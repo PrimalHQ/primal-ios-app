@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct PrimalApp: App {
+    @StateObject var feed = Feed()
+
+    init() {
+        URLCache.shared.diskCapacity = 1_000_000_000
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(feed)
         }
     }
 }
