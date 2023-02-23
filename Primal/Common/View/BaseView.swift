@@ -11,6 +11,7 @@ struct BaseView: View {
     init() {
         UITabBar.appearance().isHidden = true
     }
+    @EnvironmentObject var uiState: UIState
     
     @State var showMenu: Bool = false
     @State var currentTab = "Home"
@@ -21,6 +22,11 @@ struct BaseView: View {
     
     var body: some View {
         let sidebarWidth = getRect().width - 90
+        let dragGesture = DragGesture()
+            .updating($gestureOffset, body: { value, out, _ in
+                out = value.translation.width
+            })
+            .onEnded(onEnd(value:))
         
         NavigationView {
             HStack (spacing: 0) {
@@ -74,18 +80,12 @@ struct BaseView: View {
                                 showMenu.toggle()
                             }
                         }
-                )
+                    )
             }
             .frame(width: getRect().width + sidebarWidth)
             .offset(x: -sidebarWidth / 2)
             .offset(x: offset > 0 ? offset : 0)
-            .gesture(
-                DragGesture()
-                    .updating($gestureOffset, body: { value, out, _ in
-                        out = value.translation.width
-                    })
-                    .onEnded(onEnd(value:))
-            )
+            .gesture(uiState.isSideMenuDragGestureAllowed ? dragGesture : nil)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(true)
             .ignoresSafeArea(.keyboard, edges: .bottom)
@@ -179,5 +179,6 @@ struct BaseView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(Feed())
+            .environmentObject(UIState())
     }
 }

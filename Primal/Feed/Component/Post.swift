@@ -132,5 +132,7 @@ struct Post: View {
 struct Post_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(Feed())
+            .environmentObject(UIState())
     }
 }

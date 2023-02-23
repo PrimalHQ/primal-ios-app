@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct PrimalApp: App {
     @StateObject var feed = Feed()
+    @StateObject var uiState = UIState()
 
     init() {
         URLCache.shared.diskCapacity = 1_000_000_000
@@ -19,6 +20,7 @@ struct PrimalApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(feed)
+                .environmentObject(uiState)
         }
     }
 }

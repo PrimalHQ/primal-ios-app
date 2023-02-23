@@ -10,6 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @Binding var showMenu: Bool
     @EnvironmentObject var feed: Feed
+    @EnvironmentObject var uiState: UIState
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
@@ -67,6 +69,10 @@ struct HomeView: View {
                         .navigationTitle("Thread")
                         .onAppear {
                             feed.requestThread(postId: item.post.id, subId: item.post.id)
+                            uiState.isSideMenuDragGestureAllowed = false
+                        }
+                        .onDisappear {
+                            uiState.isSideMenuDragGestureAllowed = true
                         }
                 }
             }.safeAreaInset(edge: .bottom, alignment: .trailing) {
@@ -86,5 +92,6 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(Feed())
+            .environmentObject(UIState())
     }
 }
