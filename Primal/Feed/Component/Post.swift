@@ -118,6 +118,21 @@ struct Post: View {
                             .padding(.top, 8)
                             .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
                     }
+                    Spacer()
+                    Group {
+                        Image("Zaps")
+                            .resizable()
+                            .renderingMode(.template)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 16, height: 16)
+                            .padding(.top, 8)
+                            .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
+                        Text(String(post.post.zaps))
+                            .font(Font.custom("RobotoFlex", size: 15))
+                            .padding(.top, 8)
+                            .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
+                    }
+
                 }
                 .padding([.bottom, .trailing], 16)
             }

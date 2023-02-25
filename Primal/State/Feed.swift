@@ -5,14 +5,26 @@
 //  Created by Nikola Lukovic on 20.2.23..
 //
 
+import SwiftUI
 import Foundation
 import NWWebSocket
 import Network
 import GenericJSON
 
+enum FeedType {
+    case myFeed
+    case trending
+    case highlights
+    case snowden
+    case dorsey
+    case nvk
+}
+
 class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var isLoadingData: Bool = false
     @Published var isLoadingAdditionalData: Bool = false
+    
+    @Published var currentFeed: FeedType = .myFeed
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -27,7 +39,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     private let socketURL = URL(string: "wss://dev.primal.net/cache7")
     private let testHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
-    private let subid = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
+    private let snowdenHex = "84dee6e676e5bb67b4ad4e042cf70cbd8681155db535942fcc6a0533858a7240"
+    private let dorseyHex = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+    private let nvkHex = "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411"
     private let socket: NWWebSocket
     
     private let jsonEncoder: JSONEncoder = JSONEncoder()
@@ -44,19 +58,23 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         socket.disconnect()
     }
     
-    func requestNewPage(until: Int32 = 0, limit: Int32 = 20) {
-        self.isLoadingAdditionalData = true
-        let key = until == 0 ? "since" : "until"
+    func setCurrentFeed(_ type: FeedType) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            self.isLoadingData = true
+        }
+        self.currentFeed = type
         
-        guard let json: JSON = try? JSON(["REQ", "\(self.subid)", ["cache": ["feed", ["pubkey": "\(testHex)", "limit": limit, "\(key)": until]]]]) else {
-            print("Error encoding req")
-            return
+        self.posts.removeAll()
+        self.clearBufferPosts()
+        self.requestNewPage()
+    }
+    
+    func requestNewPage(until: Int32 = 0, limit: Int32 = 20) {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            self.isLoadingAdditionalData = true
         }
-        guard let jsonData = try? self.jsonEncoder.encode(json) else {
-            print("Error encoding req json")
-            return
-        }
-        let jsonStr = String(data: jsonData, encoding: .utf8)!
+
+        let jsonStr = self.generateRequestByFeedType(until: until, limit: limit)
         
         self.socket.send(string: jsonStr)
     }
@@ -84,7 +102,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
-        self.isLoadingData = true
+        withAnimation(.easeInOut(duration: 0.2)) {
+            self.isLoadingData = true
+        }
         self.requestNewPage()
     }
     
@@ -92,6 +112,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         print("webSocketDidDisconnect")
         dump(closeCode)
         dump(reason)
+        self.stopLoading()
     }
     
     func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
@@ -106,6 +127,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("webSocketDidReceiveError")
         dump(error)
+        self.stopLoading()
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {
@@ -119,18 +141,19 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             return
         }
         
-        if json.arrayValue?[1].stringValue == self.subid {
-            self.processPosts(json)
-        } else if json.arrayValue?[1].stringValue == self.threadSubId {
-            self.processThread(json)
-        }
-        
-        
+        self.processMessage(json)
     }
     
     func webSocketDidReceiveMessage(connection: WebSocketConnection, data: Data) {
         print("webSocketDidReceiveMessageData")
-        self.isLoadingData = false
+    }
+    
+    private func processMessage(_ json: JSON) {
+        if json.arrayValue?[1].stringValue == self.threadSubId {
+            self.processThread(json)
+        } else {
+            self.processPosts(json)
+        }
     }
     
     private func processPosts(_ json: JSON) {
@@ -166,6 +189,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             }
             
             self.appendPostsAndClearBuffer(posts)
+            self.stopLoading()
         }
     }
     
@@ -202,17 +226,20 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             }
             
             self.appendThreadPostsAndClearBuffer(posts)
+            self.stopLoading()
         }
+    }
+    
+    private func clearBufferPosts() {
+        self.bufferNostrStats.removeAll()
+        self.bufferNostrPosts.removeAll()
+        self.bufferNostrUsers.removeAll()
     }
     
     private func appendPostsAndClearBuffer(_ posts: [PrimalPost]) {
         self.posts.append(contentsOf: posts)
         
-        self.bufferNostrStats.removeAll()
-        self.bufferNostrPosts.removeAll()
-        self.bufferNostrUsers.removeAll()
-        
-        self.stopLoading()
+        self.clearBufferPosts()
     }
     
     private func appendThreadPostsAndClearBuffer(_ posts: [PrimalPost]) {
@@ -221,13 +248,63 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.bufferThreadNostrStats.removeAll()
         self.bufferThreadNostrPosts.removeAll()
         self.bufferThreadNostrUsers.removeAll()
-        
-        self.stopLoading()
     }
     
     private func stopLoading() {
-        self.isLoadingData = false
-        self.isLoadingAdditionalData = false
+        withAnimation(.easeInOut(duration: 0.1)) {
+            self.isLoadingData = false
+            self.isLoadingAdditionalData = false
+        }
+    }
+    
+    private func generateFeedPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
+        let key = until == 0 ? "since" : "until"
+        
+        guard let json: JSON = try? JSON(["REQ", "user_feed_\(hex)", ["cache": ["feed", ["pubkey": "\(hex)", "limit": limit, "\(key)": until]]]]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
+    private func generateTrendingPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
+        guard let json: JSON = try? JSON(["REQ", "explore_feed_network_trending_\(hex)", ["cache": ["explore", ["pubkey": "\(hex)", "limit": 100, "scope": "network", "timeframe": "trending"]]]]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
+    private func generateRequestByFeedType(until: Int32 = 0, limit: Int32 = 20) -> String {
+        switch self.currentFeed {
+        case .myFeed, .highlights: do {
+            return self.generateFeedPageRequestForHex(self.testHex, until: until, limit: limit)
+        }
+        case .snowden: do {
+            return self.generateFeedPageRequestForHex(self.snowdenHex, until: until, limit: limit)
+        }
+        case .dorsey: do {
+            return self.generateFeedPageRequestForHex(self.dorseyHex, until: until, limit: limit)
+        }
+        case .nvk: do {
+            return self.generateFeedPageRequestForHex(self.nvkHex, until: until, limit: limit)
+        }
+        case .trending: do {
+            return self.generateTrendingPageRequestForHex(self.testHex, until: until, limit: limit)
+        }
+        }
     }
 }
 

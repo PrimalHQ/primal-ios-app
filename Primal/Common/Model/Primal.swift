@@ -120,4 +120,40 @@ struct PrimalPost : Codable, Hashable {
     static func == (lhs: PrimalPost, rhs: PrimalPost) -> Bool {
         return lhs.post.id == rhs.post.id
     }
+    
+    static func example() -> PrimalPost {
+        let userUUID = UUID().uuidString
+        let user: PrimalUser = PrimalUser(
+            id: userUUID,
+            pubkey: userUUID,
+            npub: userUUID,
+            name: userUUID,
+            about: userUUID,
+            picture: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+            nip05: userUUID,
+            banner: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+            displayName: userUUID,
+            location: userUUID,
+            lud06: userUUID,
+            lud16: userUUID,
+            website: userUUID,
+            tags: [[]]
+        )
+        let feedPostUUID = UUID().uuidString
+        let feedPost: PrimalFeedPost = PrimalFeedPost(
+            id: feedPostUUID,
+            pubkey: feedPostUUID,
+            created_at: 1677374861,
+            tags: [[]],
+            content: "\(feedPostUUID) \(feedPostUUID)\n \(userUUID)",
+            sig: feedPostUUID,
+            likes: 420,
+            mentions: 69,
+            replies: 42,
+            zaps: 666,
+            score24h: 13
+        )
+        
+        return PrimalPost(user: user, post: feedPost)
+    }
 }

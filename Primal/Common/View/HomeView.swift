@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Binding var showMenu: Bool
+    @State private var showingFeed = false
     @EnvironmentObject var feed: Feed
     @EnvironmentObject var uiState: UIState
     
@@ -27,6 +28,18 @@ struct HomeView: View {
                         }
                         
                         Spacer()
+                        
+                        Button {
+                            showingFeed.toggle()
+                        } label: {
+                            Image("Feed")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .aspectRatio(contentMode: .fill)
+                        }.sheet(isPresented: $showingFeed) {
+                            FeedSheet()
+                                .presentationDetents([.medium])
+                        }
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 15)
@@ -35,10 +48,7 @@ struct HomeView: View {
                 }
                 .transition(.scale)
                 .overlay(
-                    Image("LogoPrimary")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width :38, height: 38)
+                    ToolbarFeedText()
                 )
                 .background(.thinMaterial)
                 .zIndex(1)

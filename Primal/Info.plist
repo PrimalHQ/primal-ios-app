@@ -21,12 +21,5 @@
 		<key>UISceneConfigurations</key>
 		<dict/>
 	</dict>
-	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>Black</string>
-		<key>UIImageName</key>
-		<string>LogoSplash</string>
-	</dict>
 </dict>
 </plist>

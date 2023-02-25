@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9310AB0129AA998D0038B6F4 /* FeedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9310AB0029AA998D0038B6F4 /* FeedSheet.swift */; };
+		9310AB0329AAB1640038B6F4 /* FeedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9310AB0229AAB1640038B6F4 /* FeedButton.swift */; };
+		9310AB0529AAB6B70038B6F4 /* ToolbarFeedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9310AB0429AAB6B70038B6F4 /* ToolbarFeedText.swift */; };
+		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932E864B29A6EB8600C415AA /* UIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932E864A29A6EB8600C415AA /* UIState.swift */; };
 		939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F529A3E36F003954C2 /* PrimalApp.swift */; };
 		939330F829A3E36F003954C2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F729A3E36F003954C2 /* ContentView.swift */; };
@@ -53,6 +57,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9310AB0029AA998D0038B6F4 /* FeedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSheet.swift; sourceTree = "<group>"; };
+		9310AB0229AAB1640038B6F4 /* FeedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedButton.swift; sourceTree = "<group>"; };
+		9310AB0429AAB6B70038B6F4 /* ToolbarFeedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarFeedText.swift; sourceTree = "<group>"; };
+		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932E864A29A6EB8600C415AA /* UIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIState.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F529A3E36F003954C2 /* PrimalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalApp.swift; sourceTree = "<group>"; };
@@ -143,6 +151,7 @@
 				939330F729A3E36F003954C2 /* ContentView.swift */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
+				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
 			);
 			path = Primal;
 			sourceTree = "<group>";
@@ -250,6 +259,7 @@
 			children = (
 				9393314529A3EA92003954C2 /* NavigationBackButton.swift */,
 				9393314729A3EAE4003954C2 /* SideMenu.swift */,
+				9310AB0429AAB6B70038B6F4 /* ToolbarFeedText.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -274,6 +284,8 @@
 		9393314F29A3EED4003954C2 /* Component */ = {
 			isa = PBXGroup;
 			children = (
+				9310AB0229AAB1640038B6F4 /* FeedButton.swift */,
+				9310AB0029AA998D0038B6F4 /* FeedSheet.swift */,
 				9393315029A3EEE2003954C2 /* Post.swift */,
 			);
 			path = Component;
@@ -396,6 +408,7 @@
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
+				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -422,6 +435,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9393314829A3EAE4003954C2 /* SideMenu.swift in Sources */,
+				9310AB0129AA998D0038B6F4 /* FeedSheet.swift in Sources */,
 				9393313729A3E5A8003954C2 /* String.swift in Sources */,
 				9393314D29A3EE9F003954C2 /* HomeView.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
@@ -435,8 +449,10 @@
 				9393314129A3EA01003954C2 /* Color.swift in Sources */,
 				9393314329A3EA25003954C2 /* UINavigationController.swift in Sources */,
 				9393313F29A3E9D8003954C2 /* View.swift in Sources */,
+				9310AB0329AAB1640038B6F4 /* FeedButton.swift in Sources */,
 				9393314629A3EA92003954C2 /* NavigationBackButton.swift in Sources */,
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
+				9310AB0529AAB6B70038B6F4 /* ToolbarFeedText.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -603,6 +619,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -639,6 +656,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
