@@ -9,8 +9,13 @@ import SwiftUI
 import Kingfisher
 
 struct Post: View {
+    @Binding var imgURL: String
+    @Binding var showImageViewer: Bool
+    
     @Environment(\.colorScheme) var colorScheme
+    
     let post: PrimalPost
+    
     let formatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.dateTimeStyle = .named
@@ -46,6 +51,7 @@ struct Post: View {
                 HStack (alignment: .center, spacing: 2) {
                     Text(post.user.name)
                         .font(Font.custom("RobotoFlex", size: 16))
+                        .frame(height: 5)
                         .foregroundColor(Color(hex: "#666666"))
                     Image("Verified")
                         .resizable()
@@ -54,53 +60,78 @@ struct Post: View {
                         .frame(width: 12, height: 12)
                         .foregroundColor(Color(hex: "#666666"))
                     let date = Date(timeIntervalSince1970: TimeInterval(post.post.created_at))
-                    Text("\(post.user.nip05) | \(formatter.localizedString(for: date, relativeTo: Date.now))")
-                        .font(Font.custom("RobotoFlex", size: 10))
+                    Text("\(post.user.getDomainNip05())")
+                        .font(Font.custom("RobotoFlex", size: 16))
+                        .foregroundColor(Color(hex: "#666666"))
+                        .frame(height: 5)
+                        .frame(alignment: .leading)
+                        .truncationMode(.tail)
+                    Text(" | \(formatter.localizedString(for: date, relativeTo: Date.now))")
+                        .font(Font.custom("RobotoFlex", size: 16))
                         .foregroundColor(Color(hex: "#666666"))
                     Spacer()
                 }
-                if !post.post.content.isValidURLAndIsImage {
-                    let result = post.post.content.extractTagsMentionsAndURLs()
-                    Group {
-                        ForEach(result, id: \.self) { text in
-                            if text.isValidURL {
-                                if text.isValidURLAndIsImage {
-                                    KFAnimatedImage(URL(string: text)!)
+                let result: [String] = post.post.content.extractTagsMentionsAndURLs()
+                let text: [String] = result.filter { r in
+                    return !r.isValidURLAndIsImage
+                    
+                }
+                let imageUrls: [String] = result.filter { r in
+                    return r.isValidURLAndIsImage
+                }
+                Group {
+                    ForEach(text) { t in
+                        if t.isValidURL {
+                            Text(try! AttributedString(markdown: t.transformURLStringToMarkdown))
+                                .font(Font.custom("RobotoFlex", size: 16))
+                                .padding(.trailing, 16)
+                        } else {
+                            Text(t)
+                                .font(Font.custom("RobotoFlex", size: 16))
+                                .foregroundColor(t.isHashTagOrMention ? Color(hex: "#CA079F") : Color.primary)
+                                .padding(.trailing, 16)
+                        }
+                    }
+                    if imageUrls.count == 1 {
+                        KFAnimatedImage(URL(string: imageUrls[0])!)
+                            .placeholder {
+                                ProgressView()
+                            }
+                            .loadDiskFileSynchronously()
+                            .cacheMemoryOnly()
+                            .fade(duration: 0.25)
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                            .padding(.trailing, 16)
+                            .id(post.post.id)
+                            .onTapGesture {
+                                self.imgURL = imageUrls[0]
+                                self.showImageViewer = true
+                            }
+                    } else if !imageUrls.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 20) {
+                                ForEach(imageUrls) { url in
+                                    KFAnimatedImage(URL(string: url)!)
                                         .placeholder {
                                             ProgressView()
                                         }
-                                        .loadDiskFileSynchronously()
                                         .cacheMemoryOnly()
                                         .fade(duration: 0.25)
                                         .aspectRatio(contentMode: .fit)
                                         .clipShape(RoundedRectangle(cornerRadius: 5))
                                         .padding(.trailing, 16)
+                                        .frame(maxHeight: 200)
+                                        .frame(minHeight: 200)
                                         .id(post.post.id)
-                                } else {
-                                    Text(try! AttributedString(markdown: text.transformURLStringToMarkdown))
-                                        .font(Font.custom("RobotoFlex", size: 16))
-                                        .padding(.trailing, 16)
+                                        .onTapGesture {
+                                            self.imgURL = url
+                                            self.showImageViewer = true
+                                        }
                                 }
-                            } else {
-                                Text(text)
-                                    .font(Font.custom("RobotoFlex", size: 16))
-                                    .foregroundColor(text.isHashTagOrMention ? Color(hex: "#CA079F") : Color.primary)
-                                    .padding(.trailing, 16)
                             }
                         }
                     }
-                } else {
-                    KFAnimatedImage(URL(string: post.post.content)!)
-                        .placeholder {
-                            ProgressView()
-                        }
-                        .loadDiskFileSynchronously()
-                        .cacheMemoryOnly()
-                        .fade(duration: 0.25)
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .padding(.trailing, 16)
-                        .id(post.post.id)
                 }
                 HStack (alignment: .center, spacing: 5) {
                     Group {
@@ -153,7 +184,7 @@ struct Post: View {
                             .frame(width: 16, height: 16)
                             .padding(.top, 8)
                             .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
-                        Text(String(post.post.zaps))
+                        Text(String(post.post.satszapped))
                             .font(Font.custom("RobotoFlex", size: 15))
                             .padding(.top, 8)
                             .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)

@@ -17,6 +17,8 @@ struct BaseView: View {
     @State var currentTab = "Home"
     @State var offset: CGFloat = 0
     @State var lastOffset: CGFloat = 0
+    @State var imgURL = ""
+    @State var showImageViewer = false
     
     @GestureState var gestureOffset: CGFloat = 0
     
@@ -33,7 +35,7 @@ struct BaseView: View {
                 SideMenu(showMenu: $showMenu)
                 VStack(alignment: .leading, spacing: 0) {
                     TabView(selection: $currentTab) {
-                        HomeView(showMenu: $showMenu)
+                        HomeView(showMenu: $showMenu, imgURL: $imgURL, showImageViewer: $showImageViewer)
                             .navigationBarTitleDisplayMode(.inline)
                             .navigationBarHidden(true)
                             .tag("Home")
@@ -105,6 +107,7 @@ struct BaseView: View {
         .onChange(of: gestureOffset) { newValue in
             onChange()
         }
+        .overlay(ImageViewerRemote2(imageURL: self.$imgURL, viewerShown: self.$showImageViewer))
     }
     
     

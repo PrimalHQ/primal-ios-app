@@ -69,6 +69,16 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.website = website
         self.tags = tags
     }
+    
+    func getDomainNip05() -> String {
+        if self.nip05.isEmpty {
+            return ""
+        }
+        
+        let components = self.nip05.components(separatedBy: "@")
+        
+        return components[1]
+    }
 }
 
 struct PrimalFeedPost : Codable, Identifiable, Hashable {
@@ -82,6 +92,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let mentions: Int32
     let replies: Int32
     let zaps: Int32
+    let satszapped: Int32
     let score24h: Int32
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
@@ -95,10 +106,11 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.mentions = nostrPostStats.mentions
         self.replies = nostrPostStats.replies
         self.zaps = nostrPostStats.zaps
+        self.satszapped = nostrPostStats.satszapped
         self.score24h = nostrPostStats.score24h
     }
     
-    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, score24h: Int32) {
+    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32) {
         self.id = id
         self.pubkey = pubkey
         self.created_at = created_at
@@ -109,11 +121,13 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.mentions = mentions
         self.replies = replies
         self.zaps = zaps
+        self.satszapped = satszapped
         self.score24h = score24h
     }
 }
 
-struct PrimalPost : Codable, Hashable {
+struct PrimalPost : Codable, Hashable, Identifiable {
+    let id: String
     let user: PrimalUser
     let post: PrimalFeedPost
     
@@ -151,9 +165,10 @@ struct PrimalPost : Codable, Hashable {
             mentions: 69,
             replies: 42,
             zaps: 666,
+            satszapped: 666,
             score24h: 13
         )
         
-        return PrimalPost(user: user, post: feedPost)
+        return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)
     }
 }

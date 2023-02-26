@@ -79,6 +79,16 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket.send(string: jsonStr)
     }
     
+    func refreshPage() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            self.isLoadingAdditionalData = true
+        }
+        
+        let jsonStr = self.generateRequestByFeedType(until: 1)
+        
+        self.socket.send(string: jsonStr)
+    }
+    
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         self.isLoadingAdditionalData = true
         self.threadSubId = subId
@@ -179,7 +189,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
                 let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
                 
-                let primalPost = PrimalPost(user: primalUser, post: primalFeedPost)
+                let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
                 
                 return primalPost
             }.sorted { $0.post.created_at > $1.post.created_at }
@@ -216,7 +226,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
                 let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
                 
-                let primalPost = PrimalPost(user: primalUser, post: primalFeedPost)
+                let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
                 
                 return primalPost
             }.sorted { $0.post.created_at > $1.post.created_at }

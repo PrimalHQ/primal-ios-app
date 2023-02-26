@@ -9,7 +9,11 @@ import SwiftUI
 
 struct HomeView: View {
     @Binding var showMenu: Bool
+    @Binding var imgURL: String
+    @Binding var showImageViewer: Bool
+    
     @State private var showingFeed = false
+    
     @EnvironmentObject var feed: Feed
     @EnvironmentObject var uiState: UIState
     
@@ -55,16 +59,15 @@ struct HomeView: View {
                 
                 List {
                     Spacer(minLength: 45)
-                    ForEach(feed.posts, id: \.post.id) { post in
+                    ForEach(feed.posts) { post in
                         NavigationLink(value: post) {
-                            Post(post: post)
+                            Post(imgURL: $imgURL, showImageViewer: $showImageViewer, post: post)
                         }
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                         .padding([.trailing], -16)
                         .onAppear() {
                             if self.feed.posts.last == post {
-                                print("Hit rock bottom")
                                 feed.requestNewPage(until: feed.posts.last?.post.created_at ?? 0)
                             }
                         }
@@ -73,7 +76,7 @@ struct HomeView: View {
                 .zIndex(0)
                 .listStyle(.plain)
                 .navigationDestination(for: PrimalPost.self) { item in
-                    ThreadView(post: item)
+                    ThreadView(imgURL: $imgURL, showImageViewer: $showImageViewer, post: item)
                         .navigationBarBackButtonHidden(true)
                         .navigationBarItems(leading: NavigationBackButton())
                         .navigationTitle("Thread")
@@ -85,14 +88,17 @@ struct HomeView: View {
                             uiState.isSideMenuDragGestureAllowed = true
                         }
                 }
+                .refreshable {
+                    feed.refreshPage()
+                }
             }.safeAreaInset(edge: .bottom, alignment: .trailing) {
                 Button {} label: {
                     Image("AddPost")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 }
-                .frame(width: 55, height: 55)
-                .offset(x: -35, y: -35)
+                .frame(width: 56, height: 56)
+                .offset(x: -13, y: -10)
             }
         }
     }

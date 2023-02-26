@@ -7,7 +7,11 @@
 
 import Foundation
 
-extension String {
+extension String : Identifiable {
+    public var id: String {
+        return UUID().uuidString
+    }
+    
     var isValidURL: Bool {
         let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         if let match = detector.firstMatch(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count)) {
@@ -21,7 +25,7 @@ extension String {
     var transformURLStringToMarkdown: String {
         let url = URL(string: self)!
     
-        return "[\(url.host ?? self) link](\(self))"
+        return "[\(url.host ?? self)](\(self))"
     }
     
     var isValidURLAndIsImage: Bool {
