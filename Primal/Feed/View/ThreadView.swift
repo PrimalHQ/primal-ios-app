@@ -34,26 +34,20 @@ struct ThreadView: View {
     
     var body: some View {
         ZStack() {
-            VStack(alignment: .leading) {
-                if feed.isLoadingAdditionalData {
-                    HStack(alignment: .center, spacing: 10) {
-                        ProgressView()
-                        Text("Loading…")
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List {
-                        PrimaryThread()
+            VStack(alignment: .leading, spacing: 0) {
+                List {
+                    PrimaryThread()
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
+                        .padding(.bottom, 3)
+                    ForEach(feed.threadPosts) { post in
+                        Post(imgURL: $imgURL, showImageViewer: $showImageViewer, post: post)
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
-                            .padding(.bottom, 3)
-                        ForEach(feed.threadPosts) { post in
-                            Post(imgURL: $imgURL, showImageViewer: $showImageViewer, post: post)
-                                .listRowInsets(EdgeInsets())
-                                .listRowSeparator(.hidden)
-                        }
                     }
-                    .listStyle(.plain)
                 }
+                .listStyle(.plain)
+                .listRowInsets(EdgeInsets())
             }
         }.safeAreaInset(edge: .bottom, alignment: .trailing) {
             VStack(spacing: 10) {
@@ -87,7 +81,7 @@ struct ThreadView: View {
                         .placeholder {
                             ProgressView()
                         }
-                        .loadDiskFileSynchronously()
+                        .cacheOriginalImage()
                         .cacheMemoryOnly()
                         .fade(duration: 0.25)
                         .frame(width: 65, height: 65)
@@ -156,7 +150,7 @@ struct ThreadView: View {
                             .placeholder {
                                 ProgressView()
                             }
-                            .loadDiskFileSynchronously()
+                            .cacheOriginalImage()
                             .cacheMemoryOnly()
                             .fade(duration: 0.25)
                             .aspectRatio(contentMode: .fit)
@@ -175,7 +169,7 @@ struct ThreadView: View {
                                         .placeholder {
                                             ProgressView()
                                         }
-                                        .loadDiskFileSynchronously()
+                                        .cacheOriginalImage()
                                         .cacheMemoryOnly()
                                         .fade(duration: 0.25)
                                         .aspectRatio(contentMode: .fit)

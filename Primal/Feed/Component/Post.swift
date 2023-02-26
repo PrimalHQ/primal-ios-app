@@ -31,7 +31,7 @@ struct Post: View {
                         .placeholder {
                             ProgressView()
                         }
-                        .loadDiskFileSynchronously()
+                        .cacheOriginalImage()
                         .cacheMemoryOnly()
                         .fade(duration: 0.25)
                         .frame(width: 65, height: 65)
@@ -97,7 +97,7 @@ struct Post: View {
                             .placeholder {
                                 ProgressView()
                             }
-                            .loadDiskFileSynchronously()
+                            .cacheOriginalImage()
                             .cacheMemoryOnly()
                             .fade(duration: 0.25)
                             .aspectRatio(contentMode: .fit)
@@ -116,6 +116,7 @@ struct Post: View {
                                         .placeholder {
                                             ProgressView()
                                         }
+                                        .cacheOriginalImage()
                                         .cacheMemoryOnly()
                                         .fade(duration: 0.25)
                                         .aspectRatio(contentMode: .fit)
