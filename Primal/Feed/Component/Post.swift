@@ -60,9 +60,35 @@ struct Post: View {
                     Spacer()
                 }
                 if !post.post.content.isValidURLAndIsImage {
-                    Text(try! AttributedString(markdown: post.post.content))
-                        .font(Font.custom("RobotoFlex", size: 16))
-                        .padding(.trailing, 16)
+                    let result = post.post.content.extractTagsMentionsAndURLs()
+                    Group {
+                        ForEach(result, id: \.self) { text in
+                            if text.isValidURL {
+                                if text.isValidURLAndIsImage {
+                                    KFAnimatedImage(URL(string: text)!)
+                                        .placeholder {
+                                            ProgressView()
+                                        }
+                                        .loadDiskFileSynchronously()
+                                        .cacheMemoryOnly()
+                                        .fade(duration: 0.25)
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        .padding(.trailing, 16)
+                                        .id(post.post.id)
+                                } else {
+                                    Text(try! AttributedString(markdown: text.transformURLStringToMarkdown))
+                                        .font(Font.custom("RobotoFlex", size: 16))
+                                        .padding(.trailing, 16)
+                                }
+                            } else {
+                                Text(text)
+                                    .font(Font.custom("RobotoFlex", size: 16))
+                                    .foregroundColor(text.isHashTagOrMention ? Color(hex: "#CA079F") : Color.primary)
+                                    .padding(.trailing, 16)
+                            }
+                        }
+                    }
                 } else {
                     KFAnimatedImage(URL(string: post.post.content)!)
                         .placeholder {

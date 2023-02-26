@@ -18,22 +18,67 @@ extension String {
         }
     }
     
-    var isValidURLAndIsImage: Bool {
-        return self.isValidURL && (self.contains(".jpg") || self.contains(".jpeg") || self.contains(".webp") || self.contains(".png") || self.contains(".gif") || self.contains("format=png"))
+    var transformURLStringToMarkdown: String {
+        let url = URL(string: self)!
+    
+        return "[\(url.host ?? self) link](\(self))"
     }
     
-    func extractURLs() -> [URL] {
-        var urls : [URL] = []
-        do {
-            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            detector.enumerateMatches(in: self, options: [], range: NSMakeRange(0, self.count), using: { (result, _, _) in
-                if let match = result, let url = match.url {
-                    urls.append(url)
-                }
-            })
-        } catch let error as NSError {
-            print(error.localizedDescription)
+    var isValidURLAndIsImage: Bool {
+        return self.isValidURL && (self.hasSuffix(".jpg") || self.hasSuffix(".jpeg") || self.hasSuffix(".webp") || self.hasSuffix(".png") || self.hasSuffix(".gif") || self.hasSuffix("format=png"))
+    }
+    
+    var isHashTagOrMention: Bool {
+        return self.hasPrefix("#") || self.hasPrefix("@")
+    }
+    
+    func extractTextAndUrls() -> (String, [URL]) {
+        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let matches = detector.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+        var urls: [URL] = []
+        var currentIndex = self.startIndex
+        var result = ""
+        for match in matches {
+            guard let range = Range(match.range, in: self) else { continue }
+            let precedingText = String(self[currentIndex..<range.lowerBound])
+            result += precedingText.trimmingCharacters(in: .whitespacesAndNewlines)
+            urls.append(match.url!)
+            currentIndex = range.upperBound
         }
-        return urls
+        result += String(self[currentIndex...])
+        return (result, urls)
+    }
+    
+    func extractTagsMentionsAndURLs() -> [String] {
+        let hashtagPattern = "#\\w+"
+        let mentionPattern = "@\\w+"
+        if let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []), let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []), let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
+            var ranges: [Range<String.Index>] = []
+            hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                    ranges.append(range)
+                }
+            }
+            mentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                    ranges.append(range)
+                }
+            }
+            urlDetector.enumerateMatches(in: self, range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                    ranges.append(range)
+                }
+            }
+            var result: [String] = []
+            var currentIndex = self.startIndex
+            for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
+                result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: ["\n", " "]))
+                result.append(String(self[range]).trimmingCharacters(in: ["\n", " "]))
+                currentIndex = range.upperBound
+            }
+            result.append(String(self[currentIndex...]))
+            return result
+        }
+        return []
     }
 }
