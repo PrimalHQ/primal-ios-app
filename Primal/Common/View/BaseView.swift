@@ -12,7 +12,7 @@ struct BaseView: View {
         UITabBar.appearance().isHidden = true
     }
     @EnvironmentObject var uiState: UIState
-    
+        
     @State var showMenu: Bool = false
     @State var currentTab = "Home"
     @State var offset: CGFloat = 0
@@ -107,7 +107,7 @@ struct BaseView: View {
         .onChange(of: gestureOffset) { newValue in
             onChange()
         }
-        .overlay(ImageViewerRemote2(imageURL: self.$imgURL, viewerShown: self.$showImageViewer))
+        .overlay(ImageViewerRemote(imageURL: self.$imgURL, viewerShown: self.$showImageViewer))
     }
     
     
@@ -166,7 +166,7 @@ struct BaseView: View {
         Button {
             withAnimation{currentTab = image}
         } label: {
-            Image(currentTab == image ? "\(image)Filled" : image)
+            Image("NEW - \(image)")
                 .resizable()
                 .renderingMode(.template)
                 .aspectRatio(contentMode: .fit)

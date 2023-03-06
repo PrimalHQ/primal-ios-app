@@ -13,6 +13,7 @@
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932E864B29A6EB8600C415AA /* UIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932E864A29A6EB8600C415AA /* UIState.swift */; };
 		9331ED4829ABC5D6003ACA1F /* ImageViewerRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9331ED4729ABC5D6003ACA1F /* ImageViewerRemote.swift */; };
+		9384D25D29B686E60025C677 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9384D25C29B686E60025C677 /* Collection.swift */; };
 		939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F529A3E36F003954C2 /* PrimalApp.swift */; };
 		939330F829A3E36F003954C2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F729A3E36F003954C2 /* ContentView.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932E864A29A6EB8600C415AA /* UIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIState.swift; sourceTree = "<group>"; };
 		9331ED4729ABC5D6003ACA1F /* ImageViewerRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerRemote.swift; sourceTree = "<group>"; };
+		9384D25C29B686E60025C677 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F529A3E36F003954C2 /* PrimalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalApp.swift; sourceTree = "<group>"; };
 		939330F729A3E36F003954C2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 				9393313E29A3E9D8003954C2 /* View.swift */,
 				9393314029A3EA01003954C2 /* Color.swift */,
 				9393314229A3EA25003954C2 /* UINavigationController.swift */,
+				9384D25C29B686E60025C677 /* Collection.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 				932E864B29A6EB8600C415AA /* UIState.swift in Sources */,
 				939330F829A3E36F003954C2 /* ContentView.swift in Sources */,
 				9393312F29A3E54E003954C2 /* Feed.swift in Sources */,
+				9384D25D29B686E60025C677 /* Collection.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9393314129A3EA01003954C2 /* Color.swift in Sources */,
 				9393314329A3EA25003954C2 /* UINavigationController.swift in Sources */,
@@ -614,7 +618,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -632,7 +636,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -651,7 +655,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -669,7 +673,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4;
+				MARKETING_VERSION = 0.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

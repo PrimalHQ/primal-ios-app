@@ -77,7 +77,11 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         
         let components = self.nip05.components(separatedBy: "@")
         
-        return components[1]
+        guard let domain = components[safe: 1] else {
+            return ""
+        }
+        
+        return domain
     }
 }
 

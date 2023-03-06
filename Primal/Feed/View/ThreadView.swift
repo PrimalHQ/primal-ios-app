@@ -19,7 +19,7 @@ struct ThreadView: View {
     @Binding var showImageViewer: Bool
     
     @EnvironmentObject var feed: Feed
-
+    
     @Environment(\.colorScheme) var colorScheme
 
     @FocusState private var focusedField: Field?
@@ -77,12 +77,18 @@ struct ThreadView: View {
         HStack (alignment: .top, spacing: 0) {
             VStack (spacing: 5) {
                 ZStack {
-                    KFAnimatedImage(URL(string: post.user.picture) ?? URL(string: "https://dev.primal.net/assets/logo-873f0213.svg")!)
+                    KFAnimatedImage(URL(string: post.user.picture))
                         .placeholder {
-                            ProgressView()
+                            Image("Profile")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 65, height: 65)
                         }
+                        .onFailureImage((Image("Profile")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 65, height: 65) as? KFCrossPlatformImage))
                         .cacheOriginalImage()
-                        .cacheMemoryOnly()
                         .fade(duration: 0.25)
                         .frame(width: 65, height: 65)
                         .clipShape(Circle())
@@ -151,7 +157,6 @@ struct ThreadView: View {
                                 ProgressView()
                             }
                             .cacheOriginalImage()
-                            .cacheMemoryOnly()
                             .fade(duration: 0.25)
                             .aspectRatio(contentMode: .fit)
                             .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -170,7 +175,6 @@ struct ThreadView: View {
                                             ProgressView()
                                         }
                                         .cacheOriginalImage()
-                                        .cacheMemoryOnly()
                                         .fade(duration: 0.25)
                                         .aspectRatio(contentMode: .fit)
                                         .clipShape(RoundedRectangle(cornerRadius: 5))

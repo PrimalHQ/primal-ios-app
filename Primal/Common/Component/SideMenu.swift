@@ -12,7 +12,7 @@ struct SideMenu: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 5) {
-                Image("ProfilePicture")
+                Image("Profile")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 65, height: 65)

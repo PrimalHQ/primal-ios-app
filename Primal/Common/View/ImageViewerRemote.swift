@@ -13,10 +13,10 @@ import Combine
 import Kingfisher
 
 @available(iOS 13.0, *)
-public struct ImageViewerRemote2: View {
+public struct ImageViewerRemote: View {
     @Binding var viewerShown: Bool
     @Binding var imageURL: String
-
+    
     @State var httpHeaders: [String: String]?
     @State var caption: Text?
     @State var closeButtonTopRight: Bool?

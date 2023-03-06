@@ -13,7 +13,7 @@ struct Post: View {
     @Binding var showImageViewer: Bool
     
     @Environment(\.colorScheme) var colorScheme
-    
+        
     let post: PrimalPost
     
     let formatter: RelativeDateTimeFormatter = {
@@ -27,12 +27,18 @@ struct Post: View {
         HStack (alignment: .top, spacing: 0) {
             VStack (spacing: 5) {
                 ZStack {
-                    KFAnimatedImage(URL(string: post.user.picture) ?? URL(string: "https://dev.primal.net/assets/logo-873f0213.svg")!)
+                    KFAnimatedImage(URL(string: post.user.picture))
                         .placeholder {
-                            ProgressView()
+                            Image("Profile")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 65, height: 65)
                         }
+                        .onFailureImage((Image("Profile")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 65, height: 65) as? KFCrossPlatformImage))
                         .cacheOriginalImage()
-                        .cacheMemoryOnly()
                         .fade(duration: 0.25)
                         .frame(width: 65, height: 65)
                         .clipShape(Circle())
@@ -98,12 +104,11 @@ struct Post: View {
                                 ProgressView()
                             }
                             .cacheOriginalImage()
-                            .cacheMemoryOnly()
                             .fade(duration: 0.25)
                             .aspectRatio(contentMode: .fit)
                             .clipShape(RoundedRectangle(cornerRadius: 5))
                             .padding(.trailing, 16)
-                            .id(post.post.id)
+                            .id(imageUrls[0])
                             .onTapGesture {
                                 self.imgURL = imageUrls[0]
                                 self.showImageViewer = true
@@ -117,14 +122,13 @@ struct Post: View {
                                             ProgressView()
                                         }
                                         .cacheOriginalImage()
-                                        .cacheMemoryOnly()
                                         .fade(duration: 0.25)
                                         .aspectRatio(contentMode: .fit)
                                         .clipShape(RoundedRectangle(cornerRadius: 5))
                                         .padding(.trailing, 16)
                                         .frame(maxHeight: 200)
                                         .frame(minHeight: 200)
-                                        .id(post.post.id)
+                                        .id(url)
                                         .onTapGesture {
                                             self.imgURL = url
                                             self.showImageViewer = true

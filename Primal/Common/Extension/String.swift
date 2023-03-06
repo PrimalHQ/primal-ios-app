@@ -33,6 +33,9 @@ extension String : Identifiable {
     }
     
     var isHashTagOrMention: Bool {
+        if self.hasPrefix("#[") {
+            return false
+        }
         return self.hasPrefix("#") || self.hasPrefix("@")
     }
     
@@ -54,9 +57,11 @@ extension String : Identifiable {
     }
     
     func extractTagsMentionsAndURLs() -> [String] {
-        let hashtagPattern = "#\\w+"
-        let mentionPattern = "@\\w+"
-        if let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []), let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []), let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
+        let hashtagPattern = "#([a-zA-Z0-9]+)"
+        let mentionPattern = "@([a-zA-Z0-9]+)"
+        if let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
+           let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
+           let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
             var ranges: [Range<String.Index>] = []
             hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
                 if let matchRange = match?.range, let range = Range(matchRange, in: self) {
@@ -76,11 +81,15 @@ extension String : Identifiable {
             var result: [String] = []
             var currentIndex = self.startIndex
             for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
-                result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: ["\n", " "]))
-                result.append(String(self[range]).trimmingCharacters(in: ["\n", " "]))
+                if currentIndex < range.lowerBound {
+                    result.append(String(self[currentIndex..<range.lowerBound]))
+                }
+                result.append(String(self[range]))
                 currentIndex = range.upperBound
             }
             result.append(String(self[currentIndex...]))
+            print(self)
+            print(result)
             return result
         }
         return []

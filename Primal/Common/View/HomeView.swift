@@ -11,7 +11,7 @@ struct HomeView: View {
     @Binding var showMenu: Bool
     @Binding var imgURL: String
     @Binding var showImageViewer: Bool
-    
+        
     @State private var showingFeed = false
     
     @EnvironmentObject var feed: Feed
@@ -25,7 +25,7 @@ struct HomeView: View {
                         Button {
                             withAnimation{showMenu.toggle()}
                         } label: {
-                            Image("ProfilePicture")
+                            Image("Profile")
                                 .resizable()
                                 .frame(width: 33, height: 33)
                                 .aspectRatio(contentMode: .fill)
@@ -36,7 +36,7 @@ struct HomeView: View {
                         Button {
                             showingFeed.toggle()
                         } label: {
-                            Image("Feed")
+                            Image("NEW - Feed picker")
                                 .resizable()
                                 .frame(width: 24, height: 24)
                                 .aspectRatio(contentMode: .fill)
