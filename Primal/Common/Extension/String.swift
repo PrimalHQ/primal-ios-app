@@ -82,14 +82,12 @@ extension String : Identifiable {
             var currentIndex = self.startIndex
             for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
                 if currentIndex < range.lowerBound {
-                    result.append(String(self[currentIndex..<range.lowerBound]))
+                    result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: [" ", "\n", "\t", "\r"]).replacingOccurrences(of: "\n", with: ""))
                 }
-                result.append(String(self[range]))
+                result.append(String(self[range]).trimmingCharacters(in: [" ", "\n", "\t", "\r"]).replacingOccurrences(of: "\n", with: ""))
                 currentIndex = range.upperBound
             }
             result.append(String(self[currentIndex...]))
-            print(self)
-            print(result)
             return result
         }
         return []

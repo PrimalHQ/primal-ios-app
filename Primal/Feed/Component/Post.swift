@@ -24,67 +24,38 @@ struct Post: View {
     }()
     
     var body: some View {
-        HStack (alignment: .top, spacing: 0) {
-            VStack (spacing: 5) {
-                ZStack {
-                    KFAnimatedImage(URL(string: post.user.picture))
-                        .placeholder {
-                            Image("Profile")
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 65, height: 65)
-                        }
-                        .onFailureImage((Image("Profile")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 65, height: 65) as? KFCrossPlatformImage))
-                        .cacheOriginalImage()
-                        .fade(duration: 0.25)
-                        .frame(width: 65, height: 65)
-                        .clipShape(Circle())
-                        .id(post.user.picture)
-                    
-                }
-                Text(post.user.displayName)
-                    .font(Font.custom("RobotoFlex", size: 12))
-                    .lineLimit(1)
+        let result: [String] = post.post.content.extractTagsMentionsAndURLs()
+        let text: [String] = result.filter { r in
+            return !r.isValidURLAndIsImage
+            
+        }
+        let imageUrls: [String] = result.filter { r in
+            return r.isValidURLAndIsImage
+        }
+        
+        VStack (alignment: .leading) {
+            HStack (alignment: .center) {
+                Text(post.user.name)
+                    .font(Font.custom("RobotoFlex", size: 16))
+                    .foregroundColor(Color(hex: "#666666"))
+                Image("Verified")
+                    .resizable()
+                    .renderingMode(.template)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 12, height: 12)
+                    .foregroundColor(Color(hex: "#666666"))
+                let date = Date(timeIntervalSince1970: TimeInterval(post.post.created_at))
+                Text("\(post.user.getDomainNip05())")
+                    .font(Font.custom("RobotoFlex", size: 16))
+                    .foregroundColor(Color(hex: "#666666"))
+                    .frame(alignment: .leading)
                     .truncationMode(.tail)
+                Text("| \(formatter.localizedString(for: date, relativeTo: Date.now))")
+                    .font(Font.custom("RobotoFlex", size: 16))
+                    .foregroundColor(Color(hex: "#666666"))
             }
-            .padding(12)
-            .frame(maxWidth: getRect().width / 5)
-            Spacer(minLength: 5)
+            .padding(.leading, getRect().width / 5)
             VStack (alignment: .leading) {
-                HStack (alignment: .center, spacing: 2) {
-                    Text(post.user.name)
-                        .font(Font.custom("RobotoFlex", size: 16))
-                        .frame(height: 5)
-                        .foregroundColor(Color(hex: "#666666"))
-                    Image("Verified")
-                        .resizable()
-                        .renderingMode(.template)
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 12, height: 12)
-                        .foregroundColor(Color(hex: "#666666"))
-                    let date = Date(timeIntervalSince1970: TimeInterval(post.post.created_at))
-                    Text("\(post.user.getDomainNip05())")
-                        .font(Font.custom("RobotoFlex", size: 16))
-                        .foregroundColor(Color(hex: "#666666"))
-                        .frame(height: 5)
-                        .frame(alignment: .leading)
-                        .truncationMode(.tail)
-                    Text(" | \(formatter.localizedString(for: date, relativeTo: Date.now))")
-                        .font(Font.custom("RobotoFlex", size: 16))
-                        .foregroundColor(Color(hex: "#666666"))
-                    Spacer()
-                }
-                let result: [String] = post.post.content.extractTagsMentionsAndURLs()
-                let text: [String] = result.filter { r in
-                    return !r.isValidURLAndIsImage
-                    
-                }
-                let imageUrls: [String] = result.filter { r in
-                    return r.isValidURLAndIsImage
-                }
                 Group {
                     ForEach(text) { t in
                         if t.isValidURL {
@@ -98,111 +69,143 @@ struct Post: View {
                                 .padding(.trailing, 16)
                         }
                     }
-                    if imageUrls.count == 1 {
-                        KFAnimatedImage(URL(string: imageUrls[0])!)
-                            .placeholder {
-                                ProgressView()
-                            }
-                            .cacheOriginalImage()
-                            .fade(duration: 0.25)
-                            .aspectRatio(contentMode: .fit)
-                            .clipShape(RoundedRectangle(cornerRadius: 5))
-                            .padding(.trailing, 16)
-                            .id(imageUrls[0])
-                            .onTapGesture {
-                                self.imgURL = imageUrls[0]
-                                self.showImageViewer = true
-                            }
-                    } else if !imageUrls.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 20) {
-                                ForEach(imageUrls) { url in
-                                    KFAnimatedImage(URL(string: url)!)
-                                        .placeholder {
-                                            ProgressView()
-                                        }
-                                        .cacheOriginalImage()
-                                        .fade(duration: 0.25)
-                                        .aspectRatio(contentMode: .fit)
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                                        .padding(.trailing, 16)
-                                        .frame(maxHeight: 200)
-                                        .frame(minHeight: 200)
-                                        .id(url)
-                                        .onTapGesture {
-                                            self.imgURL = url
-                                            self.showImageViewer = true
-                                        }
-                                }
+
+                }
+                .padding(.leading, getRect().width / 5)
+            }
+            VStack {
+                if imageUrls.count == 1 {
+                    KFAnimatedImage(URL(string: imageUrls[0])!)
+                        .placeholder {
+                            ProgressView()
+                        }
+                        .cacheOriginalImage()
+                        .fade(duration: 0.25)
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                        .padding(.trailing, 16)
+                        .id(imageUrls[0])
+                        .onTapGesture {
+                            self.imgURL = imageUrls[0]
+                            self.showImageViewer = true
+                        }
+                        .padding(.leading, getRect().width / 5)
+                } else if !imageUrls.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 20) {
+                            ForEach(imageUrls) { url in
+                                KFAnimatedImage(URL(string: url)!)
+                                    .placeholder {
+                                        ProgressView()
+                                    }
+                                    .cacheOriginalImage()
+                                    .fade(duration: 0.25)
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    .padding(.trailing, 16)
+                                    .frame(maxHeight: 200)
+                                    .frame(minHeight: 200)
+                                    .id(url)
+                                    .onTapGesture {
+                                        self.imgURL = url
+                                        self.showImageViewer = true
+                                    }
                             }
                         }
                     }
                 }
-                HStack (alignment: .center, spacing: 5) {
-                    Group {
-                        Image("Replies")
-                            .resizable()
-                            .renderingMode(.template)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
-                        Text(String(post.post.replies))
-                            .font(Font.custom("RobotoFlex", size: 15))
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
-                    }
-                    Spacer()
-                    Group {
-                        Image("Likes")
-                            .resizable()
-                            .renderingMode(.template)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
-                        Text(String(post.post.likes))
-                            .font(Font.custom("RobotoFlex", size: 15))
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
-                    }
-                    Spacer()
-                    Group {
-                        Image("Reposts")
-                            .resizable()
-                            .renderingMode(.template)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
-                        Text(String(post.post.mentions))
-                            .font(Font.custom("RobotoFlex", size: 15))
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
-                    }
-                    Spacer()
-                    Group {
-                        Image("Zaps")
-                            .resizable()
-                            .renderingMode(.template)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 16, height: 16)
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
-                        Text(String(post.post.satszapped))
-                            .font(Font.custom("RobotoFlex", size: 15))
-                            .padding(.top, 8)
-                            .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
-                    }
-
-                }
-                .padding([.bottom, .trailing], 16)
             }
-            .padding(.top, 16)
+            .padding(.top, 12)
+            HStack (alignment: .center, spacing: 5) {
+                Group {
+                    Image("Replies")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
+                    Text(String(post.post.replies))
+                        .font(Font.custom("RobotoFlex", size: 15))
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
+                }
+                Spacer()
+                Group {
+                    Image("Likes")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
+                    Text(String(post.post.likes))
+                        .font(Font.custom("RobotoFlex", size: 15))
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
+                }
+                Spacer()
+                Group {
+                    Image("Reposts")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
+                    Text(String(post.post.mentions))
+                        .font(Font.custom("RobotoFlex", size: 15))
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
+                }
+                Spacer()
+                Group {
+                    Image("Zaps")
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#FFFFFF") : .primary)
+                    Text(String(post.post.satszapped))
+                        .font(Font.custom("RobotoFlex", size: 15))
+                        .padding(.top, 8)
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "#AAAAAA") : .primary)
+                }
+                
+            }
+            .padding(.leading, getRect().width / 5)
+        }
+        .padding(16)
+        .overlay(alignment: .topLeading) {
+            VStack (alignment: .leading, spacing: 5) {
+                KFAnimatedImage(URL(string: post.user.picture))
+                    .placeholder {
+                        Image("Profile")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 52, height: 52)
+                    }
+                    .onFailureImage((Image("Profile")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 52, height: 52) as? KFCrossPlatformImage))
+                    .cacheOriginalImage()
+                    .fade(duration: 0.25)
+                    .frame(width: 52, height: 52)
+                    .clipShape(Circle())
+                    .id(post.user.picture)
+                Text(post.user.displayName)
+                    .font(Font.custom("RobotoFlex", size: 12))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            .frame(maxWidth: getRect().width / 5)
+            .padding([.leading, .top], 12)
         }
         .background(colorScheme == .dark ? Color(hex: "#181818") : Color(UIColor.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 4))
-        .padding(4)
+        .padding(.bottom, 4)
     }
 }
 

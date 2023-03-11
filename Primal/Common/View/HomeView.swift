@@ -16,7 +16,7 @@ struct HomeView: View {
     
     @EnvironmentObject var feed: Feed
     @EnvironmentObject var uiState: UIState
-    
+        
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
@@ -63,11 +63,12 @@ struct HomeView: View {
                         NavigationLink(value: post) {
                             Post(imgURL: $imgURL, showImageViewer: $showImageViewer, post: post)
                         }
+                        .isDetailLink(false)
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .padding([.trailing], -16)
+                        .padding([.trailing], -18)
                         .onAppear() {
-                            if self.feed.posts.last == post {
+                            if self.feed.posts[safe: self.feed.posts.endIndex - 2] == post {
                                 feed.requestNewPage(until: feed.posts.last?.post.created_at ?? 0)
                             }
                         }
@@ -78,8 +79,12 @@ struct HomeView: View {
                 .navigationDestination(for: PrimalPost.self) { item in
                     ThreadView(imgURL: $imgURL, showImageViewer: $showImageViewer, post: item)
                         .navigationBarBackButtonHidden(true)
-                        .navigationBarItems(leading: NavigationBackButton())
                         .navigationTitle("Thread")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                NavigationBackButton()
+                            }
+                        }
                         .onAppear {
                             feed.requestThread(postId: item.post.id, subId: item.post.id)
                             uiState.isSideMenuDragGestureAllowed = false
