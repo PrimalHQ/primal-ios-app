@@ -20,10 +20,12 @@ enum FeedType {
     case nvk
 }
 
+enum ProcessType {
+    case post
+    case thread
+}
+
 class Feed: ObservableObject, WebSocketConnectionDelegate {
-    @Published var isLoadingData: Bool = false
-    @Published var isLoadingAdditionalData: Bool = false
-    
     @Published var currentFeed: FeedType = .myFeed
     
     @Published var posts: [PrimalPost] = []
@@ -59,9 +61,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     func setCurrentFeed(_ type: FeedType) {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            self.isLoadingData = true
-        }
         self.currentFeed = type
         
         self.posts.removeAll()
@@ -70,27 +69,12 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     func requestNewPage(until: Int32 = 0, limit: Int32 = 20) {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            self.isLoadingAdditionalData = true
-        }
-
         let jsonStr = self.generateRequestByFeedType(until: until, limit: limit)
         
         self.socket.send(string: jsonStr)
     }
     
-    func refreshPage() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            self.isLoadingAdditionalData = true
-        }
-        
-        let jsonStr = self.generateRequestByFeedType(until: 1)
-        
-        self.socket.send(string: jsonStr)
-    }
-    
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
-        self.isLoadingAdditionalData = true
         self.threadSubId = subId
         self.threadPosts.removeAll()
         self.bufferThreadNostrUsers.removeAll()
@@ -110,11 +94,14 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket.send(string: jsonStr)
     }
     
+    func refreshPage() {
+        let jsonStr = self.generateRequestByFeedType(until: 1)
+        
+        self.socket.send(string: jsonStr)
+    }
+    
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
-        withAnimation(.easeInOut(duration: 0.2)) {
-            self.isLoadingData = true
-        }
         self.requestNewPage()
     }
     
@@ -122,7 +109,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         print("webSocketDidDisconnect")
         dump(closeCode)
         dump(reason)
-        self.stopLoading()
     }
     
     func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
@@ -137,7 +123,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("webSocketDidReceiveError")
         dump(error)
-        self.stopLoading()
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {
@@ -160,83 +145,83 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     private func processMessage(_ json: JSON) {
         if json.arrayValue?[1].stringValue == self.threadSubId {
-            self.processThread(json)
+            self.processMessageBy(type: .thread, json: json)
         } else {
-            self.processPosts(json)
+            self.processMessageBy(type: .post, json: json)
         }
     }
     
-    private func processPosts(_ json: JSON) {
+    private func processMessageBy(type: ProcessType, json: JSON) {
         if json.arrayValue?[0] == "EVENT" {
-            if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 1 {
-                self.bufferNostrPosts.append(NostrContent(json: json))
-            } else if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 0 {
-                let nostrUser = NostrContent(json: json)
-                self.bufferNostrUsers[nostrUser.pubkey] = nostrUser
-            } else if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 10000100 {
-                guard let nostrContentStats: NostrContentStats = try? self.jsonDecoder.decode(NostrContentStats.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                    print("Error decoding nostr stats string to json")
-                    dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                    return
-                }
-                self.bufferNostrStats[nostrContentStats.event_id] = nostrContentStats
-            }
+            self.processEvent(type: type, json: json)
         } else if json.arrayValue?[0] == "EOSE" {
-            var posts = self.bufferNostrPosts.map { nostrPost in
-                let nostrUser = self.bufferNostrUsers[nostrPost.pubkey]
-                let nostrPostStats = self.bufferNostrStats[nostrPost.id]
-                
-                let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
-                let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
-                
-                let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
-                
-                return primalPost
-            }.sorted { $0.post.created_at > $1.post.created_at }
+            self.processEose(type: type, json: json)
+        }
+    }
+    
+    private func processEvent(type: ProcessType, json: JSON) {
+        let kind = json.arrayValue?[2].objectValue?["kind"]?.doubleValue
+        
+        switch kind {
+        case 1:
+            if type == .post {
+                self.bufferNostrPosts.append(NostrContent(json: json))
+            } else {
+                self.bufferThreadNostrPosts.append(NostrContent(json: json))
+            }
+        case 0:
+            let nostrUser = NostrContent(json: json)
+            if type == .post {
+                self.bufferNostrUsers[nostrUser.pubkey] = nostrUser
+            } else {
+                self.bufferThreadNostrUsers[nostrUser.pubkey] = nostrUser
+            }
+        case 10000100:
+            guard let nostrContentStats: NostrContentStats = try? self.jsonDecoder.decode(NostrContentStats.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding nostr stats string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            if type == .post {
+                self.bufferNostrStats[nostrContentStats.event_id] = nostrContentStats
+            } else {
+                self.bufferThreadNostrStats[nostrContentStats.event_id] = nostrContentStats
+            }
+        default:
+            assert(true, "unhandled kind \(String(describing: kind))")
+        }
+    }
+    
+    private func processEose(type: ProcessType, json: JSON) {
+        let bufferPosts = type == .post ? self.bufferNostrPosts : self.bufferThreadNostrPosts
+        let nostrUsers = type == .post ? self.bufferNostrUsers : self.bufferThreadNostrUsers
+        let nostrStats = type == .post ? self.bufferNostrStats : self.bufferThreadNostrStats
+        
+        var posts = bufferPosts.map { nostrPost in
+            let nostrUser = nostrUsers[nostrPost.pubkey]
+            let nostrPostStats = nostrStats[nostrPost.id]
+            
+            let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
+            let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
+            
+            let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
+            
+            return primalPost
+        }.sorted { $0.post.created_at > $1.post.created_at }
+        
+        if type == .post {
             
             if self.posts.last?.post.id == posts.first?.post.id {
                 posts.removeFirst()
             }
             
             self.appendPostsAndClearBuffer(posts)
-            self.stopLoading()
-        }
-    }
-    
-    private func processThread(_ json: JSON) {
-        if json.arrayValue?[0] == "EVENT" {
-            if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 1 {
-                self.bufferThreadNostrPosts.append(NostrContent(json: json))
-            } else if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 0 {
-                let nostrUser = NostrContent(json: json)
-                self.bufferThreadNostrUsers[nostrUser.pubkey] = nostrUser
-            } else if json.arrayValue?[2].objectValue?["kind"]?.doubleValue == 10000100 {
-                guard let nostrContentStats: NostrContentStats = try? self.jsonDecoder.decode(NostrContentStats.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                    print("Error decoding nostr stats string to json")
-                    dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                    return
-                }
-                self.bufferThreadNostrStats[nostrContentStats.event_id] = nostrContentStats
-            }
-        } else if json.arrayValue?[0] == "EOSE" {
-            var posts = self.bufferThreadNostrPosts.map { nostrPost in
-                let nostrUser = self.bufferThreadNostrUsers[nostrPost.pubkey]
-                let nostrPostStats = self.bufferThreadNostrStats[nostrPost.id]
-                
-                let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
-                let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
-                
-                let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
-                
-                return primalPost
-            }.sorted { $0.post.created_at > $1.post.created_at }
-            
+        } else {
             if posts.last?.post.id == threadSubId {
                 posts.removeLast()
             }
             
             self.appendThreadPostsAndClearBuffer(posts)
-            self.stopLoading()
         }
     }
     
@@ -258,13 +243,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.bufferThreadNostrStats.removeAll()
         self.bufferThreadNostrPosts.removeAll()
         self.bufferThreadNostrUsers.removeAll()
-    }
-    
-    private func stopLoading() {
-        withAnimation(.easeInOut(duration: 0.1)) {
-            self.isLoadingData = false
-            self.isLoadingAdditionalData = false
-        }
     }
     
     private func generateFeedPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {

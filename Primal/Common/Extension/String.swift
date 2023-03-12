@@ -55,10 +55,10 @@ extension String : Identifiable {
         result += String(self[currentIndex...])
         return (result, urls)
     }
-    
+
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "#([a-zA-Z0-9]+)"
-        let mentionPattern = "@([a-zA-Z0-9]+)"
+        let mentionPattern = "#\\[([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])\\]"
         if let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
            let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
            let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
