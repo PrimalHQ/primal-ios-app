@@ -14,3 +14,10 @@ extension Collection where Indices.Iterator.Element == Index {
         return indices.contains(index) ? self[index] : nil
     }
 }
+
+extension Array where Element == NostrContent {
+    mutating func append(_ element: Element, callback: (Element)->Void) {
+        self.append(element)
+        callback(element)
+    }
+}

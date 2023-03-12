@@ -165,9 +165,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         switch kind {
         case 1:
             if type == .post {
-                self.bufferNostrPosts.append(NostrContent(json: json))
+                self.bufferNostrPosts.append(NostrContent(json: json), callback: requestMentions)
             } else {
-                self.bufferThreadNostrPosts.append(NostrContent(json: json))
+                self.bufferThreadNostrPosts.append(NostrContent(json: json), callback: requestMentions)
             }
         case 0:
             let nostrUser = NostrContent(json: json)
@@ -292,6 +292,20 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         case .trending: do {
             return self.generateTrendingPageRequestForHex(self.testHex, until: until, limit: limit)
         }
+        }
+    }
+    
+    private func requestMentions(_ nostrContent: NostrContent) -> Void {
+        if nostrContent.tags.isEmpty {
+            return
+        }
+        
+        for tag in nostrContent.tags {
+            if tag[0] == "p" {
+                print("requesting user \(tag[1])")
+            } else if (tag[0] == "e") {
+                print("requesting post \(tag[1])")
+            }
         }
     }
 }

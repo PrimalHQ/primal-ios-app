@@ -45,6 +45,7 @@ struct NostrContentStats: Codable {
     let replies: Int32
     let zaps: Int32
     let satszapped: Int32
+    let score: Int32
     let score24h: Int32
     
     init(json: JSON) {
@@ -54,6 +55,7 @@ struct NostrContentStats: Codable {
         self.replies = Int32(json.arrayValue?[2].objectValue?["replies"]?.doubleValue ?? -1)
         self.zaps = Int32(json.arrayValue?[2].objectValue?["zaps"]?.doubleValue ?? -1)
         self.satszapped = Int32(json.arrayValue?[2].objectValue?["satszapped"]?.doubleValue ?? -1)
+        self.score = Int32(json.arrayValue?[2].objectValue?["score"]?.doubleValue ?? -1)
         self.score24h = Int32(json.arrayValue?[2].objectValue?["score24h"]?.doubleValue ?? -1)
     }
 }

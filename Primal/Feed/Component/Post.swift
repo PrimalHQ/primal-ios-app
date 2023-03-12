@@ -34,10 +34,11 @@ struct Post: View {
         }
         
         VStack (alignment: .leading) {
-            HStack (alignment: .center) {
+            HStack (alignment: .center, spacing: 0) {
                 Text(post.user.name)
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
+                    .frame(height: 5)
                 Image("Verified")
                     .resizable()
                     .renderingMode(.template)
@@ -49,12 +50,13 @@ struct Post: View {
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
                     .frame(alignment: .leading)
+                    .frame(height: 5)
                     .truncationMode(.tail)
-                Text("| \(formatter.localizedString(for: date, relativeTo: Date.now))")
+                Text(" | \(formatter.localizedString(for: date, relativeTo: Date.now))")
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
             }
-            .padding(.leading, getRect().width / 5)
+            .padding(.leading, getRect().width / 6)
             VStack (alignment: .leading) {
                 Group {
                     ForEach(text) { t in
@@ -71,7 +73,7 @@ struct Post: View {
                     }
 
                 }
-                .padding(.leading, getRect().width / 5)
+                .padding(.leading, getRect().width / 6)
             }
             VStack {
                 if imageUrls.count == 1 {
@@ -89,7 +91,7 @@ struct Post: View {
                             self.imgURL = imageUrls[0]
                             self.showImageViewer = true
                         }
-                        .padding(.leading, getRect().width / 5)
+                        .padding(.leading, getRect().width / 6)
                 } else if !imageUrls.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 20) {
@@ -116,7 +118,7 @@ struct Post: View {
                 }
             }
             .padding(.top, 12)
-            HStack (alignment: .center, spacing: 5) {
+            HStack (alignment: .center, spacing: 6) {
                 Group {
                     Image("Replies")
                         .resizable()
@@ -174,11 +176,11 @@ struct Post: View {
                 }
                 
             }
-            .padding(.leading, getRect().width / 5)
+            .padding(.leading, getRect().width / 6)
         }
         .padding(16)
         .overlay(alignment: .topLeading) {
-            VStack (alignment: .leading, spacing: 5) {
+            VStack (alignment: .center, spacing: 0) {
                 KFAnimatedImage(URL(string: post.user.picture))
                     .placeholder {
                         Image("Profile")
@@ -195,13 +197,13 @@ struct Post: View {
                     .frame(width: 52, height: 52)
                     .clipShape(Circle())
                     .id(post.user.picture)
-                Text(post.user.displayName)
+                Text(post.user.name)
                     .font(Font.custom("RobotoFlex", size: 12))
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
-            .frame(maxWidth: getRect().width / 5)
-            .padding([.leading, .top], 12)
+            .frame(maxWidth: getRect().width / 5, alignment: .center)
+            .padding([.top], 12)
         }
         .background(colorScheme == .dark ? Color(hex: "#181818") : Color(UIColor.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 4))
