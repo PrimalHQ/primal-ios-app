@@ -68,7 +68,7 @@ struct HomeView: View {
                         .listRowSeparator(.hidden)
                         .padding([.trailing], -18)
                         .onAppear() {
-                            if self.feed.posts[safe: self.feed.posts.endIndex - 2] == post {
+                            if self.feed.posts[safe: self.feed.posts.endIndex - 4] == post {
                                 feed.requestNewPage(until: feed.posts.last?.post.created_at ?? 0)
                             }
                         }
