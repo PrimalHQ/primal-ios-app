@@ -84,10 +84,11 @@ struct ThreadView: View {
         }
         
         VStack (alignment: .leading) {
-            HStack (alignment: .center) {
-                Text(post.user.name)
+            HStack (alignment: .center, spacing: 0) {
+                Text(post.user.name.trimmingCharacters(in: .whitespacesAndNewlines))
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
+                    .frame(height: 5)
                 Image("Verified")
                     .resizable()
                     .renderingMode(.template)
@@ -99,8 +100,9 @@ struct ThreadView: View {
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
                     .frame(alignment: .leading)
+                    .frame(height: 5)
                     .truncationMode(.tail)
-                Text("| \(formatter.localizedString(for: date, relativeTo: Date.now))")
+                Text(" | \(formatter.localizedString(for: date, relativeTo: Date.now))")
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
             }
@@ -131,6 +133,7 @@ struct ThreadView: View {
                         }
                         .cacheOriginalImage()
                         .fade(duration: 0.25)
+                        .startLoadingBeforeViewAppear()
                         .aspectRatio(contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding(.trailing, 16)
@@ -150,6 +153,7 @@ struct ThreadView: View {
                                     }
                                     .cacheOriginalImage()
                                     .fade(duration: 0.25)
+                                    .startLoadingBeforeViewAppear()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 5))
                                     .padding(.trailing, 16)
@@ -228,7 +232,7 @@ struct ThreadView: View {
         }
         .padding(16)
         .overlay(alignment: .topLeading) {
-            VStack (alignment: .leading, spacing: 5) {
+            VStack (alignment: .center, spacing: 5) {
                 KFAnimatedImage(URL(string: post.user.picture))
                     .placeholder {
                         Image("Profile")
@@ -242,6 +246,7 @@ struct ThreadView: View {
                         .frame(width: 52, height: 52) as? KFCrossPlatformImage))
                     .cacheOriginalImage()
                     .fade(duration: 0.25)
+                    .startLoadingBeforeViewAppear()
                     .frame(width: 52, height: 52)
                     .clipShape(Circle())
                     .id(post.user.picture)
@@ -252,6 +257,12 @@ struct ThreadView: View {
             }
             .frame(maxWidth: getRect().width / 5)
             .padding([.leading, .top], 12)
+        }
+        .overlay(alignment: .leading) {
+            ZStack {
+                LinearGradient(gradient: Gradient(colors: [Color(hex: "#DD3A55"), Color(hex: "#5B12A4")]), startPoint: .top, endPoint: .bottom)
+            }
+            .frame(width: 5)
         }
         .background(colorScheme == .dark ? Color(hex: "#181818") : Color(UIColor.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 4))

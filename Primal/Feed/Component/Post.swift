@@ -35,7 +35,7 @@ struct Post: View {
         
         VStack (alignment: .leading) {
             HStack (alignment: .center, spacing: 0) {
-                Text(post.user.name)
+                Text(post.user.name.trimmingCharacters(in: .whitespacesAndNewlines))
                     .font(Font.custom("RobotoFlex", size: 16))
                     .foregroundColor(Color(hex: "#666666"))
                     .frame(height: 5)
@@ -83,6 +83,7 @@ struct Post: View {
                         }
                         .cacheOriginalImage()
                         .fade(duration: 0.25)
+                        .startLoadingBeforeViewAppear()
                         .aspectRatio(contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding(.trailing, 16)
@@ -102,6 +103,7 @@ struct Post: View {
                                     }
                                     .cacheOriginalImage()
                                     .fade(duration: 0.25)
+                                    .startLoadingBeforeViewAppear()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 5))
                                     .padding(.trailing, 16)
@@ -194,6 +196,7 @@ struct Post: View {
                         .frame(width: 52, height: 52) as? KFCrossPlatformImage))
                     .cacheOriginalImage()
                     .fade(duration: 0.25)
+                    .startLoadingBeforeViewAppear()
                     .frame(width: 52, height: 52)
                     .clipShape(Circle())
                     .id(post.user.picture)
