@@ -39,7 +39,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private var bufferThreadNostrUsers: [String: NostrContent] = [:]
     private var bufferThreadNostrStats: [String: NostrContentStats] = [:]
     
-    private let socketURL = URL(string: "wss://dev.primal.net/cache8")
+    private let socketURL = URL(string: "wss://primal.net/cache8")
     private let testHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
     private let snowdenHex = "84dee6e676e5bb67b4ad4e042cf70cbd8681155db535942fcc6a0533858a7240"
     private let dorseyHex = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
