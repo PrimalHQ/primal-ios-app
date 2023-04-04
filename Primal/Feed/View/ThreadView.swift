@@ -133,7 +133,7 @@ struct ThreadView: View {
                         }
                         .cacheOriginalImage()
                         .fade(duration: 0.25)
-                        .startLoadingBeforeViewAppear()
+                        .backgroundDecode()
                         .aspectRatio(contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding(.trailing, 16)
@@ -153,7 +153,7 @@ struct ThreadView: View {
                                     }
                                     .cacheOriginalImage()
                                     .fade(duration: 0.25)
-                                    .startLoadingBeforeViewAppear()
+                                    .backgroundDecode()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 5))
                                     .padding(.trailing, 16)
@@ -246,7 +246,7 @@ struct ThreadView: View {
                         .frame(width: 52, height: 52) as? KFCrossPlatformImage))
                     .cacheOriginalImage()
                     .fade(duration: 0.25)
-                    .startLoadingBeforeViewAppear()
+                    .backgroundDecode()
                     .frame(width: 52, height: 52)
                     .clipShape(Circle())
                     .id(post.user.picture)

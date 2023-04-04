@@ -83,7 +83,7 @@ struct Post: View {
                         }
                         .cacheOriginalImage()
                         .fade(duration: 0.25)
-                        .startLoadingBeforeViewAppear()
+                        .backgroundDecode()
                         .aspectRatio(contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding(.trailing, 16)
@@ -103,7 +103,7 @@ struct Post: View {
                                     }
                                     .cacheOriginalImage()
                                     .fade(duration: 0.25)
-                                    .startLoadingBeforeViewAppear()
+                                    .backgroundDecode()
                                     .aspectRatio(contentMode: .fit)
                                     .clipShape(RoundedRectangle(cornerRadius: 5))
                                     .padding(.trailing, 16)

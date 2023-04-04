@@ -69,9 +69,9 @@ public struct ImageViewerRemote: View {
                                 .placeholder {
                                     ProgressView()
                                 }
-                                .loadDiskFileSynchronously()
-                                .cacheMemoryOnly()
+                                .cacheOriginalImage()
                                 .fade(duration: 0.25)
+                                .backgroundDecode()
                                 .aspectRatio(self.aspectRatio?.wrappedValue, contentMode: .fit)
                                 .offset(x: self.dragOffset.width, y: self.dragOffset.height)
                                 .rotationEffect(.init(degrees: Double(self.dragOffset.width / 30)))
