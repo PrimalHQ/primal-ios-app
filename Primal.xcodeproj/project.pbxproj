@@ -39,6 +39,19 @@
 		9393314D29A3EE9F003954C2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393314C29A3EE9F003954C2 /* HomeView.swift */; };
 		9393315129A3EEE2003954C2 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393315029A3EEE2003954C2 /* Post.swift */; };
 		9393315329A3EF3C003954C2 /* ThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393315229A3EF3C003954C2 /* ThreadView.swift */; };
+		9E9F2F3329F4048800A9CDF3 /* Intro.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3229F4048800A9CDF3 /* Intro.mp4 */; };
+		9E9F2F3729F4052100A9CDF3 /* IntroVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3629F4052100A9CDF3 /* IntroVideoPlayerView.swift */; };
+		9E9F2F3929F4095500A9CDF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3829F4095500A9CDF3 /* AppDelegate.swift */; };
+		9E9F2F3B29F4097100A9CDF3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3A29F4097100A9CDF3 /* SceneDelegate.swift */; };
+		9E9F2F3D29F4376C00A9CDF3 /* IntroVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3C29F4376C00A9CDF3 /* IntroVideoController.swift */; };
+		9E9F2F3F29F437F100A9CDF3 /* UIView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F3E29F437F100A9CDF3 /* UIView+Extra.swift */; };
+		9E9F2F4129F43EFE00A9CDF3 /* OnboardingParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4029F43EFE00A9CDF3 /* OnboardingParentViewController.swift */; };
+		9E9F2F4529F4420500A9CDF3 /* OnboardingStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4429F4420500A9CDF3 /* OnboardingStartViewController.swift */; };
+		9E9F2F4829F443F700A9CDF3 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4729F443F700A9CDF3 /* Buttons.swift */; };
+		9E9F2F4A29F4477500A9CDF3 /* Font+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4929F4477500A9CDF3 /* Font+Extra.swift */; };
+		9E9F2F4C29F454F200A9CDF3 /* UIViewController+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4B29F454F200A9CDF3 /* UIViewController+Extra.swift */; };
+		9E9F2F4E29F4556F00A9CDF3 /* OnboardingSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4D29F4556F00A9CDF3 /* OnboardingSigninController.swift */; };
+		9E9F2F5029F45E8100A9CDF3 /* PrimalProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F4F29F45E8000A9CDF3 /* PrimalProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +105,19 @@
 		9393314C29A3EE9F003954C2 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		9393315029A3EEE2003954C2 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		9393315229A3EF3C003954C2 /* ThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadView.swift; sourceTree = "<group>"; };
+		9E9F2F3229F4048800A9CDF3 /* Intro.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Intro.mp4; sourceTree = "<group>"; };
+		9E9F2F3629F4052100A9CDF3 /* IntroVideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroVideoPlayerView.swift; sourceTree = "<group>"; };
+		9E9F2F3829F4095500A9CDF3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9E9F2F3A29F4097100A9CDF3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		9E9F2F3C29F4376C00A9CDF3 /* IntroVideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroVideoController.swift; sourceTree = "<group>"; };
+		9E9F2F3E29F437F100A9CDF3 /* UIView+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extra.swift"; sourceTree = "<group>"; };
+		9E9F2F4029F43EFE00A9CDF3 /* OnboardingParentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingParentViewController.swift; sourceTree = "<group>"; };
+		9E9F2F4429F4420500A9CDF3 /* OnboardingStartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStartViewController.swift; sourceTree = "<group>"; };
+		9E9F2F4729F443F700A9CDF3 /* Buttons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
+		9E9F2F4929F4477500A9CDF3 /* Font+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extra.swift"; sourceTree = "<group>"; };
+		9E9F2F4B29F454F200A9CDF3 /* UIViewController+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extra.swift"; sourceTree = "<group>"; };
+		9E9F2F4D29F4556F00A9CDF3 /* OnboardingSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSigninController.swift; sourceTree = "<group>"; };
+		9E9F2F4F29F45E8000A9CDF3 /* PrimalProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,11 +174,14 @@
 				9393313D29A3E6DE003954C2 /* Info.plist */,
 				9393312C29A3E534003954C2 /* State */,
 				9393312B29A3E525003954C2 /* Identity */,
-				9393312A29A3E51F003954C2 /* Feed */,
+				9E9F2F3429F404E000A9CDF3 /* SwiftUI */,
+				9E9F2F3529F4050C00A9CDF3 /* UIKit */,
 				9393312929A3E516003954C2 /* Settings */,
 				9393312829A3E4E0003954C2 /* Common */,
 				939330F529A3E36F003954C2 /* PrimalApp.swift */,
 				939330F729A3E36F003954C2 /* ContentView.swift */,
+				9E9F2F3829F4095500A9CDF3 /* AppDelegate.swift */,
+				9E9F2F3A29F4097100A9CDF3 /* SceneDelegate.swift */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
 				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
@@ -188,8 +217,7 @@
 		9393312829A3E4E0003954C2 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				9393314929A3EE72003954C2 /* View */,
-				9393314429A3EA81003954C2 /* Component */,
+				9E9F2F3229F4048800A9CDF3 /* Intro.mp4 */,
 				9393313829A3E5C2003954C2 /* Font */,
 				9393313529A3E59D003954C2 /* Extension */,
 				9393313029A3E565003954C2 /* Model */,
@@ -246,6 +274,9 @@
 				9393314029A3EA01003954C2 /* Color.swift */,
 				9393314229A3EA25003954C2 /* UINavigationController.swift */,
 				9384D25C29B686E60025C677 /* Collection.swift */,
+				9E9F2F3E29F437F100A9CDF3 /* UIView+Extra.swift */,
+				9E9F2F4929F4477500A9CDF3 /* Font+Extra.swift */,
+				9E9F2F4B29F454F200A9CDF3 /* UIViewController+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -295,6 +326,54 @@
 				9393315029A3EEE2003954C2 /* Post.swift */,
 			);
 			path = Component;
+			sourceTree = "<group>";
+		};
+		9E9F2F3429F404E000A9CDF3 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				9393314929A3EE72003954C2 /* View */,
+				9393314429A3EA81003954C2 /* Component */,
+				9393312A29A3E51F003954C2 /* Feed */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
+		9E9F2F3529F4050C00A9CDF3 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				9E9F2F4229F43F0300A9CDF3 /* Onboarding */,
+				9E9F2F3629F4052100A9CDF3 /* IntroVideoPlayerView.swift */,
+				9E9F2F3C29F4376C00A9CDF3 /* IntroVideoController.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+		9E9F2F4229F43F0300A9CDF3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				9E9F2F4629F443EA00A9CDF3 /* Views */,
+				9E9F2F4329F441D800A9CDF3 /* Steps */,
+				9E9F2F4029F43EFE00A9CDF3 /* OnboardingParentViewController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		9E9F2F4329F441D800A9CDF3 /* Steps */ = {
+			isa = PBXGroup;
+			children = (
+				9E9F2F4429F4420500A9CDF3 /* OnboardingStartViewController.swift */,
+				9E9F2F4D29F4556F00A9CDF3 /* OnboardingSigninController.swift */,
+			);
+			path = Steps;
+			sourceTree = "<group>";
+		};
+		9E9F2F4629F443EA00A9CDF3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9E9F2F4729F443F700A9CDF3 /* Buttons.swift */,
+				9E9F2F4F29F45E8000A9CDF3 /* PrimalProgressView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -416,6 +495,7 @@
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
+				9E9F2F3329F4048800A9CDF3 /* Intro.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,27 +520,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E9F2F5029F45E8100A9CDF3 /* PrimalProgressView.swift in Sources */,
 				9393314829A3EAE4003954C2 /* SideMenu.swift in Sources */,
+				9E9F2F4C29F454F200A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9310AB0129AA998D0038B6F4 /* FeedSheet.swift in Sources */,
 				9393313729A3E5A8003954C2 /* String.swift in Sources */,
 				9393314D29A3EE9F003954C2 /* HomeView.swift in Sources */,
+				9E9F2F4129F43EFE00A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
+				9E9F2F4529F4420500A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9393314B29A3EE7A003954C2 /* BaseView.swift in Sources */,
 				9393315129A3EEE2003954C2 /* Post.swift in Sources */,
 				9331ED4829ABC5D6003ACA1F /* ImageViewerRemote.swift in Sources */,
+				9E9F2F3729F4052100A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
+				9E9F2F3F29F437F100A9CDF3 /* UIView+Extra.swift in Sources */,
 				9393315329A3EF3C003954C2 /* ThreadView.swift in Sources */,
+				9E9F2F4A29F4477500A9CDF3 /* Font+Extra.swift in Sources */,
 				932E864B29A6EB8600C415AA /* UIState.swift in Sources */,
 				939330F829A3E36F003954C2 /* ContentView.swift in Sources */,
 				9393312F29A3E54E003954C2 /* Feed.swift in Sources */,
 				9384D25D29B686E60025C677 /* Collection.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
+				9E9F2F4E29F4556F00A9CDF3 /* OnboardingSigninController.swift in Sources */,
+				9E9F2F3D29F4376C00A9CDF3 /* IntroVideoController.swift in Sources */,
 				9393314129A3EA01003954C2 /* Color.swift in Sources */,
 				9393314329A3EA25003954C2 /* UINavigationController.swift in Sources */,
 				9393313F29A3E9D8003954C2 /* View.swift in Sources */,
 				9310AB0329AAB1640038B6F4 /* FeedButton.swift in Sources */,
 				9393314629A3EA92003954C2 /* NavigationBackButton.swift in Sources */,
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
+				9E9F2F4829F443F700A9CDF3 /* Buttons.swift in Sources */,
 				9310AB0529AAB6B70038B6F4 /* ToolbarFeedText.swift in Sources */,
+				9E9F2F3929F4095500A9CDF3 /* AppDelegate.swift in Sources */,
+				9E9F2F3B29F4097100A9CDF3 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@main
 struct PrimalApp: App {
     @StateObject var feed = Feed()
     @StateObject var uiState = UIState()
