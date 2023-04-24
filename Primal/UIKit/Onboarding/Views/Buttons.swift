@@ -16,7 +16,7 @@ class MyButton: UIControl {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
+        guard isPressed else { return }
         isPressed = false
         for touch in touches {
             let loc = touch.location(in: self)
@@ -71,6 +71,44 @@ class FancyButton: MyButton {
         titleLabel.font = .appFont(withSize: 18, weight: .medium)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
+    }
+}
+
+class DarkButton: MyButton {
+    let titleLabel = UILabel()
+    
+    override var isPressed: Bool {
+        didSet {
+            titleLabel.textColor = isPressed ? .darkGray : .white
+        }
+    }
+    
+    init(title: String) {
+        super.init(frame: .zero)
+        setup()
+        titleLabel.text = title
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup() {
+        addSubview(titleLabel)
+        titleLabel
+            .pinToSuperview(edges: .horizontal, padding: 18)
+            .centerToSuperview(axis: .vertical)
+        
+        titleLabel.font = .appFont(withSize: 18, weight: .medium)
+        titleLabel.textColor = .white
+        titleLabel.textAlignment = .center
+        
+        backgroundColor = .init(rgb: 0x181818)
+        layer.cornerRadius = 12
+        layer.borderColor = UIColor(rgb: 0x222222).cgColor
+        layer.borderWidth = 1
+        
+        constrainToSize(height: 58)
     }
 }
 

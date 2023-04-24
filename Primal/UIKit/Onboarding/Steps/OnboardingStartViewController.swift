@@ -15,7 +15,8 @@ class OnboardingStartViewController: UIViewController {
     }
     
     @objc func signupPressed() {
-        
+        let signUp = OnboardingSignUpStartController()
+        show(signUp, sender: nil)
     }
     
     @objc func signinPressed() {
