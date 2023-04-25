@@ -40,6 +40,11 @@
 		93CACB0729F525B6003BBCE5 /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAF029F525B6003BBCE5 /* sha256.c */; };
 		93CACB0829F525B6003BBCE5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAF329F525B6003BBCE5 /* utf8.c */; };
 		93CACB0929F525B6003BBCE5 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAF829F525B6003BBCE5 /* list.c */; };
+		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
+		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
+		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
+		9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */; };
+		9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */; };
 		9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */; };
 		9E9F2F7529F6AB6400A9CDF3 /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5A29F6AB6400A9CDF3 /* NavigationBackButton.swift */; };
 		9E9F2F7629F6AB6400A9CDF3 /* ToolbarFeedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5B29F6AB6400A9CDF3 /* ToolbarFeedText.swift */; };
@@ -162,6 +167,11 @@
 		93CACAF829F525B6003BBCE5 /* list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = list.c; sourceTree = "<group>"; };
 		93CACAF929F525B6003BBCE5 /* endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
 		93CACB0A29F5262A003BBCE5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
+		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
+		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
+		9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTwitterController.swift; sourceTree = "<group>"; };
+		9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeTwitterProfileView.swift; sourceTree = "<group>"; };
 		9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
 		9E9F2F5A29F6AB6400A9CDF3 /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		9E9F2F5B29F6AB6400A9CDF3 /* ToolbarFeedText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarFeedText.swift; sourceTree = "<group>"; };
@@ -479,8 +489,8 @@
 		9E9F2F6829F6AB6400A9CDF3 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
-				9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */,
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
+				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 			);
 			path = UIKit;
@@ -491,7 +501,6 @@
 			children = (
 				9E9F2F6C29F6AB6400A9CDF3 /* Steps */,
 				9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */,
-				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -503,6 +512,8 @@
 				9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */,
 				9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */,
 				9E9F2F7029F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift */,
+				9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */,
+				9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -510,8 +521,12 @@
 		9E9F2F7229F6AB6400A9CDF3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */,
 				9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */,
 				9E9F2F7429F6AB6400A9CDF3 /* PrimalProgressView.swift */,
+				9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */,
+				9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */,
+				9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -669,6 +684,7 @@
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
+				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				9E9F2F7629F6AB6400A9CDF3 /* ToolbarFeedText.swift in Sources */,
@@ -694,8 +710,10 @@
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9E9F2F7D29F6AB6400A9CDF3 /* HomeView.swift in Sources */,
+				9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */,
 				9E9F2F7C29F6AB6400A9CDF3 /* ImageViewerRemote.swift in Sources */,
 				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
+				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
@@ -705,6 +723,7 @@
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
+				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
@@ -712,6 +731,7 @@
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
+				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -871,7 +891,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -889,7 +909,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4.3;
+				MARKETING_VERSION = 0.4.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -911,7 +931,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -929,7 +949,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.4.3;
+				MARKETING_VERSION = 0.4.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
