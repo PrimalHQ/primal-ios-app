@@ -38,9 +38,23 @@ class MyButton: UIControl {
 class FancyButton: MyButton {
     let titleLabel = UILabel()
     
+    private let b1 = UIImageView(image: UIImage(named: "fancyButtonBackgroundBack"))
+    private let b2 = UIImageView(image: UIImage(named: "fancyButtonBackgroundFront"))
+    
     override var isPressed: Bool {
         didSet {
             titleLabel.textColor = isPressed ? .darkGray : .white
+        }
+    }
+    
+    override var isEnabled: Bool {
+        didSet {
+            b1.isHidden = !isEnabled
+            b2.isHidden = !isEnabled
+            
+            backgroundColor = isEnabled ? .clear : UIColor(rgb: 0x111111)
+            layer.borderWidth = isEnabled ? 0 : 1
+            titleLabel.textColor = isEnabled ? .white : UIColor(rgb: 0x444444)
         }
     }
     
@@ -55,9 +69,6 @@ class FancyButton: MyButton {
     }
     
     func setup() {
-        let b1 = UIImageView(image: UIImage(named: "fancyButtonBackgroundBack"))
-        let b2 = UIImageView(image: UIImage(named: "fancyButtonBackgroundFront"))
-        
         addSubview(b1)
         addSubview(b2)
         b1.pinToSuperview(padding: -25)
@@ -71,6 +82,9 @@ class FancyButton: MyButton {
         titleLabel.font = .appFont(withSize: 18, weight: .medium)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
+        
+        layer.borderColor = UIColor(rgb: 0x181818).cgColor
+        layer.cornerRadius = 12
     }
 }
 

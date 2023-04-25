@@ -163,7 +163,8 @@ private extension OnboardingSigninController {
         case .invalidKey:
             state = .validKey
         case .validKey:
-            state = .ready
+            let signup = OnboardingSignUpStartController()
+            show(signup, sender: nil)
         }
     }
 }

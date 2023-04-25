@@ -23,6 +23,11 @@ extension UIView {
     }
     
     @discardableResult
+    func constrainToSize(_ size: CGFloat) -> Self {
+        constrainToSize(width: size, height: size)
+    }
+    
+    @discardableResult
     func pin(to view: UIView, edges: Edge.Set = .all, padding: CGFloat = 0, safeArea: Bool = false) -> Self {
         translatesAutoresizingMaskIntoConstraints = false
         

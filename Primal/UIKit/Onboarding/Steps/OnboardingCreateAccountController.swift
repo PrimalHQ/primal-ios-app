@@ -1,14 +1,13 @@
 //
-//  OnboardingSignUpStartController.swift
+//  OnboardingCreateAccountController.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 24.4.23..
+//  Created by Pavle D Stevanović on 25.4.23..
 //
 
 import UIKit
 
-
-class OnboardingSignUpStartController: UIViewController {
+class OnboardingCreateAccountController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -16,10 +15,9 @@ class OnboardingSignUpStartController: UIViewController {
     }
 }
 
-private extension OnboardingSignUpStartController {
+private extension OnboardingCreateAccountController {
     func setup() {
-        title = "Create Account"
-        view.backgroundColor = .black
+        
         
         lazy var progressView = PrimalProgressView(progress: 1, total: 4)
         
@@ -47,7 +45,6 @@ private extension OnboardingSignUpStartController {
         buttonStack.axis = .vertical
         
         importTwitterButton.addTarget(self, action: #selector(importTwitterPressed), for: .touchUpInside)
-        createAccountButton.addTarget(self, action: #selector(createAccountPressed), for: .touchUpInside)
     }
     
     @objc func importTwitterPressed() {
@@ -59,3 +56,4 @@ private extension OnboardingSignUpStartController {
         
     }
 }
+
