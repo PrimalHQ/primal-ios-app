@@ -26,6 +26,24 @@
         "revision" : "eed470bc3607bc4893046f461107ec463dbd1220",
         "version" : "0.5.2"
       }
+    },
+    {
+      "identity" : "secp256k1.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GigaBitcoin/secp256k1.swift",
+      "state" : {
+        "revision" : "37cc6e53e32e614fb9563b4b7d14be0f1b4334f5",
+        "version" : "0.12.0"
+      }
+    },
+    {
+      "identity" : "vault",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SparrowTek/Vault",
+      "state" : {
+        "revision" : "87db56c3c8b6421c65b0745f73e08b0dc56f79d4",
+        "version" : "1.0.3"
+      }
     }
   ],
   "version" : 2

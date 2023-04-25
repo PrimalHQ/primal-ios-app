@@ -59,3 +59,17 @@ struct NostrContentStats: Codable {
         self.score24h = Int32(json.arrayValue?[2].objectValue?["score24h"]?.doubleValue ?? -1)
     }
 }
+
+struct NostrUserProfileInfo: Codable {
+    let follows_count: Int32
+    let followers_count: Int32
+    let note_count: Int32
+    let time_joined: Int32
+    
+    init(json: JSON) {
+        self.follows_count = Int32(json.arrayValue?[2].objectValue?["follows_count"]?.doubleValue ?? -1)
+        self.followers_count = Int32(json.arrayValue?[2].objectValue?["followers_count"]?.doubleValue ?? -1)
+        self.note_count = Int32(json.arrayValue?[2].objectValue?["note_count"]?.doubleValue ?? -1)
+        self.time_joined = Int32(json.arrayValue?[2].objectValue?["time_joined"]?.doubleValue ?? -1)
+    }
+}

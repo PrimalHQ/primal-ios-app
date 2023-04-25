@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class OnboardingSigninController: UIViewController {
     
@@ -14,6 +15,7 @@ class OnboardingSigninController: UIViewController {
         case checking
         case invalidKey
         case validKey
+        case signIn
     }
     
     lazy var progressView = PrimalProgressView(progress: 1, total: 2)
@@ -33,7 +35,7 @@ class OnboardingSigninController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         setup()
     }
 }
@@ -60,6 +62,28 @@ private extension OnboardingSigninController {
             infoLabel.isHidden = true
             
             cancelButton.isHidden = false
+                        
+            let parsed = parse_key(textView.text!)
+            
+            // allow only nsec for now
+            if parsed?.is_pub ?? true {
+                state = .invalidKey
+                return
+            }
+            
+            if get_error(parsed_key: parsed) != nil {
+                state = .invalidKey
+                return
+            }
+            
+            if let p = parsed {
+                if !process_login(p, is_pubkey: p.is_pub) {
+                    state = .invalidKey
+                    return
+                }
+                
+                state = .validKey
+            }
         case .invalidKey:
             confirmButton.titleLabel.text = "Paste new key"
             progressView.progress = 1
@@ -71,6 +95,7 @@ private extension OnboardingSigninController {
             infoLabel.textColor = .init(rgb: 0xE20505)
             
             cancelButton.isHidden = false
+            textView.isEditable = true
         case .validKey:
             confirmButton.titleLabel.text = "Sign In"
             progressView.progress = 2
@@ -82,6 +107,21 @@ private extension OnboardingSigninController {
             infoLabel.textColor = .init(rgb: 0x66E205)
             
             cancelButton.isHidden = false
+        case .signIn: do {
+            let result = get_saved_keypair()
+            if let keypair = result {
+                guard let decoded = try? bech32_decode(keypair.pubkey_bech32) else {
+                    return
+                }
+                
+                let encoded = hex_encode(decoded.data)
+                
+                let hostingController = UIHostingController(rootView: ContentView()
+                    .environmentObject(Feed(userHex: encoded))
+                    .environmentObject(UIState()))
+                view.window?.rootViewController = hostingController
+            }
+        }
         }
     }
     
@@ -163,8 +203,9 @@ private extension OnboardingSigninController {
         case .invalidKey:
             state = .validKey
         case .validKey:
-            let signup = OnboardingSignUpStartController()
-            show(signup, sender: nil)
+            state = .signIn
+        case .signIn:
+            state = .ready
         }
     }
 }

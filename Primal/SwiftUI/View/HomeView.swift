@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct HomeView: View {
     @Binding var showMenu: Bool
@@ -25,10 +26,23 @@ struct HomeView: View {
                         Button {
                             withAnimation{showMenu.toggle()}
                         } label: {
-                            Image("Profile")
-                                .resizable()
+                            KFAnimatedImage(URL(string: feed.currentUser?.picture ?? ""))
+                                .placeholder {
+                                    Image("Profile")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 33, height: 33)
+                                }
+                                .onFailureImage((Image("Profile")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 33, height: 33) as? KFCrossPlatformImage))
+                                .cacheOriginalImage()
+                                .fade(duration: 0.25)
+                                .startLoadingBeforeViewAppear()
                                 .frame(width: 33, height: 33)
-                                .aspectRatio(contentMode: .fill)
+                                .clipShape(Circle())
+                                .id(feed.currentUser?.picture)
                         }
                         
                         Spacer()
