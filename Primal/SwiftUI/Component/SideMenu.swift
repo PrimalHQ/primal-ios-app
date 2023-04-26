@@ -6,18 +6,33 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SideMenu: View {
     @Binding var showMenu: Bool
+    @EnvironmentObject var feed: Feed
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 5) {
-                Image("Profile")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+                KFAnimatedImage(URL(string: feed.currentUser?.picture ?? ""))
+                    .placeholder {
+                        Image("Profile")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 65, height: 65)
+                    }
+                    .onFailureImage((Image("Profile")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 65, height: 65) as? KFCrossPlatformImage))
+                    .cacheOriginalImage()
+                    .fade(duration: 0.25)
+                    .startLoadingBeforeViewAppear()
                     .frame(width: 65, height: 65)
+                    .clipShape(Circle())
+                    .id(feed.currentUser?.picture)
                 HStack(alignment: .center, spacing: 4) {
-                    Text("miljan")
+                    Text(feed.currentUser?.displayName ?? "")
                         .font(Font.custom("RobotoFlex-Regular", size: 24).weight(.bold))
                     Image("Verified")
                         .resizable()
@@ -27,7 +42,7 @@ struct SideMenu: View {
                         .foregroundColor(Color(hex: "#5B12A4"))
                 }
                 HStack (alignment: .center, spacing: 2) {
-                    Text("miljan")
+                    Text(feed.currentUser?.name ?? "")
                         .font(Font.custom("RobotoFlex-Regular", size: 16))
                     Image("Verified")
                         .resizable()
@@ -35,7 +50,7 @@ struct SideMenu: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 12, height: 12)
                         .foregroundColor(.primary)
-                    Text("primal.net")
+                    Text(feed.currentUser?.getDomainNip05() ?? "")
                         .font(Font.custom("RobotoFlex-Regular", size: 16))
                 }
                 HStack(spacing: 12) {
@@ -44,7 +59,7 @@ struct SideMenu: View {
                             Text("Followers")
                                 .font(Font.custom("RobotoFlex-Regular", size: 16))
                         } icon: {
-                            Text("135")
+                            Text("\(feed.currentUserStats?.followers_count ?? -1)")
                                 .font(Font.custom("RobotoFlex-Regular", size: 16).weight(.bold))
                         }
                     }
@@ -53,7 +68,7 @@ struct SideMenu: View {
                             Text("Following")
                                 .font(Font.custom("RobotoFlex-Regular", size: 16))
                         } icon: {
-                            Text("345")
+                            Text("\(feed.currentUserStats?.follows_count ?? -1)")
                                 .font(Font.custom("RobotoFlex-Regular", size: 16).weight(.bold))
                         }
                     }
@@ -109,6 +124,8 @@ struct SideMenu: View {
 
 struct SideMenu_Previews: PreviewProvider {
     static var previews: some View {
-        SideMenu(showMenu: .constant(true))
+        ContentView()
+            .environmentObject(Feed())
+            .environmentObject(UIState())
     }
 }

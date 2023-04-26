@@ -23,8 +23,10 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let lud16: String
     let website: String
     let tags: [[String]]
+    let created_at: Int32
+    let sig: String
     
-    init?(nostrUser: NostrContent?, nostrPost: NostrContent?) {
+    init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
             print("Error decoding received string to json")
             dump(nostrUser?.content)
@@ -33,7 +35,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         
         let tempId = nostrUser?.id ?? ""
         let tempPubkey = nostrUser?.pubkey ?? nostrPost?.pubkey ?? ""
-        let tempNpub = "not implemented yet" // needs C libs for bolt11
+        let tempNpub = "not implemented yet"
         let tempName = userMeta.objectValue?["name"]?.stringValue ?? tempPubkey
         let tempTags = nostrUser?.tags ?? [[]]
         
@@ -51,9 +53,11 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.lud16 = userMeta.objectValue?["lud16"]?.stringValue ?? ""
         self.website = userMeta.objectValue?["website"]?.stringValue ?? ""
         self.tags = tempTags
+        self.created_at = nostrUser?.created_at ?? -1
+        self.sig = nostrUser?.sig ?? ""
     }
     
-    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]]) {
+    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Int32, sig: String) {
         self.id = id
         self.pubkey = pubkey
         self.npub = npub
@@ -68,6 +72,8 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.lud16 = lud16
         self.website = website
         self.tags = tags
+        self.created_at = created_at
+        self.sig = sig
     }
     
     func getDomainNip05() -> String {
@@ -155,7 +161,9 @@ struct PrimalPost : Codable, Hashable, Identifiable {
             lud06: userUUID,
             lud16: userUUID,
             website: userUUID,
-            tags: [[]]
+            tags: [[]],
+            created_at: Int32(Date.now.timeIntervalSince1970),
+            sig: userUUID
         )
         let feedPostUUID = UUID().uuidString
         let feedPost: PrimalFeedPost = PrimalFeedPost(

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class OnboardingSigninController: UIViewController {
     
@@ -33,7 +34,7 @@ class OnboardingSigninController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         setup()
     }
 }
@@ -71,6 +72,7 @@ private extension OnboardingSigninController {
             infoLabel.textColor = .init(rgb: 0xE20505)
             
             cancelButton.isHidden = false
+            textView.isEditable = true
         case .validKey:
             confirmButton.titleLabel.text = "Sign In"
             progressView.progress = 2
@@ -152,19 +154,59 @@ private extension OnboardingSigninController {
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
     }
     
+    func validateAndProcessLogin() {
+        let parsed = parse_key(textView.text!)
+        
+        // allow only nsec for now
+        if parsed?.is_pub ?? true {
+            state = .invalidKey
+            return
+        }
+        
+        if get_error(parsed_key: parsed) != nil {
+            state = .invalidKey
+            return
+        }
+        
+        if let p = parsed {
+            if !process_login(p, is_pubkey: p.is_pub) {
+                state = .invalidKey
+                return
+            }
+            
+            state = .validKey
+        }
+    }
+    
+    func signIn() {
+        let result = get_saved_keypair()
+        if let keypair = result {
+            guard let decoded = try? bech32_decode(keypair.pubkey_bech32) else {
+                return
+            }
+            
+            let encoded = hex_encode(decoded.data)
+            
+            let hostingController = UIHostingController(rootView: ContentView()
+                .environmentObject(Feed(userHex: encoded))
+                .environmentObject(UIState()))
+            view.window?.rootViewController = hostingController
+        }
+    }
+    
     // MARK: - UI actions
     
     @objc func confirmButtonPressed() {
         switch state {
         case .ready:
             state = .checking
+            validateAndProcessLogin()
         case .checking:
             state = .invalidKey
         case .invalidKey:
             state = .validKey
         case .validKey:
-            let signup = OnboardingSignUpStartController()
-            show(signup, sender: nil)
+            signIn()
         }
     }
 }
