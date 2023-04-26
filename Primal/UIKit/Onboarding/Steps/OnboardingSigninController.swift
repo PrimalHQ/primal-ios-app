@@ -15,7 +15,6 @@ class OnboardingSigninController: UIViewController {
         case checking
         case invalidKey
         case validKey
-        case signIn
     }
     
     lazy var progressView = PrimalProgressView(progress: 1, total: 2)
@@ -62,28 +61,6 @@ private extension OnboardingSigninController {
             infoLabel.isHidden = true
             
             cancelButton.isHidden = false
-                        
-            let parsed = parse_key(textView.text!)
-            
-            // allow only nsec for now
-            if parsed?.is_pub ?? true {
-                state = .invalidKey
-                return
-            }
-            
-            if get_error(parsed_key: parsed) != nil {
-                state = .invalidKey
-                return
-            }
-            
-            if let p = parsed {
-                if !process_login(p, is_pubkey: p.is_pub) {
-                    state = .invalidKey
-                    return
-                }
-                
-                state = .validKey
-            }
         case .invalidKey:
             confirmButton.titleLabel.text = "Paste new key"
             progressView.progress = 1
@@ -107,21 +84,6 @@ private extension OnboardingSigninController {
             infoLabel.textColor = .init(rgb: 0x66E205)
             
             cancelButton.isHidden = false
-        case .signIn: do {
-            let result = get_saved_keypair()
-            if let keypair = result {
-                guard let decoded = try? bech32_decode(keypair.pubkey_bech32) else {
-                    return
-                }
-                
-                let encoded = hex_encode(decoded.data)
-                
-                let hostingController = UIHostingController(rootView: ContentView()
-                    .environmentObject(Feed(userHex: encoded))
-                    .environmentObject(UIState()))
-                view.window?.rootViewController = hostingController
-            }
-        }
         }
     }
     
@@ -192,20 +154,59 @@ private extension OnboardingSigninController {
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
     }
     
+    func validateAndProcessLogin() {
+        let parsed = parse_key(textView.text!)
+        
+        // allow only nsec for now
+        if parsed?.is_pub ?? true {
+            state = .invalidKey
+            return
+        }
+        
+        if get_error(parsed_key: parsed) != nil {
+            state = .invalidKey
+            return
+        }
+        
+        if let p = parsed {
+            if !process_login(p, is_pubkey: p.is_pub) {
+                state = .invalidKey
+                return
+            }
+            
+            state = .validKey
+        }
+    }
+    
+    func signIn() {
+        let result = get_saved_keypair()
+        if let keypair = result {
+            guard let decoded = try? bech32_decode(keypair.pubkey_bech32) else {
+                return
+            }
+            
+            let encoded = hex_encode(decoded.data)
+            
+            let hostingController = UIHostingController(rootView: ContentView()
+                .environmentObject(Feed(userHex: encoded))
+                .environmentObject(UIState()))
+            view.window?.rootViewController = hostingController
+        }
+    }
+    
     // MARK: - UI actions
     
     @objc func confirmButtonPressed() {
         switch state {
         case .ready:
             state = .checking
+            validateAndProcessLogin()
         case .checking:
             state = .invalidKey
         case .invalidKey:
             state = .validKey
         case .validKey:
-            state = .signIn
-        case .signIn:
-            state = .ready
+            signIn()
         }
     }
 }

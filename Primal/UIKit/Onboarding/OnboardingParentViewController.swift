@@ -8,16 +8,6 @@
 import UIKit
 import SwiftUI
 
-struct OnboardingParentViewControllerRepresentable: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> OnboardingParentViewController {
-        return OnboardingParentViewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: OnboardingParentViewController, context: Context) {
-        // update code
-    }
-}
-
 class OnboardingParentViewController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
