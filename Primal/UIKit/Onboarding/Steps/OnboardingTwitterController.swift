@@ -13,13 +13,15 @@ class OnboardingTwitterController: UIViewController {
         case created
     }
     
-    var state = State.ready {
+    private var state = State.ready {
         didSet {
             UIView.animate(withDuration: 0.3) {
                 self.updateView()
             }
         }
     }
+    
+    let profile: TwitterUserRequest.Response
     
     lazy var progressView = PrimalProgressView(progress: 3, total: 4)
     let twitterView = LargeTwitterProfileView()
@@ -28,10 +30,15 @@ class OnboardingTwitterController: UIViewController {
     let continueButton = FancyButton(title: "Create Nostr account")
     let keychainInfo = KeyKeychainInfoView()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    init(profile: TwitterUserRequest.Response) {
+        self.profile = profile
+        super.init(nibName: nil, bundle: nil)
         
         setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -59,7 +66,6 @@ private extension OnboardingTwitterController {
             twitterView.layer.borderColor = UIColor(rgb: 0x66E205).cgColor
             progressView.progress = 4
         }
-        
     }
     
     func setup() {
@@ -79,6 +85,7 @@ private extension OnboardingTwitterController {
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 30, safeArea: true)
         
         twitterView.setContentHuggingPriority(.required, for: .vertical)
+        twitterView.profile = profile
         
         successLabel.text = "Your Nostr account has been created!"
         successLabel.font = .appFont(withSize: 14, weight: .regular)

@@ -26,7 +26,7 @@ class IntroVideoController: UIViewController {
         video.play()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            self.view.window?.rootViewController = OnboardingParentViewController()
+            RootViewController.instance.set(OnboardingParentViewController())
         }
     }
 }
