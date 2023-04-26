@@ -35,8 +35,9 @@ private extension LargeTwitterProfileView {
         guard let profile else { return }
         profileImageView.kf.setImage(with: URL(string: profile.avatar))
         coverImageView.kf.setImage(with: URL(string: profile.banner))
-        usernameLabel.text = profile.username
+        usernameLabel.text = "@" + profile.username
         descriptionLabel.text = profile.bio
+        nameLabel.text = profile.displayname
     }
     
     func setup() {

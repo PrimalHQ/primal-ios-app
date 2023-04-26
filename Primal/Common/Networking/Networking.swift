@@ -25,21 +25,6 @@ enum RequestError: Error {
     case noData
 }
 
-struct TwitterUserRequest: Request {
-    typealias ResponseData = Response
-    
-    var username: String
-    
-    var url: URL { URL(string: "https://media.primal.net/api/twitter/\(username)")! }
-    
-    struct Response: Codable {
-        var avatar: String
-        var banner: String
-        var bio: String
-        var username: String
-    }
-}
-
 extension Request {
     func publisher() -> AnyPublisher<ResponseData, Error> {
         Future { promise in
