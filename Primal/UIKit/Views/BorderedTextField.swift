@@ -42,6 +42,9 @@ private extension BorderedTextField {
         
         input.font = .appFont(withSize: 20, weight: .regular)
         input.textColor = .init(rgb: 0xCCCCCC)
+        input.textContentType = .username
+        input.autocorrectionType = .no
+        input.autocapitalizationType = .none
         
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
     }

@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 24.4.23..
 //
 
+import Combine
 import UIKit
 
 class OnboardingImportTwitterController: UIViewController {
@@ -30,6 +31,8 @@ class OnboardingImportTwitterController: UIViewController {
     private lazy var instruction = UILabel()
     private lazy var textStack = UIStackView(arrangedSubviews: [instruction, input, infoLabel])
     
+    private var cancellables: Set<AnyCancellable> = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,6 +41,31 @@ class OnboardingImportTwitterController: UIViewController {
 }
 
 private extension OnboardingImportTwitterController {
+    func search() {
+        guard let username = input.input.text, !username.isEmpty else {
+            state = .notFound
+            return
+        }
+        
+        state = .searching
+        input.input.resignFirstResponder()
+        
+        TwitterUserRequest(username: username).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                if case .failure(let error) = completion  {
+                    self?.state = .notFound
+                    self?.showErrorMessage(error.localizedDescription)
+                } else {
+                    self?.state = .ready
+                }
+            }, receiveValue: { [weak self] profile in
+                let twitter = OnboardingTwitterController(profile: profile)
+                self?.show(twitter, sender: nil)
+            })
+            .store(in: &cancellables)
+    }
+    
     func updateView() {
         switch state {
         case .ready:
@@ -88,6 +116,7 @@ private extension OnboardingImportTwitterController {
         
         input.input.font = .appFont(withSize: 18, weight: .medium)
         input.input.textColor = .init(rgb: 0xCCCCCC)
+        input.input.delegate = self
         input.input.addTarget(self, action: #selector(inputChanged), for: .editingChanged)
         
         infoLabel.font = .appFont(withSize: 14, weight: .regular)
@@ -120,25 +149,16 @@ private extension OnboardingImportTwitterController {
     
     @objc func confirmButtonPressed() {
         switch state {
-        case .ready:
-            if infoLabel.text?.isEmpty == true {
-                let twitter = OnboardingTwitterController()
-                show(twitter, sender: nil)
-                return
-            }
-            
-            state = .searching
-            input.input.resignFirstResponder()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                self.state = .notFound
-            }
-        case .searching:
-            state = .notFound
-        case .notFound:
-            state = .ready
-            infoLabel.text = ""
+        case .ready, .notFound:
+            search()
+        case .searching: break // No Action
         }
     }
 }
 
+extension OnboardingImportTwitterController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        search()
+        return true
+    }
+}

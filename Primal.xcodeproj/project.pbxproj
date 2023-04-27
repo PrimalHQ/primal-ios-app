@@ -45,6 +45,10 @@
 		93CACB1629F7D167003BBCE5 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 93CACB1529F7D167003BBCE5 /* secp256k1 */; };
 		93CACB1929F7D1F4003BBCE5 /* Vault in Frameworks */ = {isa = PBXBuildFile; productRef = 93CACB1829F7D1F4003BBCE5 /* Vault */; };
 		93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1A29F7D23A003BBCE5 /* Bech32.swift */; };
+		9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38C829F937B100144073 /* LinkableLabel.swift */; };
+		9E6B38CB29F9487F00144073 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CA29F9487F00144073 /* Networking.swift */; };
+		9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CD29F954D500144073 /* RootViewController.swift */; };
+		9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */; };
 		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
@@ -175,6 +179,10 @@
 		93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrTools.swift; sourceTree = "<group>"; };
 		93CACB1229F7D136003BBCE5 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		93CACB1A29F7D23A003BBCE5 /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		9E6B38C829F937B100144073 /* LinkableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkableLabel.swift; sourceTree = "<group>"; };
+		9E6B38CA29F9487F00144073 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		9E6B38CD29F954D500144073 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserRequest.swift; sourceTree = "<group>"; };
 		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
@@ -321,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				9E9F2F9C29F6ABC500A9CDF3 /* Intro.mp4 */,
+				9E6B38CC29F9488400144073 /* Networking */,
 				9393313829A3E5C2003954C2 /* Font */,
 				9393313529A3E59D003954C2 /* Extension */,
 				9E9F2F5529F6AB4B00A9CDF3 /* ViewModifier */,
@@ -441,6 +450,15 @@
 			path = Lib;
 			sourceTree = "<group>";
 		};
+		9E6B38CC29F9488400144073 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				9E6B38CA29F9487F00144073 /* Networking.swift */,
+				9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 		9E9F2F5529F6AB4B00A9CDF3 /* ViewModifier */ = {
 			isa = PBXGroup;
 			children = (
@@ -511,6 +529,7 @@
 			isa = PBXGroup;
 			children = (
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
+				9E6B38CD29F954D500144073 /* RootViewController.swift */,
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 			);
@@ -548,6 +567,7 @@
 				9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */,
 				9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */,
 				9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */,
+				9E6B38C829F937B100144073 /* LinkableLabel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -747,17 +767,21 @@
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				9E9F2F7829F6AB6400A9CDF3 /* FeedButton.swift in Sources */,
+				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
+				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */,
+				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				9E9F2F7E29F6AB6400A9CDF3 /* BaseView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
+				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,

@@ -12,7 +12,6 @@ class OnboardingSigninController: UIViewController {
     
     enum State {
         case ready
-        case checking
         case invalidKey
         case validKey
     }
@@ -51,16 +50,6 @@ private extension OnboardingSigninController {
             infoLabel.isHidden = true
             
             cancelButton.isHidden = true
-        case .checking:
-            confirmButton.titleLabel.text = "Checking..."
-            progressView.progress = 1
-            
-            textViewParent.layer.borderWidth = 0
-            textView.resignFirstResponder()
-            textView.isEditable = false
-            infoLabel.isHidden = true
-            
-            cancelButton.isHidden = false
         case .invalidKey:
             confirmButton.titleLabel.text = "Paste new key"
             progressView.progress = 1
@@ -155,56 +144,56 @@ private extension OnboardingSigninController {
     }
     
     func validateAndProcessLogin() {
-        let parsed = parse_key(textView.text!)
+        if let pasted = UIPasteboard.general.string { // Paste from pastebin
+            textView.text = pasted
+        }
         
-        // allow only nsec for now
-        if parsed?.is_pub ?? true {
+        guard
+            let text = textView.text, !text.isEmpty,
+            let parsed = parse_key(text),
+            !parsed.is_pub // allow only nsec for now
+        else {
             state = .invalidKey
             return
         }
         
-        if get_error(parsed_key: parsed) != nil {
+        if let error = get_error(parsed_key: parsed) {
+            state = .invalidKey
+            showErrorMessage(error)
+            return
+        }
+        
+        guard process_login(parsed, is_pubkey: parsed.is_pub) else {
             state = .invalidKey
             return
         }
         
-        if let p = parsed {
-            if !process_login(p, is_pubkey: p.is_pub) {
-                state = .invalidKey
-                return
-            }
-            
-            state = .validKey
-        }
+        state = .validKey
     }
     
     func signIn() {
-        let result = get_saved_keypair()
-        if let keypair = result {
-            guard let decoded = try? bech32_decode(keypair.pubkey_bech32) else {
-                return
-            }
-            
-            let encoded = hex_encode(decoded.data)
-            
-            let hostingController = UIHostingController(rootView: ContentView()
-                .environmentObject(Feed(userHex: encoded))
-                .environmentObject(UIState()))
-            view.window?.rootViewController = hostingController
+        guard
+            let keypair = get_saved_keypair(),
+            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+        else {
+            return
         }
+            
+        let encoded = hex_encode(decoded.data)
+        
+        let hostingController = UIHostingController(rootView: ContentView()
+            .environmentObject(Feed(userHex: encoded))
+            .environmentObject(UIState()))
+        
+        RootViewController.instance.set(hostingController)
     }
     
     // MARK: - UI actions
     
     @objc func confirmButtonPressed() {
         switch state {
-        case .ready:
-            state = .checking
+        case .ready, .invalidKey:
             validateAndProcessLogin()
-        case .checking:
-            state = .invalidKey
-        case .invalidKey:
-            state = .validKey
         case .validKey:
             signIn()
         }

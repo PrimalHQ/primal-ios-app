@@ -15,13 +15,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-//        let rootView = ContentView()
-//            .environmentObject(Feed())
-//            .environmentObject(UIState())
-
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = IntroVideoController() //UIHostingController(rootView: rootView)
+        window.rootViewController = RootViewController.instance
         self.window = window
         window.makeKeyAndVisible()
+        
+        RootViewController.instance.set(IntroVideoController())
     }
 }

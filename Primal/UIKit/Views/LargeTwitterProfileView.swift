@@ -12,8 +12,13 @@ class LargeTwitterProfileView: UIView {
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
-    let descriptionLabel = UILabel()
-    let linkLabel = UILabel()
+    let descriptionLabel = LinkableLabel()
+    
+    var profile: TwitterUserRequest.Response? {
+        didSet {
+            updateView()
+        }
+    }
     
     init() {
         super.init(frame: .zero)
@@ -26,6 +31,15 @@ class LargeTwitterProfileView: UIView {
 }
 
 private extension LargeTwitterProfileView {
+    func updateView() {
+        guard let profile else { return }
+        profileImageView.kf.setImage(with: URL(string: profile.avatar))
+        coverImageView.kf.setImage(with: URL(string: profile.banner))
+        usernameLabel.text = "@" + profile.username
+        descriptionLabel.text = profile.bio
+        nameLabel.text = profile.displayname
+    }
+    
     func setup() {
         backgroundColor = .black
         layer.cornerRadius = 12
@@ -46,7 +60,7 @@ private extension LargeTwitterProfileView {
         coverImageView.backgroundColor = .darkGray
         
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, usernameLabel])
-        let mainStack = UIStackView(arrangedSubviews: [profileImageViewParent, nameStack, descriptionLabel, linkLabel])
+        let mainStack = UIStackView(arrangedSubviews: [profileImageViewParent, nameStack, descriptionLabel])
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 16)
@@ -59,25 +73,18 @@ private extension LargeTwitterProfileView {
         profileImageView.layer.masksToBounds = true
         profileImageView.backgroundColor = .darkGray
         
-        nameLabel.text = "Preston Pysh"
         nameLabel.font = .appFont(withSize: 20, weight: .bold)
         nameLabel.textColor = .white
         nameLabel.adjustsFontSizeToFitWidth = true
         
-        usernameLabel.text = "@PrestonPysh"
         usernameLabel.font = .appFont(withSize: 14, weight: .regular)
         usernameLabel.textColor = .init(rgb: 0x666666)
         
-        descriptionLabel.text = "Bitcoin & books. My bitcoin can remain in cold storage far longer than the market can remain irrational."
         descriptionLabel.font = .appFont(withSize: 14, weight: .regular)
-        descriptionLabel.numberOfLines = 3
+        descriptionLabel.numberOfLines = 4
         descriptionLabel.adjustsFontSizeToFitWidth = true
+        descriptionLabel.lineBreakMode = .byWordWrapping
         descriptionLabel.textColor = .white
-        
-        linkLabel.text = "https://theinvestorspodcast.com/"
-        linkLabel.font = .appFont(withSize: 14, weight: .regular)
-        linkLabel.textColor = .init(rgb: 0xCA079F)
-        linkLabel.adjustsFontSizeToFitWidth = true
         
         nameStack.spacing = 6
         nameStack.alignment = .center
