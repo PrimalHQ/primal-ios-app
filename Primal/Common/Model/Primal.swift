@@ -8,6 +8,54 @@
 import Foundation
 import GenericJSON
 
+struct PrimalSettingsFeed: Codable, Hashable {
+    let name: String
+    let hex: String
+    let npub: String
+}
+
+struct PrimalSettingsContent: Codable, Hashable {
+    let description: String
+    let theme: String
+    let feeds: [PrimalSettingsFeed]
+}
+
+struct PrimalSettings: Codable, Identifiable, Hashable {
+    let kind: Int32
+    let content: PrimalSettingsContent
+    let id: String
+    let created_at: Int32
+    let pubkey: String
+    let sig: String
+    let tags: [[String]]
+    
+    init(kind: Int32, content: PrimalSettingsContent, id: String, created_at: Int32, pubkey: String, sig: String, tags: [[String]]) {
+        self.kind = kind
+        self.content = content
+        self.id = id
+        self.created_at = created_at
+        self.pubkey = pubkey
+        self.sig = sig
+        self.tags = tags
+    }
+    
+    init?(json: JSON) {
+        guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+            print("Error decoding received string to json")
+            dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+            return nil
+        }
+        
+        self.kind = Int32(json.arrayValue?[2].objectValue?["kind"]?.doubleValue ?? -1)
+        self.content = settingsContent
+        self.id = json.arrayValue?[2].objectValue?["id"]?.stringValue ?? ""
+        self.created_at = Int32(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1)
+        self.pubkey = json.arrayValue?[2].objectValue?["pubkey"]?.stringValue ?? ""
+        self.sig = json.arrayValue?[2].objectValue?["sig"]?.stringValue ?? ""
+        self.tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? []
+    }
+}
+
 struct PrimalUser : Codable, Identifiable, Hashable {
     let id: String
     let pubkey: String

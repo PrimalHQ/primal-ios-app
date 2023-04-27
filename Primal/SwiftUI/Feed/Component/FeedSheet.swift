@@ -10,7 +10,7 @@ import SwiftUI
 struct FeedSheet: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
-    
+    @EnvironmentObject var feed: Feed
 
     
     var body: some View {
@@ -20,38 +20,14 @@ struct FeedSheet: View {
             Text("My Nostr Feeds")
                 .font(Font.custom("RobotoFlex-Regular", size: 40)
                     .weight(.semibold))
-            Group {
-                Spacer()
-                    .frame(maxHeight: 50)
-                
-                FeedButton(feedType: .myFeed, text: "Latest, Following", dismiss: dismiss)
+            List {
+                ForEach(feed.currentUserSettings?.content.feeds ?? [], id: \.name.id) { feed in
+                    FeedButton(text: feed.name, dismiss: dismiss)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets())
+                }
             }
-            Group {
-                Spacer()
-                    .frame(maxHeight: 10)
-                FeedButton(feedType: .trending, text: "Trending, My network", dismiss: dismiss)
-            }
-            Group {
-                Spacer()
-                    .frame(maxHeight: 10)
-                FeedButton(feedType: .myFeed, text: "Nostr highlights by Primal", dismiss: dismiss)
-            }
-            Group {
-                Spacer()
-                    .frame(maxHeight: 10)
-                FeedButton(feedType: .snowden, text: "Edward Snowden's feed", dismiss: dismiss)
-            }
-            Group {
-                Spacer()
-                    .frame(maxHeight: 10)
-                FeedButton(feedType: .dorsey, text: "Jack Dorsey's feed", dismiss: dismiss)
-            }
-            Group {
-                Spacer()
-                    .frame(maxHeight: 10)
-                FeedButton(feedType: .nvk, text: "NVK's feed", dismiss: dismiss)
-            }
-            
+            .listStyle(.plain)
         }
         .frame(maxHeight: .infinity)
         .background(colorScheme == .dark ? Color(hex: "#1C1C1C") : Color.white)
@@ -61,5 +37,7 @@ struct FeedSheet: View {
 struct FeedSheet_Previews: PreviewProvider {
     static var previews: some View {
         FeedSheet()
+            .environmentObject(Feed())
+            .environmentObject(UIState())
     }
 }

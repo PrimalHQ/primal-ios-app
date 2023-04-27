@@ -10,6 +10,28 @@
 //  Inspired by Pieter Wuille C++ implementation
 import Foundation
 
+enum Bech32Object {
+    case nsec(String)
+    case npub(String)
+    case note(String)
+    
+    static func parse(_ str: String) -> Bech32Object? {
+        guard let decoded = try? bech32_decode(str) else {
+            return nil
+        }
+        
+        if decoded.hrp == "npub" {
+            return .npub(hex_encode(decoded.data))
+        } else if decoded.hrp == "nsec" {
+            return .nsec(hex_encode(decoded.data))
+        } else if decoded.hrp == "note" {
+            return .note(hex_encode(decoded.data))
+        }
+        
+        return nil
+    }
+}
+
 /// Bech32 checksum implementation
 fileprivate let gen: [UInt32] = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
 /// Bech32 checksum delimiter

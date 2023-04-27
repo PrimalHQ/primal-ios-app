@@ -91,7 +91,7 @@ struct SideMenu: View {
                 }
             }
             
-            TabButton(title: "SIGN OUT")
+            SignoutButton(title: "SIGN OUT")
                 .padding(.horizontal)
                 .padding(.leading)
                 .padding(.bottom, 45)
@@ -113,6 +113,23 @@ struct SideMenu: View {
                 .navigationTitle(title)
                 .navigationBarBackButtonHidden(true)
                 .navigationBarItems(leading: NavigationBackButton())
+        } label: {
+            Text(title)
+                .font(Font.custom("RobotoFlex-Regular", size: 20).weight(.heavy))
+                .foregroundColor(.gray)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    
+    @ViewBuilder
+    func SignoutButton(title: String) -> some View {
+        Button {
+            do {
+                try clear_keypair()
+                RootViewController.instance.set(OnboardingParentViewController())
+            } catch {
+                print("failed to clear keypair")
+            }
         } label: {
             Text(title)
                 .font(Font.custom("RobotoFlex-Regular", size: 20).weight(.heavy))

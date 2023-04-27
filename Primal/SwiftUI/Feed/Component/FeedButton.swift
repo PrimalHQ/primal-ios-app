@@ -14,7 +14,6 @@ struct FeedButton: View {
     
     @State var tap = false
     
-    let feedType: FeedType
     let text: String
     let dismiss: DismissAction
 
@@ -23,7 +22,7 @@ struct FeedButton: View {
         let primary = colorScheme == .dark ? Color(hex: "#1C1C1C") : Color.white
 
         Button {
-            feed.setCurrentFeed(feedType)
+            feed.setCurrentFeed(text)
             tap.toggle()
             dismiss()
         } label: {

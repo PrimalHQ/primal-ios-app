@@ -16,14 +16,7 @@ struct ToolbarFeedText: View {
     
     @ViewBuilder
     func FeedText() -> some View {
-        switch feed.currentFeed {
-        case .myFeed: HighlightText("Latest, Following")
-        case .trending: HighlightText("Trending, my network")
-        case .highlights: HighlightText("Nostr Highlighys by Primal")
-        case .snowden: HighlightText("Edward Snowden's feed")
-        case .dorsey: HighlightText("Jack Dorsey's feed")
-        case .nvk: HighlightText("NVK's feed")
-        }
+        HighlightText(feed.currentFeed)
     }
     
     @ViewBuilder
