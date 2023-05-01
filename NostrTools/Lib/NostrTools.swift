@@ -3,7 +3,6 @@
 //  Primal
 //
 //  Created by William Casarin on 2022-04-11.
-//  Created by Nikola Lukovic on 25.4.23..
 //
 
 import Foundation

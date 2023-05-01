@@ -4,6 +4,7 @@
 //
 //  Created by Nikola Lukovic on 20.2.23..
 //
+// odvratan kod ispod
 
 import SwiftUI
 import Foundation
@@ -11,25 +12,18 @@ import NWWebSocket
 import Network
 import GenericJSON
 
-enum FeedType {
-    case myFeed
-    case trending
-    case highlights
-    case snowden
-    case dorsey
-    case nvk
-}
-
 enum ProcessType {
     case post
     case thread
     case profile
+    case settings
 }
 
 class Feed: ObservableObject, WebSocketConnectionDelegate {
-    @Published var currentFeed: FeedType = .myFeed
+    @Published var currentFeed: String = "Latest, following"
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
+    @Published var currentUserSettings: PrimalSettings?
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -44,30 +38,24 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     private let socketURL = URL(string: "wss://cache2.primal.net/cache12")
     private var currentUserHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
-    private let snowdenHex = "84dee6e676e5bb67b4ad4e042cf70cbd8681155db535942fcc6a0533858a7240"
-    private let dorseyHex = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
-    private let nvkHex = "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411"
-    private let socket: NWWebSocket
+    private var socket: NWWebSocket?
     
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
-    
+        
     init(userHex: String? = nil) {
         if let hex = userHex {
             self.currentUserHex = hex
         }
-        socket = NWWebSocket(url: socketURL!)
-        socket.delegate = self
-        socket.connect()
-        socket.ping(interval: 30.0)
+        self.connectWs()
     }
     
     deinit {
-        socket.disconnect()
+        socket?.disconnect()
     }
     
-    func setCurrentFeed(_ type: FeedType) {
-        self.currentFeed = type
+    func setCurrentFeed(_ feed: String) {
+        self.currentFeed = feed
         
         self.posts.removeAll()
         self.clearBufferPosts()
@@ -77,7 +65,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     func requestNewPage(until: Int32 = 0, limit: Int32 = 20) {
         let jsonStr = self.generateRequestByFeedType(until: until, limit: limit)
         
-        self.socket.send(string: jsonStr)
+        self.socket?.send(string: jsonStr)
     }
     
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
@@ -87,7 +75,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.bufferThreadNostrPosts.removeAll()
         self.bufferThreadNostrStats.removeAll()
         
-        guard let json: JSON = try? JSON(["REQ", "\(self.threadSubId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit]]]]) else {
+        guard let json: JSON = try? JSON(["REQ", "\(self.threadSubId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit] as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
@@ -97,17 +85,17 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         }
         let jsonStr = String(data: jsonData, encoding: .utf8)!
         
-        self.socket.send(string: jsonStr)
+        self.socket?.send(string: jsonStr)
     }
     
     func refreshPage() {
         let jsonStr = self.generateRequestByFeedType(until: 1)
         
-        self.socket.send(string: jsonStr)
+        self.socket?.send(string: jsonStr)
     }
     
     func requestCurrentUserProfile() {
-        guard let json: JSON = try? JSON(["REQ", "user_profile_\(self.currentUserHex)", ["cache": ["user_info", ["pubkey": "\(self.currentUserHex)"]]]]) else {
+        guard let json: JSON = try? JSON(["REQ", "user_profile_\(self.currentUserHex)", ["cache": ["user_info", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
@@ -117,11 +105,11 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         }
         let jsonStr = String(data: jsonData, encoding: .utf8)!
         
-        self.socket.send(string: jsonStr)
+        self.socket?.send(string: jsonStr)
     }
     
     func requestCurrentUserProfileInfo() {
-        guard let json: JSON = try? JSON(["REQ", "profile_info_\(self.currentUserHex)", ["cache": ["user_profile", ["pubkey": "\(self.currentUserHex)"]]]]) else {
+        guard let json: JSON = try? JSON(["REQ", "profile_info_\(self.currentUserHex)", ["cache": ["user_profile", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
@@ -131,13 +119,52 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         }
         let jsonStr = String(data: jsonData, encoding: .utf8)!
         
-        self.socket.send(string: jsonStr)
+        self.socket?.send(string: jsonStr)
+    }
+    
+    func requestCurrentUserSettings() {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        guard let settingsJson: JSON = try? JSON(["description": "Sync app settings"]) else {
+            print ("Error encoding settings")
+            return
+        }
+        
+        let ev = make_settings_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, settings: settingsJson)
+        
+        guard let json: JSON = try? JSON(
+            ["REQ",
+             "load_settings_\(self.currentUserHex)",
+             ["cache":
+                ["get_app_settings",
+                 ["event_from_user":
+                    ["content": "{\"description\":\"Sync app settings\"}",
+                     "created_at": ev.created_at,
+                     "id": ev.id,
+                     "kind": 30078,
+                     "pubkey": ev.pubkey,
+                     "sig": ev.sig,
+                     "tags": ev.tags
+                    ] as [String : Any]]] as [Any]]] as [Any]) else {
+            print("Error encoding req")
+            return
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+                
+        self.socket?.send(string: jsonStr)
     }
     
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
         self.requestCurrentUserProfile()
         self.requestCurrentUserProfileInfo()
+        self.requestCurrentUserSettings()
         self.requestNewPage()
     }
     
@@ -145,6 +172,10 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         print("webSocketDidDisconnect")
         dump(closeCode)
         dump(reason)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.connectWs()
+        }
     }
     
     func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
@@ -179,14 +210,24 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         print("webSocketDidReceiveMessageData")
     }
     
+    private func connectWs() {
+        socket = NWWebSocket(url: socketURL!)
+        socket?.delegate = self
+        socket?.connect()
+        socket?.ping(interval: 30.0)
+    }
+    
     private func processMessage(_ json: JSON) {
-        if json.arrayValue?[1].stringValue == self.threadSubId {
+        switch json.arrayValue?[1].stringValue {
+        case self.threadSubId:
             self.processMessageBy(type: .thread, json: json)
-        } else if json.arrayValue?[1].stringValue == "user_profile_\(self.currentUserHex)" {
+        case "user_profile_\(self.currentUserHex)":
             self.processMessageBy(type: .profile, json: json)
-        } else if json.arrayValue?[1].stringValue == "profile_info_\(self.currentUserHex)" {
+        case "load_settings_\(self.currentUserHex)":
+            self.processMessageBy(type: .settings, json: json)
+        case "profile_info_\(self.currentUserHex)":
             self.processMessageBy(type: .profile, json: json)
-        } else {
+        default:
             self.processMessageBy(type: .post, json: json)
         }
     }
@@ -217,6 +258,11 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 self.bufferThreadNostrUsers[nostrUser.pubkey] = nostrUser
             } else {
                 self.currentUser = PrimalUser(nostrUser: nostrUser)
+            }
+        case 30078:
+            let primalSettings = PrimalSettings(json: json)
+            if type == .settings {
+                self.currentUserSettings = primalSettings
             }
         case 10000100:
             guard let nostrContentStats: NostrContentStats = try? self.jsonDecoder.decode(NostrContentStats.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
@@ -299,7 +345,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private func generateFeedPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
         let key = until == 0 ? "since" : "until"
         
-        guard let json: JSON = try? JSON(["REQ", "user_feed_\(hex)", ["cache": ["feed", ["pubkey": "\(hex)", "limit": limit, "\(key)": until]]]]) else {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["feed", ["pubkey": "\(hex)", "limit": limit, "\(key)": until] as [String : Any]] as [Any]]] as [Any] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -313,7 +359,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateTrendingPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
-        guard let json: JSON = try? JSON(["REQ", "explore_feed_network_trending_\(hex)", ["cache": ["explore", ["pubkey": "\(hex)", "limit": 100, "scope": "network", "timeframe": "trending"]]]]) else {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["explore", ["pubkey": "\(hex)", "limit": 20, "scope": "network", "timeframe": "trending"] as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -327,23 +373,13 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateRequestByFeedType(until: Int32 = 0, limit: Int32 = 20) -> String {
-        switch self.currentFeed {
-        case .myFeed, .highlights: do {
-            return self.generateFeedPageRequestForHex(self.currentUserHex, until: until, limit: limit)
+        let feed = self.currentUserSettings?.content.feeds.first { $0.name == self.currentFeed }
+        
+        if feed?.name == "Trending, my network" {
+            return self.generateTrendingPageRequestForHex(self.currentUserHex)
         }
-        case .snowden: do {
-            return self.generateFeedPageRequestForHex(self.snowdenHex, until: until, limit: limit)
-        }
-        case .dorsey: do {
-            return self.generateFeedPageRequestForHex(self.dorseyHex, until: until, limit: limit)
-        }
-        case .nvk: do {
-            return self.generateFeedPageRequestForHex(self.nvkHex, until: until, limit: limit)
-        }
-        case .trending: do {
-            return self.generateTrendingPageRequestForHex(self.currentUserHex, until: until, limit: limit)
-        }
-        }
+        
+        return self.generateFeedPageRequestForHex(feed?.hex ?? self.currentUserHex, until: until, limit: limit)
     }
     
     private func requestMentions(_ nostrContent: NostrContent) -> Void {

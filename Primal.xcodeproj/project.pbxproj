@@ -7,8 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
+		930497A529FAD6D7003938F2 /* EventRef.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A429FAD6D6003938F2 /* EventRef.swift */; };
+		930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A629FAD788003938F2 /* LocalizationUtil.swift */; };
+		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
+		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
+		930497AE29FADA4E003938F2 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497AD29FADA4E003938F2 /* Parser.swift */; };
+		930497B029FADA85003938F2 /* PostBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497AF29FADA85003938F2 /* PostBlock.swift */; };
+		930497B229FADAC8003938F2 /* NostrPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B129FADAC8003938F2 /* NostrPost.swift */; };
+		930497B429FADAE9003938F2 /* NostrLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B329FADAE9003938F2 /* NostrLink.swift */; };
+		930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B529FADB0A003938F2 /* NostrFilter.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932E864B29A6EB8600C415AA /* UIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932E864A29A6EB8600C415AA /* UIState.swift */; };
+		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
 		939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F529A3E36F003954C2 /* PrimalApp.swift */; };
 		939330F829A3E36F003954C2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F729A3E36F003954C2 /* ContentView.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
@@ -42,7 +53,6 @@
 		93CACB0929F525B6003BBCE5 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAF829F525B6003BBCE5 /* list.c */; };
 		93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */; };
 		93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1229F7D136003BBCE5 /* Keys.swift */; };
-		93CACB1629F7D167003BBCE5 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 93CACB1529F7D167003BBCE5 /* secp256k1 */; };
 		93CACB1929F7D1F4003BBCE5 /* Vault in Frameworks */ = {isa = PBXBuildFile; productRef = 93CACB1829F7D1F4003BBCE5 /* Vault */; };
 		93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1A29F7D23A003BBCE5 /* Bech32.swift */; };
 		9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38C829F937B100144073 /* LinkableLabel.swift */; };
@@ -105,8 +115,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
+		930497A429FAD6D6003938F2 /* EventRef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRef.swift; sourceTree = "<group>"; };
+		930497A629FAD788003938F2 /* LocalizationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationUtil.swift; sourceTree = "<group>"; };
+		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
+		930497AD29FADA4E003938F2 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		930497AF29FADA85003938F2 /* PostBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBlock.swift; sourceTree = "<group>"; };
+		930497B129FADAC8003938F2 /* NostrPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrPost.swift; sourceTree = "<group>"; };
+		930497B329FADAE9003938F2 /* NostrLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrLink.swift; sourceTree = "<group>"; };
+		930497B529FADB0A003938F2 /* NostrFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrFilter.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932E864A29A6EB8600C415AA /* UIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIState.swift; sourceTree = "<group>"; };
+		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F529A3E36F003954C2 /* PrimalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalApp.swift; sourceTree = "<group>"; };
 		939330F729A3E36F003954C2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -227,8 +247,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
+				930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */,
 				93CACB1929F7D1F4003BBCE5 /* Vault in Frameworks */,
-				93CACB1629F7D167003BBCE5 /* secp256k1 in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 			);
@@ -446,6 +466,16 @@
 				93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */,
 				93CACB1229F7D136003BBCE5 /* Keys.swift */,
 				93CACB1A29F7D23A003BBCE5 /* Bech32.swift */,
+				932F90DF29FAD29E00F66593 /* NostrEvent.swift */,
+				930497A229FAD69B003938F2 /* Mentions.swift */,
+				930497A429FAD6D6003938F2 /* EventRef.swift */,
+				930497A629FAD788003938F2 /* LocalizationUtil.swift */,
+				930497A829FAD7C3003938F2 /* NostrResponse.swift */,
+				930497AD29FADA4E003938F2 /* Parser.swift */,
+				930497AF29FADA85003938F2 /* PostBlock.swift */,
+				930497B129FADAC8003938F2 /* NostrPost.swift */,
+				930497B329FADAE9003938F2 /* NostrLink.swift */,
+				930497B529FADB0A003938F2 /* NostrFilter.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -592,8 +622,8 @@
 				9393312029A3E44D003954C2 /* GenericJSON */,
 				9393312329A3E45E003954C2 /* Kingfisher */,
 				9393312629A3E475003954C2 /* NWWebSocket */,
-				93CACB1529F7D167003BBCE5 /* secp256k1 */,
 				93CACB1829F7D1F4003BBCE5 /* Vault */,
+				930497AB29FAD9FD003938F2 /* secp256k1 */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -672,8 +702,8 @@
 				9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */,
 				9393312229A3E45E003954C2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9393312529A3E475003954C2 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
-				93CACB1429F7D167003BBCE5 /* XCRemoteSwiftPackageReference "secp256k1" */,
 				93CACB1729F7D1F4003BBCE5 /* XCRemoteSwiftPackageReference "Vault" */,
+				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -721,6 +751,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				930497A329FAD69B003938F2 /* Mentions.swift in Sources */,
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F7A29F6AB6400A9CDF3 /* FeedSheet.swift in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
@@ -732,16 +763,19 @@
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
+				930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				9E9F2F7629F6AB6400A9CDF3 /* ToolbarFeedText.swift in Sources */,
 				93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */,
 				93CACB0229F525B6003BBCE5 /* node_id.c in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
+				930497A529FAD6D7003938F2 /* EventRef.swift in Sources */,
 				9E9F2F9629F6AB8A00A9CDF3 /* View.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
 				9E9F2F7729F6AB6400A9CDF3 /* SideMenu.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
+				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9E9F2F7B29F6AB6400A9CDF3 /* ThreadView.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
@@ -750,9 +784,11 @@
 				9E9F2F7929F6AB6400A9CDF3 /* Post.swift in Sources */,
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
+				930497B429FADAE9003938F2 /* NostrLink.swift in Sources */,
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				932E864B29A6EB8600C415AA /* UIState.swift in Sources */,
 				939330F829A3E36F003954C2 /* ContentView.swift in Sources */,
+				932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */,
 				9393312F29A3E54E003954C2 /* Feed.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
@@ -767,6 +803,7 @@
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				9E9F2F7829F6AB6400A9CDF3 /* FeedButton.swift in Sources */,
+				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
@@ -779,10 +816,13 @@
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				9E9F2F7E29F6AB6400A9CDF3 /* BaseView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
+				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
+				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
+				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 			);
@@ -962,7 +1002,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.5;
+				MARKETING_VERSION = 0.7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1003,7 +1043,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.5;
+				MARKETING_VERSION = 0.7.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1134,6 +1174,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jb55/secp256k1.swift";
+			requirement = {
+				kind = revision;
+				revision = 40b4b38b3b1c83f7088c76189a742870e0ca06a9;
+			};
+		};
 		9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/iwill/generic-json-swift";
@@ -1158,14 +1206,6 @@
 				minimumVersion = 0.5.2;
 			};
 		};
-		93CACB1429F7D167003BBCE5 /* XCRemoteSwiftPackageReference "secp256k1" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/GigaBitcoin/secp256k1.swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.12.0;
-			};
-		};
 		93CACB1729F7D1F4003BBCE5 /* XCRemoteSwiftPackageReference "Vault" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SparrowTek/Vault";
@@ -1177,6 +1217,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		930497AB29FAD9FD003938F2 /* secp256k1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
+			productName = secp256k1;
+		};
 		9393312029A3E44D003954C2 /* GenericJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
@@ -1191,11 +1236,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9393312529A3E475003954C2 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
 			productName = NWWebSocket;
-		};
-		93CACB1529F7D167003BBCE5 /* secp256k1 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 93CACB1429F7D167003BBCE5 /* XCRemoteSwiftPackageReference "secp256k1" */;
-			productName = secp256k1;
 		};
 		93CACB1829F7D1F4003BBCE5 /* Vault */ = {
 			isa = XCSwiftPackageProductDependency;
