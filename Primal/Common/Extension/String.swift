@@ -29,7 +29,15 @@ extension String : Identifiable {
     }
     
     var isValidURLAndIsImage: Bool {
-        return self.isValidURL && (self.hasSuffix(".jpg") || self.hasSuffix(".jpeg") || self.hasSuffix(".webp") || self.hasSuffix(".png") || self.hasSuffix(".gif") || self.hasSuffix("format=png"))
+        isValidURL && isImageURL
+    }
+    
+    var isImageURL: Bool {
+        hasSuffix(".jpg") || hasSuffix(".jpeg") || hasSuffix(".webp") || hasSuffix(".png") || hasSuffix(".gif") || hasSuffix("format=png")
+    }
+    
+    var isVideoURL: Bool {
+        hasSuffix(".mov") || hasSuffix(".mp4")
     }
     
     var isHashTagOrMention: Bool {

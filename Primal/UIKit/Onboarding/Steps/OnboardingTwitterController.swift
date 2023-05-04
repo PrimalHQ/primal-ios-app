@@ -112,7 +112,8 @@ private extension OnboardingTwitterController {
         case .ready:
             state = .created
         case .created:
-            state = .ready
+            let suggestions = OnboardingFollowSuggestionsController()
+            show(suggestions, sender: nil)
         }
     }
 }

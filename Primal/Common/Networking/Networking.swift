@@ -41,8 +41,8 @@ extension Request {
                 let decoder = JSONDecoder()
 
                 do {
-                    let exampleData = try decoder.decode(ResponseData.self, from: data)
-                    promise(.success(exampleData))
+                    let responseData = try decoder.decode(ResponseData.self, from: data)
+                    promise(.success(responseData))
                 } catch {
                     if let errorData = try? decoder.decode(RequestErrorResponse.self, from: data) {
                         promise(.failure(errorData.error))

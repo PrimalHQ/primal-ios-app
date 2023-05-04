@@ -26,4 +26,26 @@ class RootViewController: UIViewController {
         }
         currentChild = viewController
     }
+    
+    func reset() {
+        let result = get_saved_keypair()
+        
+        guard
+            let keypair = result,
+            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+        else {
+            RootViewController.instance.set(OnboardingParentViewController())
+            return
+        }
+        
+        let feed = Feed(userHex: hex_encode(decoded.data))
+        
+        
+//            let hostingController = UIHostingController(rootView: ContentView()
+//                .environmentObject(feed)
+//                .environmentObject(UIState()))
+        
+//            RootViewController.instance.set(hostingController)
+        RootViewController.instance.set(MainTabBarController(feed: feed))
+    }
 }

@@ -34,7 +34,6 @@ class MyButton: UIControl {
     }
 }
 
-
 class FancyButton: MyButton {
     let titleLabel = UILabel()
     
@@ -176,5 +175,58 @@ private extension BigOnboardingButton {
         subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
         subtitleLabel.numberOfLines = 2
         subtitleLabel.adjustsFontSizeToFitWidth = true
+    }
+}
+
+class ThinFancyButton: MyButton {
+    let titleLabel = UILabel()
+    
+    private let b1 = UIImageView(image: UIImage(named: "thinButtonBackgroundBack"))
+    private let b2 = UIImageView(image: UIImage(named: "thinButtonBackgroundFront"))
+    
+    override var isPressed: Bool {
+        didSet {
+            titleLabel.textColor = isPressed ? .darkGray : .white
+        }
+    }
+    
+    override var isEnabled: Bool {
+        didSet {
+            b1.isHidden = !isEnabled
+            b2.isHidden = !isEnabled
+            
+            backgroundColor = isEnabled ? .clear : UIColor(rgb: 0x111111)
+            layer.borderWidth = isEnabled ? 0 : 1
+            titleLabel.textColor = isEnabled ? .white : UIColor(rgb: 0x444444)
+        }
+    }
+    
+    init(title: String) {
+        super.init(frame: .zero)
+        setup()
+        titleLabel.text = title
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup() {
+        addSubview(b1)
+        addSubview(b2)
+        b1.pinToSuperview(padding: -17)
+        b2.pinToSuperview()
+        
+        addSubview(titleLabel)
+        titleLabel
+            .pinToSuperview(edges: .horizontal, padding: 18)
+            .centerToSuperview(axis: .vertical)
+        
+        titleLabel.font = .appFont(withSize: 16, weight: .medium)
+        titleLabel.textColor = .white
+        titleLabel.textAlignment = .center
+        
+        layer.borderColor = UIColor(rgb: 0x181818).cgColor
+        layer.cornerRadius = 12
     }
 }

@@ -68,6 +68,10 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
+    func requestNewPage() {
+        requestNewPage(until: posts.last?.post.created_at ?? 0)
+    }
+    
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         self.threadSubId = subId
         self.threadPosts.removeAll()

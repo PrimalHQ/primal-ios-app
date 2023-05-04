@@ -1,0 +1,39 @@
+//
+//  FeedNavigationController.swift
+//  Primal
+//
+//  Created by Pavle D Stevanović on 2.5.23..
+//
+
+import UIKit
+
+class FeedNavigationController: UINavigationController {
+    init(feed: Feed) {
+        super.init(rootViewController: HomeFeedViewController(feed: feed))
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        navigationBar.titleTextAttributes = [
+            .font: UIFont.appFont(withSize: 24, weight: .semibold),
+            .foregroundColor: UIColor(rgb: 0xCCCCCC)
+        ]
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .black
+        appearance.shadowColor = .clear
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.standardAppearance = appearance
+        navigationBar.compactScrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
+
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = true
+    }
+}

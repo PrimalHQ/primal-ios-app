@@ -20,8 +20,8 @@ class IntroVideoPlayerView: UIView {
         
         playerLayer.player = player
         
-        guard let path = Bundle.main.path(forResource: "Intro", ofType:"mp4") else {
-            debugPrint("Intro.mp4 not found")
+        guard let path = Bundle.main.path(forResource: "Intro", ofType:"mov") else {
+            debugPrint("Intro.mov not found")
             return
         }
         let item = AVPlayerItem(url: URL(fileURLWithPath: path))

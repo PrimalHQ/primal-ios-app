@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class IntroVideoController: UIViewController {
     
@@ -26,7 +27,7 @@ class IntroVideoController: UIViewController {
         video.play()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            RootViewController.instance.set(OnboardingParentViewController())
+            RootViewController.instance.reset()
         }
     }
 }
