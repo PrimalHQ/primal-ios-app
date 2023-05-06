@@ -19,7 +19,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = RootViewController.instance
         self.window = window
         window.makeKeyAndVisible()
-        
-        RootViewController.instance.set(IntroVideoController())
     }
 }

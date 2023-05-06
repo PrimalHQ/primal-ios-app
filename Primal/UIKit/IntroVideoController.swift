@@ -7,27 +7,16 @@
 
 import UIKit
 import SwiftUI
+import Lottie
 
 class IntroVideoController: UIViewController {
-    
-    lazy var video = IntroVideoPlayerView()
+    lazy var video = UIImageView(image: UIImage(named: "LogoSplash"))
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         
         view.addSubview(video)
-        video
-            .centerToSuperview()
-            .constrainToSize(width: 1920 / 3, height: 1080 / 3)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        video.play()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            RootViewController.instance.reset()
-        }
+        video.centerToSuperview().constrainToSize(200)
     }
 }

@@ -14,7 +14,8 @@ import SafariServices
 class FeedViewController: UIViewController {
     let feed: Feed
     
-    private let table = UITableView()
+    let navigationBarLengthner = SpacerView(size: 7)
+    let table = UITableView()
     
     var fullBleed = false
     var posts: [(PrimalPost, String, [URL])] = [] {
@@ -42,9 +43,15 @@ class FeedViewController: UIViewController {
 }
 
 private extension FeedViewController {
-    func setup() {        
-        view.addSubview(table)
-        table.pinToSuperview(safeArea: true)
+    func setup() {
+        navigationBarLengthner.backgroundColor = .black
+        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
+        stack.axis = .vertical
+        view.addSubview(stack)
+        stack
+            .pinToSuperview(edges: [.horizontal, .bottom])
+            .pinToSuperview(edges: .top, safeArea: true)
+        
         table.register(FeedCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self
         table.delegate = self

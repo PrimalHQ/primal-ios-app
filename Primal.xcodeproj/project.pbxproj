@@ -112,6 +112,11 @@
 		9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8F29F6AB8A00A9CDF3 /* Collection.swift */; };
 		9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */; };
 		9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */; };
+		9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */; };
+		9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB219E82A067B990037C3E5 /* MenuContainerController.swift */; };
+		9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */; };
+		9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EB2A06D2AF0037C3E5 /* splash.json */; };
+		9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EE2A06FD610037C3E5 /* MainLogo.png */; };
 		9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */; };
 		9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */; };
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
@@ -277,6 +282,11 @@
 		9E9F2F8F29F6AB8A00A9CDF3 /* Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoFlex-All.ttf"; sourceTree = "<group>"; };
+		9EB219E82A067B990037C3E5 /* MenuContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContainerController.swift; sourceTree = "<group>"; };
+		9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splashAlpha.json; sourceTree = "<group>"; };
+		9EB219EB2A06D2AF0037C3E5 /* splash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash.json; sourceTree = "<group>"; };
+		9EB219EE2A06FD610037C3E5 /* MainLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MainLogo.png; path = Assets.xcassets/LogoPrimary.imageset/MainLogo.png; sourceTree = "<group>"; };
 		9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSectionHeader.swift; sourceTree = "<group>"; };
 		9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedNavigationController.swift; sourceTree = "<group>"; };
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
@@ -357,6 +367,7 @@
 				939330F729A3E36F003954C2 /* ContentView.swift */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
+				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
 				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
@@ -441,6 +452,7 @@
 			children = (
 				9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */,
 				9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */,
+				9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */,
 			);
 			path = Font;
 			sourceTree = "<group>";
@@ -530,6 +542,8 @@
 			children = (
 				9E6924992A025D3400CAC54C /* iconLike.json */,
 				9E0DEAF329FD35A000145E08 /* iconZap.json */,
+				9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */,
+				9EB219EB2A06D2AF0037C3E5 /* splash.json */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -548,6 +562,7 @@
 		9E55CC692A03C6B3002D3DC4 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				9EB219E72A067B7B0037C3E5 /* Menu */,
 				9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */,
 				9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */,
 			);
@@ -696,6 +711,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		9EB219E72A067B7B0037C3E5 /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				9EB219E82A067B990037C3E5 /* MenuContainerController.swift */,
+			);
+			path = Menu;
+			sourceTree = "<group>";
+		};
 		9ECFD31E2A0138AB000D1B2F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
@@ -828,7 +851,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
+				9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
+				9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */,
+				9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */,
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
@@ -892,6 +919,7 @@
 				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
+				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
 				9E9F2F7B29F6AB6400A9CDF3 /* ThreadView.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,

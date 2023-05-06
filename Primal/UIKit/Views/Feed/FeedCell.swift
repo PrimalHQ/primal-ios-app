@@ -29,6 +29,7 @@ class FeedCell: UITableViewCell {
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel])
     lazy var imageStack = UIStackView(arrangedSubviews: [mainImages])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -60,8 +61,8 @@ class FeedCell: UITableViewCell {
         mainLabel.delegate = self
         mainImages.imageURLs = imageUrls
         
-        mainLabel.isHidden = text.isEmpty
-        mainImages.isHidden = imageUrls.isEmpty
+        textStack.isHidden = text.isEmpty
+        imageStack.isHidden = imageUrls.isEmpty
         
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.zaps)"
@@ -69,10 +70,10 @@ class FeedCell: UITableViewCell {
         repostButton.setTitle("  \(post.post.mentions)", for: .normal)
         
         if edgeBleed {
-            imageStack.layoutMargins = .zero
+            imageStack.layoutMargins = .init(top: 14, left: 0, bottom: 0, right: 0)
             mainImages.layer.cornerRadius = 0
         } else {
-            imageStack.layoutMargins = .init(top: 0, left: 16, bottom: 0, right: 16)
+            imageStack.layoutMargins = .init(top: 14, left: 16, bottom: 0, right: 16)
             mainImages.layer.cornerRadius = 8
         }
     }
@@ -103,18 +104,22 @@ private extension FeedCell {
         let namesStack = UIStackView(arrangedSubviews: [nameTimeStack, usernameStack])
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         let bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
-        let textStack = UIStackView(arrangedSubviews: [mainLabel])
         let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, imageStack, bottomButtonStack])
         
         let backgroundView = UIView()
         contentView.addSubview(backgroundView)
         backgroundView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
         contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 16)
+        mainStack
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .bottom, padding: 2) // Action buttons have a built in padding of 14
         [mainStack, imageStack].forEach {
             $0.axis = .vertical
             $0.spacing = 16
         }
+        mainStack.setCustomSpacing(2, after: imageStack) // Action buttons have a built in padding of 14
+        mainStack.setCustomSpacing(2, after: textStack) // Action buttons have a built in padding of 14
         
         nameTimeStack.spacing = 6
         separatorLabel.text = "|"
@@ -128,7 +133,7 @@ private extension FeedCell {
         usernameStack.spacing = 1
         
         namesStack.axis = .vertical
-        namesStack.spacing = 6
+        namesStack.spacing = 3
         namesStack.alignment = .leading
         
         horizontalStack.alignment = .top
@@ -136,8 +141,8 @@ private extension FeedCell {
         
         bottomButtonStack.distribution = .equalSpacing
         
-        profileImageView.constrainToSize(40).layer.cornerRadius = 20
-//        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.constrainToSize(40)
+        profileImageView.layer.cornerRadius = 20
         profileImageView.layer.masksToBounds = true
         
         nameLabel.textColor = .white

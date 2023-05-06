@@ -25,6 +25,10 @@ class MainTabBarController: UIViewController {
         return button
     }
     
+    let closeMenuButton = UIButton()
+    
+    lazy var buttonStack = UIStackView(arrangedSubviews: buttons )
+    
     init(feed: Feed) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
@@ -34,25 +38,47 @@ class MainTabBarController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func showCloseMenuButton() {
+        closeMenuButton.alpha = 0
+        closeMenuButton.isHidden = false
+        UIView.animate(withDuration: 0.3) {
+            self.buttonStack.alpha = 0
+            self.closeMenuButton.alpha = 1
+        }
+    }
+    
+    func showButtons() {
+        UIView.animate(withDuration: 0.3) {
+            self.buttonStack.alpha = 1
+            self.closeMenuButton.alpha = 0
+        } completion: { _ in
+            self.closeMenuButton.isHidden = true
+        }
+    }
 }
 
 private extension MainTabBarController {
     func setup() {
-        let hStack = UIStackView(arrangedSubviews: buttons)
-        let vStack = UIStackView(arrangedSubviews: [pageVC.view, hStack])
-        
+        let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
+        pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
         
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, safeArea: true)
         
         pageVC.didMove(toParent: self) // Notify child VC
-        
         pageVC.setViewControllers([home], direction: .forward, animated: false)
         
-        hStack.distribution = .fillEqually
-        hStack.constrainToSize(height: 68)
+        buttonStack.distribution = .fillEqually
+        buttonStack.constrainToSize(height: 68)
         
         vStack.axis = .vertical
+        
+        view.addSubview(closeMenuButton)
+        closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
+
+        closeMenuButton.setImage(UIImage(named: "tabIconHome"), for: .normal)
+        closeMenuButton.isHidden = true
     }
 }

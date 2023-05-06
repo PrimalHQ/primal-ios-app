@@ -8,6 +8,8 @@
 import UIKit
 
 class HomeFeedViewController: FeedViewController {
+    var onLoad: (() -> ())?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -18,6 +20,10 @@ class HomeFeedViewController: FeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.posts = posts
+                DispatchQueue.main.async {
+                    self?.onLoad?()
+                    self?.onLoad = nil
+                }
             }
             .store(in: &cancellables)
         
@@ -32,12 +38,6 @@ class HomeFeedViewController: FeedViewController {
         button.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
         button.setImage(UIImage(named: "feedPicker"), for: .normal)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
-        
-        let image = UIButton()
-        image.addTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
-        image.constrainToSize(36)
-        image.setImage(UIImage(named: "ProfilePicture"), for: .normal)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: image)
     }
     
     override func viewDidAppear(_ animated: Bool) {

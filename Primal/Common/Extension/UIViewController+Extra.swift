@@ -21,4 +21,13 @@ extension UIViewController {
             dismiss(animated: true)
         }
     }
+    
+    func findInChildren<T>() -> T? {
+        for child in children {
+            if let t = child as? T ?? child.findInChildren() {
+                return t
+            }
+        }
+        return nil
+    }
 }

@@ -12,6 +12,7 @@ import Lottie
 enum AnimationType {
     case iconZap
     case iconLike
+    case splash
     
     static var animationCache: [AnimationType: LottieAnimation] = [:]
     
@@ -19,6 +20,7 @@ enum AnimationType {
         switch self {
         case .iconZap:  return "iconZap"
         case .iconLike: return "iconLike"
+        case .splash:   return "splashAlpha"
         }
     }
     
