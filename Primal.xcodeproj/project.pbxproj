@@ -62,6 +62,9 @@
 		9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAF829FD4A0600145E08 /* FollowButton.swift */; };
 		9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAFA29FD4B3300145E08 /* FollowProfileCell.swift */; };
 		9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAFC29FD4D4B00145E08 /* VerifiedImageView.swift */; };
+		9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */; };
+		9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */; };
+		9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */; };
 		9E69249A2A025D3400CAC54C /* iconLike.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E6924992A025D3400CAC54C /* iconLike.json */; };
 		9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */; };
 		9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */; };
@@ -224,6 +227,9 @@
 		9E0DEAF829FD4A0600145E08 /* FollowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButton.swift; sourceTree = "<group>"; };
 		9E0DEAFA29FD4B3300145E08 /* FollowProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowProfileCell.swift; sourceTree = "<group>"; };
 		9E0DEAFC29FD4D4B00145E08 /* VerifiedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedImageView.swift; sourceTree = "<group>"; };
+		9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorAnimatingLabel.swift; sourceTree = "<group>"; };
+		9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedsSelectionController.swift; sourceTree = "<group>"; };
+		9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
 		9E6924992A025D3400CAC54C /* iconLike.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = iconLike.json; sourceTree = "<group>"; };
 		9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionView.swift; sourceTree = "<group>"; };
 		9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedViewController.swift; sourceTree = "<group>"; };
@@ -539,6 +545,15 @@
 			path = FollowViews;
 			sourceTree = "<group>";
 		};
+		9E55CC692A03C6B3002D3DC4 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */,
+				9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
 		9E6B38CC29F9488400144073 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -556,6 +571,7 @@
 				9E79D3A42A015BC9008404DB /* FeedButtons.swift */,
 				9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */,
 				9E6924A12A02899700CAC54C /* ThreadUIView.swift */,
+				9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -675,6 +691,7 @@
 				9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */,
 				9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */,
 				9E6B38C829F937B100144073 /* LinkableLabel.swift */,
+				9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -682,9 +699,9 @@
 		9ECFD31E2A0138AB000D1B2F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				9E55CC692A03C6B3002D3DC4 /* Home */,
 				9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */,
 				9ECFD3212A013935000D1B2F /* FeedViewController.swift */,
-				9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */,
 				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 			);
 			path = Feed;
@@ -856,6 +873,7 @@
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
+				9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */,
 				930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				9E9F2F7629F6AB6400A9CDF3 /* ToolbarFeedText.swift in Sources */,
@@ -869,6 +887,7 @@
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
 				9E9F2F7729F6AB6400A9CDF3 /* SideMenu.swift in Sources */,
+				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
@@ -905,6 +924,7 @@
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
+				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9E9F2F7829F6AB6400A9CDF3 /* FeedButton.swift in Sources */,
 				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
@@ -1105,12 +1125,12 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.10;
+				MARKETING_VERSION = 0.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1146,12 +1166,12 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.10;
+				MARKETING_VERSION = 0.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

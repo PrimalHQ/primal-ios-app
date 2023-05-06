@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 protocol FeedCellDelegate: AnyObject {
     func feedCellDidTapURL(_ cell: FeedCell, url: URL)
@@ -39,11 +40,7 @@ class FeedCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, edgeBleed: Bool) {
-        let result: [String] = post.post.content.extractTagsMentionsAndURLs()
-        let text: String = result.filter({ !$0.isValidURLAndIsImage }).joined(separator: " ")
-        let imageUrls: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
-        
+    func update(_ post: PrimalPost, text: String, imageUrls: [URL], edgeBleed: Bool) {
         nameLabel.text = post.user.displayName
         usernameLabel.text = post.user.name
         
@@ -53,7 +50,11 @@ class FeedCell: UITableViewCell {
         let date = Date(timeIntervalSince1970: TimeInterval(post.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: post.user.picture))
+        profileImageView.kf.setImage(with: URL(string: post.user.picture), options: [
+            .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ])
         
         mainLabel.text = text
         mainLabel.delegate = self
@@ -62,10 +63,10 @@ class FeedCell: UITableViewCell {
         mainLabel.isHidden = text.isEmpty
         mainImages.isHidden = imageUrls.isEmpty
         
-        replyButton.setTitle("   \(post.post.replies)", for: .normal)
+        replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.zaps)"
         likeButton.titleLabel.text = "\(post.post.likes)"
-        repostButton.setTitle("   \(post.post.mentions)", for: .normal)
+        repostButton.setTitle("  \(post.post.mentions)", for: .normal)
         
         if edgeBleed {
             imageStack.layoutMargins = .zero
@@ -136,7 +137,7 @@ private extension FeedCell {
         bottomButtonStack.distribution = .equalSpacing
         
         profileImageView.constrainToSize(40).layer.cornerRadius = 20
-        profileImageView.contentMode = .scaleAspectFill
+//        profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
         
         nameLabel.textColor = .white
@@ -147,7 +148,9 @@ private extension FeedCell {
         mainLabel.font = .appFont(withSize: 18, weight: .regular)
         mainLabel.numberOfLines = 0
         
-        mainImages.constrainToSize(height: 224)
+        let height = mainImages.heightAnchor.constraint(equalToConstant: 224)
+        height.priority = .defaultHigh
+        height.isActive = true
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         

@@ -215,7 +215,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func connectWs() {
-        socket = NWWebSocket(url: socketURL!)
+        socket = NWWebSocket(url: socketURL!, connectionQueue: DispatchQueue.global(qos: .userInitiated))
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 30.0)

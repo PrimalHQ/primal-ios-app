@@ -13,11 +13,22 @@ enum AnimationType {
     case iconZap
     case iconLike
     
+    static var animationCache: [AnimationType: LottieAnimation] = [:]
+    
     var name: String {
         switch self {
         case .iconZap:  return "iconZap"
         case .iconLike: return "iconLike"
         }
+    }
+    
+    var animation: LottieAnimation? {
+        Self.animationCache[self] ?? {
+            guard let path = Bundle.main.path(forResource: name, ofType: "json") else { return nil }
+            let animation = LottieAnimation.filepath(path)
+            Self.animationCache[self] = animation
+            return animation
+        }()
     }
 }
 

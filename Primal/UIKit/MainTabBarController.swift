@@ -7,11 +7,24 @@
 
 import UIKit
 
+extension UIViewController {
+    var mainTabBarController: MainTabBarController? {
+        parent as? MainTabBarController ?? parent?.mainTabBarController
+    }
+}
+
 class MainTabBarController: UIViewController {
     lazy var home = FeedNavigationController(feed: feed)
     
     let feed: Feed
     let pageVC = UIPageViewController(nibName: nil, bundle: nil)
+    
+    let buttons = (1...5).map {
+        let button = UIButton()
+        button.setImage(UIImage(named: "tabIcon\($0)"), for: .normal)
+        return button
+    }
+    
     init(feed: Feed) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
@@ -25,11 +38,7 @@ class MainTabBarController: UIViewController {
 
 private extension MainTabBarController {
     func setup() {
-        let hStack = UIStackView(arrangedSubviews: (1...5).map {
-            let button = UIButton()
-            button.setImage(UIImage(named: "tabIcon\($0)"), for: .normal)
-            return button
-        })
+        let hStack = UIStackView(arrangedSubviews: buttons)
         let vStack = UIStackView(arrangedSubviews: [pageVC.view, hStack])
         
         addChild(pageVC) // Add child VC

@@ -19,7 +19,7 @@ class LinkableLabel: UILabel {
     
     override var text: String? {
         didSet {
-            updateLinks()
+//            updateLinks()
         }
     }
     

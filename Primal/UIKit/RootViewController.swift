@@ -34,7 +34,7 @@ class RootViewController: UIViewController {
             let keypair = result,
             let decoded = try? bech32_decode(keypair.pubkey_bech32)
         else {
-            RootViewController.instance.set(OnboardingParentViewController())
+            set(OnboardingParentViewController())
             return
         }
         
@@ -46,6 +46,6 @@ class RootViewController: UIViewController {
 //                .environmentObject(UIState()))
         
 //            RootViewController.instance.set(hostingController)
-        RootViewController.instance.set(MainTabBarController(feed: feed))
+        set(MainTabBarController(feed: feed))
     }
 }
