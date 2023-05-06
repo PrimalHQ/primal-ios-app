@@ -12,7 +12,6 @@ import UIKit
 import Combine
 import Kingfisher
 
-@available(iOS 13.0, *)
 public struct ImageViewerRemote: View {
     @Binding var viewerShown: Bool
     @Binding var imageURL: String

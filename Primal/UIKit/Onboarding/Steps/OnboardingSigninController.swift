@@ -146,6 +146,7 @@ private extension OnboardingSigninController {
     func validateAndProcessLogin() {
         if let pasted = UIPasteboard.general.string { // Paste from pastebin
             textView.text = pasted
+            placeholderLabel.isHidden = !pasted.isEmpty
         }
         
         guard
@@ -181,11 +182,11 @@ private extension OnboardingSigninController {
             
         let encoded = hex_encode(decoded.data)
         
-        let hostingController = UIHostingController(rootView: ContentView()
-            .environmentObject(Feed(userHex: encoded))
-            .environmentObject(UIState()))
+//        let hostingController = UIHostingController(rootView: ContentView()
+//            .environmentObject(Feed(userHex: encoded))
+//            .environmentObject(UIState()))
         
-        RootViewController.instance.set(hostingController)
+        RootViewController.instance.set(FeedNavigationController(feed: Feed(userHex: encoded)))
     }
     
     // MARK: - UI actions

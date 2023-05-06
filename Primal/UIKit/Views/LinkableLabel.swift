@@ -9,6 +9,7 @@ import UIKit
 
 protocol LinkableLabelDelegate: AnyObject {
     func didTapURL(_ url: URL)
+    func didTapOutsideURL()
 }
 
 class LinkableLabel: UILabel {
@@ -25,6 +26,7 @@ class LinkableLabel: UILabel {
     init() {
         super.init(frame: .zero)
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+        isUserInteractionEnabled = true
     }
     
     required init?(coder: NSCoder) {
@@ -36,14 +38,17 @@ class LinkableLabel: UILabel {
     }
     
 }
-private extension LinkableLabel {
-    
+private extension LinkableLabel {    
     @objc func tapped(_ gesture: UITapGestureRecognizer) {
+        guard gesture.state == .ended else { return }
+        
         for (range, url) in links {
             if didTapAttributedTextInRange(range, gesture: gesture) {
                 delegate?.didTapURL(url)
+                return
             }
         }
+        delegate?.didTapOutsideURL()
     }
     
     func updateLinks() {
@@ -77,7 +82,7 @@ private extension LinkableLabel {
     
     func didTapAttributedTextInRange(_ targetRange: NSRange, gesture: UITapGestureRecognizer) -> Bool {
         let layoutManager = NSLayoutManager()
-        let textContainer = NSTextContainer(size: CGSize.zero)
+        let textContainer = NSTextContainer(size: bounds.size)
         let textStorage = NSTextStorage(attributedString: attributedText!)
 
         // Configure layoutManager and textStorage

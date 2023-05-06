@@ -27,7 +27,6 @@ struct Post: View {
         let result: [String] = post.post.content.extractTagsMentionsAndURLs()
         let text: [String] = result.filter { r in
             return !r.isValidURLAndIsImage
-            
         }
         let imageUrls: [String] = result.filter { r in
             return r.isValidURLAndIsImage
