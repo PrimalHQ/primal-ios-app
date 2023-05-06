@@ -17,6 +17,7 @@ struct HomeView: View {
     
     @EnvironmentObject var feed: Feed
     @EnvironmentObject var uiState: UIState
+    @EnvironmentObject var postBox: PostBox
         
     var body: some View {
         NavigationStack {

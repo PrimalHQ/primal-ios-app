@@ -101,6 +101,7 @@ final class RelayConnection {
                 self.backoff = 1.0
                 self.isConnected = true
                 self.isConnecting = false
+                print("relay connected: \(self.url)")
             }
         case .message(let message):
             self.receive(message: message)

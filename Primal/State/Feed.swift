@@ -17,6 +17,7 @@ enum ProcessType {
     case thread
     case profile
     case settings
+    case contacts
 }
 
 class Feed: ObservableObject, WebSocketConnectionDelegate {
@@ -24,6 +25,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
     @Published var currentUserSettings: PrimalSettings?
+    @Published var currentUserRelays: [String: RelayInfo]?
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -42,6 +44,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
+    
+    private let postBox: PostBox = PostBox(pool: RelayPool())
         
     init(userHex: String? = nil) {
         if let hex = userHex {
@@ -146,7 +150,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
              ["cache":
                 ["get_app_settings",
                  ["event_from_user":
-                    ["content": "{\"description\":\"Sync app settings\"}",
+                    ["content": ev.content,
                      "created_at": ev.created_at,
                      "id": ev.id,
                      "kind": 30078,
@@ -166,11 +170,33 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
+    func requestUserContacts() {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        guard let json: JSON = try? JSON(["REQ", "user_contacts_\(self.currentUserHex)", ["cache": ["contact_list", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
+            print("Error encoding req")
+            return
+        }
+        
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return
+        }
+        
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        self.socket?.send(string: jsonStr)
+    }
+    
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
         self.requestCurrentUserProfile()
         self.requestCurrentUserProfileInfo()
         self.requestCurrentUserSettings()
+        self.requestUserContacts()
         self.requestNewPage()
     }
     
@@ -233,6 +259,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             self.processMessageBy(type: .settings, json: json)
         case "profile_info_\(self.currentUserHex)":
             self.processMessageBy(type: .profile, json: json)
+        case "user_contacts_\(self.currentUserHex)":
+            self.processMessageBy(type: .contacts, json: json)
         default:
             self.processMessageBy(type: .post, json: json)
         }
@@ -265,6 +293,17 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             } else {
                 self.currentUser = PrimalUser(nostrUser: nostrUser)
             }
+        case 3:
+            guard let relays: [String: RelayInfo] = try? self.jsonDecoder.decode([String: RelayInfo].self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding nostr stats string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            self.currentUserRelays = relays
+            self.currentUserRelays?.forEach { kv in
+                add_rw_relay(self.postBox.pool, kv.key)
+            }
+            self.postBox.pool.connect()
         case 30078:
             let primalSettings = PrimalSettings(json: json)
             if type == .settings {

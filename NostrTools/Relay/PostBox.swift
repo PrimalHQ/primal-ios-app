@@ -33,7 +33,7 @@ class PostedEvent {
     }
 }
 
-class PostBox {
+class PostBox: ObservableObject {
     let pool: RelayPool
     var events: [String: PostedEvent]
     
