@@ -14,10 +14,11 @@ import SafariServices
 class FeedViewController: UIViewController {
     let feed: Feed
     
-    private let table = UITableView()
+    let navigationBarLengthner = SpacerView(size: 7)
+    let table = UITableView()
     
     var fullBleed = false
-    var posts: [PrimalPost] = [] {
+    var posts: [(PrimalPost, String, [URL])] = [] {
         didSet {
             table.reloadData()
         }
@@ -34,25 +35,6 @@ class FeedViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-}
-
-private extension FeedViewController {
-    func setup() {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
-        button.setImage(UIImage(named: "feedPicker"), for: .normal)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
-        let image = UIImageView(image: UIImage(named: "ProfilePicture"))
-        image.constrainToSize(32)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: image)
-        
-        view.addSubview(table)
-        table.pinToSuperview(safeArea: true)
-        table.register(FeedCell.self, forCellReuseIdentifier: "cell")
-        table.dataSource = self
-        table.delegate = self
-        table.separatorStyle = .none
-    }
     
     @objc func toggleFullBleed() {
         fullBleed.toggle()
@@ -60,10 +42,27 @@ private extension FeedViewController {
     }
 }
 
+private extension FeedViewController {
+    func setup() {
+        navigationBarLengthner.backgroundColor = .black
+        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
+        stack.axis = .vertical
+        view.addSubview(stack)
+        stack
+            .pinToSuperview(edges: [.horizontal, .bottom])
+            .pinToSuperview(edges: .top, safeArea: true)
+        
+        table.register(FeedCell.self, forCellReuseIdentifier: "cell")
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .none
+    }
+}
+
 extension FeedViewController: FeedCellDelegate {
     func feedCellDidTapPost(_ cell: FeedCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        let item = posts[indexPath.row]
+        let item = posts[indexPath.row].0
         feed.requestThread(postId: item.post.id, subId: item.post.id)
         let threadVC = ThreadViewController(feed: feed)
         show(threadVC, sender: nil)
@@ -97,7 +96,7 @@ extension FeedViewController: FeedCellDelegate {
 
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = posts[indexPath.row]
+        let item = posts[indexPath.row].0
         feed.requestThread(postId: item.post.id, subId: item.post.id)
         let threadVC = ThreadViewController(feed: feed)
         show(threadVC, sender: nil)
@@ -112,11 +111,12 @@ extension FeedViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FeedCell {
-            cell.update(posts[indexPath.row], edgeBleed: fullBleed)
+            let data = posts[indexPath.row]
+            cell.update(data.0, text: data.1, imageUrls: data.2, edgeBleed: fullBleed)
             cell.delegate = self
         }
         
-        if indexPath.row == posts.count - 4 {
+        if indexPath.row == posts.count - 10 {
             feed.requestNewPage()
         }
         return cell

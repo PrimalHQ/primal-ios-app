@@ -9,7 +9,7 @@ import UIKit
 
 class FeedNavigationController: UINavigationController {
     init(feed: Feed) {
-        super.init(rootViewController: HomeFeedViewController(feed: feed))
+        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed) )
     }
     
     required init?(coder aDecoder: NSCoder) {

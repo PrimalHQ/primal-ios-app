@@ -16,9 +16,12 @@ class ThreadViewController: FeedViewController {
         
         title = "Thread"
         
-        request = feed.$threadPosts.sink { [weak self] posts in
-            self?.posts = posts
-            self?.request = nil
-        }
+        request = feed.$threadPosts
+            .map { $0.process() }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] posts in
+                self?.posts = posts
+                self?.request = nil
+            }
     }
 }

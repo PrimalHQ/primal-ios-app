@@ -186,7 +186,7 @@ private extension OnboardingSigninController {
 //            .environmentObject(Feed(userHex: encoded))
 //            .environmentObject(UIState()))
         
-        RootViewController.instance.set(FeedNavigationController(feed: Feed(userHex: encoded)))
+        RootViewController.instance.set(MainTabBarController(feed: Feed(userHex: encoded)))
     }
     
     // MARK: - UI actions

@@ -14,6 +14,7 @@ class FeedReplyButton: UIButton {
         setImage(UIImage(named: "feedComment"), for: .normal)
         setTitleColor(UIColor(rgb: 0x757575), for: .normal)
         titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+        transform = .init(translationX: 0, y: 1)
     }
     
     required init?(coder: NSCoder) {
@@ -36,7 +37,7 @@ class FeedRepostButton: UIButton {
 
 class FeedLikeButton: MyButton {
     let animView = LottieAnimationView()
-    let titleLabel = UILabel()
+    let titleLabel = ColorAnimatingLabel()
     
     init() {
         super.init(frame: .zero)
@@ -52,28 +53,27 @@ class FeedLikeButton: MyButton {
         addSubview(hStack)
         
         hStack.pinToSuperview(padding: 8)
-        hStack.spacing = 6
+        hStack.spacing = 4
         
-        animView.constrainToSize(30)
+        animView.constrainToSize(31)
         
         titleLabel.textColor = UIColor(rgb: 0x757575)
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
         
-        if let path = Bundle.main.path(forResource: AnimationType.iconLike.name, ofType: "json") {
-            animView.animation = LottieAnimation.filepath(path)
-        }
+        animView.animation = AnimationType.iconLike.animation
         
         addTarget(self, action: #selector(tapped), for: .touchUpInside)
     }
     
     @objc func tapped() {
         animView.play()
+        titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
     }
 }
 
 class FeedZapButton: MyButton {
     let animView = LottieAnimationView()
-    let titleLabel = UILabel()
+    let titleLabel = ColorAnimatingLabel()
     
     init() {
         super.init(frame: .zero)
@@ -89,21 +89,20 @@ class FeedZapButton: MyButton {
         addSubview(hStack)
         
         hStack.pinToSuperview(padding: 8)
-        hStack.spacing = 6
+        hStack.spacing = 4
         
-        animView.constrainToSize(30)
+        animView.constrainToSize(31)
         
         titleLabel.textColor = UIColor(rgb: 0x757575)
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
         
-        if let path = Bundle.main.path(forResource: AnimationType.iconZap.name, ofType: "json") {
-            animView.animation = LottieAnimation.filepath(path)
-        }
+        animView.animation = AnimationType.iconZap.animation
         
         addTarget(self, action: #selector(tapped), for: .touchUpInside)
     }
     
     @objc func tapped() {
         animView.play()
+        titleLabel.animateToColor(color: UIColor(rgb: 0xFFA02F))
     }
 }

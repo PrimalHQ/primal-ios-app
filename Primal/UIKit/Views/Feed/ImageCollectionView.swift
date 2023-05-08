@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 protocol ImageCollectionViewDelegate: AnyObject {
     func didTapImage(url: URL, urls: [URL])
@@ -53,7 +54,12 @@ extension ImageCollectionView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        (cell as? ImageCell)?.imageView.kf.setImage(with: imageURLs[indexPath.item])
+        (cell as? ImageCell)?.imageView.kf.setImage(with: imageURLs[indexPath.item], options: [
+            .processor(DownsamplingImageProcessor(size: frame.size)),
+            .transition(.fade(0.1)),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ])
         return cell
     }
 }
