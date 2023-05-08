@@ -57,7 +57,13 @@ class FeedCell: UITableViewCell {
             .cacheOriginalImage
         ])
         
-        mainLabel.text = text
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = 7
+        mainLabel.attributedText = NSAttributedString(string: text, attributes: [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.appFont(withSize: 18, weight: .regular),
+            .paragraphStyle: style
+        ])
         mainLabel.delegate = self
         mainImages.imageURLs = imageUrls
         
@@ -112,7 +118,7 @@ private extension FeedCell {
         contentView.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .top, padding: 21)
             .pinToSuperview(edges: .bottom, padding: 2) // Action buttons have a built in padding of 14
         [mainStack, imageStack].forEach {
             $0.axis = .vertical
@@ -149,8 +155,6 @@ private extension FeedCell {
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         
-        mainLabel.textColor = .white
-        mainLabel.font = .appFont(withSize: 18, weight: .regular)
         mainLabel.numberOfLines = 0
         
         let height = mainImages.heightAnchor.constraint(equalToConstant: 224)

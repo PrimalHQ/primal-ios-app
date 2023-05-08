@@ -14,6 +14,7 @@ class FeedReplyButton: UIButton {
         setImage(UIImage(named: "feedComment"), for: .normal)
         setTitleColor(UIColor(rgb: 0x757575), for: .normal)
         titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+        transform = .init(translationX: 0, y: 1)
     }
     
     required init?(coder: NSCoder) {
@@ -54,7 +55,7 @@ class FeedLikeButton: MyButton {
         hStack.pinToSuperview(padding: 8)
         hStack.spacing = 4
         
-        animView.constrainToSize(30)
+        animView.constrainToSize(31)
         
         titleLabel.textColor = UIColor(rgb: 0x757575)
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
@@ -90,7 +91,7 @@ class FeedZapButton: MyButton {
         hStack.pinToSuperview(padding: 8)
         hStack.spacing = 4
         
-        animView.constrainToSize(30)
+        animView.constrainToSize(31)
         
         titleLabel.textColor = UIColor(rgb: 0x757575)
         titleLabel.font = .appFont(withSize: 16, weight: .regular)

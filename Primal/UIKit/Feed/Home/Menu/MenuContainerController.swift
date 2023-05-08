@@ -61,10 +61,11 @@ class MenuContainerController: UIViewController {
     func animateOpen() {
         open()
                 
-        coverView.alpha = 0
         UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
             self.child.view.transform = .identity
-            self.navigationController?.navigationBar.transform = .identity
+            self.coverView.transform = .identity
+            self.mainStack.transform = .identity
+            self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: self.view.frame.width - 68, y: 0)
             
             self.coverView.alpha = 1
             self.view.layoutIfNeeded()
@@ -76,6 +77,8 @@ class MenuContainerController: UIViewController {
         
         UIView.animate(withDuration: 0.3) {
             self.child.view.transform = .identity
+            self.coverView.transform = .identity
+            self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
@@ -85,15 +88,14 @@ class MenuContainerController: UIViewController {
     func open() {
         mainStack.alpha = 1
         
-        navigationController?.setNavigationBarHidden(true, animated: true)
         childLeftConstraint?.isActive = true
         coverView.isHidden = false
         mainTabBarController?.showCloseMenuButton()
     }
     
     func close() {
-        navigationController?.setNavigationBarHidden(false, animated: true)
         childLeftConstraint?.isActive = false
+        coverView.alpha = 0
         coverView.isHidden = true
         mainTabBarController?.showButtons()
     }
@@ -178,7 +180,7 @@ private extension MenuContainerController {
         [followersLabel, followingLabel].forEach { $0.textColor = UIColor(rgb: 0xD9D9D9) }
         
         let image = UIButton()
-        image.addTarget(self, action: #selector(openMenuTapped), for: .touchUpInside)
+        image.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
         image.constrainToSize(36)
         image.setImage(UIImage(named: "ProfilePicture"), for: .normal)
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: image)
@@ -232,6 +234,14 @@ private extension MenuContainerController {
         }
     }
     
+    @objc func toggleMenuTapped() {
+        if childLeftConstraint?.isActive == true {
+            animateClose()
+        } else {
+            animateOpen()
+        }
+    }
+    
     @objc func openMenuTapped() {
         animateOpen()
     }
@@ -242,11 +252,20 @@ private extension MenuContainerController {
     
     @objc func childPanned(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
-        case .began, .changed:
+        case .began:
+            coverView.isHidden = false
+            fallthrough
+        case .changed:
             mainStack.alpha = 1
             let translation = sender.translation(in: self.view)
-            child.view.transform = .init(translationX: max(0, translation.x), y: min(0, -translation.x / 4))
-            navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -translation.x / 4 + 10))
+            
+            let percent = (translation.x / 300).clamp(0, 1)
+            
+            coverView.alpha = percent
+            mainStack.transform = .init(translationX: (1 - percent) * -300, y: 0)
+            [child.view, navigationController?.navigationBar, coverView].forEach {
+                $0?.transform = CGAffineTransform(translationX: max(0, translation.x), y: 0)
+            }
         case .possible:
             break
         case .ended:

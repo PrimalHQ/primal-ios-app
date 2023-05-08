@@ -117,6 +117,7 @@
 		9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */; };
 		9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EB2A06D2AF0037C3E5 /* splash.json */; };
 		9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EE2A06FD610037C3E5 /* MainLogo.png */; };
+		9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */; };
 		9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */; };
 		9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */; };
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
@@ -287,6 +288,7 @@
 		9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splashAlpha.json; sourceTree = "<group>"; };
 		9EB219EB2A06D2AF0037C3E5 /* splash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash.json; sourceTree = "<group>"; };
 		9EB219EE2A06FD610037C3E5 /* MainLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MainLogo.png; path = Assets.xcassets/LogoPrimary.imageset/MainLogo.png; sourceTree = "<group>"; };
+		9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Numbers+Extra.swift"; sourceTree = "<group>"; };
 		9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSectionHeader.swift; sourceTree = "<group>"; };
 		9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedNavigationController.swift; sourceTree = "<group>"; };
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 				9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */,
 				9E9F2F8E29F6AB8A00A9CDF3 /* View.swift */,
 				9E79D3A22A01530B008404DB /* Date+Extra.swift */,
+				9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -911,6 +914,7 @@
 				9E9F2F9629F6AB8A00A9CDF3 /* View.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
+				9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
 				9E9F2F7729F6AB6400A9CDF3 /* SideMenu.swift in Sources */,

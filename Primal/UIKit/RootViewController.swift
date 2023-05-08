@@ -18,6 +18,7 @@ class RootViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         reset()
         
+        introVC!.willMove(toParent: self)
         addChild(introVC!)
         view.addSubview(introVC!.view)
         introVC!.view.pinToSuperview()
@@ -77,7 +78,7 @@ private extension RootViewController {
         guard let introVC else { return }
         
         guard let homeFeed: HomeFeedViewController = findInChildren() else {
-            UIView.animate(withDuration: 1.5) {
+            UIView.animate(withDuration: 0.8) {
                 introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
                 introVC.view.alpha = 0
             } completion: { _ in
@@ -91,7 +92,7 @@ private extension RootViewController {
         
         homeFeed.table.alpha = 0.01
         homeFeed.onLoad = {
-            UIView.animate(withDuration: 1.5) {
+            UIView.animate(withDuration: 0.8) {
                 introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
                 introVC.view.alpha = 0
             } completion: { _ in
@@ -101,11 +102,7 @@ private extension RootViewController {
                 self.introVC = nil
             }
             
-            for cell in homeFeed.table.visibleCells {
-                cell.transform = .init(translationX: 0, y: 800)
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(700)) {
                 let cells = homeFeed.table.visibleCells
                 homeFeed.table.alpha = 1
                 
