@@ -171,11 +171,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     func requestUserContacts() {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         guard let json: JSON = try? JSON(["REQ", "user_contacts_\(self.currentUserHex)", ["cache": ["contact_list", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
@@ -189,6 +184,17 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         let jsonStr = String(data: jsonData, encoding: .utf8)!
         
         self.socket?.send(string: jsonStr)
+    }
+    
+    func sendLikedEvent(likedId: String, likedPubkey: String) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, likedId: likedId, likedPubkey: likedPubkey)
+        
+        self.postBox.send(ev)
     }
     
     func webSocketDidConnect(connection: WebSocketConnection) {
