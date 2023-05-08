@@ -182,6 +182,10 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.satszapped = satszapped
         self.score24h = score24h
     }
+    
+    func toRepostNostrContent() -> NostrContent {
+        return NostrContent(kind: 1, content: self.content, id: self.id, created_at: self.created_at, pubkey: self.pubkey, sig: self.sig, tags: self.tags)
+    }
 }
 
 struct PrimalPost : Codable, Hashable, Identifiable {

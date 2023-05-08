@@ -583,20 +583,22 @@ func make_metadata_event(keypair: Keypair, metadata: NostrMetadata) -> NostrEven
     return ev
 }
 
-func make_boost_event(pubkey: String, privkey: String, boosted: NostrEvent) -> NostrEvent {
-    var tags: [[String]] = boosted.tags.filter { tag in tag.count >= 2 && (tag[0] == "e" || tag[0] == "p") }
+func make_repost_event(pubkey: String, privkey: String, nostrContent: NostrContent) -> NostrEvent? {
+    guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
+        print("Error encoding post json for repost")
+        return nil
+    }
+    let jsonStr = String(data: jsonData, encoding: .utf8)!
     
-    tags.append(["e", boosted.id, "", "root"])
-    tags.append(["p", boosted.pubkey])
-    
-    let ev = NostrEvent(content: event_to_json(ev: boosted), pubkey: pubkey, kind: 6, tags: tags)
+    let ev = NostrEvent(content: jsonStr, pubkey: pubkey, kind: 6, tags: [["e", nostrContent.id], ["p", nostrContent.pubkey]])
     ev.calculate_id()
     ev.sign(privkey: privkey)
+    
     return ev
 }
 
-func make_like_event(pubkey: String, privkey: String, likedId: String, likedPubkey: String) -> NostrEvent {
-    let ev = NostrEvent(content: "+", pubkey: pubkey, kind: 7, tags: [["e", likedId], ["p", likedPubkey]])
+func make_like_event(pubkey: String, privkey: String, post: PrimalFeedPost) -> NostrEvent {
+    let ev = NostrEvent(content: "+", pubkey: pubkey, kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
     ev.calculate_id()
     ev.sign(privkey: privkey)
     

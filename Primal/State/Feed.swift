@@ -186,15 +186,30 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
-    func sendLikedEvent(likedId: String, likedPubkey: String) {
+    func sendLikeEvent(post: PrimalFeedPost) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, likedId: likedId, likedPubkey: likedPubkey)
+        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
         
         self.postBox.send(ev)
+    }
+    
+    func sendRepostEvent(nostrContent: NostrContent) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
+        
+        if let repostEvent = ev {
+            self.postBox.send(repostEvent)
+        } else {
+            print("Error creating repost event")
+        }
     }
     
     func webSocketDidConnect(connection: WebSocketConnection) {
