@@ -537,37 +537,32 @@ func get_referenced_id_set(tags: [[String]], key: String) -> Set<ReferencedId> {
     }
 }
 
-//func make_first_contact_event(keypair: Keypair) -> NostrEvent? {
-//    guard let privkey = keypair.privkey else {
-//        return nil
-//    }
-//
-//    let bootstrap_relays = load_bootstrap_relays(pubkey: keypair.pubkey)
-//    let rw_relay_info = RelayInfo(read: true, write: true)
-//    var relays: [String: RelayInfo] = [:]
-//
-//    for relay in bootstrap_relays {
-//        relays[relay] = rw_relay_info
-//    }
-//
-//    let relay_json = encode_json(relays)!
-//    let damus_pubkey = "3efdaebb1d8923ebd99c9e7ace3b4194ab45512e2be79c1b7d68d9243e0d2681"
-//    let jb55_pubkey = "32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245" // lol
-//    let tags = [
-//        ["p", damus_pubkey],
-//        ["p", jb55_pubkey],
-//        ["p", keypair.pubkey] // you're a friend of yourself!
-//    ]
-//    let ev = NostrEvent(content: relay_json,
-//                        pubkey: keypair.pubkey,
-//                        kind: NostrKind.contacts.rawValue,
-//                        tags: tags)
-//    ev.calculate_id()
-//    ev.sign(privkey: privkey)
-//    return ev
-//}
+func make_first_contact_event(keypair: Keypair, bootstrap_relays: [String]) -> NostrEvent? {
+    guard let privkey = keypair.privkey else {
+        return nil
+    }
+    
+    let rw_relay_info = RelayInfo(read: true, write: true)
+    var relays: [String: RelayInfo] = [:]
+    
+    for relay in bootstrap_relays {
+        relays[relay] = rw_relay_info
+    }
+    
+    let relay_json = encode_json(relays)!
+    let tags = [
+        ["p", keypair.pubkey]
+    ]
+    let ev = NostrEvent(content: relay_json,
+                        pubkey: keypair.pubkey,
+                        kind: NostrKind.contacts.rawValue,
+                        tags: tags)
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    return ev
+}
 
-func make_metadata_event(keypair: Keypair, metadata: NostrMetadata) -> NostrEvent? {
+func make_metadata_event(keypair: Keypair, metadata: Profile) -> NostrEvent? {
     guard let privkey = keypair.privkey else {
         return nil
     }

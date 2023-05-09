@@ -41,6 +41,14 @@
 		939A01692A06C15800E9DBA2 /* NostrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01682A06C15800E9DBA2 /* NostrRequest.swift */; };
 		939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016A2A06C18200E9DBA2 /* Websocket.swift */; };
 		939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016C2A06C21A00E9DBA2 /* PostBox.swift */; };
+		93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE752A0AB0A5005AE313 /* Profile.swift */; };
+		93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */; };
+		93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE792A0AB118005AE313 /* AnyDecodable.swift */; };
+		93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */; };
+		93B7FE7E2A0AB181005AE313 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7D2A0AB181005AE313 /* DisplayName.swift */; };
+		93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */; };
+		93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE812A0AB1C9005AE313 /* Util.swift */; };
+		93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */; };
 		93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAC829F525B6003BBCE5 /* bech32.c */; };
 		93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACACB29F525B6003BBCE5 /* talstr.c */; };
 		93CACAFC29F525B6003BBCE5 /* damus.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACACC29F525B6003BBCE5 /* damus.c */; };
@@ -186,6 +194,14 @@
 		939A01682A06C15800E9DBA2 /* NostrRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrRequest.swift; sourceTree = "<group>"; };
 		939A016A2A06C18200E9DBA2 /* Websocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Websocket.swift; sourceTree = "<group>"; };
 		939A016C2A06C21A00E9DBA2 /* PostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBox.swift; sourceTree = "<group>"; };
+		93B7FE752A0AB0A5005AE313 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		93B7FE792A0AB118005AE313 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
+		93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
+		93B7FE7D2A0AB181005AE313 /* DisplayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayName.swift; sourceTree = "<group>"; };
+		93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubkeyView.swift; sourceTree = "<group>"; };
+		93B7FE812A0AB1C9005AE313 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationBootstrapper.swift; sourceTree = "<group>"; };
 		93CACAC529F525B5003BBCE5 /* Primal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Primal-Bridging-Header.h"; sourceTree = "<group>"; };
 		93CACAC629F525B6003BBCE5 /* amount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amount.h; sourceTree = "<group>"; };
 		93CACAC729F525B6003BBCE5 /* overflows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = overflows.h; sourceTree = "<group>"; };
@@ -568,6 +584,14 @@
 				930497B129FADAC8003938F2 /* NostrPost.swift */,
 				930497B329FADAE9003938F2 /* NostrLink.swift */,
 				930497B529FADB0A003938F2 /* NostrFilter.swift */,
+				93B7FE752A0AB0A5005AE313 /* Profile.swift */,
+				93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */,
+				93B7FE792A0AB118005AE313 /* AnyDecodable.swift */,
+				93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */,
+				93B7FE7D2A0AB181005AE313 /* DisplayName.swift */,
+				93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */,
+				93B7FE812A0AB1C9005AE313 /* Util.swift */,
+				93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -945,6 +969,7 @@
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
+				93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
 				9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */,
 				930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */,
@@ -986,6 +1011,7 @@
 				939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */,
 				9393312F29A3E54E003954C2 /* Feed.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
+				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9E9F2F7D29F6AB6400A9CDF3 /* HomeView.swift in Sources */,
@@ -1001,10 +1027,12 @@
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
+				93B7FE7E2A0AB181005AE313 /* DisplayName.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9E9F2F7829F6AB6400A9CDF3 /* FeedButton.swift in Sources */,
+				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
@@ -1012,6 +1040,7 @@
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */,
+				93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
@@ -1024,6 +1053,7 @@
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */,
+				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
 				9E9F2F7E29F6AB6400A9CDF3 /* BaseView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
@@ -1033,8 +1063,10 @@
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
+				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
+				93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
 			);

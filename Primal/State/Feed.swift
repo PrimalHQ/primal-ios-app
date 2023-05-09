@@ -374,7 +374,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         
         if type == .post {
             posts.sort { $0.post.created_at > $1.post.created_at }
-            if self.posts.last?.post.id == posts.first?.post.id {
+            if posts.count > 0 && self.posts.last?.post.id == posts.first?.post.id {
                 posts.removeFirst()
             }
             self.appendPostsAndClearBuffer(posts)

@@ -15,8 +15,8 @@ struct PrimalSettingsFeed: Codable, Hashable {
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
-    let description: String
-    let theme: String
+    let description: String?
+    let theme: String?
     let feeds: [PrimalSettingsFeed]
 }
 
