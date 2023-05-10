@@ -19,6 +19,7 @@ class ThreadViewController: FeedViewController {
     @Published private var didLoadData = false
     
     private var textHeightConstraint: NSLayoutConstraint?
+    let textInputView = UITextField()
     
     init(feed: Feed, threadId: String) {
         id = threadId
@@ -93,10 +94,20 @@ private extension ThreadViewController {
             .sink { [weak self] posts in
                 self?.mainPositionInThread = posts.firstIndex(where: { $0.0.post.id == self?.id }) ?? 0
                 self?.posts = posts
-                if !posts.isEmpty {
-                    self?.didLoadData = true
-                    self?.request = nil
-                }
+                
+                guard !posts.isEmpty, let index = self?.mainPositionInThread else { return }
+                
+                self?.didLoadData = true
+                self?.request = nil
+                
+                self?.textInputView.attributedPlaceholder = NSAttributedString(
+                    string: "Reply to \(posts[index].0.user.displayName)",
+                    attributes: [
+                        .font: UIFont.appFont(withSize: 16, weight: .regular),
+                        .foregroundColor: UIColor(rgb: 0x757575)
+                    ]
+                )
+                self?.textInputView.placeholder = "Reply to \(posts[index].0.user.displayName)"
             }
         
         Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
@@ -117,28 +128,34 @@ private extension ThreadViewController {
         
         let inputParent = UIView()
         let inputBackground = UIView()
-        let inputView = UITextField()
         
         inputParent.backgroundColor = .black
         inputBackground.backgroundColor = UIColor(rgb: 0x222222)
         inputBackground.layer.cornerRadius = 6
         
         inputParent.addSubview(inputBackground)
-        inputBackground.addSubview(inputView)
-        [navigationBarLengthner, table].forEach { $0.removeFromSuperview() }
-        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent])
-        inputView.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 6).constrainToSize(height: 32)
+        inputBackground.addSubview(textInputView)
+        textInputView.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 6).constrainToSize(height: 32)
         inputBackground.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom)
         
+        
+        let keyboardMasker = UIView()
+        let spacer = UIView()
+        [navigationBarLengthner, table].forEach { $0.removeFromSuperview() }
+        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent, spacer, keyboardMasker])
         view.addSubview(stack)
         
-        inputParent.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        
-        stack.axis = .vertical
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        stack.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor, constant: -6).isActive = true
         let bottom = stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottom.priority = .defaultLow
         bottom.isActive = true
+        
+        stack.axis = .vertical
+        
+        textInputView.font = .appFont(withSize: 16, weight: .regular)
+        
+        inputParent.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        keyboardMasker.topAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        spacer.heightAnchor.constraint(equalTo: keyboardMasker.heightAnchor, multiplier: 0.03).isActive = true
     }
 }
