@@ -20,12 +20,18 @@ enum ProcessType {
     case contacts
 }
 
+struct Contacts {
+    let created_at: Int
+    let contacts: [String]
+}
+
 class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentFeed: String = "Latest, following"
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
     @Published var currentUserSettings: PrimalSettings?
     @Published var currentUserRelays: [String: RelayInfo]?
+    @Published var currentUserContacts: Contacts = Contacts(created_at: -1, contacts: [])
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -325,6 +331,15 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 add_rw_relay(self.postBox.pool, kv.key)
             }
             self.postBox.pool.connect()
+            let tags: [String]? = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                return $0.arrayValue?[1].stringValue ?? ""
+            }
+            if let contacts = tags {
+                let c = Contacts(created_at: Int(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)
+                if self.currentUserContacts.created_at < c.created_at {
+                    self.currentUserContacts = c
+                }
+            }
         case 30078:
             let primalSettings = PrimalSettings(json: json)
             if type == .settings {
