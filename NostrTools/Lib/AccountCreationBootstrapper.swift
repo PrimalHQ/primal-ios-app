@@ -35,11 +35,8 @@ class AccountCreationBootstrapper {
         self.pool.disconnect()
     }
     
-    func initProfile(nickName: String, displayName: String, about: String, pictureUrl: String, bannerUrl: String) {
+    func signup(nickName: String, displayName: String, about: String, pictureUrl: String, bannerUrl: String, successCallback: @escaping () -> Void) {
         self.profile = Profile(name: nickName, display_name: displayName, about: about, picture: pictureUrl, banner: bannerUrl, website: nil, lud06: nil, lud16: nil, nip05: nil)
-    }
-    
-    func signup(successCallback: @escaping () -> Void) {
         for relay in bootstrap_relays {
             add_rw_relay(self.pool, relay)
         }

@@ -37,8 +37,7 @@ class OnboardingTwitterController: UIViewController {
         setup()
         
 //        let acb = AccountCreationBootstrapper()
-//        acb.initProfile(nickName: profile.username, displayName: profile.displayname, about: profile.bio, pictureUrl: profile.avatar, bannerUrl: profile.banner)
-//        acb.signup {
+//        acb.signup(nickName: profile.username, displayName: profile.displayname, about: profile.bio, pictureUrl: profile.avatar, bannerUrl: profile.banner) {
 //            print("success!")
 //        }
     }
