@@ -28,6 +28,7 @@ class MenuContainerController: UIViewController {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
+    private let profileImageButton = UIButton()
     
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
@@ -179,11 +180,12 @@ private extension MenuContainerController {
         }
         [followersLabel, followingLabel].forEach { $0.textColor = UIColor(rgb: 0xD9D9D9) }
         
-        let image = UIButton()
-        image.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
-        image.constrainToSize(36)
-        image.setImage(UIImage(named: "ProfilePicture"), for: .normal)
-        child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: image)
+        profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
+        profileImageButton.constrainToSize(36)
+        profileImageButton.setImage(UIImage(named: "ProfilePicture"), for: .normal)
+        profileImageButton.layer.cornerRadius = 18
+        profileImageButton.layer.masksToBounds = true
+        child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageButton)
         
         view.addSubview(coverView)
         coverView.pin(to: child.view)
@@ -221,6 +223,7 @@ private extension MenuContainerController {
         nameLabel.text = user.displayName
         usernameLabel.text = user.name
         checkDomainLabel.text = user.getDomainNip05()
+        profileImageButton.kf.setImage(with: URL(string: user.picture), for: .normal)
         
         [checkbox1, checkbox2].forEach { $0.isHidden = user.nip05.isEmpty }
     }
@@ -271,7 +274,7 @@ private extension MenuContainerController {
         case .ended:
             let translation = sender.translation(in: self.view)
             let velocity = sender.velocity(in: self.view)
-            if translation.x > 50, velocity.x > 0.1 {
+            if translation.x > 50, velocity.x > -0.1 {
                 animateOpen()
             } else {
                 animateClose()

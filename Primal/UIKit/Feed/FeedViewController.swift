@@ -11,7 +11,7 @@ import UIKit
 import SwiftUI
 import SafariServices
 
-class FeedViewController: UIViewController {
+class FeedViewController: UIViewController, UITableViewDataSource {
     let feed: Feed
     
     let navigationBarLengthner = SpacerView(size: 7)
@@ -40,6 +40,29 @@ class FeedViewController: UIViewController {
         fullBleed.toggle()
         table.reloadData()
     }
+    
+    func open(post: PrimalPost) {
+        let threadVC = ThreadViewController(feed: feed, threadId: post.post.id)
+        show(threadVC, sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        posts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        if let cell = cell as? FeedCell {
+            let data = posts[indexPath.row]
+            cell.update(data.0, text: data.1, imageUrls: data.2, edgeBleed: fullBleed)
+            cell.delegate = self
+        }
+        
+        if indexPath.row == posts.count - 10 {
+            feed.requestNewPage()
+        }
+        return cell
+    }
 }
 
 private extension FeedViewController {
@@ -59,16 +82,13 @@ private extension FeedViewController {
     }
 }
 
-extension FeedViewController: FeedCellDelegate {
-    func feedCellDidTapPost(_ cell: FeedCell) {
+extension FeedViewController: PostCellDelegate {
+    func postCellDidTapPost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        let item = posts[indexPath.row].0
-        feed.requestThread(postId: item.post.id, subId: item.post.id)
-        let threadVC = ThreadViewController(feed: feed)
-        show(threadVC, sender: nil)
+        open(post: posts[indexPath.row].0)
     }
     
-    func feedCellDidTapURL(_ cell: FeedCell, url: URL) {
+    func postCellDidTapURL(_ cell: PostCell, url: URL) {
         if url.absoluteString.isVideoURL {
             let player = AVPlayerViewController()
             player.player = AVPlayer(url: url)
@@ -82,7 +102,7 @@ extension FeedViewController: FeedCellDelegate {
         present(safari, animated: true)
     }
     
-    func feedCellDidTapImages(_ cell: FeedCell, image: URL, images: [URL]) {
+    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL]) {
         weak var viewController: UIViewController?
         let binding = UIHostingController(rootView: ImageViewerRemote(
             imageURL: .init(get: { image.absoluteString }, set: { _ in }),
@@ -96,29 +116,6 @@ extension FeedViewController: FeedCellDelegate {
 
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = posts[indexPath.row].0
-        feed.requestThread(postId: item.post.id, subId: item.post.id)
-        let threadVC = ThreadViewController(feed: feed)
-        show(threadVC, sender: nil)
-    }
-}
-
-extension FeedViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        posts.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if let cell = cell as? FeedCell {
-            let data = posts[indexPath.row]
-            cell.update(data.0, text: data.1, imageUrls: data.2, edgeBleed: fullBleed)
-            cell.delegate = self
-        }
-        
-        if indexPath.row == posts.count - 10 {
-            feed.requestNewPage()
-        }
-        return cell
+        open(post: posts[indexPath.row].0)
     }
 }

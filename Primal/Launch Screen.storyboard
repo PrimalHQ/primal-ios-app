@@ -29,10 +29,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MainLogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="9ve-UN-z62">
-                                <rect key="frame" x="96.666666666666686" y="326" width="200" height="200"/>
+                                <rect key="frame" x="146.66666666666666" y="306" width="100" height="100"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="7XC-YI-qzo"/>
-                                    <constraint firstAttribute="width" constant="200" id="lsj-6o-C8c"/>
+                                    <constraint firstAttribute="height" constant="100" id="7XC-YI-qzo"/>
+                                    <constraint firstAttribute="width" constant="100" id="lsj-6o-C8c"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -45,7 +45,7 @@
                             <constraint firstAttribute="bottom" secondItem="obG-Y5-kRd" secondAttribute="bottom" constant="20" id="Y44-ml-fuU"/>
                             <constraint firstItem="9ve-UN-z62" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="mdd-F3-vs1"/>
                             <constraint firstItem="GJd-Yh-RWb" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="bottom" multiplier="1/3" constant="1" id="moa-c2-u7t"/>
-                            <constraint firstItem="9ve-UN-z62" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="uTB-zC-uYR"/>
+                            <constraint firstItem="9ve-UN-z62" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-70" id="uTB-zC-uYR"/>
                             <constraint firstItem="GJd-Yh-RWb" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" symbolic="YES" id="x7j-FC-K8j"/>
                         </constraints>
                     </view>

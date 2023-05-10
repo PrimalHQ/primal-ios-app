@@ -23,7 +23,8 @@ class OnboardingSigninController: UIViewController {
     lazy var placeholderLabel = UILabel()
     
     lazy var confirmButton = FancyButton(title: "Paste your key")
-    lazy var cancelButton = DarkButton(title: "Cancel")
+    
+    private var foregroundObserver: NSObjectProtocol?
     
     private var state = State.ready {
         didSet {
@@ -35,6 +36,26 @@ class OnboardingSigninController: UIViewController {
         super.viewDidLoad()
                 
         setup()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+            self.validateAndProcessKey()
+        }
+        
+        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
+            self?.validateAndProcessKey()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if let observer = foregroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 }
 
@@ -48,8 +69,6 @@ private extension OnboardingSigninController {
             textViewParent.layer.borderWidth = 0
             textView.isEditable = true
             infoLabel.isHidden = true
-            
-            cancelButton.isHidden = true
         case .invalidKey:
             confirmButton.titleLabel.text = "Paste new key"
             progressView.progress = 1
@@ -60,7 +79,6 @@ private extension OnboardingSigninController {
             infoLabel.text = "Please enter a valid Nostr key"
             infoLabel.textColor = .init(rgb: 0xE20505)
             
-            cancelButton.isHidden = false
             textView.isEditable = true
         case .validKey:
             confirmButton.titleLabel.text = "Sign In"
@@ -71,8 +89,6 @@ private extension OnboardingSigninController {
             infoLabel.isHidden = false
             infoLabel.text = "Valid key confirmed"
             infoLabel.textColor = .init(rgb: 0x66E205)
-            
-            cancelButton.isHidden = false
         }
     }
     
@@ -80,8 +96,7 @@ private extension OnboardingSigninController {
         let progressParent = UIView()
         let instruction = UILabel()
         let textStack = UIStackView(arrangedSubviews: [instruction, textViewParent, infoLabel])
-        let buttonStack = UIStackView(arrangedSubviews: [confirmButton, cancelButton])
-        let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, buttonStack])
+        let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, confirmButton])
         
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)
@@ -121,8 +136,6 @@ private extension OnboardingSigninController {
         infoLabel.font = .appFont(withSize: 14, weight: .regular)
         infoLabel.textAlignment = .center
         
-        cancelButton.isHidden = true
-        
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .top, safeArea: true)
@@ -132,10 +145,8 @@ private extension OnboardingSigninController {
         
         mainStack.axis = .vertical
         textStack.axis = .vertical
-        buttonStack.axis = .vertical
         
         mainStack.distribution = .equalSpacing
-        buttonStack.spacing = 20
         
         textStack.spacing = 10
         textStack.setCustomSpacing(24, after: instruction)
@@ -143,16 +154,22 @@ private extension OnboardingSigninController {
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
     }
     
-    func validateAndProcessLogin() {
-        if let pasted = UIPasteboard.general.string { // Paste from pastebin
-            textView.text = pasted
-            placeholderLabel.isHidden = !pasted.isEmpty
+    func pasteIfPossible() {
+        guard let pasted = UIPasteboard.general.string else { return }
+        
+        textView.text = pasted
+        placeholderLabel.isHidden = !pasted.isEmpty
+    }
+    
+    func validateAndProcessKey() {
+        pasteIfPossible()
+        
+        guard let text = textView.text, !text.isEmpty else {
+            state = .ready
+            return
         }
         
-        guard
-            let text = textView.text, !text.isEmpty,
-            let parsed = parse_key(text),
-            !parsed.is_pub // allow only nsec for now
+        guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
         else {
             state = .invalidKey
             return
@@ -164,28 +181,35 @@ private extension OnboardingSigninController {
             return
         }
         
+        state = .validKey
+    }
+    
+    func signIn() {
+        guard let text = textView.text, !text.isEmpty else {
+            state = .ready
+            return
+        }
+        
+        guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
+        else {
+            state = .invalidKey
+            return
+        }
+        
         guard process_login(parsed, is_pubkey: parsed.is_pub) else {
             state = .invalidKey
             return
         }
         
-        state = .validKey
-    }
-    
-    func signIn() {
         guard
             let keypair = get_saved_keypair(),
             let decoded = try? bech32_decode(keypair.pubkey_bech32)
         else {
+            showErrorMessage("Unable to decode key.")
             return
         }
             
         let encoded = hex_encode(decoded.data)
-        
-//        let hostingController = UIHostingController(rootView: ContentView()
-//            .environmentObject(Feed(userHex: encoded))
-//            .environmentObject(UIState()))
-        
         RootViewController.instance.set(MainTabBarController(feed: Feed(userHex: encoded)))
     }
     
@@ -194,7 +218,7 @@ private extension OnboardingSigninController {
     @objc func confirmButtonPressed() {
         switch state {
         case .ready, .invalidKey:
-            validateAndProcessLogin()
+            validateAndProcessKey()
         case .validKey:
             signIn()
         }

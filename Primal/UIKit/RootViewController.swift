@@ -78,20 +78,12 @@ private extension RootViewController {
         guard let introVC else { return }
         
         guard let homeFeed: HomeFeedViewController = findInChildren() else {
-            UIView.animate(withDuration: 0.8) {
-                introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
-                introVC.view.alpha = 0
-            } completion: { _ in
-                introVC.willMove(toParent: nil)
-                introVC.view.removeFromSuperview()
-                introVC.removeFromParent()
-                self.introVC = nil
-            }
-            return
-        }
-        
-        homeFeed.table.alpha = 0.01
-        homeFeed.onLoad = {
+            // Just animate
+            
+            let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
+            CATransaction.begin()
+            CATransaction.setAnimationTimingFunction(easeInTiming)
+
             UIView.animate(withDuration: 0.8) {
                 introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
                 introVC.view.alpha = 0
@@ -102,17 +94,45 @@ private extension RootViewController {
                 self.introVC = nil
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(700)) {
+            CATransaction.commit()
+            return
+        }
+        
+        homeFeed.table.alpha = 0.01
+        homeFeed.onLoad = {
+            
+            let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
+            CATransaction.begin()
+            CATransaction.setAnimationTimingFunction(easeInTiming)
+
+            UIView.animate(withDuration: 0.6) {
+                introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
+                introVC.view.alpha = 0
+            } completion: { _ in
+                introVC.willMove(toParent: nil)
+                introVC.view.removeFromSuperview()
+                introVC.removeFromParent()
+                self.introVC = nil
+            }
+            
+            CATransaction.commit()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
                 let cells = homeFeed.table.visibleCells
                 homeFeed.table.alpha = 1
                 
-                for (index, cell) in cells.enumerated() {
-                    cell.transform = .init(translationX: 0, y: 800)
+                homeFeed.table.transform = .init(translationX: 0, y: 800)
                     
-                    UIView.animate(withDuration: 0.3, delay: CGFloat(index) * 0.15) {
-                        cell.transform = .identity
-                    }
+                let timingFunction = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
+
+                CATransaction.begin()
+                CATransaction.setAnimationTimingFunction(timingFunction)
+
+                UIView.animate(withDuration: 0.3) {
+                    homeFeed.table.transform = .identity
                 }
+                
+                CATransaction.commit()
             }
         }
     }

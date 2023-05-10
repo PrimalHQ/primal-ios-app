@@ -17,6 +17,8 @@ class IntroVideoController: UIViewController {
         view.backgroundColor = .black
         
         view.addSubview(video)
-        video.centerToSuperview().constrainToSize(200)
+        video.centerToSuperview(axis: .horizontal).constrainToSize(100)
+        
+        video.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -70).isActive = true
     }
 }
