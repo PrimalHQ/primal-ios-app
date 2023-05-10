@@ -65,8 +65,6 @@ class AccountCreationBootstrapper {
                 do {
                     try save_keypair(pubkey: self.keypair.pubkey, privkey: self.keypair.privkey!)
                     self.pool.disconnect()
-                    print("priv key: \(self.keypair.privkey!)")
-                    print("pub key: \(self.keypair.pubkey)")
                     if let callback = self.cb {
                         callback()
                     }

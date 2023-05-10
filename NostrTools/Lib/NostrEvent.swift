@@ -551,7 +551,7 @@ func make_first_contact_event(keypair: Keypair, bootstrap_relays: [String]) -> N
     
     let relay_json = encode_json(relays)!
     let tags = [
-        ["p", keypair.pubkey]
+        ["p", "532d830dffe09c13e75e8b145c825718fc12b0003f61d61e9077721c7fff93cb"] // follow Primal account on creation
     ]
     let ev = NostrEvent(content: relay_json,
                         pubkey: keypair.pubkey,
