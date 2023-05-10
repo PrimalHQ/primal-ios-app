@@ -7,7 +7,7 @@
 
 import Foundation
 
-fileprivate let bootstrap_relays = [
+public let bootstrap_relays = [
     "wss://relay.shitforce.one",
     "wss://nb.relay.center",
     "wss://nos.lol",

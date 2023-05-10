@@ -22,7 +22,7 @@ enum ProcessType {
 
 struct Contacts {
     let created_at: Int
-    let contacts: [String]
+    var contacts: [String]
 }
 
 class Feed: ObservableObject, WebSocketConnectionDelegate {
@@ -52,6 +52,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
     private let postBox: PostBox = PostBox(pool: RelayPool())
+    
+    private var userContactsReceivedCB: (() -> Void)?
         
     init(userHex: String? = nil) {
         if let hex = userHex {
@@ -176,7 +178,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
-    func requestUserContacts() {
+    func requestUserContacts(callback: (() -> Void)? = nil) {
         guard let json: JSON = try? JSON(["REQ", "user_contacts_\(self.currentUserHex)", ["cache": ["contact_list", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
@@ -188,6 +190,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         }
         
         let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        self.userContactsReceivedCB = callback
         
         self.socket?.send(string: jsonStr)
     }
@@ -215,6 +219,38 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             self.postBox.send(repostEvent)
         } else {
             print("Error creating repost event")
+        }
+    }
+    
+    func sendFollowEvent(_ pubkey: String) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        var contacts = self.currentUserContacts.contacts
+        contacts.append(pubkey)
+        
+        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: self.currentUserRelays!)
+        
+        self.postBox.send(ev)
+    }
+    
+    func sendUnfollowEvent(_ pubkey: String) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        self.currentUserContacts = Contacts(created_at: -1, contacts: ["d61f3bc5b3eb4400efdae6169a5c17cabf3246b514361de939ce4a1a0da6ef4a"])
+        let indexOfPubkeyToRemove = self.currentUserContacts.contacts.firstIndex(of: pubkey)
+        
+        if let index = indexOfPubkeyToRemove {
+            self.currentUserContacts.contacts.remove(at: index)
+            
+            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: self.currentUserContacts.contacts, relays: self.currentUserRelays!)
+            
+            self.postBox.send(ev)
         }
     }
     
@@ -336,8 +372,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             }
             if let contacts = tags {
                 let c = Contacts(created_at: Int(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)
-                if self.currentUserContacts.created_at < c.created_at {
+                if self.currentUserContacts.created_at <= c.created_at {
                     self.currentUserContacts = c
+                    self.userContactsReceivedCB?()
                 }
             }
         case 30078:

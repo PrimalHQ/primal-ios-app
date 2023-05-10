@@ -600,6 +600,19 @@ func make_like_event(pubkey: String, privkey: String, post: PrimalFeedPost) -> N
     return ev
 }
 
+func make_contacts_event(pubkey: String, privkey: String, contacts: [String], relays: [String: RelayInfo]) -> NostrEvent {
+    let content_json = encode_json(relays)!
+    let tags = contacts.map {
+        return ["p", $0]
+    }
+    let ev = NostrEvent(content: content_json, pubkey: pubkey, kind: 3, tags: tags)
+    
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    
+    return ev
+}
+
 func make_settings_event(pubkey: String, privkey: String, settings: Encodable) -> NostrEvent {
     let tags: [[String]] = [["d", "Primal-iOS App"]]
     let metadata_json = encode_json(settings)!
