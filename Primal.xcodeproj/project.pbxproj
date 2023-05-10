@@ -82,6 +82,9 @@
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
 		9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */; };
 		9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */; };
+		9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F42A0A717400D4837B /* ThreadCell.swift */; };
+		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
+		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
 		9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */; };
 		9E9F2F7529F6AB6400A9CDF3 /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5A29F6AB6400A9CDF3 /* NavigationBackButton.swift */; };
 		9E9F2F7629F6AB6400A9CDF3 /* ToolbarFeedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5B29F6AB6400A9CDF3 /* ToolbarFeedText.swift */; };
@@ -253,6 +256,9 @@
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
 		9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTwitterController.swift; sourceTree = "<group>"; };
 		9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeTwitterProfileView.swift; sourceTree = "<group>"; };
+		9E9D46F42A0A717400D4837B /* ThreadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCell.swift; sourceTree = "<group>"; };
+		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
+		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
 		9E9F2F5A29F6AB6400A9CDF3 /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		9E9F2F5B29F6AB6400A9CDF3 /* ToolbarFeedText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarFeedText.swift; sourceTree = "<group>"; };
@@ -585,13 +591,24 @@
 		9E79D3A12A014DEE008404DB /* Feed */ = {
 			isa = PBXGroup;
 			children = (
-				9ECFD3232A013B3C000D1B2F /* FeedCell.swift */,
+				9E9D46F62A0A728200D4837B /* PostCell */,
 				9E79D3A42A015BC9008404DB /* FeedButtons.swift */,
 				9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */,
 				9E6924A12A02899700CAC54C /* ThreadUIView.swift */,
 				9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */,
+				9E9D46F92A0A7F9B00D4837B /* GradientView.swift */,
 			);
 			path = Feed;
+			sourceTree = "<group>";
+		};
+		9E9D46F62A0A728200D4837B /* PostCell */ = {
+			isa = PBXGroup;
+			children = (
+				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
+				9ECFD3232A013B3C000D1B2F /* FeedCell.swift */,
+				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
+			);
+			path = PostCell;
 			sourceTree = "<group>";
 		};
 		9E9F2F5529F6AB4B00A9CDF3 /* ViewModifier */ = {
@@ -924,6 +941,7 @@
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
+				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				9E9F2F7B29F6AB6400A9CDF3 /* ThreadView.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
@@ -963,6 +981,7 @@
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
+				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
@@ -983,6 +1002,7 @@
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
+				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
 			);
@@ -1162,7 +1182,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.11;
+				MARKETING_VERSION = 0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1203,7 +1223,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.11;
+				MARKETING_VERSION = 0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

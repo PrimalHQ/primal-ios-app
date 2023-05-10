@@ -79,7 +79,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.bufferThreadNostrPosts.removeAll()
         self.bufferThreadNostrStats.removeAll()
         
-        guard let json: JSON = try? JSON(["REQ", "\(self.threadSubId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit] as [String : Any]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(
+            ["REQ", "\(self.threadSubId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit]
+                                                      as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
@@ -308,20 +310,16 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
             
             return primalPost
-        }.sorted { $0.post.created_at > $1.post.created_at }
+        }
         
         if type == .post {
-            
+            posts.sort { $0.post.created_at > $1.post.created_at }
             if self.posts.last?.post.id == posts.first?.post.id {
                 posts.removeFirst()
             }
-            
             self.appendPostsAndClearBuffer(posts)
         } else {
-            if posts.last?.post.id == threadSubId {
-                posts.removeLast()
-            }
-            
+            posts.sort { $0.post.created_at < $1.post.created_at }
             self.appendThreadPostsAndClearBuffer(posts)
         }
     }

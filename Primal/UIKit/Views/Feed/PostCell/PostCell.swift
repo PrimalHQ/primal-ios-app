@@ -1,22 +1,25 @@
 //
-//  FeedCell.swift
+//  PostCell.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 2.5.23..
+//  Created by Pavle D Stevanović on 9.5.23..
 //
 
 import UIKit
 import Kingfisher
 
-protocol FeedCellDelegate: AnyObject {
-    func feedCellDidTapURL(_ cell: FeedCell, url: URL)
-    func feedCellDidTapImages(_ cell: FeedCell, image: URL, images: [URL])
-    func feedCellDidTapPost(_ cell: FeedCell)
+protocol PostCellDelegate: AnyObject {
+    func postCellDidTapURL(_ cell: PostCell, url: URL)
+    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL])
+    func postCellDidTapPost(_ cell: PostCell)
 }
 
-class FeedCell: UITableViewCell {
-    weak var delegate: FeedCellDelegate?
+/// Base class, not meant to be instantiated as is, use child classes like FeedCell
+class PostCell: UITableViewCell {
+    weak var delegate: PostCellDelegate?
     
+    let backgroundColorView = UIView()
+    let threeDotsButton = UIButton()
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -29,8 +32,11 @@ class FeedCell: UITableViewCell {
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel])
-    lazy var imageStack = UIStackView(arrangedSubviews: [mainImages])
+    let separatorLabel = UILabel()
+    lazy var nameTimeStack = UIStackView(arrangedSubviews: [nameLabel, separatorLabel, timeLabel])
+    lazy var usernameStack = UIStackView(arrangedSubviews: [usernameLabel, verifiedBadge, verifiedServerLabel])
+    lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, usernameStack])
+    lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,7 +47,7 @@ class FeedCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, text: String, imageUrls: [URL], edgeBleed: Bool) {
+    func update(_ post: PrimalPost, text: String, imageUrls: [URL]) {
         nameLabel.text = post.user.displayName
         usernameLabel.text = post.user.name
         
@@ -67,65 +73,33 @@ class FeedCell: UITableViewCell {
         mainLabel.delegate = self
         mainImages.imageURLs = imageUrls
         
-        textStack.isHidden = text.isEmpty
-        imageStack.isHidden = imageUrls.isEmpty
-        
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.zaps)"
         likeButton.titleLabel.text = "\(post.post.likes)"
         repostButton.setTitle("  \(post.post.mentions)", for: .normal)
-        
-        if edgeBleed {
-            imageStack.layoutMargins = .init(top: 14, left: 0, bottom: 0, right: 0)
-            mainImages.layer.cornerRadius = 0
-        } else {
-            imageStack.layoutMargins = .init(top: 14, left: 16, bottom: 0, right: 16)
-            mainImages.layer.cornerRadius = 8
-        }
     }
 }
 
-extension FeedCell: ImageCollectionViewDelegate {
+extension PostCell: ImageCollectionViewDelegate {
     func didTapImage(url: URL, urls: [URL]) {
-        delegate?.feedCellDidTapImages(self, image: url, images: urls)
-    }    
+        delegate?.postCellDidTapImages(self, image: url, images: urls)
+    }
 }
 
-extension FeedCell: LinkableLabelDelegate {
+extension PostCell: LinkableLabelDelegate {
     func didTapURL(_ url: URL) {
-        delegate?.feedCellDidTapURL(self, url: url)
+        delegate?.postCellDidTapURL(self, url: url)
     }
     
     func didTapOutsideURL() {
-        delegate?.feedCellDidTapPost(self)
+        delegate?.postCellDidTapPost(self)
     }
 }
 
-private extension FeedCell {
+private extension PostCell {
     func setup() {
-        let threeDotsButton = UIButton()
-        let separatorLabel = UILabel()
-        let nameTimeStack = UIStackView(arrangedSubviews: [nameLabel, separatorLabel, timeLabel])
-        let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, verifiedBadge, verifiedServerLabel])
-        let namesStack = UIStackView(arrangedSubviews: [nameTimeStack, usernameStack])
-        let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
-        let bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
-        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, imageStack, bottomButtonStack])
-        
-        let backgroundView = UIView()
-        contentView.addSubview(backgroundView)
-        backgroundView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
-        contentView.addSubview(mainStack)
-        mainStack
-            .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, padding: 21)
-            .pinToSuperview(edges: .bottom, padding: 2) // Action buttons have a built in padding of 14
-        [mainStack, imageStack].forEach {
-            $0.axis = .vertical
-            $0.spacing = 16
-        }
-        mainStack.setCustomSpacing(2, after: imageStack) // Action buttons have a built in padding of 14
-        mainStack.setCustomSpacing(2, after: textStack) // Action buttons have a built in padding of 14
+        contentView.addSubview(backgroundColorView)
+        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
         
         nameTimeStack.spacing = 6
         separatorLabel.text = "|"
@@ -142,13 +116,8 @@ private extension FeedCell {
         namesStack.spacing = 3
         namesStack.alignment = .leading
         
-        horizontalStack.alignment = .top
-        horizontalStack.spacing = 12
-        
         bottomButtonStack.distribution = .equalSpacing
         
-        profileImageView.constrainToSize(40)
-        profileImageView.layer.cornerRadius = 20
         profileImageView.layer.masksToBounds = true
         
         nameLabel.textColor = .white
@@ -163,15 +132,11 @@ private extension FeedCell {
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         
-        [horizontalStack, imageStack, bottomButtonStack, textStack].forEach {
-            $0.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-            $0.isLayoutMarginsRelativeArrangement = true
-        }
-        
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
-        backgroundView.backgroundColor = UIColor(rgb: 0x181818)
-        backgroundView.layer.cornerRadius = 8
+        backgroundColorView.backgroundColor = UIColor(rgb: 0x181818)
+        backgroundColorView.layer.cornerRadius = 8
+        backgroundColorView.layer.masksToBounds = true
         
         selectionStyle = .none
     }
