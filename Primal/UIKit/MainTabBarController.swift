@@ -22,15 +22,12 @@ class MainTabBarController: UIViewController {
     lazy var buttons = (1...5).map {
         let button = UIButton()
         button.setImage(UIImage(named: "tabIcon\($0)"), for: .normal)
-        if $0 == 1 {
-            button.addTarget(self, action: #selector(homeButtonPressed), for: .touchUpInside)
-        }
         return button
     }
     
     let closeMenuButton = UIButton()
     
-    lazy var buttonStack = UIStackView(arrangedSubviews: buttons )
+    lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
 
     init(feed: Feed) {
@@ -64,12 +61,18 @@ class MainTabBarController: UIViewController {
 
 private extension MainTabBarController {
     @objc func homeButtonPressed() {
-        if pageVC.viewControllers?.contains(home) == true {
-            if let homeVC = home.topViewController as? HomeFeedViewController {
-                if !homeVC.posts.isEmpty {
-                    homeVC.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-                }
-            }
+        guard pageVC.viewControllers?.contains(home) == true else {
+            pageVC.setViewControllers([home], direction: .reverse, animated: true)
+            return
+        }
+        
+        guard let homeVC = (home.topViewController as? MenuContainerController)?.child as? HomeFeedViewController else {
+            home.popToRootViewController(animated: true)
+            return
+        }
+        
+        if !homeVC.posts.isEmpty {
+            homeVC.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
         }
     }
     
@@ -98,5 +101,7 @@ private extension MainTabBarController {
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
             feed.reconnect()
         }
+        
+        buttons[0].addTarget(self, action: #selector(homeButtonPressed), for: .touchUpInside)
     }
 }
