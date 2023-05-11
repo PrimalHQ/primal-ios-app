@@ -82,6 +82,7 @@ private extension OnboardingImportTwitterController {
             textStack.alpha = 0
             textStack.isHidden = true
             spinner.alpha = 1
+            spinner.play()
             spinner.isHidden = false
             confirmButton.isEnabled = false
         case .notFound:
@@ -124,6 +125,8 @@ private extension OnboardingImportTwitterController {
         infoLabel.textAlignment = .center
         infoLabel.textColor = .init(rgb: 0xE20505)
         infoLabel.text = "Twitter account not found"
+        
+        spinner.constrainToSize(100)
         
         view.addSubview(mainStack)
         mainStack

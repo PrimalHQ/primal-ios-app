@@ -70,6 +70,12 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         socket?.disconnect()
     }
     
+    func reconnect() {
+        socket?.delegate = nil
+        socket?.disconnect()
+        connectWs()
+    }
+    
     func setCurrentFeed(_ feed: String) {
         self.currentFeed = feed
         

@@ -124,6 +124,7 @@ private extension ThreadViewController {
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.constrainToSize(44)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let inputParent = UIView()
@@ -137,7 +138,6 @@ private extension ThreadViewController {
         inputBackground.addSubview(textInputView)
         textInputView.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 6).constrainToSize(height: 32)
         inputBackground.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom)
-        
         
         let keyboardMasker = UIView()
         let spacer = UIView()

@@ -155,27 +155,41 @@ private extension OnboardingSigninController {
     }
     
     func pasteIfPossible() {
-        guard let pasted = UIPasteboard.general.string else { return }
+        guard let pasted = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         
         textView.text = pasted
         placeholderLabel.isHidden = !pasted.isEmpty
     }
     
-    func validateAndProcessKey() {
-        pasteIfPossible()
+    func validateAndProcessKey(paste: Bool = false) {
+        if paste {
+            pasteIfPossible()
+        }
         
-        guard let text = textView.text, !text.isEmpty else {
+        guard let text = textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
+            if !paste {
+                validateAndProcessKey(paste: true)
+                return
+            }
             state = .ready
             return
         }
         
         guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
         else {
+            if !paste {
+                validateAndProcessKey(paste: true)
+                return
+            }
             state = .invalidKey
             return
         }
         
         if let error = get_error(parsed_key: parsed) {
+            if !paste {
+                validateAndProcessKey(paste: true)
+                return
+            }
             state = .invalidKey
             showErrorMessage(error)
             return
@@ -185,7 +199,7 @@ private extension OnboardingSigninController {
     }
     
     func signIn() {
-        guard let text = textView.text, !text.isEmpty else {
+        guard let text = textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
             state = .ready
             return
         }

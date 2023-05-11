@@ -56,7 +56,7 @@ class LikingManager {
             case .notice(let msg):
                 print(msg)
             case .event(let r, let ev):
-                print("event in signup?")
+                print("event")
             case .eose:
                 break
             case .ok:
