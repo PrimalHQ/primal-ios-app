@@ -134,9 +134,11 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
                 cell.nameLabel.text = nostrData.name
                 cell.usernameLabel.text = "@\(nostrData.display_name ?? "")"
                 cell.followButton.isFollowing = feed?.following.isFollowing(suggestion.pubkey) ?? false
+                
                 cell.delegate = self
             }
         }
+        
         return cell
     }
 }

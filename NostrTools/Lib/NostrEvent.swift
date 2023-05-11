@@ -553,7 +553,7 @@ func make_first_contact_event(keypair: Keypair, bootstrap_relays: [String]) -> N
     let ev = NostrEvent(content: relay_json,
                         pubkey: keypair.pubkey,
                         kind: NostrKind.contacts.rawValue,
-                        tags: [[]])
+                        tags: [["p", keypair.pubkey]]) // follow self
     ev.calculate_id()
     ev.sign(privkey: privkey)
     return ev

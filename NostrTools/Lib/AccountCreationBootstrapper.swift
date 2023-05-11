@@ -25,6 +25,7 @@ class AccountCreationBootstrapper {
     private var profile: Profile?
     private let keypair: Keypair
     private var cb: (() -> Void)?
+    private var oksReceived: Int = 0
     
     init() {
         self.pool = RelayPool()
@@ -66,11 +67,8 @@ class AccountCreationBootstrapper {
                 
                 do {
                     try save_keypair(pubkey: self.keypair.pubkey, privkey: self.keypair.privkey!)
-                    self.pool.disconnect()
                     print("NSEC: \(self.keypair.privkey_bech32!)")
-                    if let callback = self.cb {
-                        callback()
-                    }
+                    
                 } catch {
                     print("Failed to save keys")
                 }
@@ -84,11 +82,21 @@ class AccountCreationBootstrapper {
             switch resp {
             case .notice(let msg):
                 print(msg)
-            case .event:
-                print("event in signup?")
+            case .event(let r, let ev):
+                print(r, ev)
             case .eose:
                 break
-            case .ok:
+            case .ok(let res):
+                print("account created from: \(relay) with result: \(res.msg)")
+                if res.ok {
+                    self.oksReceived += 1
+                }
+                if self.oksReceived >= Int(Double(bootstrap_relays.count) / 1.25) {
+                    if let callback = self.cb {
+                        print("oks received: \(self.oksReceived)")
+                        callback()
+                    }
+                }
                 break
             }
         }

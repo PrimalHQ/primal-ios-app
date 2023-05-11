@@ -35,6 +35,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUserLikes: Set<String> = []
     @Published var currentUserReposts: Set<String> = []
     
+    @Published var didFinishInit: Bool = false
+    
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
     private var bufferNostrUsers: [String: NostrContent] = [:]
@@ -351,10 +353,12 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                     tags = []
                 } else {
                     if let isInnerEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
-                        tags = []
-                    } else {
-                        tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
-                            return $0.arrayValue?[1].stringValue ?? ""
+                        if isInnerEmpty {
+                            tags = []
+                        } else {
+                            tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                                return $0.arrayValue?[1].stringValue ?? ""
+                            }
                         }
                     }
                 }
@@ -366,6 +370,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                     self.userContactsReceivedCB?()
                 }
             }
+            self.didFinishInit = true
         case 30078:
             let primalSettings = PrimalSettings(json: json)
             if type == .settings {
