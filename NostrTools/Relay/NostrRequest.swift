@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GenericJSON
 
 struct NostrSubscribe {
     let filters: [NostrFilter]
@@ -16,4 +17,5 @@ enum NostrRequest {
     case subscribe(NostrSubscribe)
     case unsubscribe(String)
     case event(NostrEvent)
+    case json(JSON)
 }

@@ -32,6 +32,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUserSettings: PrimalSettings?
     @Published var currentUserRelays: [String: RelayInfo]?
     @Published var currentUserContacts: Contacts = Contacts(created_at: -1, contacts: [])
+    @Published var currentUserLikes: Set<String> = []
+    @Published var currentUserReposts: Set<String> = []
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -48,8 +50,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private var currentUserHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
     private var socket: NWWebSocket?
     
-    private let jsonEncoder: JSONEncoder = JSONEncoder()
-    private let jsonDecoder: JSONDecoder = JSONDecoder()
+    let jsonEncoder: JSONEncoder = JSONEncoder()
+    let jsonDecoder: JSONDecoder = JSONDecoder()
     
     let postBox: PostBox = PostBox(pool: RelayPool())
     

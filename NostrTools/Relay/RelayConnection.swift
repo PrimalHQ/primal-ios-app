@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import GenericJSON
 
 enum NostrConnectionEvent {
     case ws_event(WebSocketEvent)
@@ -169,7 +170,17 @@ func make_nostr_req(_ req: NostrRequest) -> String? {
         return make_nostr_unsubscribe_req(sub_id)
     case .event(let ev):
         return make_nostr_push_event(ev: ev)
+    case .json(let json):
+        return make_nostr_json_req(json)
     }
+}
+
+func make_nostr_json_req(_ json: JSON) -> String? {
+    guard let event = encode_json(json) else {
+        return nil
+    }
+    
+    return event
 }
 
 func make_nostr_push_event(ev: NostrEvent) -> String? {
