@@ -337,8 +337,15 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 add_rw_relay(self.postBox.pool, kv.key)
             }
             self.postBox.pool.connect()
-            let tags: [String]? = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
-                return $0.arrayValue?[1].stringValue ?? ""
+            var tags: [String]?
+            if let isEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+                if isEmpty {
+                    tags = []
+                } else {
+                    tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                        return $0.arrayValue?[1].stringValue ?? ""
+                    }
+                }
             }
             if let contacts = tags {
                 let c = Contacts(created_at: Int(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)

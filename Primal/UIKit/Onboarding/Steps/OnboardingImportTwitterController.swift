@@ -46,6 +46,7 @@ private extension OnboardingImportTwitterController {
             state = .notFound
             return
         }
+        UserDefaults.standard.setValue(username, forKey: "username")
         
         state = .searching
         input.input.resignFirstResponder()

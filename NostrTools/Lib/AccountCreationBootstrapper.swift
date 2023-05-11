@@ -46,6 +46,7 @@ class AccountCreationBootstrapper {
         }
         self.cb = successCallback
         self.pool.register_handler(sub_id: "signup", handler: handleSignupEvent)
+        self.pool.connect()
     }
     
     private func handleSignupEvent(relay: String, ev: NostrConnectionEvent) {
@@ -66,6 +67,7 @@ class AccountCreationBootstrapper {
                 do {
                     try save_keypair(pubkey: self.keypair.pubkey, privkey: self.keypair.privkey!)
                     self.pool.disconnect()
+                    print("NSEC: \(self.keypair.privkey_bech32!)")
                     if let callback = self.cb {
                         callback()
                     }
@@ -92,84 +94,3 @@ class AccountCreationBootstrapper {
         }
     }
 }
-
-//class AccountRecommendedFollowBootstrapper {
-//    private let pool: RelayPool
-//    private let userRelays: [String: RelayInfo]
-//    private let handleConnectedEvent: () -> Void
-//    var contacts: [String]
-//
-//    init(handleConnectedEvent: @escaping () -> Void) {
-//        self.handleConnectedEvent = handleConnectedEvent
-//        self.pool = RelayPool()
-//        for relay in bootstrap_relays {
-//            add_rw_relay(self.pool, relay)
-//            userRelays[relay] = RelayInfo(read: true, write: true)
-//        }
-//        self.pool.register_handler(sub_id: "follow/unfollow", handler: handleFollowUnfollowEvent)
-//    }
-//
-//    deinit {
-//        self.pool.disconnect()
-//    }
-//
-//    func disconnect() {
-//        self.pool.disconnect()
-//    }
-//
-//    func follow(_ pubkey: String) {
-//        self.contacts.append(pubkey)
-//
-//        guard let keypair = get_saved_keypair() else {
-//            print("Error getting saved keypair")
-//            return
-//        }
-//
-//        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: self.userRelays)
-//
-//        self.pool.send(.event(ev))
-//    }
-//
-//    func unfollow(_ pubkey: String) {
-//        let indexOfPubkeyToRemove = self.contacts.firstIndex(of: pubkey)
-//
-//        if let index = indexOfPubkeyToRemove {
-//            self.contacts.remove(at: index)
-//
-//            guard let keypair = get_saved_keypair() else {
-//                print("Error getting saved keypair")
-//                return
-//            }
-//
-//            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: self.contacts, relays: self.userRelays)
-//
-//            self.pool.send(.event(ev))
-//        }
-//    }
-//
-//    private func handleFollowUnfollowEvent(relay: String, ev: NostrConnectionEvent) {
-//        switch ev {
-//        case .ws_event(let wsev):
-//            switch wsev {
-//            case .connected:
-//                self.handleConnectedEvent()
-//            case .error(let err):
-//                print(String(describing: err))
-//            default:
-//                break
-//            }
-//        case .nostr_event(let resp):
-//            switch resp {
-//            case .notice(let msg):
-//                print(msg)
-//            case .event:
-//                print("event in signup?")
-//            case .eose:
-//                break
-//            case .ok:
-//                break
-//            }
-//        }
-//    }
-//
-//}

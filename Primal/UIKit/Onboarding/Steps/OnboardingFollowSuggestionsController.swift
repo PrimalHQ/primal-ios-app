@@ -55,6 +55,7 @@ private extension OnboardingFollowSuggestionsController {
             .pinToSuperview(edges: .horizontal, padding: 36)
             .pinToSuperview(edges: .top, padding: 20)
             .pinToSuperview(edges: .bottom, padding: 30, safeArea: true)
+        continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
         
         let stack = UIStackView(arrangedSubviews: [table, buttonParent])
         view.addSubview(stack)
@@ -72,13 +73,17 @@ private extension OnboardingFollowSuggestionsController {
         table.delegate = self
         table.contentInsetAdjustmentBehavior = .never
         
-        FollowSuggestionsRequest().publisher()
+        let username = UserDefaults.standard.string(forKey: "username") ?? ""
+        
+        FollowSuggestionsRequest(username: username).publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion  in
                 print(completion)
             }, receiveValue: { [weak self] response in
+                dump(response)
                 self?.metadata = response.metadata
                 self?.suggestionGroups = response.suggestions
+                UserDefaults.standard.removeObject(forKey: "username")
             })
             .store(in: &cancellables)
         
@@ -95,7 +100,7 @@ private extension OnboardingFollowSuggestionsController {
     }
     
     @objc func continuePressed() {
-        
+        RootViewController.instance.reset()
     }
 }
 
@@ -128,7 +133,7 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
                 cell.profileImage.imageView.kf.setImage(with: URL(string: nostrData.picture ?? ""))
                 cell.nameLabel.text = nostrData.name
                 cell.usernameLabel.text = "@\(nostrData.display_name ?? "")"
-                cell.followButton.isFollowing = false
+                cell.followButton.isFollowing = feed?.following.isFollowing(suggestion.pubkey) ?? false
                 cell.delegate = self
             }
         }
