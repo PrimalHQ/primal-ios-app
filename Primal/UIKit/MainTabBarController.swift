@@ -19,16 +19,20 @@ class MainTabBarController: UIViewController {
     let feed: Feed
     let pageVC = UIPageViewController(nibName: nil, bundle: nil)
     
-    let buttons = (1...5).map {
+    lazy var buttons = (1...5).map {
         let button = UIButton()
         button.setImage(UIImage(named: "tabIcon\($0)"), for: .normal)
+        if $0 == 1 {
+            button.addTarget(self, action: #selector(homeButtonPressed), for: .touchUpInside)
+        }
         return button
     }
     
     let closeMenuButton = UIButton()
     
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons )
-    
+    private var foregroundObserver: NSObjectProtocol?
+
     init(feed: Feed) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
@@ -59,6 +63,16 @@ class MainTabBarController: UIViewController {
 }
 
 private extension MainTabBarController {
+    @objc func homeButtonPressed() {
+        if pageVC.viewControllers?.contains(home) == true {
+            if let homeVC = home.topViewController as? HomeFeedViewController {
+                if !homeVC.posts.isEmpty {
+                    homeVC.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+                }
+            }
+        }
+    }
+    
     func setup() {
         let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
         pageVC.willMove(toParent: self)
@@ -78,7 +92,11 @@ private extension MainTabBarController {
         view.addSubview(closeMenuButton)
         closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
 
-        closeMenuButton.setImage(UIImage(named: "tabIconHome"), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
         closeMenuButton.isHidden = true
+        
+        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
+            feed.reconnect()
+        }
     }
 }
