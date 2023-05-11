@@ -29,6 +29,7 @@ class OnboardingTwitterController: UIViewController {
     let instructionLabel = UILabel()
     let continueButton = FancyButton(title: "Create Nostr account")
     let keychainInfo = KeyKeychainInfoView()
+    let acb = AccountCreationBootstrapper()
     
     init(profile: TwitterUserRequest.Response) {
         self.profile = profile
@@ -36,10 +37,7 @@ class OnboardingTwitterController: UIViewController {
         
         setup()
         
-//        let acb = AccountCreationBootstrapper()
-//        acb.signup(nickName: profile.username, displayName: profile.displayname, about: profile.bio, pictureUrl: profile.avatar, bannerUrl: profile.banner) {
-//            print("success!")
-//        }
+
     }
     
     required init?(coder: NSCoder) {
@@ -115,7 +113,9 @@ private extension OnboardingTwitterController {
     @objc func continuePressed() {
         switch state {
         case .ready:
-            state = .created
+            acb.signup(nickName: profile.username, displayName: profile.displayname, about: profile.bio, pictureUrl: profile.avatar, bannerUrl: profile.banner) { [weak self] in
+                self?.state = .created
+            }
         case .created:
             let suggestions = OnboardingFollowSuggestionsController()
             show(suggestions, sender: nil)

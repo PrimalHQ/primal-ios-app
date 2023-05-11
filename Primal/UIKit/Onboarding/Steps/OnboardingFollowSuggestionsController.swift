@@ -16,6 +16,7 @@ class OnboardingFollowSuggestionsController: UIViewController {
     
     lazy var table = UITableView()
     lazy var continueButton = FancyButton(title: "Finish")
+    var feed: Feed?
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -80,6 +81,17 @@ private extension OnboardingFollowSuggestionsController {
                 self?.suggestionGroups = response.suggestions
             })
             .store(in: &cancellables)
+        
+        let result = get_saved_keypair()
+        
+        guard
+            let keypair = result,
+            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+        else {
+            return
+        }
+        
+        feed = Feed(userHex: hex_encode(decoded.data))
     }
     
     @objc func continuePressed() {
