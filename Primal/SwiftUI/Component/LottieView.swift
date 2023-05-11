@@ -13,14 +13,16 @@ enum AnimationType {
     case iconZap
     case iconLike
     case splash
+    case loadingSpinner
     
     static var animationCache: [AnimationType: LottieAnimation] = [:]
     
     var name: String {
         switch self {
-        case .iconZap:  return "iconZap"
-        case .iconLike: return "iconLike"
-        case .splash:   return "splashAlpha"
+        case .iconZap:          return "iconZap"
+        case .iconLike:         return "iconLike"
+        case .splash:           return "splashAlpha"
+        case .loadingSpinner:   return "loadingSpinner"
         }
     }
     

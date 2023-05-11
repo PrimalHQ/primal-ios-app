@@ -8,6 +8,17 @@
 import UIKit
 
 class OnboardingStartViewController: UIViewController {
+    let screenshotParent = UIView()
+    
+    let signupButton = BigOnboardingButton(
+        title: "Create account",
+        subtitle: "Your new Nostr account will be up and running in a minute"
+    )
+    let signinButton = BigOnboardingButton(
+        title: "Sign in",
+        subtitle: "Already have a Nostr account? Sign in via Apple or your Nostr key."
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,7 +41,6 @@ private extension OnboardingStartViewController {
         navigationItem.titleView = UIImageView(image: UIImage(named: "logoTitle"))
         view.backgroundColor = .black
         
-        let screenshotParent = UIView()
         let screenshot = UIImageView(image: UIImage(named: "screenshotOnboarding"))
         let fade = UIImageView(image: UIImage(named: "bottomFade"))
         
@@ -44,14 +54,7 @@ private extension OnboardingStartViewController {
             
         fade.pinToSuperview(edges: [.horizontal, .bottom])
         
-        let signup = BigOnboardingButton(title: "Create account",
-            subtitle: "Your new Nostr account will be up and running in a minute"
-        )
-        let signin = BigOnboardingButton(title: "Sign in",
-            subtitle: "Already have a Nostr account? Sign in via Apple or your Nostr key."
-        )
-        
-        let buttonStack = UIStackView(arrangedSubviews: [signup, signin, UIView()])
+        let buttonStack = UIStackView(arrangedSubviews: [UIView(), signupButton, signinButton, UIView()])
         let stack = UIStackView(arrangedSubviews: [screenshotParent, buttonStack])
         
         stack.axis = .vertical
@@ -69,7 +72,7 @@ private extension OnboardingStartViewController {
             .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .bottom, safeArea: true)
         
-        signup.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
-        signin.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
+        signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
+        signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
     }
 }

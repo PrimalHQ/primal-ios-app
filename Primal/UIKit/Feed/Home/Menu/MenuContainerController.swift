@@ -182,7 +182,6 @@ private extension MenuContainerController {
         
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
         profileImageButton.constrainToSize(36)
-        profileImageButton.setImage(UIImage(named: "ProfilePicture"), for: .normal)
         profileImageButton.layer.cornerRadius = 18
         profileImageButton.layer.masksToBounds = true
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageButton)

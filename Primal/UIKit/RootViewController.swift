@@ -84,7 +84,7 @@ private extension RootViewController {
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(easeInTiming)
 
-            UIView.animate(withDuration: 0.8) {
+            UIView.animate(withDuration: 0.7) {
                 introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
                 introVC.view.alpha = 0
             } completion: { _ in
@@ -95,12 +95,35 @@ private extension RootViewController {
             }
             
             CATransaction.commit()
+            
+            guard let onboarding: OnboardingStartViewController = self.findInChildren() else { return }
+            
+            let views = [onboarding.screenshotParent, onboarding.signupButton, onboarding.signinButton]
+            views.forEach {
+                $0.alpha = 0
+                $0.transform = .init(translationX: 0, y: 300)
+            }
+            onboarding.screenshotParent.transform = .init(scaleX: 0.2, y: 0.2)
+            
+            for (index, view) in views.enumerated() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200 + index * 200)) {
+                    let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
+                    CATransaction.begin()
+                    CATransaction.setAnimationTimingFunction(easeoutTiming)
+                    
+                    UIView.animate(withDuration: 0.7 - Double(index) * 0.2) {
+                        view.transform = .identity
+                        view.alpha = 1
+                    }
+                    
+                    CATransaction.commit()
+                }
+            }
             return
         }
         
         homeFeed.table.alpha = 0.01
         homeFeed.onLoad = {
-            
             let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(easeInTiming)
@@ -123,10 +146,9 @@ private extension RootViewController {
                 
                 homeFeed.table.transform = .init(translationX: 0, y: 800)
                     
-                let timingFunction = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
-
+                let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
                 CATransaction.begin()
-                CATransaction.setAnimationTimingFunction(timingFunction)
+                CATransaction.setAnimationTimingFunction(easeoutTiming)
 
                 UIView.animate(withDuration: 0.3) {
                     homeFeed.table.transform = .identity

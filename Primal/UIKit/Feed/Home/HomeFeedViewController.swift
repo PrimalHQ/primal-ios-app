@@ -35,6 +35,7 @@ class HomeFeedViewController: FeedViewController {
             .store(in: &cancellables)
         
         let button = UIButton()
+        button.constrainToSize(44)
         button.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
         button.setImage(UIImage(named: "feedPicker"), for: .normal)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
