@@ -129,8 +129,19 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
                 cell.nameLabel.text = nostrData.name
                 cell.usernameLabel.text = "@\(nostrData.display_name ?? "")"
                 cell.followButton.isFollowing = false
+                cell.delegate = self
             }
         }
         return cell
+    }
+}
+
+extension OnboardingFollowSuggestionsController: FollowProfileCellDelegate {
+    func followButtonPressed(_ cell: FollowProfileCell) {
+        guard let index = table.indexPath(for: cell) else { return }
+        
+        let profile = suggestionGroups[index.section].members[index.row]
+        
+        feed?.following.toggleFollow(profile.pubkey)
     }
 }

@@ -51,9 +51,11 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
-    private let postBox: PostBox = PostBox(pool: RelayPool())
+    let postBox: PostBox = PostBox(pool: RelayPool())
     
     private var userContactsReceivedCB: (() -> Void)?
+    
+    var following: FollowingManager { FollowingManager(feed: self) }
         
     init(userHex: String? = nil) {
         if let hex = userHex {
@@ -219,38 +221,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             self.postBox.send(repostEvent)
         } else {
             print("Error creating repost event")
-        }
-    }
-    
-    func sendFollowEvent(_ pubkey: String) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        var contacts = self.currentUserContacts.contacts
-        contacts.append(pubkey)
-        
-        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: self.currentUserRelays!)
-        
-        self.postBox.send(ev)
-    }
-    
-    func sendUnfollowEvent(_ pubkey: String) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        self.currentUserContacts = Contacts(created_at: -1, contacts: ["d61f3bc5b3eb4400efdae6169a5c17cabf3246b514361de939ce4a1a0da6ef4a"])
-        let indexOfPubkeyToRemove = self.currentUserContacts.contacts.firstIndex(of: pubkey)
-        
-        if let index = indexOfPubkeyToRemove {
-            self.currentUserContacts.contacts.remove(at: index)
-            
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: self.currentUserContacts.contacts, relays: self.currentUserRelays!)
-            
-            self.postBox.send(ev)
         }
     }
     
