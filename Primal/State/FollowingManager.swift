@@ -34,7 +34,9 @@ class FollowingManager {
         contacts.append(pubkey)
         feed.currentUserContacts.contacts = contacts
         
-        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: feed.currentUserRelays!)
+        let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+        
+        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
         feed.postBox.send(ev)
     }
@@ -50,9 +52,21 @@ class FollowingManager {
         if let index = indexOfPubkeyToRemove {
             feed.currentUserContacts.contacts.remove(at: index)
             
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: feed.currentUserContacts.contacts, relays: feed.currentUserRelays!)
+            let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+            
+            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: feed.currentUserContacts.contacts, relays: relays)
             
             feed.postBox.send(ev)
         }
+    }
+    
+    private func makeBootstrapRelays() -> [String: RelayInfo] {
+        var relays: [String: RelayInfo] = [:]
+        
+        bootstrap_relays.forEach { relay in
+            relays[relay] = RelayInfo(read: true, write: true)
+        }
+        
+        return relays
     }
 }

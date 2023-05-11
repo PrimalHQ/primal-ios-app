@@ -346,12 +346,16 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             }
             self.postBox.pool.connect()
             var tags: [String]?
-            if let isEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+            if let isEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
                 if isEmpty {
                     tags = []
                 } else {
-                    tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
-                        return $0.arrayValue?[1].stringValue ?? ""
+                    if let isInnerEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+                        tags = []
+                    } else {
+                        tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                            return $0.arrayValue?[1].stringValue ?? ""
+                        }
                     }
                 }
             }
