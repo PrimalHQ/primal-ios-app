@@ -15,8 +15,8 @@ struct PrimalSettingsFeed: Codable, Hashable {
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
-    let description: String
-    let theme: String
+    let description: String?
+    let theme: String?
     let feeds: [PrimalSettingsFeed]
 }
 
@@ -181,6 +181,10 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.zaps = zaps
         self.satszapped = satszapped
         self.score24h = score24h
+    }
+    
+    func toRepostNostrContent() -> NostrContent {
+        return NostrContent(kind: 1, content: self.content, id: self.id, created_at: self.created_at, pubkey: self.pubkey, sig: self.sig, tags: self.tags)
     }
 }
 

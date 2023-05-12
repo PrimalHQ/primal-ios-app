@@ -17,6 +17,12 @@ enum ProcessType {
     case thread
     case profile
     case settings
+    case contacts
+}
+
+struct Contacts {
+    let created_at: Int
+    var contacts: [String]
 }
 
 class Feed: ObservableObject, WebSocketConnectionDelegate {
@@ -24,6 +30,12 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
     @Published var currentUserSettings: PrimalSettings?
+    @Published var currentUserRelays: [String: RelayInfo]?
+    @Published var currentUserContacts: Contacts = Contacts(created_at: -1, contacts: [])
+    @Published var currentUserLikes: Set<String> = []
+    @Published var currentUserReposts: Set<String> = []
+    
+    @Published var didFinishInit: Bool = false
     
     @Published var posts: [PrimalPost] = []
     private var bufferNostrPosts: [NostrContent] = []
@@ -40,8 +52,14 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private var currentUserHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
     private var socket: NWWebSocket?
     
-    private let jsonEncoder: JSONEncoder = JSONEncoder()
-    private let jsonDecoder: JSONDecoder = JSONDecoder()
+    let jsonEncoder: JSONEncoder = JSONEncoder()
+    let jsonDecoder: JSONDecoder = JSONDecoder()
+    
+    let postBox: PostBox = PostBox(pool: RelayPool())
+    
+    private var userContactsReceivedCB: (() -> Void)?
+    
+    var following: FollowingManager { FollowingManager(feed: self) }
         
     init(userHex: String? = nil) {
         if let hex = userHex {
@@ -152,7 +170,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
              ["cache":
                 ["get_app_settings",
                  ["event_from_user":
-                    ["content": "{\"description\":\"Sync app settings\"}",
+                    ["content": ev.content,
                      "created_at": ev.created_at,
                      "id": ev.id,
                      "kind": 30078,
@@ -172,11 +190,56 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
+    func requestUserContacts(callback: (() -> Void)? = nil) {
+        guard let json: JSON = try? JSON(["REQ", "user_contacts_\(self.currentUserHex)", ["cache": ["contact_list", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
+            print("Error encoding req")
+            return
+        }
+        
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return
+        }
+        
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        self.userContactsReceivedCB = callback
+        
+        self.socket?.send(string: jsonStr)
+    }
+    
+    func sendLikeEvent(post: PrimalFeedPost) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
+        
+        self.postBox.send(ev)
+    }
+    
+    func sendRepostEvent(nostrContent: NostrContent) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
+        
+        if let repostEvent = ev {
+            self.postBox.send(repostEvent)
+        } else {
+            print("Error creating repost event")
+        }
+    }
+    
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
         self.requestCurrentUserProfile()
         self.requestCurrentUserProfileInfo()
         self.requestCurrentUserSettings()
+        self.requestUserContacts()
         self.requestNewPage()
     }
     
@@ -239,6 +302,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             self.processMessageBy(type: .settings, json: json)
         case "profile_info_\(self.currentUserHex)":
             self.processMessageBy(type: .profile, json: json)
+        case "user_contacts_\(self.currentUserHex)":
+            self.processMessageBy(type: .contacts, json: json)
         default:
             self.processMessageBy(type: .post, json: json)
         }
@@ -271,6 +336,42 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             } else {
                 self.currentUser = PrimalUser(nostrUser: nostrUser)
             }
+        case 3:
+            guard let relays: [String: RelayInfo] = try? self.jsonDecoder.decode([String: RelayInfo].self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding nostr stats string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            self.currentUserRelays = relays
+            self.currentUserRelays?.forEach { kv in
+                add_rw_relay(self.postBox.pool, kv.key)
+            }
+            self.postBox.pool.connect()
+            var tags: [String]?
+            if let isEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
+                if isEmpty {
+                    tags = []
+                } else {
+                    if let isInnerEmpty = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+                        if isInnerEmpty {
+                            tags = []
+                        } else {
+                            tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                                return $0.arrayValue?[1].stringValue ?? ""
+                            }
+                        }
+                    }
+                }
+            }
+            if let contacts = tags {
+                let c = Contacts(created_at: Int(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)
+                if self.currentUserContacts.created_at <= c.created_at {
+                    self.currentUserContacts = c
+                    self.userContactsReceivedCB?()
+                }
+            }
+            self.didFinishInit = true
+            print("finish init")
         case 30078:
             let primalSettings = PrimalSettings(json: json)
             if type == .settings {
@@ -320,7 +421,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         
         if type == .post {
             posts.sort { $0.post.created_at > $1.post.created_at }
-            if self.posts.last?.post.id == posts.first?.post.id {
+            if posts.count > 0 && self.posts.last?.post.id == posts.first?.post.id {
                 posts.removeFirst()
             }
             self.appendPostsAndClearBuffer(posts)

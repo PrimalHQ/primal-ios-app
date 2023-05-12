@@ -7,11 +7,17 @@
 
 import UIKit
 
+protocol FollowProfileCellDelegate: AnyObject {
+    func followButtonPressed(_ cell: FollowProfileCell)
+}
+
 class FollowProfileCell: UITableViewCell {
     let profileImage = VerifiedImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
     let followButton = FollowButton()
+    
+    weak var delegate: FollowProfileCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -61,5 +67,6 @@ private extension FollowProfileCell {
     
     @objc func followPressed() {
         followButton.isFollowing.toggle()
+        delegate?.followButtonPressed(self)
     }
 }

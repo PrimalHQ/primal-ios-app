@@ -537,37 +537,29 @@ func get_referenced_id_set(tags: [[String]], key: String) -> Set<ReferencedId> {
     }
 }
 
-//func make_first_contact_event(keypair: Keypair) -> NostrEvent? {
-//    guard let privkey = keypair.privkey else {
-//        return nil
-//    }
-//
-//    let bootstrap_relays = load_bootstrap_relays(pubkey: keypair.pubkey)
-//    let rw_relay_info = RelayInfo(read: true, write: true)
-//    var relays: [String: RelayInfo] = [:]
-//
-//    for relay in bootstrap_relays {
-//        relays[relay] = rw_relay_info
-//    }
-//
-//    let relay_json = encode_json(relays)!
-//    let damus_pubkey = "3efdaebb1d8923ebd99c9e7ace3b4194ab45512e2be79c1b7d68d9243e0d2681"
-//    let jb55_pubkey = "32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245" // lol
-//    let tags = [
-//        ["p", damus_pubkey],
-//        ["p", jb55_pubkey],
-//        ["p", keypair.pubkey] // you're a friend of yourself!
-//    ]
-//    let ev = NostrEvent(content: relay_json,
-//                        pubkey: keypair.pubkey,
-//                        kind: NostrKind.contacts.rawValue,
-//                        tags: tags)
-//    ev.calculate_id()
-//    ev.sign(privkey: privkey)
-//    return ev
-//}
+func make_first_contact_event(keypair: Keypair, bootstrap_relays: [String]) -> NostrEvent? {
+    guard let privkey = keypair.privkey else {
+        return nil
+    }
+    
+    let rw_relay_info = RelayInfo(read: true, write: true)
+    var relays: [String: RelayInfo] = [:]
+    
+    for relay in bootstrap_relays {
+        relays[relay] = rw_relay_info
+    }
+    
+    let relay_json = encode_json(relays)!
+    let ev = NostrEvent(content: relay_json,
+                        pubkey: keypair.pubkey,
+                        kind: NostrKind.contacts.rawValue,
+                        tags: [["p", keypair.pubkey]]) // follow self
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    return ev
+}
 
-func make_metadata_event(keypair: Keypair, metadata: NostrMetadata) -> NostrEvent? {
+func make_metadata_event(keypair: Keypair, metadata: Profile) -> NostrEvent? {
     guard let privkey = keypair.privkey else {
         return nil
     }
@@ -583,23 +575,35 @@ func make_metadata_event(keypair: Keypair, metadata: NostrMetadata) -> NostrEven
     return ev
 }
 
-func make_boost_event(pubkey: String, privkey: String, boosted: NostrEvent) -> NostrEvent {
-    var tags: [[String]] = boosted.tags.filter { tag in tag.count >= 2 && (tag[0] == "e" || tag[0] == "p") }
+func make_repost_event(pubkey: String, privkey: String, nostrContent: NostrContent) -> NostrEvent? {
+    guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
+        print("Error encoding post json for repost")
+        return nil
+    }
+    let jsonStr = String(data: jsonData, encoding: .utf8)!
     
-    tags.append(["e", boosted.id, "", "root"])
-    tags.append(["p", boosted.pubkey])
-    
-    let ev = NostrEvent(content: event_to_json(ev: boosted), pubkey: pubkey, kind: 6, tags: tags)
+    let ev = NostrEvent(content: jsonStr, pubkey: pubkey, kind: 6, tags: [["e", nostrContent.id], ["p", nostrContent.pubkey]])
     ev.calculate_id()
     ev.sign(privkey: privkey)
+    
     return ev
 }
 
-func make_like_event(pubkey: String, privkey: String, liked: NostrEvent) -> NostrEvent {
-    var tags: [[String]] = liked.tags.filter { tag in tag.count >= 2 && (tag[0] == "e" || tag[0] == "p") }
-    tags.append(["e", liked.id])
-    tags.append(["p", liked.pubkey])
-    let ev = NostrEvent(content: "🤙", pubkey: pubkey, kind: 7, tags: tags)
+func make_like_event(pubkey: String, privkey: String, post: PrimalFeedPost) -> NostrEvent {
+    let ev = NostrEvent(content: "+", pubkey: pubkey, kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    
+    return ev
+}
+
+func make_contacts_event(pubkey: String, privkey: String, contacts: [String], relays: [String: RelayInfo]) -> NostrEvent {
+    let content_json = encode_json(relays)!
+    let tags = contacts.map {
+        return ["p", $0]
+    }
+    let ev = NostrEvent(content: content_json, pubkey: pubkey, kind: 3, tags: tags)
+    
     ev.calculate_id()
     ev.sign(privkey: privkey)
     
