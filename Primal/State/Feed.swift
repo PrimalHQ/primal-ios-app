@@ -371,6 +371,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 }
             }
             self.didFinishInit = true
+            print("finish init")
         case 30078:
             let primalSettings = PrimalSettings(json: json)
             if type == .settings {

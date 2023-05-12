@@ -24,6 +24,23 @@ class FollowingManager {
         }
     }
     
+    func sendFollowEvent(_ contentsOf: [String]) {
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        var contacts = feed.currentUserContacts.contacts
+        contacts.append(contentsOf: contentsOf)
+        feed.currentUserContacts.contacts = contacts
+        
+        let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+        
+        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
+        
+        feed.postBox.send(ev)
+    }
+    
     func sendFollowEvent(_ pubkey: String) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
