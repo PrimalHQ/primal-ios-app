@@ -15,21 +15,32 @@ public protocol ExpressionSyntax: SyntaxNode {
     
 }
 
-public class TextExpressionSyntax: ExpressionSyntax {
-    public var kind: SyntaxKind { get { return .TextExpression } }
-    public let textTokens: [SyntaxToken]
+public class SimpleExpressionSyntax: ExpressionSyntax {
+    public var kind: SyntaxKind
+    public let token: SyntaxToken
     
-    public init(textTokens: [SyntaxToken]) throws {
-        try textTokens.forEach { token in
-            if token.kind != .WordToken || token.kind != .NumberToken || token.kind != .UnderscoreToken {
-                throw ExpressionSyntaxError.IncorrectTokenKind("Passed unsupported token kind. TextExpressionSyntax only supports WordToken, NumberToken and UnderscoreToken. Passed: \(token.kind)")
-            }
-        }
-        self.textTokens = textTokens
+    public init(_ token: SyntaxToken) {
+        self.kind = token.kind
+        self.token = token
     }
     
     public func getChildren() -> any Sequence<SyntaxNode> {
-        return textTokens.map { $0 as any SyntaxNode }
+        return [token]
+    }
+}
+
+public class HashtagExpressionSyntax: ExpressionSyntax {
+    public var kind: SyntaxKind { get { return .HashtagToken } }
+    public let hashtagToken: SyntaxToken
+    public let textToken: SyntaxToken
+    
+    public init(hashtagToken: SyntaxToken, textToken: SyntaxToken) {
+        self.hashtagToken = hashtagToken
+        self.textToken = textToken
+    }
+    
+    public func getChildren() -> any Sequence<SyntaxNode> {
+        return [hashtagToken, textToken]
     }
 }
 
@@ -38,7 +49,7 @@ public class MentionNpubExpressionSyntax: ExpressionSyntax {
     public let mentionToken: SyntaxToken
     public let npubToken: SyntaxToken
     
-    public init(mentionToken: SyntaxToken, npubToken: SyntaxToken) throws {
+    public init(mentionToken: SyntaxToken, npubToken: SyntaxToken) {
         self.mentionToken = mentionToken
         self.npubToken = npubToken
     }
@@ -51,29 +62,33 @@ public class MentionNpubExpressionSyntax: ExpressionSyntax {
 public class NostrNpubExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .NostrNpubExpression } }
     public let nostrToken: SyntaxToken
+    public let colonToken: SyntaxToken
     public let npubToken: SyntaxToken
     
-    public init(nostrToken: SyntaxToken, npubToken: SyntaxToken) {
+    public init(nostrToken: SyntaxToken, colonToken: SyntaxToken, npubToken: SyntaxToken) {
         self.nostrToken = nostrToken
+        self.colonToken = colonToken
         self.npubToken = npubToken
     }
     
     public func getChildren() -> any Sequence<SyntaxNode> {
-        return [nostrToken, npubToken]
+        return [nostrToken, colonToken, npubToken]
     }
 }
 
 public class NostrNoteExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .NostrNoteExpression } }
     public let nostrToken: SyntaxToken
+    public let colonToken: SyntaxToken
     public let noteToken: SyntaxToken
     
-    public init(nostrToken: SyntaxToken, noteToken: SyntaxToken) {
+    public init(nostrToken: SyntaxToken, colonToken: SyntaxToken, noteToken: SyntaxToken) {
         self.nostrToken = nostrToken
+        self.colonToken = colonToken
         self.noteToken = noteToken
     }
     
     public func getChildren() -> any Sequence<SyntaxNode> {
-        return [nostrToken, noteToken]
+        return [nostrToken, colonToken, noteToken]
     }
 }

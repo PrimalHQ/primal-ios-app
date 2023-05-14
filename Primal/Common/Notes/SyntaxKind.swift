@@ -8,38 +8,48 @@
 import Foundation
 
 public enum SyntaxKind {
-    // contains < _ >
-    case UnderscoreToken
-    // contains only words consisting of letters and nothing else
-    case WordToken
-    // contains only integer numbers, the biggest value that can fin in Int
-    case NumberToken
+    // contains letters, digits and underscores
+    case TextToken
+    
     // contains < : >
     case ColonToken
+    
     // contains symbols except # and @ and _
     case SymbolToken
+    
     // contains all whitespace
     case WhitespaceToken
+    
     // contains < @ >
     case MentionToken
+    
     // contains < # >
     case HashtagToken
+    
     // contains a text value containing: npub....
     case NpubToken
+    
     // contains a text value containing note.....
     case NoteToken
+    
     // is a text value of < nostr >
     case NostrToken
+    
     // contains \0 to indicate end of file
     case EndOfFileToken
+    
     // something not handled in lexer
     case BadToken
-    // contains expression of two kinds <MentionToken><TextToken> where TextToken is an npub
+    
+    // contains expression of two kinds <MentionToken><NpubToken>
     case MentionNpubExpression
-    // contains expression of two kinds <NostrTextToken><ColonToken><TextToken> where NostrTextToken is "Nostr" string, ColonToken is ":" and TextToken is an npub
+    
+    // contains expression of two kinds <HashtagToken><TextExpression>
+    case HashtagExpression
+    
+    // contains expression of two kinds <NostrTextToken><ColonToken><NpubToken>
     case NostrNpubExpression
-    // contains expression of two kinds <NostrTextToken><ColonToken><TextToken> where NostrTextToken is "Nostr" string, ColonToken is ":" and TextToken is a note
+    
+    // contains expression of two kinds <NostrTextToken><ColonToken><NoteToken>
     case NostrNoteExpression
-    // contains an expression which is a combination of any NumberToken, WordToken and/or UnderscoreToken
-    case TextExpression
 }

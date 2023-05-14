@@ -46,38 +46,17 @@ public class NoteLexer {
             return SyntaxToken(kind: .EndOfFileToken, position: position, text: "\0", value: nil)
         }
         
-        if current.isLetter {
+        if current.isLetter || current.isNumber || current == "_" {
             let start = position
             
-            while current.isLetter {
+            while current.isLetter || current.isNumber || current == "_" {
                 next()
             }
             
             let length = position - start
             let text = String(self.text[start..<start+length])
             
-            return SyntaxToken(kind: .WordToken, position: start, text: text, value: text)
-        }
-        
-        if current.isNumber {
-            let start = position
-            
-            while current.isNumber {
-                next()
-            }
-            
-            let length = position - start
-            let text = String(self.text[start..<start+length])
-            let value = Int(text)
-            
-            return SyntaxToken(kind: .NumberToken, position: start, text: text, value: value)
-        }
-        
-        if current == "_" {
-            let text = String(current)
-            let token = SyntaxToken(kind: .UnderscoreToken, position: position, text: text, value: text)
-            position = position + 1
-            return token
+            return SyntaxToken(kind: .TextToken, position: start, text: text, value: text)
         }
         
         if current == ":" {
@@ -115,7 +94,7 @@ public class NoteLexer {
         }
         
         if current == "#" {
-            let token = SyntaxToken(kind: .MentionToken, position: position, text: "#", value: "#")
+            let token = SyntaxToken(kind: .HashtagToken, position: position, text: "#", value: "#")
             position = position + 1
             return token
         }

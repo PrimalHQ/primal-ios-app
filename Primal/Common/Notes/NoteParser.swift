@@ -9,6 +9,7 @@ import Foundation
 
 public class NoteParser {
     private var tokens: [SyntaxToken] = []
+    public var parsedExpressions: [ExpressionSyntax] = []
     private var position: Int = 0
     
     var diagnostics: [String] = []
@@ -50,25 +51,113 @@ public class NoteParser {
         return curr
     }
     
-    private func match(_ kind: SyntaxKind) -> SyntaxToken {
-        if current.kind == kind {
-            return nextToken()
+    private func isNpubText(_ text: String) -> Bool {
+        return text.starts(with: "npub") && text.count == 63 && text.allSatisfy({ $0.isLetter || $0.isNumber })
+    }
+    
+    private func isNoteText(_ text: String) -> Bool {
+        return text.starts(with: "note") && text.count == 63 && text.allSatisfy({ $0.isLetter || $0.isNumber })
+    }
+    
+    private func parseHashtagExpression() {
+        let hashtagToken = nextToken()
+        let textToken = nextToken()
+        let expr = HashtagExpressionSyntax(hashtagToken: hashtagToken, textToken: textToken)
+        
+        self.parsedExpressions.append(expr)
+    }
+    
+    private func parseSimpleExpression() {
+        let token = nextToken()
+        let expr = SimpleExpressionSyntax(token)
+        
+        self.parsedExpressions.append(expr)
+    }
+    
+    private func parseMentionNpubExpression() {
+        let mentionToken = nextToken()
+        let textToken = nextToken()
+        
+        if isNpubText(textToken.text) {
+            let expr = MentionNpubExpressionSyntax(mentionToken: mentionToken, npubToken: textToken)
+            self.parsedExpressions.append(expr)
+        } else {
+            let mentionExpr = SimpleExpressionSyntax(mentionToken)
+            let textExpr = SimpleExpressionSyntax(textToken)
+            self.parsedExpressions.append(mentionExpr)
+            self.parsedExpressions.append(textExpr)
         }
-        
-        diagnostics.append("ERROR: Unexpected token <\(current.position)>, expected <\(kind)>")
-        return SyntaxToken(kind: kind, position: current.position, text: nil, value: nil)
     }
     
-    private func parseExpressions() {
+    private func parseNostrExpression() {
+        let nostrToken = nextToken()
+        let colonToken = nextToken()
+        let textToken = nextToken()
         
+        if isNpubText(textToken.text) {
+            let expr = NostrNpubExpressionSyntax(nostrToken: nostrToken, colonToken: colonToken, npubToken: textToken)
+            self.parsedExpressions.append(expr)
+        } else if isNoteText(textToken.text) {
+            let expr = NostrNoteExpressionSyntax(nostrToken: nostrToken, colonToken: colonToken, noteToken: textToken)
+            self.parsedExpressions.append(expr)
+        } else {
+            let nostrExpr = SimpleExpressionSyntax(nostrToken)
+            let colonExpr = SimpleExpressionSyntax(colonToken)
+            let textExpr = SimpleExpressionSyntax(textToken)
+            self.parsedExpressions.append(nostrExpr)
+            self.parsedExpressions.append(colonExpr)
+            self.parsedExpressions.append(textExpr)
+        }
     }
     
-    public func getTokens() -> [SyntaxToken] {
+    public func getLexedTokens() -> [SyntaxToken] {
         return self.tokens
     }
     
-    public func parse(replacer: [String:String]) -> String {
-        return ""
+    public func parseExpressions() {
+        if current.kind == .EndOfFileToken {
+            parseSimpleExpression()
+            return
+        }
+        
+        var token: SyntaxToken
+        
+        repeat {
+            token = peek(0)
+            
+            switch (token.kind) {
+            case .TextToken:
+                if token.text.lowercased() == "nostr" {
+                    if peek(1).kind == .ColonToken && peek(2).kind == .TextToken {
+                        parseNostrExpression()
+                    }
+                } else {
+                    parseSimpleExpression()
+                }
+            case .SymbolToken:
+                parseSimpleExpression()
+            case .MentionToken:
+                if lookAhead.kind == .TextToken {
+                    parseMentionNpubExpression()
+                } else {
+                    parseSimpleExpression()
+                }
+            case .HashtagToken:
+                if lookAhead.kind == .TextToken {
+                    parseHashtagExpression()
+                } else {
+                    parseSimpleExpression()
+                }
+            case .ColonToken:
+                parseSimpleExpression()
+            case .WhitespaceToken:
+                parseSimpleExpression()
+            default:
+                break
+            }
+        } while (token.kind != .EndOfFileToken)
+        
+        parseSimpleExpression()
     }
 }
 
