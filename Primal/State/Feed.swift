@@ -48,7 +48,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private var bufferThreadNostrUsers: [String: NostrContent] = [:]
     private var bufferThreadNostrStats: [String: NostrContentStats] = [:]
     
-    private let socketURL = URL(string: "wss://cache2.primal.net/cache12")
+    private let socketURL = URL(string: "wss://cache3.primal.net/cache15")
     private var currentUserHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
     private var socket: NWWebSocket?
     
@@ -388,6 +388,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             } else {
                 self.bufferThreadNostrStats[nostrContentStats.event_id] = nostrContentStats
             }
+        case 10000115:
+            print(json)
         case 10000105:
             guard let nostrUserProfileInfo: NostrUserProfileInfo = try? self.jsonDecoder.decode(NostrUserProfileInfo.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding nostr stats string to json")
@@ -454,7 +456,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     private func generateFeedPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
         let key = until == 0 ? "since" : "until"
         
-        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["feed", ["pubkey": "\(hex)", "limit": limit, "\(key)": until] as [String : Any]] as [Any]]] as [Any] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["feed", ["user_pubkey": "\(hex)", "limit": limit, "\(key)": until] as [String : Any]] as [Any]]] as [Any] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -468,7 +470,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateTrendingPageRequestForHex(_ hex: String, until: Int32 = 0, limit: Int32 = 20) -> String {
-        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["explore", ["pubkey": "\(hex)", "limit": 20, "scope": "network", "timeframe": "trending"] as [String : Any]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(hex)", ["cache": ["explore", ["user_pubkey": "\(hex)", "limit": 20, "scope": "network", "timeframe": "trending"] as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }

@@ -20,6 +20,15 @@
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932E864B29A6EB8600C415AA /* UIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932E864A29A6EB8600C415AA /* UIState.swift */; };
 		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
+		933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDA92A112502008DCF1F /* NoteLexer.swift */; };
+		933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAB2A112508008DCF1F /* NoteParser.swift */; };
+		933DBDB02A1125A5008DCF1F /* NoteParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */; };
+		933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 933DBDB22A1126CE008DCF1F /* secp256k1 */; };
+		933DBDB52A114522008DCF1F /* SyntaxToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDB42A114522008DCF1F /* SyntaxToken.swift */; };
+		933DBDB72A114532008DCF1F /* SyntaxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDB62A114532008DCF1F /* SyntaxNode.swift */; };
+		933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */; };
+		933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBA2A114575008DCF1F /* SyntaxKind.swift */; };
+		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
 		93594D682A0D38A800634E20 /* LikingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93594D672A0D38A800634E20 /* LikingManager.swift */; };
 		93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93665D312A06BFE6001EB7A0 /* RelayPool.swift */; };
 		939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F529A3E36F003954C2 /* PrimalApp.swift */; };
@@ -175,6 +184,14 @@
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932E864A29A6EB8600C415AA /* UIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIState.swift; sourceTree = "<group>"; };
 		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
+		933DBDA92A112502008DCF1F /* NoteLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLexer.swift; sourceTree = "<group>"; };
+		933DBDAB2A112508008DCF1F /* NoteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParser.swift; sourceTree = "<group>"; };
+		933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParserTests.swift; sourceTree = "<group>"; };
+		933DBDB42A114522008DCF1F /* SyntaxToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxToken.swift; sourceTree = "<group>"; };
+		933DBDB62A114532008DCF1F /* SyntaxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxNode.swift; sourceTree = "<group>"; };
+		933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionSyntax.swift; sourceTree = "<group>"; };
+		933DBDBA2A114575008DCF1F /* SyntaxKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxKind.swift; sourceTree = "<group>"; };
+		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
 		93594D672A0D38A800634E20 /* LikingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikingManager.swift; sourceTree = "<group>"; };
 		93665D312A06BFE6001EB7A0 /* RelayPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -354,6 +371,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +385,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		933DBDA82A1124F7008DCF1F /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				933DBDA92A112502008DCF1F /* NoteLexer.swift */,
+				933DBDAB2A112508008DCF1F /* NoteParser.swift */,
+				933DBDB42A114522008DCF1F /* SyntaxToken.swift */,
+				933DBDB62A114532008DCF1F /* SyntaxNode.swift */,
+				933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */,
+				933DBDBA2A114575008DCF1F /* SyntaxKind.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		933DBDAD2A112593008DCF1F /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				933DBDAE2A112598008DCF1F /* Notes */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		933DBDAE2A112598008DCF1F /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		933DBDB12A1126CE008DCF1F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		93476F5929EEC14700F17E84 /* NostrTools */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,6 +452,7 @@
 				9393310529A3E370003954C2 /* PrimalTests */,
 				9393310F29A3E370003954C2 /* PrimalUITests */,
 				939330F329A3E36F003954C2 /* Products */,
+				933DBDB12A1126CE008DCF1F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -442,6 +497,7 @@
 		9393310529A3E370003954C2 /* PrimalTests */ = {
 			isa = PBXGroup;
 			children = (
+				933DBDAD2A112593008DCF1F /* Common */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
 			);
 			path = PrimalTests;
@@ -459,6 +515,7 @@
 		9393312829A3E4E0003954C2 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				933DBDA82A1124F7008DCF1F /* Notes */,
 				9E0DEAF029FD301D00145E08 /* Animations */,
 				9E6B38CC29F9488400144073 /* Networking */,
 				9393313829A3E5C2003954C2 /* Font */,
@@ -502,6 +559,7 @@
 				9E9F2F8E29F6AB8A00A9CDF3 /* View.swift */,
 				9E79D3A22A01530B008404DB /* Date+Extra.swift */,
 				9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */,
+				933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -851,6 +909,9 @@
 				9393310429A3E370003954C2 /* PBXTargetDependency */,
 			);
 			name = PrimalTests;
+			packageProductDependencies = (
+				933DBDB22A1126CE008DCF1F /* secp256k1 */,
+			);
 			productName = PrimalTests;
 			productReference = 9393310229A3E370003954C2 /* PrimalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -974,8 +1035,10 @@
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				9E6924A22A02899700CAC54C /* ThreadUIView.swift in Sources */,
 				9E40D6EA2A0D1A3B008AE854 /* FollowingManager.swift in Sources */,
+				933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
+				933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
@@ -1001,6 +1064,7 @@
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
+				933DBDB52A114522008DCF1F /* SyntaxToken.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
@@ -1044,6 +1108,7 @@
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9E9F2F7829F6AB6400A9CDF3 /* FeedButton.swift in Sources */,
+				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
@@ -1060,6 +1125,7 @@
 				9E0DEAEF29FD2FD900145E08 /* LottieView.swift in Sources */,
 				939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */,
 				939A01652A06C0EF00E9DBA2 /* Relay.swift in Sources */,
+				933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */,
 				9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */,
 				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
@@ -1075,10 +1141,12 @@
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
+				933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */,
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
 				93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */,
+				933DBDB72A114532008DCF1F /* SyntaxNode.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
 			);
@@ -1088,6 +1156,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				933DBDB02A1125A5008DCF1F /* NoteParserTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1482,6 +1551,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		930497AB29FAD9FD003938F2 /* secp256k1 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
+			productName = secp256k1;
+		};
+		933DBDB22A1126CE008DCF1F /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
