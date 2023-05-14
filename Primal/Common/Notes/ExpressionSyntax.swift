@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum ExpressionSyntaxError: Error {
-    case IncorrectTokenKind(String)
-}
-
 public protocol ExpressionSyntax: SyntaxNode {
     
 }

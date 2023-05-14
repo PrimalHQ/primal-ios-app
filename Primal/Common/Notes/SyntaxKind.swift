@@ -26,30 +26,21 @@ public enum SyntaxKind {
     // contains < # >
     case HashtagToken
     
-    // contains a text value containing: npub....
-    case NpubToken
-    
-    // contains a text value containing note.....
-    case NoteToken
-    
-    // is a text value of < nostr >
-    case NostrToken
-    
     // contains \0 to indicate end of file
     case EndOfFileToken
     
     // something not handled in lexer
     case BadToken
     
-    // contains expression of two kinds <MentionToken><NpubToken>
+    // contains expression of two kinds <MentionToken><TextToken>
     case MentionNpubExpression
     
-    // contains expression of two kinds <HashtagToken><TextExpression>
+    // contains expression of two kinds <HashtagToken><TextToken>
     case HashtagExpression
     
-    // contains expression of two kinds <NostrTextToken><ColonToken><NpubToken>
+    // contains expression of three kinds <NostrTextToken><ColonToken><TextToken>
     case NostrNpubExpression
     
-    // contains expression of two kinds <NostrTextToken><ColonToken><NoteToken>
+    // contains expression of three kinds <NostrTextToken><ColonToken><TextToken>
     case NostrNoteExpression
 }
