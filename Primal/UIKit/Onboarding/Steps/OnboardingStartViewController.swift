@@ -54,7 +54,7 @@ private extension OnboardingStartViewController {
             
         fade.pinToSuperview(edges: [.horizontal, .bottom])
         
-        let buttonStack = UIStackView(arrangedSubviews: [UIView(), signupButton, signinButton, UIView()])
+        let buttonStack = UIStackView(arrangedSubviews: [signupButton, signinButton, UIView()])
         let stack = UIStackView(arrangedSubviews: [screenshotParent, buttonStack])
         
         stack.axis = .vertical

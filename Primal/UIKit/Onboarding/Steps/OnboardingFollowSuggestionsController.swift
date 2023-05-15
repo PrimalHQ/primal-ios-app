@@ -26,6 +26,8 @@ class OnboardingFollowSuggestionsController: UIViewController {
     
     var metadata: [String: Metadata] = [:]
     
+    var selectedToFollow: Set<String> = []
+    
     var cancellables: Set<AnyCancellable> = []
     
     init() {
@@ -72,6 +74,7 @@ private extension OnboardingFollowSuggestionsController {
         table.dataSource = self
         table.delegate = self
         table.contentInsetAdjustmentBehavior = .never
+        table.sectionHeaderHeight = 70
         
         let username = UserDefaults.standard.string(forKey: "username") ?? ""
         
@@ -83,6 +86,7 @@ private extension OnboardingFollowSuggestionsController {
                 dump(response)
                 self?.metadata = response.metadata
                 self?.suggestionGroups = response.suggestions
+                self?.selectedToFollow = Set(response.suggestions.flatMap { $0.members } .map { $0.pubkey })
                 UserDefaults.standard.removeObject(forKey: "username")
             })
             .store(in: &cancellables)
@@ -100,6 +104,7 @@ private extension OnboardingFollowSuggestionsController {
     }
     
     @objc func continuePressed() {
+        feed?.following.sendBatchFollowEvent(Array(selectedToFollow))
         RootViewController.instance.reset()
     }
 }
@@ -107,11 +112,42 @@ private extension OnboardingFollowSuggestionsController {
 extension OnboardingFollowSuggestionsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
+        header?.tag = section
         if let header = header as? FollowSectionHeader {
             header.title.text = suggestionGroups[section].group
-//            header.delegate = self
+            let group = suggestionGroups[section].members.map { $0.pubkey }
+            header.followAll.isFollowing = selectedToFollow.isSuperset(of: group)
+            header.delegate = self
         }
         return header
+    }
+}
+
+extension OnboardingFollowSuggestionsController: FollowSectionHeaderDelegate, FollowProfileCellDelegate {
+    func followButtonPressed(_ cell: FollowProfileCell) {
+        guard let index = table.indexPath(for: cell) else { return }
+        let key = suggestionGroups[index.section].members[index.row].pubkey
+        if cell.followButton.isFollowing {
+            selectedToFollow.insert(key)
+        } else {
+            selectedToFollow.remove(key)
+        }
+        
+        if let header = table.headerView(forSection: index.section) as? FollowSectionHeader {
+            let group = suggestionGroups[index.section].members.map { $0.pubkey }
+            header.followAll.isFollowing = selectedToFollow.isSuperset(of: group)
+        }
+    }
+    
+    func headerTappedFollowAll(_ header: FollowSectionHeader) {
+        let section = header.tag
+        let group = suggestionGroups[section].members.map { $0.pubkey }
+        if header.followAll.isFollowing {
+            selectedToFollow.formUnion(group)
+        } else {
+            selectedToFollow.subtract(group)
+        }
+        table.reloadRows(at: table.indexPathsForVisibleRows ?? [], with: .none)
     }
 }
 
@@ -130,25 +166,19 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
             let suggestion = suggestionGroups[indexPath.section].members[indexPath.row]
             if let data = metadata[suggestion.pubkey], let nostrData = NostrMetadata.from(data.content) {
                 
-                cell.profileImage.imageView.kf.setImage(with: URL(string: nostrData.picture ?? ""))
+                cell.profileImage.imageView.kf.setImage(with: URL(string: nostrData.picture ?? ""), options: [
+                    .processor(DownsamplingImageProcessor(size: CGSize(width: 48, height: 48))),
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage
+                ])
+                
                 cell.nameLabel.text = nostrData.name
                 cell.usernameLabel.text = "@\(nostrData.display_name ?? "")"
-                cell.followButton.isFollowing = feed?.following.isFollowing(suggestion.pubkey) ?? false
-                
+                cell.followButton.isFollowing = selectedToFollow.contains(suggestion.pubkey)
                 cell.delegate = self
             }
         }
         
         return cell
-    }
-}
-
-extension OnboardingFollowSuggestionsController: FollowProfileCellDelegate {
-    func followButtonPressed(_ cell: FollowProfileCell) {
-        guard let index = table.indexPath(for: cell) else { return }
-        
-        let profile = suggestionGroups[index.section].members[index.row]
-        
-        feed?.following.toggleFollow(profile.pubkey)
     }
 }

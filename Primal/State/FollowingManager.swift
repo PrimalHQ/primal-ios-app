@@ -24,14 +24,14 @@ class FollowingManager {
         }
     }
     
-    func sendFollowEvent(_ contentsOf: [String]) {
+    func sendBatchFollowEvent(_ pubkeys: [String]) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
         var contacts = feed.currentUserContacts.contacts
-        contacts.append(contentsOf: contentsOf)
+        contacts.append(contentsOf: pubkeys)
         feed.currentUserContacts.contacts = contacts
         
         let relays = feed.currentUserRelays ?? makeBootstrapRelays()

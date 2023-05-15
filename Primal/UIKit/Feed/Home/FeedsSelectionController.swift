@@ -51,9 +51,10 @@ private extension FeedsSelectionController {
         let title = UILabel()
         
         var buttons: [UIButton] = []
-        for settings in (feed.currentUserSettings?.content.feeds ?? []) {
+        let settings = feed.currentUserSettings?.content.feeds ?? []
+        for feed in settings {
             let button = UIButton()
-            button.setTitle(settings.name, for: .normal)
+            button.setTitle(feed.name, for: .normal)
             button.setTitleColor(.white, for: .normal)
             button.titleLabel?.font = .appFont(withSize: 20, weight: .regular)
             button.addTarget(self, action: #selector(feedButtonPressed), for: .touchUpInside)
@@ -61,8 +62,17 @@ private extension FeedsSelectionController {
             buttons.append(button)
         }
         
+        let scrollView = UIScrollView(frame: .zero)
         let buttonStack = UIStackView(arrangedSubviews: buttons)
-        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(size: 42), title, SpacerView(size: 42), buttonStack, SpacerView(size: 42)])
+        
+        scrollView.addSubview(buttonStack)
+        buttonStack.pinToSuperview()
+        buttonStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+        let scrollHeight = scrollView.heightAnchor.constraint(equalToConstant: CGFloat(settings.count) * 66)
+        scrollHeight.priority = .defaultHigh
+        scrollHeight.isActive = true
+        
+        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(size: 42), title, SpacerView(size: 42), scrollView, SpacerView(size: 42)])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)

@@ -13,7 +13,7 @@ protocol FollowSectionHeaderDelegate: AnyObject {
 
 class FollowSectionHeader: UITableViewHeaderFooterView {
     let title = UILabel()
-    let followAll = ThinFancyButton(title: "Follow All")
+    let followAll = FollowButton("Follow All", "Unfollow All")
     
     weak var delegate: FollowSectionHeaderDelegate?
     
@@ -27,26 +27,38 @@ class FollowSectionHeader: UITableViewHeaderFooterView {
     }
     
     func setup() {
-        contentView.backgroundColor = .black
+        contentView.backgroundColor = UIColor(rgb: 0x181818)
+        contentView.layer.cornerRadius = 8
+        contentView.layer.borderColor = UIColor(rgb: 0x222222).cgColor
+        contentView.layer.borderWidth = 1
         
         let stack = UIStackView(arrangedSubviews: [title, followAll])
         contentView.addSubview(stack)
         stack
-            .pinToSuperview(edges: .horizontal, padding: 30)
-            .pinToSuperview(edges: .vertical, padding: 10)
+            .pinToSuperview(edges: .leading, padding: 24)
+            .pinToSuperview(edges: .top, padding: 16)
         
-        title.font = .appFont(withSize: 16, weight: .regular)
+        [
+            stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ].forEach {
+            $0.priority = .defaultHigh
+            $0.isActive = true
+        }
+        
+        title.font = .appFont(withSize: 14, weight: .medium)
         title.textColor = UIColor(rgb: 0xAAAAAA)
-        title.textAlignment = .center
+        title.numberOfLines = 2
         
-        followAll.constrainToSize(height: 36)
+        followAll.constrainToSize(width: 106, height: 36)
         followAll.addTarget(self, action: #selector(followAllTapped), for: .touchUpInside)
         
-        stack.axis = .vertical
-        stack.spacing = 10
+        stack.spacing = 50
+        stack.alignment = .center
     }
     
     @objc func followAllTapped() {
+        followAll.isFollowing.toggle()
         delegate?.headerTappedFollowAll(self)
     }
 }

@@ -8,10 +8,21 @@
 import UIKit
 
 class FollowButton: MyButton {
+    var titles: (String, String) {
+        didSet {
+            titleLabel.text = isFollowing ? titles.1 : titles.0
+        }
+    }
     let titleLabel = UILabel()
-    
-    private let b1 = UIImageView(image: UIImage(named: "thinButtonBackgroundBack"))
-    private let b2 = UIImageView(image: UIImage(named: "followButtonBackgroundFront"))
+    private let b1 = UIImageView(image: UIImage(named: "followButtonBackgroundBack"))
+    private let b2 = GradientBorderView(
+        gradientColors: [
+            UIColor(rgb: 0xFA4343).withAlphaComponent(0.85),
+            UIColor(rgb: 0x5B12A4).withAlphaComponent(0.85)
+        ],
+        backgroundColor: .black,
+        cornerRadius: 8
+    )
     
     override var isPressed: Bool {
         didSet {
@@ -22,18 +33,19 @@ class FollowButton: MyButton {
     var isFollowing: Bool = false {
         didSet {
             b1.isHidden = isFollowing
-            b2.isHidden = isFollowing
             titleLabel.textColor = isFollowing ? UIColor(rgb: 0xCCCCCC) : .white
-            titleLabel.text = isFollowing ? "Unfollow" : "Follow"
-            layer.borderWidth = isFollowing ? 1 : 0
-            backgroundColor = isFollowing ? UIColor(rgb: 0x181818) : .clear
+            titleLabel.text = isFollowing ? titles.1 : titles.0
+            b2.colors = isFollowing ? [UIColor(rgb: 0x444444), UIColor(rgb: 0x444444)] : [UIColor(rgb: 0xFA4343).withAlphaComponent(0.85), UIColor(rgb: 0x5B12A4).withAlphaComponent(0.85)]
+            b2.backgroundColor = isFollowing ? UIColor(rgb: 0x181818) : .black
         }
     }
     
-    init() {
+    init(_ followTitle: String = "Follow", _ unfollowTitle: String = "Unfollow") {
+        self.titles = (followTitle, unfollowTitle)
         super.init(frame: .zero)
         setup()
     }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -42,25 +54,25 @@ class FollowButton: MyButton {
     func setup() {
         addSubview(b1)
         addSubview(b2)
-        b1.pinToSuperview(edges: .horizontal, padding: -7).pinToSuperview(edges: .vertical, padding: -16)
         b2.pinToSuperview()
+        b1.centerToSuperview()
+        b1.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 2.45).isActive = true
+        b1.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.5).isActive = true
         
         addSubview(titleLabel)
         titleLabel
             .pinToSuperview(edges: .horizontal, padding: 12)
             .centerToSuperview(axis: .vertical)
         
-        titleLabel.text = "Follow"
+        titleLabel.text = isFollowing ? titles.1 : titles.0
         titleLabel.font = .appFont(withSize: 16, weight: .medium)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         titleLabel.adjustsFontSizeToFitWidth = true
-        
-        backgroundColor = UIColor(rgb: 0x181818)
-        layer.borderColor = UIColor(rgb: 0x222222).cgColor
-        layer.borderWidth = 1
-        layer.cornerRadius = 12
-        
-        constrainToSize(width: 88, height: 36)
+//
+//        backgroundColor = UIColor(rgb: 0x181818)
+//        layer.borderColor = UIColor(rgb: 0x222222).cgColor
+//        layer.borderWidth = 1
+//        layer.cornerRadius = 12
     }
 }

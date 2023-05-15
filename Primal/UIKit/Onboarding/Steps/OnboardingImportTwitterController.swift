@@ -52,13 +52,15 @@ private extension OnboardingImportTwitterController {
         input.input.resignFirstResponder()
         
         TwitterUserRequest(username: username).publisher()
+            .retry(2)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
-                if case .failure(let error) = completion  {
-                    self?.state = .notFound
-                    self?.showErrorMessage(error.localizedDescription)
-                } else {
+                switch completion {
+                case .finished:
                     self?.state = .ready
+                case .failure:
+                    self?.state = .notFound
+                    self?.showErrorMessage("We couldn't fetch that profile at this time. Please try again.")
                 }
             }, receiveValue: { [weak self] profile in
                 let twitter = OnboardingTwitterController(profile: profile)
@@ -105,10 +107,14 @@ private extension OnboardingImportTwitterController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let progressParent = UIView()
-        let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, spinner, confirmButton])
+        let spinnerParent = UIView()
+        let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, spinnerParent, confirmButton])
         
         progressParent.addSubview(progressView)
         progressView.pinToSuperview(edges: .vertical).centerToSuperview()
+        
+        spinnerParent.addSubview(spinner)
+        spinner.pinToSuperview(edges: .vertical).centerToSuperview().constrainToSize(100)
         
         instruction.font = .appFont(withSize: 20, weight: .regular)
         instruction.textColor = .init(rgb: 0xAAAAAA)
@@ -125,8 +131,6 @@ private extension OnboardingImportTwitterController {
         infoLabel.textAlignment = .center
         infoLabel.textColor = .init(rgb: 0xE20505)
         infoLabel.text = "Twitter account not found"
-        
-        spinner.constrainToSize(100)
         
         view.addSubview(mainStack)
         mainStack

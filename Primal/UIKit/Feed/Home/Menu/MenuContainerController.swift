@@ -228,12 +228,18 @@ private extension MenuContainerController {
     }
     
     @objc func signoutPressed() {
-        do {
-            try clear_keypair()
-            RootViewController.instance.reset()
-        } catch {
-            showErrorMessage(error.localizedDescription)
-        }
+        let alert = UIAlertController(title: "Are you sure you want to sign out?", message: "If you didn't save your nsec, it will be irretrievably lost", preferredStyle: .alert)
+        alert.addAction(.init(title: "Sign out", style: .destructive) { _ in
+            do {
+                try clear_keypair()
+                RootViewController.instance.reset()
+            } catch {
+                self.showErrorMessage(error.localizedDescription)
+            }
+        })
+        
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
     }
     
     @objc func toggleMenuTapped() {

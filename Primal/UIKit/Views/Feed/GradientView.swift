@@ -12,6 +12,11 @@ class GradientView: UIView {
     
     var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
     
+    var colors: [UIColor] {
+        set { gradientLayer.colors = newValue.map { $0.cgColor } }
+        get { [] }
+    }
+    
     init(colors: [UIColor]) {
         super.init(frame: .zero)
         
