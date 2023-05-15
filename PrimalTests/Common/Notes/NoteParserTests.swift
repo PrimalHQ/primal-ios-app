@@ -240,6 +240,8 @@ final class NoteParserTests: XCTestCase {
         
         var result = example
         
+        result = result.replacingOccurrences(of: content.firstExtractedURL, with: "httpUrl")
+        
         content.mentions.forEach { mention in
             result = result.replacingOccurrences(of: mention.text, with: "mention")
         }
@@ -257,5 +259,14 @@ final class NoteParserTests: XCTestCase {
         }
         
         XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag and url (httpUrl) and this is cool too: httpUrl and httpUrl")
+    }
+    
+    func testInfiniteLoop() {
+        let example = "#[0]​ your email server seems to block mine so heres a patch over nostr instead for cln-nostr-wallet-connect\n\ncurl https://jb55.com/s/379a833ddd8114ef.txt | git am"
+        
+        let parser = NoteParser(example)
+        let content = parser.parse()
+        
+        XCTAssertNotNil(content)
     }
 }

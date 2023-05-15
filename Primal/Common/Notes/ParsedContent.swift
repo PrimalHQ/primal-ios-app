@@ -7,10 +7,19 @@
 
 import Foundation
 
+struct ParsedElement: Equatable {
+    let position: Int
+    let length: Int
+    let text: String
+}
+
 struct ParsedContent {
     // array of dictionaries where key is position and value is length
-    var hashtags: [(position: Int, length: Int, text: String)] = []
-    var mentions: [(position: Int, length: Int, text: String)] = []
-    var notes: [(position: Int, length: Int, text: String)] = []
-    var httpUrls: [(position: Int, length: Int, text: String)] = []
+    var hashtags: [ParsedElement] = []
+    var mentions: [ParsedElement] = []
+    var notes: [ParsedElement] = []
+    var httpUrls: [ParsedElement] = []
+    
+    var imageUrls: [String] = []
+    var firstExtractedURL: String = ""
 }
