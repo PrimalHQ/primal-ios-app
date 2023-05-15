@@ -7,12 +7,12 @@
 
 import Foundation
 
-fileprivate let specialSymbols: [Character] = ["#", "@", "_", ":", "/", ".", "\u{0020}", "\u{000A}", "\u{000D}", "\u{0009}", "\u{000B}", "\u{000C}", "\0"]
+fileprivate let specialSymbols: [Character] = ["#", "@", "_", "-", ":", "/", ".", "\u{0020}", "\u{000A}", "\u{000D}", "\u{0009}", "\u{000B}", "\u{000C}", "\0"]
 
 public extension Character {
     var isNoteText: Bool {
         get {
-            return self.isLetter || self.isNumber || self == "_"
+            return self.isLetter || self.isNumber || self == "_" || self == "-"
         }
     }
     
