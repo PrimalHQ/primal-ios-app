@@ -23,7 +23,7 @@ class FeedCell: PostCell {
     
     func update(_ post: PrimalPost, text: String, imageUrls: [URL], edgeBleed: Bool) {
         super.update(post, text: text, imageUrls: imageUrls)
-        
+                
         textStack.isHidden = text.isEmpty
         imageStack.isHidden = imageUrls.isEmpty
         if edgeBleed {
