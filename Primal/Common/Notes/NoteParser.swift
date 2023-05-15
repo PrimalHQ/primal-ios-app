@@ -11,11 +11,15 @@ public class NoteParser {
     private var tokens: [SyntaxToken] = []
     public var parsedExpressions: [ExpressionSyntax] = []
     private var position: Int = 0
+    private var text: String
+    private var ignoreUrls: Bool = false
     
     var diagnostics: [String] = []
     
-    public init(_ text: String) {
+    public init(_ text: String, ignoreUrls: Bool = false) {
         var tokens: [SyntaxToken] = []
+        self.text = text
+        self.ignoreUrls = ignoreUrls
         
         let lexer = NoteLexer(text)
         var token: SyntaxToken
@@ -110,43 +114,56 @@ public class NoteParser {
         }
     }
     
-    func parse() -> ParsedContent {
-        self.parseExpressions()
+    private func parseHttpExpression() {
+        var tokens: [SyntaxToken] = []
+        var token: SyntaxToken
         
-        var p = ParsedContent()
+        // parens are URL safe and not encoded
+        // try and detect open paren in text before url
+        let isPreHttpUrlTokenOpenParen = peek(-1).kind == .SymbolToken && peek(-1).text == "("
         
-        self.parsedExpressions.forEach { expr in
-            switch (expr) {
-            case let hashTagExpr as HashtagExpressionSyntax:
-                p.hashtags.append((
-                    position: hashTagExpr.hashtagToken.position,
-                    length: hashTagExpr.hashtagToken.text.count + hashTagExpr.textToken.text.count,
-                    text: hashTagExpr.hashtagToken.text + hashTagExpr.textToken.text
-                ))
-            case let mentionNpubExpr as MentionNpubExpressionSyntax:
-                p.mentions.append((
-                    position: mentionNpubExpr.mentionToken.position,
-                    length: mentionNpubExpr.mentionToken.text.count + mentionNpubExpr.npubToken.text.count,
-                    text: mentionNpubExpr.mentionToken.text + mentionNpubExpr.npubToken.text
-                ))
-            case let nostrNpubExpr as NostrNpubExpressionSyntax:
-                p.mentions.append((
-                    position: nostrNpubExpr.nostrToken.position,
-                    length: nostrNpubExpr.nostrToken.text.count + nostrNpubExpr.colonToken.text.count + nostrNpubExpr.npubToken.text.count,
-                    text: nostrNpubExpr.nostrToken.text + nostrNpubExpr.colonToken.text + nostrNpubExpr.npubToken.text
-                ))
-            case let nostrNoteExpr as NostrNoteExpressionSyntax:
-                p.notes.append((
-                    position: nostrNoteExpr.nostrToken.position,
-                    length: nostrNoteExpr.nostrToken.text.count + nostrNoteExpr.colonToken.text.count + nostrNoteExpr.noteToken.text.count,
-                    text: nostrNoteExpr.nostrToken.text + nostrNoteExpr.colonToken.text + nostrNoteExpr.noteToken.text
-                ))
-            default:
-                break
+        repeat {
+            token = nextToken()
+            tokens.append(token)
+        } while (peek(0).kind != .WhitespaceToken && peek(0).kind != .EndOfFileToken)
+        
+        // if last token is close paren and we detected an open paren before url, ditch it
+        // it's not bulletproof in case of where there is an open paren before url and closing paren actually is a part of url
+        if let last = tokens.last {
+            if last.kind == .SymbolToken && last.text == ")" && isPreHttpUrlTokenOpenParen {
+                tokens.removeLast()
             }
         }
         
-        return p
+        let httpExpr = HttpUrlExpressionSyntax(tokens)
+        self.parsedExpressions.append(httpExpr)
+    }
+    
+    private func parseTextToken(_ token: SyntaxToken) {
+        switch (token.text.lowercased()) {
+        case "nostr":
+            if peek(1).kind == .ColonToken && peek(2).kind == .TextToken {
+                parseNostrExpression()
+            } else {
+                fallthrough
+            }
+        case "http":
+            fallthrough
+        case "https":
+            if peek(1).kind == .ColonToken
+                && peek(2).kind == .ForwardSlashToken
+                && peek(3).kind == .ForwardSlashToken
+                && peek(4).kind == .TextToken
+                && peek(5).kind == .DotToken
+                && peek(6).kind == .TextToken {
+                parseHttpExpression()
+                break
+            } else {
+                fallthrough
+            }
+        default:
+            parseSimpleExpression()
+        }
     }
     
     public func getLexedTokens() -> [SyntaxToken] {
@@ -166,13 +183,7 @@ public class NoteParser {
             
             switch (token.kind) {
             case .TextToken:
-                if token.text.lowercased() == "nostr" {
-                    if peek(1).kind == .ColonToken && peek(2).kind == .TextToken {
-                        parseNostrExpression()
-                    }
-                } else {
-                    parseSimpleExpression()
-                }
+                parseTextToken(token)
             case .SymbolToken:
                 parseSimpleExpression()
             case .MentionToken:
@@ -191,12 +202,90 @@ public class NoteParser {
                 parseSimpleExpression()
             case .WhitespaceToken:
                 parseSimpleExpression()
+            case .ForwardSlashToken:
+                parseSimpleExpression()
+            case .DotToken:
+                parseSimpleExpression()
+            case .EndOfFileToken:
+                parseSimpleExpression()
+            default:
+                assertionFailure("Unsupported SyntaxToken: \(token.kind)")
+            }
+        } while (token.kind != .EndOfFileToken)
+    }
+    
+    func parse() -> ParsedContent {
+        self.parseExpressions()
+        
+        var p = ParsedContent()
+        
+        self.parsedExpressions.forEach { expr in
+            switch (expr) {
+            case let hashTagExpr as HashtagExpressionSyntax:
+                p.hashtags.append(ParsedElement(
+                    position: hashTagExpr.hashtagToken.position,
+                    length: hashTagExpr.hashtagToken.text.count + hashTagExpr.textToken.text.count,
+                    text: hashTagExpr.hashtagToken.text + hashTagExpr.textToken.text
+                ))
+            case let mentionNpubExpr as MentionNpubExpressionSyntax:
+                p.mentions.append(ParsedElement(
+                    position: mentionNpubExpr.mentionToken.position,
+                    length: mentionNpubExpr.mentionToken.text.count + mentionNpubExpr.npubToken.text.count,
+                    text: mentionNpubExpr.mentionToken.text + mentionNpubExpr.npubToken.text
+                ))
+            case let nostrNpubExpr as NostrNpubExpressionSyntax:
+                p.mentions.append(ParsedElement(
+                    position: nostrNpubExpr.nostrToken.position,
+                    length: nostrNpubExpr.nostrToken.text.count + nostrNpubExpr.colonToken.text.count + nostrNpubExpr.npubToken.text.count,
+                    text: nostrNpubExpr.nostrToken.text + nostrNpubExpr.colonToken.text + nostrNpubExpr.npubToken.text
+                ))
+            case let nostrNoteExpr as NostrNoteExpressionSyntax:
+                p.notes.append(ParsedElement(
+                    position: nostrNoteExpr.nostrToken.position,
+                    length: nostrNoteExpr.nostrToken.text.count + nostrNoteExpr.colonToken.text.count + nostrNoteExpr.noteToken.text.count,
+                    text: nostrNoteExpr.nostrToken.text + nostrNoteExpr.colonToken.text + nostrNoteExpr.noteToken.text
+                ))
+            case let httpUrlExpr as HttpUrlExpressionSyntax:
+                p.httpUrls.append(ParsedElement(
+                    position: httpUrlExpr.tokens.first?.position ?? -1,
+                    length: httpUrlExpr.tokens.reduce(0) { $0 + $1.text.count },
+                    text: httpUrlExpr.tokens.reduce("") { $0 + $1.text }
+                ))
             default:
                 break
             }
-        } while (token.kind != .EndOfFileToken)
+        }
         
-        parseSimpleExpression()
+        if !p.httpUrls.isEmpty && !self.ignoreUrls {
+            var cleanedText = self.text
+            
+            var firstHttpUrlText = ""
+            var imageUrls: [String] = []
+            if let firstHttpUrl = p.httpUrls.first {
+                firstHttpUrlText = firstHttpUrl.text
+                p.httpUrls.remove(object: firstHttpUrl)
+                
+                cleanedText = cleanedText.replacingOccurrences(of: firstHttpUrl.text, with: "")
+                
+                p.httpUrls.forEach { httpUrl in
+                    if httpUrl.text.isImageURL {
+                        cleanedText = cleanedText.replacingOccurrences(of: httpUrl.text, with: "")
+                        p.httpUrls.remove(object: httpUrl)
+                        imageUrls.append(httpUrl.text)
+                        
+                    }
+                }
+            }
+            
+            // parse again
+            let parsedCleanTextParser = NoteParser(cleanedText, ignoreUrls: true)
+            var result = parsedCleanTextParser.parse()
+            result.firstExtractedURL = firstHttpUrlText
+            result.imageUrls = imageUrls
+            
+            return result
+        }
+        
+        return p
     }
 }
-

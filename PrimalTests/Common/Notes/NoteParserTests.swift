@@ -233,12 +233,14 @@ final class NoteParserTests: XCTestCase {
         XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag")
     }
     
-    func testParsedContentWithURl() {
-        let example = "Hello @npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg and nostr:npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg, this #post: nostr:note1s4p70596lv50x0zftuses32t6ck8x6wgd4edwacyetfxwns2jtysux7vep is so #cool_2023 and this is cool too: https://pbs.twimg.com/media/FwGRukMWcAYiSRY?format=jpg&name=medium"
+    func testParsedContentWithHttpUrl() {
+        let example = "Hello @npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg and nostr:npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg, this #post: nostr:note1s4p70596lv50x0zftuses32t6ck8x6wgd4edwacyetfxwns2jtysux7vep is so #cool_2023 and url (http://sample.info/?insect=fireman&porter=attraction#cave) and this is cool too: https://pbs.twimg.com/media/FwGRukMWcAYiSRY?format=jpg&name=medium and http://example.net/"
         let parser = NoteParser(example)
         let content = parser.parse()
         
         var result = example
+        
+        result = result.replacingOccurrences(of: content.firstExtractedURL, with: "httpUrl")
         
         content.mentions.forEach { mention in
             result = result.replacingOccurrences(of: mention.text, with: "mention")
@@ -252,6 +254,53 @@ final class NoteParserTests: XCTestCase {
             result = result.replacingOccurrences(of: note.text, with: "note")
         }
         
-        XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag and this is cool too: https://pbs.twimg.com/media/FwGRukMWcAYiSRY?format=jpg&name=medium")
+        content.httpUrls.forEach { httpUrl in
+            result = result.replacingOccurrences(of: httpUrl.text, with: "httpUrl")
+        }
+        
+        XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag and url (httpUrl) and this is cool too: httpUrl and httpUrl")
+    }
+    
+    func testParsedContentWithHttpAndImageUrls() {
+        let example = "Hello @npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg and nostr:npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg, this #post: nostr:note1s4p70596lv50x0zftuses32t6ck8x6wgd4edwacyetfxwns2jtysux7vep is so #cool_2023 and url (http://sample.info/?insect=fireman&porter=attraction#cave) and this is cool too: https://cdn-images-1.medium.com/max/593/1*LCJRpFgJIjk8jSGRrXe62w.jpeg and http://example.net/"
+        let parser = NoteParser(example)
+        let content = parser.parse()
+        
+        var result = example
+        
+        result = result.replacingOccurrences(of: content.firstExtractedURL, with: "httpUrl")
+        
+        content.mentions.forEach { mention in
+            result = result.replacingOccurrences(of: mention.text, with: "mention")
+        }
+        
+        content.hashtags.forEach { hashtag in
+            result = result.replacingOccurrences(of: hashtag.text, with: "hashtag")
+        }
+        
+        content.notes.forEach { note in
+            result = result.replacingOccurrences(of: note.text, with: "note")
+        }
+        
+        content.httpUrls.forEach { httpUrl in
+            result = result.replacingOccurrences(of: httpUrl.text, with: "httpUrl")
+        }
+        
+        content.imageUrls.forEach { imageUrl in
+            result = result.replacingOccurrences(of: imageUrl, with: "imageUrl")
+        }
+        
+        XCTAssertEqual(content.imageUrls.count, 1)
+        XCTAssertEqual(content.imageUrls.first, "https://cdn-images-1.medium.com/max/593/1*LCJRpFgJIjk8jSGRrXe62w.jpeg")
+        XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag and url (httpUrl) and this is cool too: imageUrl and httpUrl")
+    }
+    
+    func testInfiniteLoop() {
+        let example = "#[0]​ your email server seems to block mine so heres a patch over nostr instead for cln-nostr-wallet-connect\n\ncurl https://jb55.com/s/379a833ddd8114ef.txt | git am"
+        
+        let parser = NoteParser(example)
+        let content = parser.parse()
+        
+        XCTAssertNotNil(content)
     }
 }

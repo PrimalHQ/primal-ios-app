@@ -7,9 +7,25 @@
 
 import Foundation
 
+fileprivate let specialSymbols: [Character] = ["#", "@", "_", "-", ":", "/", ".", "\u{0020}", "\u{000A}", "\u{000D}", "\u{0009}", "\u{000B}", "\u{000C}", "\0"]
+
+public extension Character {
+    var isNoteText: Bool {
+        get {
+            return self.isLetter || self.isNumber || self == "_" || self == "-"
+        }
+    }
+    
+    var isNoteSymbol: Bool {
+        get {
+            // punctuation is not a symbol? huh?
+            return (self.isSymbol || self.isPunctuation) && !specialSymbols.contains(self)
+        }
+    }
+}
+
 public class NoteLexer {
     private let text: String
-    private let specialSymbols: [Character] = ["#", "@", "_", ":", "\u{0020}", "\u{000A}", "\u{000D}", "\u{0009}", "\u{000B}", "\u{000C}", "\0"]
     private var position: Int
     var diagnostics: [String] = []
     
@@ -46,17 +62,18 @@ public class NoteLexer {
             return SyntaxToken(kind: .EndOfFileToken, position: position, text: "\0", value: nil)
         }
         
-        if current.isLetter || current.isNumber || current == "_" {
-            let start = position
-            
-            while current.isLetter || current.isNumber || current == "_" {
-                next()
-            }
-            
-            let length = position - start
-            let text = String(self.text[start..<start+length])
-            
-            return SyntaxToken(kind: .TextToken, position: start, text: text, value: text)
+        if current == "." {
+            let text = String(current)
+            let token = SyntaxToken(kind: .DotToken, position: position, text: text, value: text)
+            position = position + 1
+            return token
+        }
+        
+        if current == "/" {
+            let text = String(current)
+            let token = SyntaxToken(kind: .ForwardSlashToken, position: position, text: text, value: text)
+            position = position + 1
+            return token
         }
         
         if current == ":" {
@@ -66,8 +83,34 @@ public class NoteLexer {
             return token
         }
         
-        // punctuation is not a symbol? huh?
-        if (current.isSymbol || current.isPunctuation) && !specialSymbols.contains(current) {
+        if current == "@" {
+            let text = String(current)
+            let token = SyntaxToken(kind: .MentionToken, position: position, text: text, value: text)
+            position = position + 1
+            return token
+        }
+        
+        if current == "#" {
+            let text = String(current)
+            let token = SyntaxToken(kind: .HashtagToken, position: position, text: text, value: text)
+            position = position + 1
+            return token
+        }
+        
+        if current.isNoteText {
+            let start = position
+            
+            while current.isNoteText {
+                next()
+            }
+            
+            let length = position - start
+            let text = String(self.text[start..<start+length])
+            
+            return SyntaxToken(kind: .TextToken, position: start, text: text, value: text)
+        }
+        
+        if current.isNoteSymbol {
             let text = String(current)
             let token = SyntaxToken(kind: .SymbolToken, position: position, text: text, value: text)
             position = position + 1
@@ -87,18 +130,6 @@ public class NoteLexer {
             return SyntaxToken(kind: .WhitespaceToken, position: start, text: text, value: text)
         }
         
-        if current == "@" {
-            let token = SyntaxToken(kind: .MentionToken, position: position, text: "@", value: "@")
-            position = position + 1
-            return token
-        }
-        
-        if current == "#" {
-            let token = SyntaxToken(kind: .HashtagToken, position: position, text: "#", value: "#")
-            position = position + 1
-            return token
-        }
-
         diagnostics.append("ERROR: bad character input: \(current)")
         let token = SyntaxToken(kind: .BadToken, position: position, text: String(self.text[position..<position+1]), value: nil)
         position = position + 1
