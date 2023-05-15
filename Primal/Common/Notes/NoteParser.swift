@@ -110,6 +110,46 @@ public class NoteParser {
         }
     }
     
+    private func parseHttpExpression() {
+        var tokens: [SyntaxToken] = []
+        var token: SyntaxToken
+        
+        repeat {
+            token = nextToken()
+            tokens.append(token)
+        } while (peek(0).kind != .WhitespaceToken && peek(0).kind != .EndOfFileToken)
+        
+        let httpExpr = HttpUrlExpressionSyntax(tokens)
+        self.parsedExpressions.append(httpExpr)
+    }
+    
+    private func parseTextToken(_ token: SyntaxToken) {
+        switch (token.text.lowercased()) {
+        case "nostr":
+            if peek(1).kind == .ColonToken && peek(2).kind == .TextToken {
+                parseNostrExpression()
+            } else {
+                fallthrough
+            }
+        case "http":
+            fallthrough
+        case "https":
+            if peek(1).kind == .ColonToken
+                && peek(2).kind == .ForwardSlashToken
+                && peek(3).kind == .ForwardSlashToken
+                && peek(4).kind == .TextToken
+                && peek(5).kind == .DotToken
+                && peek(6).kind == .TextToken {
+                parseHttpExpression()
+                break
+            } else {
+                fallthrough
+            }
+        default:
+            parseSimpleExpression()
+        }
+    }
+    
     func parse() -> ParsedContent {
         self.parseExpressions()
         
@@ -141,6 +181,12 @@ public class NoteParser {
                     length: nostrNoteExpr.nostrToken.text.count + nostrNoteExpr.colonToken.text.count + nostrNoteExpr.noteToken.text.count,
                     text: nostrNoteExpr.nostrToken.text + nostrNoteExpr.colonToken.text + nostrNoteExpr.noteToken.text
                 ))
+            case let httpUrlExpr as HttpUrlExpressionSyntax:
+                p.httpUrls.append((
+                    position: httpUrlExpr.tokens.first?.position ?? -1,
+                    length: httpUrlExpr.tokens.reduce(0) { $0 + $1.text.count },
+                    text: httpUrlExpr.tokens.reduce("") { $0 + $1.text }
+                ))
             default:
                 break
             }
@@ -166,13 +212,7 @@ public class NoteParser {
             
             switch (token.kind) {
             case .TextToken:
-                if token.text.lowercased() == "nostr" {
-                    if peek(1).kind == .ColonToken && peek(2).kind == .TextToken {
-                        parseNostrExpression()
-                    }
-                } else {
-                    parseSimpleExpression()
-                }
+                parseTextToken(token)
             case .SymbolToken:
                 parseSimpleExpression()
             case .MentionToken:
@@ -191,12 +231,16 @@ public class NoteParser {
                 parseSimpleExpression()
             case .WhitespaceToken:
                 parseSimpleExpression()
+            case .ForwardSlashToken:
+                parseSimpleExpression()
+            case .DotToken:
+                parseSimpleExpression()
+            case .EndOfFileToken:
+                parseSimpleExpression()
             default:
-                break
+                assertionFailure("Unsupported SyntaxToken: \(token.kind)")
             }
         } while (token.kind != .EndOfFileToken)
-        
-        parseSimpleExpression()
     }
 }
 

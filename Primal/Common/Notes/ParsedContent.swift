@@ -12,4 +12,5 @@ struct ParsedContent {
     var hashtags: [(position: Int, length: Int, text: String)] = []
     var mentions: [(position: Int, length: Int, text: String)] = []
     var notes: [(position: Int, length: Int, text: String)] = []
+    var httpUrls: [(position: Int, length: Int, text: String)] = []
 }

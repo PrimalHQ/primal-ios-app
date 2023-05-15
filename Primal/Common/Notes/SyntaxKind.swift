@@ -14,6 +14,12 @@ public enum SyntaxKind {
     // contains < : >
     case ColonToken
     
+    // contains < / >
+    case ForwardSlashToken
+    
+    // contains < . >
+    case DotToken
+    
     // contains symbols except # and @ and _
     case SymbolToken
     
@@ -43,4 +49,7 @@ public enum SyntaxKind {
     
     // contains expression of three kinds <NostrTextToken><ColonToken><TextToken>
     case NostrNoteExpression
+    
+    // contains an http/https url
+    case HttpExpression
 }

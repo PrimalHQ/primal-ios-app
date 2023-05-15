@@ -88,3 +88,16 @@ public class NostrNoteExpressionSyntax: ExpressionSyntax {
         return [nostrToken, colonToken, noteToken]
     }
 }
+
+public class HttpUrlExpressionSyntax: ExpressionSyntax {
+    public var kind: SyntaxKind { get { return .HttpExpression } }
+    public let tokens: [SyntaxToken]
+    
+    public init(_ tokens: [SyntaxToken]) {
+        self.tokens = tokens
+    }
+    
+    public func getChildren() -> any Sequence<SyntaxNode> {
+        return self.tokens.map { $0 as any SyntaxNode }
+    }
+}
