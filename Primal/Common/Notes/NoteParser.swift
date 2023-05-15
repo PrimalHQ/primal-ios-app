@@ -114,10 +114,22 @@ public class NoteParser {
         var tokens: [SyntaxToken] = []
         var token: SyntaxToken
         
+        // parens are URL safe and not encoded
+        // try and detect open paren in text before url
+        let isPreHttpUrlTokenOpenParen = peek(-1).kind == .SymbolToken && peek(-1).text == "("
+        
         repeat {
             token = nextToken()
             tokens.append(token)
         } while (peek(0).kind != .WhitespaceToken && peek(0).kind != .EndOfFileToken)
+        
+        // if last token is close paren and we detected an open paren before url, ditch it
+        // it's not bulletproof in case of where there is an open paren before url and closing paren actually is a part of url
+        if let last = tokens.last {
+            if last.kind == .SymbolToken && last.text == ")" && isPreHttpUrlTokenOpenParen {
+                tokens.removeLast()
+            }
+        }
         
         let httpExpr = HttpUrlExpressionSyntax(tokens)
         self.parsedExpressions.append(httpExpr)
