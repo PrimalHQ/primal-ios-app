@@ -43,8 +43,8 @@ private extension FollowProfileCell {
         
         addSubview(hStack)
         hStack
-            .pinToSuperview(edges: .horizontal, padding: 30)
-            .pinToSuperview(edges: .vertical, padding: 10)
+            .pinToSuperview(edges: .horizontal, padding: 28)
+            .pinToSuperview(edges: .vertical, padding: 16)
         
         hStack.spacing = 8
         hStack.alignment = .center
@@ -62,6 +62,7 @@ private extension FollowProfileCell {
         usernameLabel.font = .appFont(withSize: 12, weight: .regular)
         usernameLabel.adjustsFontSizeToFitWidth = true
         
+        followButton.constrainToSize(width: 88, height: 36)
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
     }
     

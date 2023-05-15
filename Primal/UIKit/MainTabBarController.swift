@@ -40,6 +40,12 @@ class MainTabBarController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        if let foregroundObserver {
+            NotificationCenter.default.removeObserver(foregroundObserver)
+        }
+    }
+    
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
