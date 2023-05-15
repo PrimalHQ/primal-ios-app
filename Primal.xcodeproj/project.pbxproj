@@ -29,6 +29,7 @@
 		933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */; };
 		933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBA2A114575008DCF1F /* SyntaxKind.swift */; };
 		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
+		933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */; };
 		93594D682A0D38A800634E20 /* LikingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93594D672A0D38A800634E20 /* LikingManager.swift */; };
 		93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93665D312A06BFE6001EB7A0 /* RelayPool.swift */; };
 		939330F629A3E36F003954C2 /* PrimalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939330F529A3E36F003954C2 /* PrimalApp.swift */; };
@@ -192,6 +193,7 @@
 		933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionSyntax.swift; sourceTree = "<group>"; };
 		933DBDBA2A114575008DCF1F /* SyntaxKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxKind.swift; sourceTree = "<group>"; };
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
+		933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedContent.swift; sourceTree = "<group>"; };
 		93594D672A0D38A800634E20 /* LikingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikingManager.swift; sourceTree = "<group>"; };
 		93665D312A06BFE6001EB7A0 /* RelayPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -394,6 +396,7 @@
 				933DBDB62A114532008DCF1F /* SyntaxNode.swift */,
 				933DBDB82A114544008DCF1F /* ExpressionSyntax.swift */,
 				933DBDBA2A114575008DCF1F /* SyntaxKind.swift */,
+				933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -1082,6 +1085,7 @@
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				932E864B29A6EB8600C415AA /* UIState.swift in Sources */,
 				939330F829A3E36F003954C2 /* ContentView.swift in Sources */,
+				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
 				932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */,
 				939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */,
 				9393312F29A3E54E003954C2 /* Feed.swift in Sources */,

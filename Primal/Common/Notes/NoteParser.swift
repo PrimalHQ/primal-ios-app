@@ -47,7 +47,7 @@ public class NoteParser {
     
     private func nextToken() -> SyntaxToken {
         let curr = current
-        position+=1
+        position += 1
         return curr
     }
     
@@ -108,6 +108,45 @@ public class NoteParser {
             self.parsedExpressions.append(colonExpr)
             self.parsedExpressions.append(textExpr)
         }
+    }
+    
+    func parse() -> ParsedContent {
+        self.parseExpressions()
+        
+        var p = ParsedContent()
+        
+        self.parsedExpressions.forEach { expr in
+            switch (expr) {
+            case let hashTagExpr as HashtagExpressionSyntax:
+                p.hashtags.append((
+                    position: hashTagExpr.hashtagToken.position,
+                    length: hashTagExpr.hashtagToken.text.count + hashTagExpr.textToken.text.count,
+                    text: hashTagExpr.hashtagToken.text + hashTagExpr.textToken.text
+                ))
+            case let mentionNpubExpr as MentionNpubExpressionSyntax:
+                p.mentions.append((
+                    position: mentionNpubExpr.mentionToken.position,
+                    length: mentionNpubExpr.mentionToken.text.count + mentionNpubExpr.npubToken.text.count,
+                    text: mentionNpubExpr.mentionToken.text + mentionNpubExpr.npubToken.text
+                ))
+            case let nostrNpubExpr as NostrNpubExpressionSyntax:
+                p.mentions.append((
+                    position: nostrNpubExpr.nostrToken.position,
+                    length: nostrNpubExpr.nostrToken.text.count + nostrNpubExpr.colonToken.text.count + nostrNpubExpr.npubToken.text.count,
+                    text: nostrNpubExpr.nostrToken.text + nostrNpubExpr.colonToken.text + nostrNpubExpr.npubToken.text
+                ))
+            case let nostrNoteExpr as NostrNoteExpressionSyntax:
+                p.notes.append((
+                    position: nostrNoteExpr.nostrToken.position,
+                    length: nostrNoteExpr.nostrToken.text.count + nostrNoteExpr.colonToken.text.count + nostrNoteExpr.noteToken.text.count,
+                    text: nostrNoteExpr.nostrToken.text + nostrNoteExpr.colonToken.text + nostrNoteExpr.noteToken.text
+                ))
+            default:
+                break
+            }
+        }
+        
+        return p
     }
     
     public func getLexedTokens() -> [SyntaxToken] {

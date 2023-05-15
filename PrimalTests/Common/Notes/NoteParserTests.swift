@@ -201,4 +201,26 @@ final class NoteParserTests: XCTestCase {
         
         XCTAssert(parser.parsedExpressions.count == 22)
     }
+    
+    func testParsedContentByReplacingOccurences() {
+        let example = "Hello @npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg and nostr:npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg, this #post: nostr:note1s4p70596lv50x0zftuses32t6ck8x6wgd4edwacyetfxwns2jtysux7vep is so #cool_2023"
+        let parser = NoteParser(example)
+        let content = parser.parse()
+        
+        var result = example
+        
+        content.mentions.forEach { mention in
+            result = result.replacingOccurrences(of: mention.text, with: "mention")
+        }
+        
+        content.hashtags.forEach { hashtag in
+            result = result.replacingOccurrences(of: hashtag.text, with: "hashtag")
+        }
+        
+        content.notes.forEach { note in
+            result = result.replacingOccurrences(of: note.text, with: "note")
+        }
+        
+        XCTAssertEqual(result, "Hello mention and mention, this hashtag: note is so hashtag")
+    }
 }

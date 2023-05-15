@@ -39,7 +39,7 @@ public class NoteLexer {
         }
     }
     
-    private func next() { position+=1 }
+    private func next() { position += 1 }
     
     public func nextToken() -> SyntaxToken {
         if position >= self.text.count {
