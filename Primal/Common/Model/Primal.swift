@@ -25,12 +25,12 @@ struct PrimalSettingsFeed: Codable, Hashable {
 struct PrimalSettingsContent: Codable, Hashable {
     let description: String?
     let theme: String?
-    let feeds: [PrimalSettingsFeed]
+    var feeds: [PrimalSettingsFeed]
 }
 
 struct PrimalSettings: Codable, Identifiable, Hashable {
     let kind: Int32
-    let content: PrimalSettingsContent
+    var content: PrimalSettingsContent
     let id: String
     let created_at: Int32
     let pubkey: String
