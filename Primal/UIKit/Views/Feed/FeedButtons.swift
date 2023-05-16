@@ -61,13 +61,6 @@ class FeedLikeButton: MyButton {
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
         
         animView.animation = AnimationType.iconLike.animation
-        
-        addTarget(self, action: #selector(tapped), for: .touchUpInside)
-    }
-    
-    @objc func tapped() {
-        animView.play()
-        titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
     }
 }
 

@@ -13,6 +13,8 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL)
     func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL])
     func postCellDidTapPost(_ cell: PostCell)
+    func postCellDidTapLike(_ cell: PostCell)
+    func postCellDidTapRepost(_ cell: PostCell)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -49,7 +51,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, parsedContent: ParsedContent) {
+    func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
         nameLabel.text = post.user.displayName
         usernameLabel.text = post.user.name
         
@@ -65,13 +67,24 @@ class PostCell: UITableViewCell {
             .cacheOriginalImage
         ])
         
+        likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
+        if didLike {
+            likeButton.animView.play()
+        } else {
+            likeButton.animView.stop()
+        }
+        
+        let repostColor = didRepost ? UIColor(rgb: 0x52CE0A) : UIColor(rgb: 0x757575)
+        repostButton.tintColor = repostColor
+        repostButton.setTitleColor(repostColor, for: .normal)
+        
         mainLabel.attributedText = parsedContent.attributedText
         mainImages.imageURLs = parsedContent.imageUrls
         
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.zaps)"
-        likeButton.titleLabel.text = "\(post.post.likes)"
-        repostButton.setTitle("  \(post.post.mentions)", for: .normal)
+        likeButton.titleLabel.text = "\(post.post.likes + (didLike ? 1 : 0))"
+        repostButton.setTitle("  \(post.post.mentions + (didRepost ? 1 : 0))", for: .normal)
     }
 }
 
@@ -141,12 +154,37 @@ private extension PostCell {
         backgroundColorView.layer.masksToBounds = true
         
         selectionStyle = .none
+        
+        likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
+        repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
+        repostButton.tintColor = UIColor(rgb: 0x757575)
+    }
+    
+    @objc func repostTapped() {
+        repostButton.tintColor = UIColor(rgb: 0x52CE0A)
+        repostButton.setTitleColor(UIColor(rgb: 0x52CE0A), for: .normal)
+        
+        if let number = Int(repostButton.title(for: .normal)?.trimmingCharacters(in: .whitespaces) ?? "") {
+            repostButton.setTitle("  \(number + 1)", for: .normal)
+        }
+        
+        delegate?.postCellDidTapRepost(self)
+    }
+    
+    @objc func likeTapped() {
+        likeButton.animView.play()
+        if let number = Int(likeButton.titleLabel.text ?? "") {
+            likeButton.titleLabel.text = "\(number + 1)"
+        }
+        likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
+        
+        delegate?.postCellDidTapLike(self)
     }
 }
 
 extension LPLinkMetadata {
     static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
-        var metadata = LPLinkMetadata()
+        let metadata = LPLinkMetadata()
         metadata.title = "Loading preview..."
         metadata.url = url
         return metadata

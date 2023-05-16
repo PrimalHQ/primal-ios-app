@@ -21,8 +21,8 @@ class FeedCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ post: PrimalPost, parsedContent: ParsedContent) {
-        super.update(post, parsedContent: parsedContent)
+    override func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
+        super.update(post, parsedContent: parsedContent, didLike: didLike, didRepost: didRepost)
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.imageUrls.isEmpty

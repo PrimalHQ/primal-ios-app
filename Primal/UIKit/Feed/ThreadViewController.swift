@@ -63,15 +63,20 @@ class ThreadViewController: FeedViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? ThreadCell {
             let data = posts[indexPath.row]
-            cell.update(data.0, parsedContent: data.1, position: {
-                if mainPositionInThread < indexPath.row {
-                    return .child
-                }
-                if mainPositionInThread > indexPath.row {
-                    return .parent
-                }
-                return .main
-            }())
+            cell.update(data.0,
+                        parsedContent: data.1,
+                        position: {
+                            if mainPositionInThread < indexPath.row {
+                                return .child
+                            }
+                            if mainPositionInThread > indexPath.row {
+                                return .parent
+                            }
+                            return .main
+                        }(),
+                        didLike: likingManager.hasLiked(data.0.post.id),
+                        didRepost: repostingManager.hasReposted(data.0.post.id)
+            )
             cell.delegate = self
         }
         return cell
