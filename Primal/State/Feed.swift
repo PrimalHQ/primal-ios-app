@@ -492,8 +492,9 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         return jsonStr
     }
     
-    private func generateLatestPageRequest(until: Int32 = 0) -> String {
-        guard let json: JSON = try? JSON(["REQ", "home_feed_\(self.currentUserHex)", ["cache": ["feed", ["user_pubkey": "\(self.currentUserHex)", "pubkey": "\(self.currentUserHex)", "limit": 20, "since": until == 0 ? 0 : until] as [String : Any]] as [Any]]] as [Any]) else {
+    private func generateLatestPageRequest(until: Int32 = 0, limit: Int32) -> String {
+        let key = until == 0 ? "since" : "until"
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(self.currentUserHex)", ["cache": ["feed", ["user_pubkey": "\(self.currentUserHex)", "pubkey": "\(self.currentUserHex)", "limit": limit, "\(key)": until] as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -552,7 +553,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         let feed = self.currentUserSettings?.content.feeds.first { $0.name == self.currentFeed } ?? PrimalSettingsFeed(name: "Latest", hex: "", npub: "")
         
         if feed.name == "Latest" {
-            return self.generateLatestPageRequest()
+            return self.generateLatestPageRequest(until: until, limit: limit)
         } else if feed.name == "Trending 24h" {
             return self.generateTrending24hPageRequest()
         } else if feed.name == "Most zapped 4h" {
