@@ -26,15 +26,15 @@ class ThreadCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ post: PrimalPost, text: String, imageUrls: [URL]) {
-        update(post, text: text, imageUrls: imageUrls, position: .child)
+    override func update(_ post: PrimalPost, parsedContent: ParsedContent) {
+        update(post, parsedContent: parsedContent, position: .child)
     }
     
-    func update(_ post: PrimalPost, text: String, imageUrls: [URL], position: ThreadPosition) {
-        super.update(post, text: text, imageUrls: imageUrls)
+    func update(_ post: PrimalPost, parsedContent: ParsedContent, position: ThreadPosition) {
+        super.update(post, parsedContent: parsedContent)
         
-        mainLabel.isHidden = text.isEmpty
-        mainImages.isHidden = imageUrls.isEmpty
+        mainLabel.isHidden = parsedContent.text.isEmpty
+        mainImages.isHidden = parsedContent.imageUrls.isEmpty
         
         switch position {
         case .parent:

@@ -217,14 +217,14 @@ private extension OnboardingSigninController {
         
         guard
             let keypair = get_saved_keypair(),
-            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+            (try? bech32_decode(keypair.pubkey_bech32)) != nil
         else {
             showErrorMessage("Unable to decode key.")
+            state = .invalidKey
             return
         }
-            
-        let encoded = hex_encode(decoded.data)
-        RootViewController.instance.set(MainTabBarController(feed: Feed(userHex: encoded)))
+        
+        RootViewController.instance.reset()
     }
     
     // MARK: - UI actions

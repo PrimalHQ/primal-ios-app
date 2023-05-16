@@ -8,18 +8,36 @@
 import UIKit
 
 class HomeFeedViewController: FeedViewController {
-    var onLoad: (() -> ())?
+    let loadingSpinner = LoadingSpinnerView()
+    
+    var onLoad: (() -> ())? {
+        didSet {
+            if !posts.isEmpty, let onLoad {
+                DispatchQueue.main.async {
+                    onLoad()
+                    self.onLoad = nil
+                }
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Latest with Replies"
         
-        feed.$posts
-            .map { $0.process() }
+        feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.posts = posts
+                if posts.isEmpty {
+                    self?.loadingSpinner.isHidden = false
+                    self?.loadingSpinner.play()
+                } else {
+                    self?.loadingSpinner.isHidden = true
+                    self?.loadingSpinner.stop()
+                }
+                
                 DispatchQueue.main.async {
                     self?.onLoad?()
                     self?.onLoad = nil
@@ -39,6 +57,9 @@ class HomeFeedViewController: FeedViewController {
         button.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
         button.setImage(UIImage(named: "feedPicker"), for: .normal)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+        
+        view.addSubview(loadingSpinner)
+        loadingSpinner.centerToSuperview().constrainToSize(100)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -46,6 +67,9 @@ class HomeFeedViewController: FeedViewController {
         
         mainTabBarController?.buttons.last?.removeTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
         mainTabBarController?.buttons.last?.addTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
+        
+        view.bringSubviewToFront(loadingSpinner)
+        loadingSpinner.play()
     }
     
     @objc func openFeedSelection() {

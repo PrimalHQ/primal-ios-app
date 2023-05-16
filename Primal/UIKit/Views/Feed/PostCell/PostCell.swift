@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import LinkPresentation
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL)
@@ -28,6 +29,7 @@ class PostCell: UITableViewCell {
     let verifiedServerLabel = UILabel()
     let mainLabel = LinkableLabel()
     let mainImages = ImageCollectionView()
+    let linkPresentation = LPLinkView()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
@@ -47,7 +49,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, text: String, imageUrls: [URL]) {
+    func update(_ post: PrimalPost, parsedContent: ParsedContent) {
         nameLabel.text = post.user.displayName
         usernameLabel.text = post.user.name
         
@@ -63,15 +65,8 @@ class PostCell: UITableViewCell {
             .cacheOriginalImage
         ])
         
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = 7
-        mainLabel.attributedText = NSAttributedString(string: text, attributes: [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.appFont(withSize: 18, weight: .regular),
-            .paragraphStyle: style
-        ])
-        mainLabel.delegate = self
-        mainImages.imageURLs = imageUrls
+        mainLabel.attributedText = parsedContent.attributedText
+        mainImages.imageURLs = parsedContent.imageUrls
         
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.zaps)"
@@ -125,19 +120,34 @@ private extension PostCell {
         nameLabel.adjustsFontSizeToFitWidth = true
         
         mainLabel.numberOfLines = 0
+        mainLabel.font = UIFont.appFont(withSize: 15, weight: .regular)
+        mainLabel.delegate = self
         
-        let height = mainImages.heightAnchor.constraint(equalToConstant: 224)
-        height.priority = .defaultHigh
-        height.isActive = true
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         
+        let height = mainImages.heightAnchor.constraint(equalToConstant: 224)
+        let height2 = linkPresentation.heightAnchor.constraint(equalToConstant: 230)
+        [height, height2].forEach {
+            $0.priority = .defaultHigh
+            $0.isActive = true
+        }
+        
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
-        backgroundColorView.backgroundColor = UIColor(rgb: 0x181818)
+        backgroundColorView.backgroundColor = UIColor(rgb: 0x121212)
         backgroundColorView.layer.cornerRadius = 8
         backgroundColorView.layer.masksToBounds = true
         
         selectionStyle = .none
+    }
+}
+
+extension LPLinkMetadata {
+    static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
+        var metadata = LPLinkMetadata()
+        metadata.title = "Loading preview..."
+        metadata.url = url
+        return metadata
     }
 }

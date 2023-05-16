@@ -246,17 +246,13 @@ struct PrimalPost : Codable, Hashable, Identifiable {
 }
 
 extension PrimalPost {
-    func process() -> (PrimalPost, text: String, images: [URL]) {
-        let result: [String] = post.content.extractTagsMentionsAndURLs()
-        let text: String = result.filter({ !$0.isValidURLAndIsImage }).joined(separator: " ")
-        let imageUrls: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
-        
-        return (self, text, imageUrls)
+    func process() -> (PrimalPost, ParsedContent) {
+        (self, NoteParser(post.content).parse())
     }
 }
 
 extension Array where Element == PrimalPost {
-    func process() -> [(PrimalPost, text: String, images: [URL])] {
+    func process() -> [(PrimalPost, ParsedContent)] {
         map { $0.process() }
     }
 }

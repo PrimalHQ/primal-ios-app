@@ -63,20 +63,15 @@ class ThreadViewController: FeedViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? ThreadCell {
             let data = posts[indexPath.row]
-            cell.update(
-                data.0,
-                text: data.1,
-                imageUrls: data.2,
-                position: {
-                    if mainPositionInThread < indexPath.row {
-                        return .child
-                    }
-                    if mainPositionInThread > indexPath.row {
-                        return .parent
-                    }
-                    return .main
-                }()
-            )
+            cell.update(data.0, parsedContent: data.1, position: {
+                if mainPositionInThread < indexPath.row {
+                    return .child
+                }
+                if mainPositionInThread > indexPath.row {
+                    return .parent
+                }
+                return .main
+            }())
             cell.delegate = self
         }
         return cell
@@ -88,8 +83,7 @@ private extension ThreadViewController {
         title = "Thread"
         
         feed.requestThread(postId: id, subId: id)
-        request = feed.$threadPosts
-            .map { $0.process() }
+        request = feed.$parsedThreadPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.mainPositionInThread = posts.firstIndex(where: { $0.0.post.id == self?.id }) ?? 0

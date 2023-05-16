@@ -40,11 +40,13 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var didFinishInit: Bool = false
     
     @Published var posts: [PrimalPost] = []
+    @Published var parsedPosts: [(PrimalPost, ParsedContent)] = []
     private var bufferNostrPosts: [NostrContent] = []
     private var bufferNostrUsers: [String: NostrContent] = [:]
     private var bufferNostrStats: [String: NostrContentStats] = [:]
     
     @Published var threadPosts: [PrimalPost] = []
+    @Published var parsedThreadPosts: [(PrimalPost, ParsedContent)] = []
     private var threadSubId: String = ""
     private var bufferThreadNostrPosts: [NostrContent] = []
     private var bufferThreadNostrUsers: [String: NostrContent] = [:]
@@ -84,6 +86,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.currentFeed = feed
         
         self.posts.removeAll()
+        self.parsedPosts.removeAll()
         self.clearBufferPosts()
         self.requestNewPage()
     }
@@ -101,6 +104,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         self.threadSubId = subId
         self.threadPosts.removeAll()
+        self.parsedThreadPosts.removeAll()
         self.bufferThreadNostrUsers.removeAll()
         self.bufferThreadNostrPosts.removeAll()
         self.bufferThreadNostrStats.removeAll()
@@ -444,12 +448,14 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     private func appendPostsAndClearBuffer(_ posts: [PrimalPost]) {
         self.posts.append(contentsOf: posts)
+        self.parsedPosts.append(contentsOf: posts.process())
         
         self.clearBufferPosts()
     }
     
     private func appendThreadPostsAndClearBuffer(_ posts: [PrimalPost]) {
         self.threadPosts.append(contentsOf: posts)
+        self.parsedThreadPosts.append(contentsOf: posts.process())
         
         self.bufferThreadNostrStats.removeAll()
         self.bufferThreadNostrPosts.removeAll()

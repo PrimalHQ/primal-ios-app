@@ -43,6 +43,10 @@ public class NoteParser {
             return tokens[tokens.count - 1]
         }
         
+        if index < 0 {
+            return tokens[0]
+        }
+        
         return tokens[index]
     }
     
@@ -256,35 +260,36 @@ public class NoteParser {
             }
         }
         
-        if !p.httpUrls.isEmpty && !self.ignoreUrls {
-            var cleanedText = self.text
+        let cleanedText = NSMutableString(string: self.text)
+        
+        let imageURLs = p.httpUrls.filter { $0.text.isImageURL }
+        var urlsToRemove = p.httpUrls.filter { $0.text.isImageURL }
+        var otherURLs = p.httpUrls.filter { $0.text.isImageURL == false }
+        
+//        if let firstURL = otherURLs.first {
+//            p.firstExtractedURL = URL(string: firstURL.text)
+//            otherURLs.removeFirst()
+//            urlsToRemove.append(firstURL)
+//        }
+        
+        // We sort them in reverse so we don't have to update it in the loop
+        urlsToRemove.sort(by: { $0.position > $1.position })
+        for url in urlsToRemove {
+            cleanedText.replaceCharacters(in: NSRange(location: url.position, length: url.length), with: "")
             
-            var firstHttpUrlText = ""
-            var imageUrls: [String] = []
-            if let firstHttpUrl = p.httpUrls.first {
-                firstHttpUrlText = firstHttpUrl.text
-                p.httpUrls.remove(object: firstHttpUrl)
-                
-                cleanedText = cleanedText.replacingOccurrences(of: firstHttpUrl.text, with: "")
-                
-                p.httpUrls.forEach { httpUrl in
-                    if httpUrl.text.isImageURL {
-                        cleanedText = cleanedText.replacingOccurrences(of: httpUrl.text, with: "")
-                        p.httpUrls.remove(object: httpUrl)
-                        imageUrls.append(httpUrl.text)
-                        
+            [p.notes, p.mentions, p.httpUrls, p.hashtags].forEach { elements in
+                for e in elements {
+                    if e.position > url.position {
+                        e.position -= url.length
                     }
                 }
             }
-            
-            // parse again
-            let parsedCleanTextParser = NoteParser(cleanedText, ignoreUrls: true)
-            var result = parsedCleanTextParser.parse()
-            result.firstExtractedURL = firstHttpUrlText
-            result.imageUrls = imageUrls
-            
-            return result
         }
+        
+        p.imageUrls = imageURLs.compactMap { URL(string: $0.text) }
+        p.httpUrls = otherURLs
+        p.text = (cleanedText as String).replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression) // Remove trailing whitespaces
+        p.buildContentString()
         
         return p
     }

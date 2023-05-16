@@ -104,20 +104,22 @@ class MenuContainerController: UIViewController {
 
 private extension MenuContainerController {
     func setup() {
-        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1])
+        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
         let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, checkbox2, checkDomainLabel])
         let followingDescLabel = UILabel()
         let followersDescLabel = UILabel()
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
-        let buttonsStack = UIStackView(arrangedSubviews: [
-            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BLOCKED USERS"),
-            MenuItemButton(title: "NOSTR RELAYS"), MenuItemButton(title: "SETTINGS")
-        ])
         let signOut = MenuItemButton(title: "SIGN OUT")
+        let buttonsStack = UIStackView(arrangedSubviews: [
+            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
+            MenuItemButton(title: "USER LISTS"), MenuItemButton(title: "SETTINGS"),
+            signOut
+        ])
+        let themeButton = UIButton()
         
         [
             profileImage, titleStack, usernameStack, followStack,
-            buttonsStack, UIView(), signOut
+            buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
         
@@ -134,12 +136,15 @@ private extension MenuContainerController {
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
         
+        themeButton.setImage(UIImage(named: "themeButton"), for: .normal)
+        
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
         buttonsStack.spacing = 30
         
         titleStack.alignment = .center
         titleStack.spacing = 4
+        titleStack.setCustomSpacing(12, after: checkbox1)
         
         usernameStack.alignment = .center
         usernameStack.spacing = 1

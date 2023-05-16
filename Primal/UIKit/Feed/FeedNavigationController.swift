@@ -7,15 +7,28 @@
 
 import UIKit
 
-class FeedNavigationController: UINavigationController {
+class ReadNavigationController: MainNavigationController {
     init(feed: Feed) {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed) )
+        super.init(rootViewController: MenuContainerController(child: ReadViewController(), feed: feed))
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class FeedNavigationController: MainNavigationController {
+    init(feed: Feed) {
+        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed))
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+}
+
+class MainNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         

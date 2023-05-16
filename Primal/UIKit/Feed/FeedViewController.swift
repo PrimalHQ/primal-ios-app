@@ -18,7 +18,7 @@ class FeedViewController: UIViewController, UITableViewDataSource {
     let table = UITableView()
     
     var fullBleed = false
-    var posts: [(PrimalPost, String, [URL])] = [] {
+    var posts: [(PrimalPost, ParsedContent)] = [] {
         didSet {
             table.reloadData()
         }
@@ -54,7 +54,7 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data.0, text: data.1, imageUrls: data.2, edgeBleed: fullBleed)
+            cell.update(data.0, parsedContent: data.1, edgeBleed: fullBleed)
             cell.delegate = self
         }
         

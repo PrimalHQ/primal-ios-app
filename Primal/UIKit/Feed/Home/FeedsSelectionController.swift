@@ -29,8 +29,11 @@ class FeedsSelectionController: UIViewController {
 private extension FeedsSelectionController {
     @objc func feedButtonPressed(_ button: UIButton) {
         guard let title = button.title(for: .normal), !title.isEmpty else { return }
-        feed.setCurrentFeed(title)
         dismiss(animated: true)
+        
+        DispatchQueue.global(qos: .background).async {
+            self.feed.setCurrentFeed(title)
+        }
     }
     
     func setup() {
@@ -40,7 +43,7 @@ private extension FeedsSelectionController {
                 pc.detents = [.custom(resolver: { [weak self] context in
                     guard let count = self?.feed.currentUserSettings?.content.feeds.count else { return 700 }
                     
-                    return 200 + CGFloat(count) * 66
+                    return 100 + CGFloat(count) * 66
                 })]
             } else {
                 pc.detents = [.large()]
@@ -49,6 +52,7 @@ private extension FeedsSelectionController {
         
         let pullBar = UIView()
         let title = UILabel()
+        let titleStack = UIStackView(arrangedSubviews: [UIImageView(image: UIImage(named: "ostrich")), title])
         
         var buttons: [UIButton] = []
         let settings = feed.currentUserSettings?.content.feeds ?? []
@@ -72,13 +76,20 @@ private extension FeedsSelectionController {
         scrollHeight.priority = .defaultHigh
         scrollHeight.isActive = true
         
-        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(size: 42), title, SpacerView(size: 42), scrollView, SpacerView(size: 42)])
+//        let border = GradientView(colors: [.clear, .white, .clear])
+//        border.gradientLayer.startPoint = .init(x: 0, y: 0.5)
+//        border.gradientLayer.endPoint = .init(x: 1, y: 0.5)
+//
+        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(size: 42), scrollView, SpacerView(size: 42)])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         stack.alignment = .center
+        stack.setCustomSpacing(10, after: titleStack)
+        
+        titleStack.spacing = 10
         
         buttonStack.axis = .vertical
         buttonStack.spacing = 30
@@ -91,5 +102,9 @@ private extension FeedsSelectionController {
         title.text = "My Nostr Feeds"
         title.font = .appFont(withSize: 32, weight: .semibold)
         title.textColor = .white
+        
+//        border
+//            .constrainToSize(height: 1)
+//            .widthAnchor.constraint(equalTo: titleStack.widthAnchor, multiplier: 1.2).isActive = true
     }
 }
