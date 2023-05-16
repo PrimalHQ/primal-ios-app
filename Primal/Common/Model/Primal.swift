@@ -8,6 +8,14 @@
 import Foundation
 import GenericJSON
 
+struct PrimalNoteStatus: Codable, Hashable {
+    let event_id: String
+    let replied: Bool
+    let liked: Bool
+    let reposted: Bool
+    let zapped: Bool
+}
+
 struct PrimalSettingsFeed: Codable, Hashable {
     let name: String
     let hex: String

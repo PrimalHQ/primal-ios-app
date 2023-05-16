@@ -1,36 +1,39 @@
 //
-//  LikingManager.swift
+//  RepostingManager.swift
 //  Primal
 //
-//  Created by Nikola Lukovic on 11.5.23..
+//  Created by Nikola Lukovic on 15.5.23..
 //
 
 import Foundation
-import GenericJSON
 
-class LikingManager {
-    let feed: Feed
+class RepostingManager {
+    private var feed: Feed
     
     init(feed: Feed) {
         self.feed = feed
     }
     
-    func hasLiked(_ eventId: String) -> Bool { feed.currentUserLikes.contains(eventId) }
+    public func hasReposted(_ eventId: String) -> Bool { feed.currentUserReposts.contains(eventId) }
     
-    func sendLikeEvent(post: PrimalFeedPost) {
+    func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
+        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
         
-        feed.postBox.pool.register_handler(sub_id: ev.id, handler: self.handleLikeEvent)
-        
-        feed.postBox.send(ev)
+        if let repostEvent = ev {
+            feed.postBox.pool.register_handler(sub_id: repostEvent.id, handler: self.handleRepostEvent)
+            
+            feed.postBox.send(repostEvent)
+        } else {
+            print("Error creating repost event")
+        }
     }
     
-    private func handleLikeEvent(relayId: String, ev: NostrConnectionEvent) {
+    private func handleRepostEvent(relayId: String, ev: NostrConnectionEvent) {
         switch ev {
         case .ws_event(let wsev):
             switch wsev {
@@ -51,7 +54,7 @@ class LikingManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    feed.currentUserLikes.insert(res.event_id)
+                    feed.currentUserReposts.insert(res.event_id)
                 }
                 break
             }

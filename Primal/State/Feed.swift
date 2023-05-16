@@ -34,6 +34,8 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUserContacts: Contacts = Contacts(created_at: -1, contacts: [])
     @Published var currentUserLikes: Set<String> = []
     @Published var currentUserReposts: Set<String> = []
+    @Published var currentUserReplied: Set<String> = []
+    @Published var currentUserZapped: Set<String> = []
     
     @Published var didFinishInit: Bool = false
     
@@ -208,32 +210,6 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         self.socket?.send(string: jsonStr)
     }
     
-    func sendLikeEvent(post: PrimalFeedPost) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
-        
-        self.postBox.send(ev)
-    }
-    
-    func sendRepostEvent(nostrContent: NostrContent) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
-        
-        if let repostEvent = ev {
-            self.postBox.send(repostEvent)
-        } else {
-            print("Error creating repost event")
-        }
-    }
-    
     func webSocketDidConnect(connection: WebSocketConnection) {
         print("webSocketDidConnect")
         self.requestCurrentUserProfile()
@@ -389,7 +365,23 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 self.bufferThreadNostrStats[nostrContentStats.event_id] = nostrContentStats
             }
         case 10000115:
-            print(json)
+            guard let noteStatus: PrimalNoteStatus = try? self.jsonDecoder.decode(PrimalNoteStatus.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding note status string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            if noteStatus.liked {
+                currentUserLikes.insert(noteStatus.event_id)
+            }
+            if noteStatus.replied {
+                currentUserReplied.insert(noteStatus.event_id)
+            }
+            if noteStatus.reposted {
+                currentUserReposts.insert(noteStatus.event_id)
+            }
+            if noteStatus.zapped {
+                currentUserZapped.insert(noteStatus.event_id)
+            }
         case 10000105:
             guard let nostrUserProfileInfo: NostrUserProfileInfo = try? self.jsonDecoder.decode(NostrUserProfileInfo.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding nostr stats string to json")

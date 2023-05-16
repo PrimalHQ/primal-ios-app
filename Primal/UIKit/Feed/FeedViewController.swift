@@ -87,8 +87,11 @@ extension FeedViewController: PostCellDelegate {
         guard let indexPath = table.indexPath(for: cell) else { return }
         open(post: posts[indexPath.row].0)
 
-        // feed.sendLikeEvent(post: item.post)
-        // feed.sendRepostEvent(nostrContent: item.post.toRepostNostrContent())
+//        let likingManager = LikingManager(feed: feed)
+//        likingManager.sendLikeEvent(post: posts[indexPath.row].0.post)
+        
+//        let repostingManager = RepostingManager(feed: feed)
+//        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
     }
     
     func postCellDidTapURL(_ cell: PostCell, url: URL) {
