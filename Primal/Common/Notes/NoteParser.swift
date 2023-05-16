@@ -17,23 +17,24 @@ public class NoteParser {
     var diagnostics: [String] = []
     
     public init(_ text: String, ignoreUrls: Bool = false) {
-        var tokens: [SyntaxToken] = []
+//        var tokens: [SyntaxToken] = []
         self.text = text
         self.ignoreUrls = ignoreUrls
+        self.tokens = [SyntaxToken(kind: .EndOfFileToken, position: position, text: "\0", value: nil)]
         
-        let lexer = NoteLexer(text)
-        var token: SyntaxToken
-        
-        repeat {
-            token = lexer.nextToken()
-            
-            if token.kind != .BadToken {
-                tokens.append(token)
-            }
-        } while (token.kind != .EndOfFileToken)
-        
-        self.tokens = tokens
-        self.diagnostics.append(contentsOf: lexer.diagnostics)
+//        let lexer = NoteLexer(text)
+//        var token: SyntaxToken
+//
+//        repeat {
+//            token = lexer.nextToken()
+//
+//            if token.kind != .BadToken {
+//                tokens.append(token)
+//            }
+//        } while (token.kind != .EndOfFileToken)
+//
+//        self.tokens = tokens
+//        self.diagnostics.append(contentsOf: lexer.diagnostics)
     }
     
     private func peek(_ offset: Int) -> SyntaxToken {
