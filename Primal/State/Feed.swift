@@ -26,7 +26,7 @@ struct Contacts {
 }
 
 class Feed: ObservableObject, WebSocketConnectionDelegate {
-    @Published var currentFeed: String = "Latest, following"
+    @Published var currentFeed: String = "Latest"
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
     @Published var currentUserSettings: PrimalSettings?
@@ -347,11 +347,22 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
                 }
             }
             self.didFinishInit = true
-            print("finish init")
         case 30078:
-            let primalSettings = PrimalSettings(json: json)
             if type == .settings {
+                let primalSettings = PrimalSettings(json: json)
                 self.currentUserSettings = primalSettings
+                
+                // override feeds for demo purposes
+                self.currentUserSettings?.content.feeds = [
+                    PrimalSettingsFeed(name: "Latest", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "Trending 24h", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "Most zapped 4h", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "#photography", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "#bitcoin2023", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "#nostrasia", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "#nature", hex: "", npub: ""),
+                    PrimalSettingsFeed(name: "#food", hex: "", npub: "")
+                ]
             }
         case 10000100:
             guard let nostrContentStats: NostrContentStats = try? self.jsonDecoder.decode(NostrContentStats.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
@@ -475,14 +486,80 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
         return jsonStr
     }
     
+    private func generateLatestPageRequest(until: Int32 = 0) -> String {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(self.currentUserHex)", ["cache": ["feed", ["user_pubkey": "\(self.currentUserHex)", "limit": 20, "since": until == 0 ? 0 : until] as [String : Any]] as [Any]]] as [Any]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
+    private func generateTrending24hPageRequest() -> String {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_trending_\(self.currentUserHex)", ["cache": ["explore_global_trending_24h"]]] as [Any]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
+    private func generateMostZapped4hPageRequest() -> String {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_zapped_\(self.currentUserHex)", ["cache": ["explore_global_mostzapped_4h"]]] as [Any]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
+    private func generateSearchContentPageRequest(_ criteria: String) -> String {
+        guard let json: JSON = try? JSON(["REQ", "search_content_\(self.currentUserHex)", ["cache": ["search", ["query": criteria, "limit": 100] as [String : Any]] as [Any] as [Any]]] as [Any]) else {
+            print("Error encoding req")
+            return ""
+        }
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return ""
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        return jsonStr
+    }
+    
     private func generateRequestByFeedType(until: Int32 = 0, limit: Int32 = 20) -> String {
         let feed = self.currentUserSettings?.content.feeds.first { $0.name == self.currentFeed }
         
-        if feed?.name == "Trending, my network" {
-            return self.generateTrendingPageRequestForHex(self.currentUserHex)
+        if let f = feed {
+            if f.name == "Latest" {
+                return self.generateLatestPageRequest()
+            } else if f.name == "Trending 24h" {
+                return self.generateTrending24hPageRequest()
+            } else if f.name == "Most zapped 4h" {
+                return self.generateMostZapped4hPageRequest()
+            } else if f.name[0] == "#" {
+                return self.generateSearchContentPageRequest(f.name)
+            } else {
+                return self.generateFeedPageRequestForHex(feed?.hex ?? self.currentUserHex, until: until, limit: limit)
+            }
         }
         
-        return self.generateFeedPageRequestForHex(feed?.hex ?? self.currentUserHex, until: until, limit: limit)
+        return ""
     }
     
     private func requestMentions(_ nostrContent: NostrContent) -> Void {
