@@ -543,23 +543,19 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateRequestByFeedType(until: Int32 = 0, limit: Int32 = 20) -> String {
-        let feed = self.currentUserSettings?.content.feeds.first { $0.name == self.currentFeed }
+        let feed = self.currentUserSettings?.content.feeds.first { $0.name == self.currentFeed } ?? PrimalSettingsFeed(name: "Latest", hex: "", npub: "")
         
-        if let f = feed {
-            if f.name == "Latest" {
-                return self.generateLatestPageRequest()
-            } else if f.name == "Trending 24h" {
-                return self.generateTrending24hPageRequest()
-            } else if f.name == "Most zapped 4h" {
-                return self.generateMostZapped4hPageRequest()
-            } else if f.name[0] == "#" {
-                return self.generateSearchContentPageRequest(f.name)
-            } else {
-                return self.generateFeedPageRequestForHex(feed?.hex ?? self.currentUserHex, until: until, limit: limit)
-            }
+        if feed.name == "Latest" {
+            return self.generateLatestPageRequest()
+        } else if feed.name == "Trending 24h" {
+            return self.generateTrending24hPageRequest()
+        } else if feed.name == "Most zapped 4h" {
+            return self.generateMostZapped4hPageRequest()
+        } else if feed.name[0] == "#" {
+            return self.generateSearchContentPageRequest(feed.name)
+        } else {
+            return self.generateFeedPageRequestForHex(feed.hex == "" ? self.currentUserHex : self.currentUserHex, until: until, limit: limit)
         }
-        
-        return ""
     }
     
     private func requestMentions(_ nostrContent: NostrContent) -> Void {
