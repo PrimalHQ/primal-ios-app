@@ -487,7 +487,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateLatestPageRequest(until: Int32 = 0) -> String {
-        guard let json: JSON = try? JSON(["REQ", "home_feed_\(self.currentUserHex)", ["cache": ["feed", ["user_pubkey": "\(self.currentUserHex)", "limit": 20, "since": until == 0 ? 0 : until] as [String : Any]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "home_feed_\(self.currentUserHex)", ["cache": ["feed", ["user_pubkey": "\(self.currentUserHex)", "pubkey": "\(self.currentUserHex)", "limit": 20, "since": until == 0 ? 0 : until] as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -501,7 +501,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateTrending24hPageRequest() -> String {
-        guard let json: JSON = try? JSON(["REQ", "sidebar_trending_\(self.currentUserHex)", ["cache": ["explore_global_trending_24h"]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_trending_\(self.currentUserHex)", ["cache": ["explore_global_trending_24h", ["user_pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -515,7 +515,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateMostZapped4hPageRequest() -> String {
-        guard let json: JSON = try? JSON(["REQ", "sidebar_zapped_\(self.currentUserHex)", ["cache": ["explore_global_mostzapped_4h"]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_zapped_\(self.currentUserHex)", ["cache": ["explore_global_mostzapped_4h", ["user_pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -529,7 +529,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateSearchContentPageRequest(_ criteria: String) -> String {
-        guard let json: JSON = try? JSON(["REQ", "search_content_\(self.currentUserHex)", ["cache": ["search", ["query": criteria, "limit": 100] as [String : Any]] as [Any] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "search_content_\(self.currentUserHex)", ["cache": ["search", ["query": criteria, "user_pubkey": "\(self.currentUserHex)", "limit": 100] as [String : Any]] as [Any] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
