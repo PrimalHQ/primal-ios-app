@@ -131,7 +131,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     func requestCurrentUserProfile() {
-        guard let json: JSON = try? JSON(["REQ", "user_profile_\(self.currentUserHex)", ["cache": ["user_info", ["pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "user_profile_\(self.currentUserHex)", ["cache": ["user_infos", ["pubkeys": ["\(self.currentUserHex)"]]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
