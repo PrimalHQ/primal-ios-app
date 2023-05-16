@@ -93,7 +93,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     
     func requestNewPage(until: Int32 = 0, limit: Int32 = 20) {
         let jsonStr = self.generateRequestByFeedType(until: until, limit: limit)
-        
+                
         self.socket?.send(string: jsonStr)
     }
     
@@ -257,7 +257,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
             dump(string)
             return
         }
-        
+                
         self.processMessage(json)
     }
     
@@ -507,7 +507,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateTrending24hPageRequest() -> String {
-        guard let json: JSON = try? JSON(["REQ", "sidebar_trending_\(self.currentUserHex)", ["cache": ["explore_global_trending_24h", ["user_pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_trending_\(self.currentUserHex)", ["cache": ["explore_global_trending_24h"] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
@@ -521,7 +521,7 @@ class Feed: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func generateMostZapped4hPageRequest() -> String {
-        guard let json: JSON = try? JSON(["REQ", "sidebar_zapped_\(self.currentUserHex)", ["cache": ["explore_global_mostzapped_4h", ["user_pubkey": "\(self.currentUserHex)"]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "sidebar_zapped_\(self.currentUserHex)", ["cache": ["explore_global_mostzapped_4h"] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return ""
         }
