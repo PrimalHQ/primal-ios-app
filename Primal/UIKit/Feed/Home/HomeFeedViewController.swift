@@ -65,9 +65,6 @@ class HomeFeedViewController: FeedViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        mainTabBarController?.buttons.last?.removeTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
-        mainTabBarController?.buttons.last?.addTarget(self, action: #selector(toggleFullBleed), for: .touchUpInside)
-        
         view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
     }

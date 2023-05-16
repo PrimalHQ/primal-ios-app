@@ -221,7 +221,7 @@ public class NoteParser {
     func parse() -> ParsedContent {
         self.parseExpressions()
         
-        var p = ParsedContent()
+        let p = ParsedContent()
         
         self.parsedExpressions.forEach { expr in
             switch (expr) {

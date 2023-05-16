@@ -17,7 +17,6 @@ class FeedViewController: UIViewController, UITableViewDataSource {
     let navigationBarLengthner = SpacerView(size: 7)
     let table = UITableView()
     
-    var fullBleed = false
     var posts: [(PrimalPost, ParsedContent)] = [] {
         didSet {
             table.reloadData()
@@ -36,11 +35,6 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func toggleFullBleed() {
-        fullBleed.toggle()
-        table.reloadData()
-    }
-    
     func open(post: PrimalPost) {
         let threadVC = ThreadViewController(feed: feed, threadId: post.post.id)
         show(threadVC, sender: nil)
@@ -54,7 +48,7 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data.0, parsedContent: data.1, edgeBleed: fullBleed)
+            cell.update(data.0, parsedContent: data.1)
             cell.delegate = self
         }
         

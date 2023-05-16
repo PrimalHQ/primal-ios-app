@@ -62,7 +62,6 @@ private extension OnboardingStartViewController {
         
         buttonStack.axis = .vertical
         buttonStack.spacing = 20
-        buttonStack.distribution = .equalCentering
         buttonStack.layoutMargins = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 35)
         buttonStack.isLayoutMarginsRelativeArrangement = true
         

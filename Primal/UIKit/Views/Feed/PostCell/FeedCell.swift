@@ -11,8 +11,6 @@ import Kingfisher
 class FeedCell: PostCell {
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
-    lazy var imageStack = UIStackView(arrangedSubviews: [mainImages])
-    lazy var linkStack = UIStackView(arrangedSubviews: [linkPresentation])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -23,43 +21,37 @@ class FeedCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, parsedContent: ParsedContent, edgeBleed: Bool) {
+    override func update(_ post: PrimalPost, parsedContent: ParsedContent) {
         super.update(post, parsedContent: parsedContent)
         
         textStack.isHidden = parsedContent.text.isEmpty
-        imageStack.isHidden = parsedContent.imageUrls.isEmpty
-        linkStack.isHidden = parsedContent.firstExtractedURL == nil
+        mainImages.isHidden = parsedContent.imageUrls.isEmpty
         
         layoutSubviews()
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
-        
-        if edgeBleed {
-            imageStack.layoutMargins = .init(top: 14, left: 0, bottom: 0, right: 0)
-            mainImages.layer.cornerRadius = 0
-        } else {
-            imageStack.layoutMargins = .init(top: 14, left: 16, bottom: 0, right: 16)
-            mainImages.layer.cornerRadius = 8
-        }
     }
 }
 
 private extension FeedCell {
     func setup() {
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
-        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, linkStack, imageStack, bottomButtonStack])
+        let buttonStackStandIn = UIView()
+        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, mainImages, buttonStackStandIn])
         
         contentView.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: [.horizontal, .bottom], padding: 16)
             .pinToSuperview(edges: .top, padding: 21)
-            .pinToSuperview(edges: .bottom, padding: 2) // Action buttons have a built in padding of 14
-        [mainStack, imageStack].forEach {
+        
+        [mainStack].forEach {
             $0.axis = .vertical
             $0.spacing = 16
         }
-        mainStack.setCustomSpacing(2, after: imageStack) // Action buttons have a built in padding of 14
-        mainStack.setCustomSpacing(2, after: textStack) // Action buttons have a built in padding of 14
+        
+        buttonStackStandIn.constrainToSize(height: 24)
+        contentView.addSubview(bottomButtonStack)
+        bottomButtonStack.pin(to: buttonStackStandIn, edges: .horizontal).centerToView(buttonStackStandIn)
         
         horizontalStack.alignment = .top
         horizontalStack.spacing = 12
@@ -76,10 +68,5 @@ private extension FeedCell {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: 18, weight: .regular)
         seeMoreLabel.textColor = UIColor(rgb: 0xCA079F)
-        
-        [horizontalStack, imageStack, bottomButtonStack, textStack, linkStack].forEach {
-            $0.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-            $0.isLayoutMarginsRelativeArrangement = true
-        }
     }
 }

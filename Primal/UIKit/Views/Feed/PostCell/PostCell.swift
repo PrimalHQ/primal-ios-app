@@ -123,6 +123,7 @@ private extension PostCell {
         mainLabel.font = UIFont.appFont(withSize: 15, weight: .regular)
         mainLabel.delegate = self
         
+        mainImages.layer.cornerRadius = 8
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         

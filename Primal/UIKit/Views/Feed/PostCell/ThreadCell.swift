@@ -83,9 +83,6 @@ private extension ThreadCell {
             $0.spacing = 16
         }
         
-        mainImages.layer.cornerRadius = 8
-        mainImages.layer.masksToBounds = true
-        
         profileImageView.constrainToSize(40)
         profileImageView.layer.cornerRadius = 20
         
