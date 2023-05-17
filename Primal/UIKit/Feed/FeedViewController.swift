@@ -58,7 +58,7 @@ class FeedViewController: UIViewController, UITableViewDataSource {
             cell.delegate = self
         }
         
-        if indexPath.row == posts.count - 10 {
+        if indexPath.row == posts.count - 5 {
             feed.requestNewPage()
         }
         return cell
@@ -90,7 +90,7 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent()) 
+        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

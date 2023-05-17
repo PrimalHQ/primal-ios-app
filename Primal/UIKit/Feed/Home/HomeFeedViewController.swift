@@ -56,6 +56,7 @@ class HomeFeedViewController: FeedViewController {
         button.constrainToSize(44)
         button.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
         button.setImage(UIImage(named: "feedPicker"), for: .normal)
+        button.backgroundColor = .black
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
         
         view.addSubview(loadingSpinner)

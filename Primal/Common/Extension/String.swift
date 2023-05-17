@@ -67,37 +67,43 @@ extension String : Identifiable {
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "#([a-zA-Z0-9]+)"
         let mentionPattern = "#\\[([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])\\]"
-        if let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
-           let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
-           let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
-            var ranges: [Range<String.Index>] = []
-            hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
-                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                    ranges.append(range)
-                }
-            }
-            mentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
-                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                    ranges.append(range)
-                }
-            }
-            urlDetector.enumerateMatches(in: self, range: NSRange(self.startIndex..., in: self)) { match, _, _ in
-                if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                    ranges.append(range)
-                }
-            }
-            var result: [String] = []
-            var currentIndex = self.startIndex
-            for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
-                if currentIndex < range.lowerBound {
-                    result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: [" ", "\n", "\t", "\r"]).replacingOccurrences(of: "\n", with: ""))
-                }
-                result.append(String(self[range]).trimmingCharacters(in: [" ", "\n", "\t", "\r"]).replacingOccurrences(of: "\n", with: ""))
-                currentIndex = range.upperBound
-            }
-            result.append(String(self[currentIndex...]))
-            return result
+        
+        let nSelf = self as NSString
+        
+        guard
+            let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
+            let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
+            let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        else {
+            return []
         }
-        return []
+        
+        var ranges: [Range<String.Index>] = []
+        hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                ranges.append(range)
+            }
+        }
+        mentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                ranges.append(range)
+            }
+        }
+        urlDetector.enumerateMatches(in: self, range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                ranges.append(range)
+            }
+        }
+        var result: [String] = []
+        var currentIndex = self.startIndex
+        for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
+            if currentIndex < range.lowerBound {
+                result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+            }
+            result.append(String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+            currentIndex = range.upperBound
+        }
+        result.append(String(self[currentIndex...]))
+        return result
     }
 }

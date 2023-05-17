@@ -263,9 +263,9 @@ public class NoteParser {
         
         let cleanedText = NSMutableString(string: self.text)
         
-        let imageURLs = p.httpUrls.filter { $0.text.isImageURL }
+//        let imageURLs = p.httpUrls.filter { $0.text.isImageURL }
         var urlsToRemove = p.httpUrls.filter { $0.text.isImageURL }
-        var otherURLs = p.httpUrls.filter { $0.text.isImageURL == false }
+//        var otherURLs = p.httpUrls.filter { $0.text.isImageURL == false }
         
 //        if let firstURL = otherURLs.first {
 //            p.firstExtractedURL = URL(string: firstURL.text)
@@ -287,9 +287,23 @@ public class NoteParser {
             }
         }
         
-        p.imageUrls = imageURLs.compactMap { URL(string: $0.text) }
-        p.httpUrls = otherURLs
-        p.text = (cleanedText as String).replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression) // Remove trailing whitespaces
+        let result: [String] = text.extractTagsMentionsAndURLs()
+        let text: String = result.filter({ !$0.isValidURLAndIsImage }).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
+        let otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) || $0.isHashTagOrMention })
+        
+        let nsText = text as NSString
+        
+        p.imageUrls = imageURLs
+        p.httpUrls = otherURLs.compactMap {
+            let position = nsText.range(of: $0)
+            
+            if position.location != NSNotFound {
+                return .init(position: position.location, length: position.length, text: $0)
+            }
+            return nil
+        }
+        p.text = text //(cleanedText as String).replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression) // Remove trailing whitespaces
         p.buildContentString()
         
         return p

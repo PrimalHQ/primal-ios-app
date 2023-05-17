@@ -153,11 +153,13 @@ private extension PostCell {
         backgroundColorView.layer.cornerRadius = 8
         backgroundColorView.layer.masksToBounds = true
         
+        repostButton.tintColor = UIColor(rgb: 0x757575)
+        
         selectionStyle = .none
         
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
-        repostButton.tintColor = UIColor(rgb: 0x757575)
+        replyButton.isUserInteractionEnabled = false
     }
     
     @objc func repostTapped() {

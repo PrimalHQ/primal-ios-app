@@ -116,6 +116,8 @@
 		9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */; };
 		9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */; };
 		9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */; };
+		9E9C421D2A14281A00F9D7ED /* FeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421C2A14281A00F9D7ED /* FeedManager.swift */; };
+		9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */; };
 		9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F42A0A717400D4837B /* ThreadCell.swift */; };
 		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
 		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
@@ -323,6 +325,8 @@
 		9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
 		9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
+		9E9C421C2A14281A00F9D7ED /* FeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedManager.swift; sourceTree = "<group>"; };
+		9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+Extra.swift"; sourceTree = "<group>"; };
 		9E9D46F42A0A717400D4837B /* ThreadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCell.swift; sourceTree = "<group>"; };
 		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
@@ -551,6 +555,7 @@
 				9E40D6E92A0D1A3B008AE854 /* FollowingManager.swift */,
 				93594D672A0D38A800634E20 /* LikingManager.swift */,
 				9344DB2E2A12C48900C9F281 /* RepostingManager.swift */,
+				9E9C421C2A14281A00F9D7ED /* FeedManager.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -579,6 +584,7 @@
 				9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */,
 				933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */,
 				9E4AAAA92A12288600C962BD /* UILabel+Extra.swift */,
+				9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1077,6 +1083,7 @@
 				9E40D6EA2A0D1A3B008AE854 /* FollowingManager.swift in Sources */,
 				933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
+				9E9C421D2A14281A00F9D7ED /* FeedManager.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
 				933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
@@ -1170,6 +1177,7 @@
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				9E0DEAEF29FD2FD900145E08 /* LottieView.swift in Sources */,
+				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
 				939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */,
 				939A01652A06C0EF00E9DBA2 /* Relay.swift in Sources */,
 				933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */,

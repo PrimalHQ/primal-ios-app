@@ -22,7 +22,13 @@ class OnboardingStartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setup()
+        let model = UIDevice.modelName
+        
+        if model.contains("Max") || model.contains("Plus") {
+            setupLargeScreen()
+        } else {
+            setup()
+        }
     }
     
     @objc func signupPressed() {
@@ -38,6 +44,36 @@ class OnboardingStartViewController: UIViewController {
 
 private extension OnboardingStartViewController {
     func setup() {
+        let stack = commonSetup()
+        
+        view.addSubview(stack)
+        stack
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .top, safeArea: true)
+            .pinToSuperview(edges: .bottom, safeArea: true)
+    }
+    
+    func setupLargeScreen() {
+        let stack = commonSetup()
+        
+        let scaledParentView = UIView()
+        scaledParentView.addSubview(stack)
+        stack
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .top, safeArea: true)
+            .pinToSuperview(edges: .bottom, safeArea: true)
+        
+        view.addSubview(scaledParentView)
+        scaledParentView.centerToSuperview()
+        NSLayoutConstraint.activate([
+            scaledParentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 9/10),
+            scaledParentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 9/10)
+        ])
+        
+        scaledParentView.transform = .init(scaleX: 10/9, y: 10/9)
+    }
+    
+    func commonSetup() -> UIView {
         navigationItem.titleView = UIImageView(image: UIImage(named: "logoTitle"))
         view.backgroundColor = .black
         
@@ -65,13 +101,9 @@ private extension OnboardingStartViewController {
         buttonStack.layoutMargins = UIEdgeInsets(top: 0, left: 35, bottom: 0, right: 35)
         buttonStack.isLayoutMarginsRelativeArrangement = true
         
-        view.addSubview(stack)
-        stack
-            .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, safeArea: true)
-            .pinToSuperview(edges: .bottom, safeArea: true)
-        
         signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
+        
+        return stack
     }
 }

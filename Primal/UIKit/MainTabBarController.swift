@@ -94,6 +94,7 @@ private extension MainTabBarController {
 
         closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
         closeMenuButton.tintColor = .white
+        closeMenuButton.backgroundColor = .black
         closeMenuButton.isHidden = true
         
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
@@ -102,6 +103,7 @@ private extension MainTabBarController {
         
         for (index, button) in buttons.enumerated() {
             button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
+            button.backgroundColor = .black
         }
         updateButtons()
         
