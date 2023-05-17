@@ -26,15 +26,15 @@ class ThreadCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ post: PrimalPost, text: String, imageUrls: [URL]) {
-        update(post, text: text, imageUrls: imageUrls, position: .child)
+    override func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
+        update(post, parsedContent: parsedContent, position: .child, didLike: didLike, didRepost: didRepost)
     }
     
-    func update(_ post: PrimalPost, text: String, imageUrls: [URL], position: ThreadPosition) {
-        super.update(post, text: text, imageUrls: imageUrls)
+    func update(_ post: PrimalPost, parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool) {
+        super.update(post, parsedContent: parsedContent, didLike: didLike, didRepost: didRepost)
         
-        mainLabel.isHidden = text.isEmpty
-        mainImages.isHidden = imageUrls.isEmpty
+        mainLabel.isHidden = parsedContent.text.isEmpty
+        mainImages.isHidden = parsedContent.imageUrls.isEmpty
         
         switch position {
         case .parent:
@@ -82,9 +82,6 @@ private extension ThreadCell {
             $0.axis = .vertical
             $0.spacing = 16
         }
-        
-        mainImages.layer.cornerRadius = 8
-        mainImages.layer.masksToBounds = true
         
         profileImageView.constrainToSize(40)
         profileImageView.layer.cornerRadius = 20

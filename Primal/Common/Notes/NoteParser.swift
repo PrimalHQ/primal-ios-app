@@ -17,23 +17,24 @@ public class NoteParser {
     var diagnostics: [String] = []
     
     public init(_ text: String, ignoreUrls: Bool = false) {
-        var tokens: [SyntaxToken] = []
+//        var tokens: [SyntaxToken] = []
         self.text = text
         self.ignoreUrls = ignoreUrls
+        self.tokens = [SyntaxToken(kind: .EndOfFileToken, position: position, text: "\0", value: nil)]
         
-        let lexer = NoteLexer(text)
-        var token: SyntaxToken
-        
-        repeat {
-            token = lexer.nextToken()
-            
-            if token.kind != .BadToken {
-                tokens.append(token)
-            }
-        } while (token.kind != .EndOfFileToken)
-        
-        self.tokens = tokens
-        self.diagnostics.append(contentsOf: lexer.diagnostics)
+//        let lexer = NoteLexer(text)
+//        var token: SyntaxToken
+//
+//        repeat {
+//            token = lexer.nextToken()
+//
+//            if token.kind != .BadToken {
+//                tokens.append(token)
+//            }
+//        } while (token.kind != .EndOfFileToken)
+//
+//        self.tokens = tokens
+//        self.diagnostics.append(contentsOf: lexer.diagnostics)
     }
     
     private func peek(_ offset: Int) -> SyntaxToken {
@@ -41,6 +42,10 @@ public class NoteParser {
         
         if index >= tokens.count {
             return tokens[tokens.count - 1]
+        }
+        
+        if index < 0 {
+            return tokens[0]
         }
         
         return tokens[index]
@@ -215,9 +220,9 @@ public class NoteParser {
     }
     
     func parse() -> ParsedContent {
-        self.parseExpressions()
+//        self.parseExpressions()
         
-        var p = ParsedContent()
+        let p = ParsedContent()
         
         self.parsedExpressions.forEach { expr in
             switch (expr) {
@@ -256,35 +261,50 @@ public class NoteParser {
             }
         }
         
-        if !p.httpUrls.isEmpty && !self.ignoreUrls {
-            var cleanedText = self.text
+        let cleanedText = NSMutableString(string: self.text)
+        
+//        let imageURLs = p.httpUrls.filter { $0.text.isImageURL }
+        var urlsToRemove = p.httpUrls.filter { $0.text.isImageURL }
+//        var otherURLs = p.httpUrls.filter { $0.text.isImageURL == false }
+        
+//        if let firstURL = otherURLs.first {
+//            p.firstExtractedURL = URL(string: firstURL.text)
+//            otherURLs.removeFirst()
+//            urlsToRemove.append(firstURL)
+//        }
+        
+        // We sort them in reverse so we don't have to update it in the loop
+        urlsToRemove.sort(by: { $0.position > $1.position })
+        for url in urlsToRemove {
+            cleanedText.replaceCharacters(in: NSRange(location: url.position, length: url.length), with: "")
             
-            var firstHttpUrlText = ""
-            var imageUrls: [String] = []
-            if let firstHttpUrl = p.httpUrls.first {
-                firstHttpUrlText = firstHttpUrl.text
-                p.httpUrls.remove(object: firstHttpUrl)
-                
-                cleanedText = cleanedText.replacingOccurrences(of: firstHttpUrl.text, with: "")
-                
-                p.httpUrls.forEach { httpUrl in
-                    if httpUrl.text.isImageURL {
-                        cleanedText = cleanedText.replacingOccurrences(of: httpUrl.text, with: "")
-                        p.httpUrls.remove(object: httpUrl)
-                        imageUrls.append(httpUrl.text)
-                        
+            [p.notes, p.mentions, p.httpUrls, p.hashtags].forEach { elements in
+                for e in elements {
+                    if e.position > url.position {
+                        e.position -= url.length
                     }
                 }
             }
-            
-            // parse again
-            let parsedCleanTextParser = NoteParser(cleanedText, ignoreUrls: true)
-            var result = parsedCleanTextParser.parse()
-            result.firstExtractedURL = firstHttpUrlText
-            result.imageUrls = imageUrls
-            
-            return result
         }
+        
+        let result: [String] = text.extractTagsMentionsAndURLs()
+        let text: String = result.filter({ !$0.isValidURLAndIsImage }).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
+        let otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) || $0.isHashTagOrMention })
+        
+        let nsText = text as NSString
+        
+        p.imageUrls = imageURLs
+        p.httpUrls = otherURLs.compactMap {
+            let position = nsText.range(of: $0)
+            
+            if position.location != NSNotFound {
+                return .init(position: position.location, length: position.length, text: $0)
+            }
+            return nil
+        }
+        p.text = text //(cleanedText as String).replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression) // Remove trailing whitespaces
+        p.buildContentString()
         
         return p
     }

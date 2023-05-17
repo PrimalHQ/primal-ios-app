@@ -28,7 +28,7 @@ class MenuContainerController: UIViewController {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
-    private let profileImageButton = UIButton()
+    private let menuProfileImage = UIImageView()
     
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
@@ -104,20 +104,22 @@ class MenuContainerController: UIViewController {
 
 private extension MenuContainerController {
     func setup() {
-        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1])
+        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
         let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, checkbox2, checkDomainLabel])
         let followingDescLabel = UILabel()
         let followersDescLabel = UILabel()
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
-        let buttonsStack = UIStackView(arrangedSubviews: [
-            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BLOCKED USERS"),
-            MenuItemButton(title: "NOSTR RELAYS"), MenuItemButton(title: "SETTINGS")
-        ])
         let signOut = MenuItemButton(title: "SIGN OUT")
+        let buttonsStack = UIStackView(arrangedSubviews: [
+            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
+            MenuItemButton(title: "USER LISTS"), MenuItemButton(title: "SETTINGS"),
+            signOut
+        ])
+        let themeButton = UIButton()
         
         [
             profileImage, titleStack, usernameStack, followStack,
-            buttonsStack, UIView(), signOut
+            buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
         
@@ -134,12 +136,15 @@ private extension MenuContainerController {
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
         
+        themeButton.setImage(UIImage(named: "themeButton"), for: .normal)
+        
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
         buttonsStack.spacing = 30
         
         titleStack.alignment = .center
         titleStack.spacing = 4
+        titleStack.setCustomSpacing(12, after: checkbox1)
         
         usernameStack.alignment = .center
         usernameStack.spacing = 1
@@ -180,11 +185,19 @@ private extension MenuContainerController {
         }
         [followersLabel, followingLabel].forEach { $0.textColor = UIColor(rgb: 0xD9D9D9) }
         
+        let menuButtonParent = UIView()
+        let profileImageButton = UIButton()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
-        profileImageButton.constrainToSize(36)
-        profileImageButton.layer.cornerRadius = 18
-        profileImageButton.layer.masksToBounds = true
-        child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageButton)
+        profileImageButton.backgroundColor = .black
+        menuProfileImage.layer.cornerRadius = 16
+        menuProfileImage.layer.masksToBounds = true
+        menuProfileImage.isUserInteractionEnabled = false
+        
+        menuButtonParent.addSubview(profileImageButton)
+        profileImageButton.constrainToSize(44).pinToSuperview()
+        menuButtonParent.addSubview(menuProfileImage)
+        menuProfileImage.constrainToSize(32).centerToSuperview()
+        child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)
         coverView.pin(to: child.view)
@@ -219,10 +232,14 @@ private extension MenuContainerController {
             .cacheOriginalImage
         ])
         
+        menuProfileImage.kf.setImage(with: URL(string: user.picture), options: [
+            .processor(DownsamplingImageProcessor(size: .init(width: 32, height: 32))),
+            .scaleFactor(UIScreen.main.scale)
+        ])
+        
         nameLabel.text = user.displayName
         usernameLabel.text = user.name
         checkDomainLabel.text = user.getDomainNip05()
-        profileImageButton.kf.setImage(with: URL(string: user.picture), for: .normal)
         
         [checkbox1, checkbox2].forEach { $0.isHidden = user.nip05.isEmpty }
     }

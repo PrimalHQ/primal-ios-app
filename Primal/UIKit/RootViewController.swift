@@ -7,22 +7,24 @@
 
 import UIKit
 
+extension CAMediaTimingFunction {
+    static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
+    static let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
+}
+
 class RootViewController: UIViewController {
 
     static let instance = RootViewController()
     
     private(set) var currentChild: UIViewController?
-    private var introVC: IntroVideoController? = IntroVideoController()
+    private var introVC: IntroVideoController?
+    
+    var didAnimate = false
     
     init() {
         super.init(nibName: nil, bundle: nil)
-        reset()
-        
-        introVC!.willMove(toParent: self)
-        addChild(introVC!)
-        view.addSubview(introVC!.view)
-        introVC!.view.pinToSuperview()
-        introVC!.didMove(toParent: self)
+        quickReset()
+        addIntro()
     }
     
     required init?(coder: NSCoder) {
@@ -31,12 +33,13 @@ class RootViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         animateFromIntro()
     }
     
     func set(_ viewController: UIViewController) {
         addChild(viewController)
-        view.addSubview(viewController.view)
+        view.insertSubview(viewController.view, at: 0)
         viewController.view.pinToSuperview()
         viewController.didMove(toParent: self)
         
@@ -49,6 +52,31 @@ class RootViewController: UIViewController {
     }
     
     func reset() {
+        addIntro()
+        
+        didAnimate = false
+        introVC?.video.transform = .init(scaleX: 0.3, y: 0.3)
+        introVC?.view.alpha = 0
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(.easeoutTiming)
+        
+        UIView.animate(withDuration: 1) {
+            self.introVC?.view.alpha = 1
+            self.introVC?.video.transform = .identity
+        } completion: { _ in
+            DispatchQueue.main.async {
+                self.quickReset()
+                DispatchQueue.main.async {
+                    self.animateFromIntro()
+                }
+            }
+        }
+        
+        CATransaction.commit()
+    }
+    
+    func quickReset() {
         let result = get_saved_keypair()
         
         guard
@@ -61,6 +89,17 @@ class RootViewController: UIViewController {
         
         let feed = Feed(userHex: hex_encode(decoded.data))
         set(MainTabBarController(feed: feed))
+    }
+    
+    func addIntro() {
+        let intro = IntroVideoController()
+        intro.willMove(toParent: self)
+        addChild(intro)
+        view.addSubview(intro.view)
+        intro.view.pinToSuperview()
+        intro.didMove(toParent: self)
+        
+        introVC = intro
     }
 }
 
@@ -75,26 +114,25 @@ private extension RootViewController {
             }
         }
         
-        guard let introVC else { return }
+        guard !didAnimate,  let introVC else { return }
+        didAnimate = true
         
         guard let homeFeed: HomeFeedViewController = findInChildren() else {
-            // Just animate
-            
-            let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
-            CATransaction.begin()
-            CATransaction.setAnimationTimingFunction(easeInTiming)
-
-            UIView.animate(withDuration: 0.7) {
-                introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
-                introVC.view.alpha = 0
-            } completion: { _ in
-                introVC.willMove(toParent: nil)
-                introVC.view.removeFromSuperview()
-                introVC.removeFromParent()
-                self.introVC = nil
+            // Animate onboarding
+            DispatchQueue.main.async {
+                CATransaction.begin()
+                CATransaction.setAnimationTimingFunction(.easeInTiming)
+                UIView.animate(withDuration: 0.6) {
+                    introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
+                    introVC.view.alpha = 0
+                } completion: { _ in
+                    introVC.willMove(toParent: nil)
+                    introVC.view.removeFromSuperview()
+                    introVC.removeFromParent()
+                    self.introVC = nil
+                }
+                CATransaction.commit()
             }
-            
-            CATransaction.commit()
             
             guard let onboarding: OnboardingStartViewController = self.findInChildren() else { return }
             
@@ -107,9 +145,8 @@ private extension RootViewController {
             
             for (index, view) in views.enumerated() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200 + index * 200)) {
-                    let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
                     CATransaction.begin()
-                    CATransaction.setAnimationTimingFunction(easeoutTiming)
+                    CATransaction.setAnimationTimingFunction(.easeoutTiming)
                     
                     UIView.animate(withDuration: 0.7 - Double(index) * 0.2) {
                         view.transform = .identity
@@ -124,9 +161,8 @@ private extension RootViewController {
         
         homeFeed.table.alpha = 0.01
         homeFeed.onLoad = {
-            let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
             CATransaction.begin()
-            CATransaction.setAnimationTimingFunction(easeInTiming)
+            CATransaction.setAnimationTimingFunction(.easeInTiming)
 
             UIView.animate(withDuration: 0.6) {
                 introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
@@ -141,14 +177,11 @@ private extension RootViewController {
             CATransaction.commit()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
-                let cells = homeFeed.table.visibleCells
                 homeFeed.table.alpha = 1
-                
                 homeFeed.table.transform = .init(translationX: 0, y: 800)
                     
-                let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
                 CATransaction.begin()
-                CATransaction.setAnimationTimingFunction(easeoutTiming)
+                CATransaction.setAnimationTimingFunction(.easeoutTiming)
 
                 UIView.animate(withDuration: 0.3) {
                     homeFeed.table.transform = .identity

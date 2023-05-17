@@ -30,6 +30,7 @@ class OnboardingImportTwitterController: UIViewController {
     private lazy var confirmButton = FancyButton(title: "Find Twitter profile")
     private lazy var instruction = UILabel()
     private lazy var textStack = UIStackView(arrangedSubviews: [instruction, input, infoLabel])
+    private let spinnerParent = UIView()
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -75,17 +76,17 @@ private extension OnboardingImportTwitterController {
             title = "Import from Twitter"
             textStack.alpha = 1
             textStack.isHidden = false
-            spinner.alpha = 0
-            spinner.isHidden = true
+            spinnerParent.alpha = 0
+            spinnerParent.isHidden = true
             infoLabel.alpha = 0
             confirmButton.isEnabled = input.input.text?.isEmpty != true
         case .searching:
             title = "Searching..."
             textStack.alpha = 0
             textStack.isHidden = true
-            spinner.alpha = 1
+            spinnerParent.alpha = 1
+            spinnerParent.isHidden = false
             spinner.play()
-            spinner.isHidden = false
             confirmButton.isEnabled = false
         case .notFound:
             title = "Import from Twitter"
@@ -107,7 +108,6 @@ private extension OnboardingImportTwitterController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let progressParent = UIView()
-        let spinnerParent = UIView()
         let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, spinnerParent, confirmButton])
         
         progressParent.addSubview(progressView)

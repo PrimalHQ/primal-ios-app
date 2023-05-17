@@ -13,12 +13,13 @@ import SafariServices
 
 class FeedViewController: UIViewController, UITableViewDataSource {
     let feed: Feed
+    lazy var likingManager = LikingManager(feed: feed)
+    lazy var repostingManager = RepostingManager(feed: feed)
     
     let navigationBarLengthner = SpacerView(size: 7)
     let table = UITableView()
     
-    var fullBleed = false
-    var posts: [(PrimalPost, String, [URL])] = [] {
+    var posts: [(PrimalPost, ParsedContent)] = [] {
         didSet {
             table.reloadData()
         }
@@ -36,11 +37,6 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func toggleFullBleed() {
-        fullBleed.toggle()
-        table.reloadData()
-    }
-    
     func open(post: PrimalPost) {
         let threadVC = ThreadViewController(feed: feed, threadId: post.post.id)
         show(threadVC, sender: nil)
@@ -54,11 +50,15 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data.0, text: data.1, imageUrls: data.2, edgeBleed: fullBleed)
+            cell.update(data.0,
+                        parsedContent: data.1,
+                        didLike: likingManager.hasLiked(data.0.post.id),
+                        didRepost: repostingManager.hasReposted(data.0.post.id)
+            )
             cell.delegate = self
         }
         
-        if indexPath.row == posts.count - 10 {
+        if indexPath.row == posts.count - 5 {
             feed.requestNewPage()
         }
         return cell
@@ -83,15 +83,19 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapLike(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        likingManager.sendLikeEvent(post: posts[indexPath.row].0.post)
+    }
+    
+    func postCellDidTapRepost(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
+    }
+    
     func postCellDidTapPost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         open(post: posts[indexPath.row].0)
-
-//        let likingManager = LikingManager(feed: feed)
-//        likingManager.sendLikeEvent(post: posts[indexPath.row].0.post)
-        
-//        let repostingManager = RepostingManager(feed: feed)
-//        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
     }
     
     func postCellDidTapURL(_ cell: PostCell, url: URL) {
