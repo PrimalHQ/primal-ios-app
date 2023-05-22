@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardingTwitterController: UIViewController {
+final class OnboardingTwitterController: UIViewController {
     enum State {
         case ready
         case created
@@ -123,7 +123,7 @@ private extension OnboardingTwitterController {
     }
 }
 
-class KeyKeychainInfoView: UIView {
+final class KeyKeychainInfoView: UIView {
     init() {
         super.init(frame: .zero)
         setup()

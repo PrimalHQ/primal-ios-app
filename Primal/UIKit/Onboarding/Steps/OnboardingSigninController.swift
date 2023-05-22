@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class OnboardingSigninController: UIViewController {
+final class OnboardingSigninController: UIViewController {
     
     enum State {
         case ready

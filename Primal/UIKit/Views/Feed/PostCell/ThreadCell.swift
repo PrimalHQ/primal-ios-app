@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class ThreadCell: PostCell {
+final class ThreadCell: PostCell {
     enum ThreadPosition {
         case parent, main, child
     }

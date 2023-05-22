@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ReadNavigationController: MainNavigationController {
+final class ReadNavigationController: MainNavigationController {
     init(feed: SocketManager) {
         super.init(rootViewController: MenuContainerController(child: ReadViewController(), feed: feed))
     }
@@ -17,7 +17,7 @@ class ReadNavigationController: MainNavigationController {
     }
 }
 
-class FeedNavigationController: MainNavigationController {
+final class FeedNavigationController: MainNavigationController {
     init(feed: SocketManager) {
         super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed))
     }
@@ -25,7 +25,6 @@ class FeedNavigationController: MainNavigationController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 class MainNavigationController: UINavigationController {

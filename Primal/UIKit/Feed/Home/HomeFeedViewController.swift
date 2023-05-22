@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeFeedViewController: FeedViewController {
+final class HomeFeedViewController: FeedViewController {
     let loadingSpinner = LoadingSpinnerView()
     
     var onLoad: (() -> ())? {

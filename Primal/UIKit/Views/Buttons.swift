@@ -34,7 +34,7 @@ class MyButton: UIControl {
     }
 }
 
-class FancyButton: MyButton {
+final class FancyButton: MyButton {
     let titleLabel = UILabel()
     
     private let b1 = UIImageView(image: UIImage(named: "fancyButtonBackgroundBack"))
@@ -87,7 +87,7 @@ class FancyButton: MyButton {
     }
 }
 
-class DarkButton: MyButton {
+final class DarkButton: MyButton {
     let titleLabel = UILabel()
     
     override var isPressed: Bool {
@@ -125,7 +125,7 @@ class DarkButton: MyButton {
     }
 }
 
-class BigOnboardingButton: MyButton {
+final class BigOnboardingButton: MyButton {
     
     let titleLabel = UILabel()
     let subtitleLabel = UILabel()
@@ -178,7 +178,7 @@ private extension BigOnboardingButton {
     }
 }
 
-class ThinFancyButton: MyButton {
+final class ThinFancyButton: MyButton {
     let titleLabel = UILabel()
     
     private let b1 = UIImageView(image: UIImage(named: "thinButtonBackgroundBack"))

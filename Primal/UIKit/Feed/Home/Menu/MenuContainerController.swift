@@ -17,7 +17,7 @@ extension UIViewController {
     }
 }
 
-class MenuContainerController: UIViewController {
+final class MenuContainerController: UIViewController {
     private let profileImage = UIImageView()
     private let nameLabel = UILabel()
     private let checkbox1 = UIImageView(image: UIImage(named: "verifiedBadge"))
@@ -309,7 +309,7 @@ private extension MenuContainerController {
     }
 }
 
-class MenuItemButton: UIButton {
+final class MenuItemButton: UIButton {
     init(title: String) {
         super.init(frame: .zero)
         setTitle(title, for: .normal)

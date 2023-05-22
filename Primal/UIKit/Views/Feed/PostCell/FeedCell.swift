@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class FeedCell: PostCell {
+final class FeedCell: PostCell {
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     

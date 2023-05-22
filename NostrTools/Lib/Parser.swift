@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Parser {
+final class Parser {
     var pos: Int
     var str: String
     

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class VerifiedImageView: UIView {
+final class VerifiedImageView: UIView {
     let imageView = UIImageView()
     let verifiedBadge = UIImageView(image: UIImage(named: "verifiedBadge"))
     

@@ -8,7 +8,7 @@
 import UIKit
 import Lottie
 
-class FeedReplyButton: UIButton {
+final class FeedReplyButton: UIButton {
     init() {
         super.init(frame: .zero)
         setImage(UIImage(named: "feedComment"), for: .normal)
@@ -22,7 +22,7 @@ class FeedReplyButton: UIButton {
     }
 }
 
-class FeedRepostButton: UIButton {
+final class FeedRepostButton: UIButton {
     init() {
         super.init(frame: .zero)
         setImage(UIImage(named: "feedLightning"), for: .normal)
@@ -35,7 +35,7 @@ class FeedRepostButton: UIButton {
     }
 }
 
-class FeedLikeButton: MyButton {
+final class FeedLikeButton: MyButton {
     let animView = LottieAnimationView()
     let titleLabel = ColorAnimatingLabel()
     
@@ -64,7 +64,7 @@ class FeedLikeButton: MyButton {
     }
 }
 
-class FeedZapButton: MyButton {
+final class FeedZapButton: MyButton {
     let animView = LottieAnimationView()
     let titleLabel = ColorAnimatingLabel()
     

@@ -8,7 +8,7 @@
 import AVKit
 import UIKit
 
-class IntroVideoPlayerView: UIView {
+final class IntroVideoPlayerView: UIView {
     override class var layerClass: AnyClass { AVPlayerLayer.self }
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }

@@ -12,7 +12,7 @@ protocol ImageCollectionViewDelegate: AnyObject {
     func didTapImage(url: URL, urls: [URL])
 }
 
-class ImageCollectionView: UICollectionView {
+final class ImageCollectionView: UICollectionView {
     weak var imageDelegate: ImageCollectionViewDelegate?
     
     var imageURLs: [URL] {
@@ -64,7 +64,7 @@ extension ImageCollectionView: UICollectionViewDataSource {
     }
 }
 
-class ImageCell: UICollectionViewCell {
+final class ImageCell: UICollectionViewCell {
     let imageView = UIImageView()
     
     override init(frame: CGRect) {

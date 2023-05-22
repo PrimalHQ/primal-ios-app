@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class SyntaxToken: SyntaxNode {
+public final class SyntaxToken: SyntaxNode {
     public var kind: SyntaxKind
     var position: Int
     var text: String

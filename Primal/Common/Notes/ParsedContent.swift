@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class ParsedElement: Equatable {
+final class ParsedElement: Equatable {
     static func == (lhs: ParsedElement, rhs: ParsedElement) -> Bool {
         lhs.position == rhs.position && lhs.length == rhs.length && lhs.text == rhs.text
     }
@@ -24,7 +24,7 @@ class ParsedElement: Equatable {
     }
 }
 
-class ParsedContent {
+final class ParsedContent {
     // array of dictionaries where key is position and value is length
     var hashtags: [ParsedElement] = []
     var mentions: [ParsedElement] = []

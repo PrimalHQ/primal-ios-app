@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GradientBorderView: GradientView {
+final class GradientBorderView: GradientView {
     override var backgroundColor: UIColor? {
         get { backgroundView.backgroundColor }
         set { backgroundView.backgroundColor = newValue }

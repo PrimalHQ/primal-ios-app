@@ -24,7 +24,7 @@ public extension Character {
     }
 }
 
-public class NoteLexer {
+public final class NoteLexer {
     private let text: String
     private var position: Int
     var diagnostics: [String] = []

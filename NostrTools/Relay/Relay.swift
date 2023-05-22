@@ -48,7 +48,7 @@ struct RelayMetadata: Codable {
     }
 }
 
-class Relay: Identifiable {
+final class Relay: Identifiable {
     let descriptor: RelayDescriptor
     let connection: RelayConnection
     

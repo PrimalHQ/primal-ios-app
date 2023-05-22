@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ColorAnimatingLabel: UIView {
+final class ColorAnimatingLabel: UIView {
     var font: UIFont {
         get { frontLabel.font }
         set {

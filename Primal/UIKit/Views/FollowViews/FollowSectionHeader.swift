@@ -11,7 +11,7 @@ protocol FollowSectionHeaderDelegate: AnyObject {
     func headerTappedFollowAll(_ header: FollowSectionHeader)
 }
 
-class FollowSectionHeader: UITableViewHeaderFooterView {
+final class FollowSectionHeader: UITableViewHeaderFooterView {
     let title = UILabel()
     let followAll = FollowButton("Follow All", "Unfollow All")
     

@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-class FeedManager {
+final class FeedManager {
     let connection: SocketManager
     
     @Published var currentFeed: String = "Latest"

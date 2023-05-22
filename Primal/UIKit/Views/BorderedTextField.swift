@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BorderedTextField: UIView {
+final class BorderedTextField: UIView {
     let input = UITextField()
     private let atSymbol = UILabel()
     init(showAtSymbol: Bool) {

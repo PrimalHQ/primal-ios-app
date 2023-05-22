@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SpacerView: UIView {
+final class SpacerView: UIView {
     init(size: CGFloat? = nil, priority: UILayoutPriority = .defaultHigh) {
         super.init(frame: .zero)
         guard let size else { return }

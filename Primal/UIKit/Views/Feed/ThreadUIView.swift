@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ThreadUIView: UIView {
+final class ThreadUIView: UIView {
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
