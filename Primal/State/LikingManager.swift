@@ -9,9 +9,9 @@ import Foundation
 import GenericJSON
 
 class LikingManager {
-    let feed: Feed
+    let feed: SocketManager
     
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         self.feed = feed
     }
     

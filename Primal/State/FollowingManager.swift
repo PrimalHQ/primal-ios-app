@@ -9,12 +9,12 @@ import Combine
 import Foundation
 
 class FollowingManager {
-    let feed: Feed
-    init(feed: Feed) {
-        self.feed = feed
+    let connection: SocketManager
+    init(socket: SocketManager) {
+        self.connection = socket
     }
     
-    func isFollowing(_ pubkey: String) -> Bool { feed.currentUserContacts.contacts.contains(pubkey) }
+    func isFollowing(_ pubkey: String) -> Bool { connection.currentUserContacts.contacts.contains(pubkey) }
     
     func toggleFollow(_ pubkey: String) {
         if isFollowing(pubkey) {
@@ -30,15 +30,15 @@ class FollowingManager {
             return
         }
         
-        var contacts = feed.currentUserContacts.contacts
+        var contacts = connection.currentUserContacts.contacts
         contacts.append(contentsOf: pubkeys)
-        feed.currentUserContacts.contacts = contacts
+        connection.currentUserContacts.contacts = contacts
         
-        let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+        let relays = connection.currentUserRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        feed.postBox.send(ev)
+        connection.postBox.send(ev)
     }
     
     func sendFollowEvent(_ pubkey: String) {
@@ -47,15 +47,15 @@ class FollowingManager {
             return
         }
         
-        var contacts = feed.currentUserContacts.contacts
+        var contacts = connection.currentUserContacts.contacts
         contacts.append(pubkey)
-        feed.currentUserContacts.contacts = contacts
+        connection.currentUserContacts.contacts = contacts
         
-        let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+        let relays = connection.currentUserRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        feed.postBox.send(ev)
+        connection.postBox.send(ev)
     }
     
     func sendUnfollowEvent(_ pubkey: String) {
@@ -64,16 +64,16 @@ class FollowingManager {
             return
         }
         
-        let indexOfPubkeyToRemove = feed.currentUserContacts.contacts.firstIndex(of: pubkey)
+        let indexOfPubkeyToRemove = connection.currentUserContacts.contacts.firstIndex(of: pubkey)
         
         if let index = indexOfPubkeyToRemove {
-            feed.currentUserContacts.contacts.remove(at: index)
+            connection.currentUserContacts.contacts.remove(at: index)
             
-            let relays = feed.currentUserRelays ?? makeBootstrapRelays()
+            let relays = connection.currentUserRelays ?? makeBootstrapRelays()
             
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: feed.currentUserContacts.contacts, relays: relays)
+            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: connection.currentUserContacts.contacts, relays: relays)
             
-            feed.postBox.send(ev)
+            connection.postBox.send(ev)
         }
     }
     

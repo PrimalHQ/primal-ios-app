@@ -16,7 +16,7 @@ class OnboardingFollowSuggestionsController: UIViewController {
     
     lazy var table = UITableView()
     lazy var continueButton = FancyButton(title: "Finish")
-    var feed: Feed?
+    var feed: SocketManager?
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -100,7 +100,7 @@ private extension OnboardingFollowSuggestionsController {
             return
         }
         
-        feed = Feed(userHex: hex_encode(decoded.data))
+        feed = SocketManager(userHex: hex_encode(decoded.data))
     }
     
     @objc func continuePressed() {

@@ -8,9 +8,9 @@
 import Foundation
 
 class RepostingManager {
-    private var feed: Feed
+    private var feed: SocketManager
     
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         self.feed = feed
     }
     

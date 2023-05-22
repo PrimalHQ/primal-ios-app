@@ -39,8 +39,8 @@ class MenuContainerController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     let child: UIViewController
-    let feed: Feed
-    init(child: UIViewController, feed: Feed) {
+    let feed: SocketManager
+    init(child: UIViewController, feed: SocketManager) {
         self.child = child
         self.feed = feed
         super.init(nibName: nil, bundle: nil)

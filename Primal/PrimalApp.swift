@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PrimalApp: App {
-    @StateObject var feed = Feed()
+    @StateObject var feed = SocketManager()
     @StateObject var uiState = UIState()
 
     init() {
@@ -17,7 +17,7 @@ struct PrimalApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Color.black
                 .environmentObject(feed)
                 .environmentObject(uiState)
         }

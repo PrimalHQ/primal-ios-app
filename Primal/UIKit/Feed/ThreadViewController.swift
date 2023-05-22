@@ -21,7 +21,7 @@ class ThreadViewController: FeedViewController {
     private var textHeightConstraint: NSLayoutConstraint?
     let textInputView = UITextField()
     
-    init(feed: Feed, threadId: String) {
+    init(feed: SocketManager, threadId: String) {
         id = threadId
         super.init(feed: feed)
         setup()
@@ -88,26 +88,29 @@ private extension ThreadViewController {
         title = "Thread"
         
         feed.requestThread(postId: id, subId: id)
-        request = feed.$parsedThreadPosts
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in
-                self?.mainPositionInThread = posts.firstIndex(where: { $0.0.post.id == self?.id }) ?? 0
-                self?.posts = posts
+        feed.postsEmitter.sink { [weak self] (id, posts) in
+            guard let self, id == self.id else { return }
+            
+            let parsed = posts.sorted(by: { $0.post.created_at < $1.post.created_at }).map { $0.process() }
+            
+            DispatchQueue.main.async {
+                self.mainPositionInThread = parsed.firstIndex(where: { $0.0.post.id == self.id }) ?? 0
+                self.posts = parsed
                 
-                guard !posts.isEmpty, let index = self?.mainPositionInThread else { return }
+                self.didLoadData = true
                 
-                self?.didLoadData = true
-                self?.request = nil
-                
-                self?.textInputView.attributedPlaceholder = NSAttributedString(
-                    string: "Reply to \(posts[index].0.user.displayName)",
+                self.textInputView.attributedPlaceholder = NSAttributedString(
+                    string: "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)",
                     attributes: [
                         .font: UIFont.appFont(withSize: 16, weight: .regular),
                         .foregroundColor: UIColor(rgb: 0x757575)
                     ]
                 )
-                self?.textInputView.placeholder = "Reply to \(posts[index].0.user.displayName)"
+                self.textInputView.placeholder = "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)"
             }
+            
+        }
+        .store(in: &cancellables)
         
         Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
             guard let self, $0 && $1 && !didMoveToMain else { return }

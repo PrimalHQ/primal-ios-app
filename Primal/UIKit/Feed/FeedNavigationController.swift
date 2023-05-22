@@ -8,7 +8,7 @@
 import UIKit
 
 class ReadNavigationController: MainNavigationController {
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         super.init(rootViewController: MenuContainerController(child: ReadViewController(), feed: feed))
     }
     
@@ -18,7 +18,7 @@ class ReadNavigationController: MainNavigationController {
 }
 
 class FeedNavigationController: MainNavigationController {
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed))
     }
     

@@ -20,7 +20,7 @@ class MainTabBarController: UIViewController {
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: MessagesViewController(), feed: feed))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController(), feed: feed))
     
-    let feed: Feed
+    let feed: SocketManager
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     
     lazy var buttons = (1...5).map { _ in UIButton() }
@@ -36,7 +36,7 @@ class MainTabBarController: UIViewController {
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
 
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
