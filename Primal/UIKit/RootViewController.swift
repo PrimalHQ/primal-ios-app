@@ -87,7 +87,7 @@ class RootViewController: UIViewController {
             return
         }
         
-        let feed = Feed(userHex: hex_encode(decoded.data))
+        let feed = SocketManager(userHex: hex_encode(decoded.data))
         set(MainTabBarController(feed: feed))
     }
     

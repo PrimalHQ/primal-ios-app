@@ -12,7 +12,7 @@ import SwiftUI
 import SafariServices
 
 class FeedViewController: UIViewController, UITableViewDataSource {
-    let feed: Feed
+    let feed: SocketManager
     lazy var likingManager = LikingManager(feed: feed)
     lazy var repostingManager = RepostingManager(feed: feed)
     
@@ -25,9 +25,11 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         }
     }
     
+    lazy var feedManager = FeedManager(socket: feed)
+    
     var cancellables: Set<AnyCancellable> = []
     
-    init(feed: Feed) {
+    init(feed: SocketManager) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
@@ -58,8 +60,8 @@ class FeedViewController: UIViewController, UITableViewDataSource {
             cell.delegate = self
         }
         
-        if indexPath.row == posts.count - 5 {
-            feed.requestNewPage()
+        if indexPath.row > posts.count - 10  {
+            feedManager.requestNewPage()
         }
         return cell
     }

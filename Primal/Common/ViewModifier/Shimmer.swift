@@ -65,11 +65,3 @@ struct ShimmerConfig {
     var highlightOpacity: CGFloat = 1
     var speed: CGFloat = 2
 }
-
-struct Shimmer_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .environmentObject(Feed())
-            .environmentObject(UIState())
-    }
-}
