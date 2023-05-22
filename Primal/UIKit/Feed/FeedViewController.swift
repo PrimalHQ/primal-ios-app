@@ -25,7 +25,7 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         }
     }
     
-    lazy var feedManager = FeedManager(feed: feed)
+    lazy var feedManager = FeedManager(socket: feed)
     
     var cancellables: Set<AnyCancellable> = []
     

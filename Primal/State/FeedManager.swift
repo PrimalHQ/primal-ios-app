@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 class FeedManager {
-    let feed: SocketManager
+    let connection: SocketManager
     
     @Published var currentFeed: String = "Latest"
     @Published var posts: [PrimalPost] = []
@@ -21,10 +21,10 @@ class FeedManager {
     
     var requestID = ""
     
-    init(feed: SocketManager) {
-        self.feed = feed
+    init(socket: SocketManager) {
+        connection = socket
         
-        feed.postsEmitter.sink { [weak self] (id, posts) in
+        socket.postsEmitter.sink { [weak self] (id, posts) in
             guard let self, id == self.requestID else { return }
             
             var sorted = posts.sorted(by: { $0.post.created_at > $1.post.created_at })
@@ -32,13 +32,13 @@ class FeedManager {
                 sorted.removeFirst()
             }
             
-            self.isRequestingNewPage = false
             self.posts.append(contentsOf: posts)
             self.parsedPosts.append(contentsOf: posts.process())
+            self.isRequestingNewPage = false
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(feed.$didFinishInit, feed.$isConnected.removeDuplicates()).sink { [weak self] didInit, isConnected in
+        Publishers.CombineLatest(socket.$didFinishInit, socket.$isConnected.removeDuplicates()).sink { [weak self] didInit, isConnected in
             guard didInit, isConnected, self?.posts.isEmpty == true else { return }
             self?.refresh()
         }
@@ -60,6 +60,6 @@ class FeedManager {
     func requestNewPage() {
         guard !isRequestingNewPage else { return }
         isRequestingNewPage = true
-        requestID = feed.requestNewPage(feedName: currentFeed, until: posts.last?.post.created_at ?? 0)
+        requestID = connection.requestNewPage(feedName: currentFeed, until: posts.last?.post.created_at ?? 0)
     }
 }
