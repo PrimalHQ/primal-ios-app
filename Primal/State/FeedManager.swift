@@ -15,11 +15,9 @@ class FeedManager {
     @Published var posts: [PrimalPost] = []
     @Published var parsedPosts: [(PrimalPost, ParsedContent)] = []
     
-    var isRequestingNewPage = false
-    
-    var cancellables: Set<AnyCancellable> = []
-    
-    var requestID = ""
+    private var isRequestingNewPage = false
+    private var cancellables: Set<AnyCancellable> = []
+    private var requestID = ""
     
     init(socket: SocketManager) {
         connection = socket
