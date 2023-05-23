@@ -46,14 +46,14 @@ extension ParsedContent {
         style.lineSpacing = 7
         
         let result = NSMutableAttributedString(string: text, attributes: [
-            .foregroundColor: UIColor.white,
+            .foregroundColor: UIColor.foreground,
             .font: UIFont.appFont(withSize: 15, weight: .regular),
             .paragraphStyle: style
         ])
         
         for element in elements {
             result.addAttributes([
-                .foregroundColor: UIColor(rgb: 0xCA079F)
+                .foregroundColor: UIColor.accent
             ], range: .init(location: element.position, length: element.length))
         }
         

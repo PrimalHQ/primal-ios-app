@@ -8,7 +8,9 @@
 import UIKit
 
 final class HomeFeedViewController: FeedViewController {
+    
     let loadingSpinner = LoadingSpinnerView()
+    let feedButton = UIButton()
     
     var onLoad: (() -> ())? {
         didSet {
@@ -52,15 +54,15 @@ final class HomeFeedViewController: FeedViewController {
             }
             .store(in: &cancellables)
         
-        let button = UIButton()
-        button.constrainToSize(44)
-        button.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
-        button.setImage(UIImage(named: "feedPicker"), for: .normal)
-        button.backgroundColor = .black
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+        feedButton.constrainToSize(44)
+        feedButton.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
+        feedButton.setImage(UIImage(named: "feedPicker"), for: .normal)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: feedButton)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
+        
+        updateTheme()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -72,5 +74,12 @@ final class HomeFeedViewController: FeedViewController {
     
     @objc func openFeedSelection() {
         present(FeedsSelectionController(feed: feedManager), animated: true)
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        feedButton.backgroundColor = .background
+        feedButton.tintColor = .foreground3
     }
 }

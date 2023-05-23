@@ -13,7 +13,7 @@ extension UIViewController {
     }
 }
 
-final class MainTabBarController: UIViewController {
+final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController(feed: feed)
     lazy var read = ReadNavigationController(feed: feed)
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController(), feed: feed))
@@ -70,10 +70,23 @@ final class MainTabBarController: UIViewController {
             self.closeMenuButton.isHidden = true
         }
     }
+    
+    func updateTheme() {
+        view.backgroundColor = .background
+        
+        closeMenuButton.tintColor = .foreground
+        closeMenuButton.backgroundColor = .background
+
+        buttons.forEach { $0.backgroundColor = .background }
+        
+        updateButtons()
+    }
 }
 
 private extension MainTabBarController {
     func setup() {
+        updateTheme()
+        
         let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
         pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
@@ -93,8 +106,6 @@ private extension MainTabBarController {
         closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
 
         closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
-        closeMenuButton.tintColor = .white
-        closeMenuButton.backgroundColor = .black
         closeMenuButton.isHidden = true
         
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
@@ -103,9 +114,7 @@ private extension MainTabBarController {
         
         for (index, button) in buttons.enumerated() {
             button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
-            button.backgroundColor = .black
         }
-        updateButtons()
         
         buttons[0].addTarget(self, action: #selector(homeButtonPressed), for: .touchUpInside)
         buttons[1].addTarget(self, action: #selector(readButtonPressed), for: .touchUpInside)
@@ -116,7 +125,7 @@ private extension MainTabBarController {
     
     func updateButtons() {
         for (index, button) in buttons.enumerated() {
-            button.tintColor = index == currentPageIndex ? .white : .init(rgb: 0xAAAAAA)
+            button.tintColor = index == currentPageIndex ? .foreground : .foreground3
         }
     }
     

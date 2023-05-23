@@ -11,13 +11,14 @@ import UIKit
 import SwiftUI
 import SafariServices
 
-class FeedViewController: UIViewController, UITableViewDataSource {
+class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let feed: SocketManager
     lazy var likingManager = LikingManager(feed: feed)
     lazy var repostingManager = RepostingManager(feed: feed)
     
     let navigationBarLengthner = SpacerView(size: 7)
-    let table = UITableView()
+    var table = UITableView()
+    lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
     
     var posts: [(PrimalPost, ParsedContent)] = [] {
         didSet {
@@ -65,22 +66,35 @@ class FeedViewController: UIViewController, UITableViewDataSource {
         }
         return cell
     }
+    
+    func updateTheme() {
+        posts.forEach { $0.1.buildContentString() }
+        
+        navigationBarLengthner.backgroundColor = .background
+        
+        table.removeFromSuperview()
+        table = UITableView() // We need to flush old cells
+        table.register(FeedCell.self, forCellReuseIdentifier: "cell")
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .none
+        
+        stack.addArrangedSubview(table)
+        
+        view.backgroundColor = .background
+        table.backgroundColor = .background
+    }
 }
 
 private extension FeedViewController {
     func setup() {
-        navigationBarLengthner.backgroundColor = .black
-        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
         stack.axis = .vertical
         view.addSubview(stack)
         stack
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, safeArea: true)
         
-        table.register(FeedCell.self, forCellReuseIdentifier: "cell")
-        table.dataSource = self
-        table.delegate = self
-        table.separatorStyle = .none
+        updateTheme()
     }
 }
 

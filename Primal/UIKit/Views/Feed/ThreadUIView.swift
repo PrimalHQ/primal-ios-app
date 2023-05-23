@@ -89,7 +89,7 @@ private extension ThreadUIView {
         separatorLabel.text = "|"
         [timeLabel, separatorLabel, usernameLabel, verifiedServerLabel].forEach {
             $0.font = .appFont(withSize: 16, weight: .regular)
-            $0.textColor = UIColor(rgb: 0x666666)
+            $0.textColor = .foreground3
             $0.adjustsFontSizeToFitWidth = true
         }
         
@@ -109,11 +109,11 @@ private extension ThreadUIView {
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
         
-        nameLabel.textColor = .white
+        nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         
-        mainLabel.textColor = .white
+        mainLabel.textColor = .foreground
         mainLabel.font = .appFont(withSize: 18, weight: .regular)
         mainLabel.numberOfLines = 0
         
@@ -127,7 +127,7 @@ private extension ThreadUIView {
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
-        backgroundView.backgroundColor = UIColor(rgb: 0x181818)
+        backgroundView.backgroundColor = .background2
         backgroundView.layer.cornerRadius = 8
     }
 }

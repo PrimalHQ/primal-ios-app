@@ -67,6 +67,6 @@ private extension FeedCell {
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: 18, weight: .regular)
-        seeMoreLabel.textColor = UIColor(rgb: 0xCA079F)
+        seeMoreLabel.textColor = .accent
     }
 }

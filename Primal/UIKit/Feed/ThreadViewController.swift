@@ -20,6 +20,8 @@ final class ThreadViewController: FeedViewController {
     
     private var textHeightConstraint: NSLayoutConstraint?
     let textInputView = UITextField()
+    let inputParent = UIView()
+    let inputBackground = UIView()
     
     init(feed: SocketManager, threadId: String) {
         id = threadId
@@ -81,6 +83,24 @@ final class ThreadViewController: FeedViewController {
         }
         return cell
     }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        table.register(ThreadCell.self, forCellReuseIdentifier: "cell")
+        inputParent.backgroundColor = .background
+        inputBackground.backgroundColor = .background3
+        
+        guard !posts.isEmpty else { return }
+        
+        textInputView.attributedPlaceholder = NSAttributedString(
+            string: "Reply to \(posts[mainPositionInThread].0.user.displayName)",
+            attributes: [
+                .font: UIFont.appFont(withSize: 16, weight: .regular),
+                .foregroundColor: UIColor.foreground4
+            ]
+        )
+    }
 }
 
 private extension ThreadViewController {
@@ -103,10 +123,9 @@ private extension ThreadViewController {
                     string: "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)",
                     attributes: [
                         .font: UIFont.appFont(withSize: 16, weight: .regular),
-                        .foregroundColor: UIColor(rgb: 0x757575)
+                        .foregroundColor: UIColor.foreground4
                     ]
                 )
-                self.textInputView.placeholder = "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)"
             }
             
         }
@@ -120,7 +139,6 @@ private extension ThreadViewController {
         })
         .store(in: &cancellables)
         
-        table.register(ThreadCell.self, forCellReuseIdentifier: "cell")
         table.keyboardDismissMode = .interactive
         
         let button = UIButton()
@@ -129,11 +147,6 @@ private extension ThreadViewController {
         button.constrainToSize(44)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
-        let inputParent = UIView()
-        let inputBackground = UIView()
-        
-        inputParent.backgroundColor = .black
-        inputBackground.backgroundColor = UIColor(rgb: 0x222222)
         inputBackground.layer.cornerRadius = 6
         
         inputParent.addSubview(inputBackground)
