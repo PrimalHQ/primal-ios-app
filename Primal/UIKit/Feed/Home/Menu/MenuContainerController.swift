@@ -17,7 +17,7 @@ extension UIViewController {
     }
 }
 
-final class MenuContainerController: UIViewController {
+final class MenuContainerController: UIViewController, Themeable {
     private let profileImage = UIImageView()
     private let nameLabel = UILabel()
     private let checkbox1 = UIImageView(image: UIImage(named: "verifiedBadge"))
@@ -29,6 +29,18 @@ final class MenuContainerController: UIViewController {
     private let mainStack = UIStackView()
     private let coverView = UIView()
     private let menuProfileImage = UIImageView()
+    
+    private let profileImageButton = UIButton()
+    private let followingDescLabel = UILabel()
+    private let followersDescLabel = UILabel()
+    private let themeButton = UIButton()
+    
+    private let signOut = MenuItemButton(title: "SIGN OUT")
+    private lazy var buttonsStack = UIStackView(arrangedSubviews: [
+        MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
+        MenuItemButton(title: "USER LISTS"), MenuItemButton(title: "SETTINGS"),
+        signOut
+    ])
     
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
@@ -100,22 +112,38 @@ final class MenuContainerController: UIViewController {
         coverView.isHidden = true
         mainTabBarController?.showButtons()
     }
+    
+    func updateTheme() {
+        view.backgroundColor = .background
+        
+        for view in buttonsStack.arrangedSubviews {
+            guard let button = view as? MenuItemButton else { continue }
+            button.updateTheme()
+        }
+        
+        themeButton.setImage(Theme.current.menuButtonImage, for: .normal)
+        
+        nameLabel.textColor = .foreground
+        
+        profileImageButton.backgroundColor = .background
+        
+        coverView.backgroundColor = .background.withAlphaComponent(0.5)
+        
+        [usernameLabel, checkDomainLabel, followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
+            $0.font = .appFont(withSize: 15, weight: .regular)
+            $0.textColor = .foreground5
+        }
+        [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
+    }
 }
 
 private extension MenuContainerController {
     func setup() {
+        updateTheme()
+        
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
         let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, checkbox2, checkDomainLabel])
-        let followingDescLabel = UILabel()
-        let followersDescLabel = UILabel()
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
-        let signOut = MenuItemButton(title: "SIGN OUT")
-        let buttonsStack = UIStackView(arrangedSubviews: [
-            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
-            MenuItemButton(title: "USER LISTS"), MenuItemButton(title: "SETTINGS"),
-            signOut
-        ])
-        let themeButton = UIButton()
         
         [
             profileImage, titleStack, usernameStack, followStack,
@@ -135,8 +163,6 @@ private extension MenuContainerController {
         mainStack.setCustomSpacing(10, after: usernameStack)
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
-        
-        themeButton.setImage(UIImage(named: "themeButton"), for: .normal)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -177,18 +203,9 @@ private extension MenuContainerController {
         profileImage.layer.masksToBounds = true
         
         nameLabel.font = .appFont(withSize: 16, weight: .black)
-        nameLabel.textColor = .white
-        
-        [usernameLabel, checkDomainLabel, followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
-            $0.font = .appFont(withSize: 15, weight: .regular)
-            $0.textColor = UIColor(rgb: 0x666666)
-        }
-        [followersLabel, followingLabel].forEach { $0.textColor = UIColor(rgb: 0xD9D9D9) }
         
         let menuButtonParent = UIView()
-        let profileImageButton = UIButton()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
-        profileImageButton.backgroundColor = .black
         menuProfileImage.layer.cornerRadius = 16
         menuProfileImage.layer.masksToBounds = true
         menuProfileImage.isUserInteractionEnabled = false
@@ -201,7 +218,6 @@ private extension MenuContainerController {
         
         view.addSubview(coverView)
         coverView.pin(to: child.view)
-        coverView.backgroundColor = .black.withAlphaComponent(0.5)
         coverView.isHidden = true
         coverView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(closeMenuTapped)))
         let swipe = UISwipeGestureRecognizer(target: self, action: #selector(closeMenuTapped))
@@ -209,6 +225,7 @@ private extension MenuContainerController {
         coverView.addGestureRecognizer(swipe)
         
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
+        themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         
         feed.$currentUser.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let user else { return }
@@ -242,6 +259,15 @@ private extension MenuContainerController {
         checkDomainLabel.text = user.getDomainNip05()
         
         [checkbox1, checkbox2].forEach { $0.isHidden = user.nip05.isEmpty }
+    }
+    
+    @objc func themeButtonPressed() {
+        switch Theme.current.kind {
+        case .sunriseWave:
+            Theme.defaultTheme = SunsetWave.instance
+        case .sunsetWave:
+            Theme.defaultTheme = SunriseWave.instance
+        }
     }
     
     @objc func signoutPressed() {
@@ -309,15 +335,19 @@ private extension MenuContainerController {
     }
 }
 
-final class MenuItemButton: UIButton {
+final class MenuItemButton: UIButton, Themeable {
     init(title: String) {
         super.init(frame: .zero)
         setTitle(title, for: .normal)
-        setTitleColor(UIColor(rgb: 0xAAAAAA), for: .normal)
         titleLabel?.font = .appFont(withSize: 20, weight: .black)
+        updateTheme()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        setTitleColor(.foreground2, for: .normal)
     }
 }

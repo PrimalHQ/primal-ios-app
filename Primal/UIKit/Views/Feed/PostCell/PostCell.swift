@@ -82,7 +82,7 @@ class PostCell: UITableViewCell {
         mainImages.imageURLs = parsedContent.imageUrls
         
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
-        zapButton.titleLabel.text = "\(post.post.zaps)"
+        zapButton.titleLabel.text = "\(post.post.satszapped)"
         likeButton.titleLabel.text = "\(post.post.likes + (didLike ? 1 : 0))"
         repostButton.setTitle("  \(post.post.mentions + (didRepost ? 1 : 0))", for: .normal)
     }
@@ -106,6 +106,7 @@ extension PostCell: LinkableLabelDelegate {
 
 private extension PostCell {
     func setup() {
+        contentView.backgroundColor = .background
         contentView.addSubview(backgroundColorView)
         backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
         
@@ -113,7 +114,7 @@ private extension PostCell {
         separatorLabel.text = "|"
         [timeLabel, separatorLabel, usernameLabel, verifiedServerLabel].forEach {
             $0.font = .appFont(withSize: 16, weight: .regular)
-            $0.textColor = UIColor(rgb: 0x666666)
+            $0.textColor = .foreground3
             $0.adjustsFontSizeToFitWidth = true
         }
         
@@ -128,7 +129,7 @@ private extension PostCell {
         
         profileImageView.layer.masksToBounds = true
         
-        nameLabel.textColor = .white
+        nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         
@@ -149,7 +150,7 @@ private extension PostCell {
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
-        backgroundColorView.backgroundColor = UIColor(rgb: 0x121212)
+        backgroundColorView.backgroundColor = .background2
         backgroundColorView.layer.cornerRadius = 8
         backgroundColorView.layer.masksToBounds = true
         

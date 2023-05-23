@@ -27,25 +27,28 @@ final class FeedNavigationController: MainNavigationController {
     }
 }
 
-class MainNavigationController: UINavigationController {
+class MainNavigationController: UINavigationController, Themeable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationBar.titleTextAttributes = [
-            .font: UIFont.appFont(withSize: 24, weight: .semibold),
-            .foregroundColor: UIColor(rgb: 0xCCCCCC)
-        ]
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = true
         
+        updateTheme()
+    }
+    
+    func updateTheme() {
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = .black
+        appearance.backgroundColor = UIColor.background
         appearance.shadowColor = .clear
+        appearance.titleTextAttributes = [
+            .font: UIFont.appFont(withSize: 20, weight: .semibold),
+            .foregroundColor: UIColor.foreground
+        ]
         navigationBar.scrollEdgeAppearance = appearance
         navigationBar.standardAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance
         navigationBar.compactAppearance = appearance
-
-        navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = true
     }
 }

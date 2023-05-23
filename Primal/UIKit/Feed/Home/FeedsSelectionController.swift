@@ -31,7 +31,7 @@ private extension FeedsSelectionController {
     }
     
     func setup() {
-        view.backgroundColor = UIColor(rgb: 0x1C1C1E)
+        view.backgroundColor = .background2
         if let pc = presentationController as? UISheetPresentationController {
             if #available(iOS 16.0, *) {
                 pc.detents = [.custom(resolver: { [weak self] context in
@@ -53,7 +53,7 @@ private extension FeedsSelectionController {
         for feed in settings {
             let button = UIButton()
             button.setTitle(feed.name, for: .normal)
-            button.setTitleColor(.white, for: .normal)
+            button.setTitleColor(.foreground, for: .normal)
             button.titleLabel?.font = .appFont(withSize: 20, weight: .regular)
             button.addTarget(self, action: #selector(feedButtonPressed), for: .touchUpInside)
             
@@ -90,12 +90,12 @@ private extension FeedsSelectionController {
         buttonStack.alignment = .center
         
         pullBar.constrainToSize(width: 60, height: 5)
-        pullBar.backgroundColor = .white
+        pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
         pullBar.layer.cornerRadius = 2.5
         
         title.text = "My Nostr Feeds"
         title.font = .appFont(withSize: 32, weight: .semibold)
-        title.textColor = .white
+        title.textColor = .foreground
         
 //        border
 //            .constrainToSize(height: 1)

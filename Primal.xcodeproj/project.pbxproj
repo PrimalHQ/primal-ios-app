@@ -151,6 +151,12 @@
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
 		9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3232A013B3C000D1B2F /* FeedCell.swift */; };
 		9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */; };
+		9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */; };
+		9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */; };
+		9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */; };
+		9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB82A1CF6CA00FB6C86 /* ThemingManager.swift */; };
+		9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */; };
+		9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -349,6 +355,12 @@
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		9ECFD3232A013B3C000D1B2F /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
 		9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSuggestionsRequest.swift; sourceTree = "<group>"; };
+		9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunriseWave.swift; sourceTree = "<group>"; };
+		9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetWave.swift; sourceTree = "<group>"; };
+		9EE07AB82A1CF6CA00FB6C86 /* ThemingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemingManager.swift; sourceTree = "<group>"; };
+		9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemedColors.swift; sourceTree = "<group>"; };
+		9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -527,6 +539,7 @@
 		9393312C29A3E534003954C2 /* State */ = {
 			isa = PBXGroup;
 			children = (
+				9EE07AB12A1CF39E00FB6C86 /* Theming */,
 				9393312E29A3E54E003954C2 /* SocketManager.swift */,
 				932E864A29A6EB8600C415AA /* UIState.swift */,
 				9E40D6E92A0D1A3B008AE854 /* FollowingManager.swift */,
@@ -832,6 +845,27 @@
 			path = Feed;
 			sourceTree = "<group>";
 		};
+		9EE07AB12A1CF39E00FB6C86 /* Theming */ = {
+			isa = PBXGroup;
+			children = (
+				9EE07AB82A1CF6CA00FB6C86 /* ThemingManager.swift */,
+				9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */,
+				9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */,
+				9EE07ABA2A1CFB0B00FB6C86 /* Themes */,
+			);
+			path = Theming;
+			sourceTree = "<group>";
+		};
+		9EE07ABA2A1CFB0B00FB6C86 /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */,
+				9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */,
+				9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */,
+			);
+			path = Themes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1003,6 +1037,8 @@
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9E9C421D2A14281A00F9D7ED /* FeedManager.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
+				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
+				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
@@ -1034,6 +1070,7 @@
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
+				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
@@ -1050,6 +1087,7 @@
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
 				9393312F29A3E54E003954C2 /* SocketManager.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
+				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
 				93594D682A0D38A800634E20 /* LikingManager.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
@@ -1063,12 +1101,14 @@
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
+				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
 				93B7FE7E2A0AB181005AE313 /* DisplayName.swift in Sources */,
 				9344DB2F2A12C48900C9F281 /* RepostingManager.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
+				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,

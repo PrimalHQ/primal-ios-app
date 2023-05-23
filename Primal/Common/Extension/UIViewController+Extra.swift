@@ -30,4 +30,15 @@ extension UIViewController {
         }
         return nil
     }
+    
+    func findAllChildren<T>() -> [T] {
+        var result = [T]()
+        for child in children {
+            if let t = child as? T {
+                result.append(t)
+            }
+            result += child.findAllChildren()
+        }
+        return result
+    }
 }

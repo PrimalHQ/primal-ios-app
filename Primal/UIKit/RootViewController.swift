@@ -21,10 +21,17 @@ final class RootViewController: UIViewController {
     
     var didAnimate = false
     
-    init() {
+    private init() {
         super.init(nibName: nil, bundle: nil)
+        if !Theme.hasDefaultTheme {
+            Theme.current = UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance
+        }
         quickReset()
         addIntro()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
     }
     
     required init?(coder: NSCoder) {
