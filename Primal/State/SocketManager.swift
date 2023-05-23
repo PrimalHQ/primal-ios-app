@@ -31,7 +31,7 @@ class ResponseBuffer {
     var stats: [String: NostrContentStats] = [:]
 }
 
-class SocketManager: ObservableObject, WebSocketConnectionDelegate {
+final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUser: PrimalUser?
     @Published var currentUserStats: NostrUserProfileInfo?
     @Published var currentUserSettings: PrimalSettings?

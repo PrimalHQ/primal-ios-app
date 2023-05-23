@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FollowButton: MyButton {
+final class FollowButton: MyButton {
     var titles: (String, String) {
         didSet {
             titleLabel.text = isFollowing ? titles.1 : titles.0

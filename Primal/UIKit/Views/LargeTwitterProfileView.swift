@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LargeTwitterProfileView: UIView {
+final class LargeTwitterProfileView: UIView {
     let coverImageView = UIImageView()
     let profileImageView = UIImageView()
     let nameLabel = UILabel()

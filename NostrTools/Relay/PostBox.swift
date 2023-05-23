@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Relayer {
+final class Relayer {
     let relay: String
     var attempts: Int
     var retry_after: Double
@@ -21,7 +21,7 @@ class Relayer {
     }
 }
 
-class PostedEvent {
+final class PostedEvent {
     let event: NostrEvent
     var remaining: [Relayer]
     
@@ -33,7 +33,7 @@ class PostedEvent {
     }
 }
 
-class PostBox: ObservableObject {
+final class PostBox: ObservableObject {
     let pool: RelayPool
     var events: [String: PostedEvent]
     

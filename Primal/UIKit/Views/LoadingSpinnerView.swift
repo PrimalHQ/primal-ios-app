@@ -35,7 +35,7 @@ enum AnimationType {
     }
 }
 
-class LoadingSpinnerView: LottieAnimationView {
+final class LoadingSpinnerView: LottieAnimationView {
     init() {
         super.init(animation: AnimationType.loadingSpinner.animation)
         loopMode = .loop

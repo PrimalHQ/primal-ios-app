@@ -12,7 +12,7 @@ extension CAMediaTimingFunction {
     static let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
 }
 
-class RootViewController: UIViewController {
+final class RootViewController: UIViewController {
 
     static let instance = RootViewController()
     

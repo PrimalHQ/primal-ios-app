@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Profile: Codable {
+final class Profile: Codable {
     var value: [String: AnyCodable]
     
     init (name: String?, display_name: String?, about: String?, picture: String?, banner: String?, website: String?, lud06: String?, lud16: String?, nip05: String?) {

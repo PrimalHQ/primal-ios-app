@@ -12,7 +12,7 @@ protocol LinkableLabelDelegate: AnyObject {
     func didTapOutsideURL()
 }
 
-class LinkableLabel: UILabel {
+final class LinkableLabel: UILabel {
     
     var links: [(NSRange, URL)] = []
     weak var delegate: LinkableLabelDelegate?

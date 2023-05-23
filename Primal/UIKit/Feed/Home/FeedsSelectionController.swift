@@ -7,18 +7,12 @@
 
 import UIKit
 
-class FeedsSelectionController: UIViewController {
+final class FeedsSelectionController: UIViewController {
     let feed: FeedManager
     init(feed: FeedManager) {
         self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
-        
-//        self.feed.requestUserContacts {
-//            let miljanHex = "d61f3bc5b3eb4400efdae6169a5c17cabf3246b514361de939ce4a1a0da6ef4a"
-//            self.feed.sendFollowEvent(miljanHex)
-//            self.feed.sendUnfollowEvent(miljanHex)
-//        }
     }
     
     required init?(coder: NSCoder) {

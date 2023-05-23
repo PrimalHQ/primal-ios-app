@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardingStartViewController: UIViewController {
+final class OnboardingStartViewController: UIViewController {
     let screenshotParent = UIView()
     
     let signupButton = BigOnboardingButton(

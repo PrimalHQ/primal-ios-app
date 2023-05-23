@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class OnboardingImportTwitterController: UIViewController {
+final class OnboardingImportTwitterController: UIViewController {
     enum State {
         case ready
         case searching

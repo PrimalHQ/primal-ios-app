@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class OnboardingParentViewController: UINavigationController {
+final class OnboardingParentViewController: UINavigationController {
     init() {
         super.init(rootViewController: OnboardingStartViewController())
     }

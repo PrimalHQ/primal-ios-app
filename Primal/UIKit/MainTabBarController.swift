@@ -13,7 +13,7 @@ extension UIViewController {
     }
 }
 
-class MainTabBarController: UIViewController {
+final class MainTabBarController: UIViewController {
     lazy var home = FeedNavigationController(feed: feed)
     lazy var read = ReadNavigationController(feed: feed)
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController(), feed: feed))

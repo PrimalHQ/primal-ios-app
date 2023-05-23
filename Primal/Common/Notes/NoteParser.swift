@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class NoteParser {
+public final class NoteParser {
     private var tokens: [SyntaxToken] = []
     public var parsedExpressions: [ExpressionSyntax] = []
     private var position: Int = 0

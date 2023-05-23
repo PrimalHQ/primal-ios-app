@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-class FollowingManager {
+final class FollowingManager {
     let connection: SocketManager
     init(socket: SocketManager) {
         self.connection = socket

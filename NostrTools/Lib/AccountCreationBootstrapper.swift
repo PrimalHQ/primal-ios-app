@@ -20,7 +20,7 @@ public let bootstrap_relays = [
     "wss://damus.relay.center"
 ]
 
-class AccountCreationBootstrapper {
+final class AccountCreationBootstrapper {
     private let pool: RelayPool
     private var profile: Profile?
     private let keypair: Keypair

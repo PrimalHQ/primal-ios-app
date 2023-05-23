@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-class LikingManager {
+final class LikingManager {
     let feed: SocketManager
     
     init(feed: SocketManager) {

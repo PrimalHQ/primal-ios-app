@@ -39,7 +39,7 @@ struct NostrRequestId: Equatable, Hashable {
     let sub_id: String
 }
 
-class RelayPool {
+final class RelayPool {
     var relays: [Relay] = []
     var handlers: [RelayHandler] = []
     var request_queue: [QueuedRequest] = []

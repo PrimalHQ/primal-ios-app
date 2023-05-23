@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimalProgressView: UIView {
+final class PrimalProgressView: UIView {
     
     var progress: Int {
         didSet {

@@ -11,7 +11,7 @@ protocol FollowProfileCellDelegate: AnyObject {
     func followButtonPressed(_ cell: FollowProfileCell)
 }
 
-class FollowProfileCell: UITableViewCell {
+final class FollowProfileCell: UITableViewCell {
     let profileImage = VerifiedImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()

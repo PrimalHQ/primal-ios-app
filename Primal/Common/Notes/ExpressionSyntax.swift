@@ -11,7 +11,7 @@ public protocol ExpressionSyntax: SyntaxNode {
     
 }
 
-public class SimpleExpressionSyntax: ExpressionSyntax {
+public final class SimpleExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind
     public let token: SyntaxToken
     
@@ -25,7 +25,7 @@ public class SimpleExpressionSyntax: ExpressionSyntax {
     }
 }
 
-public class HashtagExpressionSyntax: ExpressionSyntax {
+public final class HashtagExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .HashtagToken } }
     public let hashtagToken: SyntaxToken
     public let textToken: SyntaxToken
@@ -40,7 +40,7 @@ public class HashtagExpressionSyntax: ExpressionSyntax {
     }
 }
 
-public class MentionNpubExpressionSyntax: ExpressionSyntax {
+public final class MentionNpubExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .MentionNpubExpression } }
     public let mentionToken: SyntaxToken
     public let npubToken: SyntaxToken
@@ -55,7 +55,7 @@ public class MentionNpubExpressionSyntax: ExpressionSyntax {
     }
 }
 
-public class NostrNpubExpressionSyntax: ExpressionSyntax {
+public final class NostrNpubExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .NostrNpubExpression } }
     public let nostrToken: SyntaxToken
     public let colonToken: SyntaxToken
@@ -72,7 +72,7 @@ public class NostrNpubExpressionSyntax: ExpressionSyntax {
     }
 }
 
-public class NostrNoteExpressionSyntax: ExpressionSyntax {
+public final class NostrNoteExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .NostrNoteExpression } }
     public let nostrToken: SyntaxToken
     public let colonToken: SyntaxToken
@@ -89,7 +89,7 @@ public class NostrNoteExpressionSyntax: ExpressionSyntax {
     }
 }
 
-public class HttpUrlExpressionSyntax: ExpressionSyntax {
+public final class HttpUrlExpressionSyntax: ExpressionSyntax {
     public var kind: SyntaxKind { get { return .HttpExpression } }
     public let tokens: [SyntaxToken]
     

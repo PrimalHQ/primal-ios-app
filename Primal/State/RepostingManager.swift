@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RepostingManager {
+final class RepostingManager {
     private var feed: SocketManager
     
     init(feed: SocketManager) {

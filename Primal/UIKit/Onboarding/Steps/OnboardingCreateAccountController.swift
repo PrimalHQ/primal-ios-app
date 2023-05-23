@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardingCreateAccountController: UIViewController {
+final class OnboardingCreateAccountController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         

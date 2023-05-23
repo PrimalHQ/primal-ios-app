@@ -242,7 +242,7 @@ struct PinchZoom: UIViewRepresentable {
     
     func updateUIView(_ pageControl: PinchZoomView, context: Context) { }
     
-    class Coordinator: NSObject, PinchZoomViewDelgate {
+    final class Coordinator: NSObject, PinchZoomViewDelgate {
         var pinchZoom: PinchZoom
         
         init(_ pinchZoom: PinchZoom) {
@@ -292,7 +292,7 @@ extension View {
 
 
 
-class ImageLoader: ObservableObject {
+final class ImageLoader: ObservableObject {
     @Published var image: UIImage?
     private let url: Binding<String>
     private var cancellable: AnyCancellable?
