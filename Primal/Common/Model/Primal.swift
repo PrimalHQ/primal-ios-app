@@ -19,13 +19,19 @@ struct PrimalNoteStatus: Codable, Hashable {
 struct PrimalSettingsFeed: Codable, Hashable {
     let name: String
     let hex: String
-    let npub: String
+    let npub: String?
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
     let description: String?
     let theme: String?
     var feeds: [PrimalSettingsFeed]
+}
+
+struct PrimalSearchPagination: Codable, Hashable {
+    let since: Int32
+    let until: Int32
+    let order_by: String
 }
 
 struct PrimalSettings: Codable, Identifiable, Hashable {

@@ -11,7 +11,7 @@ import Foundation
 final class FeedManager {
     let connection: SocketManager
     
-    @Published var currentFeed: String = "Latest"
+    @Published var currentFeed: String = ""
     @Published var posts: [PrimalPost] = []
     @Published var parsedPosts: [(PrimalPost, ParsedContent)] = []
     
@@ -27,17 +27,21 @@ final class FeedManager {
             
             var sorted = posts.sorted(by: { $0.post.created_at > $1.post.created_at })
             if self.posts.last?.post.id == sorted.first?.post.id {
-                sorted.removeFirst()
+                 sorted.removeFirst()
             }
             
-            self.posts.append(contentsOf: posts)
-            self.parsedPosts.append(contentsOf: posts.process())
+            self.posts.append(contentsOf: sorted)
+            self.parsedPosts.append(contentsOf: sorted.process())
             self.isRequestingNewPage = false
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(socket.$didFinishInit, socket.$isConnected.removeDuplicates()).sink { [weak self] didInit, isConnected in
-            guard didInit, isConnected, self?.posts.isEmpty == true else { return }
+        Publishers.CombineLatest3(socket.$didFinishInit, socket.$isConnected.removeDuplicates(), socket.$currentUserSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
+            guard didInit, isConnected, self?.posts.isEmpty == true, let settings = currentUserSettings else { return }
+            
+            guard let feedName = settings.content.feeds.first?.name else { fatalError("no feed detected") }
+            
+            self?.currentFeed = feedName
             self?.refresh()
         }
         .store(in: &cancellables)
