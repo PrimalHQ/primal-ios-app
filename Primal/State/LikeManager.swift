@@ -1,39 +1,36 @@
 //
-//  RepostingManager.swift
+//  LikingManager.swift
 //  Primal
 //
-//  Created by Nikola Lukovic on 15.5.23..
+//  Created by Nikola Lukovic on 11.5.23..
 //
 
 import Foundation
+import GenericJSON
 
-final class RepostingManager {
-    private var feed: SocketManager
+final class LikeManager {
+    let feed: SocketManager
     
     init(feed: SocketManager) {
         self.feed = feed
     }
     
-    public func hasReposted(_ eventId: String) -> Bool { feed.currentUserReposts.contains(eventId) }
+    func hasLiked(_ eventId: String) -> Bool { feed.currentUserLikes.contains(eventId) }
     
-    func sendRepostEvent(nostrContent: NostrContent) {
+    func sendLikeEvent(post: PrimalFeedPost) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
+        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
         
-        if let repostEvent = ev {
-            feed.postBox.pool.register_handler(sub_id: repostEvent.id, handler: self.handleRepostEvent)
-            
-            feed.postBox.send(repostEvent)
-        } else {
-            print("Error creating repost event")
-        }
+        feed.postBox.pool.register_handler(sub_id: ev.id, handler: self.handleLikeEvent)
+        
+        feed.postBox.send(ev)
     }
     
-    private func handleRepostEvent(relayId: String, ev: NostrConnectionEvent) {
+    private func handleLikeEvent(relayId: String, ev: NostrConnectionEvent) {
         switch ev {
         case .ws_event(let wsev):
             switch wsev {
@@ -54,7 +51,7 @@ final class RepostingManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    feed.currentUserReposts.insert(res.event_id)
+                    feed.currentUserLikes.insert(res.event_id)
                 }
                 break
             }
