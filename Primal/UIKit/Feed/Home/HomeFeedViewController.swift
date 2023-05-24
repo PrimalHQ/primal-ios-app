@@ -62,6 +62,13 @@ final class HomeFeedViewController: FeedViewController {
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
         
+        let postButton = UIButton()
+        postButton.setImage(UIImage(named: "AddPost"), for: .normal)
+        postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
+        
+        view.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(edges: [.trailing, .bottom], padding: 8, safeArea: true)
+        
         updateTheme()
     }
     
@@ -74,6 +81,10 @@ final class HomeFeedViewController: FeedViewController {
     
     @objc func openFeedSelection() {
         present(FeedsSelectionController(feed: feedManager), animated: true)
+    }
+    
+    @objc func postPressed() {
+        present(NewPostViewController(socket: feed), animated: true)
     }
     
     override func updateTheme() {

@@ -89,7 +89,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
 private extension FeedViewController {
     func setup() {
         stack.axis = .vertical
-        view.addSubview(stack)
+        view.insertSubview(stack, at: 0)
         stack
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, safeArea: true)
@@ -135,6 +135,7 @@ extension FeedViewController: PostCellDelegate {
             viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
         ))
         viewController = binding
+        binding.view.backgroundColor = .clear
         binding.modalPresentationStyle = .overFullScreen
         present(binding, animated: true)
     }

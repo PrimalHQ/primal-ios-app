@@ -13,13 +13,7 @@ protocol Themeable {
 
 final class ThemingManager {
     static let instance = ThemingManager()
-    
-    init() {
-        NotificationCenter.default.addObserver(forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: nil) { _ in
-            self.traitDidChange()
-        }
-    }
-    
+        
     func traitDidChange() {
         guard !Theme.hasDefaultTheme else { return }
         
