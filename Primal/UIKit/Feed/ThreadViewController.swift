@@ -12,6 +12,10 @@ final class ThreadViewController: FeedViewController {
     var request: AnyCancellable?
     let id: String
     
+    var didPostNewComment = false
+    
+    lazy var posting = PostManager(feed: feed)
+    
     var mainPositionInThread = 0
     
     private var didMoveToMain = false
@@ -106,6 +110,24 @@ final class ThreadViewController: FeedViewController {
 }
 
 private extension ThreadViewController {
+    @objc func postButtonPressed() {
+        guard let text = textInputView.text, !text.isEmpty else {
+            showErrorMessage("Text mustn't be empty")
+            return
+        }
+        
+        textInputView.isEditable = false
+        
+        posting.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
+            self.textInputView.isEditable = true
+            self.textInputView.text = ""
+            self.placeholderLabel.isHidden = false
+            self.didPostNewComment = true
+            self.didMoveToMain = false
+            self.feed.requestThread(postId: self.id, subId: self.id)
+        }
+    }
+    
     func addPublishers() {
         feed.requestThread(postId: id, subId: id)
         feed.postsEmitter.sink { [weak self] (id, posts) in
@@ -131,7 +153,15 @@ private extension ThreadViewController {
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
             self.didMoveToMain = true
-            self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+            
+            if self.didPostNewComment {
+                self.didPostNewComment = false
+                DispatchQueue.main.async {
+                    self.table.scrollToRow(at: IndexPath(row: self.posts.count - 1, section: 0), at: .top, animated: true)
+                }
+            } else {
+                self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+            }
         })
         .store(in: &cancellables)
         
@@ -213,6 +243,7 @@ private extension ThreadViewController {
         let postButton = GradientInGradientButton(title: "Reply")
         postButton.titleLabel.font = .appFont(withSize: 14, weight: .medium)
         postButton.constrainToSize(width: 80, height: 28)
+        postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
         [imageButton, cameraButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)

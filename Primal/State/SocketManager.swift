@@ -415,12 +415,14 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     private func emitPosts(subId: String) {
         guard let data = postCache[subId] else { return }
         postCache[subId] = nil
-        let posts = data.posts.map { nostrPost in
-            let nostrUser = data.users[nostrPost.pubkey]
-            let nostrPostStats = data.stats[nostrPost.id]
+        let posts: [PrimalPost] = data.posts.compactMap { nostrPost in
+            guard
+                let nostrUser = data.users[nostrPost.pubkey],
+                let nostrPostStats = data.stats[nostrPost.id],
+                let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)
+            else { return nil }
             
-            let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)!
-            let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats!)
+            let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats)
             
             let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
             

@@ -14,6 +14,7 @@ class NewPostViewController: UIViewController {
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
     let socket: SocketManager
+    lazy var posting = PostManager(feed: socket)
     
     private var cancellables: Set<AnyCancellable> = []
         
@@ -34,7 +35,17 @@ class NewPostViewController: UIViewController {
     }
 }
 
-private extension NewPostViewController {    
+private extension NewPostViewController {
+    @objc func postButtonPressed() {
+        guard let text = textView.text, !text.isEmpty else {
+            showErrorMessage("Text mustn't be empty")
+            return
+        }
+        posting.sendPostEvent(text) { [weak self] in
+            self?.dismiss(animated: true)
+        }
+    }
+    
     func setup() {
         view.backgroundColor = .background2
         
@@ -97,6 +108,6 @@ private extension NewPostViewController {
         .store(in: &cancellables)
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        post.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
     }
 }
