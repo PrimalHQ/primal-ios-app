@@ -35,6 +35,6 @@ enum Kind: UInt32 {
     case notification = 10_000_110
     case timestamp = 10_000_111
     case notificationStats = 10_000_112
-    case notePaging = 10_000_113
+    case searchPaginationSettingsEvent = 10_000_113
     case noteActions = 10_000_115
 }

@@ -41,6 +41,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUserReposts: Set<String> = []
     @Published var currentUserReplied: Set<String> = []
     @Published var currentUserZapped: Set<String> = []
+    @Published var searchPaginationEvent: PrimalSearchPagination?
     
     @Published var didFinishInit: Bool = false
     @Published var isConnected: Bool = false
@@ -100,7 +101,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
         self.postCache[subId] = .init()
         
         guard let json: JSON = try? JSON(
-            ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit]
+            ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": self.currentUserHex]
                                                       as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
@@ -364,6 +365,16 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
             if let id {
                 postCache[id]?.stats[nostrContentStats.event_id] = nostrContentStats
             }
+        case .searchPaginationSettingsEvent:
+            guard let searchPaginationEvent: PrimalSearchPagination = try? self.jsonDecoder.decode(PrimalSearchPagination.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding nostr stats string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            
+            self.searchPaginationEvent = searchPaginationEvent
+            dump(self.searchPaginationEvent)
+            break
         case .noteActions:
             guard let noteStatus: PrimalNoteStatus = try? self.jsonDecoder.decode(PrimalNoteStatus.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding note status string to json")

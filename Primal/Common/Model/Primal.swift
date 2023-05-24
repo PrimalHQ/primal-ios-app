@@ -28,6 +28,12 @@ struct PrimalSettingsContent: Codable, Hashable {
     var feeds: [PrimalSettingsFeed]
 }
 
+struct PrimalSearchPagination: Codable, Hashable {
+    let since: Int32
+    let until: Int32
+    let order_by: String
+}
+
 struct PrimalSettings: Codable, Identifiable, Hashable {
     let kind: Int32
     var content: PrimalSettingsContent
