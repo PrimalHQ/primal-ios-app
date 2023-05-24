@@ -575,6 +575,27 @@ func make_metadata_event(keypair: Keypair, metadata: Profile) -> NostrEvent? {
     return ev
 }
 
+func make_reply_event(pubkey: String, privkey: String, content: String, post: PrimalFeedPost) -> NostrEvent {
+    let e = ["e", post.id, "", "reply"]
+    let p = ["p", post.pubkey]
+    
+    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [e, p])
+    
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    
+    return ev
+}
+
+func make_post_event(pubkey: String, privkey: String, content: String) -> NostrEvent {
+    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [[]])
+    
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    
+    return ev
+}
+
 func make_repost_event(pubkey: String, privkey: String, nostrContent: NostrContent) -> NostrEvent? {
     guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
         print("Error encoding post json for repost")

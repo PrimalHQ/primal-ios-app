@@ -13,8 +13,8 @@ import SafariServices
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let feed: SocketManager
-    lazy var likingManager = LikingManager(feed: feed)
-    lazy var repostingManager = RepostingManager(feed: feed)
+    lazy var likeManager = LikeManager(feed: feed)
+    lazy var postManager = PostManager(feed: feed)
     
     let navigationBarLengthner = SpacerView(size: 7)
     var table = UITableView()
@@ -55,8 +55,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             let data = posts[indexPath.row]
             cell.update(data.0,
                         parsedContent: data.1,
-                        didLike: likingManager.hasLiked(data.0.post.id),
-                        didRepost: repostingManager.hasReposted(data.0.post.id)
+                        didLike: likeManager.hasLiked(data.0.post.id),
+                        didRepost: postManager.hasReposted(data.0.post.id)
             )
             cell.delegate = self
         }
@@ -101,12 +101,12 @@ private extension FeedViewController {
 extension FeedViewController: PostCellDelegate {
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        likingManager.sendLikeEvent(post: posts[indexPath.row].0.post)
+        likeManager.sendLikeEvent(post: posts[indexPath.row].0.post)
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        repostingManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
+        postManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

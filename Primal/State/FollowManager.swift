@@ -1,5 +1,5 @@
 //
-//  Following.swift
+//  FollowManager.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 11.5.23..
@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-final class FollowingManager {
+final class FollowManager {
     let connection: SocketManager
     init(socket: SocketManager) {
         self.connection = socket

@@ -60,7 +60,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     
     private var userContactsReceivedCB: (() -> Void)?
     
-    var following: FollowingManager { FollowingManager(socket: self) }
+    var followManager: FollowManager { FollowManager(socket: self) }
     
     private let identity: String
         

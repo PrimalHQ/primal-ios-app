@@ -104,7 +104,7 @@ private extension OnboardingFollowSuggestionsController {
     }
     
     @objc func continuePressed() {
-        feed?.following.sendBatchFollowEvent(Array(selectedToFollow))
+        feed?.followManager.sendBatchFollowEvent(Array(selectedToFollow))
         RootViewController.instance.reset()
     }
 }
