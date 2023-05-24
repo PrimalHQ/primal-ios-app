@@ -1,5 +1,5 @@
 //
-//  LikingManager.swift
+//  LikeManager.swift
 //  Primal
 //
 //  Created by Nikola Lukovic on 11.5.23..

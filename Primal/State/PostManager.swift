@@ -1,5 +1,5 @@
 //
-//  PostingManager.swift
+//  PostManager.swift
 //  Primal
 //
 //  Created by Nikola Lukovic on 24.5.23..

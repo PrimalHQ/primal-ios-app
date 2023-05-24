@@ -1,5 +1,5 @@
 //
-//  Kind.swift
+//  ResponseKind.swift
 //  Primal
 //
 //  Created by Nikola Lukovic on 23.5.23..
