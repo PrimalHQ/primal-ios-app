@@ -297,7 +297,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     }
     
     private func processEvent(type: ProcessType, json: JSON) {
-        let kind = Kind(rawValue: UInt32(json.arrayValue![2].objectValue!["kind"]!.doubleValue!))
+        let kind = ResponseKind(rawValue: UInt32(json.arrayValue![2].objectValue!["kind"]!.doubleValue!))
         let id = json.arrayValue?[1].stringValue
         
         switch kind {

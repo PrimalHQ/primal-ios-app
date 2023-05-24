@@ -37,11 +37,12 @@ final class FeedManager {
         .store(in: &cancellables)
         
         Publishers.CombineLatest3(socket.$didFinishInit, socket.$isConnected.removeDuplicates(), socket.$currentUserSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
-            guard didInit, isConnected, self?.posts.isEmpty == true else { return }
-            if let settings = currentUserSettings {
-                self?.currentFeed = settings.content.feeds.first?.name ?? ""
-                self?.refresh()
-            }
+            guard didInit, isConnected, self?.posts.isEmpty == true, let settings = currentUserSettings else { return }
+            
+            guard let feedName = settings.content.feeds.first?.name else { fatalError("no feed detected") }
+            
+            self?.currentFeed = feedName
+            self?.refresh()
         }
         .store(in: &cancellables)
     }

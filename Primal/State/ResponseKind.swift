@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Kind: UInt32 {
+enum ResponseKind: UInt32 {
     case metadata = 0
     case text = 1
     case recommendRelay = 2
