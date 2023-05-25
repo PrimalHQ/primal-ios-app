@@ -92,6 +92,12 @@
 		9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */; };
 		9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */; };
 		9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */; };
+		9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2892A1FA6DE00D5D523 /* SettingsMainViewController.swift */; };
+		9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */; };
+		9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */; };
+		9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2922A1FBC4200D5D523 /* ThemeableViews.swift */; };
+		9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2942A1FBDB600D5D523 /* BorderView.swift */; };
+		9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */; };
 		9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */; };
 		9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */; };
 		9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9402A1E6586008DFFBE /* CancelButton.swift */; };
@@ -300,6 +306,12 @@
 		9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorAnimatingLabel.swift; sourceTree = "<group>"; };
 		9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedsSelectionController.swift; sourceTree = "<group>"; };
 		9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
+		9E55F2892A1FA6DE00D5D523 /* SettingsMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMainViewController.swift; sourceTree = "<group>"; };
+		9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsOptionButton.swift; sourceTree = "<group>"; };
+		9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNsecViewController.swift; sourceTree = "<group>"; };
+		9E55F2922A1FBC4200D5D523 /* ThemeableViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeableViews.swift; sourceTree = "<group>"; };
+		9E55F2942A1FBDB600D5D523 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
+		9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTitleView.swift; sourceTree = "<group>"; };
 		9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
 		9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientInGradientButton.swift; sourceTree = "<group>"; };
 		9E5BD9402A1E6586008DFFBE /* CancelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelButton.swift; sourceTree = "<group>"; };
@@ -717,6 +729,42 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		9E55F2882A1FA6CD00D5D523 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				9E55F2892A1FA6DE00D5D523 /* SettingsMainViewController.swift */,
+				9E55F28E2A1FB9B200D5D523 /* SubControllers */,
+				9E55F28B2A1FAA6500D5D523 /* Views */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		9E55F28B2A1FAA6500D5D523 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */,
+				9E55F2942A1FBDB600D5D523 /* BorderView.swift */,
+				9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9E55F28E2A1FB9B200D5D523 /* SubControllers */ = {
+			isa = PBXGroup;
+			children = (
+				9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */,
+			);
+			path = SubControllers;
+			sourceTree = "<group>";
+		};
+		9E55F2912A1FBC3000D5D523 /* Themeable */ = {
+			isa = PBXGroup;
+			children = (
+				9E55F2922A1FBC4200D5D523 /* ThemeableViews.swift */,
+			);
+			path = Themeable;
+			sourceTree = "<group>";
+		};
 		9E5BD93A2A1E310A008DFFBE /* Posting */ = {
 			isa = PBXGroup;
 			children = (
@@ -806,6 +854,7 @@
 				9E9C42152A1401F500F9D7ED /* Explore */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
+				9E55F2882A1FA6CD00D5D523 /* Settings */,
 				9E9C42122A13FC8B00F9D7ED /* Read */,
 				9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */,
 				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
@@ -839,6 +888,7 @@
 		9E9F2F7229F6AB6400A9CDF3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9E55F2912A1FBC3000D5D523 /* Themeable */,
 				9E5BD93D2A1E6554008DFFBE /* Buttons */,
 				9E79D3A12A014DEE008404DB /* Feed */,
 				9E0DEAF729FD49F100145E08 /* FollowViews */,
@@ -1066,6 +1116,7 @@
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9E9C421D2A14281A00F9D7ED /* FeedManager.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
+				9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */,
@@ -1128,7 +1179,9 @@
 				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
+				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */,
+				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
@@ -1141,6 +1194,7 @@
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
+				9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
@@ -1156,8 +1210,10 @@
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
+				9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */,
 				939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */,
 				939A01652A06C0EF00E9DBA2 /* Relay.swift in Sources */,
+				9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */,
 				9EA420D22A17B42F008FBFED /* ImageViewerRemote.swift in Sources */,
 				933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */,
 				9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */,

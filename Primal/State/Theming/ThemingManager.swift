@@ -25,8 +25,13 @@ final class ThemingManager {
     
     func themeDidChange() {
         RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
+        
         UIView.animate(withDuration: 0.3, delay: 0, options: [.transitionCrossDissolve]) {
             for themable: Themeable in RootViewController.instance.findAllChildren() {
+                themable.updateTheme()
+            }
+            
+            for themable: Themeable in RootViewController.instance.view.findAllSubviews() {
                 themable.updateTheme()
             }
         }

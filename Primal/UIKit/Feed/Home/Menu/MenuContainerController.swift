@@ -35,13 +35,6 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
     
-    private let signOut = MenuItemButton(title: "SIGN OUT")
-    private lazy var buttonsStack = UIStackView(arrangedSubviews: [
-        MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
-        MenuItemButton(title: "USER LISTS"), MenuItemButton(title: "SETTINGS"),
-        signOut
-    ])
-    
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
     }
@@ -61,6 +54,12 @@ final class MenuContainerController: UIViewController, Themeable {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        close()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -106,6 +105,13 @@ final class MenuContainerController: UIViewController, Themeable {
         mainTabBarController?.showCloseMenuButton()
     }
     
+    func resetNavigationTabBar() {
+        mainTabBarController?.showButtons()
+        UIView.animate(withDuration: 0.2) {
+            self.navigationController?.navigationBar.transform = .identity
+        }
+    }
+    
     func close() {
         childLeftConstraint?.isActive = false
         coverView.alpha = 0
@@ -115,11 +121,6 @@ final class MenuContainerController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
-        
-        for view in buttonsStack.arrangedSubviews {
-            guard let button = view as? MenuItemButton else { continue }
-            button.updateTheme()
-        }
         
         themeButton.setImage(Theme.current.menuButtonImage, for: .normal)
         
@@ -144,6 +145,15 @@ private extension MenuContainerController {
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
         let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, checkbox2, checkDomainLabel])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
+        
+        let signOut = MenuItemButton(title: "SIGN OUT")
+        let settings = MenuItemButton(title: "SETTINGS")
+        let buttonsStack = UIStackView(arrangedSubviews: [
+            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
+            MenuItemButton(title: "USER LISTS"), settings,
+            signOut
+        ])
+        
         
         [
             profileImage, titleStack, usernameStack, followStack,
@@ -224,6 +234,7 @@ private extension MenuContainerController {
         swipe.direction = .left
         coverView.addGestureRecognizer(swipe)
         
+        settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         
@@ -259,6 +270,13 @@ private extension MenuContainerController {
         checkDomainLabel.text = user.getDomainNip05()
         
         [checkbox1, checkbox2].forEach { $0.isHidden = user.nip05.isEmpty }
+    }
+    
+    // MARK: - Objc methods
+    
+    @objc func settingsButtonPressed() {
+        show(SettingsMainViewController(), sender: nil)
+        resetNavigationTabBar()
     }
     
     @objc func themeButtonPressed() {
@@ -349,5 +367,6 @@ final class MenuItemButton: UIButton, Themeable {
     
     func updateTheme() {
         setTitleColor(.foreground2, for: .normal)
+        setTitleColor(.foreground2.withAlphaComponent(0.5), for: .highlighted)
     }
 }
