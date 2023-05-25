@@ -28,6 +28,7 @@ enum ResponseKind: UInt32 {
     case noteStats = 10_000_100
     case netStats = 10_000_101
     case legendStats = 10_000_102
+    case defaultSettings = 10_000_103
     case userStats = 10_000_105
     case oldestEvent = 10_000_106
     case mentions = 10_000_107

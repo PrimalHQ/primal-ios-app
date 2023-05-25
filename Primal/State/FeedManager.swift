@@ -26,7 +26,7 @@ final class FeedManager {
             guard let self, id == self.requestID else { return }
             
             var sorted = posts.sorted(by: { $0.post.created_at > $1.post.created_at })
-            if self.posts.last?.post.id == sorted.first?.post.id {
+            if (self.posts.count > 0 || sorted.count > 0) && self.posts.last?.post.id == sorted.first?.post.id {
                  sorted.removeFirst()
             }
             
