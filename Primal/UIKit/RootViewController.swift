@@ -10,6 +10,10 @@ import UIKit
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
     static let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
+    
+    static let logoScaleEaseInOut = CAMediaTimingFunction(controlPoints: 1, 0.51, 0.26, 0.87)
+    static let postsEaseInOut = CAMediaTimingFunction(controlPoints: 0.9, 0.13, 0.14, 0.83)
+    static let signinEaseOut = CAMediaTimingFunction(controlPoints: 0.01, 0.64, 0.19, 0.91)
 }
 
 final class RootViewController: UIViewController {
@@ -30,13 +34,11 @@ final class RootViewController: UIViewController {
         addIntro()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle { Theme.current.statusBarStyle }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -66,7 +68,7 @@ final class RootViewController: UIViewController {
         introVC?.view.alpha = 0
         
         CATransaction.begin()
-        CATransaction.setAnimationTimingFunction(.easeoutTiming)
+        CATransaction.setAnimationTimingFunction(.logoScaleEaseInOut)
         
         UIView.animate(withDuration: 1) {
             self.introVC?.view.alpha = 1
@@ -148,20 +150,20 @@ private extension RootViewController {
                 $0.alpha = 0
                 $0.transform = .init(translationX: 0, y: 300)
             }
-            onboarding.screenshotParent.transform = .init(scaleX: 0.2, y: 0.2)
+            onboarding.screenshotParent.transform = .init(scaleX: 0.75, y: 0.75)
             
-            for (index, view) in views.enumerated() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200 + index * 200)) {
-                    CATransaction.begin()
-                    CATransaction.setAnimationTimingFunction(.easeoutTiming)
-                    
-                    UIView.animate(withDuration: 0.7 - Double(index) * 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+                CATransaction.begin()
+                CATransaction.setAnimationTimingFunction(.signinEaseOut)
+                
+                UIView.animate(withDuration: 0.7) {
+                    for view in views {
                         view.transform = .identity
                         view.alpha = 1
                     }
-                    
-                    CATransaction.commit()
                 }
+                
+                CATransaction.commit()
             }
             return
         }
@@ -188,7 +190,7 @@ private extension RootViewController {
                 homeFeed.table.transform = .init(translationX: 0, y: 800)
                     
                 CATransaction.begin()
-                CATransaction.setAnimationTimingFunction(.easeoutTiming)
+                CATransaction.setAnimationTimingFunction(.postsEaseInOut)
 
                 UIView.animate(withDuration: 0.3) {
                     homeFeed.table.transform = .identity

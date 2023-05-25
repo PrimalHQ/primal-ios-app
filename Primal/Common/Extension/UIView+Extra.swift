@@ -9,6 +9,21 @@ import UIKit
 import SwiftUI
 
 extension UIView {
+    func findAllSubviews<T>() -> [T] {
+        var result = [T]()
+
+        if let t = self as? T {
+            result.append(t)
+        }
+        
+        for subview in subviews {
+            result += subview.findAllSubviews()
+        }
+        
+        return result
+    }
+    
+    // MARK: - Constraints
     
     @discardableResult
     func centerToSuperview(axis: Axis.Set = [.horizontal, .vertical]) -> Self {

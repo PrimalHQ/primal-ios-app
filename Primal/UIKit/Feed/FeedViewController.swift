@@ -101,7 +101,10 @@ private extension FeedViewController {
 extension FeedViewController: PostCellDelegate {
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
+        
         likeManager.sendLikeEvent(post: posts[indexPath.row].0.post)
+        
+        cell.update(posts[indexPath.row].0, parsedContent: posts[indexPath.row].1, didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].0.post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {

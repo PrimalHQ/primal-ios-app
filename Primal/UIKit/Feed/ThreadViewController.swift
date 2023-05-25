@@ -167,6 +167,7 @@ private extension ThreadViewController {
         
         inputManager.$isEditing.sink { [unowned self] isEditing in
             self.textHeightConstraint?.isActive = !isEditing
+            self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             UIView.animate(withDuration: 0.2) {
                 self.inputParent.backgroundColor = isEditing ? .background2 : .background
                 self.inputBackground.backgroundColor = isEditing ? .background : .background3
@@ -179,11 +180,6 @@ private extension ThreadViewController {
                 
                 self.textInputView.layoutIfNeeded()
             }
-        }
-        .store(in: &cancellables)
-        
-        inputManager.didChangeEvent.sink { [weak self] textView in
-            self?.placeholderLabel.isHidden = !textView.text.isEmpty
         }
         .store(in: &cancellables)
     }
@@ -228,6 +224,7 @@ private extension ThreadViewController {
         
         textInputView.backgroundColor = .clear
         textInputView.font = .appFont(withSize: 16, weight: .regular)
+        textInputView.textColor = .foreground2
         textInputView.delegate = inputManager
         
         setupMainStack()

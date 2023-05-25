@@ -7,17 +7,17 @@
 
 import UIKit
 
-final class ExploreViewController: UIViewController {
+final class ExploreViewController: UIViewController, Themeable {
+    let backgroundView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Explore Nostr"
         
-        let backgroundView = UIView()
         view.addSubview(backgroundView)
         
         backgroundView.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 7, safeArea: true)
-        backgroundView.backgroundColor = .init(rgb: 0x121212)
         
         let label = UILabel()
         label.text = "coming soon"
@@ -26,5 +26,11 @@ final class ExploreViewController: UIViewController {
         
         backgroundView.addSubview(label)
         label.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .top, padding: 32)
+        
+        updateTheme()
+    }
+    
+    func updateTheme() {
+        backgroundView.backgroundColor = .background2
     }
 }

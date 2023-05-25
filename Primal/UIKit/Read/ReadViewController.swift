@@ -7,13 +7,14 @@
 
 import UIKit
 
-final class ReadViewController: UIViewController {
+final class ReadViewController: UIViewController, Themeable {
+    let image = UIImageView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Nostr Reads"
         
-        let image = UIImageView(image: UIImage(named: "readMockup"))
         let scroll = UIScrollView()
         
         scroll.addSubview(image)
@@ -22,5 +23,11 @@ final class ReadViewController: UIViewController {
         
         view.addSubview(scroll)
         scroll.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 7, safeArea: true)
+        
+        updateTheme()
+    }
+    
+    func updateTheme() {
+        image.image = Theme.current.mockupImage
     }
 }
