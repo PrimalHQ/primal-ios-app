@@ -373,7 +373,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
             }
             
             self.searchPaginationEvent = searchPaginationEvent
-            dump(self.searchPaginationEvent)
+            self.searchPaginationEvent?.subId = json.arrayValue?[1].stringValue
             break
         case .noteActions:
             guard let noteStatus: PrimalNoteStatus = try? self.jsonDecoder.decode(PrimalNoteStatus.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
@@ -442,10 +442,13 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     
     private func generateFeedPageRequest(_ criteria: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
         let key = until == 0 ? "since" : "until"
+        let subId = "feed_\(criteria)_\(self.identity)"
+        
+        let u = self.searchPaginationEvent?.subId == subId ? (self.searchPaginationEvent?.since ?? until) : until
         
         return try? JSON([
             "REQ",
-            "feed_\(criteria)_\(self.identity)",
+            subId,
             [
                 "cache":
                     [
@@ -454,7 +457,7 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
                             "directive": criteria,
                             "user_pubkey": self.currentUserHex,
                             "limit": limit,
-                            "\(key)": until
+                            "\(key)": u
                         ] as [String : Any]
                     ] as [Any]
             ]
