@@ -92,6 +92,11 @@
 		9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */; };
 		9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */; };
 		9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */; };
+		9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */; };
+		9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */; };
+		9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9402A1E6586008DFFBE /* CancelButton.swift */; };
+		9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */; };
+		9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */; };
 		9E69249A2A025D3400CAC54C /* iconLike.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E6924992A025D3400CAC54C /* iconLike.json */; };
 		9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */; };
 		9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */; };
@@ -295,6 +300,11 @@
 		9E55CC672A03C2D7002D3DC4 /* ColorAnimatingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorAnimatingLabel.swift; sourceTree = "<group>"; };
 		9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedsSelectionController.swift; sourceTree = "<group>"; };
 		9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
+		9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
+		9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientInGradientButton.swift; sourceTree = "<group>"; };
+		9E5BD9402A1E6586008DFFBE /* CancelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelButton.swift; sourceTree = "<group>"; };
+		9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSizingTextView.swift; sourceTree = "<group>"; };
+		9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingTextViewManager.swift; sourceTree = "<group>"; };
 		9E6924992A025D3400CAC54C /* iconLike.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = iconLike.json; sourceTree = "<group>"; };
 		9E69249B2A0262CE00CAC54C /* ImageCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionView.swift; sourceTree = "<group>"; };
 		9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedViewController.swift; sourceTree = "<group>"; };
@@ -707,6 +717,25 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		9E5BD93A2A1E310A008DFFBE /* Posting */ = {
+			isa = PBXGroup;
+			children = (
+				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
+				9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */,
+			);
+			path = Posting;
+			sourceTree = "<group>";
+		};
+		9E5BD93D2A1E6554008DFFBE /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */,
+				9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */,
+				9E5BD9402A1E6586008DFFBE /* CancelButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
 		9E6B38CC29F9488400144073 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -775,8 +804,9 @@
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
-				9E9C42122A13FC8B00F9D7ED /* Read */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
+				9E5BD93A2A1E310A008DFFBE /* Posting */,
+				9E9C42122A13FC8B00F9D7ED /* Read */,
 				9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */,
 				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
 			);
@@ -809,16 +839,17 @@
 		9E9F2F7229F6AB6400A9CDF3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9E5BD93D2A1E6554008DFFBE /* Buttons */,
 				9E79D3A12A014DEE008404DB /* Feed */,
 				9E0DEAF729FD49F100145E08 /* FollowViews */,
 				9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */,
-				9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */,
 				9E9F2F7429F6AB6400A9CDF3 /* PrimalProgressView.swift */,
 				9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */,
 				9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */,
 				9E8DE4DB29F7ECA20028D3C3 /* LargeTwitterProfileView.swift */,
 				9E6B38C829F937B100144073 /* LinkableLabel.swift */,
 				9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */,
+				9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1028,6 +1059,7 @@
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
+				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
 				9E6924A22A02899700CAC54C /* ThreadUIView.swift in Sources */,
 				9E40D6EA2A0D1A3B008AE854 /* FollowManager.swift in Sources */,
 				933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */,
@@ -1084,6 +1116,7 @@
 				939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
 				9393312F29A3E54E003954C2 /* SocketManager.swift in Sources */,
+				9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
@@ -1091,6 +1124,7 @@
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */,
+				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
 				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
@@ -1132,12 +1166,14 @@
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
+				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
+				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,

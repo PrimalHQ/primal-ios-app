@@ -12,6 +12,10 @@ final class ThreadViewController: FeedViewController {
     var request: AnyCancellable?
     let id: String
     
+    var didPostNewComment = false
+    
+    lazy var posting = PostManager(feed: feed)
+    
     var mainPositionInThread = 0
     
     private var didMoveToMain = false
@@ -19,9 +23,15 @@ final class ThreadViewController: FeedViewController {
     @Published private var didLoadData = false
     
     private var textHeightConstraint: NSLayoutConstraint?
-    let textInputView = UITextField()
-    let inputParent = UIView()
-    let inputBackground = UIView()
+    private let textInputView = SelfSizingTextView()
+    private let placeholderLabel = UILabel()
+    private let inputParent = UIView()
+    private let inputBackground = UIView()
+    
+    private let buttonStack = UIStackView()
+    private let replyingToLabel = UILabel()
+    
+    private var inputManager = PostingTextViewManager()
     
     init(feed: SocketManager, threadId: String) {
         id = threadId
@@ -88,25 +98,37 @@ final class ThreadViewController: FeedViewController {
         super.updateTheme()
         
         table.register(ThreadCell.self, forCellReuseIdentifier: "cell")
-        inputParent.backgroundColor = .background
-        inputBackground.backgroundColor = .background3
+        
+        inputParent.backgroundColor = inputManager.isEditing ? .background2 : .background
+        inputBackground.backgroundColor = inputManager.isEditing ? .background : .background3
         
         guard !posts.isEmpty else { return }
         
-        textInputView.attributedPlaceholder = NSAttributedString(
-            string: "Reply to \(posts[mainPositionInThread].0.user.displayName)",
-            attributes: [
-                .font: UIFont.appFont(withSize: 16, weight: .regular),
-                .foregroundColor: UIColor.foreground4
-            ]
-        )
+        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].0.user.displayName)"
+        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].0.user.name)
     }
 }
 
 private extension ThreadViewController {
-    func setup() {
-        title = "Thread"
+    @objc func postButtonPressed() {
+        guard let text = textInputView.text, !text.isEmpty else {
+            showErrorMessage("Text mustn't be empty")
+            return
+        }
         
+        textInputView.isEditable = false
+        
+        posting.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
+            self.textInputView.isEditable = true
+            self.textInputView.text = ""
+            self.placeholderLabel.isHidden = false
+            self.didPostNewComment = true
+            self.didMoveToMain = false
+            self.feed.requestThread(postId: self.id, subId: self.id)
+        }
+    }
+    
+    func addPublishers() {
         feed.requestThread(postId: id, subId: id)
         feed.postsEmitter.sink { [weak self] (id, posts) in
             guard let self, id == self.id else { return }
@@ -119,13 +141,9 @@ private extension ThreadViewController {
                 
                 self.didLoadData = true
                 
-                self.textInputView.attributedPlaceholder = NSAttributedString(
-                    string: "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)",
-                    attributes: [
-                        .font: UIFont.appFont(withSize: 16, weight: .regular),
-                        .foregroundColor: UIColor.foreground4
-                    ]
-                )
+                self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)"
+                
+                self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].0.user.name)
             }
             
         }
@@ -135,11 +153,47 @@ private extension ThreadViewController {
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
             self.didMoveToMain = true
-            self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+            
+            if self.didPostNewComment {
+                self.didPostNewComment = false
+                DispatchQueue.main.async {
+                    self.table.scrollToRow(at: IndexPath(row: self.posts.count - 1, section: 0), at: .top, animated: true)
+                }
+            } else {
+                self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+            }
         })
         .store(in: &cancellables)
         
-        table.keyboardDismissMode = .interactive
+        inputManager.$isEditing.sink { [unowned self] isEditing in
+            self.textHeightConstraint?.isActive = !isEditing
+            UIView.animate(withDuration: 0.2) {
+                self.inputParent.backgroundColor = isEditing ? .background2 : .background
+                self.inputBackground.backgroundColor = isEditing ? .background : .background3
+                
+                self.replyingToLabel.isHidden = !isEditing
+                self.replyingToLabel.alpha = isEditing ? 1 : 0
+                
+                self.buttonStack.isHidden = !isEditing
+                self.buttonStack.alpha = isEditing ? 1 : 0
+                
+                self.textInputView.layoutIfNeeded()
+            }
+        }
+        .store(in: &cancellables)
+        
+        inputManager.didChangeEvent.sink { [weak self] textView in
+            self?.placeholderLabel.isHidden = !textView.text.isEmpty
+        }
+        .store(in: &cancellables)
+    }
+    
+    func setup() {
+        addPublishers()
+        
+        title = "Thread"
+        
+        table.keyboardDismissMode = .onDrag
         
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)
@@ -149,28 +203,87 @@ private extension ThreadViewController {
         
         inputBackground.layer.cornerRadius = 6
         
-        inputParent.addSubview(inputBackground)
+        let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, buttonStack])
+        inputStack.axis = .vertical
+        
+        inputParent.addSubview(inputStack)
+        inputBackground.addSubview(placeholderLabel)
         inputBackground.addSubview(textInputView)
-        textInputView.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 6).constrainToSize(height: 32)
-        inputBackground.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom)
         
-        let keyboardMasker = UIView()
-        let spacer = UIView()
+        placeholderLabel
+            .pinToSuperview(edges: .leading, padding: 21)
+            .pinToSuperview(edges: .top, padding: 13)
+        
+        textInputView
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .vertical, padding: 5)
+        
+        inputStack
+            .pinToSuperview(edges: .horizontal, padding: 20)
+            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .bottom)
+        
+        inputStack.spacing = 4
+        inputStack.setCustomSpacing(8, after: replyingToLabel)
+        
+        textInputView.backgroundColor = .clear
+        textInputView.font = .appFont(withSize: 16, weight: .regular)
+        textInputView.delegate = inputManager
+        
+        setupMainStack()
+        
+        let imageButton = UIButton()
+        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
+        imageButton.constrainToSize(48)
+        
+        let cameraButton = UIButton()
+        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
+        cameraButton.constrainToSize(48)
+        
+        let postButton = GradientInGradientButton(title: "Reply")
+        postButton.titleLabel.font = .appFont(withSize: 14, weight: .medium)
+        postButton.constrainToSize(width: 80, height: 28)
+        postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        
+        [imageButton, cameraButton, UIView(), postButton].forEach {
+            buttonStack.addArrangedSubview($0)
+        }
+        
+        buttonStack.alignment = .center
+        
+        placeholderLabel.font = .appFont(withSize: 16, weight: .regular)
+        placeholderLabel.textColor = .foreground4
+        
+        buttonStack.isHidden = true
+        buttonStack.alpha = 0
+        replyingToLabel.isHidden = true
+        replyingToLabel.alpha = 0
+        
+        textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
+        textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+    }
+    
+    func setupMainStack() {
         [navigationBarLengthner, table].forEach { $0.removeFromSuperview() }
-        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent, spacer, keyboardMasker])
+        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent])
         view.addSubview(stack)
-        
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        let bottom = stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        bottom.priority = .defaultLow
-        bottom.isActive = true
         
         stack.axis = .vertical
         
-        textInputView.font = .appFont(withSize: 16, weight: .regular)
-        
-        inputParent.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        keyboardMasker.topAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        spacer.heightAnchor.constraint(equalTo: keyboardMasker.heightAnchor, multiplier: 0.03).isActive = true
+        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+    }
+    
+    func replyToString(name: String) -> NSAttributedString {
+        let value = NSMutableAttributedString()
+        value.append(NSAttributedString(string: "Replying to ", attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .medium),
+            .foregroundColor: UIColor.foreground4
+        ]))
+        value.append(NSAttributedString(string: "@\(name)", attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .medium),
+            .foregroundColor: UIColor.accent
+        ]))
+        return value
     }
 }

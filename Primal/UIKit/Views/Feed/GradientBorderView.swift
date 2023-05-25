@@ -13,7 +13,7 @@ final class GradientBorderView: GradientView {
         set { backgroundView.backgroundColor = newValue }
     }
     
-    private let backgroundView = UIView()
+    let backgroundView = UIView()
     
     var cornerRadius: CGFloat {
         get { backgroundView.layer.cornerRadius }
@@ -23,7 +23,7 @@ final class GradientBorderView: GradientView {
         }
     }
     
-    var borderWidth: CGFloat {
+    var borderWidth: CGFloat { // Defaults to 1
         get {
             -(backgroundSizeConstraints.first?.constant ?? 0) / 2 }
         set {
@@ -49,6 +49,7 @@ final class GradientBorderView: GradientView {
     func setup() {
         addSubview(backgroundView)
         backgroundView.centerToSuperview()
+        backgroundView.clipsToBounds = true
         backgroundSizeConstraints = [
             backgroundView.heightAnchor.constraint(equalTo: heightAnchor, constant: -2),
             backgroundView.widthAnchor.constraint(equalTo: widthAnchor, constant: -2)
