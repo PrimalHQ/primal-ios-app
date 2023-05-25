@@ -135,6 +135,8 @@ final class MenuContainerController: UIViewController, Themeable {
             $0.textColor = .foreground5
         }
         [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
+        
+        child.updateThemeIfThemeable()
     }
 }
 
