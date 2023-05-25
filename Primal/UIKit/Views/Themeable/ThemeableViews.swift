@@ -58,3 +58,20 @@ final class ThemeableImageView: UIImageView, Themeable {
         theme(self)
     }
 }
+
+final class ThemeableButton: UIButton, Themeable {
+    func setTheme(_ theme: @escaping (ThemeableButton) -> ()) -> Self {
+        self.theme = theme
+        return self
+    }
+    
+    var theme: (ThemeableButton) -> () = { _ in } {
+        didSet {
+            theme(self)
+        }
+    }
+    
+    func updateTheme() {
+        theme(self)
+    }
+}

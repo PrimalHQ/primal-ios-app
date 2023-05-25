@@ -30,7 +30,7 @@ final class GradientInGradientButton: MyButton {
         borderGradient.pinToSuperview()
         
         borderGradient.backgroundView.addSubview(innerGradient)
-        innerGradient.pinToSuperview()//padding: 1)
+        innerGradient.pinToSuperview()
         
         addSubview(titleLabel)
         titleLabel.centerToSuperview()

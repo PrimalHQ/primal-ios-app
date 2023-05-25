@@ -135,6 +135,8 @@ final class MenuContainerController: UIViewController, Themeable {
             $0.textColor = .foreground5
         }
         [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
+        
+        child.updateThemeIfThemeable()
     }
 }
 
@@ -148,12 +150,7 @@ private extension MenuContainerController {
         
         let signOut = MenuItemButton(title: "SIGN OUT")
         let settings = MenuItemButton(title: "SETTINGS")
-        let buttonsStack = UIStackView(arrangedSubviews: [
-            MenuItemButton(title: "PROFILE"), MenuItemButton(title: "BOOKMARKS"),
-            MenuItemButton(title: "USER LISTS"), settings,
-            signOut
-        ])
-        
+        let buttonsStack = UIStackView(arrangedSubviews: [MenuItemButton(title: "PROFILE"), settings, signOut])
         
         [
             profileImage, titleStack, usernameStack, followStack,
@@ -275,7 +272,7 @@ private extension MenuContainerController {
     // MARK: - Objc methods
     
     @objc func settingsButtonPressed() {
-        show(SettingsMainViewController(), sender: nil)
+        show(SettingsMainViewController(socket: feed), sender: nil)
         resetNavigationTabBar()
     }
     

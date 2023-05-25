@@ -12,6 +12,17 @@ class SettingsMainViewController: UIViewController, Themeable {
     
     let versionLabel = UILabel()
     
+    let socket: SocketManager
+    
+    init(socket: SocketManager) {
+        self.socket = socket
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,6 +94,6 @@ private extension SettingsMainViewController {
     }
     
     @objc func keysPressed() {
-        show(SettingsNsecViewController(), sender: nil)
+        show(SettingsNsecViewController(socket: socket), sender: nil)
     }
 }

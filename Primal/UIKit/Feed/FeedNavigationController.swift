@@ -50,5 +50,7 @@ class MainNavigationController: UINavigationController, Themeable {
         navigationBar.standardAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance
         navigationBar.compactAppearance = appearance
+        
+        viewControllers.forEach { $0.updateThemeIfThemeable() }
     }
 }

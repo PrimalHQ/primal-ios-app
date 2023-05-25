@@ -41,4 +41,11 @@ extension UIViewController {
         }
         return result
     }
+    
+    func updateThemeIfThemeable() {
+        (self as? Themeable)?.updateTheme()
+        
+        let themables: [Themeable] = view.findAllSubviews()
+        themables.forEach { $0.updateTheme() }
+    }
 }

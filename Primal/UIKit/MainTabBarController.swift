@@ -80,6 +80,8 @@ final class MainTabBarController: UIViewController, Themeable {
         buttons.forEach { $0.backgroundColor = .background }
         
         updateButtons()
+        
+        [home, read, explore, messages, notifications].forEach { $0.updateThemeIfThemeable() }
     }
 }
 
