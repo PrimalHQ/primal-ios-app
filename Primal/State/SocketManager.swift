@@ -349,6 +349,8 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
                     self.userContactsReceivedCB?()
                 }
             }
+        case .defaultSettings:
+            fallthrough
         case .settings:
             if type == .settings {
                 let primalSettings = PrimalSettings(json: json)
