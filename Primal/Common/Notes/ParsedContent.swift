@@ -47,7 +47,7 @@ extension ParsedContent {
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: 15, weight: .regular),
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
             .paragraphStyle: style
         ])
         

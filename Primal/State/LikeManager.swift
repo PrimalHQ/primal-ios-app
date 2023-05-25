@@ -18,7 +18,10 @@ final class LikeManager {
     func hasLiked(_ eventId: String) -> Bool { feed.currentUserLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
-        guard let keypair = get_saved_keypair() else {
+        guard
+            !hasLiked(post.id),
+            let keypair = get_saved_keypair()
+        else {
             print("Error getting saved keypair")
             return
         }

@@ -29,4 +29,8 @@ protocol AppTheme {
     var extraColorMenu: UIColor { get }
     
     var menuButtonImage: UIImage? { get }
+    
+    var statusBarStyle: UIStatusBarStyle { get }
+    
+    var mockupImage: UIImage? { get }
 }

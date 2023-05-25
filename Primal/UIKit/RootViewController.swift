@@ -30,13 +30,11 @@ final class RootViewController: UIViewController {
         addIntro()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle { Theme.current.statusBarStyle }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

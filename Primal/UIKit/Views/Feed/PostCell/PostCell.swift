@@ -134,7 +134,7 @@ private extension PostCell {
         nameLabel.adjustsFontSizeToFitWidth = true
         
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: 15, weight: .regular)
+        mainLabel.font = UIFont.appFont(withSize: 16, weight: .regular)
         mainLabel.delegate = self
         
         mainImages.layer.cornerRadius = 8
@@ -176,9 +176,6 @@ private extension PostCell {
     
     @objc func likeTapped() {
         likeButton.animView.play()
-        if let number = Int(likeButton.titleLabel.text ?? "") {
-            likeButton.titleLabel.text = "\(number + 1)"
-        }
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
         
         delegate?.postCellDidTapLike(self)
