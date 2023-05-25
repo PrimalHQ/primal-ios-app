@@ -99,7 +99,6 @@
 		9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2942A1FBDB600D5D523 /* BorderView.swift */; };
 		9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */; };
 		9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */; };
-		9E55F29B2A1FDC0F00D5D523 /* ShowNsecButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F29A2A1FDC0F00D5D523 /* ShowNsecButton.swift */; };
 		9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */; };
 		9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */; };
 		9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9402A1E6586008DFFBE /* CancelButton.swift */; };
@@ -315,7 +314,6 @@
 		9E55F2942A1FBDB600D5D523 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
 		9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTitleView.swift; sourceTree = "<group>"; };
 		9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
-		9E55F29A2A1FDC0F00D5D523 /* ShowNsecButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowNsecButton.swift; sourceTree = "<group>"; };
 		9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
 		9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientInGradientButton.swift; sourceTree = "<group>"; };
 		9E5BD9402A1E6586008DFFBE /* CancelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelButton.swift; sourceTree = "<group>"; };
@@ -750,7 +748,6 @@
 				9E55F2942A1FBDB600D5D523 /* BorderView.swift */,
 				9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */,
 				9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */,
-				9E55F29A2A1FDC0F00D5D523 /* ShowNsecButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1239,7 +1236,6 @@
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
-				9E55F29B2A1FDC0F00D5D523 /* ShowNsecButton.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
 				933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */,
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,

@@ -18,7 +18,6 @@ final class CopyButton: MyButton {
         super.init(frame: .zero)
         
         icon.image = UIImage(named: "copyIcon")
-        icon.tintColor = .green
         
         label.text = title
         label.font = .appFont(withSize: 18, weight: .medium)
@@ -47,7 +46,7 @@ final class CopyButton: MyButton {
         let stack = UIStackView(arrangedSubviews: [icon, label])
         addSubview(stack)
         stack.centerToSuperview()
-        stack.spacing = 8
+        stack.spacing = 12
         stack.alignment = .center
         
         constrainToSize(height: 48)
@@ -55,7 +54,7 @@ final class CopyButton: MyButton {
     
     func animateCopied() {
         UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve) {
-            self.icon.image = UIImage.checkmark
+            self.icon.image = UIImage(named: "checkmark")
             self.label.text = "Copied"
         } completion: { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {

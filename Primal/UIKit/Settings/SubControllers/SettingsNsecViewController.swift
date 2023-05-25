@@ -6,17 +6,36 @@
 //
 
 import UIKit
+import Kingfisher
 
 class SettingsNsecViewController: UIViewController, Themeable {
     let copyPubButton = CopyButton(title: "Copy public key")
     let secLabel = ThemeableLabel()
     let copySecButton = CopyButton(title: "Copy private key")
-    let showSecButton = ShowNsecButton()
+    let showSecButton = ThemeableButton().setTheme {
+        $0.setTitleColor(.accent, for: .normal)
+        $0.setTitleColor(.accent, for: .highlighted)
+    }
+    let pubIcon = UIImageView(image: UIImage(named: "Profile"))
     
     var isShowingNsec = false {
         didSet {
             updateSec()
         }
+    }
+    
+    init(socket: SocketManager) {
+        super.init(nibName: nil, bundle: nil)
+        guard let iconURL = URL(string: socket.currentUser?.picture ?? "") else { return }
+        pubIcon.kf.setImage(with: iconURL, options: [
+            .processor(DownsamplingImageProcessor(size: CGSize(width: 44, height: 44))),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -33,24 +52,23 @@ class SettingsNsecViewController: UIViewController, Themeable {
 
 private extension SettingsNsecViewController {
     func updateSec() {
-        showSecButton.isVisible = isShowingNsec
-        copySecButton.isHidden = !isShowingNsec
+        showSecButton.setTitle(isShowingNsec ? "hide key" : "show key", for: .normal)
         
         guard isShowingNsec else {
-            secLabel.font = .appFont(withSize: 30, weight: .medium)
+            secLabel.font = .appFont(withSize: 36, weight: .medium)
             secLabel.adjustsFontSizeToFitWidth = true
             secLabel.numberOfLines = 1
-            secLabel.text = "••••••••••••••••••••••••••••••••••••••••••"
+            secLabel.text = "• • • • • • • • • • • • • • • • •"
             secLabel.theme = { $0.textColor = .foreground3 }
             return
         }
         
-        secLabel.font = .appFont(withSize: 18, weight: .medium)
+        secLabel.font = .appFont(withSize: 12, weight: .medium)
         secLabel.numberOfLines = 2
         secLabel.adjustsFontSizeToFitWidth = false
         secLabel.theme = { $0.textColor = .foreground }
         
-        secLabel.text = get_saved_keypair()?.privkey_bech32 ?? ""
+        secLabel.text = get_saved_keypair()?.privkey_bech32
     }
     
     func setupView() {
@@ -62,25 +80,41 @@ private extension SettingsNsecViewController {
         button.constrainToSize(44)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
-        let pubTitle = SettingsTitleView(title: "PUBLIC KEY")
+        let pubTitle = SettingsTitleViewVibrant(title: "YOUR PUBLIC KEY")
         let pubLabelParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         let pubLabel = ThemeableLabel().setTheme { $0.textColor = .foreground }
-        let pubLabelDesc = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
+        let pubLabelDesc = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
+        let pubStack = UIStackView(arrangedSubviews: [pubIcon, pubLabel])
         let border = BorderView()
         
-        pubLabelParent.addSubview(pubLabel)
-        pubLabel.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 12)
+        pubLabelParent.addSubview(pubStack)
+        pubStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
+        pubLabelParent.constrainToSize(height: 64)
         
-        let secTitle = SettingsTitleView(title: "PRIVATE KEY")
+        let secTitle = SettingsTitleViewVibrant(title: "YOUR PRIVATE KEY")
         let secLabelParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
-        let warning = ThemeableImageView(image: UIImage(named: "nsecWarning")).setTheme { $0.tintColor = .foreground3 }
+        let secStack = UIStackView(arrangedSubviews: [UIImageView(image: UIImage(named: "keyKeychain")), secLabel])
+        let warning = ThemeableImageView(image: UIImage(named: "nsecWarning")).setTheme { $0.tintColor = .foreground4 }
         
-        secLabelParent.addSubview(secLabel)
-        secLabel.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 12)
+        secLabelParent.addSubview(secStack)
+        secStack
+            .pinToSuperview(edges: .leading, padding: 27)
+            .pinToSuperview(edges: .trailing, padding: 16)
+            .centerToSuperview(axis: .vertical)
+        secLabelParent.constrainToSize(height: 64)
+        
+        let titleStack = UIStackView(arrangedSubviews: [secTitle, UIView(), showSecButton])
         
         let stack = UIStackView(arrangedSubviews: [
-            pubTitle, pubLabelParent, copyPubButton, pubLabelDesc, border,
-            secTitle, secLabelParent, copySecButton, showSecButton, warning, UIView()
+            pubTitle,       SpacerView(size: 16, priority: .defaultLow),
+            pubLabelParent, SpacerView(size: 22, priority: .defaultLow),
+            copyPubButton,  SpacerView(size: 16, priority: .defaultLow),
+            pubLabelDesc,   SpacerView(size: 20, priority: .defaultLow),
+            border,         SpacerView(size: 26, priority: .defaultLow),
+            titleStack,     SpacerView(size: 8, priority: .defaultLow),
+            secLabelParent, SpacerView(size: 22, priority: .defaultLow),
+            copySecButton,  SpacerView(size: 16, priority: .defaultLow),
+            warning,        UIView()
         ])
         
         view.addSubview(stack)
@@ -90,24 +124,30 @@ private extension SettingsNsecViewController {
         bottomC.isActive = true
         
         stack.axis = .vertical
-        stack.spacing = 8
-        stack.setCustomSpacing(12, after: copyPubButton)
-        stack.setCustomSpacing(30, after: pubLabelDesc)
-        stack.setCustomSpacing(24, after: border)
-        stack.setCustomSpacing(12, after: copySecButton)
         
-        pubLabelParent.layer.cornerRadius = 8
-        secLabelParent.layer.cornerRadius = 8
+        pubLabelParent.layer.cornerRadius = 12
+        secLabelParent.layer.cornerRadius = 12
         
-        pubLabel.font = .appFont(withSize: 18, weight: .medium)
+        pubStack.spacing = 11
+        pubStack.alignment = .center
+        pubIcon.constrainToSize(44)
+        pubIcon.layer.cornerRadius = 22
+        pubIcon.layer.masksToBounds = true
+        
+        secStack.spacing = 24
+        secStack.alignment = .center
+        
+        pubLabel.font = .appFont(withSize: 12, weight: .medium)
         pubLabel.numberOfLines = 2
         pubLabel.text = get_saved_keypair()?.pubkey_bech32
         
         pubLabelDesc.font = .appFont(withSize: 14, weight: .regular)
-        pubLabelDesc.adjustsFontSizeToFitWidth = true
-        pubLabelDesc.text = "This is your public key. Feel free to share anywhere."
+        pubLabelDesc.numberOfLines = 0
+        pubLabelDesc.text = "Anyone on Nostr can find you via your public key. Feel free to share anywhere."
         
-        warning.contentMode = .scaleAspectFill
+        
+        
+        warning.contentMode = .scaleAspectFit
         warning.heightAnchor.constraint(equalTo: warning.widthAnchor, multiplier: 80 / 327).isActive = true
         
         copyPubButton.addTarget(self, action: #selector(copyPubPressed), for: .touchUpInside)
