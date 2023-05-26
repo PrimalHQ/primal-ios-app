@@ -354,7 +354,10 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
         case .settings:
             if type == .settings {
                 var primalSettings = PrimalSettings(json: json)
-                primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest, following", hex: self.currentUserHex), at: 0)
+                let latestFeedExists = primalSettings?.content.feeds.contains(where: { $0.hex == self.currentUserHex }) ?? false
+                if !latestFeedExists {
+                    primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest", hex: self.currentUserHex), at: 0)
+                }
                 self.currentUserSettings = primalSettings
                 self.didFinishInit = true
             }
