@@ -353,7 +353,8 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
             fallthrough
         case .settings:
             if type == .settings {
-                let primalSettings = PrimalSettings(json: json)
+                var primalSettings = PrimalSettings(json: json)
+                primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest, following", hex: self.currentUserHex), at: 0)
                 self.currentUserSettings = primalSettings
                 self.didFinishInit = true
             }
