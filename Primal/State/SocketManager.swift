@@ -328,8 +328,10 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
                 return
             }
             
-            if let primalUser = PrimalUser(nostrUser: nostrContent) {
-                feedUsers.insert(primalUser)
+            if type != .post {
+                if let primalUser = PrimalUser(nostrUser: nostrContent) {
+                    feedUsers.insert(primalUser)
+                }
             }
         case .contacts:
             guard let relays: [String: RelayInfo] = try? self.jsonDecoder.decode([String: RelayInfo].self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
