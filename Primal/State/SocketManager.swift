@@ -46,6 +46,8 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     @Published var didFinishInit: Bool = false
     @Published var isConnected: Bool = false
     
+    @Published var feedUsers: Set<PrimalUser> = []
+    
     let postsEmitter: PassthroughSubject<(String, [PrimalPost]), Never> = .init()
     private var postCache: [String : ResponseBuffer] = [:]
     
@@ -308,12 +310,26 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
         case .metadata:
             let nostrUser = NostrContent(json: json)
             
+            if let primalUser = PrimalUser(nostrUser: nostrUser) {
+                feedUsers.insert(primalUser)
+            }
+
             if type == .post {
                 if let id {
                     postCache[id]?.users[nostrUser.pubkey] = nostrUser
                 }
             } else {
                 self.currentUser = PrimalUser(nostrUser: nostrUser)
+            }
+        case .mentions:
+            guard let nostrContent: NostrContent = try? self.jsonDecoder.decode(NostrContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding nostr content string to json")
+                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            
+            if let primalUser = PrimalUser(nostrUser: nostrContent) {
+                feedUsers.insert(primalUser)
             }
         case .contacts:
             guard let relays: [String: RelayInfo] = try? self.jsonDecoder.decode([String: RelayInfo].self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {

@@ -151,6 +151,10 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         
         return domain
     }
+    
+    static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {
+        return lhs.pubkey == rhs.pubkey
+    }
 }
 
 struct PrimalFeedPost : Codable, Identifiable, Hashable {
