@@ -41,10 +41,10 @@ final class OnboardingSigninController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-            self.validateAndProcessKey()
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) { [weak self] in
+            self?.validateAndProcessKey()
         }
-        
+
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
             self?.validateAndProcessKey()
         }
@@ -155,7 +155,10 @@ private extension OnboardingSigninController {
     }
     
     func pasteIfPossible() {
-        guard let pasted = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        guard
+            UIPasteboard.general.hasStrings,
+            let pasted = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines)
+        else { return }
         
         textView.text = pasted
         placeholderLabel.isHidden = !pasted.isEmpty

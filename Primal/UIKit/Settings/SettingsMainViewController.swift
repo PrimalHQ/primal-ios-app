@@ -50,26 +50,27 @@ private extension SettingsMainViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let keys = SettingsOptionButton(title: "Keys")
+        let feeds = SettingsOptionButton(title: "Feeds")
         let appearance = SettingsOptionButton(title: "Appearance")
         let notifications = SettingsOptionButton(title: "Notifications")
-        let messages = SettingsOptionButton(title: "Messages")
         let network = SettingsOptionButton(title: "Network")
         
         let deleteLabel = SettingsTitleView(title: "DELETE")
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
-        let stack = UIStackView(arrangedSubviews: [
-            keys, appearance, notifications, messages, network,
-            deleteLabel, deleteButton, versionTitleLabel, versionLabel, UIView()
-        ])
+        let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
+        let stack = UIStackView(arrangedSubviews: [keys, feeds, appearance, notifications, network, bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
         stack.axis = .vertical
         stack.setCustomSpacing(40, after: network)
-        stack.setCustomSpacing(16, after: deleteLabel)
-        stack.setCustomSpacing(36, after: deleteButton)
         stack.setCustomSpacing(12, after: versionTitleLabel)
+        
+        bottomStack.axis = .vertical
+        bottomStack.spacing = 12
+        bottomStack.isLayoutMarginsRelativeArrangement = true
+        bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
         deleteLabel.text = "DELETE ACCOUNT"
         deleteLabel.font = .appFont(withSize: 14, weight: .medium)

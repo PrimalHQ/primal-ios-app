@@ -67,6 +67,13 @@ class PostCell: UITableViewCell {
             .cacheOriginalImage
         ])
         
+        mainLabel.attributedText = parsedContent.attributedText
+        mainImages.imageURLs = parsedContent.imageUrls
+        
+        updateButtons(post, didLike: didLike, didRepost: didRepost)
+    }
+    
+    func updateButtons(_ post: PrimalPost, didLike: Bool, didRepost: Bool) {
         likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
         if didLike {
             likeButton.animView.play()
@@ -77,9 +84,6 @@ class PostCell: UITableViewCell {
         let repostColor = didRepost ? UIColor(rgb: 0x52CE0A) : UIColor(rgb: 0x757575)
         repostButton.tintColor = repostColor
         repostButton.setTitleColor(repostColor, for: .normal)
-        
-        mainLabel.attributedText = parsedContent.attributedText
-        mainImages.imageURLs = parsedContent.imageUrls
         
         replyButton.setTitle("  \(post.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(post.post.satszapped)"
@@ -141,7 +145,8 @@ private extension PostCell {
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         
-        let height = mainImages.heightAnchor.constraint(equalToConstant: 224)
+        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
+        let height = mainImages.heightAnchor.constraint(greaterThanOrEqualToConstant: 224)
         let height2 = linkPresentation.heightAnchor.constraint(equalToConstant: 230)
         [height, height2].forEach {
             $0.priority = .defaultHigh

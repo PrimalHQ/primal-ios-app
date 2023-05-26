@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 26.4.23..
 //
 
+import Combine
 import UIKit
 
 extension CAMediaTimingFunction {
@@ -13,7 +14,6 @@ extension CAMediaTimingFunction {
     
     static let logoScaleEaseInOut = CAMediaTimingFunction(controlPoints: 1, 0.51, 0.26, 0.87)
     static let postsEaseInOut = CAMediaTimingFunction(controlPoints: 0.9, 0.13, 0.14, 0.83)
-    static let signinEaseOut = CAMediaTimingFunction(controlPoints: 0.01, 0.64, 0.19, 0.91)
 }
 
 final class RootViewController: UIViewController {
@@ -21,9 +21,11 @@ final class RootViewController: UIViewController {
     static let instance = RootViewController()
     
     private(set) var currentChild: UIViewController?
-    private var introVC: IntroVideoController?
+    private weak var introVC: IntroVideoController?
     
     var didAnimate = false
+    
+    var cancellables: Set<AnyCancellable> = []
     
     private init() {
         super.init(nibName: nil, bundle: nil)
@@ -116,55 +118,22 @@ private extension RootViewController {
     func animateFromIntro() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
             if self.introVC != nil {
+                print("ERROR")
                 self.introVC!.willMove(toParent: nil)
                 self.introVC!.view.removeFromSuperview()
                 self.introVC!.removeFromParent()
-                self.introVC = nil
             }
         }
         
-        guard !didAnimate,  let introVC else { return }
+        guard !didAnimate, let introVC else { return }
         didAnimate = true
         
         guard let homeFeed: HomeFeedViewController = findInChildren() else {
-            // Animate onboarding
-            DispatchQueue.main.async {
-                CATransaction.begin()
-                CATransaction.setAnimationTimingFunction(.easeInTiming)
-                UIView.animate(withDuration: 0.6) {
-                    introVC.video.transform = .init(scaleX: 0.3, y: 0.3)
-                    introVC.view.alpha = 0
-                } completion: { _ in
-                    introVC.willMove(toParent: nil)
-                    introVC.view.removeFromSuperview()
-                    introVC.removeFromParent()
-                    self.introVC = nil
-                }
-                CATransaction.commit()
-            }
-            
             guard let onboarding: OnboardingStartViewController = self.findInChildren() else { return }
             
-            let views = [onboarding.screenshotParent, onboarding.signupButton, onboarding.signinButton]
-            views.forEach {
-                $0.alpha = 0
-                $0.transform = .init(translationX: 0, y: 300)
-            }
-            onboarding.screenshotParent.transform = .init(scaleX: 0.75, y: 0.75)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
-                CATransaction.begin()
-                CATransaction.setAnimationTimingFunction(.signinEaseOut)
-                
-                UIView.animate(withDuration: 0.7) {
-                    for view in views {
-                        view.transform = .identity
-                        view.alpha = 1
-                    }
-                }
-                
-                CATransaction.commit()
-            }
+            RootAnimatorToSignIn(introVC: introVC, onboarding: onboarding).animate()
+                .sink(receiveValue: { })
+                .store(in: &cancellables)
             return
         }
         
