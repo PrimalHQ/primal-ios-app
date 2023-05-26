@@ -19,7 +19,6 @@ struct PrimalNoteStatus: Codable, Hashable {
 struct PrimalSettingsFeed: Codable, Hashable {
     let name: String
     let hex: String
-    let npub: String?
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
@@ -32,6 +31,7 @@ struct PrimalSearchPagination: Codable, Hashable {
     let since: Int32
     let until: Int32
     let order_by: String
+    var subId: String? = ""
 }
 
 struct PrimalSettings: Codable, Identifiable, Hashable {
