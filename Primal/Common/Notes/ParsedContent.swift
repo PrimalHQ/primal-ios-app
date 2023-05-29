@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import LinkPresentation
 
 final class ParsedElement: Equatable {
     static func == (lhs: ParsedElement, rhs: ParsedElement) -> Bool {
@@ -33,6 +34,8 @@ final class ParsedContent {
     
     var imageUrls: [URL] = []
     var firstExtractedURL: URL?
+    
+    @Published var extractedMetadata: LPLinkMetadata?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")

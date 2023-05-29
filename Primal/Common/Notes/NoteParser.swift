@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LinkPresentation
 
 public final class NoteParser {
     private var tokens: [SyntaxToken] = []
@@ -288,9 +289,47 @@ public final class NoteParser {
         }
         
         let result: [String] = text.extractTagsMentionsAndURLs()
-        let text: String = result.filter({ !$0.isValidURLAndIsImage }).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
-        let otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) || $0.isHashTagOrMention })
+        var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) || $0.isHashTagOrMention })
+        
+        var itemsToRemove = result.filter { $0.isValidURLAndIsImage }
+        
+        if let index = otherURLs.firstIndex(where: { $0.isValidURL }) {
+            let firstURL = otherURLs.remove(at: index)
+            itemsToRemove.append(firstURL)
+            
+            if let url = URL(string: firstURL) {
+                p.firstExtractedURL = url
+                let metadata = LPLinkMetadata()
+                metadata.url = url
+                metadata.title = "Loading..."
+                p.extractedMetadata = metadata
+                
+                let provider = LPMetadataProvider()
+                provider.startFetchingMetadata(for: url) { metadata, error in
+                    DispatchQueue.main.async {
+                        guard let metadata else {
+                            let metadata = LPLinkMetadata()
+                            metadata.url = url
+                            metadata.title = "Loading..."
+                            p.extractedMetadata = metadata
+                            return
+                        }
+                        p.extractedMetadata = metadata
+                        
+                        _ = provider
+                    }
+                }
+            }
+        }
+        
+        var text: String = text
+        
+        for item in itemsToRemove {
+            text = text.replacingOccurrences(of: item, with: "")
+        }
+        
+        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let nsText = text as NSString
         
@@ -303,7 +342,7 @@ public final class NoteParser {
             }
             return nil
         }
-        p.text = text //(cleanedText as String).replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression) // Remove trailing whitespaces
+        p.text = text
         p.buildContentString()
         
         return p

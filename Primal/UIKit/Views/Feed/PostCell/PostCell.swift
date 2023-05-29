@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 9.5.23..
 //
 
+import Combine
 import UIKit
 import Kingfisher
 import LinkPresentation
@@ -42,6 +43,8 @@ class PostCell: UITableViewCell {
     lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, usernameStack])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
+    var metadataUpdater: AnyCancellable?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -66,6 +69,15 @@ class PostCell: UITableViewCell {
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ])
+        
+        if let metadata = parsedContent.extractedMetadata {
+            linkPresentation.metadata = metadata
+            linkPresentation.isHidden = false
+            
+            metadataUpdater = parsedContent.$extractedMetadata.sink(receiveValue: { [weak self] in self?.linkPresentation.metadata = $0 ?? .init() })
+        } else {
+            linkPresentation.isHidden = true
+        }
         
         mainLabel.attributedText = parsedContent.attributedText
         mainImages.imageURLs = parsedContent.imageUrls
@@ -145,9 +157,8 @@ private extension PostCell {
         mainImages.layer.masksToBounds = true
         mainImages.imageDelegate = self
         
-        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
-        let height = mainImages.heightAnchor.constraint(greaterThanOrEqualToConstant: 224)
-        let height2 = linkPresentation.heightAnchor.constraint(equalToConstant: 230)
+        let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
+        let height2 = linkPresentation.heightAnchor.constraint(equalToConstant: 300)
         [height, height2].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
