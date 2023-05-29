@@ -37,7 +37,7 @@ private extension FeedCell {
     func setup() {
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         let buttonStackStandIn = UIView()
-        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, mainImages, buttonStackStandIn])
+        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, mainImages, linkPresentation, buttonStackStandIn])
         
         contentView.addSubview(mainStack)
         mainStack

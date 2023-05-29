@@ -63,7 +63,7 @@ private extension SettingsNsecViewController {
             return
         }
         
-        secLabel.font = .appFont(withSize: 12, weight: .medium)
+        secLabel.font = .appFont(withSize: 14, weight: .medium)
         secLabel.numberOfLines = 2
         secLabel.adjustsFontSizeToFitWidth = false
         secLabel.theme = { $0.textColor = .foreground }
@@ -137,7 +137,7 @@ private extension SettingsNsecViewController {
         secStack.spacing = 24
         secStack.alignment = .center
         
-        pubLabel.font = .appFont(withSize: 12, weight: .medium)
+        pubLabel.font = .appFont(withSize: 14, weight: .medium)
         pubLabel.numberOfLines = 2
         pubLabel.text = get_saved_keypair()?.pubkey_bech32
         

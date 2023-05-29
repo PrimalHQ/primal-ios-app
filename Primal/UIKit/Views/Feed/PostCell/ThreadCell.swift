@@ -57,7 +57,7 @@ private extension ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, mainImages, actionButtonStandin])
+        let contentStack = UIStackView(arrangedSubviews: [mainLabel, mainImages, linkPresentation, actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         

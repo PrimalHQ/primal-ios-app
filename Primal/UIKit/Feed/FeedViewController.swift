@@ -104,7 +104,7 @@ extension FeedViewController: PostCellDelegate {
         
         likeManager.sendLikeEvent(post: posts[indexPath.row].0.post)
         
-        cell.update(posts[indexPath.row].0, parsedContent: posts[indexPath.row].1, didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].0.post.id))
+        cell.updateButtons(posts[indexPath.row].0, didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].0.post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
@@ -141,6 +141,11 @@ extension FeedViewController: PostCellDelegate {
         binding.view.backgroundColor = .clear
         binding.modalPresentationStyle = .overFullScreen
         present(binding, animated: true)
+    }
+    
+    func postCellDidLoadImage(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        table.reloadRows(at: [indexPath], with: .none)
     }
 }
 

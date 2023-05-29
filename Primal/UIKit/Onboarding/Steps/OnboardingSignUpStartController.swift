@@ -56,7 +56,5 @@ private extension OnboardingSignUpStartController {
     }
     
     @objc func createAccountPressed() {
-        let suggestions = OnboardingFollowSuggestionsController()
-        show(suggestions, sender: nil)
     }
 }
