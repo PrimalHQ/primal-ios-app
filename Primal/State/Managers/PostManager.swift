@@ -2,20 +2,18 @@
 //  PostManager.swift
 //  Primal
 //
-//  Created by Nikola Lukovic on 24.5.23..
+//  Created by Nikola Lukovic on 1.6.23..
 //
 
 import Foundation
 
-final class PostManager {
-    private let feed: SocketManager
+final class PManager {
+    private init() {}
     
-    init(feed: SocketManager) {
-        self.feed = feed
-    }
+    static let the: PManager = PManager()
     
-    public func hasReposted(_ eventId: String) -> Bool { feed.currentUserReposts.contains(eventId) }
-    public func hasReplied(_ eventId: String) -> Bool { feed.currentUserReplied.contains(eventId) }
+    public func hasReposted(_ eventId: String) -> Bool { FdManager.the.userReposts.contains(eventId) }
+    public func hasReplied(_ eventId: String) -> Bool { FdManager.the.userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
@@ -26,8 +24,8 @@ final class PostManager {
         let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
         
         if let repostEvent = ev {
-            feed.postBox.pool.register_handler(sub_id: repostEvent.id, handler: self.handleRepostEvent)
-            feed.postBox.send(repostEvent)
+            RelaysPostBox.the.registerHandler(sub_id: repostEvent.id, handler: self.handleRepostEvent)
+            RelaysPostBox.the.send(repostEvent)
         } else {
             print("Error creating repost event")
         }
@@ -40,8 +38,8 @@ final class PostManager {
         
         let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content)
         
-        feed.postBox.pool.register_handler(sub_id: ev.id, handler: handlePostEvent(callback))
-        feed.postBox.send(ev)
+        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handlePostEvent(callback))
+        RelaysPostBox.the.send(ev)
     }
     func sendReplyEvent(_ content: String, post: PrimalFeedPost, _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
@@ -51,8 +49,8 @@ final class PostManager {
         
         let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post)
         
-        feed.postBox.pool.register_handler(sub_id: ev.id, handler: handleReplyEvent(callback))
-        feed.postBox.send(ev)
+        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handleReplyEvent(callback))
+        RelaysPostBox.the.send(ev)
     }
     
     private func handleRepostEvent(relayId: String, ev: NostrConnectionEvent) {
@@ -76,7 +74,7 @@ final class PostManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    feed.currentUserReposts.insert(res.event_id)
+                    FdManager.the.userReposts.insert(res.event_id)
                 }
                 break
             }
@@ -135,6 +133,7 @@ final class PostManager {
                     break
                 case .ok(let res):
                     if res.ok {
+                        FdManager.the.userReplied.insert(res.event_id)
                         callback()
                     }
                     break

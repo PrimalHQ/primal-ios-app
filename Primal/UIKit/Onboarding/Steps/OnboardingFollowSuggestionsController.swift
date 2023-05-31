@@ -16,7 +16,6 @@ final class OnboardingFollowSuggestionsController: UIViewController {
     
     lazy var table = UITableView()
     lazy var continueButton = FancyButton(title: "Finish")
-    var feed: SocketManager?
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -91,20 +90,19 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        let result = get_saved_keypair()
-        
-        guard
-            let keypair = result,
-            let decoded = try? bech32_decode(keypair.pubkey_bech32)
-        else {
-            return
-        }
-        
-        feed = SocketManager(userHex: hex_encode(decoded.data))
+        Connection.the.$isConnected.sink { res in
+            if res {
+                IdentityManager.the.requestUserInfos()
+                IdentityManager.the.requestUserProfile()
+                IdentityManager.the.requestUserSettings()
+                IdentityManager.the.requestUserContacts()
+            }
+        }.store(in: &cancellables)
+        Connection.the.connect()
     }
     
     @objc func continuePressed() {
-        feed?.followManager.sendBatchFollowEvent(Array(selectedToFollow))
+        FManager.the.sendBatchFollowEvent(Array(selectedToFollow))
         RootViewController.instance.reset()
     }
 }

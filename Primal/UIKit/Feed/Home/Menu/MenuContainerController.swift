@@ -44,10 +44,8 @@ final class MenuContainerController: UIViewController, Themeable {
     private var cancellables: Set<AnyCancellable> = []
     
     let child: UIViewController
-    let feed: SocketManager
-    init(child: UIViewController, feed: SocketManager) {
+    init(child: UIViewController) {
         self.child = child
-        self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -235,13 +233,13 @@ private extension MenuContainerController {
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         
-        feed.$currentUser.receive(on: DispatchQueue.main).sink { [weak self] user in
+        IdentityManager.the.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let user else { return }
             self?.update(user)
         }
         .store(in: &cancellables)
         
-        feed.$currentUserStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
+        IdentityManager.the.$userStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
             guard let stats, let self else { return }
             
             self.followersLabel.text = "\(stats.followers_count)"
@@ -272,7 +270,7 @@ private extension MenuContainerController {
     // MARK: - Objc methods
     
     @objc func settingsButtonPressed() {
-        show(SettingsMainViewController(socket: feed), sender: nil)
+        show(SettingsMainViewController(), sender: nil)
         resetNavigationTabBar()
     }
     

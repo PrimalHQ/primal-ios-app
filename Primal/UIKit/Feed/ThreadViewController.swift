@@ -13,9 +13,7 @@ final class ThreadViewController: FeedViewController {
     let id: String
     
     var didPostNewComment = false
-    
-    lazy var posting = PostManager(feed: feed)
-    
+        
     var mainPositionInThread = 0
     
     private var didMoveToMain = false
@@ -33,9 +31,9 @@ final class ThreadViewController: FeedViewController {
     
     private var inputManager = PostingTextViewManager()
     
-    init(feed: SocketManager, threadId: String) {
+    init(threadId: String) {
         id = threadId
-        super.init(feed: feed)
+        super.init()
         setup()
     }
     
@@ -86,8 +84,8 @@ final class ThreadViewController: FeedViewController {
                             }
                             return .main
                         }(),
-                        didLike: likeManager.hasLiked(data.0.post.id),
-                        didRepost: postManager.hasReposted(data.0.post.id)
+                        didLike: LManager.the.hasLiked(data.0.post.id),
+                        didRepost: PManager.the.hasReposted(data.0.post.id)
             )
             cell.delegate = self
         }
@@ -118,19 +116,19 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        posting.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
+        PManager.the.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
             self.textInputView.isEditable = true
             self.textInputView.text = ""
             self.placeholderLabel.isHidden = false
             self.didPostNewComment = true
             self.didMoveToMain = false
-            self.feed.requestThread(postId: self.id, subId: self.id)
+            FdManager.the.requestThread(postId: self.id, subId: self.id)
         }
     }
     
     func addPublishers() {
-        feed.requestThread(postId: id, subId: id)
-        feed.postsEmitter.sink { [weak self] (id, posts) in
+        FdManager.the.requestThread(postId: id, subId: id)
+        FdManager.the.postsEmitter.sink { [weak self] (id, posts) in
             guard let self, id == self.id else { return }
             
             let parsed = posts.sorted(by: { $0.post.created_at < $1.post.created_at }).map { $0.process() }

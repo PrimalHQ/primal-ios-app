@@ -1,21 +1,18 @@
 //
-//  LikeManager.swift
+//  LManager.swift
 //  Primal
 //
-//  Created by Nikola Lukovic on 11.5.23..
+//  Created by Nikola Lukovic on 31.5.23..
 //
 
 import Foundation
-import GenericJSON
 
-final class LikeManager {
-    let feed: SocketManager
+final class LManager {
+    private init() {}
     
-    init(feed: SocketManager) {
-        self.feed = feed
-    }
+    static let the: LManager = LManager()
     
-    func hasLiked(_ eventId: String) -> Bool { feed.currentUserLikes.contains(eventId) }
+    func hasLiked(_ eventId: String) -> Bool { FdManager.the.userLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
         guard
@@ -28,9 +25,9 @@ final class LikeManager {
         
         let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
         
-        feed.postBox.pool.register_handler(sub_id: ev.id, handler: self.handleLikeEvent)
+        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: self.handleLikeEvent)
         
-        feed.postBox.send(ev)
+        RelaysPostBox.the.send(ev)
     }
     
     private func handleLikeEvent(relayId: String, ev: NostrConnectionEvent) {
@@ -54,7 +51,7 @@ final class LikeManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    feed.currentUserLikes.insert(res.event_id)
+                    FdManager.the.userLikes.insert(res.event_id)
                 }
                 break
             }

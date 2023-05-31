@@ -8,6 +8,11 @@
 import Foundation
 import GenericJSON
 
+struct Contacts {
+    let created_at: Int
+    var contacts: [String]
+}
+
 struct PrimalNoteStatus: Codable, Hashable {
     let event_id: String
     let replied: Bool
@@ -55,7 +60,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     
     init?(json: JSON) {
         guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-            print("Error decoding received string to json")
+            print("Error decoding PrimalSettingsContent to json")
             dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
             return nil
         }
@@ -90,7 +95,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
-            print("Error decoding received string to json")
+            print("Error decoding nostrUser: NostrContent to json")
             dump(nostrUser?.content)
             return nil
         }

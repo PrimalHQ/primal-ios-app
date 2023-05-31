@@ -13,13 +13,9 @@ class NewPostViewController: UIViewController {
     let textView = UITextView()
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
-    let socket: SocketManager
-    lazy var posting = PostManager(feed: socket)
-    
     private var cancellables: Set<AnyCancellable> = []
         
-    init(socket: SocketManager) {
-        self.socket = socket
+    init() {
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -41,7 +37,7 @@ private extension NewPostViewController {
             showErrorMessage("Text mustn't be empty")
             return
         }
-        posting.sendPostEvent(text) { [weak self] in
+        PManager.the.sendPostEvent(text) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
@@ -96,7 +92,7 @@ private extension NewPostViewController {
         mainStack.pinToSuperview(edges: [.horizontal, .top])
         mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        socket.$currentUser.receive(on: DispatchQueue.main).sink { [weak self] user in
+        IdentityManager.the.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
             self.imageView.kf.setImage(with: URL(string: user.picture), options: [

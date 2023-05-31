@@ -1,0 +1,137 @@
+//
+//  Connection.swift
+//  Primal
+//
+//  Created by Nikola Lukovic on 31.5.23..
+//
+
+import Foundation
+import Combine
+import NWWebSocket
+import Network
+import GenericJSON
+
+final class Connection {
+    private let socketURL = URL(string: "wss://cache3.primal.net/cache15")!
+    private let jsonEncoder: JSONEncoder = JSONEncoder()
+    private let jsonDecoder: JSONDecoder = JSONDecoder()
+    
+    private var socket: NWWebSocket?
+    private var subHandlers: [String: (_: [JSON]) -> Void] = [:]
+    private var responseBuffer: [String: [JSON]] = [:]
+    
+    private init() {
+        identity = UUID().uuidString
+        self.connect()
+    }
+    
+    deinit {
+        socket?.disconnect()
+    }
+    
+    static let the = Connection()
+    
+    let identity: String
+    
+    @Published var isConnected: Bool = false
+    
+    func connect() {
+        socket = NWWebSocket(url: socketURL, connectionQueue: DispatchQueue.global(qos: .userInitiated))
+        socket?.delegate = self
+        socket?.connect()
+        socket?.ping(interval: 10.0)
+    }
+    func reconnect() {
+        socket?.delegate = nil
+        socket?.disconnect()
+        connect()
+    }
+    
+    func send(json: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        guard let subId = json.arrayValue?[1].stringValue else {
+            print("subId not found in \(json)")
+            return
+        }
+        
+        if !subHandlers.keys.contains(subId) {
+            subHandlers[subId] = handler
+        }
+        
+        if !responseBuffer.keys.contains(subId) {
+            responseBuffer[subId] = []
+        }
+        
+        guard let jsonData = try? self.jsonEncoder.encode(json) else {
+            print("Error encoding req json")
+            return
+        }
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+        
+        self.socket?.send(string: jsonStr)
+    }
+    
+    private func processMessage(_ json: JSON) {
+        guard
+            let subId = json.arrayValue?[1].stringValue,
+            let type = json.arrayValue?[0]
+        else {
+            print("error getting subId and/or type")
+            return
+        }
+        
+        if type == "EVENT" {
+            if responseBuffer.keys.contains(subId) {
+                responseBuffer[subId]?.append(json)
+            }
+        } else if type == "EOSE" {
+            if let handler = subHandlers[subId], let b = responseBuffer[subId] {
+                handler(b)
+            }
+            responseBuffer[subId] = []
+        }
+    }
+}
+
+extension Connection: WebSocketConnectionDelegate {
+    func webSocketDidConnect(connection: WebSocketConnection) {
+        isConnected = true
+    }
+    
+    func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
+        isConnected = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.connect()
+        }
+    }
+    
+    func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
+        
+    }
+    
+    func webSocketDidAttemptBetterPathMigration(result: Result<WebSocketConnection, NWError>) {
+        
+    }
+    
+    func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
+        print("WSERROR: \(error)")
+    }
+    
+    func webSocketDidReceivePong(connection: WebSocketConnection) {
+        
+    }
+    
+    func webSocketDidReceiveMessage(connection: WebSocketConnection, string: String) {
+        guard let json: JSON = try? self.jsonDecoder.decode(JSON.self, from: string.data(using: .utf8)!) else {
+            print("Error decoding received string to json")
+            dump(string)
+            return
+        }
+        
+        self.processMessage(json)
+    }
+    
+    func webSocketDidReceiveMessage(connection: WebSocketConnection, data: Data) {
+        
+    }
+}
