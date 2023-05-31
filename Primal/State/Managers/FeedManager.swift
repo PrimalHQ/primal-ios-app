@@ -15,7 +15,7 @@ class ResponseBuffer {
     var stats: [String: NostrContentStats] = [:]
 }
 
-final class FdManager {
+final class FeedManager {
     private var requestID = ""
     private var cancellables: Set<AnyCancellable> = []
     private var postCache: [String : ResponseBuffer] = [:]
@@ -26,7 +26,7 @@ final class FdManager {
         initUserConnectionSubscription()
     }
     
-    static let the: FdManager = FdManager()
+    static let the: FeedManager = FeedManager()
     
     let postsEmitter: PassthroughSubject<(String, [PrimalPost]), Never> = .init()
     

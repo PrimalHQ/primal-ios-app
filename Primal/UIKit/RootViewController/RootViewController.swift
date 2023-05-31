@@ -87,8 +87,8 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {
-        Connection.the.$isConnected.sink { res in
-            if res {
+        Connection.the.$isConnected.sink { connected in
+            if connected {
                 IdentityManager.the.requestUserInfos()
                 IdentityManager.the.requestUserProfile()
                 IdentityManager.the.requestUserSettings()

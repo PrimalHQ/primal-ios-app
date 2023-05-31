@@ -37,7 +37,7 @@ private extension NewPostViewController {
             showErrorMessage("Text mustn't be empty")
             return
         }
-        PManager.the.sendPostEvent(text) { [weak self] in
+        PostManager.the.sendPostEvent(text) { [weak self] in
             self?.dismiss(animated: true)
         }
     }

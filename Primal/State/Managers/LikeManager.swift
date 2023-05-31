@@ -7,12 +7,12 @@
 
 import Foundation
 
-final class LManager {
+final class LikeManager {
     private init() {}
     
-    static let the: LManager = LManager()
+    static let the: LikeManager = LikeManager()
     
-    func hasLiked(_ eventId: String) -> Bool { FdManager.the.userLikes.contains(eventId) }
+    func hasLiked(_ eventId: String) -> Bool { FeedManager.the.userLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
         guard
@@ -51,7 +51,7 @@ final class LManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    FdManager.the.userLikes.insert(res.event_id)
+                    FeedManager.the.userLikes.insert(res.event_id)
                 }
                 break
             }

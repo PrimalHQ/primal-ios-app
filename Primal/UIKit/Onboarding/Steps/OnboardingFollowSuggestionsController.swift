@@ -90,8 +90,8 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        Connection.the.$isConnected.sink { res in
-            if res {
+        Connection.the.$isConnected.sink { connected in
+            if connected {
                 IdentityManager.the.requestUserInfos()
                 IdentityManager.the.requestUserProfile()
                 IdentityManager.the.requestUserSettings()
@@ -102,7 +102,7 @@ private extension OnboardingFollowSuggestionsController {
     }
     
     @objc func continuePressed() {
-        FManager.the.sendBatchFollowEvent(Array(selectedToFollow))
+        FollowManager.the.sendBatchFollowEvent(Array(selectedToFollow))
         RootViewController.instance.reset()
     }
 }

@@ -28,7 +28,7 @@ final class HomeFeedViewController: FeedViewController {
         
         title = "Latest with Replies"
         
-        FdManager.the.$parsedPosts
+        FeedManager.the.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.posts = posts
@@ -47,7 +47,7 @@ final class HomeFeedViewController: FeedViewController {
             }
             .store(in: &cancellables)
         
-        FdManager.the.$currentFeed
+        FeedManager.the.$currentFeed
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
                 self?.title = name

@@ -24,7 +24,7 @@ private extension FeedsSelectionController {
         dismiss(animated: true)
         
         DispatchQueue.global(qos: .background).async {
-            FdManager.the.setCurrentFeed(title)
+            FeedManager.the.setCurrentFeed(title)
         }
     }
     

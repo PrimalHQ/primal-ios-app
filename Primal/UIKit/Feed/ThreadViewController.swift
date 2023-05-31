@@ -84,8 +84,8 @@ final class ThreadViewController: FeedViewController {
                             }
                             return .main
                         }(),
-                        didLike: LManager.the.hasLiked(data.0.post.id),
-                        didRepost: PManager.the.hasReposted(data.0.post.id)
+                        didLike: LikeManager.the.hasLiked(data.0.post.id),
+                        didRepost: PostManager.the.hasReposted(data.0.post.id)
             )
             cell.delegate = self
         }
@@ -116,19 +116,19 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        PManager.the.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
+        PostManager.the.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
             self.textInputView.isEditable = true
             self.textInputView.text = ""
             self.placeholderLabel.isHidden = false
             self.didPostNewComment = true
             self.didMoveToMain = false
-            FdManager.the.requestThread(postId: self.id, subId: self.id)
+            FeedManager.the.requestThread(postId: self.id, subId: self.id)
         }
     }
     
     func addPublishers() {
-        FdManager.the.requestThread(postId: id, subId: id)
-        FdManager.the.postsEmitter.sink { [weak self] (id, posts) in
+        FeedManager.the.requestThread(postId: id, subId: id)
+        FeedManager.the.postsEmitter.sink { [weak self] (id, posts) in
             guard let self, id == self.id else { return }
             
             let parsed = posts.sorted(by: { $0.post.created_at < $1.post.created_at }).map { $0.process() }

@@ -48,14 +48,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             let data = posts[indexPath.row]
             cell.update(data.0,
                         parsedContent: data.1,
-                        didLike: LManager.the.hasLiked(data.0.post.id),
-                        didRepost: PManager.the.hasReposted(data.0.post.id)
+                        didLike: LikeManager.the.hasLiked(data.0.post.id),
+                        didRepost: PostManager.the.hasReposted(data.0.post.id)
             )
             cell.delegate = self
         }
         
         if indexPath.row > posts.count - 10  {
-            FdManager.the.requestNewPage()
+            FeedManager.the.requestNewPage()
         }
         return cell
     }
@@ -95,14 +95,14 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
-        LManager.the.sendLikeEvent(post: posts[indexPath.row].0.post)
+        LikeManager.the.sendLikeEvent(post: posts[indexPath.row].0.post)
         
-        cell.updateButtons(posts[indexPath.row].0, didLike: true, didRepost: PManager.the.hasReposted(posts[indexPath.row].0.post.id))
+        cell.updateButtons(posts[indexPath.row].0, didLike: true, didRepost: PostManager.the.hasReposted(posts[indexPath.row].0.post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        PManager.the.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
+        PostManager.the.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

@@ -7,13 +7,13 @@
 
 import Foundation
 
-final class PManager {
+final class PostManager {
     private init() {}
     
-    static let the: PManager = PManager()
+    static let the: PostManager = PostManager()
     
-    public func hasReposted(_ eventId: String) -> Bool { FdManager.the.userReposts.contains(eventId) }
-    public func hasReplied(_ eventId: String) -> Bool { FdManager.the.userReplied.contains(eventId) }
+    public func hasReposted(_ eventId: String) -> Bool { FeedManager.the.userReposts.contains(eventId) }
+    public func hasReplied(_ eventId: String) -> Bool { FeedManager.the.userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
@@ -74,7 +74,7 @@ final class PManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    FdManager.the.userReposts.insert(res.event_id)
+                    FeedManager.the.userReposts.insert(res.event_id)
                 }
                 break
             }
@@ -133,7 +133,7 @@ final class PManager {
                     break
                 case .ok(let res):
                     if res.ok {
-                        FdManager.the.userReplied.insert(res.event_id)
+                        FeedManager.the.userReplied.insert(res.event_id)
                         callback()
                     }
                     break

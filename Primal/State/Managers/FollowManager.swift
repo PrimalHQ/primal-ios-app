@@ -7,10 +7,10 @@
 
 import Foundation
 
-final class FManager {
+final class FollowManager {
     private init() {}
     
-    static let the: FManager = FManager()
+    static let the: FollowManager = FollowManager()
     
     func isFollowing(_ pubkey: String) -> Bool { IdentityManager.the.userContacts.contacts.contains(pubkey) }
     
