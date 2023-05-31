@@ -65,6 +65,8 @@ final class FeedManager {
             for response in res {
                 self.handlePostEvent(response)
             }
+            guard let id = res.last?.arrayValue?[1].stringValue else { return }
+            self.emitPosts(subId: id)
         }
     }
     
