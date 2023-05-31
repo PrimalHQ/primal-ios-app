@@ -108,6 +108,8 @@ final class FeedManager {
             for response in res {
                 self.handlePostEvent(response)
             }
+            guard let id = res.last?.arrayValue?[1].stringValue else { return }
+            self.emitPosts(subId: id)
         }
         return id
     }
@@ -169,8 +171,8 @@ final class FeedManager {
         switch kind {
         case .metadata:
             let nostrUser = NostrContent(json: response)
-            if let primalUser = PrimalUser(nostrUser: nostrUser) {
-                self.feedUsers.append(primalUser)
+            if let id {
+                postCache[id]?.users[nostrUser.pubkey] = nostrUser
             }
         case .text:
             if let id {
