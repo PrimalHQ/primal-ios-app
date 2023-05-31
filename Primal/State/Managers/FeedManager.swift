@@ -9,12 +9,6 @@ import Combine
 import Foundation
 import GenericJSON
 
-class ResponseBuffer {
-    var posts: [NostrContent] = []
-    var users: [String: NostrContent] = [:]
-    var stats: [String: NostrContentStats] = [:]
-}
-
 final class FeedManager {
     private var requestID = ""
     private var cancellables: Set<AnyCancellable> = []
@@ -57,7 +51,6 @@ final class FeedManager {
         isRequestingNewPage = true
         requestID = requestNewPage(feedName: currentFeed, until: posts.last?.post.created_at ?? 0)
     }
-    
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         self.postCache[subId] = .init()
         
@@ -70,55 +63,7 @@ final class FeedManager {
         
         Connection.the.send(json: json) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
-                let id = json.arrayValue?[1].stringValue
-                
-                switch kind {
-                case .text:
-                    if let id {
-                        self.postCache[id]?.posts.append(NostrContent(json: response))
-                    }
-                case .noteStats:
-                    guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding nostrContentStats: NostrContentStats to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    
-                    if let id {
-                        self.postCache[id]?.stats[nostrContentStats.event_id] = nostrContentStats
-                    }
-                case .searchPaginationSettingsEvent:
-                    guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding PrimalSearchPagination to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    
-                    self.searchPaginationEvent = searchPaginationEvent
-                    self.searchPaginationEvent?.subId = json.arrayValue?[1].stringValue
-                    break
-                case .noteActions:
-                    guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding PrimalNoteStatus to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    if noteStatus.liked {
-                        self.userLikes.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.replied {
-                        self.userReplied.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.reposted {
-                        self.userReposts.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.zapped {
-                        self.userZapped.insert(noteStatus.event_id)
-                    }
-                default:
-                    assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
-                }
+                self.handlePostEvent(response)
             }
         }
     }
@@ -161,64 +106,7 @@ final class FeedManager {
         self.postCache[id] = .init()
         Connection.the.send(json: json) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
-                let id = json.arrayValue?[1].stringValue
-                
-                switch kind {
-                case .metadata:
-                    let nostrUser = NostrContent(json: response)
-                    if let primalUser = PrimalUser(nostrUser: nostrUser) {
-                        self.feedUsers.append(primalUser)
-                    }
-                case .text:
-                    if let id {
-                        self.postCache[id]?.posts.append(NostrContent(json: response))
-                    }
-                case .noteStats:
-                    guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding NostrContentStats to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    
-                    if let id {
-                        self.postCache[id]?.stats[nostrContentStats.event_id] = nostrContentStats
-                    }
-                case .searchPaginationSettingsEvent:
-                    guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding PrimalSearchPagination to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    
-                    self.searchPaginationEvent = searchPaginationEvent
-                    self.searchPaginationEvent?.subId = json.arrayValue?[1].stringValue
-                    break
-                case .noteActions:
-                    guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding PrimalNoteStatus to json")
-                        dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
-                        return
-                    }
-                    if noteStatus.liked {
-                        self.userLikes.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.replied {
-                        self.userReplied.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.reposted {
-                        self.userReposts.insert(noteStatus.event_id)
-                    }
-                    if noteStatus.zapped {
-                        self.userZapped.insert(noteStatus.event_id)
-                    }
-                case .repost:
-                    print("got repost")
-                case .mentions:
-                    print("got mention")
-                default:
-                    assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
-                }
+                self.handlePostEvent(response)
             }
         }
         return id
@@ -231,7 +119,6 @@ final class FeedManager {
             fatalError("feed should exist at all times")
         }
     }
-    
     private func generateFeedPageRequest(_ criteria: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
         let key = until == 0 ? "since" : "until"
         let subId = "feed_\(criteria)_\(Connection.the.identity)"
@@ -274,5 +161,65 @@ final class FeedManager {
         }
         
         postsEmitter.send((subId, posts))
+    }
+    private func handlePostEvent(_ response: JSON) {
+        let kind = ResponseKind.fromGenericJSON(response)
+        let id = response.arrayValue?[1].stringValue
+        
+        switch kind {
+        case .metadata:
+            let nostrUser = NostrContent(json: response)
+            if let primalUser = PrimalUser(nostrUser: nostrUser) {
+                self.feedUsers.append(primalUser)
+            }
+        case .text:
+            if let id {
+                self.postCache[id]?.posts.append(NostrContent(json: response))
+            }
+        case .noteStats:
+            guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding NostrContentStats to json")
+                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            
+            if let id {
+                self.postCache[id]?.stats[nostrContentStats.event_id] = nostrContentStats
+            }
+        case .searchPaginationSettingsEvent:
+            guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding PrimalSearchPagination to json")
+                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            
+            self.searchPaginationEvent = searchPaginationEvent
+            self.searchPaginationEvent?.subId = response.arrayValue?[1].stringValue
+            break
+        case .noteActions:
+            guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                print("Error decoding PrimalNoteStatus to json")
+                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
+                return
+            }
+            if noteStatus.liked {
+                self.userLikes.insert(noteStatus.event_id)
+            }
+            if noteStatus.replied {
+                self.userReplied.insert(noteStatus.event_id)
+            }
+            if noteStatus.reposted {
+                self.userReposts.insert(noteStatus.event_id)
+            }
+            if noteStatus.zapped {
+                self.userZapped.insert(noteStatus.event_id)
+            }
+        case .repost:
+            print("got repost")
+        case .mentions:
+            print("got mention")
+        default:
+            assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
+        }
     }
 }
