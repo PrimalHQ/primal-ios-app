@@ -92,13 +92,13 @@ extension String : Identifiable {
 
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
-        let mentionPattern = "\\#\\[([0-9]*)\\]"
-        let profileMentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
+        let nip27MentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
 
         guard
             let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
-            let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
-            let profileMentionRegex = try? NSRegularExpression(pattern: profileMentionPattern, options: []),
+            let mentionRegex = try? NSRegularExpression(pattern: nip08MentionPattern, options: []),
+            let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: []),
             let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         else {
             return []
