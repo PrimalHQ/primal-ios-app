@@ -40,7 +40,18 @@ extension String : Identifiable {
         hasSuffix(".mov") || hasSuffix(".mp4")
     }
     
-    var isNostrMention: Bool {
+    var isHashtag: Bool {
+        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+        
+        guard let hashtagRegex = try? Regex(hashtagPattern) else { fatalError("Unable to create hashtag pattern regex") }
+        if let matches = self.wholeMatch(of: hashtagRegex) {
+            return !matches.isEmpty
+        }
+        
+        return false
+    }
+    
+    var isNip08Mention: Bool {
         let mentionPattern = "\\#\\[([0-9]*)\\]"
         
         guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
@@ -51,7 +62,7 @@ extension String : Identifiable {
         return false
     }
     
-    var isAlternativeMention: Bool {
+    var isNip27Mention: Bool {
         let mentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
         
         guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }

@@ -83,8 +83,11 @@ extension PostRequestResult {
         let result: [String] = text.extractTagsMentionsAndURLs()
         let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
         var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) })
+        var hashtags = result.filter({ $0.isHashtag })
         
         var itemsToRemove = result.filter { $0.isValidURLAndIsImage }
+        var itemsToReplace = result.filter { $0.isNip08Mention || $0.isNip27Mention }
+        var markedMentions: [String] = []
         
         if let index = otherURLs.firstIndex(where: { $0.isValidURL }) {
             let firstURL = otherURLs.remove(at: index)
@@ -140,33 +143,39 @@ extension PostRequestResult {
         }
         
         for r in result {
-            if r.isNostrMention || r.isAlternativeMention {
-                itemsToRemove.append(r)
+            if r.isNip08Mention || r.isNip27Mention {
+                itemsToReplace.append(r)
             }
         }
         
         if removeExtractedLinks {
             for item in itemsToRemove {
-                if item.isNostrMention {
-                    if let index = Int(item[safe: 2]!.string) {
-                        if let tag = post.tags[safe: index] {
-                            if let pubkey = tag[safe: 1] {
-                                if let user = users[pubkey] {
-                                    text = text.replacingOccurrences(of: item, with: "@\(user.displayName)")
-                                }
+                text = text.replacingOccurrences(of: item, with: "")
+            }
+        }
+        
+        for item in itemsToReplace {
+            if item.isNip08Mention {
+                if let index = Int(item[safe: 2]!.string) {
+                    if let tag = post.tags[safe: index] {
+                        if let pubkey = tag[safe: 1] {
+                            if let user = users[pubkey] {
+                                let mention = "@\(user.name)"
+                                text = text.replacingOccurrences(of: item, with: mention)
+                                markedMentions.append(mention)
                             }
                         }
                     }
-                } else if item.isAlternativeMention {
-                    if let npub = item.split(separator: ":")[safe: 1]?.string {
-                        guard let decoded = try? bech32_decode(npub) else { fatalError("Incorrect npub") }
-                        let pubkey = hex_encode(decoded.data)
-                        if let user = users[pubkey] {
-                            text = text.replacingOccurrences(of: item, with: "@\(user.name)")
-                        }
+                }
+            } else if item.isNip27Mention {
+                if let npub = item.split(separator: ":")[safe: 1]?.string {
+                    guard let decoded = try? bech32_decode(npub) else { fatalError("Incorrect npub") }
+                    let pubkey = hex_encode(decoded.data)
+                    if let user = users[pubkey] {
+                        let mention = "@\(user.name)"
+                        text = text.replacingOccurrences(of: item, with: mention)
+                        markedMentions.append(mention)
                     }
-                } else {
-                    text = text.replacingOccurrences(of: item, with: "")
                 }
             }
         }
@@ -175,6 +184,8 @@ extension PostRequestResult {
         
         let nsText = text as NSString
         
+        otherURLs.append(contentsOf: markedMentions)
+        otherURLs.append(contentsOf: hashtags)
         p.imageUrls = imageURLs
         p.httpUrls = otherURLs.compactMap {
             let position = nsText.range(of: $0)
