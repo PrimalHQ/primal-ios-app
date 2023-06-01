@@ -175,6 +175,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let zaps: Int32
     let satszapped: Int32
     let score24h: Int32
+    let reposts: Int32
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id
@@ -189,9 +190,10 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.zaps = nostrPostStats.zaps
         self.satszapped = nostrPostStats.satszapped
         self.score24h = nostrPostStats.score24h
+        self.reposts = nostrPostStats.reposts
     }
     
-    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32) {
+    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
         self.id = id
         self.pubkey = pubkey
         self.created_at = created_at
@@ -204,6 +206,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.zaps = zaps
         self.satszapped = satszapped
         self.score24h = score24h
+        self.reposts = reposts
     }
     
     func toRepostNostrContent() -> NostrContent {
@@ -253,7 +256,8 @@ struct PrimalPost : Codable, Hashable, Identifiable {
             replies: 42,
             zaps: 666,
             satszapped: 666,
-            score24h: 13
+            score24h: 13,
+            reposts: 42
         )
         
         return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)

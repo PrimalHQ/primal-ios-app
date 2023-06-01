@@ -47,6 +47,7 @@ struct NostrContentStats: Codable {
     let satszapped: Int32
     let score: Int32
     let score24h: Int32
+    let reposts: Int32
     
     init(json: JSON) {
         self.event_id = json.arrayValue?[2].objectValue?["event_id"]?.stringValue ?? ""
@@ -57,6 +58,7 @@ struct NostrContentStats: Codable {
         self.satszapped = Int32(json.arrayValue?[2].objectValue?["satszapped"]?.doubleValue ?? -1)
         self.score = Int32(json.arrayValue?[2].objectValue?["score"]?.doubleValue ?? -1)
         self.score24h = Int32(json.arrayValue?[2].objectValue?["score24h"]?.doubleValue ?? -1)
+        self.reposts = Int32(json.arrayValue?[2].objectValue?["reposts"]?.doubleValue ?? -1)
     }
 }
 
