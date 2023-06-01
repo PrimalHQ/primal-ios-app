@@ -87,7 +87,7 @@ private extension NewPostViewController {
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         bottomStack.spacing = 4
         
-        let border = SpacerView(size: 1, priority: .required)
+        let border = SpacerView(height: 1, priority: .required)
         border.backgroundColor = .background3
         
         let mainStack = UIStackView(arrangedSubviews: [topStack, contentStack, border, bottomStack])

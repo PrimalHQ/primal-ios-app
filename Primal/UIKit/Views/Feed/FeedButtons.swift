@@ -25,7 +25,7 @@ final class FeedReplyButton: UIButton {
 final class FeedRepostButton: UIButton {
     init() {
         super.init(frame: .zero)
-        setImage(UIImage(named: "feedLightning"), for: .normal)
+        setImage(UIImage(named: "feedRepost"), for: .normal)
         setTitleColor(UIColor(rgb: 0x757575), for: .normal)
         titleLabel?.font = .appFont(withSize: 16, weight: .regular)
     }

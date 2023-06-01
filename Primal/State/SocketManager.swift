@@ -25,11 +25,25 @@ struct Contacts {
     var contacts: [String]
 }
 
-class ResponseBuffer {
+class PostRequestResult {
+    let id: String
     var posts: [NostrContent] = []
+    var mentions: [NostrContent] = []
+    var reposts: [NostrRepost] = []
     var users: [String: NostrContent] = [:]
     var stats: [String: NostrContentStats] = [:]
+    
+    init(id: String) {
+        self.id = id
+    }
 }
+
+
+struct NostrRepost {
+    let pubkey: String
+    let post: NostrContent
+}
+
 
 final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     @Published var currentUser: PrimalUser?
@@ -46,8 +60,8 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     @Published var didFinishInit: Bool = false
     @Published var isConnected: Bool = false
     
-    let postsEmitter: PassthroughSubject<(String, [PrimalPost]), Never> = .init()
-    private var postCache: [String : ResponseBuffer] = [:]
+    let postsEmitter: PassthroughSubject<PostRequestResult, Never> = .init()
+    private var postCache: [String : PostRequestResult] = [:]
     
     private let socketURL = URL(string: "wss://cache3.primal.net/cache15")
     private var currentUserHex = "97b988fbf4f8880493f925711e1bd806617b508fd3d28312288507e42f8a3368"
@@ -92,13 +106,13 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
             print("Error encoding req json")
             return ""
         }
-        self.postCache[id] = .init()
+        self.postCache[id] = .init(id: id)
         socket?.send(string: jsonStr)
         return id
     }
     
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
-        self.postCache[subId] = .init()
+        self.postCache[subId] = .init(id: subId)
         
         guard let json: JSON = try? JSON(
             ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": self.currentUserHex]
@@ -302,11 +316,13 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
         
         switch kind {
         case .text:
-            if let id {
-                postCache[id]?.posts.append(NostrContent(json: json))
-            }
+            guard let id, let contentJSON = json.arrayValue?[2].objectValue else { return }
+            
+            postCache[id]?.posts.append(NostrContent(json: .object(contentJSON)))
         case .metadata:
-            let nostrUser = NostrContent(json: json)
+            guard let contentJSON = json.arrayValue?[2].objectValue else { return }
+            
+            let nostrUser = NostrContent(json: .object(contentJSON))
             
             if type == .post {
                 if let id {
@@ -408,6 +424,24 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
             if type == .profile {
                 self.currentUserStats = nostrUserProfileInfo
             }
+        case .repost:
+            guard
+                let id,
+                let pubKey = json.arrayValue?[2].objectValue?["pubkey"]?.stringValue,
+                let contentString = json.arrayValue?[2].objectValue?["content"]?.stringValue,
+                let contentData = contentString.data(using: .utf8),
+                let contentJSON = try? jsonDecoder.decode(JSON.self, from: contentData)
+            else { return }
+            
+            postCache[id]?.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON)))
+        case .mentions:
+            guard
+                let id,
+                let contentString = json.arrayValue?[2].objectValue!["content"]?.stringValue,
+                let contentData = contentString.data(using: .utf8),
+                let contentJSON = try? jsonDecoder.decode(JSON.self, from: contentData)
+            else { return }
+            postCache[id]?.mentions.append(NostrContent(json: contentJSON))
         default:
             assert(true, "unhandled kind \(String(describing: kind))")
         }
@@ -420,22 +454,8 @@ final class SocketManager: ObservableObject, WebSocketConnectionDelegate {
     
     private func emitPosts(subId: String) {
         guard let data = postCache[subId] else { return }
-        postCache[subId] = nil
-        let posts: [PrimalPost] = data.posts.compactMap { nostrPost in
-            guard
-                let nostrUser = data.users[nostrPost.pubkey],
-                let nostrPostStats = data.stats[nostrPost.id],
-                let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: nostrPost)
-            else { return nil }
-            
-            let primalFeedPost = PrimalFeedPost(nostrPost: nostrPost, nostrPostStats: nostrPostStats)
-            
-            let primalPost = PrimalPost(id:UUID().uuidString, user: primalUser, post: primalFeedPost)
-            
-            return primalPost
-        }
-        
-        postsEmitter.send((subId, posts))        
+        postCache[subId] = nil        
+        postsEmitter.send(data)
     }
     
     private func generateRequestByFeedType(feedName: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {

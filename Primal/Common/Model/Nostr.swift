@@ -28,13 +28,13 @@ struct NostrContent: Codable {
     }
     
     init(json: JSON) {
-        self.kind = Int32(json.arrayValue?[2].objectValue?["kind"]?.doubleValue ?? -1)
-        self.content = json.arrayValue?[2].objectValue?["content"]?.stringValue ?? ""
-        self.id = json.arrayValue?[2].objectValue?["id"]?.stringValue ?? ""
-        self.created_at = Int32(json.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1)
-        self.pubkey = json.arrayValue?[2].objectValue?["pubkey"]?.stringValue ?? ""
-        self.sig = json.arrayValue?[2].objectValue?["sig"]?.stringValue ?? ""
-        self.tags = json.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? []
+        self.kind = Int32(json.objectValue?["kind"]?.doubleValue ?? -1)
+        self.content = json.objectValue?["content"]?.stringValue ?? ""
+        self.id = json.objectValue?["id"]?.stringValue ?? ""
+        self.created_at = Int32(json.objectValue?["created_at"]?.doubleValue ?? -1)
+        self.pubkey = json.objectValue?["pubkey"]?.stringValue ?? ""
+        self.sig = json.objectValue?["sig"]?.stringValue ?? ""
+        self.tags = json.objectValue?["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? []
     }
 }
 

@@ -250,15 +250,3 @@ struct PrimalPost : Codable, Hashable, Identifiable {
         return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)
     }
 }
-
-extension PrimalPost {
-    func process() -> (PrimalPost, ParsedContent) {
-        (self, NoteParser(post.content).parse())
-    }
-}
-
-extension Array where Element == PrimalPost {
-    func process() -> [(PrimalPost, ParsedContent)] {
-        map { $0.process() }
-    }
-}

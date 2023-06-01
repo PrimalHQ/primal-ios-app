@@ -16,6 +16,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
+    func postCellDidTapEmbededPost(_ cell: PostCell)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -37,6 +38,8 @@ class PostCell: UITableViewCell {
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
+    let postPreview = PostPreviewView()
+    let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
     lazy var nameTimeStack = UIStackView(arrangedSubviews: [nameLabel, separatorLabel, timeLabel])
     lazy var usernameStack = UIStackView(arrangedSubviews: [usernameLabel, verifiedBadge, verifiedServerLabel])
@@ -54,38 +57,52 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
-        nameLabel.text = post.user.displayName
-        usernameLabel.text = post.user.name
+    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
+        nameLabel.text = content.user.displayName
+        usernameLabel.text = content.user.name
         
-        verifiedBadge.isHidden = post.user.nip05.isEmpty
-        verifiedServerLabel.text = post.user.getDomainNip05()
+        verifiedBadge.isHidden = content.user.nip05.isEmpty
+        verifiedServerLabel.text = content.user.getDomainNip05()
         
-        let date = Date(timeIntervalSince1970: TimeInterval(post.post.created_at))
+        let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: post.user.picture), options: [
+        profileImageView.kf.setImage(with: URL(string: content.user.picture), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ])
         
-        if let metadata = parsedContent.extractedMetadata {
+        if let metadata = content.extractedMetadata {
             linkPresentation.metadata = metadata
             linkPresentation.isHidden = false
             
-            metadataUpdater = parsedContent.$extractedMetadata.sink(receiveValue: { [weak self] in self?.linkPresentation.metadata = $0 ?? .init() })
+            metadataUpdater = content.$extractedMetadata.sink(receiveValue: { [weak self] in self?.linkPresentation.metadata = $0 ?? .init() })
         } else {
             linkPresentation.isHidden = true
         }
         
-        mainLabel.attributedText = parsedContent.attributedText
-        mainImages.imageURLs = parsedContent.imageUrls
+        if let embeded = content.embededPost {
+            postPreview.update(embeded)
+            postPreview.isHidden = false
+        } else {
+            postPreview.isHidden = true
+        }
         
-        updateButtons(post, didLike: didLike, didRepost: didRepost)
+        if let reposted = content.reposted {
+            repostIndicator.update(user: reposted)
+            repostIndicator.isHidden = false
+        } else {
+            repostIndicator.isHidden = true
+        }
+        
+        mainLabel.attributedText = content.attributedText
+        mainImages.imageURLs = content.imageUrls
+        
+        updateButtons(content, didLike: didLike, didRepost: didRepost)
     }
     
-    func updateButtons(_ post: PrimalPost, didLike: Bool, didRepost: Bool) {
+    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
         likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
         if didLike {
             likeButton.animView.play()
@@ -97,10 +114,10 @@ class PostCell: UITableViewCell {
         repostButton.tintColor = repostColor
         repostButton.setTitleColor(repostColor, for: .normal)
         
-        replyButton.setTitle("  \(post.post.replies)", for: .normal)
-        zapButton.titleLabel.text = "\(post.post.satszapped)"
-        likeButton.titleLabel.text = "\(post.post.likes + (didLike ? 1 : 0))"
-        repostButton.setTitle("  \(post.post.mentions + (didRepost ? 1 : 0))", for: .normal)
+        replyButton.setTitle("  \(content.post.replies)", for: .normal)
+        zapButton.titleLabel.text = "\(content.post.satszapped)"
+        likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
+        repostButton.setTitle("  \(content.post.mentions + (didRepost ? 1 : 0))", for: .normal)
     }
 }
 
@@ -158,11 +175,13 @@ private extension PostCell {
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
-        let height2 = linkPresentation.heightAnchor.constraint(equalToConstant: 300)
+        let height2 = linkPresentation.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
         [height, height2].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
         }
+        
+        linkPresentation.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
@@ -174,9 +193,14 @@ private extension PostCell {
         
         selectionStyle = .none
         
+        postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.isUserInteractionEnabled = false
+    }
+    
+    @objc func embedTapped() {
+        delegate?.postCellDidTapEmbededPost(self)
     }
     
     @objc func repostTapped() {
@@ -195,14 +219,5 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
         
         delegate?.postCellDidTapLike(self)
-    }
-}
-
-extension LPLinkMetadata {
-    static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
-        let metadata = LPLinkMetadata()
-        metadata.title = "Loading preview..."
-        metadata.url = url
-        return metadata
     }
 }

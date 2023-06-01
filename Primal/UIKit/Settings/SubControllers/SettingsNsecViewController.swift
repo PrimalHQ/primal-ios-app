@@ -106,14 +106,14 @@ private extension SettingsNsecViewController {
         let titleStack = UIStackView(arrangedSubviews: [secTitle, UIView(), showSecButton])
         
         let stack = UIStackView(arrangedSubviews: [
-            pubTitle,       SpacerView(size: 16, priority: .defaultLow),
-            pubLabelParent, SpacerView(size: 22, priority: .defaultLow),
-            copyPubButton,  SpacerView(size: 16, priority: .defaultLow),
-            pubLabelDesc,   SpacerView(size: 20, priority: .defaultLow),
-            border,         SpacerView(size: 26, priority: .defaultLow),
-            titleStack,     SpacerView(size: 8, priority: .defaultLow),
-            secLabelParent, SpacerView(size: 22, priority: .defaultLow),
-            copySecButton,  SpacerView(size: 16, priority: .defaultLow),
+            pubTitle,       SpacerView(height: 16, priority: .defaultLow),
+            pubLabelParent, SpacerView(height: 22, priority: .defaultLow),
+            copyPubButton,  SpacerView(height: 16, priority: .defaultLow),
+            pubLabelDesc,   SpacerView(height: 20, priority: .defaultLow),
+            border,         SpacerView(height: 26, priority: .defaultLow),
+            titleStack,     SpacerView(height: 8, priority: .defaultLow),
+            secLabelParent, SpacerView(height: 22, priority: .defaultLow),
+            copySecButton,  SpacerView(height: 16, priority: .defaultLow),
             warning,        UIView()
         ])
         

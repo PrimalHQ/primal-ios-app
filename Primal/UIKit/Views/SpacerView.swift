@@ -8,13 +8,21 @@
 import UIKit
 
 final class SpacerView: UIView {
-    init(size: CGFloat? = nil, priority: UILayoutPriority = .defaultHigh) {
+    init(width: CGFloat? = nil, height: CGFloat? = nil, priority: UILayoutPriority = .defaultHigh) {
         super.init(frame: .zero)
-        guard let size else { return }
         translatesAutoresizingMaskIntoConstraints = false
-        let heightC = heightAnchor.constraint(equalToConstant: size)
-        heightC.priority = priority
-        heightC.isActive = true
+        
+        if let width {
+            let widthC = widthAnchor.constraint(equalToConstant: width)
+            widthC.priority = priority
+            widthC.isActive = true
+        }
+        
+        if let height {
+            let heightC = heightAnchor.constraint(equalToConstant: height)
+            heightC.priority = priority
+            heightC.isActive = true
+        }
     }
     
     required init?(coder: NSCoder) {
