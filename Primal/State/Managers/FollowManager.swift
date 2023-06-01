@@ -1,8 +1,9 @@
 //
-//  FManager.swift
+//  FollowManager.swift
 //  Primal
 //
-//  Created by Nikola Lukovic on 31.5.23..
+//  Created by Pavle D Stevanović on 11.5.23..
+//  Modified by Nikola Lukovic on 31.5.23..
 //
 
 import Foundation
