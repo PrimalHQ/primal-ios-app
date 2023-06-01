@@ -26,12 +26,12 @@ final class ThreadCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
-        update(post, parsedContent: parsedContent, position: .child, didLike: didLike, didRepost: didRepost)
+    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
+        update(parsedContent, position: .child, didLike: didLike, didRepost: didRepost)
     }
     
-    func update(_ post: PrimalPost, parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool) {
-        super.update(post, parsedContent: parsedContent, didLike: didLike, didRepost: didRepost)
+    func update(_ parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool) {
+        super.update(parsedContent, didLike: didLike, didRepost: didRepost)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.imageUrls.isEmpty
@@ -57,11 +57,11 @@ private extension ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, mainImages, linkPresentation, actionButtonStandin])
+        let contentStack = UIStackView(arrangedSubviews: [mainLabel, mainImages, linkPresentation, postPreview, actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         
-        let mainStack = UIStackView(arrangedSubviews: [horizontalProfileStack, horizontalContentStack])
+        let mainStack = UIStackView(arrangedSubviews: [repostIndicator, horizontalProfileStack, horizontalContentStack])
         contentView.addSubview(mainStack)
         
         mainStack

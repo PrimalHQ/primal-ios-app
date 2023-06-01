@@ -72,7 +72,7 @@ private extension FeedsSelectionController {
 //        border.gradientLayer.startPoint = .init(x: 0, y: 0.5)
 //        border.gradientLayer.endPoint = .init(x: 1, y: 0.5)
 //
-        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(size: 42), scrollView, SpacerView(size: 42)])
+        let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(height: 42), scrollView, SpacerView(height: 42)])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)

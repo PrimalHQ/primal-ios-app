@@ -63,7 +63,7 @@ final class IdentityManager {
                 
                 switch kind {
                 case .metadata:
-                    let nostrUser = NostrContent(json: response)
+                    let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
                     self.user = PrimalUser(nostrUser: nostrUser)
                 case .userScore:
                     if let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue {
@@ -96,7 +96,7 @@ final class IdentityManager {
                 
                 switch kind {
                 case .metadata:
-                    let nostrUser = NostrContent(json: response)
+                    let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
                     self.user = PrimalUser(nostrUser: nostrUser)
                 case .userStats:
                     guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
