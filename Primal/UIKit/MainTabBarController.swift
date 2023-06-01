@@ -14,13 +14,12 @@ extension UIViewController {
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = FeedNavigationController(feed: feed)
-    lazy var read = ReadNavigationController(feed: feed)
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController(), feed: feed))
-    lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: MessagesViewController(), feed: feed))
-    lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController(), feed: feed))
+    lazy var home = FeedNavigationController()
+    lazy var read = ReadNavigationController()
+    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: MessagesViewController()))
+    lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
     
-    let feed: SocketManager
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     
     lazy var buttons = (1...5).map { _ in UIButton() }
@@ -36,8 +35,7 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
 
-    init(feed: SocketManager) {
-        self.feed = feed
+    init() {
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -110,8 +108,8 @@ private extension MainTabBarController {
         closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
         closeMenuButton.isHidden = true
         
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] notification in
-            feed.reconnect()
+        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
+            Connection.the.reconnect()
         }
         
         for (index, button) in buttons.enumerated() {

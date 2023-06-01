@@ -12,10 +12,6 @@ import SwiftUI
 import SafariServices
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
-    let feed: SocketManager
-    lazy var likeManager = LikeManager(feed: feed)
-    lazy var postManager = PostManager(feed: feed)
-    
     let navigationBarLengthner = SpacerView(height: 7)
     var table = UITableView()
     lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
@@ -25,13 +21,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             table.reloadData()
         }
     }
-    
-    lazy var feedManager = FeedManager(socket: feed)
-    
+        
     var cancellables: Set<AnyCancellable> = []
     
-    init(feed: SocketManager) {
-        self.feed = feed
+    init() {
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -41,7 +34,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func open(post: PrimalFeedPost) {
-        let threadVC = ThreadViewController(feed: feed, threadId: post.id)
+        let threadVC = ThreadViewController(threadId: post.id)
         show(threadVC, sender: nil)
     }
     
@@ -54,14 +47,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
             cell.update(data,
-                        didLike: likeManager.hasLiked(data.post.id),
-                        didRepost: postManager.hasReposted(data.post.id)
+                        didLike: LikeManager.the.hasLiked(data.post.id),
+                        didRepost: PostManager.the.hasReposted(data.post.id)
             )
             cell.delegate = self
         }
         
         if indexPath.row > posts.count - 10  {
-            feedManager.requestNewPage()
+            FeedManager.the.requestNewPage()
         }
         return cell
     }
@@ -101,14 +94,14 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
-        likeManager.sendLikeEvent(post: posts[indexPath.row].post)
+        LikeManager.the.sendLikeEvent(post: posts[indexPath.row].post)
         
-        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].post.id))
+        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: PostManager.the.hasReposted(posts[indexPath.row].post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        postManager.sendRepostEvent(nostrContent: posts[indexPath.row].post.toRepostNostrContent())
+        PostManager.the.sendRepostEvent(nostrContent: posts[indexPath.row].post.toRepostNostrContent())
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

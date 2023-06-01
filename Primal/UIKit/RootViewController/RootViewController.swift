@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import Combine
 
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
@@ -17,16 +18,14 @@ extension CAMediaTimingFunction {
 }
 
 final class RootViewController: UIViewController {
-
     static let instance = RootViewController()
     
     private(set) var currentChild: UIViewController?
-    private weak var introVC: IntroVideoController?
+    private var introVC: IntroVideoController?
+    private var cancellables: Set<AnyCancellable> = []
     
     var didAnimate = false
-    
-    var cancellables: Set<AnyCancellable> = []
-    
+
     private init() {
         super.init(nibName: nil, bundle: nil)
         if !Theme.hasDefaultTheme {
@@ -88,18 +87,19 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {
-        let result = get_saved_keypair()
-        
-        guard
-            let keypair = result,
-            let decoded = try? bech32_decode(keypair.pubkey_bech32)
-        else {
-            set(OnboardingParentViewController())
-            return
-        }
-        
-        let feed = SocketManager(userHex: hex_encode(decoded.data))
-        set(MainTabBarController(feed: feed))
+        Connection.the.$isConnected.sink { connected in
+            if connected {
+                IdentityManager.the.requestUserInfos()
+                IdentityManager.the.requestUserProfile()
+                IdentityManager.the.requestUserSettings()
+                IdentityManager.the.requestUserContacts()
+                
+                DispatchQueue.main.async {
+                    self.set(MainTabBarController())
+                }
+            }
+        }.store(in: &cancellables)
+        Connection.the.connect()
     }
     
     func addIntro() {

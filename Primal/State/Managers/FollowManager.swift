@@ -3,26 +3,17 @@
 //  Primal
 //
 //  Created by Pavle D Stevanović on 11.5.23..
+//  Modified by Nikola Lukovic on 31.5.23..
 //
 
-import Combine
 import Foundation
 
 final class FollowManager {
-    let connection: SocketManager
-    init(socket: SocketManager) {
-        self.connection = socket
-    }
+    private init() {}
     
-    func isFollowing(_ pubkey: String) -> Bool { connection.currentUserContacts.contacts.contains(pubkey) }
+    static let the: FollowManager = FollowManager()
     
-    func toggleFollow(_ pubkey: String) {
-        if isFollowing(pubkey) {
-            sendUnfollowEvent(pubkey)
-        } else {
-            sendFollowEvent(pubkey)
-        }
-    }
+    func isFollowing(_ pubkey: String) -> Bool { IdentityManager.the.userContacts.contacts.contains(pubkey) }
     
     func sendBatchFollowEvent(_ pubkeys: [String]) {
         guard let keypair = get_saved_keypair() else {
@@ -30,15 +21,15 @@ final class FollowManager {
             return
         }
         
-        var contacts = connection.currentUserContacts.contacts
+        var contacts = IdentityManager.the.userContacts.contacts
         contacts.append(contentsOf: pubkeys)
-        connection.currentUserContacts.contacts = contacts
+        IdentityManager.the.userContacts.contacts = contacts
         
-        let relays = connection.currentUserRelays ?? makeBootstrapRelays()
+        let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        connection.postBox.send(ev)
+        RelaysPostBox.the.send(ev)
     }
     
     func sendFollowEvent(_ pubkey: String) {
@@ -47,15 +38,15 @@ final class FollowManager {
             return
         }
         
-        var contacts = connection.currentUserContacts.contacts
+        var contacts = IdentityManager.the.userContacts.contacts
         contacts.append(pubkey)
-        connection.currentUserContacts.contacts = contacts
+        IdentityManager.the.userContacts.contacts = contacts
         
-        let relays = connection.currentUserRelays ?? makeBootstrapRelays()
+        let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        connection.postBox.send(ev)
+        RelaysPostBox.the.send(ev)
     }
     
     func sendUnfollowEvent(_ pubkey: String) {
@@ -64,16 +55,16 @@ final class FollowManager {
             return
         }
         
-        let indexOfPubkeyToRemove = connection.currentUserContacts.contacts.firstIndex(of: pubkey)
+        let indexOfPubkeyToRemove = IdentityManager.the.userContacts.contacts.firstIndex(of: pubkey)
         
         if let index = indexOfPubkeyToRemove {
-            connection.currentUserContacts.contacts.remove(at: index)
+            IdentityManager.the.userContacts.contacts.remove(at: index)
             
-            let relays = connection.currentUserRelays ?? makeBootstrapRelays()
+            let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
             
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: connection.currentUserContacts.contacts, relays: relays)
+            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.the.userContacts.contacts, relays: relays)
             
-            connection.postBox.send(ev)
+            RelaysPostBox.the.send(ev)
         }
     }
     

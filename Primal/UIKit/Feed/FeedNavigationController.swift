@@ -8,8 +8,8 @@
 import UIKit
 
 final class ReadNavigationController: MainNavigationController {
-    init(feed: SocketManager) {
-        super.init(rootViewController: MenuContainerController(child: ReadViewController(), feed: feed))
+    init() {
+        super.init(rootViewController: MenuContainerController(child: ReadViewController()))
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -18,8 +18,8 @@ final class ReadNavigationController: MainNavigationController {
 }
 
 final class FeedNavigationController: MainNavigationController {
-    init(feed: SocketManager) {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: feed), feed: feed))
+    init() {
+        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController()))
     }
     
     required init?(coder aDecoder: NSCoder) {

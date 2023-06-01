@@ -8,6 +8,11 @@
 import Foundation
 import GenericJSON
 
+struct Contacts {
+    let created_at: Int
+    var contacts: [String]
+}
+
 struct PrimalNoteStatus: Codable, Hashable {
     let event_id: String
     let replied: Bool
@@ -55,7 +60,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     
     init?(json: JSON) {
         guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-            print("Error decoding received string to json")
+            print("Error decoding PrimalSettingsContent to json")
             dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
             return nil
         }
@@ -90,7 +95,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
-            print("Error decoding received string to json")
+            print("Error decoding nostrUser: NostrContent to json")
             dump(nostrUser?.content)
             return nil
         }
@@ -151,6 +156,10 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         
         return domain
     }
+    
+    static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {
+        return lhs.pubkey == rhs.pubkey
+    }
 }
 
 struct PrimalFeedPost : Codable, Identifiable, Hashable {
@@ -166,6 +175,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let zaps: Int32
     let satszapped: Int32
     let score24h: Int32
+    let reposts: Int32
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id
@@ -180,9 +190,10 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.zaps = nostrPostStats.zaps
         self.satszapped = nostrPostStats.satszapped
         self.score24h = nostrPostStats.score24h
+        self.reposts = nostrPostStats.reposts
     }
     
-    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32) {
+    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
         self.id = id
         self.pubkey = pubkey
         self.created_at = created_at
@@ -195,6 +206,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.zaps = zaps
         self.satszapped = satszapped
         self.score24h = score24h
+        self.reposts = reposts
     }
     
     func toRepostNostrContent() -> NostrContent {
@@ -244,7 +256,8 @@ struct PrimalPost : Codable, Hashable, Identifiable {
             replies: 42,
             zaps: 666,
             satszapped: 666,
-            score24h: 13
+            score24h: 13,
+            reposts: 42
         )
         
         return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)

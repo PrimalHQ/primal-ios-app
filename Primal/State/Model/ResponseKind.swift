@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GenericJSON
 
 enum ResponseKind: UInt32 {
     case metadata = 0
@@ -38,4 +39,14 @@ enum ResponseKind: UInt32 {
     case notificationStats = 10_000_112
     case searchPaginationSettingsEvent = 10_000_113
     case noteActions = 10_000_115
+}
+
+extension ResponseKind {
+    static func fromGenericJSON(_ json: JSON) -> ResponseKind {
+        guard let kind = ResponseKind(rawValue: UInt32(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) else {
+            fatalError("ResponseKind: fromGenericJSON: Unable to extract kind from json: \(json)")
+        }
+        
+        return kind
+    }
 }

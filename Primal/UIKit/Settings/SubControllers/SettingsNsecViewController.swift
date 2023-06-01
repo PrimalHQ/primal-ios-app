@@ -24,9 +24,9 @@ class SettingsNsecViewController: UIViewController, Themeable {
         }
     }
     
-    init(socket: SocketManager) {
+    init() {
         super.init(nibName: nil, bundle: nil)
-        guard let iconURL = URL(string: socket.currentUser?.picture ?? "") else { return }
+        guard let iconURL = URL(string: IdentityManager.the.user?.picture ?? "") else { return }
         pubIcon.kf.setImage(with: iconURL, options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 44, height: 44))),
             .scaleFactor(UIScreen.main.scale),

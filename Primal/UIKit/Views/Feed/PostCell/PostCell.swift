@@ -117,7 +117,7 @@ class PostCell: UITableViewCell {
         replyButton.setTitle("  \(content.post.replies)", for: .normal)
         zapButton.titleLabel.text = "\(content.post.satszapped)"
         likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
-        repostButton.setTitle("  \(content.post.mentions + (didRepost ? 1 : 0))", for: .normal)
+        repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
     }
 }
 
