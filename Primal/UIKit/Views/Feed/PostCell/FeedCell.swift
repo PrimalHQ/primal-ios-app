@@ -21,8 +21,8 @@ final class FeedCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ post: PrimalPost, parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
-        super.update(post, parsedContent: parsedContent, didLike: didLike, didRepost: didRepost)
+    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool) {
+        super.update(parsedContent, didLike: didLike, didRepost: didRepost)
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.imageUrls.isEmpty
@@ -37,17 +37,21 @@ private extension FeedCell {
     func setup() {
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         let buttonStackStandIn = UIView()
-        let mainStack = UIStackView(arrangedSubviews: [horizontalStack, textStack, mainImages, linkPresentation, buttonStackStandIn])
+        let mainStack = UIStackView(arrangedSubviews: [
+            repostIndicator, horizontalStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
+        ])
         
         contentView.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: [.horizontal, .bottom], padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 16)
             .pinToSuperview(edges: .top, padding: 21)
+    
+        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+        bottomC.priority = .defaultHigh
+        bottomC.isActive = true
         
-        [mainStack].forEach {
-            $0.axis = .vertical
-            $0.spacing = 16
-        }
+        mainStack.axis = .vertical
+        mainStack.spacing = 16
         
         buttonStackStandIn.constrainToSize(height: 24)
         contentView.addSubview(bottomButtonStack)

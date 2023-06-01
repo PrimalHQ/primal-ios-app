@@ -49,10 +49,10 @@ final class ThreadViewController: FeedViewController {
         didLoadView = true
     }
     
-    override func open(post: PrimalPost) {
-        guard post.post.id != id else { return }
+    override func open(post: PrimalFeedPost) {
+        guard post.id != id else { return }
         
-        guard let index = posts.firstIndex(where: { $0.0 == post }) else {
+        guard let index = posts.firstIndex(where: { $0.post == post }) else {
             super.open(post: post)
             return
         }
@@ -60,7 +60,7 @@ final class ThreadViewController: FeedViewController {
         if index < mainPositionInThread {
             for vc in navigationController?.viewControllers ?? [] {
                 guard let thread = vc as? ThreadViewController else { continue }
-                if thread.id == post.post.id {
+                if thread.id == post.id {
                     thread.didMoveToMain = false
                     navigationController?.popToViewController(vc, animated: true)
                     return
@@ -75,8 +75,7 @@ final class ThreadViewController: FeedViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? ThreadCell {
             let data = posts[indexPath.row]
-            cell.update(data.0,
-                        parsedContent: data.1,
+            cell.update(data,
                         position: {
                             if mainPositionInThread < indexPath.row {
                                 return .child
@@ -86,8 +85,8 @@ final class ThreadViewController: FeedViewController {
                             }
                             return .main
                         }(),
-                        didLike: likeManager.hasLiked(data.0.post.id),
-                        didRepost: postManager.hasReposted(data.0.post.id)
+                        didLike: likeManager.hasLiked(data.post.id),
+                        didRepost: postManager.hasReposted(data.post.id)
             )
             cell.delegate = self
         }
@@ -104,8 +103,8 @@ final class ThreadViewController: FeedViewController {
         
         guard !posts.isEmpty else { return }
         
-        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].0.user.displayName)"
-        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].0.user.name)
+        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.displayName)"
+        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.name)
     }
 }
 
@@ -118,7 +117,7 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        posting.sendReplyEvent(text, post: posts[mainPositionInThread].0.post) {
+        posting.sendReplyEvent(text, post: posts[mainPositionInThread].post) {
             self.textInputView.isEditable = true
             self.textInputView.text = ""
             self.placeholderLabel.isHidden = false
@@ -130,20 +129,21 @@ private extension ThreadViewController {
     
     func addPublishers() {
         feed.requestThread(postId: id, subId: id)
-        feed.postsEmitter.sink { [weak self] (id, posts) in
-            guard let self, id == self.id else { return }
+        feed.postsEmitter.sink { [weak self]  result in
+            guard let self, result.id == self.id else { return }
             
-            let parsed = posts.sorted(by: { $0.post.created_at < $1.post.created_at }).map { $0.process() }
+            let parsed = result.process()
+                .sorted(by: { $0.post.created_at < $1.post.created_at })
             
             DispatchQueue.main.async {
-                self.mainPositionInThread = parsed.firstIndex(where: { $0.0.post.id == self.id }) ?? 0
+                self.mainPositionInThread = parsed.firstIndex(where: { $0.post.id == self.id }) ?? 0
                 self.posts = parsed
                 
                 self.didLoadData = true
                 
-                self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].0.user.displayName)"
+                self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].user.displayName)"
                 
-                self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].0.user.name)
+                self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].user.name)
             }
             
         }

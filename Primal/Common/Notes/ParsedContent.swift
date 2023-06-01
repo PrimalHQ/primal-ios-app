@@ -26,6 +26,14 @@ final class ParsedElement: Equatable {
 }
 
 final class ParsedContent {
+    let post: PrimalFeedPost
+    let user: PrimalUser
+    
+    init(post: PrimalFeedPost, user: PrimalUser) {
+        self.post = post
+        self.user = user
+    }
+    
     // array of dictionaries where key is position and value is length
     var hashtags: [ParsedElement] = []
     var mentions: [ParsedElement] = []
@@ -39,6 +47,9 @@ final class ParsedContent {
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
+    
+    var embededPost: ParsedContent?
+    var reposted: PrimalUser?
 }
 
 extension ParsedContent {
@@ -46,7 +57,7 @@ extension ParsedContent {
     
     func buildContentString() {
         let style = NSMutableParagraphStyle()
-        style.lineSpacing = 7
+        style.lineSpacing = 4
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.foreground,

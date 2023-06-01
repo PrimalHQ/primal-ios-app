@@ -16,11 +16,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     lazy var likeManager = LikeManager(feed: feed)
     lazy var postManager = PostManager(feed: feed)
     
-    let navigationBarLengthner = SpacerView(size: 7)
+    let navigationBarLengthner = SpacerView(height: 7)
     var table = UITableView()
     lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
     
-    var posts: [(PrimalPost, ParsedContent)] = [] {
+    var posts: [ParsedContent] = [] {
         didSet {
             table.reloadData()
         }
@@ -40,8 +40,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func open(post: PrimalPost) {
-        let threadVC = ThreadViewController(feed: feed, threadId: post.post.id)
+    func open(post: PrimalFeedPost) {
+        let threadVC = ThreadViewController(feed: feed, threadId: post.id)
         show(threadVC, sender: nil)
     }
     
@@ -53,10 +53,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data.0,
-                        parsedContent: data.1,
-                        didLike: likeManager.hasLiked(data.0.post.id),
-                        didRepost: postManager.hasReposted(data.0.post.id)
+            cell.update(data,
+                        didLike: likeManager.hasLiked(data.post.id),
+                        didRepost: postManager.hasReposted(data.post.id)
             )
             cell.delegate = self
         }
@@ -68,7 +67,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func updateTheme() {
-        posts.forEach { $0.1.buildContentString() }
+        posts.forEach { $0.buildContentString() }
         
         navigationBarLengthner.backgroundColor = .background
         
@@ -102,19 +101,28 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
-        likeManager.sendLikeEvent(post: posts[indexPath.row].0.post)
+        likeManager.sendLikeEvent(post: posts[indexPath.row].post)
         
-        cell.updateButtons(posts[indexPath.row].0, didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].0.post.id))
+        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: postManager.hasReposted(posts[indexPath.row].post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        postManager.sendRepostEvent(nostrContent: posts[indexPath.row].0.post.toRepostNostrContent())
+        postManager.sendRepostEvent(nostrContent: posts[indexPath.row].post.toRepostNostrContent())
     }
     
     func postCellDidTapPost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        open(post: posts[indexPath.row].0)
+        open(post: posts[indexPath.row].post)
+    }
+    
+    func postCellDidTapEmbededPost(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let post = posts[indexPath.row].embededPost?.post
+        else { return }
+        
+        open(post: post)
     }
     
     func postCellDidTapURL(_ cell: PostCell, url: URL) {
@@ -151,6 +159,6 @@ extension FeedViewController: PostCellDelegate {
 
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        open(post: posts[indexPath.row].0)
+        open(post: posts[indexPath.row].post)
     }
 }
