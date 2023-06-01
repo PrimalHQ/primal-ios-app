@@ -83,7 +83,7 @@ extension PostRequestResult {
         let result: [String] = text.extractTagsMentionsAndURLs()
         let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
         var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) })
-        var hashtags = result.filter({ $0.isHashtag })
+        let hashtags = result.filter({ $0.isHashtag })
         
         var itemsToRemove = result.filter { $0.isValidURLAndIsImage }
         var itemsToReplace = result.filter { $0.isNip08Mention || $0.isNip27Mention }
@@ -184,21 +184,25 @@ extension PostRequestResult {
         
         let nsText = text as NSString
         
-        otherURLs.append(contentsOf: markedMentions)
-        otherURLs.append(contentsOf: hashtags)
         p.imageUrls = imageURLs
-        p.httpUrls = otherURLs.compactMap {
-            let position = nsText.range(of: $0)
-            
-            if position.location != NSNotFound {
-                return .init(position: position.location, length: position.length, text: $0)
-            }
-            return nil
-        }
+        p.hashtags = hashtags.compactMap { nsText.position(of: $0) }
+        p.mentions = markedMentions.compactMap { nsText.position(of: $0) }
+        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0) }
         p.text = text
         p.buildContentString()
         
         return p
+    }
+}
+
+extension NSString {
+    func position(of substring: String) -> ParsedElement? {
+        let position = range(of: substring)
+        
+        if position.location != NSNotFound {
+            return .init(position: position.location, length: position.length, text: substring)
+        }
+        return nil
     }
 }
 
