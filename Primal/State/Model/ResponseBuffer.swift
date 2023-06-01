@@ -12,7 +12,7 @@ class PostRequestResult {
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
-    var users: [String: NostrContent] = [:]
+    var users: [String: PrimalUser] = [:]
     var stats: [String: NostrContentStats] = [:]
     
     init(id: String) {

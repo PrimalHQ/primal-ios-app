@@ -160,7 +160,9 @@ final class FeedManager {
             
             let nostrUser = NostrContent(json: .object(contentJSON))
             if let id {
-                postCache[id]?.users[nostrUser.pubkey] = nostrUser
+                if let user = PrimalUser(nostrUser: nostrUser) {
+                    postCache[id]?.users[nostrUser.pubkey] = user
+                }
             }
         case .text:
             guard let id, let contentJSON = response.arrayValue?[2].objectValue else { return }

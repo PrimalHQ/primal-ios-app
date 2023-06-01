@@ -34,13 +34,12 @@ extension PostRequestResult {
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, PrimalUser)? {
         guard
             let nostrUser = users[content.pubkey],
-            let nostrPostStats = stats[content.id],
-            let primalUser = PrimalUser(nostrUser: nostrUser, nostrPost: content)
+            let nostrPostStats = stats[content.id]
         else { return nil }
         
         let primalFeedPost = PrimalFeedPost(nostrPost: content, nostrPostStats: nostrPostStats)
         
-        return (primalFeedPost, primalUser)
+        return (primalFeedPost, nostrUser)
     }
     
     func process() -> [ParsedContent] {
@@ -57,13 +56,12 @@ extension PostRequestResult {
                 let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedLinks: true)
                 
                 guard
-                    let nostrUser = users[repost.pubkey],
-                    let repostUser = PrimalUser(nostrUser: nostrUser, nostrPost: repost.post)
+                    let nostrUser = users[repost.pubkey]
                 else {
                     return post
                 }
                 
-                post.reposted = repostUser
+                post.reposted = nostrUser
                 return post
             }
         
@@ -84,7 +82,7 @@ extension PostRequestResult {
         var text: String = post.content
         let result: [String] = text.extractTagsMentionsAndURLs()
         let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
-        var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) || $0.isHashTagOrMention })
+        var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) })
         
         var itemsToRemove = result.filter { $0.isValidURLAndIsImage }
         
@@ -141,11 +139,35 @@ extension PostRequestResult {
             }
         }
         
-        
+        for r in result {
+            if r.isNostrMention || r.isAlternativeMention {
+                itemsToRemove.append(r)
+            }
+        }
         
         if removeExtractedLinks {
             for item in itemsToRemove {
-                text = text.replacingOccurrences(of: item, with: "")
+                if item.isNostrMention {
+                    if let index = Int(item[safe: 2]!.string) {
+                        if let tag = post.tags[safe: index] {
+                            if let pubkey = tag[safe: 1] {
+                                if let user = users[pubkey] {
+                                    text = text.replacingOccurrences(of: item, with: "@\(user.displayName)")
+                                }
+                            }
+                        }
+                    }
+                } else if item.isAlternativeMention {
+                    if let npub = item.split(separator: ":")[safe: 1]?.string {
+                        guard let decoded = try? bech32_decode(npub) else { fatalError("Incorrect npub") }
+                        let pubkey = hex_encode(decoded.data)
+                        if let user = users[pubkey] {
+                            text = text.replacingOccurrences(of: item, with: "@\(user.name)")
+                        }
+                    }
+                } else {
+                    text = text.replacingOccurrences(of: item, with: "")
+                }
             }
         }
         
