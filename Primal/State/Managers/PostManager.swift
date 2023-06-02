@@ -10,10 +10,10 @@ import Foundation
 final class PostManager {
     private init() {}
     
-    static let the: PostManager = PostManager()
+    static let instance: PostManager = PostManager()
     
-    public func hasReposted(_ eventId: String) -> Bool { FeedManager.the.userReposts.contains(eventId) }
-    public func hasReplied(_ eventId: String) -> Bool { FeedManager.the.userReplied.contains(eventId) }
+    public func hasReposted(_ eventId: String) -> Bool { FeedManager.instance.userReposts.contains(eventId) }
+    public func hasReplied(_ eventId: String) -> Bool { FeedManager.instance.userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
@@ -74,7 +74,7 @@ final class PostManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    FeedManager.the.userReposts.insert(res.event_id)
+                    FeedManager.instance.userReposts.insert(res.event_id)
                 }
                 break
             }
@@ -133,7 +133,7 @@ final class PostManager {
                     break
                 case .ok(let res):
                     if res.ok {
-                        FeedManager.the.userReplied.insert(res.event_id)
+                        FeedManager.instance.userReplied.insert(res.event_id)
                         callback()
                     }
                     break

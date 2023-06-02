@@ -233,13 +233,13 @@ private extension MenuContainerController {
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         
-        IdentityManager.the.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
+        IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let user else { return }
             self?.update(user)
         }
         .store(in: &cancellables)
         
-        IdentityManager.the.$userStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
+        IdentityManager.instance.$userStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
             guard let stats, let self else { return }
             
             self.followersLabel.text = "\(stats.followers_count)"

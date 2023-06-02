@@ -100,15 +100,15 @@ final class RootViewController: UIViewController {
         
         set(MainTabBarController())
             
-        Connection.the.$isConnected.sink { connected in
+        Connection.instance.$isConnected.sink { connected in
             if connected {
-                IdentityManager.the.requestUserInfos()
-                IdentityManager.the.requestUserProfile()
-                IdentityManager.the.requestUserSettings()
-                IdentityManager.the.requestUserContacts()
+                IdentityManager.instance.requestUserInfos()
+                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserSettings()
+                IdentityManager.instance.requestUserContacts()
             }
         }.store(in: &cancellables)
-        Connection.the.connect()
+        Connection.instance.connect()
     }
     
     func addIntro() {

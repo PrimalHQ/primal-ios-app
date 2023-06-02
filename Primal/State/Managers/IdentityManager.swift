@@ -11,7 +11,7 @@ import GenericJSON
 final class IdentityManager {
     private init() {}
     
-    static let the = IdentityManager()
+    static let instance = IdentityManager()
     
     var userHexExists: Bool {
         get {
@@ -52,12 +52,12 @@ final class IdentityManager {
     @Published var didFinishInit: Bool = false
     
     func requestUserInfos() {
-        guard let json: JSON = try? JSON(["REQ", "user_infos_\(Connection.the.identity)", ["cache": ["user_infos", ["pubkeys": ["\(IdentityManager.the.userHex)"]]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "user_infos_\(Connection.instance.identity)", ["cache": ["user_infos", ["pubkeys": ["\(IdentityManager.instance.userHex)"]]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
         
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
                 
@@ -85,12 +85,12 @@ final class IdentityManager {
         }
     }
     func requestUserProfile() {
-        guard let json: JSON = try? JSON(["REQ", "profile_info_\(Connection.the.identity)", ["cache": ["user_profile", ["pubkey": "\(IdentityManager.the.userHex)"]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "profile_info_\(Connection.instance.identity)", ["cache": ["user_profile", ["pubkey": "\(IdentityManager.instance.userHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
         
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
                 
@@ -126,7 +126,7 @@ final class IdentityManager {
         
         guard let json: JSON = try? JSON(
             ["REQ",
-             "get_app_settings_\(Connection.the.identity)",
+             "get_app_settings_\(Connection.instance.identity)",
              ["cache":
                 ["get_app_settings",
                  ["event_from_user":
@@ -142,7 +142,7 @@ final class IdentityManager {
             return
         }
 
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
                 
@@ -151,9 +151,9 @@ final class IdentityManager {
                     fallthrough
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
-                    let latestFeedExists = primalSettings?.content.feeds.contains(where: { $0.hex == IdentityManager.the.userHex }) ?? false
+                    let latestFeedExists = primalSettings?.content.feeds.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.the.userHex), at: 0)
+                        primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
                     }
                     self.userSettings = primalSettings
                 default:
@@ -164,12 +164,12 @@ final class IdentityManager {
         }
     }
     func requestUserContacts(callback: (() -> Void)? = nil) {
-        guard let json: JSON = try? JSON(["REQ", "user_contacts_\(Connection.the.identity)", ["cache": ["contact_list", ["pubkey": "\(IdentityManager.the.userHex)"]] as [Any]]] as [Any]) else {
+        guard let json: JSON = try? JSON(["REQ", "user_contacts_\(Connection.instance.identity)", ["cache": ["contact_list", ["pubkey": "\(IdentityManager.instance.userHex)"]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
         
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
                 

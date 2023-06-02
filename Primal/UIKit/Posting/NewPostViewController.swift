@@ -37,7 +37,7 @@ private extension NewPostViewController {
             showErrorMessage("Text mustn't be empty")
             return
         }
-        PostManager.the.sendPostEvent(text) { [weak self] in
+        PostManager.instance.sendPostEvent(text) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
@@ -92,7 +92,7 @@ private extension NewPostViewController {
         mainStack.pinToSuperview(edges: [.horizontal, .top])
         mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        IdentityManager.the.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
+        IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
             self.imageView.kf.setImage(with: URL(string: user.picture), options: [

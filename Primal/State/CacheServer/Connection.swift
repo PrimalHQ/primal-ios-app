@@ -29,7 +29,7 @@ final class Connection {
         socket?.disconnect()
     }
     
-    static let the = Connection()
+    static let instance = Connection()
     
     let identity: String
     

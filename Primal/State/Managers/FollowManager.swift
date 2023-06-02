@@ -11,9 +11,9 @@ import Foundation
 final class FollowManager {
     private init() {}
     
-    static let the: FollowManager = FollowManager()
+    static let instance: FollowManager = FollowManager()
     
-    func isFollowing(_ pubkey: String) -> Bool { IdentityManager.the.userContacts.contacts.contains(pubkey) }
+    func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
     
     func sendBatchFollowEvent(_ pubkeys: [String]) {
         guard let keypair = get_saved_keypair() else {
@@ -21,11 +21,11 @@ final class FollowManager {
             return
         }
         
-        var contacts = IdentityManager.the.userContacts.contacts
+        var contacts = IdentityManager.instance.userContacts.contacts
         contacts.append(contentsOf: pubkeys)
-        IdentityManager.the.userContacts.contacts = contacts
+        IdentityManager.instance.userContacts.contacts = contacts
         
-        let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
+        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
@@ -38,11 +38,11 @@ final class FollowManager {
             return
         }
         
-        var contacts = IdentityManager.the.userContacts.contacts
+        var contacts = IdentityManager.instance.userContacts.contacts
         contacts.append(pubkey)
-        IdentityManager.the.userContacts.contacts = contacts
+        IdentityManager.instance.userContacts.contacts = contacts
         
-        let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
+        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
@@ -55,14 +55,14 @@ final class FollowManager {
             return
         }
         
-        let indexOfPubkeyToRemove = IdentityManager.the.userContacts.contacts.firstIndex(of: pubkey)
+        let indexOfPubkeyToRemove = IdentityManager.instance.userContacts.contacts.firstIndex(of: pubkey)
         
         if let index = indexOfPubkeyToRemove {
-            IdentityManager.the.userContacts.contacts.remove(at: index)
+            IdentityManager.instance.userContacts.contacts.remove(at: index)
             
-            let relays = IdentityManager.the.userRelays ?? makeBootstrapRelays()
+            let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
             
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.the.userContacts.contacts, relays: relays)
+            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.instance.userContacts.contacts, relays: relays)
             
             RelaysPostBox.the.send(ev)
         }

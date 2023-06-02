@@ -83,8 +83,8 @@ final class ThreadViewController: FeedViewController {
                             }
                             return .main
                         }(),
-                        didLike: LikeManager.the.hasLiked(data.post.id),
-                        didRepost: PostManager.the.hasReposted(data.post.id)
+                        didLike: LikeManager.instance.hasLiked(data.post.id),
+                        didRepost: PostManager.instance.hasReposted(data.post.id)
             )
             cell.delegate = self
         }
@@ -115,19 +115,19 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        PostManager.the.sendReplyEvent(text, post: posts[mainPositionInThread].post) {
+        PostManager.instance.sendReplyEvent(text, post: posts[mainPositionInThread].post) {
             self.textInputView.isEditable = true
             self.textInputView.text = ""
             self.placeholderLabel.isHidden = false
             self.didPostNewComment = true
             self.didMoveToMain = false
-            FeedManager.the.requestThread(postId: self.id, subId: self.id)
+            FeedManager.instance.requestThread(postId: self.id, subId: self.id)
         }
     }
     
     func addPublishers() {
-        FeedManager.the.requestThread(postId: id, subId: id)
-        FeedManager.the.postsEmitter.sink { [weak self] result in
+        FeedManager.instance.requestThread(postId: id, subId: id)
+        FeedManager.instance.postsEmitter.sink { [weak self] result in
             guard let self, result.id == self.id else { return }
             
             let parsed = result.process()
