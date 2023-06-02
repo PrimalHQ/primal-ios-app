@@ -34,6 +34,15 @@ final class RootViewController: UIViewController {
         overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         quickReset()
         addIntro()
+        
+        Connection.instance.$isConnected.sink { connected in
+            if connected {
+                IdentityManager.instance.requestUserInfos()
+                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserSettings()
+                IdentityManager.instance.requestUserContacts()
+            }
+        }.store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -95,19 +104,12 @@ final class RootViewController: UIViewController {
             let decoded = try? bech32_decode(keypair.pubkey_bech32)
         else {
             set(OnboardingParentViewController())
+            Connection.instance.disconnect()
             return
         }
         
         set(MainTabBarController())
             
-        Connection.instance.$isConnected.sink { connected in
-            if connected {
-                IdentityManager.instance.requestUserInfos()
-                IdentityManager.instance.requestUserProfile()
-                IdentityManager.instance.requestUserSettings()
-                IdentityManager.instance.requestUserContacts()
-            }
-        }.store(in: &cancellables)
         Connection.instance.connect()
     }
     

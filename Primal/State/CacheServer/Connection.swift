@@ -47,6 +47,12 @@ final class Connection {
         connect()
     }
     
+    func disconnect() {
+        socket?.delegate = nil
+        socket?.disconnect()
+        isConnected =  false
+    }
+    
     func send(json: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
         guard let subId = json.arrayValue?[1].stringValue else {
             print("subId not found in \(json)")
