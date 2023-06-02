@@ -182,6 +182,7 @@ private extension PostCell {
         }
         
         linkPresentation.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        linkPresentation.layer.cornerRadius = 8
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         

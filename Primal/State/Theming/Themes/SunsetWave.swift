@@ -30,6 +30,7 @@ final class SunsetWave: AppTheme {
     var menuButtonImage: UIImage? { UIImage(named: "themeButton") }
     
     var statusBarStyle: UIStatusBarStyle { .lightContent }
+    var userInterfaceStyle: UIUserInterfaceStyle { .dark }
     
     var mockupImage: UIImage? { UIImage(named: "readMockup")}
 }

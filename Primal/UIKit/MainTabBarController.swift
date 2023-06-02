@@ -109,7 +109,7 @@ private extension MainTabBarController {
         closeMenuButton.isHidden = true
         
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
-            Connection.the.reconnect()
+            Connection.instance.reconnect()
         }
         
         for (index, button) in buttons.enumerated() {

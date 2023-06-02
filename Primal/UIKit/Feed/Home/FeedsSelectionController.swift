@@ -24,7 +24,7 @@ private extension FeedsSelectionController {
         dismiss(animated: true)
         
         DispatchQueue.global(qos: .background).async {
-            FeedManager.the.setCurrentFeed(title)
+            FeedManager.instance.setCurrentFeed(title)
         }
     }
     
@@ -33,7 +33,7 @@ private extension FeedsSelectionController {
         if let pc = presentationController as? UISheetPresentationController {
             if #available(iOS 16.0, *) {
                 pc.detents = [.custom(resolver: { context in
-                    guard let count = IdentityManager.the.userSettings?.content.feeds.count else { return 700 }
+                    guard let count = IdentityManager.instance.userSettings?.content.feeds.count else { return 700 }
                     
                     return 100 + CGFloat(count) * 66
                 })]
@@ -47,7 +47,7 @@ private extension FeedsSelectionController {
         let titleStack = UIStackView(arrangedSubviews: [UIImageView(image: UIImage(named: "ostrich")), title])
         
         var buttons: [UIButton] = []
-        let settings = IdentityManager.the.userSettings?.content.feeds ?? []
+        let settings = IdentityManager.instance.userSettings?.content.feeds ?? []
         for feed in settings {
             let button = UIButton()
             button.setTitle(feed.name, for: .normal)

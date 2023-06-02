@@ -31,8 +31,18 @@ final class RootViewController: UIViewController {
         if !Theme.hasDefaultTheme {
             Theme.current = UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance
         }
+        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         quickReset()
         addIntro()
+        
+        Connection.instance.$isConnected.sink { connected in
+            if connected {
+                IdentityManager.instance.requestUserInfos()
+                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserSettings()
+                IdentityManager.instance.requestUserContacts()
+            }
+        }.store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -87,19 +97,20 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {
-        Connection.the.$isConnected.sink { connected in
-            if connected {
-                IdentityManager.the.requestUserInfos()
-                IdentityManager.the.requestUserProfile()
-                IdentityManager.the.requestUserSettings()
-                IdentityManager.the.requestUserContacts()
-                
-                DispatchQueue.main.async {
-                    self.set(MainTabBarController())
-                }
-            }
-        }.store(in: &cancellables)
-        Connection.the.connect()
+        let result = get_saved_keypair()
+        
+        guard
+            let keypair = result,
+            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+        else {
+            set(OnboardingParentViewController())
+            Connection.instance.disconnect()
+            return
+        }
+        
+        set(MainTabBarController())
+            
+        Connection.instance.connect()
     }
     
     func addIntro() {

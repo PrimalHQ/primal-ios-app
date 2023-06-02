@@ -40,11 +40,37 @@ extension String : Identifiable {
         hasSuffix(".mov") || hasSuffix(".mp4")
     }
     
-    var isHashTagOrMention: Bool {
-        if self.hasPrefix("#[") {
-            return false
+    var isHashtag: Bool {
+        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+        
+        guard let hashtagRegex = try? Regex(hashtagPattern) else { fatalError("Unable to create hashtag pattern regex") }
+        if let matches = self.wholeMatch(of: hashtagRegex) {
+            return !matches.isEmpty
         }
-        return self.hasPrefix("#") || self.hasPrefix("@")
+        
+        return false
+    }
+    
+    var isNip08Mention: Bool {
+        let mentionPattern = "\\#\\[([0-9]*)\\]"
+        
+        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        if let matches = self.wholeMatch(of: mentionRegex) {
+            return !matches.isEmpty
+        }
+        
+        return false
+    }
+    
+    var isNip27Mention: Bool {
+        let mentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        
+        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        if let matches = self.wholeMatch(of: mentionRegex) {
+            return !matches.isEmpty
+        }
+        
+        return false
     }
     
     func extractTextAndUrls() -> (String, [URL]) {
@@ -65,45 +91,50 @@ extension String : Identifiable {
     }
 
     func extractTagsMentionsAndURLs() -> [String] {
-        let hashtagPattern = "#([a-zA-Z0-9]+)"
-        let mentionPattern = "#\\[([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])\\]"
-        
-        let nSelf = self as NSString
-        
+        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+        let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
+        let nip27MentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+
         guard
             let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
-            let mentionRegex = try? NSRegularExpression(pattern: mentionPattern, options: []),
+            let mentionRegex = try? NSRegularExpression(pattern: nip08MentionPattern, options: []),
+            let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: []),
             let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         else {
             return []
         }
         
-        var ranges: [Range<String.Index>] = []
+        var ranges: Set<Range<String.Index>> = []
         hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
             if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                ranges.append(range)
+                ranges.insert(range)
             }
         }
         mentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
             if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                ranges.append(range)
+                ranges.insert(range)
+            }
+        }
+        profileMentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
+            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
+                ranges.insert(range)
             }
         }
         urlDetector.enumerateMatches(in: self, range: NSRange(self.startIndex..., in: self)) { match, _, _ in
             if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                ranges.append(range)
+                ranges.insert(range)
             }
         }
-        var result: [String] = []
+        var result: Set<String> = []
         var currentIndex = self.startIndex
         for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
             if currentIndex < range.lowerBound {
-                result.append(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+                result.insert(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
             }
-            result.append(String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+            result.insert(String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
             currentIndex = range.upperBound
         }
-        result.append(String(self[currentIndex...]))
-        return result
+        result.insert(String(self[currentIndex...]))
+        return Array(result)
     }
 }

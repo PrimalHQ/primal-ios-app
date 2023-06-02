@@ -29,7 +29,7 @@ final class Connection {
         socket?.disconnect()
     }
     
-    static let the = Connection()
+    static let instance = Connection()
     
     let identity: String
     
@@ -45,6 +45,12 @@ final class Connection {
         socket?.delegate = nil
         socket?.disconnect()
         connect()
+    }
+    
+    func disconnect() {
+        socket?.delegate = nil
+        socket?.disconnect()
+        isConnected =  false
     }
     
     func send(json: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {

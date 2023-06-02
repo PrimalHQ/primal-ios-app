@@ -90,19 +90,19 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        Connection.the.$isConnected.sink { connected in
+        Connection.instance.$isConnected.sink { connected in
             if connected {
-                IdentityManager.the.requestUserInfos()
-                IdentityManager.the.requestUserProfile()
-                IdentityManager.the.requestUserSettings()
-                IdentityManager.the.requestUserContacts()
+                IdentityManager.instance.requestUserInfos()
+                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserSettings()
+                IdentityManager.instance.requestUserContacts()
             }
         }.store(in: &cancellables)
-        Connection.the.connect()
+        Connection.instance.connect()
     }
     
     @objc func continuePressed() {
-        FollowManager.the.sendBatchFollowEvent(Array(selectedToFollow))
+        FollowManager.instance.sendBatchFollowEvent(Array(selectedToFollow))
         RootViewController.instance.reset()
     }
 }

@@ -20,7 +20,7 @@ final class FeedManager {
         initUserConnectionSubscription()
     }
     
-    static let the: FeedManager = FeedManager()
+    static let instance: FeedManager = FeedManager()
     
     let postsEmitter: PassthroughSubject<PostRequestResult, Never> = .init()
     
@@ -53,13 +53,13 @@ final class FeedManager {
         self.postCache[subId] = .init(id: subId)
         
         guard let json: JSON = try? JSON(
-            ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": IdentityManager.the.userHex]
+            ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": IdentityManager.instance.userHex]
                                            as [String : Any]] as [Any]]] as [Any]) else {
             print("Error encoding req")
             return
         }
         
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 self.handlePostEvent(response)
             }
@@ -84,7 +84,7 @@ final class FeedManager {
         .store(in: &cancellables)
     }
     private func initUserConnectionSubscription() {
-        Publishers.CombineLatest3(IdentityManager.the.$didFinishInit, Connection.the.$isConnected.removeDuplicates(), IdentityManager.the.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
+        Publishers.CombineLatest3(IdentityManager.instance.$didFinishInit, Connection.instance.$isConnected.removeDuplicates(), IdentityManager.instance.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
             guard didInit, isConnected, self?.parsedPosts.isEmpty == true, let settings = currentUserSettings else { return }
             
             guard let feedName = settings.content.feeds.first?.name else { fatalError("no feed detected") }
@@ -104,7 +104,7 @@ final class FeedManager {
             return ""
         }
         self.postCache[id] = .init(id: id)
-        Connection.the.send(json: json) { res in
+        Connection.instance.send(json: json) { res in
             for response in res {
                 self.handlePostEvent(response)
             }
@@ -115,7 +115,7 @@ final class FeedManager {
     }
     
     private func generateRequestByFeedType(feedName: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
-        if let feed = IdentityManager.the.userSettings?.content.feeds.first(where: { $0.name == feedName }) {
+        if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == feedName }) {
             return generateFeedPageRequest(feed.hex, until: until, limit: limit)
         } else {
             fatalError("feed should exist at all times")
@@ -123,7 +123,7 @@ final class FeedManager {
     }
     private func generateFeedPageRequest(_ criteria: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
         let key = until == 0 ? "since" : "until"
-        let subId = "feed_\(criteria)_\(Connection.the.identity)"
+        let subId = "feed_\(criteria)_\(Connection.instance.identity)"
         
         let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
         
@@ -136,7 +136,7 @@ final class FeedManager {
                         "feed_directive",
                         [
                             "directive": criteria,
-                            "user_pubkey": IdentityManager.the.userHex,
+                            "user_pubkey": IdentityManager.instance.userHex,
                             "limit": limit,
                             "\(key)": u
                         ] as [String : Any]
@@ -160,7 +160,9 @@ final class FeedManager {
             
             let nostrUser = NostrContent(json: .object(contentJSON))
             if let id {
-                postCache[id]?.users[nostrUser.pubkey] = nostrUser
+                if let user = PrimalUser(nostrUser: nostrUser) {
+                    postCache[id]?.users[nostrUser.pubkey] = user
+                }
             }
         case .text:
             guard let id, let contentJSON = response.arrayValue?[2].objectValue else { return }
