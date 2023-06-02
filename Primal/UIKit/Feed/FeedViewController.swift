@@ -60,7 +60,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func updateTheme() {
-        posts.forEach { $0.buildContentString() }
+        posts.forEach {
+            $0.buildContentString()
+            $0.embededPost?.buildContentString()
+        }
         
         navigationBarLengthner.backgroundColor = .background
         

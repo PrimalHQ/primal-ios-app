@@ -8,28 +8,6 @@
 import Foundation
 import LinkPresentation
 
-extension LPLinkMetadata {
-    static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
-        let metadata = LPLinkMetadata()
-        metadata.title = "Loading preview..."
-        metadata.url = url
-        if let url = Bundle.main.url(forResource: "MainLogo", withExtension: "png") {
-            metadata.imageProvider = .init(contentsOf: url)
-        }
-        return metadata
-    }
-    
-    static func failedToLoad(_ url: URL) -> LPLinkMetadata {   
-        let metadata = LPLinkMetadata()
-        metadata.url = url
-        metadata.title = "Failed to load preview..."
-        if let url = Bundle.main.url(forResource: "MainLogo", withExtension: "png") {
-            metadata.imageProvider = .init(contentsOf: url)
-        }
-        return metadata
-    }
-}
-
 extension PostRequestResult {
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, PrimalUser)? {
         guard
@@ -81,7 +59,8 @@ extension PostRequestResult {
         
         var text: String = post.content
         let result: [String] = text.extractTagsMentionsAndURLs()
-        let imageURLs: [URL] = result.filter({ $0.isValidURLAndIsImage }).compactMap { URL(string: $0) }
+        let imageURLStrings = result.filter({ $0.isValidURLAndIsImage })
+        let imageURLs: [URL] = imageURLStrings.compactMap { URL(string: $0) }
         var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) })
         let hashtags = result.filter({ $0.isHashtag })
         
@@ -107,24 +86,19 @@ extension PostRequestResult {
                         
                         if let imageProvider = metadata.imageProvider {
                             imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                guard
-                                    image == nil,
-                                    let url = Bundle.main.url(forResource: "MainLogo", withExtension: "png")
-                                else { return }
+                                guard image == nil else { return }
 
-                                metadata.imageProvider = .init(contentsOf: url)
                                 DispatchQueue.main.async {
+                                    metadata.imageProvider = .webImageProvider
                                     p.extractedMetadata = metadata
-
                                     _ = provider
                                 }
                             }
-                        } else if metadata.videoProvider == nil, let url = Bundle.main.url(forResource: "MainLogo", withExtension: "png") {
-                            metadata.imageProvider = .init(contentsOf: url)
+                        } else if metadata.videoProvider == nil {
+                            metadata.imageProvider = .webImageProvider
                         }
                         
                         p.extractedMetadata = metadata
-                        
                         _ = provider
                     }
                 }
@@ -167,15 +141,16 @@ extension PostRequestResult {
                         }
                     }
                 }
-            } else if item.isNip27Mention {
-                if let npub = item.split(separator: ":")[safe: 1]?.string {
-                    guard let decoded = try? bech32_decode(npub) else { fatalError("Incorrect npub") }
-                    let pubkey = hex_encode(decoded.data)
-                    if let user = users[pubkey] {
-                        let mention = "@\(user.name)"
-                        text = text.replacingOccurrences(of: item, with: mention)
-                        markedMentions.append(mention)
-                    }
+            } else if
+                item.isNip27Mention,
+                let npub = item.split(separator: ":")[safe: 1]?.string,
+                let decoded = try? bech32_decode(npub)
+            {
+                let pubkey = hex_encode(decoded.data)
+                if let user = users[pubkey] {
+                    let mention = "@\(user.name)"
+                    text = text.replacingOccurrences(of: item, with: mention)
+                    markedMentions.append(mention)
                 }
             }
         }
@@ -183,6 +158,10 @@ extension PostRequestResult {
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let nsText = text as NSString
+        
+        if !removeExtractedLinks {
+            otherURLs += itemsToRemove
+        }
         
         p.imageUrls = imageURLs
         p.hashtags = hashtags.compactMap { nsText.position(of: $0) }
@@ -201,6 +180,33 @@ extension NSString {
         
         if position.location != NSNotFound {
             return .init(position: position.location, length: position.length, text: substring)
+        }
+        return nil
+    }
+}
+
+extension LPLinkMetadata {
+    static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
+        let metadata = LPLinkMetadata()
+        metadata.title = "Loading preview..."
+        metadata.url = url
+        metadata.imageProvider = .webImageProvider
+        return metadata
+    }
+    
+    static func failedToLoad(_ url: URL) -> LPLinkMetadata {
+        let metadata = LPLinkMetadata()
+        metadata.url = url
+        metadata.title = "Failed to load preview..."
+        metadata.imageProvider = .webImageProvider
+        return metadata
+    }
+}
+
+extension NSItemProvider {
+    static var webImageProvider: NSItemProvider? {
+        if let url = Bundle.main.url(forResource: "Web", withExtension: "png") {
+            return .init(contentsOf: url)
         }
         return nil
     }

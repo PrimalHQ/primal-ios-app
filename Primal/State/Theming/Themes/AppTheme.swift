@@ -32,6 +32,7 @@ protocol AppTheme {
     var menuButtonImage: UIImage? { get }
     
     var statusBarStyle: UIStatusBarStyle { get }
+    var userInterfaceStyle: UIUserInterfaceStyle { get }
     
     var mockupImage: UIImage? { get }
 }

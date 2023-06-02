@@ -31,6 +31,7 @@ final class SunriseWave: AppTheme {
     var menuButtonImage: UIImage? { UIImage(named: "themeButtonLight") }
     
     var statusBarStyle: UIStatusBarStyle { .darkContent }
+    var userInterfaceStyle: UIUserInterfaceStyle { .light }
     
     var mockupImage: UIImage? { UIImage(named: "readMockupLight") }
 }

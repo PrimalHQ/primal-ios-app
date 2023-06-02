@@ -31,6 +31,7 @@ final class RootViewController: UIViewController {
         if !Theme.hasDefaultTheme {
             Theme.current = UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance
         }
+        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         quickReset()
         addIntro()
     }
@@ -87,16 +88,24 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {
+        let result = get_saved_keypair()
+        
+        guard
+            let keypair = result,
+            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+        else {
+            set(OnboardingParentViewController())
+            return
+        }
+        
+        set(MainTabBarController())
+            
         Connection.the.$isConnected.sink { connected in
             if connected {
                 IdentityManager.the.requestUserInfos()
                 IdentityManager.the.requestUserProfile()
                 IdentityManager.the.requestUserSettings()
                 IdentityManager.the.requestUserContacts()
-                
-                DispatchQueue.main.async {
-                    self.set(MainTabBarController())
-                }
             }
         }.store(in: &cancellables)
         Connection.the.connect()

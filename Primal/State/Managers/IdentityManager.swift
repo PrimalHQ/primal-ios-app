@@ -35,7 +35,7 @@ final class IdentityManager {
                 let keypair = result,
                 let decoded = try? bech32_decode(keypair.pubkey_bech32)
             else {
-                fatalError("IdentityManager: No saved user keypair found")
+                return ""
             }
             
             return hex_encode(decoded.data)
