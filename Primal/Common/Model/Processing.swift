@@ -59,14 +59,27 @@ extension PostRequestResult {
         
         var text: String = post.content
         let result: [String] = text.extractTagsMentionsAndURLs()
-        let imageURLStrings = result.filter({ $0.isValidURLAndIsImage })
-        let imageURLs: [URL] = imageURLStrings.compactMap { URL(string: $0) }
-        var otherURLs = result.filter({ ($0.isValidURL && !$0.isImageURL) })
-        let hashtags = result.filter({ $0.isHashtag })
-        
-        var itemsToRemove = result.filter { $0.isValidURLAndIsImage }
-        var itemsToReplace = result.filter { $0.isNip08Mention || $0.isNip27Mention }
+        var imageURLs: [URL] = []
+        var otherURLs: [String] = []
+        var hashtags: [String] = []
+        var itemsToRemove: [String] = []
+        var itemsToReplace: [String] = []
         var markedMentions: [String] = []
+        
+        for str in result {
+            if str.isValidURLAndIsImage {
+                if let url = URL(string: str) {
+                    imageURLs.append(url)
+                    itemsToRemove.append(str)
+                }
+            } else if str.isValidURL && !str.isImageURL {
+                otherURLs.append(str)
+            } else if str.isNip08Mention || str.isNip27Mention {
+                itemsToReplace.append(str)
+            } else if str.isHashtag {
+                hashtags.append(str)
+            }
+        }
         
         if let index = otherURLs.firstIndex(where: { $0.isValidURL }) {
             let firstURL = otherURLs.remove(at: index)
@@ -113,12 +126,6 @@ extension PostRequestResult {
                 itemsToRemove.append(searchString)
                 p.embededPost = mention
                 break
-            }
-        }
-        
-        for r in result {
-            if r.isNip08Mention || r.isNip27Mention {
-                itemsToReplace.append(r)
             }
         }
         
