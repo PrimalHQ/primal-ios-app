@@ -49,6 +49,12 @@ final class FollowManager {
         RelaysPostBox.the.send(ev)
     }
     
+    func sendLatestFollowEvent(_ pubkey: String) {
+        IdentityManager.instance.requestUserContacts() {
+            self.sendFollowEvent(pubkey)
+        }
+    }
+    
     func sendUnfollowEvent(_ pubkey: String) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
