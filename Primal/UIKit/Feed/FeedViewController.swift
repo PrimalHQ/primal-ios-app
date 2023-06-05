@@ -18,7 +18,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     
     var posts: [ParsedContent] = [] {
         didSet {
-            table.reloadData()
+            guard oldValue.count != 0, oldValue.count < posts.count else {
+                table.reloadData()
+                return
+            }
+            let indexes = (oldValue.count..<posts.count).map { IndexPath(row: $0, section: 0) }
+            table.insertRows(at: indexes, with: .none)
         }
     }
         
@@ -121,7 +126,18 @@ extension FeedViewController: PostCellDelegate {
         open(post: post)
     }
     
-    func postCellDidTapURL(_ cell: PostCell, url: URL) {
+    func postCellDidTapURL(_ cell: PostCell, url: URL?) {
+        guard let url else {
+            guard
+                let indexPath = table.indexPath(for: cell),
+                let url = posts[indexPath.row].firstExtractedURL
+            else { return }
+            
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
+            return
+        }
+        
         if url.absoluteString.isVideoURL {
             let player = AVPlayerViewController()
             player.player = AVPlayer(url: url)

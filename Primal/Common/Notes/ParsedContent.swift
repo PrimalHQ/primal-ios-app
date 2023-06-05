@@ -44,6 +44,7 @@ final class ParsedContent {
     var firstExtractedURL: URL?
     
     @Published var extractedMetadata: LPLinkMetadata?
+    @Published var parsedMetadata: LinkMetadata?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")

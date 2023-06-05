@@ -22,6 +22,8 @@ extension String : Identifiable {
         }
     }
     
+    var isNotEmail: Bool { !contains("@") }
+    
     var transformURLStringToMarkdown: String {
         let url = URL(string: self)!
     

@@ -36,7 +36,7 @@ final class Connection {
     @Published var isConnected: Bool = false
     
     func connect() {
-        socket = NWWebSocket(url: socketURL, connectionQueue: DispatchQueue.global(qos: .userInitiated))
+        socket = NWWebSocket(url: socketURL, connectionQueue: DispatchQueue.global(qos: .background))
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
@@ -93,7 +93,8 @@ final class Connection {
             if let handler = subHandlers[subId], let b = responseBuffer[subId] {
                 handler(b)
             }
-            responseBuffer[subId] = []
+            responseBuffer[subId] = nil
+            subHandlers[subId] = nil
         }
     }
 }

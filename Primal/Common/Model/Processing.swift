@@ -81,29 +81,35 @@ extension PostRequestResult {
             }
         }
         
-        if let index = otherURLs.firstIndex(where: { $0.isValidURL }) {
+        if let index = otherURLs.firstIndex(where: { $0.isValidURL && $0.isNotEmail }) {
             let firstURL = otherURLs.remove(at: index)
             itemsToRemove.append(firstURL)
             
-            if let url = URL(string: firstURL) {
+            if let url = URL(string: firstURL.hasPrefix("http") ? firstURL : "https://\(firstURL)") {
                 p.firstExtractedURL = url
                 p.extractedMetadata = .loadingMetadata(url)
+                p.parsedMetadata = .loadingMetadata(url)
                 
                 let provider = LPMetadataProvider()
                 provider.startFetchingMetadata(for: url) { metadata, error in
                     DispatchQueue.main.async {
                         guard let metadata else {
                             p.extractedMetadata = .failedToLoad(url)
+                            p.parsedMetadata = .failedToLoad(url)
                             return
                         }
                         
                         if let imageProvider = metadata.imageProvider {
                             imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                guard image == nil else { return }
-
                                 DispatchQueue.main.async {
-                                    metadata.imageProvider = .webImageProvider
-                                    p.extractedMetadata = metadata
+                                    if image == nil {
+                                        metadata.imageProvider = .webImageProvider
+                                        p.extractedMetadata = metadata
+                                        p.parsedMetadata = .init(url: url, title: metadata.title)
+                                    } else {
+                                        p.parsedMetadata = .init(url: url, image: image as? UIImage, title: metadata.title)
+                                    }
+
                                     _ = provider
                                 }
                             }
@@ -112,6 +118,7 @@ extension PostRequestResult {
                         }
                         
                         p.extractedMetadata = metadata
+                        p.parsedMetadata = .init(url: url, title: metadata.title)
                         _ = provider
                     }
                 }

@@ -47,7 +47,12 @@ final class FeedManager {
     func requestNewPage() {
         guard !isRequestingNewPage else { return }
         isRequestingNewPage = true
-        requestID = requestNewPage(feedName: currentFeed, until: parsedPosts.last?.post.created_at ?? 0)
+        DispatchQueue.global(qos: .background).async {
+            let id = self.sendNewPageRequest()
+            DispatchQueue.main.async {
+                self.requestID = id
+            }
+        }
     }
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         self.postCache[subId] = .init(id: subId)
@@ -95,9 +100,9 @@ final class FeedManager {
         .store(in: &cancellables)
     }
     
-    private func requestNewPage(feedName: String, until: Int32 = 0, limit: Int32 = 20) -> String {
+    private func sendNewPageRequest(until: Int32 = 0, limit: Int32 = 20) -> String {
         guard
-            let json = generateRequestByFeedType(feedName: feedName, until: until, limit: limit),
+            let json = generateRequestByFeedType(feedName: currentFeed, until: until, limit: limit),
             let id = json.arrayValue?.dropFirst().first?.stringValue
         else {
             print("Error encoding req json")
@@ -121,9 +126,11 @@ final class FeedManager {
             fatalError("feed should exist at all times")
         }
     }
-    private func generateFeedPageRequest(_ criteria: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
+    private func generateFeedPageRequest(_ criteria: String, until: Int32? = nil, limit: Int32 = 20) -> JSON? {
         let key = until == 0 ? "since" : "until"
         let subId = "feed_\(criteria)_\(Connection.instance.identity)"
+        
+        let until = until ?? parsedPosts.last?.post.created_at ?? 0
         
         let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
         
