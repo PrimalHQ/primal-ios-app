@@ -124,6 +124,14 @@
 		9E8834A62A274A88005DB548 /* Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A52A274A88005DB548 /* Processing.swift */; };
 		9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */; };
 		9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */; };
+		9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B02A320E90005DB548 /* ProfileViewController.swift */; };
+		9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B32A3239E0005DB548 /* ProfileNavigationView.swift */; };
+		9E8834B62A323C3B005DB548 /* NPubDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B52A323C3B005DB548 /* NPubDisplayView.swift */; };
+		9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */; };
+		9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */; };
+		9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */; };
+		9E8834BE2A328767005DB548 /* GradientBorderIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */; };
+		9E8834C02A328966005DB548 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BF2A328966005DB548 /* GradientButton.swift */; };
 		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
@@ -346,6 +354,14 @@
 		9E8834A52A274A88005DB548 /* Processing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Processing.swift; sourceTree = "<group>"; };
 		9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepostedIndicatorView.swift; sourceTree = "<group>"; };
 		9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreview.swift; sourceTree = "<group>"; };
+		9E8834B02A320E90005DB548 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		9E8834B32A3239E0005DB548 /* ProfileNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNavigationView.swift; sourceTree = "<group>"; };
+		9E8834B52A323C3B005DB548 /* NPubDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPubDisplayView.swift; sourceTree = "<group>"; };
+		9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLinkDisplayView.swift; sourceTree = "<group>"; };
+		9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStatDisplayView.swift; sourceTree = "<group>"; };
+		9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoCell.swift; sourceTree = "<group>"; };
+		9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderIconButton.swift; sourceTree = "<group>"; };
+		9E8834BF2A328966005DB548 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
 		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
@@ -872,6 +888,29 @@
 			path = RootViewController;
 			sourceTree = "<group>";
 		};
+		9E8834AF2A320E6E005DB548 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				9E8834B22A3239CF005DB548 /* Views */,
+				9E8834B02A320E90005DB548 /* ProfileViewController.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		9E8834B22A3239CF005DB548 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9E8834B32A3239E0005DB548 /* ProfileNavigationView.swift */,
+				9E8834B52A323C3B005DB548 /* NPubDisplayView.swift */,
+				9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */,
+				9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */,
+				9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */,
+				9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */,
+				9E8834BF2A328966005DB548 /* GradientButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		9E9C42122A13FC8B00F9D7ED /* Read */ = {
 			isa = PBXGroup;
 			children = (
@@ -918,8 +957,8 @@
 				9E9C42152A1401F500F9D7ED /* Explore */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
-				9E55F2882A1FA6CD00D5D523 /* Settings */,
 				9E9C42122A13FC8B00F9D7ED /* Read */,
+				9E55F2882A1FA6CD00D5D523 /* Settings */,
 				9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */,
 				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
 			);
@@ -979,6 +1018,7 @@
 		9ECFD31E2A0138AB000D1B2F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				9E8834AF2A320E6E005DB548 /* Profile */,
 				9E55CC692A03C6B3002D3DC4 /* Home */,
 				9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */,
 				9ECFD3212A013935000D1B2F /* FeedViewController.swift */,
@@ -1185,6 +1225,7 @@
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
+				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
@@ -1216,13 +1257,16 @@
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
+				9E8834C02A328966005DB548 /* GradientButton.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
 				9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */,
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
+				9E8834B62A323C3B005DB548 /* NPubDisplayView.swift in Sources */,
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
+				9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */,
 				93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */,
 				930497B429FADAE9003938F2 /* NostrLink.swift in Sources */,
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
@@ -1232,9 +1276,11 @@
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
 				932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */,
 				939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */,
+				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
+				9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
@@ -1245,6 +1291,7 @@
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
+				9E8834BE2A328767005DB548 /* GradientBorderIconButton.swift in Sources */,
 				939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */,
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
@@ -1294,6 +1341,7 @@
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
+				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
@@ -1491,7 +1539,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.3;
+				MARKETING_VERSION = 0.14.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1532,7 +1580,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.3;
+				MARKETING_VERSION = 0.14.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

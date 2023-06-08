@@ -13,6 +13,7 @@ import LinkPresentation
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
     func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL])
+    func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
@@ -191,6 +192,7 @@ private extension PostCell {
         bottomButtonStack.distribution = .equalSpacing
         
         profileImageView.layer.masksToBounds = true
+        profileImageView.isUserInteractionEnabled = true
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
@@ -225,8 +227,10 @@ private extension PostCell {
         
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
         postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
+        profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
+        
         replyButton.isUserInteractionEnabled = false
     }
     
@@ -236,6 +240,10 @@ private extension PostCell {
     
     @objc func embedTapped() {
         delegate?.postCellDidTapEmbededPost(self)
+    }
+    
+    @objc func profileTapped() {
+        delegate?.postCellDidTapProfile(self)
     }
     
     @objc func repostTapped() {

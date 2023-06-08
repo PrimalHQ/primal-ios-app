@@ -15,21 +15,24 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let navigationBarLengthner = SpacerView(height: 7)
     var table = UITableView()
     lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
+    let feed: FeedManager
     
+    var postSection: Int { 0 }
     var posts: [ParsedContent] = [] {
         didSet {
             guard oldValue.count != 0, oldValue.count < posts.count else {
                 table.reloadData()
                 return
             }
-            let indexes = (oldValue.count..<posts.count).map { IndexPath(row: $0, section: 0) }
+            let indexes = (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
             table.insertRows(at: indexes, with: .none)
         }
     }
         
     var cancellables: Set<AnyCancellable> = []
     
-    init() {
+    init(feed: FeedManager) {
+        self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -59,7 +62,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
         
         if indexPath.row > posts.count - 10  {
-            FeedManager.instance.requestNewPage()
+            feed.requestNewPage()
         }
         return cell
     }
@@ -99,6 +102,12 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapProfile(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        let profile = ProfileViewController(profile: posts[index].user)
+        show(profile, sender: nil)
+    }
+    
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         

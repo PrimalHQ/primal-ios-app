@@ -12,7 +12,7 @@ import Network
 import GenericJSON
 
 final class Connection {
-    static let dispatchQueue = DispatchQueue.global(qos: .background)
+    static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
     private let socketURL = URL(string: "wss://cache3.primal.net/cache17")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
