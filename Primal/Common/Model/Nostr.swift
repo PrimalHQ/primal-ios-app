@@ -75,3 +75,39 @@ struct NostrUserProfileInfo: Codable {
         self.time_joined = Int32(json.arrayValue?[2].objectValue?["time_joined"]?.doubleValue ?? -1)
     }
 }
+
+enum MediaSize: String {
+    case small = "s"
+    case large = "l"
+    case medium = "m"
+    case original = "o"
+}
+
+struct MediaMetadata: Codable {
+    let event_id: String
+    let resources: [Resource]
+    
+    struct Resource: Codable {
+        let url: String
+        let variants: [Variant]
+        
+        struct Variant: Codable {
+            var a: Int
+            var h: Int
+            var w: Int
+            var s: String
+            var media_url: String
+            
+            var height: Int { h }
+            var width: Int { w }
+            var url: URL? { URL(string: media_url) }
+            var animated: Bool { a != 1 }
+            var size: MediaSize { .init(rawValue: s) ?? .medium }
+        }
+        
+        func url(for size: MediaSize) -> URL? {
+            (variants.first(where: { $0.size == size }) ?? variants.first(where: { $0.size == .original }) ?? variants.first)?.url
+                ?? URL(string: url)
+        }
+    }
+}

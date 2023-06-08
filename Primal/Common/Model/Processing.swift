@@ -23,7 +23,7 @@ extension PostRequestResult {
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedLinks: false) }
+            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
         
         let reposts: [ParsedContent] = reposts
             .compactMap {
@@ -31,7 +31,7 @@ extension PostRequestResult {
                 return (post, user, $0)
             }
             .compactMap { (primalPost: PrimalFeedPost, user: PrimalUser, repost: NostrRepost) in
-                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedLinks: true)
+                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
                 
                 guard
                     let nostrUser = users[repost.pubkey]
@@ -44,7 +44,7 @@ extension PostRequestResult {
             }
         
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
-            .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedLinks: true)}
+            .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true)}
         
         return (reposts + normalPosts).sorted(by: { $0.post.created_at > $1.post.created_at })
     }
@@ -53,13 +53,13 @@ extension PostRequestResult {
         post: PrimalFeedPost,
         user: PrimalUser,
         mentions: [ParsedContent],
-        removeExtractedLinks: Bool
+        removeExtractedPost: Bool
     ) -> ParsedContent {
         let p = ParsedContent(post: post, user: user)
         
         var text: String = post.content
         let result: [String] = text.extractTagsMentionsAndURLs()
-        var imageURLs: [URL] = []
+        var imageURLs: [String] = []
         var otherURLs: [String] = []
         var hashtags: [String] = []
         var itemsToRemove: [String] = []
@@ -68,10 +68,8 @@ extension PostRequestResult {
         
         for str in result {
             if str.isValidURLAndIsImage {
-                if let url = URL(string: str) {
-                    imageURLs.append(url)
-                    itemsToRemove.append(str)
-                }
+                imageURLs.append(str)
+                itemsToRemove.append(str)
             } else if str.isValidURL && !str.isImageURL {
                 otherURLs.append(str)
             } else if str.isNip08Mention || str.isNip27Mention {
@@ -81,38 +79,48 @@ extension PostRequestResult {
             }
         }
         
-        if let index = otherURLs.firstIndex(where: { $0.isValidURL }) {
+        if let index = otherURLs.firstIndex(where: { $0.isValidURL && $0.isNotEmail }) {
             let firstURL = otherURLs.remove(at: index)
             itemsToRemove.append(firstURL)
             
-            if let url = URL(string: firstURL) {
+            if let url = URL(string: firstURL.hasPrefix("http") ? firstURL : "https://\(firstURL)") {
                 p.firstExtractedURL = url
-                p.extractedMetadata = .loadingMetadata(url)
+                p.parsedMetadata = .loadingMetadata(url)
                 
                 let provider = LPMetadataProvider()
                 provider.startFetchingMetadata(for: url) { metadata, error in
                     DispatchQueue.main.async {
+                        _ = provider
+                        
                         guard let metadata else {
-                            p.extractedMetadata = .failedToLoad(url)
+                            p.parsedMetadata = .failedToLoad(url)
                             return
                         }
                         
+                        var parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
+                        p.parsedMetadata = parsed
+                        
                         if let imageProvider = metadata.imageProvider {
                             imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                guard image == nil else { return }
-
                                 DispatchQueue.main.async {
-                                    metadata.imageProvider = .webImageProvider
-                                    p.extractedMetadata = metadata
-                                    _ = provider
+                                    guard let image = image as? UIImage else { return }
+                                        
+                                    parsed.image = image
+                                    p.parsedMetadata = parsed
                                 }
                             }
-                        } else if metadata.videoProvider == nil {
-                            metadata.imageProvider = .webImageProvider
                         }
                         
-                        p.extractedMetadata = metadata
-                        _ = provider
+                        if let iconProvider = metadata.iconProvider {
+                            iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
+                                DispatchQueue.main.async {
+                                    guard let icon = icon as? UIImage else { return }
+                                        
+                                    parsed.icon = icon
+                                    p.parsedMetadata = parsed
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -123,54 +131,55 @@ extension PostRequestResult {
             guard let noteRef = bech32_note_id(mention.post.id) else { continue }
             let searchString = "nostr:\(noteRef)"
             if text.contains(searchString) {
-                itemsToRemove.append(searchString)
+                if removeExtractedPost {
+                    itemsToRemove.append(searchString)
+                }
                 p.embededPost = mention
                 break
             }
         }
         
-        if removeExtractedLinks {
-            for item in itemsToRemove {
-                text = text.replacingOccurrences(of: item, with: "")
-            }
+        for item in itemsToRemove {
+            text = text.replacingOccurrences(of: item, with: "")
+        }
+        
+        for media in mediaMetadata where media.event_id == post.id {
+            p.imageResources = media.resources
         }
         
         for item in itemsToReplace {
-            if item.isNip08Mention {
-                if let index = Int(item[safe: 2]!.string) {
-                    if let tag = post.tags[safe: index] {
-                        if let pubkey = tag[safe: 1] {
-                            if let user = users[pubkey] {
-                                let mention = "@\(user.name)"
-                                text = text.replacingOccurrences(of: item, with: mention)
-                                markedMentions.append(mention)
-                            }
-                        }
-                    }
+            guard let user: PrimalUser = {
+                if item.isNip08Mention {
+                    guard
+                        let index = Int(item[safe: 2]?.string ?? ""),
+                        let tag = post.tags[safe: index],
+                        let pubkey = tag[safe: 1]
+                    else { return nil }
+                                
+                    return users[pubkey]
                 }
-            } else if
-                item.isNip27Mention,
-                let npub = item.split(separator: ":")[safe: 1]?.string,
-                let decoded = try? bech32_decode(npub)
-            {
+                
+                guard
+                    item.isNip27Mention,
+                    let npub = item.split(separator: ":")[safe: 1]?.string,
+                    let decoded = try? bech32_decode(npub)
+                else { return nil }
                 let pubkey = hex_encode(decoded.data)
-                if let user = users[pubkey] {
-                    let mention = "@\(user.name)"
-                    text = text.replacingOccurrences(of: item, with: mention)
-                    markedMentions.append(mention)
-                }
-            }
+                return users[pubkey]
+            }() else { continue }
+            
+            let mention = "@\(user.name)"
+            text = text.replacingOccurrences(of: item, with: mention)
+            markedMentions.append(mention)
         }
         
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let nsText = text as NSString
         
-        if !removeExtractedLinks {
-            otherURLs += itemsToRemove
+        if p.imageResources.isEmpty {
+            p.imageResources = imageURLs.map { .init(url: $0, variants: []) }
         }
-        
-        p.imageUrls = imageURLs
         p.hashtags = hashtags.compactMap { nsText.position(of: $0) }
         p.mentions = markedMentions.compactMap { nsText.position(of: $0) }
         p.httpUrls = otherURLs.compactMap { nsText.position(of: $0) }
@@ -189,24 +198,6 @@ extension NSString {
             return .init(position: position.location, length: position.length, text: substring)
         }
         return nil
-    }
-}
-
-extension LPLinkMetadata {
-    static func loadingMetadata(_ url: URL) -> LPLinkMetadata {
-        let metadata = LPLinkMetadata()
-        metadata.title = "Loading preview..."
-        metadata.url = url
-        metadata.imageProvider = .webImageProvider
-        return metadata
-    }
-    
-    static func failedToLoad(_ url: URL) -> LPLinkMetadata {
-        let metadata = LPLinkMetadata()
-        metadata.url = url
-        metadata.title = "Failed to load preview..."
-        metadata.imageProvider = .webImageProvider
-        return metadata
     }
 }
 

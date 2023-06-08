@@ -23,7 +23,7 @@ private extension FeedsSelectionController {
         guard let title = button.title(for: .normal), !title.isEmpty else { return }
         dismiss(animated: true)
         
-        DispatchQueue.global(qos: .background).async {
+        Connection.dispatchQueue.async {
             FeedManager.instance.setCurrentFeed(title)
         }
     }

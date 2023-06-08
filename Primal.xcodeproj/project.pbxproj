@@ -123,7 +123,7 @@
 		9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A32A274A0D005DB548 /* PostPreviewView.swift */; };
 		9E8834A62A274A88005DB548 /* Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A52A274A88005DB548 /* Processing.swift */; };
 		9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */; };
-		9E8834AC2A292EEF005DB548 /* Web.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E8834AB2A292EEF005DB548 /* Web.png */; };
+		9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */; };
 		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
@@ -345,7 +345,7 @@
 		9E8834A32A274A0D005DB548 /* PostPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostPreviewView.swift; sourceTree = "<group>"; };
 		9E8834A52A274A88005DB548 /* Processing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Processing.swift; sourceTree = "<group>"; };
 		9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepostedIndicatorView.swift; sourceTree = "<group>"; };
-		9E8834AB2A292EEF005DB548 /* Web.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Web.png; sourceTree = "<group>"; };
+		9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreview.swift; sourceTree = "<group>"; };
 		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
@@ -522,7 +522,6 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				9E8834AB2A292EEF005DB548 /* Web.png */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -859,6 +858,7 @@
 				9E9D46F92A0A7F9B00D4837B /* GradientView.swift */,
 				9E4AAAA72A1155F200C962BD /* GradientBorderView.swift */,
 				9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */,
+				9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1141,7 +1141,6 @@
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
-				9E8834AC2A292EEF005DB548 /* Web.png in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
@@ -1300,6 +1299,7 @@
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
+				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */,
@@ -1472,7 +1472,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -1491,7 +1491,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.1;
+				MARKETING_VERSION = 0.14.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1513,7 +1513,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Primal/Preview Content\"";
 				DEVELOPMENT_TEAM = 7B23MN6TDM;
 				ENABLE_PREVIEWS = YES;
@@ -1532,7 +1532,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.1;
+				MARKETING_VERSION = 0.14.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

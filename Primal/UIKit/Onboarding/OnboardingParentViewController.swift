@@ -20,14 +20,17 @@ final class OnboardingParentViewController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationBar.titleTextAttributes = [
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .black
+        appearance.shadowColor = .clear
+        appearance.titleTextAttributes = [
             .font: UIFont.appFont(withSize: 24, weight: .semibold),
             .foregroundColor: UIColor(rgb: 0xCCCCCC)
         ]
         
-        let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = .black
-        appearance.shadowColor = .clear
+        appearance.backgroundImage = UIImage()
+        appearance.shadowImage = UIImage()
+        
         navigationBar.scrollEdgeAppearance = appearance
         navigationBar.standardAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance

@@ -11,7 +11,7 @@ import Kingfisher
 import LinkPresentation
 
 protocol PostCellDelegate: AnyObject {
-    func postCellDidTapURL(_ cell: PostCell, url: URL)
+    func postCellDidTapURL(_ cell: PostCell, url: URL?)
     func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL])
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -28,12 +28,10 @@ class PostCell: UITableViewCell {
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
-    let usernameLabel = UILabel()
-    let verifiedBadge = UIImageView(image: UIImage(named: "feedVerifiedBadge"))
-    let verifiedServerLabel = UILabel()
+    let nipLabel = UILabel()
     let mainLabel = LinkableLabel()
     let mainImages = ImageCollectionView()
-    let linkPresentation = LPLinkView()
+    let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
@@ -42,10 +40,10 @@ class PostCell: UITableViewCell {
     let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
     lazy var nameTimeStack = UIStackView(arrangedSubviews: [nameLabel, separatorLabel, timeLabel])
-    lazy var usernameStack = UIStackView(arrangedSubviews: [usernameLabel, verifiedBadge, verifiedServerLabel])
-    lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, usernameStack])
+    lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, nipLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
+    weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -58,11 +56,10 @@ class PostCell: UITableViewCell {
     }
     
     func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
-        nameLabel.text = content.user.displayName
-        usernameLabel.text = content.user.name
+        nameLabel.text = content.user.firstIdentifier
         
-        verifiedBadge.isHidden = content.user.nip05.isEmpty
-        verifiedServerLabel.text = content.user.getDomainNip05()
+        nipLabel.text = content.user.nip05
+        nipLabel.isHidden = content.user.nip05.isEmpty
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
@@ -73,11 +70,13 @@ class PostCell: UITableViewCell {
             .cacheOriginalImage
         ])
         
-        if let metadata = content.extractedMetadata {
-            linkPresentation.metadata = metadata
+        if let metadata = content.parsedMetadata {
+            linkPresentation.data = metadata
             linkPresentation.isHidden = false
             
-            metadataUpdater = content.$extractedMetadata.sink(receiveValue: { [weak self] in self?.linkPresentation.metadata = $0 ?? .init() })
+            metadataUpdater = content.$parsedMetadata.sink { [weak self] in
+                self?.linkPresentation.data = $0 ?? .failedToLoad(metadata.url)
+            }
         } else {
             linkPresentation.isHidden = true
         }
@@ -97,7 +96,20 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.imageURLs = content.imageUrls
+        mainImages.imageURLs = content.imageResources.compactMap { $0.url(for: .large) }
+        
+        imageAspectConstraint?.isActive = false
+        if let first = content.imageResources.first?.variants.first {
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+        } else {
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+        }
         
         updateButtons(content, didLike: didLike, didRepost: didRepost)
     }
@@ -114,10 +126,31 @@ class PostCell: UITableViewCell {
         repostButton.tintColor = repostColor
         repostButton.setTitleColor(repostColor, for: .normal)
         
-        replyButton.setTitle("  \(content.post.replies)", for: .normal)
-        zapButton.titleLabel.text = "\(content.post.satszapped)"
-        likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
-        repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
+        if content.post.replies < 1 {
+            replyButton.setTitle(nil, for: .normal)
+        } else {
+            replyButton.setTitle("  \(content.post.replies)", for: .normal)
+        }
+        
+        if content.post.satszapped < 1 {
+            zapButton.titleLabel.isHidden = true
+        } else {
+            zapButton.titleLabel.text = "\(content.post.satszapped)"
+            zapButton.titleLabel.isHidden = false
+        }
+        
+        if content.post.likes < 1 && !didLike {
+            likeButton.titleLabel.isHidden = true
+        } else {
+            likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
+            likeButton.titleLabel.isHidden = false
+        }
+        
+        if content.post.reposts < 1 && !didRepost {
+            repostButton.setTitle(nil, for: .normal)
+        } else {
+            repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
+        }
     }
 }
 
@@ -145,14 +178,11 @@ private extension PostCell {
         
         nameTimeStack.spacing = 6
         separatorLabel.text = "|"
-        [timeLabel, separatorLabel, usernameLabel, verifiedServerLabel].forEach {
+        [timeLabel, separatorLabel, nipLabel].forEach {
             $0.font = .appFont(withSize: 16, weight: .regular)
             $0.textColor = .foreground3
             $0.adjustsFontSizeToFitWidth = true
         }
-        
-        usernameStack.alignment = .center
-        usernameStack.spacing = 1
         
         namesStack.axis = .vertical
         namesStack.spacing = 3
@@ -175,14 +205,13 @@ private extension PostCell {
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
-        let height2 = linkPresentation.heightAnchor.constraint(greaterThanOrEqualToConstant: 300)
-        [height, height2].forEach {
+        [height].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
         }
+        imageAspectConstraint = height
         
-        linkPresentation.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        linkPresentation.layer.cornerRadius = 8
+        linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
@@ -194,10 +223,15 @@ private extension PostCell {
         
         selectionStyle = .none
         
+        linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
         postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.isUserInteractionEnabled = false
+    }
+    
+    @objc func linkPreviewTapped() {
+        delegate?.postCellDidTapURL(self, url: nil)
     }
     
     @objc func embedTapped() {
