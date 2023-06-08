@@ -15,7 +15,12 @@ final class PostPreviewView: UIView {
     let secondaryIdentifierLabel = UILabel()
     let verifiedBadge = UIImageView(image: UIImage(named: "feedVerifiedBadge"))
     let mainLabel = LinkableLabel()
+    let seeMoreLabel = UILabel()
+    let imageView = UIImageView()
+    let linkPreview = LinkPreview()
 
+    weak var imageAspectConstraint: NSLayoutConstraint?
+    
     init() {
         super.init(frame: .zero)
         setup()
@@ -39,7 +44,48 @@ final class PostPreviewView: UIView {
             .cacheOriginalImage
         ])
         
+        if let image = content.imageResources.first {
+            let aspectMultiplier: CGFloat = {
+                guard let first = image.variants.first else { return 1 }
+                return CGFloat(first.width) / CGFloat(first.height)
+            }()
+            
+            imageAspectConstraint?.isActive = false
+            let aspect = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: aspectMultiplier)
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+            
+            if imageView.frame.size.width > 10 {
+                imageView.kf.setImage(with: image.url(for: .large), options: [
+                    .processor(DownsamplingImageProcessor(size: .init(width: imageView.frame.width, height: imageView.frame.width / aspectMultiplier))),
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage
+                ])
+            } else {
+                imageView.kf.setImage(with: image.url(for: .large), options: [
+                    .processor(DownsamplingImageProcessor(size: .init(width: 300, height: 300 / aspectMultiplier))),
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage
+                ])
+            }
+            
+            imageView.isHidden = false
+        } else {
+            imageView.isHidden = true
+        }
+        
+        if let data = content.parsedMetadata {
+            linkPreview.data = data
+            linkPreview.isHidden = false
+        } else {
+            linkPreview.isHidden = true
+        }
+        
         mainLabel.attributedText = content.attributedText
+        layoutSubviews()
+        
+        seeMoreLabel.isHidden = !mainLabel.isTruncated()
     }
 }
 
@@ -69,6 +115,19 @@ private extension PostPreviewView {
         
         mainLabel.numberOfLines = 0
         mainLabel.font = UIFont.appFont(withSize: 16, weight: .regular)
+        mainLabel.numberOfLines = 10
+        mainLabel.lineBreakMode = .byWordWrapping
+        mainLabel.lineBreakStrategy = .standard
+        
+        seeMoreLabel.text = "See more..."
+        seeMoreLabel.textAlignment = .natural
+        seeMoreLabel.font = .appFont(withSize: 16, weight: .regular)
+        seeMoreLabel.textColor = .accent
+        
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 8
+        imageView.isHidden = true
         
         let nameTimeStack = UIStackView(arrangedSubviews: [
             profileImageView, nameLabel, verifiedBadge, secondaryIdentifierLabel,
@@ -77,9 +136,12 @@ private extension PostPreviewView {
         nameTimeStack.spacing = 4
         nameTimeStack.alignment = .center
         
-        let mainStack = UIStackView(arrangedSubviews: [nameTimeStack, mainLabel])
+        let mainStack = UIStackView(arrangedSubviews: [
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 12), imageView, linkPreview
+        ])
         mainStack.axis = .vertical
-        mainStack.spacing = 12
+        mainStack.setCustomSpacing(12, after: nameTimeStack)
+        mainStack.setCustomSpacing(12, after: imageView)
         addSubview(mainStack)
         
         mainStack

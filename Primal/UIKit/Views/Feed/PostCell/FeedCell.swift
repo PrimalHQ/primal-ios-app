@@ -25,7 +25,7 @@ final class FeedCell: PostCell {
         super.update(parsedContent, didLike: didLike, didRepost: didRepost)
         
         textStack.isHidden = parsedContent.text.isEmpty
-        mainImages.isHidden = parsedContent.imageUrls.isEmpty
+        mainImages.isHidden = parsedContent.imageResources.isEmpty
         
         layoutSubviews()
         
@@ -70,7 +70,7 @@ private extension FeedCell {
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: 18, weight: .regular)
+        seeMoreLabel.font = .appFont(withSize: 16, weight: .regular)
         seeMoreLabel.textColor = .accent
     }
 }

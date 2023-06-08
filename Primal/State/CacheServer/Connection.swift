@@ -12,7 +12,9 @@ import Network
 import GenericJSON
 
 final class Connection {
-    private let socketURL = URL(string: "wss://cache3.primal.net/cache15")!
+    static let dispatchQueue = DispatchQueue.global(qos: .background)
+    
+    private let socketURL = URL(string: "wss://cache3.primal.net/cache17")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -36,7 +38,7 @@ final class Connection {
     @Published var isConnected: Bool = false
     
     func connect() {
-        socket = NWWebSocket(url: socketURL, connectionQueue: DispatchQueue.global(qos: .background))
+        socket = NWWebSocket(url: socketURL, connectionQueue: Self.dispatchQueue)
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)

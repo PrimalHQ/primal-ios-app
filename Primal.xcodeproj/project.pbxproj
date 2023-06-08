@@ -123,7 +123,6 @@
 		9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A32A274A0D005DB548 /* PostPreviewView.swift */; };
 		9E8834A62A274A88005DB548 /* Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A52A274A88005DB548 /* Processing.swift */; };
 		9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */; };
-		9E8834AC2A292EEF005DB548 /* Web.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E8834AB2A292EEF005DB548 /* Web.png */; };
 		9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */; };
 		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
@@ -346,7 +345,6 @@
 		9E8834A32A274A0D005DB548 /* PostPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostPreviewView.swift; sourceTree = "<group>"; };
 		9E8834A52A274A88005DB548 /* Processing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Processing.swift; sourceTree = "<group>"; };
 		9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepostedIndicatorView.swift; sourceTree = "<group>"; };
-		9E8834AB2A292EEF005DB548 /* Web.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Web.png; sourceTree = "<group>"; };
 		9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreview.swift; sourceTree = "<group>"; };
 		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
@@ -524,7 +522,6 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				9E8834AB2A292EEF005DB548 /* Web.png */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -1144,7 +1141,6 @@
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
-				9E8834AC2A292EEF005DB548 /* Web.png in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
@@ -1495,7 +1491,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.2;
+				MARKETING_VERSION = 0.14.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1536,7 +1532,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.14.2;
+				MARKETING_VERSION = 0.14.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

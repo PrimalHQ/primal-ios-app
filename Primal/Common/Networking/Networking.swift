@@ -12,17 +12,17 @@ extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }
 
-protocol Request {
-    associatedtype ResponseData: Codable
-    var url: URL { get }
-}
-
 struct RequestErrorResponse: Codable {
     var error: String
 }
 
 enum RequestError: Error {
     case noData
+}
+
+protocol Request {
+    associatedtype ResponseData: Codable
+    var url: URL { get }
 }
 
 extension Request {

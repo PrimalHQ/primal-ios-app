@@ -7,9 +7,11 @@
 
 import UIKit
 import SafariServices
+import LinkPresentation
 
 struct LinkMetadata {
     var url: URL
+    var lpMetadata: LPLinkMetadata?
     var image: UIImage?
     var icon: UIImage?
     var title: String?
@@ -31,9 +33,11 @@ final class LinkPreview: UIView {
         }
     }
     
-    private let imageView = UIImageView(image: .init(named: "webPreview"))
+    private let imageView = UIImageView()
+    private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private weak var imageAspectConstraint: NSLayoutConstraint?
     
     init() {
         super.init(frame: .zero)
@@ -49,8 +53,23 @@ private extension LinkPreview {
     func set(data: LinkMetadata) {
         if let image = data.image {
             imageView.image = image
+            
+            imageAspectConstraint?.isActive = false
+            let aspect = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: image.size.width / image.size.height)
+            imageAspectConstraint = aspect
+            
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
         } else {
-            imageView.image = .init(named: "webPreview")
+            imageView.isHidden = true
+        }
+        
+        if let icon = data.icon {
+            iconView.image = icon
+            iconView.layer.cornerRadius = 18
+        } else {
+            iconView.image = UIImage(named: "webPreviewIcon")
+            iconView.layer.cornerRadius = 0
         }
         
         titleLabel.text = data.title
@@ -65,29 +84,37 @@ private extension LinkPreview {
         mainStack.axis = .vertical
         addSubview(mainStack)
         mainStack.pinToSuperview()
-        
+                
         let titleStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        backgroundView.addSubview(titleStack)
-        titleStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 16)
+        let iconTitleStack = UIStackView(arrangedSubviews: [iconView, titleStack])
+        
+        backgroundView.addSubview(iconTitleStack)
+        iconTitleStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 16)
+        
+        iconTitleStack.spacing = 12
+        iconTitleStack.alignment = .center
+        
         titleStack.axis = .vertical
         titleStack.spacing = 4
         
-        backgroundColor = .background
+        backgroundView.backgroundColor = .background3
         
-        imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
-        imageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        imageView.contentMode = .scaleAspectFill
+        
+        iconView.constrainToSize(36)
+        iconView.clipsToBounds = true
         
         layer.cornerRadius = 8
         layer.masksToBounds = true
         layer.borderWidth = 1
-        layer.borderColor = UIColor.background3.cgColor
+        layer.borderColor = UIColor.background3.withAlphaComponent(0.4).cgColor
         
         subtitleLabel.font = .appFont(withSize: 16, weight: .regular)
-        subtitleLabel.textColor = .init(rgb: 0x666666)
+        subtitleLabel.textColor = .foreground5
         
         titleLabel.font = .appFont(withSize: 18, weight: .bold)
-        titleLabel.textColor = .foreground2
+        titleLabel.textColor = .foreground
         
         addInteraction(UIContextMenuInteraction(delegate: self))
     }

@@ -27,6 +27,7 @@ final class FollowSectionHeader: UITableViewHeaderFooterView {
     }
     
     func setup() {
+        backgroundColor = .black
         contentView.backgroundColor = UIColor(rgb: 0x181818)
         contentView.layer.cornerRadius = 8
         contentView.layer.borderColor = UIColor(rgb: 0x222222).cgColor

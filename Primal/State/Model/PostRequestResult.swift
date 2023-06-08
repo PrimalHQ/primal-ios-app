@@ -12,6 +12,8 @@ class PostRequestResult {
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
+    var mediaMetadata: [MediaMetadata] = []
+    
     var users: [String: PrimalUser] = [:]
     var stats: [String: NostrContentStats] = [:]
     

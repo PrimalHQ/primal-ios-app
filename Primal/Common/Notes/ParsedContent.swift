@@ -40,10 +40,9 @@ final class ParsedContent {
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
     
-    var imageUrls: [URL] = []
+    var imageResources: [MediaMetadata.Resource] = []
     var firstExtractedURL: URL?
     
-    @Published var extractedMetadata: LPLinkMetadata?
     @Published var parsedMetadata: LinkMetadata?
     
     var text: String = ""

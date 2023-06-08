@@ -47,7 +47,7 @@ final class FeedManager {
     func requestNewPage() {
         guard !isRequestingNewPage else { return }
         isRequestingNewPage = true
-        DispatchQueue.global(qos: .background).async {
+        Connection.dispatchQueue.async {
             let id = self.sendNewPageRequest()
             DispatchQueue.main.async {
                 self.requestID = id
@@ -100,9 +100,9 @@ final class FeedManager {
         .store(in: &cancellables)
     }
     
-    private func sendNewPageRequest(until: Int32 = 0, limit: Int32 = 20) -> String {
+    private func sendNewPageRequest(limit: Int32 = 20) -> String {
         guard
-            let json = generateRequestByFeedType(feedName: currentFeed, until: until, limit: limit),
+            let json = generateRequestByFeedType(feedName: currentFeed, limit: limit),
             let id = json.arrayValue?.dropFirst().first?.stringValue
         else {
             print("Error encoding req json")
@@ -119,18 +119,42 @@ final class FeedManager {
         return id
     }
     
-    private func generateRequestByFeedType(feedName: String, until: Int32 = 0, limit: Int32 = 20) -> JSON? {
+    private func generateRequestByFeedType(feedName: String, limit: Int32 = 20) -> JSON? {
         if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == feedName }) {
-            return generateFeedPageRequest(feed.hex, until: until, limit: limit)
+            return generateFeedPageRequest(feed.hex, limit: limit)
         } else {
             fatalError("feed should exist at all times")
         }
     }
-    private func generateFeedPageRequest(_ criteria: String, until: Int32? = nil, limit: Int32 = 20) -> JSON? {
-        let key = until == 0 ? "since" : "until"
+    
+    private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON? {
         let subId = "feed_\(criteria)_\(Connection.instance.identity)"
         
-        let until = until ?? parsedPosts.last?.post.created_at ?? 0
+        let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
+        
+        let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
+        
+        return try? JSON([
+            "REQ",
+            subId,
+            [
+                "cache": [
+                    "feed_directive",
+                    [
+                        "directive": criteria,
+                        "user_pubkey": IdentityManager.instance.userHex,
+                        "limit": limit,
+                        "until": u
+                    ] as [String : Any]
+                ] as [Any]
+            ]
+        ] as [Any])
+    }
+    
+    private func generateProfileFeedRequest(_ criteria: String, limit: Int32 = 20) -> JSON? {
+        let subId = "feed_\(criteria)_\(Connection.instance.identity)"
+        
+        let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
         
         let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
         
@@ -145,7 +169,7 @@ final class FeedManager {
                             "directive": criteria,
                             "user_pubkey": IdentityManager.instance.userHex,
                             "limit": limit,
-                            "\(key)": u
+                            "until": u
                         ] as [String : Any]
                     ] as [Any]
             ]
@@ -157,6 +181,7 @@ final class FeedManager {
         postCache[subId] = nil        
         postsEmitter.send(data)
     }
+    
     private func handlePostEvent(_ response: JSON) {
         let kind = ResponseKind.fromGenericJSON(response)
         let id = response.arrayValue?[1].stringValue
@@ -231,6 +256,15 @@ final class FeedManager {
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: contentData)
             else { return }
             postCache[id]?.mentions.append(NostrContent(json: contentJSON))
+        case .mediaMetadata:
+            guard
+                let id,
+                let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,
+                let contentData = contentString.data(using: .utf8),
+                let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: contentData)
+            else { return }
+            
+            postCache[id]?.mediaMetadata.append(metadata)
         default:
             assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
         }

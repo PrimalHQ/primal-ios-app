@@ -43,6 +43,7 @@ class PostCell: UITableViewCell {
     lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, nipLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
+    weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -95,7 +96,20 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.imageURLs = content.imageUrls
+        mainImages.imageURLs = content.imageResources.compactMap { $0.url(for: .large) }
+        
+        imageAspectConstraint?.isActive = false
+        if let first = content.imageResources.first?.variants.first {
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+        } else {
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+        }
         
         updateButtons(content, didLike: didLike, didRepost: didRepost)
     }
@@ -112,10 +126,31 @@ class PostCell: UITableViewCell {
         repostButton.tintColor = repostColor
         repostButton.setTitleColor(repostColor, for: .normal)
         
-        replyButton.setTitle("  \(content.post.replies)", for: .normal)
-        zapButton.titleLabel.text = "\(content.post.satszapped)"
-        likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
-        repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
+        if content.post.replies < 1 {
+            replyButton.setTitle(nil, for: .normal)
+        } else {
+            replyButton.setTitle("  \(content.post.replies)", for: .normal)
+        }
+        
+        if content.post.satszapped < 1 {
+            zapButton.titleLabel.isHidden = true
+        } else {
+            zapButton.titleLabel.text = "\(content.post.satszapped)"
+            zapButton.titleLabel.isHidden = false
+        }
+        
+        if content.post.likes < 1 && !didLike {
+            likeButton.titleLabel.isHidden = true
+        } else {
+            likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
+            likeButton.titleLabel.isHidden = false
+        }
+        
+        if content.post.reposts < 1 && !didRepost {
+            repostButton.setTitle(nil, for: .normal)
+        } else {
+            repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
+        }
     }
 }
 
@@ -170,11 +205,11 @@ private extension PostCell {
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
-        let height2 = linkPresentation.heightAnchor.constraint(greaterThanOrEqualToConstant: 200)
-        [height, height2].forEach {
+        [height].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
         }
+        imageAspectConstraint = height
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
         
