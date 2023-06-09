@@ -12,7 +12,7 @@ import Vault
 let PUBKEY_HRP = "npub"
 let PRIVKEY_HRP = "nsec"
 
-struct FullKeypair {
+struct FullKeypair: Equatable {
     let pubkey: String
     let privkey: String
 }

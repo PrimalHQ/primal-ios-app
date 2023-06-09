@@ -88,7 +88,8 @@ final class HomeFeedViewController: FeedViewController {
     }
     
     @objc func openFeedSelection() {
-        present(FeedsSelectionController(feed: feed), animated: true)
+        UIApplication.shared.open(URL(string:"https://nwc.getalby.com/apps/new?c=Primal-iOS")!)
+        // present(FeedsSelectionController(), animated: true)
     }
     
     @objc func postPressed() {
