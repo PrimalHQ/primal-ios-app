@@ -137,7 +137,6 @@ private extension ThreadViewController {
             guard let self, result.id == self.id else { return }
             
             let parsed = result.process()
-                .sorted(by: { $0.post.created_at < $1.post.created_at })
             
             DispatchQueue.main.async {
                 self.mainPositionInThread = parsed.firstIndex(where: { $0.post.id == self.id }) ?? 0

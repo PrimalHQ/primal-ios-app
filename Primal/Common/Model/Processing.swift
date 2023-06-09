@@ -45,8 +45,10 @@ extension PostRequestResult {
         
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
             .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true)}
+  
+        let all = reposts + normalPosts
         
-        return (reposts + normalPosts).sorted(by: { $0.post.created_at > $1.post.created_at })
+        return posts.compactMap { post in all.first(where: { $0.post.id == post.id }) }
     }
     
     func parse(

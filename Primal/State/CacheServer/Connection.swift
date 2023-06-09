@@ -74,7 +74,7 @@ final class Connection {
             return
         }
         let jsonStr = String(data: jsonData, encoding: .utf8)!
-        
+                
         self.socket?.send(string: jsonStr)
     }
     
