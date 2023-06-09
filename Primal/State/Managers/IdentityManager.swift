@@ -78,6 +78,8 @@ final class IdentityManager {
                         
                         self.userScore = score
                     }
+                case .mediaMetadata:
+                    print("IdentityManager: requestUserInfos: Got mediaMetada")
                 default:
                     assertionFailure("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(response)")
                 }
