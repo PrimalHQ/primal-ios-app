@@ -33,7 +33,7 @@ final class ThreadViewController: FeedViewController {
     
     init(threadId: String) {
         id = threadId
-        super.init()
+        super.init(feed: FeedManager())
         setup()
     }
     
@@ -43,9 +43,15 @@ final class ThreadViewController: FeedViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
         
         didLoadView = true
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }    
     
     override func open(post: PrimalFeedPost) {
         guard post.id != id else { return }

@@ -10,12 +10,12 @@ import Foundation
 import GenericJSON
 
 final class FeedManager {
-    private var requestID = ""
     private var cancellables: Set<AnyCancellable> = []
-    private var postCache: [String : PostRequestResult] = [:]
+    
+    private var pendingResult: PostRequestResult?
     private var isRequestingNewPage = false
     
-    private init() {
+    init() {
         initPostsEmitterSubscription()
         initUserConnectionSubscription()
     }
@@ -33,6 +33,14 @@ final class FeedManager {
     @Published var userZapped: Set<String> = []
     @Published var feedUsers: [PrimalUser] = []
     
+    var profileId: String?
+    
+    init(profilePubkey: String) {
+        self.profileId = profilePubkey
+        initPostsEmitterSubscription()
+        initUserConnectionSubscription()
+    }
+    
     func setCurrentFeed(_ feed: String) {
         currentFeed = feed
         refresh()
@@ -48,34 +56,13 @@ final class FeedManager {
         guard !isRequestingNewPage else { return }
         isRequestingNewPage = true
         Connection.dispatchQueue.async {
-            let id = self.sendNewPageRequest()
-            DispatchQueue.main.async {
-                self.requestID = id
-            }
-        }
-    }
-    func requestThread(postId: String, subId: String, limit: Int32 = 100) {
-        self.postCache[subId] = .init(id: subId)
-        
-        guard let json: JSON = try? JSON(
-            ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": IdentityManager.instance.userHex]
-                                           as [String : Any]] as [Any]]] as [Any]) else {
-            print("Error encoding req")
-            return
-        }
-        
-        Connection.instance.send(json: json) { res in
-            for response in res {
-                self.handlePostEvent(response)
-            }
-            guard let id = res.last?.arrayValue?[1].stringValue else { return }
-            self.emitPosts(subId: id)
+            self.sendNewPageRequest()
         }
     }
     
     private func initPostsEmitterSubscription() {
         postsEmitter.sink { [weak self] result in
-            guard let self, result.id == self.requestID else { return }
+            guard let self else { return }
             
             var sorted = result.process()
             
@@ -100,30 +87,52 @@ final class FeedManager {
         .store(in: &cancellables)
     }
     
-    private func sendNewPageRequest(limit: Int32 = 20) -> String {
+    private func sendNewPageRequest(limit: Int32 = 20) {
         guard
-            let json = generateRequestByFeedType(feedName: currentFeed, limit: limit),
+            let json = generateRequestByFeedType(limit: limit),
             let id = json.arrayValue?.dropFirst().first?.stringValue
         else {
             print("Error encoding req json")
-            return ""
+            return
         }
-        self.postCache[id] = .init(id: id)
+        
+        pendingResult = .init(id: id)
         Connection.instance.send(json: json) { res in
             for response in res {
                 self.handlePostEvent(response)
             }
-            guard let id = res.last?.arrayValue?[1].stringValue else { return }
-            self.emitPosts(subId: id)
+            self.emitPosts()
         }
-        return id
     }
     
-    private func generateRequestByFeedType(feedName: String, limit: Int32 = 20) -> JSON? {
-        if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == feedName }) {
+    private func generateRequestByFeedType(limit: Int32 = 20) -> JSON? {
+        if let profileId {
+            return generateProfileFeedRequest(profileId)
+        } else if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == currentFeed }) {
             return generateFeedPageRequest(feed.hex, limit: limit)
         } else {
             fatalError("feed should exist at all times")
+        }
+    }
+    
+    func requestThread(postId: String, subId: String, limit: Int32 = 100) {
+        Connection.dispatchQueue.async {
+            self.pendingResult = .init(id: subId)
+            
+            guard let json: JSON = try? JSON(
+                ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": IdentityManager.instance.userHex]
+                                               as [String : Any]] as [Any]]] as [Any]) else {
+                print("Error encoding req")
+                return
+            }
+            
+            
+            Connection.instance.send(json: json) { res in
+                for response in res {
+                    self.handlePostEvent(response)
+                }
+                self.emitPosts()
+            }
         }
     }
     
@@ -151,79 +160,68 @@ final class FeedManager {
         ] as [Any])
     }
     
-    private func generateProfileFeedRequest(_ criteria: String, limit: Int32 = 20) -> JSON? {
-        let subId = "feed_\(criteria)_\(Connection.instance.identity)"
+    private func generateProfileFeedRequest(_ profileId: String, limit: Int32 = 20) -> JSON? {
+        let subId = "feed_profile\(profileId)"
         
         let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
-        
-        let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
         
         return try? JSON([
             "REQ",
             subId,
             [
-                "cache":
+                "cache": [
+                    "feed",
                     [
-                        "feed_directive",
-                        [
-                            "directive": criteria,
-                            "user_pubkey": IdentityManager.instance.userHex,
-                            "limit": limit,
-                            "until": u
-                        ] as [String : Any]
-                    ] as [Any]
+                        "pubkey": profileId,
+                        "user_pubkey": IdentityManager.instance.userHex,
+                        "notes": "authored",
+                        "limit": limit,
+                        "until": until
+                    ] as [String : Any]
+                ] as [Any]
             ]
         ] as [Any])
     }
     
-    private func emitPosts(subId: String) {
-        guard let data = postCache[subId] else { return }
-        postCache[subId] = nil        
+    private func emitPosts() {
+        guard let data = pendingResult else { return }
+        pendingResult = nil
         postsEmitter.send(data)
     }
     
     private func handlePostEvent(_ response: JSON) {
         let kind = ResponseKind.fromGenericJSON(response)
-        let id = response.arrayValue?[1].stringValue
         
         switch kind {
         case .metadata:
             guard let contentJSON = response.arrayValue?[2].objectValue else { return }
             
             let nostrUser = NostrContent(json: .object(contentJSON))
-            if let id {
-                if let user = PrimalUser(nostrUser: nostrUser) {
-                    postCache[id]?.users[nostrUser.pubkey] = user
-                }
+            if let user = PrimalUser(nostrUser: nostrUser) {
+                pendingResult?.users[nostrUser.pubkey] = user
             }
         case .text:
-            guard let id, let contentJSON = response.arrayValue?[2].objectValue else { return }
+            guard let contentJSON = response.arrayValue?[2].objectValue else { return }
             
-            postCache[id]?.posts.append(NostrContent(json: .object(contentJSON)))
+            pendingResult?.posts.append(NostrContent(json: .object(contentJSON)))
         case .noteStats:
             guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding NostrContentStats to json")
-                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
                 return
             }
             
-            if let id {
-                self.postCache[id]?.stats[nostrContentStats.event_id] = nostrContentStats
-            }
+            pendingResult?.stats[nostrContentStats.event_id] = nostrContentStats
         case .searchPaginationSettingsEvent:
             guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding PrimalSearchPagination to json")
-                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
                 return
             }
             
             self.searchPaginationEvent = searchPaginationEvent
             self.searchPaginationEvent?.subId = response.arrayValue?[1].stringValue
-            break
         case .noteActions:
             guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding PrimalNoteStatus to json")
-                dump(response.arrayValue?[2].objectValue?["content"]?.stringValue)
                 return
             }
             if noteStatus.liked {
@@ -240,31 +238,25 @@ final class FeedManager {
             }
         case .repost:
             guard
-                let id,
                 let pubKey = response.arrayValue?[2].objectValue?["pubkey"]?.stringValue,
                 let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue,
-                let contentData = contentString.data(using: .utf8),
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: contentData)
+                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             
-            postCache[id]?.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON)))
+            pendingResult?.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON)))
         case .mentions:
             guard
-                let id,
                 let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,
-                let contentData = contentString.data(using: .utf8),
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: contentData)
+                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
-            postCache[id]?.mentions.append(NostrContent(json: contentJSON))
+            pendingResult?.mentions.append(NostrContent(json: contentJSON))
         case .mediaMetadata:
             guard
-                let id,
                 let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,
-                let contentData = contentString.data(using: .utf8),
-                let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: contentData)
+                let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8))
             else { return }
             
-            postCache[id]?.mediaMetadata.append(metadata)
+            pendingResult?.mediaMetadata.append(metadata)
         default:
             assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
         }

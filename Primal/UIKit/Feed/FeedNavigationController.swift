@@ -19,7 +19,7 @@ final class ReadNavigationController: MainNavigationController {
 
 final class FeedNavigationController: MainNavigationController {
     init() {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController()))
+        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: FeedManager.instance)))
     }
     
     required init?(coder aDecoder: NSCoder) {

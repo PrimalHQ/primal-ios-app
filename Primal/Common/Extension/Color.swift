@@ -44,4 +44,12 @@ extension UIColor {
             alpha: CGFloat(1.0)
         )
     }
+    
+    static let gradient: [UIColor] = [UIColor(rgb: 0xFA4343), UIColor(rgb: 0x5B12A4)]
+}
+
+extension Array where Element: UIColor {
+    func withAlphaComponent(_ alpha: CGFloat) -> [UIColor] {
+        map { $0.withAlphaComponent(alpha) }
+    }
 }
