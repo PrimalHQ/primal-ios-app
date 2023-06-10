@@ -76,8 +76,13 @@ class PostCell: UITableViewCell {
             linkPresentation.data = metadata
             linkPresentation.isHidden = false
             
+            let didHaveImage = metadata.image != nil
             metadataUpdater = content.$parsedMetadata.sink { [weak self] in
-                self?.linkPresentation.data = $0 ?? .failedToLoad(metadata.url)
+                var data = $0 ?? .failedToLoad(metadata.url)
+                if !didHaveImage {
+                    data.image = nil
+                }
+                self?.linkPresentation.data = data
             }
         } else {
             linkPresentation.isHidden = true
