@@ -62,12 +62,12 @@ class ProfileInfoCell: UITableViewCell {
             followButton.isHidden = false
             editProfile.isHidden = true
             
-            updateFollowButton(user)
+            updateFollowButton(FollowManager.instance.isFollowing(user.pubkey))
         }
     }
     
-    func updateFollowButton(_ user: PrimalUser) {
-        followButton.title = FollowManager.instance.isFollowing(user.pubkey) ? "unfollow" : "follow"
+    func updateFollowButton(_ isFollowing: Bool) {
+        followButton.title = isFollowing ? "unfollow" : "follow"
     }
     
     required init?(coder: NSCoder) {

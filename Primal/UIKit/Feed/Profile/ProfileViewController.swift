@@ -170,9 +170,10 @@ extension ProfileViewController: ProfileInfoCellDelegate {
     func followPressed(in cell: ProfileInfoCell) {
         if FollowManager.instance.isFollowing(profile.pubkey) {
             FollowManager.instance.sendUnfollowEvent(profile.pubkey)
+            cell.updateFollowButton(false)
         } else {
             FollowManager.instance.sendFollowEvent(profile.pubkey)
+            cell.updateFollowButton(true)
         }
-        cell.updateFollowButton(profile)
     }
 }
