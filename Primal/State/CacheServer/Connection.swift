@@ -65,6 +65,8 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                     
+            self.responseBuffer[subId] = .init()
+            self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
         }
     }
