@@ -642,75 +642,156 @@ func make_settings_event(pubkey: String, privkey: String, settings: Encodable) -
     return ev
 }
 
-//func zap_target_to_tags(_ target: ZapTarget) -> [[String]] {
-//    switch target {
-//    case .profile(let pk):
-//        return [["p", pk]]
-//    case .note(let note_target):
-//        return [["e", note_target.note_id], ["p", note_target.author]]
-//    }
-//}
-//
-//func make_private_zap_request_event(identity: FullKeypair, enc_key: FullKeypair, target: ZapTarget, message: String) -> String? {
-//    // target tags must be the same as zap request target tags
-//    let tags = zap_target_to_tags(target)
-//
-//    let note = NostrEvent(content: message, pubkey: identity.pubkey, kind: 9733, tags: tags)
-//    note.id = calculate_event_id(ev: note)
-//    note.sig = sign_event(privkey: identity.privkey, ev: note)
-//
-//    guard let note_json = encode_json(note) else {
-//        return nil
-//    }
-//    return encrypt_message(message: note_json, privkey: enc_key.privkey, to_pk: target.pubkey, encoding: .bech32)
-//}
+func make_zap_request_event(keypair: FullKeypair, content: String, relays: [RelayDescriptor], target: ZapTarget, zap_type: ZapType) -> MakeZapRequest? {
+    var tags = zap_target_to_tags(target)
+    var relay_tag = ["relays"]
+    relay_tag.append(contentsOf: relays.map { $0.url.id })
+    tags.append(relay_tag)
+    
+    var kp = keypair
+    
+    let now = Int64(Date().timeIntervalSince1970)
+    
+    var privzap_req: PrivateZapRequest?
+    
+    var message = content
+    switch zap_type {
+    case .pub:
+        break
+    case .non_zap:
+        break
+    case .anon:
+        tags.append(["anon"])
+        kp = generate_new_keypair().to_full()!
+    case .priv:
+        guard let priv_kp = generate_private_keypair(our_privkey: keypair.privkey, id: target.id, created_at: now) else {
+            return nil
+        }
+        kp = priv_kp
+        guard let privreq = make_private_zap_request_event(identity: keypair, enc_key: kp, target: target, message: message) else {
+            return nil
+        }
+        tags.append(["anon", privreq.enc])
+        message = ""
+        privzap_req = privreq
+    }
+    
+    let ev = NostrEvent(content: message, pubkey: kp.pubkey, kind: 9734, tags: tags, createdAt: now)
+    ev.id = calculate_event_id(ev: ev)
+    ev.sig = sign_event(privkey: kp.privkey, ev: ev)
+    let zapreq = ZapRequest(ev: ev)
+    if let privzap_req {
+        return .priv(zapreq, privzap_req)
+    } else {
+        return .normal(zapreq)
+    }
+}
 
-//func decrypt_private_zap(our_privkey: String, zapreq: NostrEvent, target: ZapTarget) -> NostrEvent? {
-//    guard let anon_tag = zapreq.tags.first(where: { t in t.count >= 2 && t[0] == "anon" }) else {
-//        return nil
-//    }
-//
-//    let enc_note = anon_tag[1]
-//
-//    var note = decrypt_note(our_privkey: our_privkey, their_pubkey: zapreq.pubkey, enc_note: enc_note, encoding: .bech32)
-//
-//    // check to see if the private note was from us
-//    if note == nil {
-//        guard let our_private_keypair = generate_private_keypair(our_privkey: our_privkey, id: target.id, created_at: zapreq.created_at) else{
-//            return nil
-//        }
-//        // use our private keypair and their pubkey to get the shared secret
-//        note = decrypt_note(our_privkey: our_private_keypair.privkey, their_pubkey: target.pubkey, enc_note: enc_note, encoding: .bech32)
-//    }
-//
-//    guard let note else {
-//        return nil
-//    }
-//
-//    guard note.kind == 9733 else {
-//        return nil
-//    }
-//
-//    let zr_etag = zapreq.referenced_ids.first
-//    let note_etag = note.referenced_ids.first
-//
-//    guard zr_etag == note_etag else {
-//        return nil
-//    }
-//
-//    let zr_ptag = zapreq.referenced_pubkeys.first
-//    let note_ptag = note.referenced_pubkeys.first
-//
-//    guard let zr_ptag, let note_ptag, zr_ptag == note_ptag else {
-//        return nil
-//    }
-//
-//    guard validate_event(ev: note) == .ok else {
-//        return nil
-//    }
-//
-//    return note
-//}
+func event_has_tag(ev: NostrEvent, tag: String) -> Bool {
+    for t in ev.tags {
+        if t.count >= 1 && t[0] == tag {
+            return true
+        }
+    }
+    
+    return false
+}
+
+func event_is_anonymous(ev: NostrEvent) -> Bool {
+    return ev.known_kind == .zap_request && event_has_tag(ev: ev, tag: "anon")
+}
+
+func make_private_zap_request_event(identity: FullKeypair, enc_key: FullKeypair, target: ZapTarget, message: String) -> PrivateZapRequest? {
+    // target tags must be the same as zap request target tags
+    let tags = zap_target_to_tags(target)
+    
+    let note = NostrEvent(content: message, pubkey: identity.pubkey, kind: 9733, tags: tags)
+    note.id = calculate_event_id(ev: note)
+    note.sig = sign_event(privkey: identity.privkey, ev: note)
+    
+    guard let note_json = encode_json(note),
+          let enc = encrypt_message(message: note_json, privkey: enc_key.privkey, to_pk: target.pubkey, encoding: .bech32)
+    else {
+        return nil
+    }
+    
+    return PrivateZapRequest(req: ZapRequest(ev: note), enc: enc)
+}
+
+func zap_target_to_tags(_ target: ZapTarget) -> [[String]] {
+    switch target {
+    case .profile(let pk):
+        return [["p", pk]]
+    case .note(let note_target):
+        return [["e", note_target.note_id], ["p", note_target.author]]
+    }
+}
+
+func encrypt_message(message: String, privkey: String, to_pk: String, encoding: EncEncoding = .base64) -> String? {
+    let iv = random_bytes(count: 16).bytes
+    guard let shared_sec = get_shared_secret(privkey: privkey, pubkey: to_pk) else {
+        return nil
+    }
+    let utf8_message = Data(message.utf8).bytes
+    guard let enc_message = aes_encrypt(data: utf8_message, iv: iv, shared_sec: shared_sec) else {
+        return nil
+    }
+    
+    switch encoding {
+    case .base64:
+        return encode_dm_base64(content: enc_message.bytes, iv: iv)
+    case .bech32:
+        return encode_dm_bech32(content: enc_message.bytes, iv: iv)
+    }
+    
+}
+
+func decrypt_private_zap(our_privkey: String, zapreq: NostrEvent, target: ZapTarget) -> NostrEvent? {
+    guard let anon_tag = zapreq.tags.first(where: { t in t.count >= 2 && t[0] == "anon" }) else {
+        return nil
+    }
+    
+    let enc_note = anon_tag[1]
+    
+    var note = decrypt_note(our_privkey: our_privkey, their_pubkey: zapreq.pubkey, enc_note: enc_note, encoding: .bech32)
+    
+    // check to see if the private note was from us
+    if note == nil {
+        guard let our_private_keypair = generate_private_keypair(our_privkey: our_privkey, id: target.id, created_at: zapreq.created_at) else{
+            return nil
+        }
+        // use our private keypair and their pubkey to get the shared secret
+        note = decrypt_note(our_privkey: our_private_keypair.privkey, their_pubkey: target.pubkey, enc_note: enc_note, encoding: .bech32)
+    }
+    
+    guard let note else {
+        return nil
+    }
+    
+    guard note.kind == 9733 else {
+        return nil
+    }
+    
+    let zr_etag = zapreq.referenced_ids.first
+    let note_etag = note.referenced_ids.first
+    
+    guard zr_etag == note_etag else {
+        return nil
+    }
+    
+    let zr_ptag = zapreq.referenced_pubkeys.first
+    let note_ptag = note.referenced_pubkeys.first
+    
+    guard let zr_ptag, let note_ptag, zr_ptag == note_ptag else {
+        return nil
+    }
+    
+    guard validate_event(ev: note) == .ok else {
+        return nil
+    }
+    
+    return note
+}
 
 func generate_private_keypair(our_privkey: String, id: String, created_at: Int64) -> FullKeypair? {
     let to_hash = our_privkey + id + String(created_at)
@@ -725,43 +806,6 @@ func generate_private_keypair(our_privkey: String, id: String, created_at: Int64
     
     return FullKeypair(pubkey: pubkey, privkey: privkey)
 }
-
-//func make_zap_request_event(keypair: FullKeypair, content: String, relays: [RelayDescriptor], target: ZapTarget, zap_type: ZapType) -> NostrEvent? {
-//    var tags = zap_target_to_tags(target)
-//    var relay_tag = ["relays"]
-//    relay_tag.append(contentsOf: relays.map { $0.url.absoluteString })
-//    tags.append(relay_tag)
-//
-//    var kp = keypair
-//
-//    let now = Int64(Date().timeIntervalSince1970)
-//
-//    var message = content
-//    switch zap_type {
-//    case .pub:
-//        break
-//    case .non_zap:
-//        break
-//    case .anon:
-//        tags.append(["anon"])
-//        kp = generate_new_keypair().to_full()!
-//    case .priv:
-//        guard let priv_kp = generate_private_keypair(our_privkey: keypair.privkey, id: target.id, created_at: now) else {
-//            return nil
-//        }
-//        kp = priv_kp
-//        guard let privreq = make_private_zap_request_event(identity: keypair, enc_key: kp, target: target, message: message) else {
-//            return nil
-//        }
-//        tags.append(["anon", privreq])
-//        message = ""
-//    }
-//
-//    let ev = NostrEvent(content: message, pubkey: kp.pubkey, kind: 9734, tags: tags, createdAt: now)
-//    ev.id = calculate_event_id(ev: ev)
-//    ev.sig = sign_event(privkey: kp.privkey, ev: ev)
-//    return ev
-//}
 
 func uniq<T: Hashable>(_ xs: [T]) -> [T] {
     var s = Set<T>()
