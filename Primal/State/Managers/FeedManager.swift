@@ -34,6 +34,7 @@ final class FeedManager {
     @Published var feedUsers: [PrimalUser] = []
     
     var profileId: String?
+    var didReachEnd = false
     
     init(profilePubkey: String) {
         self.profileId = profilePubkey
@@ -49,11 +50,12 @@ final class FeedManager {
     func refresh() {
         parsedPosts.removeAll()
         isRequestingNewPage = false
+        didReachEnd = false
         requestNewPage()
     }
     
     func requestNewPage() {
-        guard !isRequestingNewPage else { return }
+        guard !isRequestingNewPage, !didReachEnd else { return }
         isRequestingNewPage = true
         Connection.dispatchQueue.async {
             self.sendNewPageRequest()
@@ -70,7 +72,11 @@ final class FeedManager {
                  sorted.removeFirst()
             }
             
-            self.parsedPosts.append(contentsOf: sorted)
+            if sorted.isEmpty {
+                didReachEnd = true
+            } else {
+                self.parsedPosts.append(contentsOf: sorted)
+            }
             self.isRequestingNewPage = false
         }
         .store(in: &cancellables)
