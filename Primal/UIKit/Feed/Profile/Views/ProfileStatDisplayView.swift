@@ -8,7 +8,12 @@
 import UIKit
 
 class ProfileStatDisplayView: UIView {
-    let infoLabel = UILabel()
+    private let infoLabel = UILabel()
+    
+    var text: String {
+        get { infoLabel.text ?? "" }
+        set { infoLabel.text = newValue }
+    }
     
     init(_ title: String) {
         super.init(frame: .zero)

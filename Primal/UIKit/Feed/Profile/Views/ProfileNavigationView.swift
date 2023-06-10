@@ -16,6 +16,7 @@ class ProfileNavigationView: UIView, Themeable {
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
     lazy var titleStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
+    var overlayView = UIView()
     
     let profilePictureParent = UIView()
     let profilePicture = UIImageView()
@@ -73,9 +74,11 @@ class ProfileNavigationView: UIView, Themeable {
         
         if deltaFromMax < deltaTitleStartAppearing {
             let smallProgress = (deltaTitleStartAppearing - deltaFromMax) / titleTranslation
+//            overlayView.alpha = smallProgress
             titleStack.alpha = smallProgress
             titleStack.transform = .init(translationX: 0, y: (1 - smallProgress) * titleTranslation)
         } else {
+//            overlayView.alpha = 0
             titleStack.alpha = 0
         }
             
@@ -85,22 +88,33 @@ class ProfileNavigationView: UIView, Themeable {
             bringSubviewToFront(profilePictureParent)
             profilePicture.transform = .identity
             profilePictureParent.transform = .identity
+            overlayView.alpha = 0
             
-            let smallProgress = min(1, (size - maxSize) / 50) // Will be between 0 and 1
-            bannerViewBig.image = bannerImage?.kf.blurred(withRadius: smallProgress * 10)
+            let smallProgress = min(1, (size - maxSize) / 50) - 0.1 // Will be between -0.1 and 0.9
+            if smallProgress > 0 {
+                bannerViewBig.image = bannerImage?.kf.blurred(withRadius: smallProgress * 10)
+            } else {
+                bannerViewBig.image = bannerImage
+            }
         } else if size > maxSize - 20 { // Shrink avatar
-            bringSubviewToFront(profilePictureParent)
             let smallProgress = (maxSize - size) / 20 // Will be between 0 and 1
             let invertedProgress = 1 - smallProgress
-            let scale = 0.5 + (0.5 * invertedProgress)
+            let scale = 0.6 + (0.4 * invertedProgress)
+            
+            bringSubviewToFront(profilePictureParent)
             profilePicture.transform = .init(scaleX: scale, y: scale)
             profilePictureParent.transform = .identity
+            overlayView.alpha = 0
             
             bannerViewBig.image = bannerImage
         } else {  // Translate avatar after shrinking
             sendSubviewToBack(profilePictureParent)
-            profilePicture.transform = .init(scaleX: 0.5, y: 0.5)
+            profilePicture.transform = .init(scaleX: 0.6, y: 0.6)
             profilePictureParent.transform = .init(translationX: 0, y: (size == minSize ? deltaFromMax + maxSize - minSize : 0))
+            
+            let progress = 1 - ((size - minSize) / (maxSize - minSize - 20))
+            
+            overlayView.alpha = progress
             
             bannerViewBig.image = bannerImage?.kf.blurred(withRadius: (maxSize - 20 - size) / 2)
         }
@@ -115,6 +129,8 @@ class ProfileNavigationView: UIView, Themeable {
         primaryLabel.textColor = .foreground
         
         bannerViewBig.backgroundColor = .background
+        
+        overlayView.backgroundColor = .background.withAlphaComponent(0.5)
     }
 }
 
@@ -123,6 +139,9 @@ private extension ProfileNavigationView {
         addSubview(bannerParent)
         bannerParent.pinToSuperview()
         bannerParent.clipsToBounds = true
+        
+        addSubview(overlayView)
+        overlayView.pinToSuperview()
         
         bannerParent.addSubview(bannerViewBig)
         bannerViewBig.pinToSuperview()
@@ -138,9 +157,9 @@ private extension ProfileNavigationView {
         profilePicture.pinToSuperview()
         
         addSubview(profilePictureParent)
-        profilePictureParent.pinToSuperview(edges: .leading, padding: 12).pinToSuperview(edges: .bottom, padding: -81)
+        profilePictureParent.pinToSuperview(edges: .leading, padding: -28).pinToSuperview(edges: .bottom, padding: -90)
             
-        profilePicture.anchorPoint = .init(x: 0.5, y: 1)
+        profilePicture.anchorPoint = .init(x: 0, y: 1)
         
         addSubview(backButton)
         backButton.pinToSuperview(edges: .leading, padding: 12).pinToSuperview(edges: .top, padding: 44)

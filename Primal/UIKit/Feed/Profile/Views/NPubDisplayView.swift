@@ -7,11 +7,17 @@
 
 import UIKit
 
-class NPubDisplayView: UIView {
+class NPubDisplayView: MyButton {
     
     var npub = "" {
         didSet {
             label.text = "\(String(npub.prefix(10)))...\(String(npub.suffix(5)))"
+        }
+    }
+    
+    override var isPressed: Bool {
+        didSet {
+            alpha = isPressed ? 0.5 : 1
         }
     }
     

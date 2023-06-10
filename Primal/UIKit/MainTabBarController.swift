@@ -121,7 +121,10 @@ private extension MainTabBarController {
         buttons[2].addTarget(self, action: #selector(exploreButtonPressed), for: .touchUpInside)
         buttons[3].addTarget(self, action: #selector(messagesButtonPressed), for: .touchUpInside)
         buttons[4].addTarget(self, action: #selector(notificationsButtonPressed), for: .touchUpInside)
+        
+        buttons[1].removeFromSuperview() // REMOVE READ FOR NOW
     }
+    
     
     func updateButtons() {
         for (index, button) in buttons.enumerated() {

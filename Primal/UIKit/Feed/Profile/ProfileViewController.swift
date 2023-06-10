@@ -6,9 +6,15 @@
 //
 
 import UIKit
+import GenericJSON
 
 final class ProfileViewController: FeedViewController {
     let profile: PrimalUser
+    var userStats: NostrUserProfileInfo? {
+        didSet {
+            table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+        }
+    }
     
     private let navigationBar = ProfileNavigationView()
     private let loadingSpinner = LoadingSpinnerView()
@@ -45,7 +51,7 @@ final class ProfileViewController: FeedViewController {
         
         table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileInfoCell.self, forCellReuseIdentifier: "profile")
-        table.contentInset = .init(top: navigationBar.maxSize - 6, left: 0, bottom: 0, right: 0)
+        table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
     }
     
     // MARK: - TableView
@@ -62,7 +68,7 @@ final class ProfileViewController: FeedViewController {
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: "profile", for: indexPath)
-        (cell as? ProfileInfoCell)?.update(user: profile)
+        (cell as? ProfileInfoCell)?.update(user: profile, stats: userStats, delegate: self)
         return cell
     }
     
@@ -73,7 +79,7 @@ final class ProfileViewController: FeedViewController {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offest = -scrollView.contentOffset.y
-        navigationBar.updateSize(offest - navigationBar.maxSize + 6)
+        navigationBar.updateSize(offest - navigationBar.maxSize)
     }
 }
 
@@ -87,7 +93,7 @@ private extension ProfileViewController {
             .sink { [weak self] posts in
                 guard let self else { return }
                 self.posts = posts
-                self.table.contentInset = .init(top: self.navigationBar.maxSize - 6, left: 0, bottom: 0, right: 0)
+                self.table.contentInset = .init(top: self.navigationBar.maxSize, left: 0, bottom: 0, right: 0)
                 if posts.isEmpty {
                     self.loadingSpinner.isHidden = false
                     self.loadingSpinner.play()
@@ -101,7 +107,7 @@ private extension ProfileViewController {
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
         
-        table.contentInset = .init(top: navigationBar.maxSize - 6, left: 0, bottom: 0, right: 0)
+        table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
@@ -113,5 +119,60 @@ private extension ProfileViewController {
         stack.pinToSuperview()
         
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        
+        requestUserProfile()
+    }
+    
+    func requestUserProfile() {
+        let profile = self.profile
+        Connection.dispatchQueue.async {
+            guard let json: JSON = try? JSON([
+                "REQ",
+                "profile_data_\(profile.id)",
+                ["cache": ["user_profile", ["pubkey": profile.pubkey]] as [Any]]
+            ] as [Any]) else {
+                print("Error encoding req")
+                return
+            }
+            
+            Connection.instance.send(json: json) { [weak self] res in
+                DispatchQueue.main.async {
+                    for response in res {
+                        let kind = ResponseKind.fromGenericJSON(response)
+                        
+                        switch kind {
+                        case .metadata:
+                            break
+                        case .userStats:
+                            guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                                print("Error decoding nostr stats string to json")
+                                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
+                                return
+                            }
+                            
+                            self?.userStats = nostrUserProfileInfo
+                        default:
+                            assertionFailure("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension ProfileViewController: ProfileInfoCellDelegate {
+    func npubPressed(in cell: ProfileInfoCell) {
+        UIPasteboard.general.string = profile.npub
+        view.showToast("Key copied to clipboard")
+    }
+    
+    func followPressed(in cell: ProfileInfoCell) {
+        if FollowManager.instance.isFollowing(profile.pubkey) {
+            FollowManager.instance.sendUnfollowEvent(profile.pubkey)
+        } else {
+            FollowManager.instance.sendFollowEvent(profile.pubkey)
+        }
+        cell.updateFollowButton(profile)
     }
 }

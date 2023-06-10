@@ -8,7 +8,12 @@
 import UIKit
 
 final class GradientButton: MyButton {
-    let label = UILabel()
+    var title: String {
+        get { label.text ?? "" }
+        set { label.text = newValue }
+    }
+    
+    private let label = UILabel()
     init(title: String) {
         super.init(frame: .zero)
         
@@ -29,6 +34,12 @@ final class GradientButton: MyButton {
         constrainToSize(height: 36)
         layer.masksToBounds = true
         layer.cornerRadius = 8
+    }
+    
+    override var isPressed: Bool {
+        didSet {
+            label.alpha = isPressed ? 0.5 : 1
+        }
     }
     
     required init?(coder: NSCoder) {
