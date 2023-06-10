@@ -17,6 +17,16 @@ final class PostingTextViewManager: NSObject {
 extension PostingTextViewManager: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         isEditing = true
+        
+        Connection.instance.request(.object([
+            "user_search": .object([
+                "query": .string("A"),
+                "limit": .number(15),
+                "pubkey": .string(IdentityManager.instance.userHex)
+            ])
+        ])) { result in
+            print(result)
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {

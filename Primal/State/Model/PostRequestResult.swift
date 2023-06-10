@@ -8,7 +8,6 @@
 import Foundation
 
 class PostRequestResult {
-    let id: String
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
@@ -16,10 +15,6 @@ class PostRequestResult {
     
     var users: [String: PrimalUser] = [:]
     var stats: [String: NostrContentStats] = [:]
-    
-    init(id: String) {
-        self.id = id
-    }
 }
 
 struct NostrRepost {
