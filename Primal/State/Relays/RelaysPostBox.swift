@@ -20,11 +20,18 @@ final class RelaysPostBox {
         }
     }
     
+    var numConnected: Int {
+        get {
+            return postBox.pool.num_connected
+        }
+    }
+    
     func connect(_ relays: [String: RelayInfo]) {
         for relay in relays {
             add_rw_relay(postBox.pool, relay.key)
         }
         
+        postBox.pool.disconnect()
         postBox.pool.connect()
     }
     

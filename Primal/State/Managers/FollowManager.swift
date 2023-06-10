@@ -32,7 +32,7 @@ final class FollowManager {
         RelaysPostBox.the.send(ev)
     }
     
-    func sendFollowEvent(_ pubkey: String) {
+    private func follow(_ pubkey: String) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
@@ -49,13 +49,13 @@ final class FollowManager {
         RelaysPostBox.the.send(ev)
     }
     
-    func sendLatestFollowEvent(_ pubkey: String) {
+    func sendFollowEvent(_ pubkey: String) {
         IdentityManager.instance.requestUserContacts() {
-            self.sendFollowEvent(pubkey)
+            self.follow(pubkey)
         }
     }
     
-    func sendUnfollowEvent(_ pubkey: String) {
+    private func unfollow(_ pubkey: String) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
@@ -71,6 +71,12 @@ final class FollowManager {
             let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.instance.userContacts.contacts, relays: relays)
             
             RelaysPostBox.the.send(ev)
+        }
+    }
+    
+    func sendUnfollowEvent(_ pubkey: String) {
+        IdentityManager.instance.requestUserContacts() {
+            self.unfollow(pubkey)
         }
     }
     
