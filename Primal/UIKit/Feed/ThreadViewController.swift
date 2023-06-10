@@ -127,14 +127,14 @@ private extension ThreadViewController {
             self.placeholderLabel.isHidden = false
             self.didPostNewComment = true
             self.didMoveToMain = false
-            FeedManager.instance.requestThread(postId: self.id, subId: self.id)
+            self.feed.requestThread(postId: self.id, subId: self.id)
         }
     }
     
     func addPublishers() {
-        FeedManager.instance.requestThread(postId: id, subId: id)
-        FeedManager.instance.postsEmitter.sink { [weak self] result in
-            guard let self, result.id == self.id else { return }
+        feed.requestThread(postId: id, subId: id)
+        feed.postsEmitter.sink { [weak self] result in
+            guard let self else { return }
             
             let parsed = result.process()
             

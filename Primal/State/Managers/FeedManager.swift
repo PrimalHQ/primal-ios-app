@@ -88,16 +88,10 @@ final class FeedManager {
     }
     
     private func sendNewPageRequest(limit: Int32 = 20) {
-        guard
-            let json = generateRequestByFeedType(limit: limit),
-            let id = json.arrayValue?.dropFirst().first?.stringValue
-        else {
-            print("Error encoding req json")
-            return
-        }
+        let json = generateRequestByFeedType(limit: limit)
         
-        pendingResult = .init(id: id)
-        Connection.instance.send(json: json) { res in
+        pendingResult = .init()
+        Connection.instance.request(json) { res in
             for response in res {
                 self.handlePostEvent(response)
             }
@@ -105,7 +99,7 @@ final class FeedManager {
         }
     }
     
-    private func generateRequestByFeedType(limit: Int32 = 20) -> JSON? {
+    private func generateRequestByFeedType(limit: Int32 = 20) -> JSON {
         if let profileId {
             return generateProfileFeedRequest(profileId)
         } else if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == currentFeed }) {
@@ -117,17 +111,20 @@ final class FeedManager {
     
     func requestThread(postId: String, subId: String, limit: Int32 = 100) {
         Connection.dispatchQueue.async {
-            self.pendingResult = .init(id: subId)
+            self.pendingResult = .init()
             
-            guard let json: JSON = try? JSON(
-                ["REQ", "\(subId)", ["cache": ["thread_view", ["event_id": "\(postId)", "limit": limit, "user_pubkey": IdentityManager.instance.userHex]
-                                               as [String : Any]] as [Any]]] as [Any]) else {
-                print("Error encoding req")
-                return
-            }
+            let request: JSON = .object([
+                "cache": .array([
+                    .string("thread_view"),
+                    .object([
+                        "event_id": .string(postId),
+                        "limit": .number(Double(limit)),
+                        "user_pubkey": .string(IdentityManager.instance.userHex)
+                    ])
+                ])
+            ])
             
-            
-            Connection.instance.send(json: json) { res in
+            Connection.instance.request(request) { res in
                 for response in res {
                     self.handlePostEvent(response)
                 }
@@ -136,51 +133,43 @@ final class FeedManager {
         }
     }
     
-    private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON? {
+    private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON {
         let subId = "feed_\(criteria)_\(Connection.instance.identity)"
         
         let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
         
         let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
         
-        return try? JSON([
-            "REQ",
-            subId,
-            [
-                "cache": [
-                    "feed_directive",
-                    [
-                        "directive": criteria,
-                        "user_pubkey": IdentityManager.instance.userHex,
-                        "limit": limit,
-                        "until": u
-                    ] as [String : Any]
-                ] as [Any]
-            ]
-        ] as [Any])
+        return .object([
+            "cache": .array([
+                .string("feed_directive"),
+                .object([
+                    "directive": .string(criteria),
+                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "limit": .number(Double(limit)),
+                    "until": .number(Double(u))
+                ])
+            ])
+        ])
     }
     
-    private func generateProfileFeedRequest(_ profileId: String, limit: Int32 = 20) -> JSON? {
+    private func generateProfileFeedRequest(_ profileId: String, limit: Double = 20) -> JSON {
         let subId = "feed_profile\(profileId)"
         
         let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
         
-        return try? JSON([
-            "REQ",
-            subId,
-            [
-                "cache": [
-                    "feed",
-                    [
-                        "pubkey": profileId,
-                        "user_pubkey": IdentityManager.instance.userHex,
-                        "notes": "authored",
-                        "limit": limit,
-                        "until": until
-                    ] as [String : Any]
-                ] as [Any]
-            ]
-        ] as [Any])
+        return .object([
+            "cache": .array([
+                .string("feed"),
+                .object([
+                    "pubkey": .string(profileId),
+                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "notes": .string("authored"),
+                    "limit": .number(limit),
+                    "until": .number(Double(until))
+                ])
+            ])
+        ])
     }
     
     private func emitPosts() {

@@ -55,27 +55,18 @@ final class Connection {
         isConnected =  false
     }
     
-    func send(json: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        guard let subId = json.arrayValue?[1].stringValue else {
-            print("subId not found in \(json)")
-            return
+    func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        let subId = UUID().uuidString
+        let json: JSON = .array([.string("REQ"), .string(subId), request])
+        Self.dispatchQueue.async {
+            guard let jsonData = try? self.jsonEncoder.encode(json) else {
+                print("Error encoding req json")
+                return
+            }
+            let jsonStr = String(data: jsonData, encoding: .utf8)!
+                    
+            self.socket?.send(string: jsonStr)
         }
-        
-        if !subHandlers.keys.contains(subId) {
-            subHandlers[subId] = handler
-        }
-        
-        if !responseBuffer.keys.contains(subId) {
-            responseBuffer[subId] = []
-        }
-        
-        guard let jsonData = try? self.jsonEncoder.encode(json) else {
-            print("Error encoding req json")
-            return
-        }
-        let jsonStr = String(data: jsonData, encoding: .utf8)!
-                
-        self.socket?.send(string: jsonStr)
     }
     
     private func processMessage(_ json: JSON) {

@@ -126,16 +126,17 @@ private extension ProfileViewController {
     func requestUserProfile() {
         let profile = self.profile
         Connection.dispatchQueue.async {
-            guard let json: JSON = try? JSON([
-                "REQ",
-                "profile_data_\(profile.id)",
-                ["cache": ["user_profile", ["pubkey": profile.pubkey]] as [Any]]
-            ] as [Any]) else {
+            guard let request: JSON = try? JSON([
+                "cache": [
+                    "user_profile",
+                    ["pubkey": profile.pubkey]
+                ] as [Any]
+            ]) else {
                 print("Error encoding req")
                 return
             }
             
-            Connection.instance.send(json: json) { [weak self] res in
+            Connection.instance.request(request) { [weak self] res in
                 DispatchQueue.main.async {
                     for response in res {
                         let kind = ResponseKind.fromGenericJSON(response)
@@ -146,7 +147,6 @@ private extension ProfileViewController {
                         case .userStats:
                             guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                                 print("Error decoding nostr stats string to json")
-                                dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
                                 return
                             }
                             
