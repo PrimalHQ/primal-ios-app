@@ -108,8 +108,7 @@ extension PostRequestResult {
                                     DispatchQueue.main.async {
                                         guard let image = image as? UIImage else { return }
                                         
-                                        parsed.image = image
-                                        p.parsedMetadata = parsed
+                                        p.parsedMetadata?.image = image
                                     }
                                 }
                             }
@@ -119,8 +118,7 @@ extension PostRequestResult {
                                     DispatchQueue.main.async {
                                         guard let icon = icon as? UIImage else { return }
                                         
-                                        parsed.icon = icon
-                                        p.parsedMetadata = parsed
+                                        p.parsedMetadata?.icon = icon
                                     }
                                 }
                             }
