@@ -84,42 +84,42 @@ extension PostRequestResult {
         if let index = otherURLs.firstIndex(where: { $0.isValidURL && $0.isNotEmail }) {
             let firstURL = otherURLs.remove(at: index)
             itemsToRemove.append(firstURL)
-            
+
             if let url = URL(string: firstURL.hasPrefix("http") ? firstURL : "https://\(firstURL)") {
                 p.firstExtractedURL = url
                 p.parsedMetadata = .loadingMetadata(url)
-                
+
                 let provider = LPMetadataProvider()
                 provider.startFetchingMetadata(for: url) { metadata, error in
                     DispatchQueue.main.async {
                         _ = provider
-                        
+
                         guard let metadata else {
                             p.parsedMetadata = .failedToLoad(url)
                             return
                         }
-                        
+
                         var parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
                         p.parsedMetadata = parsed
-                        
-                        if let imageProvider = metadata.imageProvider {
-                            imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                DispatchQueue.main.async {
-                                    guard let image = image as? UIImage else { return }
+
+                        DispatchQueue.global(qos: .background).async {
+                            if let imageProvider = metadata.imageProvider {
+                                imageProvider.loadObject(ofClass: UIImage.self) { image, error in
+                                    DispatchQueue.main.async {
+                                        guard let image = image as? UIImage else { return }
                                         
-                                    parsed.image = image
-                                    p.parsedMetadata = parsed
+                                        p.parsedMetadata?.image = image
+                                    }
                                 }
                             }
-                        }
-                        
-                        if let iconProvider = metadata.iconProvider {
-                            iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
-                                DispatchQueue.main.async {
-                                    guard let icon = icon as? UIImage else { return }
+                            
+                            if let iconProvider = metadata.iconProvider {
+                                iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
+                                    DispatchQueue.main.async {
+                                        guard let icon = icon as? UIImage else { return }
                                         
-                                    parsed.icon = icon
-                                    p.parsedMetadata = parsed
+                                        p.parsedMetadata?.icon = icon
+                                    }
                                 }
                             }
                         }
