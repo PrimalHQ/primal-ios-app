@@ -7,10 +7,16 @@
 
 import UIKit
 
+protocol ProfileInfoCellDelegate: AnyObject {
+    func npubPressed(in cell: ProfileInfoCell)
+    func followPressed(in cell: ProfileInfoCell)
+}
+
 class ProfileInfoCell: UITableViewCell {
     let zapButton = GradientBorderIconButton(icon: UIImage(named: "profileZap"))
     let messageButton = GradientBorderIconButton(icon: UIImage(named: "profileMessage"))
     let followButton = GradientButton(title: "follow")
+    let editProfile = GradientBorderTextButton(text: "edit profile")
     
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
@@ -25,12 +31,16 @@ class ProfileInfoCell: UITableViewCell {
     let followers = ProfileStatDisplayView("Followers")
     let posts = ProfileStatDisplayView("Posts")
     
+    weak var delegate: ProfileInfoCellDelegate?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
     
-    func update(user: PrimalUser) {
+    func update(user: PrimalUser, stats: NostrUserProfileInfo?, delegate: ProfileInfoCellDelegate?) {
+        self.delegate = delegate
+        
         primaryLabel.text = user.firstIdentifier
         
         checkboxIcon.isHidden = user.nip05.isEmpty
@@ -40,6 +50,24 @@ class ProfileInfoCell: UITableViewCell {
         npubView.npub = user.npub
         descLabel.text = user.about
         linkView.link = user.website
+        
+        following.text = "\(stats?.follows_count ?? 0)"
+        followers.text = "\(stats?.followers_count ?? 0)"
+        posts.text = "\(stats?.note_count ?? 0)"
+        
+        if user.id == IdentityManager.instance.user?.id {
+            followButton.isHidden = true
+            editProfile.isHidden = false
+        } else {
+            followButton.isHidden = false
+            editProfile.isHidden = true
+            
+            updateFollowButton(user)
+        }
+    }
+    
+    func updateFollowButton(_ user: PrimalUser) {
+        followButton.title = FollowManager.instance.isFollowing(user.pubkey) ? "unfollow" : "follow"
     }
     
     required init?(coder: NSCoder) {
@@ -49,8 +77,7 @@ class ProfileInfoCell: UITableViewCell {
 
 private extension ProfileInfoCell {
     func setup() {
-        
-        let actionStack = UIStackView(arrangedSubviews: [UIView(), zapButton, messageButton, followButton])
+        let actionStack = UIStackView(arrangedSubviews: [UIView(), zapButton, messageButton, followButton, editProfile])
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
@@ -85,5 +112,16 @@ private extension ProfileInfoCell {
         primaryLabel.textColor = .foreground
         secondaryLabel.textColor = .foreground5
         descLabel.textColor = .foreground
+        
+        npubView.addTarget(self, action: #selector(npubPressed), for: .touchUpInside)
+        followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
+    }
+    
+    @objc func npubPressed() {
+        delegate?.npubPressed(in: self)
+    }
+    
+    @objc func followPressed() {
+        delegate?.followPressed(in: self)
     }
 }

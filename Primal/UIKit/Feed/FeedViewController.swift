@@ -108,6 +108,11 @@ extension FeedViewController: PostCellDelegate {
         show(profile, sender: nil)
     }
     
+    func postCellDidTapRepostedProfile(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted else { return }
+       show(ProfileViewController(profile: profile), sender: nil)
+    }
+    
     func postCellDidTapLike(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         

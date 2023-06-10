@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RepostedIndicatorView: UIView {
+final class RepostedIndicatorView: MyButton {
     let nameLabel = UILabel()
     
     init() {

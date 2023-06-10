@@ -148,7 +148,8 @@ private extension MenuContainerController {
         
         let signOut = MenuItemButton(title: "SIGN OUT")
         let settings = MenuItemButton(title: "SETTINGS")
-        let buttonsStack = UIStackView(arrangedSubviews: [MenuItemButton(title: "PROFILE"), settings, signOut])
+        let profile = MenuItemButton(title: "PROFILE")
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
         
         [
             profileImage, titleStack, usernameStack, followStack,
@@ -229,9 +230,12 @@ private extension MenuContainerController {
         swipe.direction = .left
         coverView.addGestureRecognizer(swipe)
         
+        profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
+        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
+        profileImage.isUserInteractionEnabled = true
         
         IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let user else { return }
@@ -268,6 +272,12 @@ private extension MenuContainerController {
     }
     
     // MARK: - Objc methods
+    
+    @objc func profilePressed() {
+        guard let profile = IdentityManager.instance.user else { return }
+        show(ProfileViewController(profile: profile), sender: nil)
+        resetNavigationTabBar()
+    }
     
     @objc func settingsButtonPressed() {
         show(SettingsMainViewController(), sender: nil)

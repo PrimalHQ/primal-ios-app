@@ -18,6 +18,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
+    func postCellDidTapRepostedProfile(_ cell: PostCell)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -225,6 +226,7 @@ private extension PostCell {
         
         selectionStyle = .none
         
+        repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
         postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
@@ -244,6 +246,10 @@ private extension PostCell {
     
     @objc func profileTapped() {
         delegate?.postCellDidTapProfile(self)
+    }
+    
+    @objc func repostProfileTapped() {
+        delegate?.postCellDidTapRepostedProfile(self)
     }
     
     @objc func repostTapped() {
