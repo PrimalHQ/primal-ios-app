@@ -165,16 +165,19 @@ extension FeedViewController: PostCellDelegate {
         present(safari, animated: true)
     }
     
-    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL]) {
+    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
         weak var viewController: UIViewController?
         let binding = UIHostingController(rootView: ImageViewerRemote(
-            imageURL: .init(get: { image.absoluteString }, set: { _ in }),
+            imageURL: .init(get: { resource.url }, set: { _ in }),
             viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
         ))
         viewController = binding
         binding.view.backgroundColor = .clear
         binding.modalPresentationStyle = .overFullScreen
         present(binding, animated: true)
+    }
+    
+    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL]) {
     }
     
     func postCellDidLoadImage(_ cell: PostCell) {

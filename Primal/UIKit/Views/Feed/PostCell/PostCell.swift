@@ -12,7 +12,7 @@ import LinkPresentation
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
-    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL])
+    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource])
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -76,11 +76,11 @@ class PostCell: UITableViewCell {
             linkPresentation.data = metadata
             linkPresentation.isHidden = false
             
-            let didHaveImage = metadata.image != nil
+            let didHaveImage = metadata.imageKey != nil
             metadataUpdater = content.$parsedMetadata.sink { [weak self] in
                 var data = $0 ?? .failedToLoad(metadata.url)
                 if !didHaveImage {
-                    data.image = nil
+                    data.imageKey = nil
                 }
                 self?.linkPresentation.data = data
             }
@@ -103,7 +103,7 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.imageURLs = content.imageResources.compactMap { $0.url(for: .large) }
+        mainImages.imageResources = content.imageResources
         
         imageAspectConstraint?.isActive = false
         if let first = content.imageResources.first?.variants.first {
@@ -162,8 +162,8 @@ class PostCell: UITableViewCell {
 }
 
 extension PostCell: ImageCollectionViewDelegate {
-    func didTapImage(url: URL, urls: [URL]) {
-        delegate?.postCellDidTapImages(self, image: url, images: urls)
+    func didTapImage(resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
+        delegate?.postCellDidTapImages(self, resource: resource, resources: resources)
     }
 }
 

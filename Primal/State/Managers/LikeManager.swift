@@ -12,7 +12,9 @@ final class LikeManager {
     
     static let instance: LikeManager = LikeManager()
     
-    func hasLiked(_ eventId: String) -> Bool { FeedManager.instance.userLikes.contains(eventId) }
+    @Published var userLikes: Set<String> = []
+    
+    func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
         guard
@@ -51,7 +53,7 @@ final class LikeManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    FeedManager.instance.userLikes.insert(res.event_id)
+                    userLikes.insert(res.event_id)
                 }
                 break
             }

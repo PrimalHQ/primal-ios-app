@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import Combine
+import Kingfisher
 
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
@@ -55,6 +56,12 @@ final class RootViewController: UIViewController {
         super.viewDidAppear(animated)
         
         animateFromIntro()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+        KingfisherManager.shared.cache.clearMemoryCache()
     }
     
     func set(_ viewController: UIViewController) {

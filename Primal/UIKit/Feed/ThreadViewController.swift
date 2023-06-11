@@ -33,7 +33,7 @@ final class ThreadViewController: FeedViewController {
     
     init(threadId: String) {
         id = threadId
-        super.init(feed: FeedManager())
+        super.init(feed: FeedManager(threadId: threadId))
         setup()
     }
     
@@ -127,28 +127,22 @@ private extension ThreadViewController {
             self.placeholderLabel.isHidden = false
             self.didPostNewComment = true
             self.didMoveToMain = false
-            self.feed.requestThread(postId: self.id, subId: self.id)
+            self.feed.requestThread(postId: self.id)
         }
     }
     
     func addPublishers() {
-        feed.requestThread(postId: id, subId: id)
-        feed.postsEmitter.sink { [weak self] result in
-            guard let self else { return }
+        feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
+            guard let self, !parsed.isEmpty else { return }
             
-            let parsed = result.process()
+            self.posts = parsed.sorted(by: { $0.post.created_at < $1.post.created_at })
+            self.mainPositionInThread = self.posts.firstIndex(where: { $0.post.id == self.id }) ?? 0
             
-            DispatchQueue.main.async {
-                self.mainPositionInThread = parsed.firstIndex(where: { $0.post.id == self.id }) ?? 0
-                self.posts = parsed
-                
-                self.didLoadData = true
-                
-                self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].user.displayName)"
-                
-                self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].user.name)
-            }
+            self.didLoadData = true
             
+            self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].user.displayName)"
+            
+            self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].user.name)
         }
         .store(in: &cancellables)
         

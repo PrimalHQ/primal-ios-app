@@ -7,6 +7,7 @@
 
 import Foundation
 import LinkPresentation
+import Kingfisher
 
 extension PostRequestResult {
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, PrimalUser)? {
@@ -103,22 +104,34 @@ extension PostRequestResult {
                         p.parsedMetadata = parsed
 
                         DispatchQueue.global(qos: .background).async {
-                            if let imageProvider = metadata.imageProvider {
+                            let imageKey = p.linkMetadataImageKey
+                            if KingfisherManager.shared.cache.isCached(forKey: imageKey) {
+                                DispatchQueue.main.async {
+                                    p.parsedMetadata?.imageKey = imageKey
+                                }
+                            } else if let imageProvider = metadata.imageProvider {
                                 imageProvider.loadObject(ofClass: UIImage.self) { image, error in
                                     DispatchQueue.main.async {
                                         guard let image = image as? UIImage else { return }
                                         
-                                        p.parsedMetadata?.image = image
+                                        KingfisherManager.shared.cache.store(image, forKey: imageKey)
+                                        p.parsedMetadata?.imageKey =  imageKey
                                     }
                                 }
                             }
-                            
-                            if let iconProvider = metadata.iconProvider {
+
+                            let iconKey = p.linkMetadataIconKey
+                            if KingfisherManager.shared.cache.isCached(forKey: iconKey) {
+                                DispatchQueue.main.async {
+                                    p.parsedMetadata?.iconKey = iconKey
+                                }
+                            } else if let iconProvider = metadata.iconProvider {
                                 iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
                                     DispatchQueue.main.async {
                                         guard let icon = icon as? UIImage else { return }
                                         
-                                        p.parsedMetadata?.icon = icon
+                                        KingfisherManager.shared.cache.store(icon, forKey: iconKey)
+                                        p.parsedMetadata?.iconKey = iconKey
                                     }
                                 }
                             }

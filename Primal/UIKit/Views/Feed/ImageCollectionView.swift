@@ -9,20 +9,20 @@ import UIKit
 import Kingfisher
 
 protocol ImageCollectionViewDelegate: AnyObject {
-    func didTapImage(url: URL, urls: [URL])
+    func didTapImage(resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource])
 }
 
 final class ImageCollectionView: UICollectionView {
     weak var imageDelegate: ImageCollectionViewDelegate?
 
-    var imageURLs: [URL] {
+    var imageResources: [MediaMetadata.Resource] {
         didSet {
             reloadData()
         }
     }
 
-    init(urls: [URL] = []) {
-        imageURLs = urls
+    init(resources: [MediaMetadata.Resource] = []) {
+        imageResources = resources
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -43,23 +43,34 @@ extension ImageCollectionView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageDelegate?.didTapImage(url: imageURLs[indexPath.row], urls: imageURLs)
+        imageDelegate?.didTapImage(resource: imageResources[indexPath.item], resources: imageResources)
     }
 }
 
 extension ImageCollectionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageURLs.count
+        imageResources.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        (cell as? ImageCell)?.imageView.kf.setImage(with: imageURLs[indexPath.item], options: [
-            .processor(DownsamplingImageProcessor(size: frame.size)),
-            .transition(.fade(0.1)),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        
+        let r = imageResources[indexPath.item]
+        
+        if r.variants.first?.animated == true || r.url.hasSuffix("gif") {
+            print("ANIMATED ANIMATED")
+            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
+                .transition(.fade(0.1)),
+                .scaleFactor(UIScreen.main.scale),
+            ])
+        } else {
+            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
+                .processor(DownsamplingImageProcessor(size: frame.size)),
+                .transition(.fade(0.1)),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ])
+        }
         return cell
     }
 }

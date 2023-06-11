@@ -28,7 +28,7 @@ final class HomeFeedViewController: FeedViewController {
         
         title = "Latest with Replies"
         
-        FeedManager.instance.$parsedPosts
+        feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 self?.posts = posts
@@ -47,7 +47,7 @@ final class HomeFeedViewController: FeedViewController {
             }
             .store(in: &cancellables)
         
-        FeedManager.instance.$currentFeed
+        feed.$currentFeed
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
                 self?.title = name
@@ -88,7 +88,7 @@ final class HomeFeedViewController: FeedViewController {
     }
     
     @objc func openFeedSelection() {
-        present(FeedsSelectionController(), animated: true)
+        present(FeedsSelectionController(feed: feed), animated: true)
     }
     
     @objc func postPressed() {

@@ -8,12 +8,15 @@
 import UIKit
 import SafariServices
 import LinkPresentation
+import Kingfisher
 
 struct LinkMetadata {
     var url: URL
     var lpMetadata: LPLinkMetadata?
-    var image: UIImage?
-    var icon: UIImage?
+    
+    var imageKey: String?
+    var iconKey: String?
+    
     var title: String?
     
     static func loadingMetadata(_ url: URL) -> LinkMetadata {
@@ -51,22 +54,30 @@ final class LinkPreview: UIView {
 
 private extension LinkPreview {
     func set(data: LinkMetadata) {
-        if let image = data.image {
-            imageView.image = image
-            
-            imageAspectConstraint?.isActive = false
-            let aspect = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: image.size.width / image.size.height)
-            imageAspectConstraint = aspect
-            
-            aspect.priority = .defaultHigh
-            aspect.isActive = true
+        if let imageKey = data.imageKey, KingfisherManager.shared.cache.isCached(forKey: imageKey) {
+            KingfisherManager.shared.cache.retrieveImage(forKey: imageKey) { [weak self] result in
+                guard let self, case .success(let cachedImage) = result, let image = cachedImage.image else { return }
+                
+                self.imageView.image = image
+                
+                self.imageAspectConstraint?.isActive = false
+                let aspect = self.imageView.widthAnchor.constraint(equalTo: self.imageView.heightAnchor, multiplier: image.size.width / image.size.height)
+                self.imageAspectConstraint = aspect
+                
+                aspect.priority = .defaultHigh
+                aspect.isActive = true
+            }
         } else {
             imageView.isHidden = true
         }
         
-        if let icon = data.icon {
-            iconView.image = icon
-            iconView.layer.cornerRadius = 18
+        if let iconKey = data.iconKey, KingfisherManager.shared.cache.isCached(forKey: iconKey) {
+            KingfisherManager.shared.cache.retrieveImage(forKey: iconKey) { [weak self] result in
+                guard let self, case .success(let cachedImage) = result, let icon = cachedImage.image else { return }
+                
+                self.iconView.image = icon
+                self.iconView.layer.cornerRadius = 18
+            }
         } else {
             iconView.image = UIImage(named: "webPreviewIcon")
             iconView.layer.cornerRadius = 0
