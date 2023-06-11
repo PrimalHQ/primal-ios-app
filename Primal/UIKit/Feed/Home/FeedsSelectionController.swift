@@ -6,9 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class FeedsSelectionController: UIViewController {
-    init() {
+    let feed: FeedManager
+    
+    init(feed: FeedManager) {
+        self.feed = feed
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -23,8 +27,10 @@ private extension FeedsSelectionController {
         guard let title = button.title(for: .normal), !title.isEmpty else { return }
         dismiss(animated: true)
         
+        KingfisherManager.shared.cache.clearMemoryCache()
+        
         Connection.dispatchQueue.async {
-            FeedManager.instance.setCurrentFeed(title)
+            self.feed.setCurrentFeed(title)
         }
     }
     

@@ -20,17 +20,11 @@ final class FeedManager {
         initUserConnectionSubscription()
     }
     
-    static let instance: FeedManager = FeedManager()
-    
     let postsEmitter: PassthroughSubject<PostRequestResult, Never> = .init()
     
     @Published var currentFeed: String = ""
     @Published var parsedPosts: [ParsedContent] = []
     @Published var searchPaginationEvent: PrimalSearchPagination?
-    @Published var userLikes: Set<String> = []
-    @Published var userReposts: Set<String> = []
-    @Published var userReplied: Set<String> = []
-    @Published var userZapped: Set<String> = []
     @Published var feedUsers: [PrimalUser] = []
     
     var profileId: String?
@@ -40,6 +34,11 @@ final class FeedManager {
         self.profileId = profilePubkey
         initPostsEmitterSubscription()
         initUserConnectionSubscription()
+    }
+    
+    init(threadId: String) {
+        initPostsEmitterSubscription()
+        requestThread(postId: threadId)
     }
     
     func setCurrentFeed(_ feed: String) {
@@ -115,27 +114,25 @@ final class FeedManager {
         }
     }
     
-    func requestThread(postId: String, subId: String, limit: Int32 = 100) {
-        Connection.dispatchQueue.async {
-            self.pendingResult = .init()
-            
-            let request: JSON = .object([
-                "cache": .array([
-                    .string("thread_view"),
-                    .object([
-                        "event_id": .string(postId),
-                        "limit": .number(Double(limit)),
-                        "user_pubkey": .string(IdentityManager.instance.userHex)
-                    ])
+    func requestThread(postId: String, limit: Int32 = 100) {
+        self.pendingResult = .init()
+        
+        let request: JSON = .object([
+            "cache": .array([
+                .string("thread_view"),
+                .object([
+                    "event_id": .string(postId),
+                    "limit": .number(Double(limit)),
+                    "user_pubkey": .string(IdentityManager.instance.userHex)
                 ])
             ])
-            
-            Connection.instance.request(request) { res in
-                for response in res {
-                    self.handlePostEvent(response)
-                }
-                self.emitPosts()
+        ])
+        
+        Connection.instance.request(request) { res in
+            for response in res {
+                self.handlePostEvent(response)
             }
+            self.emitPosts()
         }
     }
     
@@ -220,16 +217,16 @@ final class FeedManager {
                 return
             }
             if noteStatus.liked {
-                self.userLikes.insert(noteStatus.event_id)
+                LikeManager.instance.userLikes.insert(noteStatus.event_id)
             }
             if noteStatus.replied {
-                self.userReplied.insert(noteStatus.event_id)
+                PostManager.instance.userReplied.insert(noteStatus.event_id)
             }
             if noteStatus.reposted {
-                self.userReposts.insert(noteStatus.event_id)
+                PostManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
-                self.userZapped.insert(noteStatus.event_id)
+                PostManager.instance.userZapped.insert(noteStatus.event_id)
             }
         case .repost:
             guard

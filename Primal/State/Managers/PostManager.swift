@@ -12,8 +12,12 @@ final class PostManager {
     
     static let instance: PostManager = PostManager()
     
-    public func hasReposted(_ eventId: String) -> Bool { FeedManager.instance.userReposts.contains(eventId) }
-    public func hasReplied(_ eventId: String) -> Bool { FeedManager.instance.userReplied.contains(eventId) }
+    @Published var userReposts: Set<String> = []
+    @Published var userReplied: Set<String> = []
+    @Published var userZapped: Set<String> = []
+    
+    public func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
+    public func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
@@ -74,7 +78,7 @@ final class PostManager {
                 break
             case .ok(let res):
                 if res.ok {
-                    FeedManager.instance.userReposts.insert(res.event_id)
+                    userReposts.insert(res.event_id)
                 }
                 break
             }
@@ -133,7 +137,7 @@ final class PostManager {
                     break
                 case .ok(let res):
                     if res.ok {
-                        FeedManager.instance.userReplied.insert(res.event_id)
+                        userReplied.insert(res.event_id)
                         callback()
                     }
                     break

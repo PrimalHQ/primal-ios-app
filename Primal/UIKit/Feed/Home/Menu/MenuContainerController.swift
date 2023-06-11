@@ -298,6 +298,7 @@ private extension MenuContainerController {
         alert.addAction(.init(title: "Sign out", style: .destructive) { _ in
             do {
                 try clear_keypair()
+                KingfisherManager.shared.cache.clearMemoryCache()
                 RootViewController.instance.reset()
             } catch {
                 self.showErrorMessage(error.localizedDescription)
