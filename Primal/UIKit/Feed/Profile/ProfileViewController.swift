@@ -105,7 +105,8 @@ private extension ProfileViewController {
             .store(in: &cancellables)
         
         view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(100)
+        loadingSpinner.centerToSuperview(axis: .horizontal).constrainToSize(100)
+        loadingSpinner.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 200).isActive = true
         
         table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
         

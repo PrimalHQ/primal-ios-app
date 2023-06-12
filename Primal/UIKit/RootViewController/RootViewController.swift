@@ -32,7 +32,6 @@ final class RootViewController: UIViewController {
         if !Theme.hasDefaultTheme {
             Theme.current = UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance
         }
-        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         quickReset()
         addIntro()
         
@@ -50,7 +49,9 @@ final class RootViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle { Theme.current.statusBarStyle }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        currentChild as? OnboardingParentViewController != nil ? .lightContent : Theme.current.statusBarStyle
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -110,11 +111,13 @@ final class RootViewController: UIViewController {
             let keypair = result,
             let decoded = try? bech32_decode(keypair.pubkey_bech32)
         else {
+            overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())
             Connection.instance.disconnect()
             return
         }
         
+        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         set(MainTabBarController())
             
         Connection.instance.connect()

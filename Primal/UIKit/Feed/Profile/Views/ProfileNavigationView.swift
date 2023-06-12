@@ -89,13 +89,7 @@ class ProfileNavigationView: UIView, Themeable {
             profilePicture.transform = .identity
             profilePictureParent.transform = .identity
             overlayView.alpha = 0
-            
-            let smallProgress = min(1, (size - maxSize) / 50) - 0.1 // Will be between -0.1 and 0.9
-            if smallProgress > 0 {
-                bannerViewBig.image = bannerImage?.kf.blurred(withRadius: smallProgress * 10)
-            } else {
-                bannerViewBig.image = bannerImage
-            }
+            bannerViewBig.image = bannerImage
         } else if size > maxSize - 20 { // Shrink avatar
             let smallProgress = (maxSize - size) / 20 // Will be between 0 and 1
             let invertedProgress = 1 - smallProgress
