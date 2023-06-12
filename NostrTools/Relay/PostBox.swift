@@ -136,8 +136,8 @@ final class PostBox: ObservableObject {
         
         events[event.id] = posted_ev
         
-        if after == nil {
+//        if after == nil {
             flush_event(posted_ev)
-        }
+//        }
     }
 }

@@ -33,9 +33,14 @@ final class NostrWalletConnectSuccessController : UIViewController {
         guard let url = nwcURL?.to_url().absoluteString else {
             return
         }
-        nwcLabel.text = url
+        nwcLabel.text = nwcURL?.pubkey
         nwcLabel.contentMode = .scaleToFill
         view.addSubview(nwcLabel)
         nwcLabel.centerToSuperview()
+        let defaults = UserDefaults.standard
+        
+        if let nwc = nwcURL {
+            defaults.set(url, forKey: "nwc")
+        }
     }
 }

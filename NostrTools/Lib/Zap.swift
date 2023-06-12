@@ -604,10 +604,7 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
     return result.pr
 }
 
-func initial_pending_zap_state() -> PendingZapState {
-    let url = "pull out of storage"
-    let nwc = WalletConnectURL(str: url)!
-    
+func initial_pending_zap_state(_ nwc: WalletConnectURL) -> PendingZapState {
     return .nwc(NWCPendingZapState(state: .fetching_invoice, url: nwc))
 }
 

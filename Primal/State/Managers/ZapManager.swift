@@ -23,6 +23,13 @@ final class ZapManager {
             return
         }
         
+        guard
+            let nwcUrl = UserDefaults.standard.string(forKey: "nwc"),
+            let nwc = WalletConnectURL(str: nwcUrl)
+        else {
+            return
+        }
+        
         let relays = RelaysPostBox.the.zapRelays()
         
         guard let mzapreq = make_zap_request_event(keypair: fullKeypair, content: comment, relays: relays, target: target, zap_type: type) else {
@@ -31,13 +38,11 @@ final class ZapManager {
         }
         
         let amount_msat = amount * 1000
-        let pending_zap_state = initial_pending_zap_state()
-        let pending_zap = PendingZap(amount_msat: amount_msat, target: target, request: mzapreq, type: type, state: pending_zap_state)
         let zapreq = mzapreq.potentially_anon_outer_request.ev
         let reqid = ZapRequestId(from_makezap: mzapreq)
         
         Task {
-            var mpayreq = await fetch_static_payreq(lnurl)
+            let mpayreq = await fetch_static_payreq(lnurl)
             
             guard let payreq = mpayreq else {
                 return
@@ -46,10 +51,17 @@ final class ZapManager {
             guard let inv = await fetch_zap_invoice(payreq, zapreq: zapreq, msats: amount_msat, zap_type: type, comment: comment) else {
                 return
             }
-            
-            let nwcUrl = WalletConnectURL(str: "")!
-            
-            let nwc_req = nwc_pay(url: nwcUrl,  pool: RelaysPostBox.the.pool, post: RelaysPostBox.the.postBox, invoice: inv, on_flush: nil)
+             
+            DispatchQueue.main.async {
+                let nwc_req = nwc_pay(url: nwc,  pool: RelaysPostBox.the.pool, post: RelaysPostBox.the.postBox, invoice: inv, on_flush: nil)
+                
+                guard let nwc_req else {
+                    print("error")
+                    return
+                }
+                
+                print("nwc: sending request \(nwc_req.id) zap_req_id \(reqid.reqid)")
+            }
         }
     }
 }

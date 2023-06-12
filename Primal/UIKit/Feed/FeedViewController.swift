@@ -102,6 +102,26 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapZap(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell)
+        else {
+            return
+        }
+
+        let post = posts[indexPath.row].post
+        let postUser = posts[indexPath.row].user
+                
+        guard
+            let lnurl = postUser.lnurl
+        else {
+            print("Error getting lnurl to zap")
+            return
+        }
+        
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: 10)
+    }
+    
     func postCellDidTapProfile(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row else { return }
         let profile = ProfileViewController(profile: posts[index].user)

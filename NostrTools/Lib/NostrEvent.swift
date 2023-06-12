@@ -29,7 +29,7 @@ enum EncEncoding {
     case bech32
 }
 
-enum NostrKind: Int {
+enum NostrKind: Int, Codable {
     case metadata = 0
     case text = 1
     case contacts = 3
@@ -726,13 +726,13 @@ func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool) {
 }
 
 @discardableResult
-func nwc_pay(url: WalletConnectURL, pool: RelayPool, post: PostBox, invoice: String, delay: TimeInterval? = 5.0, on_flush: OnFlush? = nil) -> NostrEvent? {
+func nwc_pay(url: WalletConnectURL, pool: RelayPool, post: PostBox, invoice: String, delay: TimeInterval? = 0.0, on_flush: OnFlush? = nil) -> NostrEvent? {
     let req = make_wallet_pay_invoice_request(invoice: invoice)
     guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
         return nil
     }
     
-    try? pool.add_relay(.nwc(url: url.relay))
+//    try? pool.add_relay(.nwc(url: url.relay))
     subscribe_to_nwc(url: url, pool: pool)
     post.send(ev, to: [url.relay.id], skip_ephemeral: false, delay: delay, on_flush: on_flush)
     return ev
