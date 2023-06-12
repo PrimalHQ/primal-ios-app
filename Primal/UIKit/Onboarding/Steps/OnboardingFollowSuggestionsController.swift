@@ -68,6 +68,7 @@ private extension OnboardingFollowSuggestionsController {
         view.addSubview(fade)
         fade.pin(to: table, edges: [.horizontal, .bottom])
         
+        table.backgroundColor = .black
         table.register(FollowProfileCell.self, forCellReuseIdentifier: "cell")
         table.register(FollowSectionHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         table.dataSource = self
