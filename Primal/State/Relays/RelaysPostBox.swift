@@ -26,9 +26,21 @@ final class RelaysPostBox {
         }
     }
     
+    var postBox: PostBox {
+        get {
+            return postBox
+        }
+    }
+    
+    var pool: RelayPool {
+        get {
+            return postBox.pool
+        }
+    }
+    
     func connect(_ relays: [String: RelayInfo]) {
         for relay in relays {
-            add_rw_relay(postBox.pool, relay.key)
+            add_rw_relay(pool: postBox.pool, url: relay.key, info: .rw, variant: .regular)
         }
         
         postBox.pool.disconnect()
@@ -41,5 +53,9 @@ final class RelaysPostBox {
     
     func registerHandler(sub_id: String, handler: @escaping (String, NostrConnectionEvent) -> ()) {
         postBox.pool.register_handler(sub_id: sub_id, handler: handler)
+    }
+    
+    func zapRelays() -> [RelayDescriptor] {
+        return Array(postBox.pool.our_descriptors.prefix(10))
     }
 }

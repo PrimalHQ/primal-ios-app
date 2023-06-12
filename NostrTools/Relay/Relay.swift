@@ -14,9 +14,37 @@ public struct RelayInfo: Codable {
     static let rw = RelayInfo(read: true, write: true)
 }
 
+enum RelayVariant {
+    case regular
+    case ephemeral
+    case nwc
+}
+
 public struct RelayDescriptor {
-    public let url: RelayURL
-    public let info: RelayInfo
+    let url: RelayURL
+    let info: RelayInfo
+    let variant: RelayVariant
+    
+    init(url: RelayURL, info: RelayInfo, variant: RelayVariant = .regular) {
+        self.url = url
+        self.info = info
+        self.variant = variant
+    }
+    
+    var ephemeral: Bool {
+        switch variant {
+        case .regular:
+            return false
+        case .ephemeral:
+            return true
+        case .nwc:
+            return true
+        }
+    }
+    
+    static func nwc(url: RelayURL) -> RelayDescriptor {
+        return RelayDescriptor(url: url, info: .rw, variant: .nwc)
+    }
 }
 
 enum RelayFlags: Int {

@@ -44,6 +44,7 @@ enum NostrKind: Int {
     case zap = 9735
     case zap_request = 9734
     case settings = 30078
+    case nwc_response = 23195
 }
 
 enum ValidationResult: Decodable {
@@ -686,6 +687,57 @@ func make_zap_request_event(keypair: FullKeypair, content: String, relays: [Rela
         return .normal(zapreq)
     }
 }
+
+func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: FullKeypair, created_at: Int64, kind: Int) -> NostrEvent? {
+    let privkey = keypair.privkey
+    
+    guard let enc_content = encrypt_message(message: message, privkey: privkey, to_pk: to_pk) else {
+        return nil
+    }
+    
+    let ev = NostrEvent(content: enc_content, pubkey: keypair.pubkey, kind: kind, tags: tags, createdAt: created_at)
+    
+    ev.calculate_id()
+    ev.sign(privkey: privkey)
+    return ev
+}
+
+func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypair: FullKeypair) -> NostrEvent? {
+    let tags = [["p", to_pk]]
+    let created_at = Int64(Date().timeIntervalSince1970)
+    guard let content = encode_json(req) else {
+        return nil
+    }
+    return create_encrypted_event(content, to_pk: to_pk, tags: tags, keypair: keypair, created_at: created_at, kind: 23194)
+}
+
+func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoiceRequest> {
+    let data = PayInvoiceRequest(invoice: invoice)
+    return WalletRequest(method: "pay_invoice", params: data)
+}
+
+func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool) {
+    var filter = NostrFilter(kinds: [.nwc_response])
+    filter.authors = [url.pubkey]
+    filter.limit = 0
+    let sub = NostrSubscribe(filters: [filter], sub_id: "nwc")
+    
+    pool.send(.subscribe(sub), to: [url.relay.id], skip_ephemeral: false)
+}
+
+@discardableResult
+func nwc_pay(url: WalletConnectURL, pool: RelayPool, post: PostBox, invoice: String, delay: TimeInterval? = 5.0, on_flush: OnFlush? = nil) -> NostrEvent? {
+    let req = make_wallet_pay_invoice_request(invoice: invoice)
+    guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
+        return nil
+    }
+    
+    try? pool.add_relay(.nwc(url: url.relay))
+    subscribe_to_nwc(url: url, pool: pool)
+    post.send(ev, to: [url.relay.id], skip_ephemeral: false, delay: delay, on_flush: on_flush)
+    return ev
+}
+
 
 func event_has_tag(ev: NostrEvent, tag: String) -> Bool {
     for t in ev.tags {

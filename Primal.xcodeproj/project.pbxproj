@@ -54,6 +54,7 @@
 		939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016A2A06C18200E9DBA2 /* Websocket.swift */; };
 		939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016C2A06C21A00E9DBA2 /* PostBox.swift */; };
 		939BDB532A352ACF00E80B2C /* Zap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB522A352ACF00E80B2C /* Zap.swift */; };
+		939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB542A374EAB00E80B2C /* ZapManager.swift */; };
 		93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE752A0AB0A5005AE313 /* Profile.swift */; };
 		93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */; };
 		93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE792A0AB118005AE313 /* AnyDecodable.swift */; };
@@ -260,6 +261,7 @@
 		939A016A2A06C18200E9DBA2 /* Websocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Websocket.swift; sourceTree = "<group>"; };
 		939A016C2A06C21A00E9DBA2 /* PostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBox.swift; sourceTree = "<group>"; };
 		939BDB522A352ACF00E80B2C /* Zap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zap.swift; sourceTree = "<group>"; };
+		939BDB542A374EAB00E80B2C /* ZapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapManager.swift; sourceTree = "<group>"; };
 		93B7FE752A0AB0A5005AE313 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		93B7FE792A0AB118005AE313 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
@@ -804,6 +806,7 @@
 				93F27DA72A27FA8E004ADA55 /* LikeManager.swift */,
 				93F27DA92A27FB41004ADA55 /* PostManager.swift */,
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
+				939BDB542A374EAB00E80B2C /* ZapManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1266,6 +1269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				930497A329FAD69B003938F2 /* Mentions.swift in Sources */,
+				939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */,
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,

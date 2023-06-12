@@ -74,7 +74,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     }
 }
 
-struct PrimalUser : Codable, Identifiable, Hashable {
+class PrimalUser : Codable, Identifiable, Hashable {
     let id: String
     let pubkey: String
     let npub: String
@@ -154,6 +154,33 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         }
         
         return domain
+    }
+    
+    private var _lnurl: String? = nil
+    var lnurl: String? {
+        if let _lnurl {
+            return _lnurl
+        }
+        
+        var addr: String = ""
+        if lud16 == "" && lud06 == "" {
+            return nil
+        }
+        
+        addr = lud16 == "" ? lud06 : lud16
+        
+        if addr.contains("@") {
+            // this is a heavy op and is used a lot in views, cache it!
+            let addr = lnaddress_to_lnurl(addr);
+            _lnurl = addr
+            return addr
+        }
+        
+        if !addr.lowercased().hasPrefix("lnurl") {
+            return nil
+        }
+        
+        return addr;
     }
     
     static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {

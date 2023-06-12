@@ -603,3 +603,23 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
     
     return result.pr
 }
+
+func initial_pending_zap_state() -> PendingZapState {
+    let url = "pull out of storage"
+    let nwc = WalletConnectURL(str: url)!
+    
+    return .nwc(NWCPendingZapState(state: .fetching_invoice, url: nwc))
+}
+
+struct WalletRequest<T: Codable>: Codable {
+    let method: String
+    let params: T?
+}
+
+struct PayInvoiceRequest: Codable {
+    let invoice: String
+}
+
+struct PayInvoiceResponse: Decodable {
+    let preimage: String
+}
