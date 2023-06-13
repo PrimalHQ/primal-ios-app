@@ -53,15 +53,10 @@ final class IdentityManager {
     
     func requestUserInfos() {
         let request: JSON = .object([
-            "cache": .array([
-                .string("user_infos"),
-                .object([
-                    "pubkeys": .array([.string(userHex)])
-                ])
-            ])
+            "pubkeys": .array([.string(userHex)])
         ])
 
-        Connection.instance.request(request) { res in
+        Connection.instance.requestCache(name: "user_infos", request: request) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
                 

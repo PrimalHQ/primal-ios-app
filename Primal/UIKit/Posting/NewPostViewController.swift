@@ -13,6 +13,14 @@ class NewPostViewController: UIViewController {
     let textView = UITextView()
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
+    let usersTableView = UITableView()
+    
+    let imageButton = UIButton()
+    let cameraButton = UIButton()
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, UIView()])
+    
+    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
+    
     private var cancellables: Set<AnyCancellable> = []
         
     init() {
@@ -33,10 +41,13 @@ class NewPostViewController: UIViewController {
 
 private extension NewPostViewController {
     @objc func postButtonPressed() {
-        guard let text = textView.text, !text.isEmpty else {
+        let text = manager.postingText
+        
+        guard !text.isEmpty else {
             showErrorMessage("Text mustn't be empty")
             return
         }
+        
         PostManager.instance.sendPostEvent(text) { [weak self] in
             self?.dismiss(animated: true)
         }
@@ -54,14 +65,6 @@ private extension NewPostViewController {
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         
-        let imageButton = UIButton()
-        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
-        imageButton.constrainToSize(48)
-        
-        let cameraButton = UIButton()
-        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
-        cameraButton.constrainToSize(48)
-        
         let imageParent = UIView()
         imageParent.addSubview(imageView)
         imageView.constrainToSize(52).pinToSuperview(edges: [.horizontal, .top])
@@ -74,11 +77,11 @@ private extension NewPostViewController {
         imageView.layer.cornerRadius = 26
         imageView.clipsToBounds = true
         
-        textView.font = .appFont(withSize: 18, weight: .regular)
-        textView.textColor = .foreground
-        textView.backgroundColor = .background2
+        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
+        imageButton.constrainToSize(48)
+        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
+        cameraButton.constrainToSize(48)
         
-        let bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, UIView()])
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         bottomStack.spacing = 4
@@ -86,12 +89,23 @@ private extension NewPostViewController {
         let border = SpacerView(height: 1, priority: .required)
         border.backgroundColor = .background3
         
-        let mainStack = UIStackView(arrangedSubviews: [topStack, contentStack, border, bottomStack])
+        let mainStack = UIStackView(arrangedSubviews: [topStack, contentStack, border, usersTableView, bottomStack])
         mainStack.axis = .vertical
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top])
-        mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
+        NSLayoutConstraint.activate([
+            mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
+        ])
+        
+        cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        
+        setupBindings()
+    }
+    
+    func setupBindings() {
         IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
@@ -103,7 +117,18 @@ private extension NewPostViewController {
         }
         .store(in: &cancellables)
         
-        cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        manager.$users.receive(on: DispatchQueue.main).sink { [weak self] users in
+            guard let self else { return }
+            self.bottomStack.isHidden = !users.isEmpty
+            self.usersTableView.isHidden = users.isEmpty
+            self.manager.usersHeightConstraint.constant = CGFloat(users.count) * 60
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutSubviews()
+            } completion: { _ in
+                self.usersTableView.reloadData()
+            }
+            self.usersTableView.reloadData()
+        }
+        .store(in: &cancellables)
     }
 }

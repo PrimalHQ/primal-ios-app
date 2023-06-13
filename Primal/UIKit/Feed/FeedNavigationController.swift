@@ -27,13 +27,15 @@ final class FeedNavigationController: MainNavigationController {
     }
 }
 
-class MainNavigationController: UINavigationController, Themeable {
+class MainNavigationController: UINavigationController, Themeable, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = true
+            
+        interactivePopGestureRecognizer?.delegate = self
         
         updateTheme()
     }
@@ -52,5 +54,9 @@ class MainNavigationController: UINavigationController, Themeable {
         navigationBar.compactAppearance = appearance
         
         viewControllers.forEach { $0.updateThemeIfThemeable() }
+    }
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
     }
 }

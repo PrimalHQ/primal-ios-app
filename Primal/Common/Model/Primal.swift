@@ -36,7 +36,6 @@ struct PrimalSearchPagination: Codable, Hashable {
     let since: Int32
     let until: Int32
     let order_by: String
-    var subId: String? = ""
 }
 
 struct PrimalSettings: Codable, Identifiable, Hashable {

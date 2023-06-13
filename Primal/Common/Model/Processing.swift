@@ -236,6 +236,18 @@ extension PrimalUser {
         return npub
     }
     
+    var atIdentifier: String { "@" + atIdentifierWithoutAt }
+    
+    var atIdentifierWithoutAt: String {
+        if !name.isEmpty {
+            return name
+        }
+        if !displayName.isEmpty {
+            return displayName
+        }
+        return npub
+    }
+    
     var secondIdentifier: String? {
         let identifiers = [displayName, name, nip05, npub]
         var didFindFirst = false

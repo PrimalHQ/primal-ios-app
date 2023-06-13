@@ -29,7 +29,9 @@ final class ThreadViewController: FeedViewController {
     private let buttonStack = UIStackView()
     private let replyingToLabel = UILabel()
     
-    private var inputManager = PostingTextViewManager()
+    let usersTableView = UITableView()
+    
+    private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView)
     
     init(threadId: String) {
         id = threadId
@@ -114,7 +116,9 @@ final class ThreadViewController: FeedViewController {
 
 private extension ThreadViewController {
     @objc func postButtonPressed() {
-        guard let text = textInputView.text, !text.isEmpty else {
+        let text = inputManager.postingText
+        
+        guard !text.isEmpty else {
             showErrorMessage("Text mustn't be empty")
             return
         }
@@ -140,9 +144,9 @@ private extension ThreadViewController {
             
             self.didLoadData = true
             
-            self.placeholderLabel.text = "Reply to \(parsed[self.mainPositionInThread].user.displayName)"
+            self.placeholderLabel.text = "Reply to \(self.posts[self.mainPositionInThread].user.displayName)"
             
-            self.replyingToLabel.attributedText = self.replyToString(name: parsed[self.mainPositionInThread].user.name)
+            self.replyingToLabel.attributedText = self.replyToString(name: self.posts[self.mainPositionInThread].user.name)
         }
         .store(in: &cancellables)
         
@@ -177,6 +181,19 @@ private extension ThreadViewController {
                 
                 self.textInputView.layoutIfNeeded()
             }
+        }
+        .store(in: &cancellables)
+        
+        inputManager.$users.receive(on: DispatchQueue.main).sink { [weak self] users in
+            guard let self else { return }
+            self.usersTableView.isHidden = users.isEmpty
+            self.inputManager.usersHeightConstraint.constant = CGFloat(users.count) * 60
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutSubviews()
+            } completion: { _ in
+                self.usersTableView.reloadData()
+            }
+            self.usersTableView.reloadData()
         }
         .store(in: &cancellables)
     }
@@ -255,6 +272,15 @@ private extension ThreadViewController {
         
         textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
         textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        
+        view.addSubview(usersTableView)
+        usersTableView.pin(to: inputParent, edges: .horizontal)
+        usersTableView.isHidden = true
+        
+        NSLayoutConstraint.activate([
+            usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
+            usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
+        ])
     }
     
     func setupMainStack() {
