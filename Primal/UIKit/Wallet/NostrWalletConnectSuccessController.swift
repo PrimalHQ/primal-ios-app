@@ -27,23 +27,25 @@ final class NostrWalletConnectSuccessController : UIViewController {
     private func setup() {
         view.backgroundColor = Theme.current.background
         
-        navigationItem.title = "Success"
-        
-        nwcLabel.textColor = Theme.current.foreground
         guard let url = nwcURL?.to_url().absoluteString else {
             return
         }
-        nwcLabel.text = nwcURL?.pubkey
-        nwcLabel.contentMode = .scaleToFill
-        view.addSubview(nwcLabel)
-        nwcLabel.centerToSuperview()
-        let defaults = UserDefaults.standard
-        
-        if let nwc = nwcURL {
-            defaults.set(url, forKey: "nwc")
+
+        if let _ = nwcURL {
+            UserDefaults.standard.set(url, forKey: "nwc")
             
             RelaysPostBox.the.disconnect()
             RelaysPostBox.the.connect(IdentityManager.instance.userRelays!)
+            
+            nwcLabel.textColor = Theme.current.foreground
+            nwcLabel.text = "Wallet connected. You can close this view now. (Just pull it down)"
+            nwcLabel.lineBreakMode = .byWordWrapping
+            nwcLabel.numberOfLines = 0
+            nwcLabel.preferredMaxLayoutWidth = view.frame.width
+            nwcLabel.textAlignment = .center
+
+            view.addSubview(nwcLabel)
+            nwcLabel.centerToSuperview()
         }
     }
 }
