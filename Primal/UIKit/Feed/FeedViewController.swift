@@ -115,11 +115,22 @@ extension FeedViewController: PostCellDelegate {
         guard
             let lnurl = postUser.lnurl
         else {
-            print("Error getting lnurl to zap")
+            let alert = UIAlertController(title: "Error", message: "User you're trying to zap didn't set up their lightning wallet", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
             return
         }
         
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: 10)
+        guard
+            let _ = UserDefaults.standard.string(forKey: "nwc")
+        else {
+            let alert = UIAlertController(title: "Error", message: "You didn't connect Nostr Wallet Connect with Primal", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: 69)
     }
     
     func postCellDidTapProfile(_ cell: PostCell) {
@@ -130,7 +141,7 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapRepostedProfile(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted else { return }
-       show(ProfileViewController(profile: profile), sender: nil)
+        show(ProfileViewController(profile: profile), sender: nil)
     }
     
     func postCellDidTapLike(_ cell: PostCell) {

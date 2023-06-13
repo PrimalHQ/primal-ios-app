@@ -41,6 +41,9 @@ final class NostrWalletConnectSuccessController : UIViewController {
         
         if let nwc = nwcURL {
             defaults.set(url, forKey: "nwc")
+            
+            RelaysPostBox.the.disconnect()
+            RelaysPostBox.the.connect(IdentityManager.instance.userRelays!)
         }
     }
 }

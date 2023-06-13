@@ -732,7 +732,6 @@ func nwc_pay(url: WalletConnectURL, pool: RelayPool, post: PostBox, invoice: Str
         return nil
     }
     
-//    try? pool.add_relay(.nwc(url: url.relay))
     subscribe_to_nwc(url: url, pool: pool)
     post.send(ev, to: [url.relay.id], skip_ephemeral: false, delay: delay, on_flush: on_flush)
     return ev

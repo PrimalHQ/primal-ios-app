@@ -38,6 +38,11 @@ final class RelaysPostBox {
         }
     }
     
+    func disconnect() {
+        _postBox.pool.disconnect()
+        _postBox.pool.relays = []
+    }
+    
     func connect(_ relays: [String: RelayInfo]) {
         for relay in relays {
             add_rw_relay(pool: _postBox.pool, url: relay.key, info: .rw, variant: .regular)
