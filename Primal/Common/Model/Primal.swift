@@ -27,9 +27,11 @@ struct PrimalSettingsFeed: Codable, Hashable {
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
-    let description: String?
-    let theme: String?
+    var description: String?
+    var theme: String?
     var feeds: [PrimalSettingsFeed]
+    var defaultZapAmount: Int64?
+    var zapOptions: [Int64]?
 }
 
 struct PrimalSearchPagination: Codable, Hashable {

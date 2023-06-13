@@ -130,7 +130,9 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: 69)
+        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
+        
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount)
     }
     
     func postCellDidTapProfile(_ cell: PostCell) {
