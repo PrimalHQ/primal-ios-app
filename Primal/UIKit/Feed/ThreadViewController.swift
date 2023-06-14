@@ -116,6 +116,8 @@ final class ThreadViewController: FeedViewController {
 
 private extension ThreadViewController {
     @objc func postButtonPressed() {
+        guard textInputView.isEditable else { return }
+        
         let text = inputManager.postingText
         
         guard !text.isEmpty else {
@@ -125,7 +127,7 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        PostManager.instance.sendReplyEvent(text, post: posts[mainPositionInThread].post) {
+        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) {
             self.textInputView.isEditable = true
             self.textInputView.text = ""
             self.placeholderLabel.isHidden = false
