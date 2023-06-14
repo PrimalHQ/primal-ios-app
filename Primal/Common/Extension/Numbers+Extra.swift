@@ -12,3 +12,32 @@ extension FloatingPoint {
         min(maximum, max(minimum, self))
     }
 }
+
+extension Int {
+    func shortened() -> String {
+        if self < 1000 {
+            return "\(self)"
+        }
+        
+        let multipliers: [(String, Float)] = [
+            ("k", 1_000),
+            ("m", 1_000_000),
+            ("b", 1_000_000_000)
+        ]
+        
+        for (shorten, multiplier) in multipliers {
+            let total = Float(self) / multiplier
+            if total < 10 {
+                guard let string = String(format: "%.1f", total).split(separator: ".0").first else {
+                    return String(format: "%.1f\(shorten)", total)
+                }
+                return string + shorten
+            }
+            if total < 1000 {
+                return "\(Int(total))\(shorten)"
+            }
+        }
+        
+        return "1t+"
+    }
+}

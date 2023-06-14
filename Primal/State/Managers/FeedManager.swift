@@ -48,6 +48,7 @@ final class FeedManager {
     
     func refresh() {
         parsedPosts.removeAll()
+        searchPaginationEvent = nil
         isRequestingNewPage = false
         didReachEnd = false
         requestNewPage()
@@ -137,11 +138,7 @@ final class FeedManager {
     }
     
     private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON {
-        let subId = "feed_\(criteria)_\(Connection.instance.identity)"
-        
-        let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
-        
-        let u = searchPaginationEvent?.subId == subId ? (searchPaginationEvent?.since ?? until) : until
+        let until = searchPaginationEvent?.since ?? parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
         
         return .object([
             "cache": .array([
@@ -150,7 +147,7 @@ final class FeedManager {
                     "directive": .string(criteria),
                     "user_pubkey": .string(IdentityManager.instance.userHex),
                     "limit": .number(Double(limit)),
-                    "until": .number(Double(u))
+                    "until": .number(Double(until))
                 ])
             ])
         ])
@@ -210,7 +207,6 @@ final class FeedManager {
             }
             
             self.searchPaginationEvent = searchPaginationEvent
-            self.searchPaginationEvent?.subId = response.arrayValue?[1].stringValue
         case .noteActions:
             guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding PrimalNoteStatus to json")

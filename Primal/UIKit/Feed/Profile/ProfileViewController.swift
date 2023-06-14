@@ -127,17 +127,14 @@ private extension ProfileViewController {
     func requestUserProfile() {
         let profile = self.profile
         Connection.dispatchQueue.async {
-            guard let request: JSON = try? JSON([
-                "cache": [
-                    "user_profile",
-                    ["pubkey": profile.pubkey]
-                ] as [Any]
-            ]) else {
-                print("Error encoding req")
-                return
-            }
+            let request: JSON = .array([
+                .string("user_profile"),
+                .object([
+                    "pubkey": .string(profile.pubkey)
+                ])
+            ])
             
-            Connection.instance.request(request) { [weak self] res in
+            Connection.instance.requestCache(request) { [weak self] res in
                 DispatchQueue.main.async {
                     for response in res {
                         let kind = ResponseKind.fromGenericJSON(response)

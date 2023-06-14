@@ -9,7 +9,6 @@ import UIKit
 
 extension UILabel {
     func countLabelLines() -> Int {
-//        layoutIfNeeded()
         let myText = (text ?? "") as NSString
         let attributes: [NSAttributedString.Key : Any] = [.font : font!]
         

@@ -134,6 +134,11 @@
 		9E8834C02A328966005DB548 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BF2A328966005DB548 /* GradientButton.swift */; };
 		9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C12A33BE24005DB548 /* ToastMessageView.swift */; };
 		9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C32A33C25F005DB548 /* GradientBorderTextButton.swift */; };
+		9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C52A377A93005DB548 /* SocketRequest.swift */; };
+		9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C72A378DA5005DB548 /* Publisher+Extra.swift */; };
+		9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C92A379672005DB548 /* NSRange+Extra.swift */; };
+		9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */; };
+		9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */; };
 		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
@@ -161,9 +166,7 @@
 		9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */; };
 		9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */; };
 		9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */; };
-		9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8C29F6AB8A00A9CDF3 /* UINavigationController.swift */; };
 		9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */; };
-		9E9F2F9629F6AB8A00A9CDF3 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8E29F6AB8A00A9CDF3 /* View.swift */; };
 		9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8F29F6AB8A00A9CDF3 /* Collection.swift */; };
 		9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */; };
 		9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */; };
@@ -366,6 +369,11 @@
 		9E8834BF2A328966005DB548 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
 		9E8834C12A33BE24005DB548 /* ToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastMessageView.swift; sourceTree = "<group>"; };
 		9E8834C32A33C25F005DB548 /* GradientBorderTextButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderTextButton.swift; sourceTree = "<group>"; };
+		9E8834C52A377A93005DB548 /* SocketRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketRequest.swift; sourceTree = "<group>"; };
+		9E8834C72A378DA5005DB548 /* Publisher+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extra.swift"; sourceTree = "<group>"; };
+		9E8834C92A379672005DB548 /* NSRange+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRange+Extra.swift"; sourceTree = "<group>"; };
+		9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTableCell.swift; sourceTree = "<group>"; };
+		9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeTests.swift; sourceTree = "<group>"; };
 		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
@@ -393,9 +401,7 @@
 		9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Font+Extra.swift"; sourceTree = "<group>"; };
 		9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extra.swift"; sourceTree = "<group>"; };
 		9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extra.swift"; sourceTree = "<group>"; };
-		9E9F2F8C29F6AB8A00A9CDF3 /* UINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
-		9E9F2F8E29F6AB8A00A9CDF3 /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		9E9F2F8F29F6AB8A00A9CDF3 /* Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -469,6 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				933DBDAE2A112598008DCF1F /* Notes */,
+				9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -609,6 +616,7 @@
 				9393313129A3E56F003954C2 /* Nostr.swift */,
 				9393313329A3E575003954C2 /* Primal.swift */,
 				9E8834A52A274A88005DB548 /* Processing.swift */,
+				9E8834C52A377A93005DB548 /* SocketRequest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -620,15 +628,15 @@
 				9E9F2F8829F6AB8A00A9CDF3 /* Color.swift */,
 				9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */,
 				9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */,
-				9E9F2F8C29F6AB8A00A9CDF3 /* UINavigationController.swift */,
 				9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */,
 				9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */,
-				9E9F2F8E29F6AB8A00A9CDF3 /* View.swift */,
 				9E79D3A22A01530B008404DB /* Date+Extra.swift */,
 				9EB219F02A0919930037C3E5 /* Numbers+Extra.swift */,
 				933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */,
 				9E4AAAA92A12288600C962BD /* UILabel+Extra.swift */,
 				9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */,
+				9E8834C72A378DA5005DB548 /* Publisher+Extra.swift */,
+				9E8834C92A379672005DB548 /* NSRange+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -843,6 +851,7 @@
 			children = (
 				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
 				9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */,
+				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
 			);
 			path = Posting;
 			sourceTree = "<group>";
@@ -1249,7 +1258,6 @@
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* ResponseKind.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
-				9E9F2F9629F6AB8A00A9CDF3 /* View.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
 				9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */,
@@ -1318,6 +1326,7 @@
 				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
+				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
 				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
@@ -1325,6 +1334,7 @@
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */,
 				93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */,
+				9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
@@ -1333,6 +1343,7 @@
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
+				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
 				93F27DA82A27FA8E004ADA55 /* LikeManager.swift in Sources */,
 				9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */,
 				939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */,
@@ -1340,12 +1351,12 @@
 				9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */,
 				9EA420D22A17B42F008FBFED /* ImageViewerRemote.swift in Sources */,
 				933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */,
-				9E9F2F9429F6AB8A00A9CDF3 /* UINavigationController.swift in Sources */,
 				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
+				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
@@ -1376,6 +1387,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */,
 				933DBDB02A1125A5008DCF1F /* NoteParserTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
@@ -1547,7 +1559,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.15;
+				MARKETING_VERSION = 0.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1588,7 +1600,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.15;
+				MARKETING_VERSION = 0.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

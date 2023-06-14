@@ -55,6 +55,14 @@ final class Connection {
         isConnected =  false
     }
     
+    func requestCache(name: String, request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        requestCache(.array([.string(name), request]), handler)
+    }
+    
+    func requestCache(_ cacheRequest: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        request(.object(["cache" : cacheRequest]), handler)
+    }
+    
     func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
         let subId = UUID().uuidString
         let json: JSON = .array([.string("REQ"), .string(subId), request])
@@ -64,7 +72,8 @@ final class Connection {
                 return
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
-                    
+                 
+            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
