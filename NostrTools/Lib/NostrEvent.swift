@@ -588,7 +588,7 @@ func make_reply_event(pubkey: String, privkey: String, content: String, post: Pr
 }
 
 func make_post_event(pubkey: String, privkey: String, content: String) -> NostrEvent {
-    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [[]])
+    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [])
     
     ev.calculate_id()
     ev.sign(privkey: privkey)
