@@ -40,20 +40,19 @@ final class PostManager {
             return
         }
         
-        let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content)
-        ev.tags = mentionedPubkeys.map { ["p", $0, "", "mention"] }
+        let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, mentionedPubkeys: mentionedPubkeys)
         
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handlePostEvent(callback))
         RelaysPostBox.the.send(ev)
     }
+    
     func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post)
-        ev.tags = mentionedPubkeys.map { ["p", $0, "", "mention"] }
+        let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post, mentionedPubkeys: mentionedPubkeys)
         
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handleReplyEvent(callback))
         RelaysPostBox.the.send(ev)
