@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import GenericJSON
 
 struct EditingToken {
     var range: NSRange
@@ -205,10 +206,8 @@ private extension PostingTextViewManager {
                 case nil:
                     return Just(.init()).eraseToAnyPublisher()
                 case "":
-                    return SocketRequest(name: "user_search", payload: .object([
-                        "query": .string(""),
-                        "limit": .number(15),
-                        "pubkey": .string(IdentityManager.instance.userHex)
+                    return SocketRequest(name: "user_infos", payload: .object([
+                        "pubkeys": .array(self.recommendedUsersNpubs.map { .string($0) })
                     ])).publisher()
                 default:
                    return SocketRequest(name: "user_search", payload: .object([
@@ -220,7 +219,9 @@ private extension PostingTextViewManager {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
                 self?.userScore = result.userScore
-                self?.users = Array(result.users.values).sorted(by: { $0.firstIdentifier.lowercased() < $1.firstIdentifier.lowercased() })
+                self?.users = Array(result.users.values).sorted(by: {
+                    result.userScore[$0.pubkey] ?? 0 > result.userScore[$1.pubkey] ?? 0
+                })
             })
             .store(in: &cancellables)
     }
@@ -259,4 +260,19 @@ extension PostingTextViewManager: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         replaceEditingTokenWithUser(users[indexPath.row])
     }
+}
+
+extension PostingTextViewManager {
+    var recommendedUsersNpubs: [String] { [
+        "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2", // jack
+        "bf2376e17ba4ec269d10fcc996a4746b451152be9031fa48e74553dde5526bce", // carla
+        "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11", // walker
+        "85080d3bad70ccdcd7f74c29a44f55bb85cbcd3dd0cbb957da1d215bdb931204", // preston
+        "eab0e756d32b80bcd464f3d844b8040303075a13eabc3599a762c9ac7ab91f4f", // lyn
+        "04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9", // odell
+        "472f440f29ef996e92a186b8d320ff180c855903882e59d50de1b8bd5669301e", // marty
+        "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411", // nvk
+        "91c9a5e1a9744114c6fe2d61ae4de82629eaaa0fb52f48288093c7e7e036f832", // rockstar
+        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
+    ] }
 }
