@@ -575,11 +575,11 @@ func make_metadata_event(keypair: Keypair, metadata: Profile) -> NostrEvent? {
     return ev
 }
 
-func make_reply_event(pubkey: String, privkey: String, content: String, post: PrimalFeedPost) -> NostrEvent {
+func make_reply_event(pubkey: String, privkey: String, content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrEvent {
     let e = ["e", post.id, "", "reply"]
     let p = ["p", post.pubkey]
     
-    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [e, p])
+    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [e, p] + mentionedPubkeys.map { ["p", $0, "", "mention"] })
     
     ev.calculate_id()
     ev.sign(privkey: privkey)
@@ -587,8 +587,8 @@ func make_reply_event(pubkey: String, privkey: String, content: String, post: Pr
     return ev
 }
 
-func make_post_event(pubkey: String, privkey: String, content: String) -> NostrEvent {
-    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: [])
+func make_post_event(pubkey: String, privkey: String, content: String, mentionedPubkeys: [String]) -> NostrEvent {
+    let ev = NostrEvent(content: content, pubkey: pubkey, kind: Int(ResponseKind.text.rawValue), tags: mentionedPubkeys.map { ["p", $0, "", "mention"] })
     
     ev.calculate_id()
     ev.sign(privkey: privkey)

@@ -64,13 +64,21 @@ final class PostingTextViewManager: NSObject {
     }
     
     var postingText: String {
+        var tokens = self.tokens
         var currentText = textView.text as NSString
         
-        for token in tokens {
-            currentText = currentText.replacingCharacters(in: token.range, with: "nostr:\(token.user.npub)") as NSString
+        for i in tokens.indices {
+            let token = tokens[i]
+            let replacement = "nostr:\(token.user.npub)"
+            currentText = currentText.replacingCharacters(in: token.range, with: replacement) as NSString
+            tokens = updateTokensForReplacingRange(tokens: tokens, range: token.range, replacementText: replacement)
         }
         
         return currentText as String
+    }
+    
+    var mentionedUsersPubkeys: [String] {
+        tokens.map { $0.user.pubkey }
     }
 }
 
@@ -170,6 +178,14 @@ private extension PostingTextViewManager {
         for i in tokens.indices where tokens[i].range.location >= range.location {
             tokens[i].range.location += (replacementText as NSString).length - range.length
         }
+    }
+    
+    func updateTokensForReplacingRange(tokens: [UserToken], range: NSRange, replacementText: String) -> [UserToken] {
+        var tokens = tokens
+        for i in tokens.indices where tokens[i].range.location >= range.location {
+            tokens[i].range.location += (replacementText as NSString).length - range.length
+        }
+        return tokens
     }
     
     func updateText(_ text: String, cursorPosition: Int) {

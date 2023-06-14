@@ -34,24 +34,25 @@ final class PostManager {
             print("Error creating repost event")
         }
     }
-    func sendPostEvent(_ content: String, _ callback: @escaping () -> Void) {
+    func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content)
+        let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, mentionedPubkeys: mentionedPubkeys)
         
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handlePostEvent(callback))
         RelaysPostBox.the.send(ev)
     }
-    func sendReplyEvent(_ content: String, post: PrimalFeedPost, _ callback: @escaping () -> Void) {
+    
+    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
         }
         
-        let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post)
+        let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post, mentionedPubkeys: mentionedPubkeys)
         
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handleReplyEvent(callback))
         RelaysPostBox.the.send(ev)

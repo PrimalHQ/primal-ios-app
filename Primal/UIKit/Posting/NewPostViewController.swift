@@ -48,7 +48,7 @@ private extension NewPostViewController {
             return
         }
         
-        PostManager.instance.sendPostEvent(text) { [weak self] in
+        PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] in
             self?.dismiss(animated: true)
         }
     }
