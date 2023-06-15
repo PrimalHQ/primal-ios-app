@@ -16,6 +16,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
+    func postCellDidTapZap(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
     func postCellDidTapRepostedProfile(_ cell: PostCell)
@@ -237,8 +238,13 @@ private extension PostCell {
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
+        zapButton.addTarget(self, action: #selector(zapTapped), for: .touchUpInside)
         
         replyButton.isUserInteractionEnabled = false
+    }
+    
+    @objc func zapTapped() {
+        delegate?.postCellDidTapZap(self)
     }
     
     @objc func linkPreviewTapped() {

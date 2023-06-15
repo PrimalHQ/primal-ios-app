@@ -30,6 +30,11 @@
 		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
 		933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */; };
 		9344DB312A1D28EB00C9F281 /* ResponseKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9344DB302A1D28EB00C9F281 /* ResponseKind.swift */; };
+		9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */; };
+		9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */; };
+		9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */; };
+		9363DE792A30DE810060F4BD /* NostrWalletConnectSuccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */; };
+		9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */; };
 		93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93665D312A06BFE6001EB7A0 /* RelayPool.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
 		939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330FC29A3E370003954C2 /* Preview Assets.xcassets */; };
@@ -48,6 +53,8 @@
 		939A01692A06C15800E9DBA2 /* NostrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01682A06C15800E9DBA2 /* NostrRequest.swift */; };
 		939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016A2A06C18200E9DBA2 /* Websocket.swift */; };
 		939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016C2A06C21A00E9DBA2 /* PostBox.swift */; };
+		939BDB532A352ACF00E80B2C /* Zap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB522A352ACF00E80B2C /* Zap.swift */; };
+		939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB542A374EAB00E80B2C /* ZapManager.swift */; };
 		93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE752A0AB0A5005AE313 /* Profile.swift */; };
 		93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */; };
 		93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE792A0AB118005AE313 /* AnyDecodable.swift */; };
@@ -229,6 +236,11 @@
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
 		933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedContent.swift; sourceTree = "<group>"; };
 		9344DB302A1D28EB00C9F281 /* ResponseKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseKind.swift; sourceTree = "<group>"; };
+		9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerProtocol.swift; sourceTree = "<group>"; };
+		9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerCoordinator.swift; sourceTree = "<group>"; };
+		9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectDeeplinkHandler.swift; sourceTree = "<group>"; };
+		9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectSuccessController.swift; sourceTree = "<group>"; };
+		9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectURL.swift; sourceTree = "<group>"; };
 		93665D312A06BFE6001EB7A0 /* RelayPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F929A3E370003954C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -248,6 +260,8 @@
 		939A01682A06C15800E9DBA2 /* NostrRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrRequest.swift; sourceTree = "<group>"; };
 		939A016A2A06C18200E9DBA2 /* Websocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Websocket.swift; sourceTree = "<group>"; };
 		939A016C2A06C21A00E9DBA2 /* PostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBox.swift; sourceTree = "<group>"; };
+		939BDB522A352ACF00E80B2C /* Zap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zap.swift; sourceTree = "<group>"; };
+		939BDB542A374EAB00E80B2C /* ZapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapManager.swift; sourceTree = "<group>"; };
 		93B7FE752A0AB0A5005AE313 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		93B7FE792A0AB118005AE313 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
@@ -505,6 +519,32 @@
 			path = NostrTools;
 			sourceTree = "<group>";
 		};
+		9363DE6F2A30DD880060F4BD /* DeepLinking */ = {
+			isa = PBXGroup;
+			children = (
+				9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */,
+				9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */,
+			);
+			path = DeepLinking;
+			sourceTree = "<group>";
+		};
+		9363DE742A30DDD80060F4BD /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */,
+				9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
+		9363DE772A30DE300060F4BD /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
 		93665D302A06BFCB001EB7A0 /* Relay */ = {
 			isa = PBXGroup;
 			children = (
@@ -586,6 +626,8 @@
 		9393312829A3E4E0003954C2 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				9363DE742A30DDD80060F4BD /* Wallet */,
+				9363DE6F2A30DD880060F4BD /* DeepLinking */,
 				9EA420D12A17B42F008FBFED /* ImageViewerRemote.swift */,
 				933DBDA82A1124F7008DCF1F /* Notes */,
 				9E0DEAF029FD301D00145E08 /* Animations */,
@@ -735,6 +777,7 @@
 				93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */,
 				93B7FE812A0AB1C9005AE313 /* Util.swift */,
 				93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */,
+				939BDB522A352ACF00E80B2C /* Zap.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -763,6 +806,7 @@
 				93F27DA72A27FA8E004ADA55 /* LikeManager.swift */,
 				93F27DA92A27FB41004ADA55 /* PostManager.swift */,
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
+				939BDB542A374EAB00E80B2C /* ZapManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -963,6 +1007,7 @@
 		9E9F2F6829F6AB6400A9CDF3 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
+				9363DE772A30DE300060F4BD /* Wallet */,
 				9E88349A2A21150D005DB548 /* RootViewController */,
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
@@ -1224,6 +1269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				930497A329FAD69B003938F2 /* Mentions.swift in Sources */,
+				939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */,
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
@@ -1264,8 +1310,10 @@
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
+				9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
+				9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */,
 				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
 				933DBDB52A114522008DCF1F /* SyntaxToken.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
@@ -1324,6 +1372,7 @@
 				9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,
+				9363DE792A30DE810060F4BD /* NostrWalletConnectSuccessController.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
@@ -1339,6 +1388,7 @@
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
+				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
@@ -1354,12 +1404,14 @@
 				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
+				9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */,
 				93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
+				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
@@ -1549,7 +1601,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -1590,7 +1642,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";

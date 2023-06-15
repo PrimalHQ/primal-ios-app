@@ -18,4 +18,21 @@ enum NostrRequest {
     case unsubscribe(String)
     case event(NostrEvent)
     case json(JSON)
+    
+    var is_write: Bool {
+        switch self {
+        case .subscribe:
+            return false
+        case .unsubscribe:
+            return false
+        case .event:
+            return true
+        case .json(_):
+            return true
+        }
+    }
+    
+    var is_read: Bool {
+        return !is_write
+    }
 }

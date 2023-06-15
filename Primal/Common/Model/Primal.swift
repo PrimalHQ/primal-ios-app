@@ -27,9 +27,11 @@ struct PrimalSettingsFeed: Codable, Hashable {
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
-    let description: String?
-    let theme: String?
+    var description: String?
+    var theme: String?
     var feeds: [PrimalSettingsFeed]
+    var defaultZapAmount: Int64?
+    var zapOptions: [Int64]?
 }
 
 struct PrimalSearchPagination: Codable, Hashable {
@@ -154,6 +156,33 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         }
         
         return domain
+    }
+    
+    // private var _lnurl: String? = nil
+    var lnurl: String? {
+//        if let _lnurl {
+//            return _lnurl
+//        }
+        
+        var addr: String = ""
+        if lud16 == "" && lud06 == "" {
+            return nil
+        }
+        
+        addr = lud16 == "" ? lud06 : lud16
+        
+        if addr.contains("@") {
+            // this is a heavy op and is used a lot in views, cache it!
+            let addr = lnaddress_to_lnurl(addr);
+            // _lnurl = addr
+            return addr
+        }
+        
+        if !addr.lowercased().hasPrefix("lnurl") {
+            return nil
+        }
+        
+        return addr;
     }
     
     static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {

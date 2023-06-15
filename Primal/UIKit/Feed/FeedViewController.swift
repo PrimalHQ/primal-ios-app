@@ -102,6 +102,39 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapZap(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell)
+        else {
+            return
+        }
+
+        let post = posts[indexPath.row].post
+        let postUser = posts[indexPath.row].user
+                
+        guard
+            let lnurl = postUser.lnurl
+        else {
+            let alert = UIAlertController(title: "Error", message: "User you're trying to zap didn't set up their lightning wallet", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        guard
+            let _ = UserDefaults.standard.string(forKey: "nwc")
+        else {
+            let alert = UIAlertController(title: "Error", message: "You didn't connect Nostr Wallet Connect with Primal", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
+        
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount)
+    }
+    
     func postCellDidTapProfile(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row else { return }
         let profile = ProfileViewController(profile: posts[index].user)
@@ -110,7 +143,7 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapRepostedProfile(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted else { return }
-       show(ProfileViewController(profile: profile), sender: nil)
+        show(ProfileViewController(profile: profile), sender: nil)
     }
     
     func postCellDidTapLike(_ cell: PostCell) {

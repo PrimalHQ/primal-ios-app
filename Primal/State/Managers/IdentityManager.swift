@@ -188,6 +188,7 @@ final class IdentityManager {
                     }
                     
                     self.userRelays = relays
+                    
                     RelaysPostBox.the.connect(relays)
                     
                     var tags: [String]?

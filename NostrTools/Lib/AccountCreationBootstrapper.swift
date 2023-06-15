@@ -43,7 +43,7 @@ final class AccountCreationBootstrapper {
     func signup(nickName: String, displayName: String, about: String, pictureUrl: String, bannerUrl: String, successCallback: @escaping () -> Void) {
         self.profile = Profile(name: nickName, display_name: displayName, about: about, picture: pictureUrl, banner: bannerUrl, website: nil, lud06: nil, lud16: nil, nip05: nil)
         for relay in bootstrap_relays {
-            add_rw_relay(self.pool, relay)
+            add_rw_relay(pool: self.pool, url: relay, info: .rw, variant: .regular)
         }
         self.cb = successCallback
         self.pool.register_handler(sub_id: "signup", handler: handleSignupEvent)

@@ -39,6 +39,11 @@ struct NostrRequestId: Equatable, Hashable {
     let sub_id: String
 }
 
+enum OnFlush {
+    case once((PostedEvent) -> Void)
+    case all((PostedEvent) -> Void)
+}
+
 final class RelayPool {
     var relays: [Relay] = []
     var handlers: [RelayHandler] = []
@@ -65,6 +70,14 @@ final class RelayPool {
     
     var descriptors: [RelayDescriptor] {
         relays.map { $0.descriptor }
+    }
+    
+    var our_descriptors: [RelayDescriptor] {
+        return all_descriptors.filter { d in !d.ephemeral }
+    }
+    
+    var all_descriptors: [RelayDescriptor] {
+        relays.map { r in r.descriptor }
     }
     
     var num_connecting: Int {
@@ -106,7 +119,8 @@ final class RelayPool {
         }
     }
     
-    func add_relay(_ url: RelayURL, info: RelayInfo) throws {
+    func add_relay(_ desc: RelayDescriptor) throws {
+        let url = desc.url
         let relay_id = get_relay_id(url)
         if get_relay(relay_id) != nil {
             throw RelayError.RelayAlreadyExists
@@ -114,8 +128,7 @@ final class RelayPool {
         let conn = RelayConnection(url: url) { event in
             self.handle_event(relay_id: relay_id, event: event)
         }
-        let descriptor = RelayDescriptor(url: url, info: info)
-        let relay = Relay(descriptor: descriptor, connection: conn)
+        let relay = Relay(descriptor: desc, connection: conn)
         self.relays.append(relay)
     }
     
@@ -218,6 +231,31 @@ final class RelayPool {
         }
     }
     
+    func send(_ req: NostrRequest, to: [String]? = nil, skip_ephemeral: Bool = true) {
+        let relays = to.map{ get_relays($0) } ?? self.relays
+        
+        for relay in relays {
+            if req.is_read && !(relay.descriptor.info.read ?? true) {
+                continue
+            }
+            
+            if req.is_write && !(relay.descriptor.info.write ?? true) {
+                continue
+            }
+            
+            if relay.descriptor.ephemeral && skip_ephemeral {
+                continue
+            }
+            
+            guard relay.connection.isConnected else {
+                queue_req(r: req, relay: relay.id)
+                continue
+            }
+            
+            relay.connection.send(req)
+        }
+    }
+    
     func get_relays(_ ids: [String]) -> [Relay] {
         relays.filter { ids.contains($0.id) }
     }
@@ -270,11 +308,14 @@ final class RelayPool {
     }
 }
 
-func add_rw_relay(_ pool: RelayPool, _ url: String) {
+func add_rw_relay(pool: RelayPool, url: String, info: RelayInfo, variant: RelayVariant) {
     guard let url = RelayURL(url) else {
         return
     }
-    try? pool.add_relay(url, info: RelayInfo.rw)
+    
+    let desc: RelayDescriptor = RelayDescriptor(url: url, info: info, variant: variant)
+    
+    try? pool.add_relay(desc)
 }
 
 
