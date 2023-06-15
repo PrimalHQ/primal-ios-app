@@ -27,7 +27,7 @@ final class NostrWalletConnectDeeplinkHandler : DeeplinkHandlerProtocol {
         guard let nwc = WalletConnectURL(str: url.absoluteString) else {
             return
         }
-        let viewController = NostrWalletConnectSuccessController(nwcURL: nwc)
-        rootViewController?.present(viewController, animated: true)
+        
+        notify(.nostrWalletConnect, nwc)
     }
 }

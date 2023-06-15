@@ -67,6 +67,15 @@ final class FancyButton: MyButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var title: String? {
+        get {
+            return titleLabel.text
+        }
+        set(newTitle) {
+            titleLabel.text = newTitle
+        }
+    }
+    
     func setup() {
         addSubview(b1)
         addSubview(b2)
