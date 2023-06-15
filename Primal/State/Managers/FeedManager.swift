@@ -116,7 +116,8 @@ final class FeedManager {
     }
     
     func requestThread(postId: String, limit: Int32 = 100) {
-        self.pendingResult = .init()
+        pendingResult = .init()
+        parsedPosts.removeAll()
         
         let request: JSON = .object([
             "cache": .array([

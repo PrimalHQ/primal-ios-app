@@ -8,6 +8,10 @@
 import UIKit
 import Kingfisher
 
+protocol ProfileNavigationViewDelegate: AnyObject {
+    func profilePictureTapped()
+}
+
 class ProfileNavigationView: UIView, Themeable {
     let bannerParent = UIView()
     let bannerViewBig = UIImageView()
@@ -27,6 +31,8 @@ class ProfileNavigationView: UIView, Themeable {
     
     let maxSize: CGFloat = 125
     let minSize: CGFloat = 89
+    
+    weak var delegate: ProfileNavigationViewDelegate?
     
     init() {
         super.init(frame: .zero)
@@ -146,13 +152,14 @@ private extension ProfileNavigationView {
         profilePicture.layer.cornerRadius = 40
         profilePicture.layer.borderWidth = 3
         profilePicture.layer.masksToBounds = true
+        profilePicture.isUserInteractionEnabled = true
         
         profilePictureParent.addSubview(profilePicture)
         profilePicture.pinToSuperview()
         
         addSubview(profilePictureParent)
         profilePictureParent.pinToSuperview(edges: .leading, padding: -28).pinToSuperview(edges: .bottom, padding: -90)
-            
+        
         profilePicture.anchorPoint = .init(x: 0, y: 1)
         
         addSubview(backButton)
@@ -177,7 +184,11 @@ private extension ProfileNavigationView {
         heightConstraint.isActive = true
         
         updateTheme()
-        
+        setupMenuButton()
+        profilePicture.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pictureTapped)))
+    }
+    
+    func setupMenuButton() {
         let addFeed = UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { _ in
             
         }
@@ -196,5 +207,9 @@ private extension ProfileNavigationView {
 
         menuButton.menu = UIMenu(children: [addFeed, share, report, block])
         menuButton.showsMenuAsPrimaryAction = true
+    }
+    
+    @objc func pictureTapped() {
+        delegate?.profilePictureTapped()
     }
 }

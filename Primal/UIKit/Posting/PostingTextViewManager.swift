@@ -247,13 +247,13 @@ private extension PostingTextViewManager {
         textView.textColor = .foreground
         textView.backgroundColor = .background2
         textView.delegate = self
-        textView.keyboardType = .emailAddress
         textView.bounces = false
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self
         usersTableView.dataSource = self
         usersTableView.separatorStyle = .none
+        usersTableView.bounces = false
         
         usersHeightConstraint = usersTableView.heightAnchor.constraint(equalToConstant: 60)
         usersHeightConstraint.priority = .defaultHigh

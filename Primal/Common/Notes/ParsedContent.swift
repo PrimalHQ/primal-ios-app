@@ -25,11 +25,23 @@ final class ParsedElement: Equatable {
     }
 }
 
+final class ParsedUser {
+    var data: PrimalUser
+    var profileImage: MediaMetadata.Resource
+    var likes: Int?
+    
+    init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, likes: Int? = nil) {
+        self.data = data
+        self.profileImage = profileImage ?? .init(url: data.picture, variants: [])
+        self.likes = likes
+    }
+}
+
 final class ParsedContent {
     let post: PrimalFeedPost
-    let user: PrimalUser
+    let user: ParsedUser
     
-    init(post: PrimalFeedPost, user: PrimalUser) {
+    init(post: PrimalFeedPost, user: ParsedUser) {
         self.post = post
         self.user = user
     }
@@ -51,7 +63,7 @@ final class ParsedContent {
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     
     var embededPost: ParsedContent?
-    var reposted: PrimalUser?
+    var reposted: ParsedUser?
 }
 
 extension ParsedContent {

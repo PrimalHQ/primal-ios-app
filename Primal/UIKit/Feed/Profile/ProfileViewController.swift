@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import SwiftUI
 import GenericJSON
 
 final class ProfileViewController: FeedViewController {
-    let profile: PrimalUser
+    let profile: ParsedUser
     var userStats: NostrUserProfileInfo? {
         didSet {
             table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
@@ -21,9 +22,9 @@ final class ProfileViewController: FeedViewController {
     
     override var postSection: Int { 1 }
     
-    init(profile: PrimalUser) {
+    init(profile: ParsedUser) {
         self.profile = profile
-        super.init(feed: FeedManager(profilePubkey: profile.pubkey))
+        super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
         setup()
     }
     
@@ -68,7 +69,7 @@ final class ProfileViewController: FeedViewController {
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: "profile", for: indexPath)
-        (cell as? ProfileInfoCell)?.update(user: profile, stats: userStats, delegate: self)
+        (cell as? ProfileInfoCell)?.update(user: profile.data, stats: userStats, delegate: self)
         return cell
     }
     
@@ -112,7 +113,8 @@ private extension ProfileViewController {
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
-        navigationBar.updateInfo(profile)
+        navigationBar.updateInfo(profile.data)
+        navigationBar.delegate = self
         
         navigationBarLengthner.removeFromSuperview()
         stack.removeFromSuperview()
@@ -130,7 +132,7 @@ private extension ProfileViewController {
             let request: JSON = .array([
                 .string("user_profile"),
                 .object([
-                    "pubkey": .string(profile.pubkey)
+                    "pubkey": .string(profile.data.pubkey)
                 ])
             ])
             
@@ -159,18 +161,32 @@ private extension ProfileViewController {
     }
 }
 
+extension ProfileViewController: ProfileNavigationViewDelegate {
+    func profilePictureTapped() {
+        weak var viewController: UIViewController?
+        let binding = UIHostingController(rootView: ImageViewerRemote(
+            imageURL: .init(get: { [weak self] in self?.profile.data.picture ?? "" }, set: { _ in }),
+            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
+        ))
+        viewController = binding
+        binding.view.backgroundColor = .clear
+        binding.modalPresentationStyle = .overFullScreen
+        present(binding, animated: true)
+    }
+}
+
 extension ProfileViewController: ProfileInfoCellDelegate {
     func npubPressed(in cell: ProfileInfoCell) {
-        UIPasteboard.general.string = profile.npub
+        UIPasteboard.general.string = profile.data.npub
         view.showToast("Key copied to clipboard")
     }
     
     func followPressed(in cell: ProfileInfoCell) {
-        if FollowManager.instance.isFollowing(profile.pubkey) {
-            FollowManager.instance.sendUnfollowEvent(profile.pubkey)
+        if FollowManager.instance.isFollowing(profile.data.pubkey) {
+            FollowManager.instance.sendUnfollowEvent(profile.data.pubkey)
             cell.updateFollowButton(false)
         } else {
-            FollowManager.instance.sendFollowEvent(profile.pubkey)
+            FollowManager.instance.sendFollowEvent(profile.data.pubkey)
             cell.updateFollowButton(true)
         }
     }

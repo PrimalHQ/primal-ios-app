@@ -110,7 +110,7 @@ extension FeedViewController: PostCellDelegate {
         }
 
         let post = posts[indexPath.row].post
-        let postUser = posts[indexPath.row].user
+        let postUser = posts[indexPath.row].user.data
                 
         guard
             let lnurl = postUser.lnurl

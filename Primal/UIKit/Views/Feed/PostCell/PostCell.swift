@@ -59,19 +59,29 @@ class PostCell: UITableViewCell {
     }
     
     func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
-        nameLabel.text = content.user.firstIdentifier
+        let user = content.user.data
         
-        nipLabel.text = content.user.nip05
-        nipLabel.isHidden = content.user.nip05.isEmpty
+        nameLabel.text = user.firstIdentifier
+        
+        if user.nip05.hasPrefix("_@") {
+            nipLabel.text = String(user.nip05.split(separator: "@").last ?? "")
+        } else {
+            nipLabel.text = user.nip05
+        }
+        nipLabel.isHidden = user.nip05.isEmpty
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: content.user.picture), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        if !content.user.profileImage.variants.isEmpty {
+            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small))
+        } else {
+            profileImageView.kf.setImage(with: URL(string: user.picture), options: [
+                .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ])
+        }
         
         if let metadata = content.parsedMetadata {
             linkPresentation.data = metadata
@@ -96,7 +106,7 @@ class PostCell: UITableViewCell {
             postPreview.isHidden = true
         }
         
-        if let reposted = content.reposted {
+        if let reposted = content.reposted?.data {
             repostIndicator.update(user: reposted)
             repostIndicator.isHidden = false
         } else {
@@ -198,6 +208,7 @@ private extension PostCell {
         
         bottomButtonStack.distribution = .equalSpacing
         
+        profileImageView.contentMode = .scaleToFill
         profileImageView.layer.masksToBounds = true
         profileImageView.isUserInteractionEnabled = true
         

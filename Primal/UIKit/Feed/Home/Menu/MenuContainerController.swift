@@ -206,6 +206,7 @@ private extension MenuContainerController {
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
         profileImage.constrainToSize(52)
+        profileImage.contentMode = .scaleToFill
         profileImage.layer.cornerRadius = 26
         profileImage.layer.masksToBounds = true
         
@@ -281,7 +282,7 @@ private extension MenuContainerController {
     
     @objc func profilePressed() {
         guard let profile = IdentityManager.instance.user else { return }
-        show(ProfileViewController(profile: profile), sender: nil)
+        show(ProfileViewController(profile: .init(data: profile)), sender: nil)
         resetNavigationTabBar()
     }
     
