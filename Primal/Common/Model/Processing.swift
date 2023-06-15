@@ -10,7 +10,7 @@ import LinkPresentation
 import Kingfisher
 
 extension PostRequestResult {
-    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, PrimalUser)? {
+    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
         guard
             let nostrUser = users[content.pubkey],
             let nostrPostStats = stats[content.id]
@@ -18,8 +18,14 @@ extension PostRequestResult {
         
         let primalFeedPost = PrimalFeedPost(nostrPost: content, nostrPostStats: nostrPostStats)
         
-        return (primalFeedPost, nostrUser)
+        return (primalFeedPost, createParsedUser(nostrUser))
     }
+    
+    func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
+        data: user,
+        profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
+        likes: userScore[user.pubkey]
+    )}
     
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
@@ -31,7 +37,7 @@ extension PostRequestResult {
                 guard let (post, user) = createPrimalPost(content: $0.post) else { return nil }
                 return (post, user, $0)
             }
-            .compactMap { (primalPost: PrimalFeedPost, user: PrimalUser, repost: NostrRepost) in
+            .compactMap { (primalPost: PrimalFeedPost, user: ParsedUser, repost: NostrRepost) in
                 let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
                 
                 guard
@@ -40,7 +46,7 @@ extension PostRequestResult {
                     return post
                 }
                 
-                post.reposted = nostrUser
+                post.reposted = createParsedUser(nostrUser)
                 return post
             }
         
@@ -54,7 +60,7 @@ extension PostRequestResult {
     
     func parse(
         post: PrimalFeedPost,
-        user: PrimalUser,
+        user: ParsedUser,
         mentions: [ParsedContent],
         removeExtractedPost: Bool
     ) -> ParsedContent {

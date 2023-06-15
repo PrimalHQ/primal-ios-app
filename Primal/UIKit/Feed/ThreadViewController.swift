@@ -109,8 +109,8 @@ final class ThreadViewController: FeedViewController {
         
         guard !posts.isEmpty else { return }
         
-        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.displayName)"
-        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.name)
+        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.data.displayName)"
+        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.data.name)
     }
 }
 
@@ -127,13 +127,22 @@ private extension ThreadViewController {
         
         textInputView.isEditable = false
         
-        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) {
-            self.textInputView.isEditable = true
-            self.textInputView.text = ""
-            self.placeholderLabel.isHidden = false
-            self.didPostNewComment = true
-            self.didMoveToMain = false
-            self.feed.requestThread(postId: self.id)
+        var runOnce = true
+        
+        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] in
+            guard runOnce else { return }
+            runOnce = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                guard let self else { return }
+                
+                self.textInputView.isEditable = true
+                self.textInputView.text = ""
+                self.placeholderLabel.isHidden = false
+                self.didPostNewComment = true
+                self.didMoveToMain = false
+                self.feed.requestThread(postId: self.id)
+            }
         }
     }
     
@@ -146,9 +155,11 @@ private extension ThreadViewController {
             
             self.didLoadData = true
             
-            self.placeholderLabel.text = "Reply to \(self.posts[self.mainPositionInThread].user.displayName)"
+            let user = self.posts[self.mainPositionInThread].user.data
             
-            self.replyingToLabel.attributedText = self.replyToString(name: self.posts[self.mainPositionInThread].user.name)
+            self.placeholderLabel.text = "Reply to \(user.displayName)"
+            
+            self.replyingToLabel.attributedText = self.replyToString(name: user.name)
         }
         .store(in: &cancellables)
         

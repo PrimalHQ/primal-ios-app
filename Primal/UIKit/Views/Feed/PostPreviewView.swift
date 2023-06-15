@@ -31,14 +31,16 @@ final class PostPreviewView: UIView {
     }
     
     func update(_ content: ParsedContent) {
-        nameLabel.text = content.user.firstIdentifier
-        secondaryIdentifierLabel.text = content.user.nip05
-        verifiedBadge.isHidden = content.user.nip05.isEmpty
+        let user = content.user.data
+        
+        nameLabel.text = user.firstIdentifier
+        secondaryIdentifierLabel.text = user.nip05
+        verifiedBadge.isHidden = user.nip05.isEmpty
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: content.user.picture), options: [
+        profileImageView.kf.setImage(with: URL(string: user.picture), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 28, height: 28))),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage

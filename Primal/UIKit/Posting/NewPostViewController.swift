@@ -124,8 +124,10 @@ private extension NewPostViewController {
             self.manager.usersHeightConstraint.constant = CGFloat(users.count) * 60
             UIView.animate(withDuration: 0.3) {
                 self.view.layoutSubviews()
+                self.textView.scrollToCursorPosition()
             } completion: { _ in
                 self.usersTableView.reloadData()
+                self.textView.scrollToCursorPosition()
             }
             self.usersTableView.reloadData()
         }

@@ -11,7 +11,7 @@ class NPubDisplayView: MyButton {
     
     var npub = "" {
         didSet {
-            label.text = "\(String(npub.prefix(10)))...\(String(npub.suffix(5)))"
+            label.text = "\(String(npub.prefix(10)))...\(String(npub.suffix(10)))"
         }
     }
     
