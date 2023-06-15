@@ -92,7 +92,8 @@ final class ThreadViewController: FeedViewController {
                             return .main
                         }(),
                         didLike: LikeManager.instance.hasLiked(data.post.id),
-                        didRepost: PostManager.instance.hasReposted(data.post.id)
+                        didRepost: PostManager.instance.hasReposted(data.post.id),
+                        didZap: ZapManager.instance.hasZapped(data.post.id)
             )
             cell.delegate = self
         }

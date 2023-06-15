@@ -38,7 +38,7 @@ final class ParsedUser {
 }
 
 final class ParsedContent {
-    let post: PrimalFeedPost
+    var post: PrimalFeedPost
     let user: ParsedUser
     
     init(post: PrimalFeedPost, user: ParsedUser) {

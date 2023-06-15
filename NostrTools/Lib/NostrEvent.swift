@@ -726,14 +726,12 @@ func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool) {
 }
 
 @discardableResult
-func nwc_pay(url: WalletConnectURL, pool: RelayPool, post: PostBox, invoice: String, delay: TimeInterval? = 0.0, on_flush: OnFlush? = nil) -> NostrEvent? {
+func nwc_pay(url: WalletConnectURL, invoice: String) -> NostrEvent? {
     let req = make_wallet_pay_invoice_request(invoice: invoice)
     guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
         return nil
     }
     
-    subscribe_to_nwc(url: url, pool: pool)
-    post.send(ev, to: [url.relay.id], skip_ephemeral: false, delay: delay, on_flush: on_flush)
     return ev
 }
 

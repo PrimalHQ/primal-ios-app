@@ -12,7 +12,10 @@ final class ZapManager {
     
     static let instance: ZapManager = ZapManager()
     
-    func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64) {
+    @Published var userZapped: Set<String> = []
+    func hasZapped(_ eventId: String) -> Bool { userZapped.contains(eventId) }
+    
+    func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
@@ -53,15 +56,54 @@ final class ZapManager {
             }
              
             DispatchQueue.main.async {
-                let nwc_req = nwc_pay(url: nwc,  pool: RelaysPostBox.the.pool, post: RelaysPostBox.the.postBox, invoice: inv, on_flush: nil)
+                let nwc_req = nwc_pay(url: nwc, invoice: inv)
                 
                 guard let nwc_req else {
                     print("error")
                     return
                 }
                 
+                RelaysPostBox.the.registerHandler(sub_id: nwc_req.id, handler: self.handleZapEvent(callback))
+                RelaysPostBox.the.postBox.send(nwc_req, to: [nwc.relay.id], skip_ephemeral: false, delay: 0.0, on_flush: nil)
+                
                 print("nwc: sending request \(nwc_req.id) zap_req_id \(reqid.reqid)")
             }
         }
+    }
+    
+    private func handleZapEvent(_ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
+        func handle(relayId: String, ev: NostrConnectionEvent) {
+            switch ev {
+            case .ws_event(let wsev):
+                switch wsev {
+                case .connected:
+                    break
+                case .error(let err):
+                    print(String(describing: err))
+                default:
+                    break
+                }
+            case .nostr_event(let resp):
+                switch resp {
+                case .notice:
+                    break
+                case .event:
+                    break
+                case .eose:
+                    break
+                case .ok(let res):
+                    if res.ok {
+                        let (inserted, _) = userZapped.insert(res.event_id)
+                        // call only once
+                        if inserted {
+                            callback()
+                        }
+                    }
+                    break
+                }
+            }
+        }
+        
+        return handle
     }
 }
