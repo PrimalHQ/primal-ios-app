@@ -132,7 +132,7 @@ class PostCell: UITableViewCell {
         updateButtons(content, didLike: didLike, didRepost: didRepost, didZap: didZap)
     }
     
-    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool) {
+    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, zapAmount: Int32? = nil) {
         likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
         if didLike {
             likeButton.animView.play()
@@ -161,7 +161,11 @@ class PostCell: UITableViewCell {
         if content.post.satszapped < 1 {
             zapButton.titleLabel.isHidden = true
         } else {
-            zapButton.titleLabel.text = "\(content.post.satszapped)"
+            if let zapAmount {
+                zapButton.titleLabel.text = "\(zapAmount)"
+            } else {
+                zapButton.titleLabel.text = "\(content.post.satszapped)"
+            }
             zapButton.titleLabel.isHidden = false
         }
         

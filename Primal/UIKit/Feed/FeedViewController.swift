@@ -134,11 +134,13 @@ extension FeedViewController: PostCellDelegate {
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
         
         ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [self] in
-            self.posts[indexPath.row].post.satszapped += Int32(zapAmount)
+            let newZapAmount = self.posts[indexPath.row].post.satszapped + Int32(zapAmount)
+            
             cell.updateButtons(self.posts[indexPath.row],
                                didLike: LikeManager.instance.hasLiked(posts[indexPath.row].post.id),
                                didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id),
-                               didZap: true)
+                               didZap: true,
+                               zapAmount: newZapAmount)
         }
     }
     
