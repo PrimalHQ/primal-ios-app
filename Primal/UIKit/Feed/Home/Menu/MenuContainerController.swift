@@ -149,8 +149,7 @@ private extension MenuContainerController {
         let signOut = MenuItemButton(title: "SIGN OUT")
         let settings = MenuItemButton(title: "SETTINGS")
         let profile = MenuItemButton(title: "PROFILE")
-        let wallet = MenuItemButton(title: "WALLET")
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, wallet, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
         
         [
             profileImage, titleStack, usernameStack, followStack,
@@ -235,7 +234,6 @@ private extension MenuContainerController {
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
-        wallet.addTarget(self, action: #selector(walletPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
@@ -276,10 +274,6 @@ private extension MenuContainerController {
     
     // MARK: - Objc methods
     
-    @objc func walletPressed() {
-        UIApplication.shared.open(URL(string:"https://nwc.getalby.com/apps/new?c=Primal-iOS")!)
-    }
-    
     @objc func profilePressed() {
         guard let profile = IdentityManager.instance.user else { return }
         show(ProfileViewController(profile: .init(data: profile)), sender: nil)
@@ -307,6 +301,7 @@ private extension MenuContainerController {
                 try clear_keypair()
                 KingfisherManager.shared.cache.clearMemoryCache()
                 RootViewController.instance.reset()
+                UserDefaults.standard.removeObject(forKey: nwcDefaultsKey)
             } catch {
                 self.showErrorMessage(error.localizedDescription)
             }

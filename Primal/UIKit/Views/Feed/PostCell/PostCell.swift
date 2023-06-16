@@ -58,7 +58,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
+    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool) {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -129,15 +129,23 @@ class PostCell: UITableViewCell {
             imageAspectConstraint = aspect
         }
         
-        updateButtons(content, didLike: didLike, didRepost: didRepost)
+        updateButtons(content, didLike: didLike, didRepost: didRepost, didZap: didZap)
     }
     
-    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool) {
+    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, zapAmount: Int32? = nil) {
         likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
         if didLike {
             likeButton.animView.play()
         } else {
             likeButton.animView.stop()
+        }
+        
+        if didZap {
+            zapButton.titleLabel.animateToColor(color: UIColor(rgb: 0xFFA02F))
+            zapButton.animView.play()
+        } else {
+            zapButton.titleLabel.textColor = UIColor(rgb: 0x757575)
+            zapButton.animView.stop()
         }
         
         let repostColor = didRepost ? UIColor(rgb: 0x52CE0A) : UIColor(rgb: 0x757575)
@@ -153,7 +161,11 @@ class PostCell: UITableViewCell {
         if content.post.satszapped < 1 {
             zapButton.titleLabel.isHidden = true
         } else {
-            zapButton.titleLabel.text = "\(content.post.satszapped)"
+            if let zapAmount {
+                zapButton.titleLabel.text = "\(zapAmount)"
+            } else {
+                zapButton.titleLabel.text = "\(content.post.satszapped)"
+            }
             zapButton.titleLabel.isHidden = false
         }
         

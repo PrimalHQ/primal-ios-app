@@ -201,7 +201,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let mentions: Int32
     let replies: Int32
     let zaps: Int32
-    let satszapped: Int32
+    var satszapped: Int32
     let score24h: Int32
     let reposts: Int32
     

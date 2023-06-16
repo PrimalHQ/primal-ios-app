@@ -56,7 +56,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             let data = posts[indexPath.row]
             cell.update(data,
                         didLike: LikeManager.instance.hasLiked(data.post.id),
-                        didRepost: PostManager.instance.hasReposted(data.post.id)
+                        didRepost: PostManager.instance.hasReposted(data.post.id),
+                        didZap: ZapManager.instance.hasZapped(data.post.id)
             )
             cell.delegate = self
         }
@@ -132,7 +133,15 @@ extension FeedViewController: PostCellDelegate {
         
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
         
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount)
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [self] in
+            let newZapAmount = self.posts[indexPath.row].post.satszapped + Int32(zapAmount)
+            
+            cell.updateButtons(self.posts[indexPath.row],
+                               didLike: LikeManager.instance.hasLiked(posts[indexPath.row].post.id),
+                               didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id),
+                               didZap: true,
+                               zapAmount: newZapAmount)
+        }
     }
     
     func postCellDidTapProfile(_ cell: PostCell) {
@@ -151,7 +160,7 @@ extension FeedViewController: PostCellDelegate {
         
         LikeManager.instance.sendLikeEvent(post: posts[indexPath.row].post)
         
-        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id))
+        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id), didZap: ZapManager.instance.hasZapped(posts[indexPath.row].post.id))
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {

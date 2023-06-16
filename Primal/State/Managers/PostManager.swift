@@ -14,7 +14,6 @@ final class PostManager {
     
     @Published var userReposts: Set<String> = []
     @Published var userReplied: Set<String> = []
-    @Published var userZapped: Set<String> = []
     
     public func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     public func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
@@ -138,8 +137,11 @@ final class PostManager {
                     break
                 case .ok(let res):
                     if res.ok {
-                        userReplied.insert(res.event_id)
-                        callback()
+                        let (inserted, _) = userReplied.insert(res.event_id)
+                        // call only once
+                        if inserted {
+                            callback()
+                        }
                     }
                     break
                 }

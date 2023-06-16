@@ -223,7 +223,7 @@ final class FeedManager {
                 PostManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
-                PostManager.instance.userZapped.insert(noteStatus.event_id)
+                ZapManager.instance.userZapped.insert(noteStatus.event_id)
             }
         case .repost:
             guard

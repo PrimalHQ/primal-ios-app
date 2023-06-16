@@ -48,6 +48,7 @@ private extension SettingsMainViewController {
         
         let keys = SettingsOptionButton(title: "Keys")
         let feeds = SettingsOptionButton(title: "Feeds")
+        let wallet = SettingsOptionButton(title: "Wallet")
         let appearance = SettingsOptionButton(title: "Appearance")
         let notifications = SettingsOptionButton(title: "Notifications")
         let network = SettingsOptionButton(title: "Network")
@@ -56,7 +57,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, feeds, appearance, notifications, network, bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, feeds, wallet, appearance, notifications, network, bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
@@ -89,9 +90,14 @@ private extension SettingsMainViewController {
         }
         
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)
+        wallet.addTarget(self, action: #selector(walletPressed), for: .touchUpInside)
     }
     
     @objc func keysPressed() {
         show(SettingsNsecViewController(), sender: nil)
+    }
+    
+    @objc func walletPressed() {
+        show(SettingsWalletViewController(), sender: nil)
     }
 }
