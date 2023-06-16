@@ -10,12 +10,16 @@ import Combine
 import UIKit
 import SwiftUI
 import SafariServices
+import Lottie
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let navigationBarLengthner = SpacerView(height: 7)
     var table = UITableView()
     lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
     let feed: FeedManager
+    
+    let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
+    let heavy = UIImpactFeedbackGenerator(style: .heavy)
     
     var postSection: Int { 0 }
     var posts: [ParsedContent] = [] {
@@ -39,6 +43,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        hapticGenerator.prepare()
+        heavy.prepare()
     }
     
     func open(post: PrimalFeedPost) {
@@ -100,47 +111,57 @@ private extension FeedViewController {
         
         updateTheme()
     }
+    
+    func animateZap(_ cell: PostCell, amount: Int32) {
+        let animView = LottieAnimationView(animation: AnimationType.zapMedium.animation)
+        view.addSubview(animView)
+        animView
+            .constrainToSize(width: 375, height: 100)
+            .pin(to: cell.zapButton.iconView, edges: .top, padding: -38.5)
+            .pin(to: cell.zapButton.iconView, edges: .leading, padding: -114.5)
+        
+        view.layoutIfNeeded()
+        
+        cell.zapButton.iconView.alpha = 0.01
+        cell.zapButton.animateTo(amount, filled: true)
+        
+        heavy.impactOccurred()
+            
+        animView.play { _ in
+            UIView.animate(withDuration: 0.2) {
+                cell.zapButton.iconView.alpha = 1
+                animView.alpha = 0
+            } completion: { _ in
+                animView.removeFromSuperview()
+            }
+        }
+    }
 }
 
 extension FeedViewController: PostCellDelegate {
     func postCellDidTapZap(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell)
-        else {
-            return
-        }
+        guard let index = table.indexPath(for: cell)?.row else { return }
 
-        let post = posts[indexPath.row].post
-        let postUser = posts[indexPath.row].user.data
-                
-        guard
-            let lnurl = postUser.lnurl
-        else {
-            let alert = UIAlertController(title: "Error", message: "User you're trying to zap didn't set up their lightning wallet", preferredStyle: .alert)
-            alert.addAction(.init(title: "OK", style: .default))
-            present(alert, animated: true)
+        let post = posts[index].post
+        let postUser = posts[index].user.data
+             
+        guard let lnurl = postUser.lnurl else {
+            showErrorMessage("User you're trying to zap didn't set up their lightning wallet")
             return
         }
         
-        guard
-            let _ = UserDefaults.standard.string(forKey: "nwc")
-        else {
-            let alert = UIAlertController(title: "Error", message: "You didn't connect Nostr Wallet Connect with Primal", preferredStyle: .alert)
-            alert.addAction(.init(title: "OK", style: .default))
-            present(alert, animated: true)
+        guard let _ = UserDefaults.standard.string(forKey: "nwc") else {
+            showErrorMessage("You didn't connect Nostr Wallet Connect with Primal")
             return
         }
         
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
+        let newZapAmount = post.satszapped + Int32(zapAmount)
         
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [self] in
-            let newZapAmount = self.posts[indexPath.row].post.satszapped + Int32(zapAmount)
+        animateZap(cell, amount: newZapAmount)
+        
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [weak self] in
             
-            cell.updateButtons(self.posts[indexPath.row],
-                               didLike: LikeManager.instance.hasLiked(posts[indexPath.row].post.id),
-                               didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id),
-                               didZap: true,
-                               zapAmount: newZapAmount)
         }
     }
     
@@ -160,12 +181,15 @@ extension FeedViewController: PostCellDelegate {
         
         LikeManager.instance.sendLikeEvent(post: posts[indexPath.row].post)
         
-        cell.updateButtons(posts[indexPath.row], didLike: true, didRepost: PostManager.instance.hasReposted(posts[indexPath.row].post.id), didZap: ZapManager.instance.hasZapped(posts[indexPath.row].post.id))
+        hapticGenerator.impactOccurred()
+        
+        cell.likeButton.animateTo(posts[indexPath.row].post.likes + 1, filled: true)
     }
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         PostManager.instance.sendRepostEvent(nostrContent: posts[indexPath.row].post.toRepostNostrContent())
+        cell.repostButton.animateTo(posts[indexPath.row].post.reposts + 1, filled: true)
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

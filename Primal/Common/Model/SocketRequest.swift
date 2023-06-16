@@ -75,7 +75,7 @@ private extension SocketRequest {
                 PostManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
-                ZapManager.instance.userZapped.insert(noteStatus.event_id)
+                ZapManager.instance.userZapped[noteStatus.event_id] = 0
             }
             
         case .repost:

@@ -129,58 +129,10 @@ class PostCell: UITableViewCell {
             imageAspectConstraint = aspect
         }
         
-        updateButtons(content, didLike: didLike, didRepost: didRepost, didZap: didZap)
-    }
-    
-    func updateButtons(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, zapAmount: Int32? = nil) {
-        likeButton.titleLabel.textColor = didLike ? UIColor(rgb: 0xCA079F) : UIColor(rgb: 0x757575)
-        if didLike {
-            likeButton.animView.play()
-        } else {
-            likeButton.animView.stop()
-        }
-        
-        if didZap {
-            zapButton.titleLabel.animateToColor(color: UIColor(rgb: 0xFFA02F))
-            zapButton.animView.play()
-        } else {
-            zapButton.titleLabel.textColor = UIColor(rgb: 0x757575)
-            zapButton.animView.stop()
-        }
-        
-        let repostColor = didRepost ? UIColor(rgb: 0x52CE0A) : UIColor(rgb: 0x757575)
-        repostButton.tintColor = repostColor
-        repostButton.setTitleColor(repostColor, for: .normal)
-        
-        if content.post.replies < 1 {
-            replyButton.setTitle(nil, for: .normal)
-        } else {
-            replyButton.setTitle("  \(content.post.replies)", for: .normal)
-        }
-        
-        if content.post.satszapped < 1 {
-            zapButton.titleLabel.isHidden = true
-        } else {
-            if let zapAmount {
-                zapButton.titleLabel.text = "\(zapAmount)"
-            } else {
-                zapButton.titleLabel.text = "\(content.post.satszapped)"
-            }
-            zapButton.titleLabel.isHidden = false
-        }
-        
-        if content.post.likes < 1 && !didLike {
-            likeButton.titleLabel.isHidden = true
-        } else {
-            likeButton.titleLabel.text = "\(content.post.likes + (didLike ? 1 : 0))"
-            likeButton.titleLabel.isHidden = false
-        }
-        
-        if content.post.reposts < 1 && !didRepost {
-            repostButton.setTitle(nil, for: .normal)
-        } else {
-            repostButton.setTitle("  \(content.post.reposts + (didRepost ? 1 : 0))", for: .normal)
-        }
+        likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
+        zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
+        repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
+        replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
     }
 }
 
@@ -220,7 +172,7 @@ private extension PostCell {
         
         bottomButtonStack.distribution = .equalSpacing
         
-        profileImageView.contentMode = .scaleToFill
+        profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
         profileImageView.isUserInteractionEnabled = true
         
@@ -287,13 +239,6 @@ private extension PostCell {
     }
     
     @objc func repostTapped() {
-        repostButton.tintColor = UIColor(rgb: 0x52CE0A)
-        repostButton.setTitleColor(UIColor(rgb: 0x52CE0A), for: .normal)
-        
-        if let number = Int(repostButton.title(for: .normal)?.trimmingCharacters(in: .whitespaces) ?? "") {
-            repostButton.setTitle("  \(number + 1)", for: .normal)
-        }
-        
         delegate?.postCellDidTapRepost(self)
     }
     

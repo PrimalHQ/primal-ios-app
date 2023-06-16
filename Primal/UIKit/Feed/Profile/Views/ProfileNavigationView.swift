@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
-    func profilePictureTapped()
+    
 }
 
 class ProfileNavigationView: UIView, Themeable {
@@ -24,6 +24,9 @@ class ProfileNavigationView: UIView, Themeable {
     
     let profilePictureParent = UIView()
     let profilePicture = UIImageView()
+    
+    weak var profilePicOverlayBig: UIView?
+    weak var profilePicOverlaySmall: UIView?
     
     var heightConstraint: NSLayoutConstraint!
     
@@ -75,16 +78,16 @@ class ProfileNavigationView: UIView, Themeable {
         guard size != oldSize || deltaFromMax > deltaTitleStartAppearing - titleTranslation else {
             titleStack.alpha = 1
             titleStack.transform = .identity
+            profilePicOverlayBig?.isHidden = true
+            profilePicOverlaySmall?.isHidden = true
             return
         }
         
         if deltaFromMax < deltaTitleStartAppearing {
             let smallProgress = (deltaTitleStartAppearing - deltaFromMax) / titleTranslation
-//            overlayView.alpha = smallProgress
             titleStack.alpha = smallProgress
             titleStack.transform = .init(translationX: 0, y: (1 - smallProgress) * titleTranslation)
         } else {
-//            overlayView.alpha = 0
             titleStack.alpha = 0
         }
             
@@ -96,6 +99,10 @@ class ProfileNavigationView: UIView, Themeable {
             profilePictureParent.transform = .identity
             overlayView.alpha = 0
             bannerViewBig.image = bannerImage
+            
+            profilePicOverlayBig?.isHidden = false
+            profilePicOverlaySmall?.isHidden = true
+            profilePicOverlaySmall?.transform = .identity
         } else if size > maxSize - 20 { // Shrink avatar
             let smallProgress = (maxSize - size) / 20 // Will be between 0 and 1
             let invertedProgress = 1 - smallProgress
@@ -107,16 +114,31 @@ class ProfileNavigationView: UIView, Themeable {
             overlayView.alpha = 0
             
             bannerViewBig.image = bannerImage
+            
+            profilePicOverlayBig?.isHidden = false
+            profilePicOverlaySmall?.isHidden = true
+            profilePicOverlaySmall?.transform = .identity
         } else {  // Translate avatar after shrinking
             sendSubviewToBack(profilePictureParent)
             profilePicture.transform = .init(scaleX: 0.6, y: 0.6)
-            profilePictureParent.transform = .init(translationX: 0, y: (size == minSize ? deltaFromMax + maxSize - minSize : 0))
+            let yTranslation = (size == minSize ? deltaFromMax + maxSize - minSize : 0)
+            let translation = CGAffineTransform.init(translationX: 0, y: yTranslation)
+            profilePictureParent.transform = translation
             
             let progress = 1 - ((size - minSize) / (maxSize - minSize - 20))
             
             overlayView.alpha = progress
             
             bannerViewBig.image = bannerImage?.kf.blurred(withRadius: (maxSize - 20 - size) / 2)
+            
+            profilePicOverlayBig?.isHidden = true
+            if yTranslation > -20 {
+                profilePicOverlaySmall?.isHidden = false
+                profilePicOverlaySmall?.transform = translation
+            } else {
+                profilePicOverlaySmall?.isHidden = true
+                profilePicOverlaySmall?.transform = .identity
+            }
         }
         
         heightConstraint.constant = size
@@ -152,7 +174,7 @@ private extension ProfileNavigationView {
         profilePicture.layer.cornerRadius = 40
         profilePicture.layer.borderWidth = 3
         profilePicture.layer.masksToBounds = true
-        profilePicture.isUserInteractionEnabled = true
+        profilePicture.contentMode = .scaleAspectFill
         
         profilePictureParent.addSubview(profilePicture)
         profilePicture.pinToSuperview()
@@ -185,7 +207,6 @@ private extension ProfileNavigationView {
         
         updateTheme()
         setupMenuButton()
-        profilePicture.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pictureTapped)))
     }
     
     func setupMenuButton() {
@@ -207,9 +228,5 @@ private extension ProfileNavigationView {
 
         menuButton.menu = UIMenu(children: [addFeed, share, report, block])
         menuButton.showsMenuAsPrimaryAction = true
-    }
-    
-    @objc func pictureTapped() {
-        delegate?.profilePictureTapped()
     }
 }

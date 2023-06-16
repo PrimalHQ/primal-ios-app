@@ -12,8 +12,11 @@ final class ZapManager {
     
     static let instance: ZapManager = ZapManager()
     
-    @Published var userZapped: Set<String> = []
-    func hasZapped(_ eventId: String) -> Bool { userZapped.contains(eventId) }
+    var didCallback: Set<String> = []
+    @Published var userZapped: [String: Int64] = [:]
+    
+    func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
+    func amountZapped(_ eventId: String) -> Int64 { userZapped[eventId, default: 0] }
     
     func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
         guard let keypair = get_saved_keypair() else {
@@ -44,6 +47,8 @@ final class ZapManager {
         let zapreq = mzapreq.potentially_anon_outer_request.ev
         let reqid = ZapRequestId(from_makezap: mzapreq)
         
+        userZapped[target.id] = amount
+        
         Task {
             let mpayreq = await fetch_static_payreq(lnurl)
             
@@ -63,7 +68,7 @@ final class ZapManager {
                     return
                 }
                 
-                RelaysPostBox.the.registerHandler(sub_id: nwc_req.id, handler: self.handleZapEvent(callback))
+                RelaysPostBox.the.registerHandler(sub_id: nwc_req.id, handler: self.handleZapEvent(amount: amount, callback))
                 RelaysPostBox.the.postBox.send(nwc_req, to: [nwc.relay.id], skip_ephemeral: false, delay: 0.0, on_flush: nil)
                 
                 print("nwc: sending request \(nwc_req.id) zap_req_id \(reqid.reqid)")
@@ -71,7 +76,7 @@ final class ZapManager {
         }
     }
     
-    private func handleZapEvent(_ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
+    private func handleZapEvent(amount: Int64, _ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
         func handle(relayId: String, ev: NostrConnectionEvent) {
             switch ev {
             case .ws_event(let wsev):
@@ -93,11 +98,9 @@ final class ZapManager {
                     break
                 case .ok(let res):
                     if res.ok {
-                        let (inserted, _) = userZapped.insert(res.event_id)
-                        // call only once
-                        if inserted {
-                            callback()
-                        }
+                        guard !didCallback.contains(res.event_id) else { return }
+                        
+                        callback()
                     }
                     break
                 }

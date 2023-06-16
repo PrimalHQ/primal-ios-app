@@ -124,6 +124,18 @@ private extension ProfileViewController {
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         
         requestUserProfile()
+        
+        let profileOverlay1 = UIView()
+        let profileOverlay2 = UIView()
+        [profileOverlay1, profileOverlay2].forEach {
+            view.addSubview($0)
+            $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePicTapped)))
+            $0.pinToSuperview(edges: .leading, padding: 12).pin(to: navigationBar, edges: .bottom, padding: -50)
+        }
+        profileOverlay1.constrainToSize(80)
+        profileOverlay2.constrainToSize(0.6 * 80)
+        navigationBar.profilePicOverlayBig = profileOverlay1
+        navigationBar.profilePicOverlaySmall = profileOverlay2
     }
     
     func requestUserProfile() {
@@ -159,10 +171,8 @@ private extension ProfileViewController {
             }
         }
     }
-}
-
-extension ProfileViewController: ProfileNavigationViewDelegate {
-    func profilePictureTapped() {
+    
+    @objc func profilePicTapped() {
         weak var viewController: UIViewController?
         let binding = UIHostingController(rootView: ImageViewerRemote(
             imageURL: .init(get: { [weak self] in self?.profile.data.picture ?? "" }, set: { _ in }),
@@ -172,6 +182,12 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         binding.view.backgroundColor = .clear
         binding.modalPresentationStyle = .overFullScreen
         present(binding, animated: true)
+    }
+}
+
+extension ProfileViewController: ProfileNavigationViewDelegate {
+    func profilePictureTapped() {
+        profilePicTapped()
     }
 }
 
