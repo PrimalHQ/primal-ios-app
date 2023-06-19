@@ -1,13 +1,13 @@
 //
-//  CopyButton.swift
+//  GradientSettingsButton.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 25.5.23..
+//  Created by Pavle D Stevanović on 18.6.23..
 //
 
 import UIKit
 
-final class CopyButton: MyButton {
+final class GradientSettingsButton: MyButton {
     private let icon = UIImageView()
     private let label = UILabel()
     
@@ -18,6 +18,7 @@ final class CopyButton: MyButton {
         super.init(frame: .zero)
         
         icon.image = UIImage(named: "copyIcon")
+        icon.isHidden = true
         
         label.text = title
         label.font = .appFont(withSize: 18, weight: .medium)
@@ -41,20 +42,6 @@ final class CopyButton: MyButton {
         stack.alignment = .center
         
         constrainToSize(height: 48)
-    }
-    
-    func animateCopied() {
-        UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve) {
-            self.icon.image = UIImage(named: "checkmark")
-            self.label.text = "Copied"
-        } completion: { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                UIView.transition(with: self, duration: 0.3, options: .transitionCrossDissolve) {
-                    self.icon.image = UIImage(named: "copyIcon")
-                    self.label.text = self.title
-                }
-            }
-        }
     }
     
     required init?(coder: NSCoder) {

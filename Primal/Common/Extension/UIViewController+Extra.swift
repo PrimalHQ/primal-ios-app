@@ -22,6 +22,14 @@ extension UIViewController {
         }
     }
     
+    var customBackButton: UIBarButtonItem {
+        let button = UIButton()
+        button.setImage(UIImage(named: "back"), for: .normal)
+        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.constrainToSize(44)
+        return UIBarButtonItem(customView: button)
+    }
+    
     func findInChildren<T>() -> T? {
         for child in children {
             if let t = child as? T ?? child.findInChildren() {

@@ -24,6 +24,7 @@ protocol AppTheme {
     var foreground3: UIColor { get }
     var foreground4: UIColor { get }
     var foreground5: UIColor { get }
+    var foreground6: UIColor { get }
     
     var accent: UIColor { get }
     

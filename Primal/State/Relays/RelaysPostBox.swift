@@ -49,7 +49,7 @@ final class RelaysPostBox {
         }
         
         if
-            let nwcUrl = UserDefaults.standard.string(forKey: "nwc"),
+            let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
             let nwc = WalletConnectURL(str: nwcUrl) {
             add_rw_relay(pool: _postBox.pool, url: nwc.relay.url.absoluteString, info: .rw, variant: .nwc)
         }

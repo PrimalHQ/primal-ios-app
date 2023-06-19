@@ -189,6 +189,8 @@
 		9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */; };
 		9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */; };
 		9ECCC8902A3CACBC00BE8F62 /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCC88F2A3CACBC00BE8F62 /* zap-medium.json */; };
+		9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */; };
+		9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */; };
 		9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */; };
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
 		9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3232A013B3C000D1B2F /* FeedCell.swift */; };
@@ -435,6 +437,8 @@
 		9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSectionHeader.swift; sourceTree = "<group>"; };
 		9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+Extra.swift"; sourceTree = "<group>"; };
 		9ECCC88F2A3CACBC00BE8F62 /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
+		9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAlbyButton.swift; sourceTree = "<group>"; };
+		9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSettingsButton.swift; sourceTree = "<group>"; };
 		9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedNavigationController.swift; sourceTree = "<group>"; };
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		9ECFD3232A013B3C000D1B2F /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
@@ -881,6 +885,8 @@
 				9E55F2942A1FBDB600D5D523 /* BorderView.swift */,
 				9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */,
 				9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */,
+				9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */,
+				9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1286,6 +1292,7 @@
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
+				9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
 				933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */,
@@ -1377,6 +1384,7 @@
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
+				9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
@@ -1627,7 +1635,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.17;
+				MARKETING_VERSION = 0.17.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1668,7 +1676,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.17;
+				MARKETING_VERSION = 0.17.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -30,7 +30,7 @@ final class ZapManager {
         }
         
         guard
-            let nwcUrl = UserDefaults.standard.string(forKey: "nwc"),
+            let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
             let nwc = WalletConnectURL(str: nwcUrl)
         else {
             return

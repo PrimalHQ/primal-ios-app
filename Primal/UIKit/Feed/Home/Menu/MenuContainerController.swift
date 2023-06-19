@@ -302,7 +302,7 @@ private extension MenuContainerController {
                 try clear_keypair()
                 KingfisherManager.shared.cache.clearMemoryCache()
                 RootViewController.instance.reset()
-                UserDefaults.standard.removeObject(forKey: nwcDefaultsKey)
+                UserDefaults.standard.nwc = nil
             } catch {
                 self.showErrorMessage(error.localizedDescription)
             }

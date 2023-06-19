@@ -150,8 +150,9 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        guard let _ = UserDefaults.standard.string(forKey: "nwc") else {
-            showErrorMessage("You didn't connect Nostr Wallet Connect with Primal")
+        guard UserDefaults.standard.nwc != nil else {
+            let walletSettings = SettingsWalletViewController()
+            show(walletSettings, sender: nil)
             return
         }
         

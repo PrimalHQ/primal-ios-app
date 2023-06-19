@@ -8,13 +8,31 @@
 import Foundation
 import UIKit
 
-let nwcDefaultsKey: String = "nwc"
+extension String {
+    static let nwcDefaultsKey = "nwcDefaultsKey"
+}
 
-final class SettingsWalletViewController : UIViewController {
-    private var foregroundObserver: NSObjectProtocol?
-    private lazy var descriptionLabel: UILabel = UILabel()
-    private lazy var actionButton: FancyButton = FancyButton(title: "")
-
+extension UserDefaults {
+    var nwc: String? {
+        get { string(forKey: .nwcDefaultsKey) }
+        set { set(newValue, forKey: .nwcDefaultsKey) }
+    }
+}
+    
+final class SettingsWalletViewController : UIViewController, Themeable {
+    private var walletObserver: NSObjectProtocol?
+    
+    private lazy var iconParent = UIView()
+    private lazy var walletIcon = UIImageView(image: UIImage(named: "walletLarge"))
+    private lazy var checkbox = CheckboxView()
+    private lazy var descriptionLabel = UILabel()
+    
+    private let connectButton = ConnectAlbyButton()
+    private lazy var infoView = WalletInfoView()
+    private lazy var disconnectButton = GradientSettingsButton(title: "Disconnect Wallet")
+    
+    let defaults = UserDefaults.standard
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         
@@ -26,81 +44,173 @@ final class SettingsWalletViewController : UIViewController {
     }
     
     deinit {
-        if let foregroundObserver {
-            NotificationCenter.default.removeObserver(foregroundObserver)
+        if let walletObserver {
+            NotificationCenter.default.removeObserver(walletObserver)
         }
     }
     
-    private func saveNewNWC(_ wcu: WalletConnectURL) {
-        UserDefaults.standard.set(wcu.to_url().absoluteString, forKey: nwcDefaultsKey)
+    func updateTheme() {
+        view.backgroundColor = .background
+        
+        iconParent.backgroundColor = .background3
+        iconParent.layer.borderColor = UIColor(rgb: 0x209C00).withAlphaComponent(0.65).cgColor
+        
+        walletIcon.tintColor = .foreground5
+        descriptionLabel.textColor = .foreground
+    }
+}
+
+private extension SettingsWalletViewController {
+    func saveNewNWC(_ wcu: WalletConnectURL) {
+        defaults.nwc = wcu.to_url().absoluteString
     }
     
-    private func setup() {
-        foregroundObserver = NotificationCenter.default.addObserver(forName: .nostrWalletConnect, object: nil, queue: .main) { notification in
+    func setup() {
+        walletObserver = NotificationCenter.default.addObserver(forName: .nostrWalletConnect, object: nil, queue: .main) { notification in
             if let wcu = notification.object as? WalletConnectURL {
                 self.saveNewNWC(wcu)
-                self.setupTitle()
-                let detailText = self.detailText()
-                self.actionButton.title = detailText.actionButtonTitle
-                self.descriptionLabel.text = detailText.descriptionText
+                self.updateView()
             }
         }
         
-        view.backgroundColor = Theme.current.background
-        setupBackButton()
-        setupTitle()
-        setupDetail()
+        navigationItem.leftBarButtonItem = customBackButton
+        setupStack()
+        updateView()
+        updateTheme()
     }
     
-    private func setupBackButton() {
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        button.constrainToSize(44)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-    }
-    private func setupTitle() {
-        if let _ = UserDefaults.standard.string(forKey: nwcDefaultsKey) {
-            title = "Wallet connected"
-        } else {
-            title = "Connect a wallet"
+    func updateView() {
+        guard let nwc = defaults.nwc, let wcu = WalletConnectURL(str: nwc) else {
+            title = "Connect a Wallet"
+            descriptionLabel.text = "To send and receive zaps,  connect a bitcoin lightning wallet."
+            
+            iconParent.layer.borderWidth = 0
+            
+            connectButton.isHidden = false
+            checkbox.isHidden = true
+            infoView.isHidden = true
+            disconnectButton.isHidden = true
+            return
         }
+        
+        title = "Wallet Connected"
+        descriptionLabel.text = "You are currently using the following bitcoin lightning wallet:"
+        infoView.firstLabel.text = wcu.relay.url.absoluteString
+        infoView.secondLabel.text = wcu.lud16
+        
+        iconParent.layer.borderWidth = 7
+        
+        connectButton.isHidden = true
+        checkbox.isHidden = false
+        infoView.isHidden = false
+        disconnectButton.isHidden = false
     }
-    private func setupDetail() {
-        let detailText = detailText()
-        descriptionLabel.textColor = Theme.current.foreground
-        descriptionLabel.text = detailText.descriptionText
+    
+    func setupStack() {
         descriptionLabel.lineBreakMode = .byWordWrapping
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.preferredMaxLayoutWidth = view.frame.width
         descriptionLabel.textAlignment = .center
         
-        actionButton.title = detailText.actionButtonTitle
-        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+        let actionStack = UIStackView(arrangedSubviews: [descriptionLabel, connectButton, infoView, disconnectButton])
+        actionStack.axis = .vertical
+        actionStack.spacing = 20
         
-        let stack = UIStackView(arrangedSubviews: [descriptionLabel, actionButton])
+        let stack = UIStackView(arrangedSubviews: [iconParent, actionStack])
         stack.axis = .vertical
-        stack.setCustomSpacing(40, after: descriptionLabel)
+        stack.alignment = .center
+        stack.spacing = 40
         
         view.addSubview(stack)
         
-        stack.centerToSuperview()
+        descriptionLabel.font = .appFont(withSize: 20, weight: .regular)
+        
+        iconParent.constrainToSize(200)
+        iconParent.layer.cornerRadius = 100
+        iconParent.addSubview(walletIcon)
+        walletIcon.pinToSuperview(edges: .leading, padding: 42).pinToSuperview(edges: .top, padding: 32)
+        
+        stack.pinToSuperview(edges: .horizontal, padding: 24).centerToSuperview(axis: .vertical)
+        actionStack.pinToSuperview(edges: .horizontal)
+        
+        view.addSubview(checkbox)
+        checkbox.pin(to: iconParent, edges: [.trailing, .bottom], padding: -6)
+        
+        connectButton.addTarget(self, action: #selector(connectButtonTapped), for: .touchUpInside)
+        disconnectButton.addTarget(self, action: #selector(disconnectButtonTapped), for: .touchUpInside)
     }
-    private func detailText() -> (descriptionText: String, actionButtonTitle: String) {
-        if
-            let wcuUrl = UserDefaults.standard.string(forKey: nwcDefaultsKey),
-            let wcu = WalletConnectURL(str: wcuUrl) {
-            return ("You are currently using the following bitcoin lightning wallet:\n\n\(wcu.relay.url.absoluteString)\n\(wcu.lud16 ?? "")", "Disconnect Wallet")
-        } else {
-            return ("To send and receive zaps, connect a bitcoin lightning wallet.", "Connect Alby Wallet")
-        }
+    
+    @objc func disconnectButtonTapped() {
+        defaults.nwc = nil
+        updateView()
     }
-    @objc private func actionButtonTapped() {
-        if let _ = UserDefaults.standard.string(forKey: nwcDefaultsKey) {
-            UserDefaults.standard.removeObject(forKey: nwcDefaultsKey)
-            navigationController?.popViewController(animated: true)
-        } else {
-            UIApplication.shared.open(URL(string:"https://nwc.getalby.com/apps/new?c=Primal-iOS")!)
+    
+    @objc func connectButtonTapped() {
+        guard let url = URL(string:"https://nwc.getalby.com/apps/new?c=Primal-iOS") else { return }
+        UIApplication.shared.open(url)
+    }
+}
+
+final class CheckboxView: UIView, Themeable {
+    let icon = UIImageView(image: UIImage(named: "checkboxLarge"))
+    
+    init() {
+        super.init(frame: .zero)
+        
+        backgroundColor = .init(rgb: 0x209C00)
+        layer.borderWidth = 6
+        layer.cornerRadius = 30
+        
+        addSubview(icon)
+        icon.centerToSuperview()
+        updateTheme()
+        constrainToSize(60)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        layer.borderColor = UIColor.background.cgColor
+    }
+}
+
+final class WalletInfoView: UIView, Themeable {
+    let firstLabel = UILabel()
+    let secondLabel = UILabel()
+    let spacer = SpacerView(height: 1)
+    
+    init() {
+        super.init(frame: .zero)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setup() {
+        let stack = UIStackView(arrangedSubviews: [firstLabel, spacer, secondLabel])
+        stack.spacing = 10
+        stack.axis = .vertical
+        
+        [firstLabel, secondLabel].forEach {
+            $0.textAlignment = .center
+            $0.font = .appFont(withSize: 18, weight: .regular)
         }
+        
+        addSubview(stack)
+        stack.pinToSuperview(edges: .vertical, padding: 10).pinToSuperview(edges: .horizontal)
+        
+        layer.cornerRadius = 12
+        updateTheme()
+    }
+    
+    func updateTheme() {
+        backgroundColor = .background3
+        [firstLabel, secondLabel].forEach {
+            $0.textColor = .foreground
+        }
+        spacer.backgroundColor = .foreground6
     }
 }
