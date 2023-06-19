@@ -18,6 +18,7 @@ extension UIColor {
     static var foreground3: UIColor { Theme.current.foreground3 }
     static var foreground4: UIColor { Theme.current.foreground4 }
     static var foreground5: UIColor { Theme.current.foreground5 }
+    static var foreground6: UIColor { Theme.current.foreground6 }
     
     static var accent: UIColor { Theme.current.accent }
     

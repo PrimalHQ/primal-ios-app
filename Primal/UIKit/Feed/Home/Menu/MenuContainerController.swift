@@ -205,7 +205,7 @@ private extension MenuContainerController {
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
         profileImage.constrainToSize(52)
-        profileImage.contentMode = .scaleToFill
+        profileImage.contentMode = .scaleAspectFill
         profileImage.layer.cornerRadius = 26
         profileImage.layer.masksToBounds = true
         
@@ -216,6 +216,7 @@ private extension MenuContainerController {
         menuProfileImage.layer.cornerRadius = 16
         menuProfileImage.layer.masksToBounds = true
         menuProfileImage.isUserInteractionEnabled = false
+        menuProfileImage.contentMode = .scaleAspectFill
         
         menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
@@ -301,7 +302,7 @@ private extension MenuContainerController {
                 try clear_keypair()
                 KingfisherManager.shared.cache.clearMemoryCache()
                 RootViewController.instance.reset()
-                UserDefaults.standard.removeObject(forKey: nwcDefaultsKey)
+                UserDefaults.standard.nwc = nil
             } catch {
                 self.showErrorMessage(error.localizedDescription)
             }

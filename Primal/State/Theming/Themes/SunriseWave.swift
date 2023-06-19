@@ -23,6 +23,7 @@ final class SunriseWave: AppTheme {
     let foreground3: UIColor = .init(rgb: 0x666666)
     let foreground4: UIColor = .init(rgb: 0x808080)
     let foreground5: UIColor = .init(rgb: 0x808080)
+    var foreground6: UIColor = .init(rgb: 0xC8C8C8)
     
     let accent: UIColor = .init(rgb: 0xCA079F)
     

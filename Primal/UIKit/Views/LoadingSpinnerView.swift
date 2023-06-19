@@ -14,6 +14,8 @@ enum AnimationType {
     case splash
     case loadingSpinner
     
+    case zapMedium
+    
     static var animationCache: [AnimationType: LottieAnimation] = [:]
     
     var name: String {
@@ -22,6 +24,7 @@ enum AnimationType {
         case .iconLike:         return "iconLike"
         case .splash:           return "splashAlpha"
         case .loadingSpinner:   return "loadingSpinner"
+        case .zapMedium:        return "zap-medium"
         }
     }
     

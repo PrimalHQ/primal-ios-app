@@ -53,6 +53,8 @@ final class PostManager {
         
         let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post, mentionedPubkeys: mentionedPubkeys)
         
+        userReposts.insert(post.id)
+        
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handleReplyEvent(callback))
         RelaysPostBox.the.send(ev)
     }

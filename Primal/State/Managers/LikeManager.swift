@@ -25,6 +25,8 @@ final class LikeManager {
             return
         }
         
+        userLikes.insert(post.id)
+        
         let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
         
         RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: self.handleLikeEvent)

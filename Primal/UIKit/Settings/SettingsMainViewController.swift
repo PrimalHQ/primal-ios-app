@@ -47,22 +47,22 @@ private extension SettingsMainViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let keys = SettingsOptionButton(title: "Keys")
-        let feeds = SettingsOptionButton(title: "Feeds")
         let wallet = SettingsOptionButton(title: "Wallet")
         let appearance = SettingsOptionButton(title: "Appearance")
         let notifications = SettingsOptionButton(title: "Notifications")
         let network = SettingsOptionButton(title: "Network")
+        let feeds = SettingsOptionButton(title: "Feeds")
+        let zaps = SettingsOptionButton(title: "Zaps")
         
         let deleteLabel = SettingsTitleView(title: "DELETE")
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, feeds, wallet, appearance, notifications, network, bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, appearance, notifications, network, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
         stack.axis = .vertical
-        stack.setCustomSpacing(40, after: network)
         stack.setCustomSpacing(12, after: versionTitleLabel)
         
         bottomStack.axis = .vertical
