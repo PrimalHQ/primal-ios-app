@@ -86,6 +86,24 @@ struct EventId: Identifiable, CustomStringConvertible {
     }
 }
 
+extension NostrEvent {
+    func toJSONString() -> String? {
+        let jsonEncoder = JSONEncoder()
+        
+        guard let jsonData = try? jsonEncoder.encode(self) else {
+            print("Error encoding req json")
+            return nil
+        }
+        
+        guard let event = String(data: jsonData, encoding: .utf8) else {
+            print("Error encoding Data JSON to String")
+            return nil
+        }
+        
+        return "[\"EVENT\",\(event)]"
+    }
+}
+
 final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatable, Hashable, Comparable {
     static func == (lhs: NostrEvent, rhs: NostrEvent) -> Bool {
         return lhs.id == rhs.id

@@ -50,6 +50,9 @@
 		9393313429A3E575003954C2 /* Primal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393313329A3E575003954C2 /* Primal.swift */; };
 		9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */; };
 		9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */; };
+		9393D8302A422C3D00F0C55A /* RelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393D82F2A422C3D00F0C55A /* RelayConnection.swift */; };
+		9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393D8312A423D1600F0C55A /* RelayPool.swift */; };
+		9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393D8332A424DB700F0C55A /* UnsentEvent.swift */; };
 		939A01652A06C0EF00E9DBA2 /* Relay_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01642A06C0EF00E9DBA2 /* Relay_bkp.swift */; };
 		939A01672A06C12200E9DBA2 /* RelayConnection_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01662A06C12200E9DBA2 /* RelayConnection_bkp.swift */; };
 		939A01692A06C15800E9DBA2 /* NostrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01682A06C15800E9DBA2 /* NostrRequest.swift */; };
@@ -269,6 +272,9 @@
 		9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoFlex-Regular.ttf"; sourceTree = "<group>"; };
 		9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = RobotoFlex.ttf; sourceTree = "<group>"; };
 		9393313D29A3E6DE003954C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9393D82F2A422C3D00F0C55A /* RelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayConnection.swift; sourceTree = "<group>"; };
+		9393D8312A423D1600F0C55A /* RelayPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool.swift; sourceTree = "<group>"; };
+		9393D8332A424DB700F0C55A /* UnsentEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsentEvent.swift; sourceTree = "<group>"; };
 		939A01642A06C0EF00E9DBA2 /* Relay_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relay_bkp.swift; sourceTree = "<group>"; };
 		939A01662A06C12200E9DBA2 /* RelayConnection_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayConnection_bkp.swift; sourceTree = "<group>"; };
 		939A01682A06C15800E9DBA2 /* NostrRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrRequest.swift; sourceTree = "<group>"; };
@@ -820,6 +826,9 @@
 			isa = PBXGroup;
 			children = (
 				93F27DA02A27E66E004ADA55 /* RelaysPostBox.swift */,
+				9393D82F2A422C3D00F0C55A /* RelayConnection.swift */,
+				9393D8312A423D1600F0C55A /* RelayPool.swift */,
+				9393D8332A424DB700F0C55A /* UnsentEvent.swift */,
 			);
 			path = Relays;
 			sourceTree = "<group>";
@@ -1348,6 +1357,7 @@
 				933DBDB92A114544008DCF1F /* ExpressionSyntax.swift in Sources */,
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
+				9393D8302A422C3D00F0C55A /* RelayConnection.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
 				9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
@@ -1487,9 +1497,11 @@
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
+				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
+				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
