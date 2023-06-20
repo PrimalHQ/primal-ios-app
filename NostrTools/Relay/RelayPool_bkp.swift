@@ -44,7 +44,7 @@ enum OnFlush {
     case all((PostedEvent) -> Void)
 }
 
-final class RelayPool {
+final class RelayPool_bkp {
     var relays: [Relay] = []
     var handlers: [RelayHandler] = []
     var request_queue: [QueuedRequest] = []
@@ -125,7 +125,7 @@ final class RelayPool {
         if get_relay(relay_id) != nil {
             throw RelayError.RelayAlreadyExists
         }
-        let conn = RelayConnection(url: url) { event in
+        let conn = RelayConnection_bkp(url: url) { event in
             self.handle_event(relay_id: relay_id, event: event)
         }
         let relay = Relay(descriptor: desc, connection: conn)
@@ -308,7 +308,7 @@ final class RelayPool {
     }
 }
 
-func add_rw_relay(pool: RelayPool, url: String, info: RelayInfo, variant: RelayVariant) {
+func add_rw_relay(pool: RelayPool_bkp, url: String, info: RelayInfo, variant: RelayVariant) {
     guard let url = RelayURL(url) else {
         return
     }

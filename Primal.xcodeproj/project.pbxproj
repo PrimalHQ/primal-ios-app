@@ -35,7 +35,7 @@
 		9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */; };
 		9363DE792A30DE810060F4BD /* NostrWalletConnectSuccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */; };
 		9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */; };
-		93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93665D312A06BFE6001EB7A0 /* RelayPool.swift */; };
+		93665D322A06BFE6001EB7A0 /* RelayPool_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93665D312A06BFE6001EB7A0 /* RelayPool_bkp.swift */; };
 		936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */; };
 		936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
@@ -50,11 +50,11 @@
 		9393313429A3E575003954C2 /* Primal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393313329A3E575003954C2 /* Primal.swift */; };
 		9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */; };
 		9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */; };
-		939A01652A06C0EF00E9DBA2 /* Relay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01642A06C0EF00E9DBA2 /* Relay.swift */; };
-		939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01662A06C12200E9DBA2 /* RelayConnection.swift */; };
+		939A01652A06C0EF00E9DBA2 /* Relay_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01642A06C0EF00E9DBA2 /* Relay_bkp.swift */; };
+		939A01672A06C12200E9DBA2 /* RelayConnection_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01662A06C12200E9DBA2 /* RelayConnection_bkp.swift */; };
 		939A01692A06C15800E9DBA2 /* NostrRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A01682A06C15800E9DBA2 /* NostrRequest.swift */; };
 		939A016B2A06C18200E9DBA2 /* Websocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016A2A06C18200E9DBA2 /* Websocket.swift */; };
-		939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016C2A06C21A00E9DBA2 /* PostBox.swift */; };
+		939A016D2A06C21A00E9DBA2 /* PostBox_bkp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939A016C2A06C21A00E9DBA2 /* PostBox_bkp.swift */; };
 		939BDB532A352ACF00E80B2C /* Zap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB522A352ACF00E80B2C /* Zap.swift */; };
 		939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939BDB542A374EAB00E80B2C /* ZapManager.swift */; };
 		93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE752A0AB0A5005AE313 /* Profile.swift */; };
@@ -253,7 +253,7 @@
 		9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectDeeplinkHandler.swift; sourceTree = "<group>"; };
 		9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectSuccessController.swift; sourceTree = "<group>"; };
 		9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectURL.swift; sourceTree = "<group>"; };
-		93665D312A06BFE6001EB7A0 /* RelayPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool.swift; sourceTree = "<group>"; };
+		93665D312A06BFE6001EB7A0 /* RelayPool_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayPool_bkp.swift; sourceTree = "<group>"; };
 		936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
 		936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNotifications.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -269,11 +269,11 @@
 		9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoFlex-Regular.ttf"; sourceTree = "<group>"; };
 		9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = RobotoFlex.ttf; sourceTree = "<group>"; };
 		9393313D29A3E6DE003954C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		939A01642A06C0EF00E9DBA2 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relay.swift; sourceTree = "<group>"; };
-		939A01662A06C12200E9DBA2 /* RelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayConnection.swift; sourceTree = "<group>"; };
+		939A01642A06C0EF00E9DBA2 /* Relay_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relay_bkp.swift; sourceTree = "<group>"; };
+		939A01662A06C12200E9DBA2 /* RelayConnection_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayConnection_bkp.swift; sourceTree = "<group>"; };
 		939A01682A06C15800E9DBA2 /* NostrRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrRequest.swift; sourceTree = "<group>"; };
 		939A016A2A06C18200E9DBA2 /* Websocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Websocket.swift; sourceTree = "<group>"; };
-		939A016C2A06C21A00E9DBA2 /* PostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBox.swift; sourceTree = "<group>"; };
+		939A016C2A06C21A00E9DBA2 /* PostBox_bkp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBox_bkp.swift; sourceTree = "<group>"; };
 		939BDB522A352ACF00E80B2C /* Zap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zap.swift; sourceTree = "<group>"; };
 		939BDB542A374EAB00E80B2C /* ZapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapManager.swift; sourceTree = "<group>"; };
 		93B7FE752A0AB0A5005AE313 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
@@ -572,12 +572,12 @@
 		93665D302A06BFCB001EB7A0 /* Relay */ = {
 			isa = PBXGroup;
 			children = (
-				93665D312A06BFE6001EB7A0 /* RelayPool.swift */,
-				939A01642A06C0EF00E9DBA2 /* Relay.swift */,
-				939A01662A06C12200E9DBA2 /* RelayConnection.swift */,
+				93665D312A06BFE6001EB7A0 /* RelayPool_bkp.swift */,
+				939A01642A06C0EF00E9DBA2 /* Relay_bkp.swift */,
+				939A01662A06C12200E9DBA2 /* RelayConnection_bkp.swift */,
 				939A01682A06C15800E9DBA2 /* NostrRequest.swift */,
 				939A016A2A06C18200E9DBA2 /* Websocket.swift */,
-				939A016C2A06C21A00E9DBA2 /* PostBox.swift */,
+				939A016C2A06C21A00E9DBA2 /* PostBox_bkp.swift */,
 			);
 			path = Relay;
 			sourceTree = "<group>";
@@ -1411,7 +1411,7 @@
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
 				932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */,
-				939A016D2A06C21A00E9DBA2 /* PostBox.swift in Sources */,
+				939A016D2A06C21A00E9DBA2 /* PostBox_bkp.swift in Sources */,
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */,
@@ -1474,8 +1474,8 @@
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
 				93F27DA82A27FA8E004ADA55 /* LikeManager.swift in Sources */,
 				9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */,
-				939A01672A06C12200E9DBA2 /* RelayConnection.swift in Sources */,
-				939A01652A06C0EF00E9DBA2 /* Relay.swift in Sources */,
+				939A01672A06C12200E9DBA2 /* RelayConnection_bkp.swift in Sources */,
+				939A01652A06C0EF00E9DBA2 /* Relay_bkp.swift in Sources */,
 				9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */,
 				9EA420D22A17B42F008FBFED /* ImageViewerRemote.swift in Sources */,
 				933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */,
@@ -1483,7 +1483,7 @@
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */,
-				93665D322A06BFE6001EB7A0 /* RelayPool.swift in Sources */,
+				93665D322A06BFE6001EB7A0 /* RelayPool_bkp.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,

@@ -41,11 +41,11 @@ class PostedEvent {
     }
 }
 
-final class PostBox: ObservableObject {
-    let pool: RelayPool
+final class PostBox_bkp: ObservableObject {
+    let pool: RelayPool_bkp
     var events: [String: PostedEvent]
     
-    init(pool: RelayPool) {
+    init(pool: RelayPool_bkp) {
         self.pool = pool
         self.events = [:]
         pool.register_handler(sub_id: "postbox", handler: handle_event)

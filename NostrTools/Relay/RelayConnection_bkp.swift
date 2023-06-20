@@ -38,7 +38,7 @@ public struct RelayURL: Hashable {
     }
 }
 
-final class RelayConnection {
+final class RelayConnection_bkp {
     private(set) var isConnected = false
     private(set) var isConnecting = false
     

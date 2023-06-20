@@ -21,14 +21,14 @@ public let bootstrap_relays = [
 ]
 
 final class AccountCreationBootstrapper {
-    private let pool: RelayPool
+    private let pool: RelayPool_bkp
     private var profile: Profile?
     private let keypair: Keypair
     private var cb: (() -> Void)?
     private var oksReceived: Int = 0
     
     init() {
-        self.pool = RelayPool()
+        self.pool = RelayPool_bkp()
         self.keypair = generate_new_keypair()
     }
     

@@ -8,7 +8,7 @@
 import Foundation
 
 final class RelaysPostBox {
-    private let _postBox: PostBox = PostBox(pool: RelayPool())
+    private let _postBox: PostBox_bkp = PostBox_bkp(pool: RelayPool_bkp())
     
     private init() {}
     
@@ -26,13 +26,13 @@ final class RelaysPostBox {
         }
     }
     
-    var postBox: PostBox {
+    var postBox: PostBox_bkp {
         get {
             return _postBox
         }
     }
     
-    var pool: RelayPool {
+    var pool: RelayPool_bkp {
         get {
             return _postBox.pool
         }

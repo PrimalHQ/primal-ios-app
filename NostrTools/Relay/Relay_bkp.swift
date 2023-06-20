@@ -78,11 +78,11 @@ struct RelayMetadata: Codable {
 
 final class Relay: Identifiable {
     let descriptor: RelayDescriptor
-    let connection: RelayConnection
+    let connection: RelayConnection_bkp
     
     var flags: Int
     
-    init(descriptor: RelayDescriptor, connection: RelayConnection) {
+    init(descriptor: RelayDescriptor, connection: RelayConnection_bkp) {
         self.flags = 0
         self.descriptor = descriptor
         self.connection = connection

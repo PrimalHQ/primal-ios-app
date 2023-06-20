@@ -716,7 +716,7 @@ func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoic
     return WalletRequest(method: "pay_invoice", params: data)
 }
 
-func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool) {
+func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool_bkp) {
     var filter = NostrFilter(kinds: [.nwc_response])
     filter.authors = [url.pubkey]
     filter.limit = 0
