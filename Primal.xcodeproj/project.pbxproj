@@ -84,6 +84,8 @@
 		93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1229F7D136003BBCE5 /* Keys.swift */; };
 		93CACB1929F7D1F4003BBCE5 /* Vault in Frameworks */ = {isa = PBXBuildFile; productRef = 93CACB1829F7D1F4003BBCE5 /* Vault */; };
 		93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1A29F7D23A003BBCE5 /* Bech32.swift */; };
+		93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E0A81C2A43A97C00C33A08 /* NWCRelayConnection.swift */; };
+		93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E0A81E2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift */; };
 		93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27D9D2A27DE32004ADA55 /* Connection.swift */; };
 		93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27DA32A27EA04004ADA55 /* FollowManager.swift */; };
 		93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */; };
@@ -337,6 +339,8 @@
 		93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrTools.swift; sourceTree = "<group>"; };
 		93CACB1229F7D136003BBCE5 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		93CACB1A29F7D23A003BBCE5 /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		93E0A81C2A43A97C00C33A08 /* NWCRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCRelayConnection.swift; sourceTree = "<group>"; };
+		93E0A81E2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCRelayConnectionEvent.swift; sourceTree = "<group>"; };
 		93F27D9D2A27DE32004ADA55 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		93F27DA32A27EA04004ADA55 /* FollowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowManager.swift; sourceTree = "<group>"; };
 		93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityManager.swift; sourceTree = "<group>"; };
@@ -806,6 +810,8 @@
 				9393D8312A423D1600F0C55A /* RelayPool.swift */,
 				9393D8332A424DB700F0C55A /* UnsentEvent.swift */,
 				9393D8352A430C8200F0C55A /* RelaysPostbox.swift */,
+				93E0A81C2A43A97C00C33A08 /* NWCRelayConnection.swift */,
+				93E0A81E2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift */,
 			);
 			path = Relays;
 			sourceTree = "<group>";
@@ -1470,7 +1476,9 @@
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
+				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				9E9F2F9729F6AB8A00A9CDF3 /* Collection.swift in Sources */,
+				93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
@@ -1675,7 +1683,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.18.2;
+				MARKETING_VERSION = 0.18.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1716,7 +1724,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.18.2;
+				MARKETING_VERSION = 0.18.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

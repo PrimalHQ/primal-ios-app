@@ -49,8 +49,8 @@ final class RelayConnection {
 
     func connect() {
         state.send(.connecting)
-        
-        socket = NWWebSocket(url: socketURL)
+    
+        socket = NWWebSocket(url: socketURL, connectionQueue: self.dispatchQueue)
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
@@ -134,7 +134,7 @@ extension RelayConnection : WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
         state.send(.disconnected)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        self.dispatchQueue.asyncAfter(deadline: .now() + 3) {
             self.connect()
         }
     }
@@ -149,6 +149,12 @@ extension RelayConnection : WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(self.socketURL) - \(error)")
+        
+//        state.send(.disconnected)
+//
+//        self.dispatchQueue.asyncAfter(deadline: .now() + 3) {
+//            self.connect()
+//        }
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {

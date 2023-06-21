@@ -6,19 +6,74 @@
 //
 
 import Foundation
+import Combine
 
 final class ZapManager {
+    private var nwcRelayConnection: NWCRelayConnection?
+    private var cancellables = Set<AnyCancellable>()
+    private var relayURLString: String = ""
+    private var handleEvent: ((NostrConnectionEvent) -> Void)?
+    private var handleZapEvent: (() -> Void)?
+    
     private init() {}
     
     static let instance: ZapManager = ZapManager()
     
-    var didCallback: Set<String> = []
+    @Published private(set) var isConnected = false
+    @Published private(set) var isConnecting = false
     @Published var userZapped: [String: Int64] = [:]
+    
+    deinit {
+        self.disconnect()
+    }
+    
+    func connect(_ relayURLString: String) {
+        guard let relayURL = URL(string: relayURLString) else {
+            print("Provided relayURLString is invalid: \(relayURLString)")
+            return
+        }
+        self.relayURLString = relayURLString
+        
+        self.nwcRelayConnection = NWCRelayConnection(relayURL)
+        
+        self.nwcRelayConnection?.subject
+            .receive(on: DispatchQueue.global(qos: .default))
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.receive(event: .error(error))
+                case .finished:
+                    self?.receive(event: .disconnected(.normalClosure, nil))
+                }
+            } receiveValue: { [weak self] event in
+                self?.receive(event: event)
+            }.store(in: &cancellables)
+        
+        
+        self.nwcRelayConnection?.connect()
+    }
+    func disconnect() {
+        self.nwcRelayConnection?.disconnect()
+        for cancellable in cancellables {
+            cancellable.cancel()
+        }
+        
+        isConnected = false
+        isConnecting = false
+    }
+    func reconnect() {
+        guard !isConnecting else {
+            return  // we're already trying to connect
+        }
+        disconnect()
+        connect(self.relayURLString)
+    }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
     func amountZapped(_ eventId: String) -> Int64 { userZapped[eventId, default: 0] }
     
     func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
+        self.handleZapEvent = callback
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
@@ -66,13 +121,89 @@ final class ZapManager {
                     return
                 }
                 
-                RelaysPostbox.instance.request(ev, specificRelay: nwc.relay.url.absoluteString, successHandler: { _ in
-                    callback()
-                }, errorHandler: {
-                    print("ZapManager: Zapping failed for event id: \(ev.id)")
-                })
+                self.send(ev) { response in
+                    switch response {
+                    case .nostr_event(let nostrResponse):
+                        switch nostrResponse {
+                        case .ok(let commandResult):
+                            if commandResult.ok {
+                                callback()
+                            }
+                        default:
+                            break
+                        }
+                    case .ws_event(let wsResponse):
+                        print("ZapManager: WS_EVENT: \(wsResponse)")
+                    }
+                }
                 
                 print("nwc: sending request \(ev.id) zap_req_id \(reqid.reqid)")
+            }
+        }
+    }
+    
+    private func send(_ req: NostrEvent, _ handler: @escaping (NostrConnectionEvent) -> Void) {
+        guard let req = req.toJSONString() else {
+            print("failed to encode nostr req: \(req)")
+            return
+        }
+        self.handleEvent = handler
+        self.nwcRelayConnection?.send(.string(req))
+    }
+    private func receive(message: URLSessionWebSocketTask.Message) {
+        switch message {
+        case .string(let messageString):
+            if let ev = decode_nostr_event(txt: messageString) {
+                DispatchQueue.main.async {
+                    if let handler = self.handleEvent {
+                        handler(.nostr_event(ev))
+                    }
+                }
+                return
+            }
+        case .data(let messageData):
+            if let messageString = String(data: messageData, encoding: .utf8) {
+                receive(message: .string(messageString))
+            }
+        @unknown default:
+            print("An unexpected URLSessionWebSocketTask.Message was received.")
+        }
+    }
+    private func receive(event: NWCRelayConnectionEvent) {
+        switch event {
+        case .connected:
+            DispatchQueue.main.async {
+                self.isConnected = true
+                self.isConnecting = false
+                print("✅ Success: NWCRelayConnection (\(self.relayURLString)) has connected")
+            }
+        case .message(let message):
+            self.receive(message: message)
+        case .disconnected(let closeCode, let reason):
+            if closeCode != .normalClosure {
+                print("⚠️ Warning: NWCRelayConnection (\(self.relayURLString)) closed with code \(closeCode), reason: \(String(describing: reason))")
+            }
+            DispatchQueue.main.async {
+                self.isConnected = false
+                self.isConnecting = false
+                self.reconnect()
+            }
+        case .error(let error):
+            print("⚠️ Warning: NWCRelayConnection (\(self.relayURLString)) error: \(error)")
+            let nserr = error as NSError
+            if nserr.domain == NSPOSIXErrorDomain && nserr.code == 57 {
+                // ignore socket not connected?
+                return
+            }
+            DispatchQueue.main.async {
+                self.isConnected = false
+                self.isConnecting = false
+                self.reconnect()
+            }
+        }
+        DispatchQueue.main.async {
+            if let handler = self.handleEvent {
+                handler(.ws_event(event))
             }
         }
     }
