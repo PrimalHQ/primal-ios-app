@@ -39,6 +39,7 @@ enum ResponseKind: UInt32 {
     case notificationStats = 10_000_112
     case searchPaginationSettingsEvent = 10_000_113
     case noteActions = 10_000_115
+    case popular_hashtags = 10_000_116
     case mediaMetadata = 10_000_119
 }
 

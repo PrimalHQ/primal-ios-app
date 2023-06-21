@@ -25,6 +25,25 @@ final class UserInfoTableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func update(user: ParsedUser) {
+        nameLabel.text = user.data.atIdentifierWithoutAt
+        secondaryLabel.text = user.data.nip05
+        secondaryLabel.isHidden = user.data.nip05.isEmpty
+        
+        profileIcon.kf.setImage(with: user.profileImage.url(for: .small), options: [
+            .processor(DownsamplingImageProcessor(size: CGSize(width: 36, height: 36))),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ])
+        
+        if let count = user.likes {
+            followersLabel.text = count.shortened()
+            followStack.isHidden = false
+        } else {
+            followStack.isHidden = true
+        }
+    }
+    
     func update(user: PrimalUser, count: Int?) {
         nameLabel.text = user.atIdentifierWithoutAt
         secondaryLabel.text = user.nip05

@@ -11,7 +11,7 @@ import GenericJSON
 
 public struct SocketRequest {
     let name: String
-    let payload: JSON
+    let payload: JSON?
     
     private let pendingResult: PostRequestResult = .init()
     
@@ -117,6 +117,23 @@ private extension SocketRequest {
             }
             
             print(nostrUserProfileInfo)
+        case .popular_hashtags:
+            guard
+                let contentString = payload["content"]?.stringValue,
+                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
+                case .array(let contentArray) = contentJSON
+            else {
+                return
+            }
+            
+            for element in contentArray {
+                guard
+                    let array = element.arrayValue,
+                    let name = array.first?.stringValue,
+                        let count = array.last?.doubleValue
+                else { continue }
+                pendingResult.popularHashtags.append(.init(title: name, apperances: Int(count)))
+            }
         default:
             assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(payload)")
         }

@@ -27,13 +27,20 @@ final class FeedManager {
     @Published var searchPaginationEvent: PrimalSearchPagination?
     @Published var feedUsers: [PrimalUser] = []
     
-    var profileId: String?
+    var searchTerm: String?
+    var profilePubkey: String?
     var didReachEnd = false
     
     init(profilePubkey: String) {
-        self.profileId = profilePubkey
+        self.profilePubkey = profilePubkey
         initPostsEmitterSubscription()
         initUserConnectionSubscription()
+    }
+    
+    init(search: String) {
+        searchTerm = search
+        initPostsEmitterSubscription()
+        refresh()
     }
     
     init(threadId: String) {
@@ -106,8 +113,10 @@ final class FeedManager {
     }
     
     private func generateRequestByFeedType(limit: Int32 = 20) -> JSON {
-        if let profileId {
-            return generateProfileFeedRequest(profileId)
+        if let profilePubkey {
+            return generateProfileFeedRequest(profilePubkey)
+        } else if let searchTerm {
+            return generateFeedPageRequest("search;\(searchTerm)", limit: limit)
         } else if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == currentFeed }) {
             return generateFeedPageRequest(feed.hex, limit: limit)
         } else {
