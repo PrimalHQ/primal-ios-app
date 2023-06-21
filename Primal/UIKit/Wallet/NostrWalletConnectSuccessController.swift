@@ -34,8 +34,15 @@ final class NostrWalletConnectSuccessController : UIViewController {
         if let _ = nwcURL {
             UserDefaults.standard.set(url, forKey: .nwcDefaultsKey)
             
-            RelaysPostBox.the.disconnect()
-            RelaysPostBox.the.connect(IdentityManager.instance.userRelays!)
+            guard let userRelays = IdentityManager.instance.userRelays else {
+                // this shouldn't ever happen
+                fatalError("User has no relays at this point? Impossible.")
+            }
+            
+//            RelaysPostBox_bkp.the.disconnect()
+//            RelaysPostBox_bkp.the.connect(IdentityManager.instance.userRelays!)
+            RelaysPostbox.instance.disconnect()
+            RelaysPostbox.instance.connect(Array(userRelays.keys))
             
             nwcLabel.textColor = Theme.current.foreground
             nwcLabel.text = "Wallet connected. You can close this view now. (Just pull it down)"

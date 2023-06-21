@@ -27,7 +27,7 @@ final class RelayConnection {
 
     private var dispatchQueue: DispatchQueue
     
-    private var subHandlers: [String: (_: [JSON]) -> Void] = [:]
+    private var subHandlers: [String: (_ result: [JSON], _ relay: String) -> Void] = [:]
     private var responseBuffer: [String: [JSON]] = [:]
     
     private let jsonEncoder: JSONEncoder = JSONEncoder()
@@ -68,7 +68,7 @@ final class RelayConnection {
         state.send(.disconnected)
     }
     
-    func request(_ ev: NostrEvent, _ handler: @escaping (_ result: [JSON]) -> Void) {
+    func request(_ ev: NostrEvent, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
         self.dispatchQueue.async {
             guard let jsonStr = ev.toJSONString() else {
                 return
@@ -90,13 +90,23 @@ final class RelayConnection {
             return
         }
         
-        if type == "EVENT" {
+        print("TYPE: \(type)")
+        print("RESPONSE: \(json)")
+        
+        if type == "OK" {
+            guard let okBool = json.arrayValue?[2].boolValue else {
+                print("error getting bool value from OK response")
+                return
+            }
+            
             if responseBuffer.keys.contains(subId) {
                 responseBuffer[subId]?.append(json)
             }
-        } else if type == "EOSE" {
-            if let handler = subHandlers[subId], let b = responseBuffer[subId] {
-                handler(b)
+            
+            if let handler = subHandlers[subId], let b = responseBuffer[subId], okBool == true {
+                DispatchQueue.main.async {
+                    handler(b, self.socketURL.absoluteString)
+                }
             }
             responseBuffer[subId] = nil
             subHandlers[subId] = nil

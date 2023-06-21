@@ -27,8 +27,12 @@ final class PostManager {
         let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
         
         if let repostEvent = ev {
-            RelaysPostBox.the.registerHandler(sub_id: repostEvent.id, handler: self.handleRepostEvent)
-            RelaysPostBox.the.send(repostEvent)
+            self.userReposts.insert(repostEvent.id)
+            RelaysPostbox.instance.request(repostEvent, specificRelay: nil, successHandler: { _ in
+                // do nothing
+            }, errorHandler: {
+                self.userReposts.remove(repostEvent.id)
+            })
         } else {
             print("Error creating repost event")
         }
@@ -41,8 +45,11 @@ final class PostManager {
         
         let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, mentionedPubkeys: mentionedPubkeys)
         
-        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handlePostEvent(callback))
-        RelaysPostBox.the.send(ev)
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            callback()
+        }, errorHandler: {
+            print("Posting failed for id: \(ev.id)")
+        })
     }
     
     func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
@@ -53,103 +60,12 @@ final class PostManager {
         
         let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post, mentionedPubkeys: mentionedPubkeys)
         
-        userReposts.insert(post.id)
+        self.userReplied.insert(post.id)
         
-        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: handleReplyEvent(callback))
-        RelaysPostBox.the.send(ev)
-    }
-    
-    private func handleRepostEvent(relayId: String, ev: NostrConnectionEvent) {
-        switch ev {
-        case .ws_event(let wsev):
-            switch wsev {
-            case .connected:
-                break
-            case .error(let err):
-                print(String(describing: err))
-            default:
-                break
-            }
-        case .nostr_event(let resp):
-            switch resp {
-            case .notice:
-                break
-            case .event:
-                break
-            case .eose:
-                break
-            case .ok(let res):
-                if res.ok {
-                    userReposts.insert(res.event_id)
-                }
-                break
-            }
-        }
-    }
-    private func handlePostEvent(_ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
-        func handle(relayId: String, ev: NostrConnectionEvent) {
-            switch ev {
-            case .ws_event(let wsev):
-                switch wsev {
-                case .connected:
-                    break
-                case .error(let err):
-                    print(String(describing: err))
-                default:
-                    break
-                }
-            case .nostr_event(let resp):
-                switch resp {
-                case .notice:
-                    break
-                case .event:
-                    break
-                case .eose:
-                    break
-                case .ok(let res):
-                    if res.ok {
-                        callback()
-                    }
-                    break
-                }
-            }
-        }
-        
-        return handle
-    }
-    private func handleReplyEvent(_ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
-        func handle(relayId: String, ev: NostrConnectionEvent) {
-            switch ev {
-            case .ws_event(let wsev):
-                switch wsev {
-                case .connected:
-                    break
-                case .error(let err):
-                    print(String(describing: err))
-                default:
-                    break
-                }
-            case .nostr_event(let resp):
-                switch resp {
-                case .notice:
-                    break
-                case .event:
-                    break
-                case .eose:
-                    break
-                case .ok(let res):
-                    if res.ok {
-                        let (inserted, _) = userReplied.insert(res.event_id)
-                        // call only once
-                        if inserted {
-                            callback()
-                        }
-                    }
-                    break
-                }
-            }
-        }
-        
-        return handle
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            // do nothing
+        }, errorHandler: {
+            self.userReplied.remove(post.id)
+        })
     }
 }

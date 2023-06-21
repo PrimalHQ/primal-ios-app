@@ -29,17 +29,14 @@ final class OnboardingTwitterController: UIViewController {
     let instructionLabel = UILabel()
     let continueButton = FancyButton(title: "Create Nostr account")
     let keychainInfo = KeyKeychainInfoView()
-    let acb = AccountCreationBootstrapper()
     
     init(profile: TwitterUserRequest.Response) {
         self.profile = profile
         super.init(nibName: nil, bundle: nil)
         
         setup()
-        
-
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -113,8 +110,44 @@ private extension OnboardingTwitterController {
     @objc func continuePressed() {
         switch state {
         case .ready:
-            acb.signup(nickName: profile.username, displayName: profile.displayname, about: profile.bio, pictureUrl: profile.avatar, bannerUrl: profile.banner) { [weak self] in
-                self?.state = .created
+            RelaysPostbox.instance.connect(bootstrap_relays)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                let profile = Profile(
+                    name: self.profile.username,
+                    display_name: self.profile.displayname,
+                    about: self.profile.bio,
+                    picture: self.profile.avatar,
+                    banner: self.profile.banner,
+                    website: nil,
+                    lud06: nil,
+                    lud16: nil,
+                    nip05: nil
+                )
+                let keypair = generate_new_keypair()
+                guard let metadata_ev = make_metadata_event(keypair: keypair, metadata: profile) else {
+                    fatalError("Unable to create metadata, this shouldn't be possible")
+                }
+                guard let contacts_ev = make_first_contact_event(keypair: keypair, bootstrap_relays: bootstrap_relays) else {
+                    fatalError("Unable to create contacts, this shouldn't be possible")
+                }
+                
+                RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
+                    RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
+                        do {
+                            try save_keypair(pubkey: keypair.pubkey, privkey: keypair.privkey!)
+                            print("NSEC: \(keypair.privkey_bech32!)")
+                            
+                            RelaysPostbox.instance.disconnect()
+                            self.state = .created
+                        } catch {
+                            print("Failed to save keys")
+                        }
+                    }, errorHandler: {
+                        
+                    })
+                }, errorHandler: {
+                    
+                })
             }
         case .created:
             let suggestions = OnboardingFollowSuggestionsController()

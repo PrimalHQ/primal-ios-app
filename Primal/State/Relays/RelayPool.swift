@@ -19,18 +19,18 @@ final class RelayPool {
     
     var atLeastOneConnected: CurrentValueSubject<Bool, Error> = CurrentValueSubject(false)
     var numOfConnected: CurrentValueSubject<Int, Error> = CurrentValueSubject(0)
-    var relays: CurrentValueSubject<Int, Error> = CurrentValueSubject(0)
-    
-    init(_ relays: [String]) {
-        self.connect(relays: relays)
-        self.relays.send(relays.count)
-    }
+    var relays: CurrentValueSubject<[String], Error> = CurrentValueSubject([])
     
     deinit {
+        self.disconnect()
+    }
+    
+    func disconnect() {
         for connection in connections {
             connection.disconnect()
         }
         connections = []
+        self.relays.send([])
     }
     
     func connect(relays: [String]) {
@@ -67,10 +67,14 @@ final class RelayPool {
         }).store(in: &cancellables)
         
         rc.connect()
+        
         connections.insert(rc)
+        
+        self.relays.value.append(relay)
+        self.relays.send(self.relays.value)
     }
     
-    func request(_ ev: NostrEvent, _ handler: @escaping (_ result: [JSON]) -> Void) {
+    func request(_ ev: NostrEvent, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
         Self.dispatchQueue.async {
             for connection in self.connections {
                 if connection.state.value == .connected {
@@ -82,7 +86,7 @@ final class RelayPool {
         }
     }
     
-    func request(_ ev: NostrEvent, specificRelay: String, _ handler: @escaping (_ result: [JSON]) -> Void) {
+    func requestTo(_ specificRelay: String, _ ev: NostrEvent, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
         Self.dispatchQueue.async {
             for connection in self.connections {
                 if connection.identity == specificRelay {

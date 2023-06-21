@@ -24,41 +24,15 @@ final class LikeManager {
             print("Error getting saved keypair")
             return
         }
+                
+        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
         
         userLikes.insert(post.id)
         
-        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
-        
-        RelaysPostBox.the.registerHandler(sub_id: ev.id, handler: self.handleLikeEvent)
-        
-        RelaysPostBox.the.send(ev)
-    }
-    
-    private func handleLikeEvent(relayId: String, ev: NostrConnectionEvent) {
-        switch ev {
-        case .ws_event(let wsev):
-            switch wsev {
-            case .connected:
-                break
-            case .error(let err):
-                print(String(describing: err))
-            default:
-                break
-            }
-        case .nostr_event(let resp):
-            switch resp {
-            case .notice:
-                break
-            case .event:
-                break
-            case .eose:
-                break
-            case .ok(let res):
-                if res.ok {
-                    userLikes.insert(res.event_id)
-                }
-                break
-            }
-        }
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            // do nothing
+        }, errorHandler: {
+            self.userLikes.remove(ev.id)
+        })
     }
 }

@@ -661,10 +661,10 @@ func make_settings_event(pubkey: String, privkey: String, settings: Encodable) -
     return ev
 }
 
-func make_zap_request_event(keypair: FullKeypair, content: String, relays: [RelayDescriptor], target: ZapTarget, zap_type: ZapType) -> MakeZapRequest? {
+func make_zap_request_event(keypair: FullKeypair, content: String, relays: [String], target: ZapTarget, zap_type: ZapType) -> MakeZapRequest? {
     var tags = zap_target_to_tags(target)
     var relay_tag = ["relays"]
-    relay_tag.append(contentsOf: relays.map { $0.url.id })
+    relay_tag.append(contentsOf: relays)
     tags.append(relay_tag)
     
     var kp = keypair
@@ -732,15 +732,6 @@ func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypai
 func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoiceRequest> {
     let data = PayInvoiceRequest(invoice: invoice)
     return WalletRequest(method: "pay_invoice", params: data)
-}
-
-func subscribe_to_nwc(url: WalletConnectURL, pool: RelayPool_bkp) {
-    var filter = NostrFilter(kinds: [.nwc_response])
-    filter.authors = [url.pubkey]
-    filter.limit = 0
-    let sub = NostrSubscribe(filters: [filter], sub_id: "nwc")
-    
-    pool.send(.subscribe(sub), to: [url.relay.id], skip_ephemeral: false)
 }
 
 @discardableResult

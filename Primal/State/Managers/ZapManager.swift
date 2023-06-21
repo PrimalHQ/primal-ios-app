@@ -36,7 +36,7 @@ final class ZapManager {
             return
         }
         
-        let relays = RelaysPostBox.the.zapRelays()
+        let relays = Array(RelaysPostbox.instance.relays.value.prefix(10))
         
         guard let mzapreq = make_zap_request_event(keypair: fullKeypair, content: comment, relays: relays, target: target, zap_type: type) else {
             // this should never happen
@@ -61,52 +61,19 @@ final class ZapManager {
             }
              
             DispatchQueue.main.async {
-                let nwc_req = nwc_pay(url: nwc, invoice: inv)
-                
-                guard let nwc_req else {
+                guard let ev = nwc_pay(url: nwc, invoice: inv) else {
                     print("error")
                     return
                 }
                 
-                RelaysPostBox.the.registerHandler(sub_id: nwc_req.id, handler: self.handleZapEvent(amount: amount, callback))
-                RelaysPostBox.the.postBox.send(nwc_req, to: [nwc.relay.id], skip_ephemeral: false, delay: 0.0, on_flush: nil)
+                RelaysPostbox.instance.request(ev, specificRelay: nwc.relay.url.absoluteString, successHandler: { _ in
+                    callback()
+                }, errorHandler: {
+                    print("ZapManager: Zapping failed for event id: \(ev.id)")
+                })
                 
-                print("nwc: sending request \(nwc_req.id) zap_req_id \(reqid.reqid)")
+                print("nwc: sending request \(ev.id) zap_req_id \(reqid.reqid)")
             }
         }
-    }
-    
-    private func handleZapEvent(amount: Int64, _ callback: @escaping () -> Void) -> (_ relayId: String, _ ev: NostrConnectionEvent) -> Void {
-        func handle(relayId: String, ev: NostrConnectionEvent) {
-            switch ev {
-            case .ws_event(let wsev):
-                switch wsev {
-                case .connected:
-                    break
-                case .error(let err):
-                    print(String(describing: err))
-                default:
-                    break
-                }
-            case .nostr_event(let resp):
-                switch resp {
-                case .notice:
-                    break
-                case .event:
-                    break
-                case .eose:
-                    break
-                case .ok(let res):
-                    if res.ok {
-                        guard !didCallback.contains(res.event_id) else { return }
-                        
-                        callback()
-                    }
-                    break
-                }
-            }
-        }
-        
-        return handle
     }
 }

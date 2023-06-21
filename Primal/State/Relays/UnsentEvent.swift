@@ -13,7 +13,7 @@ struct UnsentEvent : Identifiable {
     
     let identity: String
     let event: NostrEvent
-    let callback: (_ result: [JSON]) -> Void
+    let callback: (_ result: [JSON], _ relay: String) -> Void
 }
 
 extension UnsentEvent : Equatable {
