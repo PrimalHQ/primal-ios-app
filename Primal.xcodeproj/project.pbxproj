@@ -195,6 +195,12 @@
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
 		9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3232A013B3C000D1B2F /* FeedCell.swift */; };
 		9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */; };
+		9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415F62A40FE0100892235 /* SearchViewController.swift */; };
+		9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */; };
+		9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415FB2A41E02200892235 /* SearchHeaderView.swift */; };
+		9ED415FF2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */; };
+		9ED416022A42483D00892235 /* RegularFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416012A42483D00892235 /* RegularFeedViewController.swift */; };
+		9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416032A424AAD00892235 /* SearchTermTableCell.swift */; };
 		9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */; };
 		9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */; };
 		9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */; };
@@ -443,6 +449,12 @@
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		9ECFD3232A013B3C000D1B2F /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
 		9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSuggestionsRequest.swift; sourceTree = "<group>"; };
+		9ED415F62A40FE0100892235 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagCollectionViewCell.swift; sourceTree = "<group>"; };
+		9ED415FB2A41E02200892235 /* SearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHeaderView.swift; sourceTree = "<group>"; };
+		9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCenterHorizonatallyLayout.swift; sourceTree = "<group>"; };
+		9ED416012A42483D00892235 /* RegularFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularFeedViewController.swift; sourceTree = "<group>"; };
+		9ED416032A424AAD00892235 /* SearchTermTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTermTableCell.swift; sourceTree = "<group>"; };
 		9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunriseWave.swift; sourceTree = "<group>"; };
 		9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetWave.swift; sourceTree = "<group>"; };
@@ -998,6 +1010,9 @@
 		9E9C42152A1401F500F9D7ED /* Explore */ = {
 			isa = PBXGroup;
 			children = (
+				9ED415FD2A42441600892235 /* Supporting */,
+				9ED415F82A41DF3100892235 /* Views */,
+				9ED415F52A40FDEC00892235 /* Search */,
 				9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */,
 			);
 			path = Explore;
@@ -1096,6 +1111,7 @@
 		9ECFD31E2A0138AB000D1B2F /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				9ED416002A42482700892235 /* Regular */,
 				9E8834AF2A320E6E005DB548 /* Profile */,
 				9E55CC692A03C6B3002D3DC4 /* Home */,
 				9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */,
@@ -1103,6 +1119,40 @@
 				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 			);
 			path = Feed;
+			sourceTree = "<group>";
+		};
+		9ED415F52A40FDEC00892235 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				9ED415F62A40FE0100892235 /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		9ED415F82A41DF3100892235 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */,
+				9ED415FB2A41E02200892235 /* SearchHeaderView.swift */,
+				9ED416032A424AAD00892235 /* SearchTermTableCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9ED415FD2A42441600892235 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+		9ED416002A42482700892235 /* Regular */ = {
+			isa = PBXGroup;
+			children = (
+				9ED416012A42483D00892235 /* RegularFeedViewController.swift */,
+			);
+			path = Regular;
 			sourceTree = "<group>";
 		};
 		9EE07AB12A1CF39E00FB6C86 /* Theming */ = {
@@ -1307,6 +1357,7 @@
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
+				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
 				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
@@ -1349,6 +1400,7 @@
 				9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */,
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
 				9E8834B62A323C3B005DB548 /* NPubDisplayView.swift in Sources */,
+				9ED415FF2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift in Sources */,
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
 				9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */,
 				93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */,
@@ -1369,10 +1421,12 @@
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
+				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
 				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
+				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				9E8834BE2A328767005DB548 /* GradientBorderIconButton.swift in Sources */,
@@ -1456,6 +1510,8 @@
 				933DBDB72A114532008DCF1F /* SyntaxNode.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
+				9ED416022A42483D00892235 /* RegularFeedViewController.swift in Sources */,
+				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1635,7 +1691,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.17.1;
+				MARKETING_VERSION = 0.18.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1676,7 +1732,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.17.1;
+				MARKETING_VERSION = 0.18.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

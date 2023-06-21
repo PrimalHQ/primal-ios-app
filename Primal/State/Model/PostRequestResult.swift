@@ -16,9 +16,16 @@ class PostRequestResult {
     var users: [String: PrimalUser] = [:]
     var stats: [String: NostrContentStats] = [:]
     var userScore: [String: Int] = [:]
+    
+    var popularHashtags: [PopularHashtag] = []
 }
 
 struct NostrRepost {
     let pubkey: String
     let post: NostrContent
+}
+
+public struct PopularHashtag {
+    var title: String
+    var apperances: Int
 }

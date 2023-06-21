@@ -223,7 +223,7 @@ private extension PostingTextViewManager {
                     return Just(.init()).eraseToAnyPublisher()
                 case "":
                     return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(self.recommendedUsersNpubs.map { .string($0) })
+                        "pubkeys": .array(Self.recommendedUsersNpubs.map { .string($0) })
                     ])).publisher()
                 default:
                    return SocketRequest(name: "user_search", payload: .object([
@@ -279,7 +279,7 @@ extension PostingTextViewManager: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension PostingTextViewManager {
-    var recommendedUsersNpubs: [String] { [
+    static var recommendedUsersNpubs: [String] { [
         "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2", // jack
         "bf2376e17ba4ec269d10fcc996a4746b451152be9031fa48e74553dde5526bce", // carla
         "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11", // walker

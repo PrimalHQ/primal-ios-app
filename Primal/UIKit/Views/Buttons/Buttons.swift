@@ -11,8 +11,8 @@ class MyButton: UIControl {
     var isPressed: Bool = false
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
         isPressed = true
+        sendActions(for: .touchDown)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {

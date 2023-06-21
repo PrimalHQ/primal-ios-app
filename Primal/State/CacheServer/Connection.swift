@@ -55,8 +55,12 @@ final class Connection {
         isConnected =  false
     }
     
-    func requestCache(name: String, request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        requestCache(.array([.string(name), request]), handler)
+    func requestCache(name: String, request: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        if let request {
+            requestCache(.array([.string(name), request]), handler)
+        } else {
+            requestCache(.array([.string(name)]), handler)
+        }
     }
     
     func requestCache(_ cacheRequest: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
