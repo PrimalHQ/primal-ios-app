@@ -80,8 +80,7 @@ private extension ExploreViewController {
 
 extension ExploreViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let text = ("#" + hashtags[indexPath.item].title)
-        
+        let text = "#" + hashtags[indexPath.item].title
         let feed = RegularFeedViewController(feed: FeedManager(search: text))
         show(feed, sender: nil)
     }
@@ -92,12 +91,12 @@ extension ExploreViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        (cell as? HashtagCollectionViewCell)?.label.text = "#" + hashtags[indexPath.item].title
+        (cell as? HashtagCollectionViewCell)?.label.text = hashtags[indexPath.item].title
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let text = ("#" + hashtags[indexPath.item].title) as NSString
+        let text = hashtags[indexPath.item].title as NSString
         
         let textWidth = text.size(withAttributes: [.font : UIFont.appFont(withSize: 18, weight: .medium)]).width
         

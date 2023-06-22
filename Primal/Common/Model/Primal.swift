@@ -62,7 +62,6 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     init?(json: JSON) {
         guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
             print("Error decoding PrimalSettingsContent to json")
-            dump(json.arrayValue?[2].objectValue?["content"]?.stringValue)
             return nil
         }
         
