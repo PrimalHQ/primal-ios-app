@@ -1,22 +1,19 @@
 //
-//  WebSocket.swift
-//  damus
+//  NWCRelayConnection.swift
+//  Primal
 //
-//  Created by Bryan Montz on 4/13/23.
+//  Created by Nikola Lukovic on 21.6.23..
 //
 
-import Combine
 import Foundation
+import Combine
 
-enum WebSocketEvent {
-    case connected
-    case message(URLSessionWebSocketTask.Message)
-    case disconnected(URLSessionWebSocketTask.CloseCode, String?)
-    case error(Error)
+enum NostrConnectionEvent {
+    case ws_event(NWCRelayConnectionEvent)
+    case nostr_event(NostrResponse)
 }
 
-final class WebSocket: NSObject, URLSessionWebSocketDelegate {
-    
+final class NWCRelayConnection: NSObject, URLSessionWebSocketDelegate {
     private let url: URL
     private let session: URLSession
     private lazy var webSocketTask: URLSessionWebSocketTask = {
@@ -25,11 +22,23 @@ final class WebSocket: NSObject, URLSessionWebSocketDelegate {
         return task
     }()
     
-    let subject = PassthroughSubject<WebSocketEvent, Never>()
+    let subject = PassthroughSubject<NWCRelayConnectionEvent, Never>()
     
     init(_ url: URL, session: URLSession = .shared) {
         self.url = url
         self.session = session
+    }
+    
+    func ping() async throws -> () {
+        return try await withCheckedThrowingContinuation { cont in
+            self.webSocketTask.sendPing { err in
+                if let err {
+                    cont.resume(throwing: err)
+                } else {
+                    cont.resume(returning: ())
+                }
+            }
+        }
     }
     
     func connect() {

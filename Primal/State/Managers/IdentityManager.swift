@@ -189,8 +189,16 @@ final class IdentityManager {
                     
                     self.userRelays = relays
                     
-                    RelaysPostBox.the.connect(relays)
+                    var relayKeys = Array(relays.keys)
                     
+                    if
+                        let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
+                        let nwc = WalletConnectURL(str: nwcUrl) {
+                        ZapManager.instance.connect(nwc.relay.url.absoluteString)
+                    }
+                    
+                    RelaysPostbox.instance.connect(relayKeys)
+                                        
                     var tags: [String]?
                     if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
                         if isEmpty {

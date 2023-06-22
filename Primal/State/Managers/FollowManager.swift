@@ -29,7 +29,12 @@ final class FollowManager {
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        RelaysPostBox.the.send(ev)
+        //    RelaysPostBox_bkp.the.send(ev)
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            
+        }, errorHandler: {
+            
+        })
     }
     
     private func follow(_ pubkey: String) {
@@ -46,7 +51,12 @@ final class FollowManager {
         
         let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
         
-        RelaysPostBox.the.send(ev)
+        //    RelaysPostBox_bkp.the.send(ev)
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            
+        }, errorHandler: {
+            
+        })
     }
     
     func sendFollowEvent(_ pubkey: String) {
@@ -70,7 +80,12 @@ final class FollowManager {
             
             let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.instance.userContacts.contacts, relays: relays)
             
-            RelaysPostBox.the.send(ev)
+            //    RelaysPostBox_bkp.the.send(ev)
+            RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+                
+            }, errorHandler: {
+                
+            })
         }
     }
     
