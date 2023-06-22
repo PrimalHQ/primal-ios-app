@@ -44,7 +44,7 @@ enum Bech32Key {
     case sec(String)
 }
 
-struct DamusKeychainConfiguration: KeychainConfiguration {
+struct PrimalKeychainConfiguration: KeychainConfiguration {
     var serviceName = "Primal"
     var accessGroup: String? = nil
     var accountName = "privkey"
@@ -182,11 +182,11 @@ func save_pubkey(pubkey: String) {
 }
 
 func save_privkey(privkey: String) throws {
-    try Vault.savePrivateKey(privkey, keychainConfiguration: DamusKeychainConfiguration())
+    try Vault.savePrivateKey(privkey, keychainConfiguration: PrimalKeychainConfiguration())
 }
 
 func clear_saved_privkey() throws {
-    try Vault.deletePrivateKey(keychainConfiguration: DamusKeychainConfiguration())
+    try Vault.deletePrivateKey(keychainConfiguration: PrimalKeychainConfiguration())
 }
 
 func clear_saved_pubkey() {
@@ -221,7 +221,7 @@ func get_saved_pubkey() -> String? {
 }
 
 func get_saved_privkey() -> String? {
-    let mkey = try? Vault.getPrivateKey(keychainConfiguration: DamusKeychainConfiguration());
+    let mkey = try? Vault.getPrivateKey(keychainConfiguration: PrimalKeychainConfiguration());
     return mkey.map { $0.trimmingCharacters(in: .whitespaces) }
 }
 

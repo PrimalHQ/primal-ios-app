@@ -8,6 +8,20 @@
 import Foundation
 
 extension String : Identifiable {
+    func sha256() -> String {
+        return data(using: .utf8)?.sha256.hexadecimalString ?? ""
+    }
+    
+    func indexDistance(of character: Character) -> Int? {
+        guard let index = firstIndex(of: character) else { return nil }
+        return distance(from: startIndex, to: index)
+    }
+    
+    func lastIndex(of string: String) -> Int? {
+        guard let index = range(of: string, options: .backwards) else { return nil }
+        return self.distance(from: self.startIndex, to: index.lowerBound)
+    }
+    
     public var id: String {
         return UUID().uuidString
     }
