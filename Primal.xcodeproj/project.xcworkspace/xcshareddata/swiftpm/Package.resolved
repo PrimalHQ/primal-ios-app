@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher.git",
       "state" : {
-        "revision" : "415b1d97fb38bda1e5a6b2dde63354720832110b",
-        "version" : "7.6.1"
+        "revision" : "c1f60c63f356d364f4284ba82961acbe7de79bcc",
+        "version" : "7.8.1"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/NWWebSocket.git",
       "state" : {
-        "revision" : "eed470bc3607bc4893046f461107ec463dbd1220",
-        "version" : "0.5.2"
+        "revision" : "19d23951c8099304ad98e2fc762fa23d6bfab0b9",
+        "version" : "0.5.3"
       }
     },
     {
