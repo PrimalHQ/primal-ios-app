@@ -24,7 +24,9 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         
         view.addSubview(table)
-        table.pinToSuperview(edges: [.leading, .vertical], safeArea: true).pinToSuperview(edges: .trailing, padding: 6)
+        table.pinToSuperview(edges: [.leading, .top], safeArea: true).pinToSuperview(edges: .trailing, padding: 6)
+        table.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        
         table.backgroundColor = .background
         table.delegate = self
         table.dataSource = self
@@ -132,6 +134,21 @@ extension SettingsFeedViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        guard let indexes = table.indexPathsForVisibleRows else { return }
+        
+        for index in indexes {
+            guard let cell = table.cellForRow(at: index) as? SettingsFeedCell else { continue }
+            
+            if cell.inputField == textField {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                    self.table.scrollToRow(at: index, at: .middle, animated: true)
+                }
+                return
+            }
+        }
     }
 }
 

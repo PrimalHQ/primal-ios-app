@@ -42,7 +42,7 @@ class FeedButton: MyButton {
         iconView.image = filled ? filledIcon : normalIcon
         iconView.tintColor = filled ? filledColor : normalColor
         titleLabel.textColor = filled ? filledColor : normalColor
-        titleLabel.text = "\(count)"
+        titleLabel.text = count.localized()
         titleLabel.isHidden = count < 1
     }
     
@@ -51,7 +51,7 @@ class FeedButton: MyButton {
         let color = filled ? filledColor : normalColor
         titleLabel.animateToColor(color: color)
         UIView.animate(withDuration: 0.2) {
-            self.titleLabel.text = "\(count)"
+            self.titleLabel.text = count.localized()
             self.titleLabel.isHidden = count < 1
             self.iconView.tintColor = color
         }

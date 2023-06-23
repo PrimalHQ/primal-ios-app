@@ -24,8 +24,7 @@ final class PostingTextViewManager: NSObject {
     @Published var isEditing = false
     @Published var userSearchText: String?
     
-    var userScore: [String: Int] = [:]
-    @Published var users: [PrimalUser] = []
+    @Published var users: [ParsedUser] = []
     
     var tokens: [UserToken] = []
     
@@ -242,9 +241,8 @@ private extension PostingTextViewManager {
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
-                self?.userScore = result.userScore
-                self?.users = Array(result.users.values).sorted(by: {
-                    result.userScore[$0.pubkey] ?? 0 > result.userScore[$1.pubkey] ?? 0
+                self?.users = result.users.values.map { result.createParsedUser($0) } .sorted(by: {
+                    $0.likes ?? 0 > $1.likes ?? 0
                 })
             })
             .store(in: &cancellables)
@@ -277,12 +275,12 @@ extension PostingTextViewManager: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let user = users[indexPath.row]
-        (cell as? UserInfoTableCell)?.update(user: user, count: userScore[user.pubkey])
+        (cell as? UserInfoTableCell)?.update(user: user)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        replaceEditingTokenWithUser(users[indexPath.row])
+        replaceEditingTokenWithUser(users[indexPath.row].data)
     }
 }
 

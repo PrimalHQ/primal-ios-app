@@ -41,3 +41,12 @@ extension Int {
         return "1t+"
     }
 }
+
+extension Int32 {
+    func localized() -> String {
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        return nf.string(from: self as NSNumber) ?? ""
+    }
+}
+

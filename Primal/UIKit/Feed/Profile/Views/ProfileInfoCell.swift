@@ -51,9 +51,9 @@ class ProfileInfoCell: UITableViewCell {
         descLabel.text = user.about
         linkView.link = user.website
         
-        following.text = "\(stats?.follows_count ?? 0)"
-        followers.text = "\(stats?.followers_count ?? 0)"
-        posts.text = "\(stats?.note_count ?? 0)"
+        following.text = (stats?.follows_count ?? 0).localized()
+        followers.text = (stats?.followers_count ?? 0).localized()
+        posts.text = (stats?.note_count ?? 0).localized()
         
         if user.id == IdentityManager.instance.user?.id {
             followButton.isHidden = true
@@ -77,7 +77,7 @@ class ProfileInfoCell: UITableViewCell {
 
 private extension ProfileInfoCell {
     func setup() {
-        let actionStack = UIStackView(arrangedSubviews: [UIView(), zapButton, messageButton, followButton, editProfile])
+        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 200, priority: .defaultLow), zapButton, messageButton, followButton, editProfile])
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
@@ -93,11 +93,12 @@ private extension ProfileInfoCell {
         descLabel.font = .appFont(withSize: 14, weight: .regular)
         descLabel.numberOfLines = 0
         
-        let infoStack = UIStackView(arrangedSubviews: [following, followers, posts, UIView()])
+        let infoStack = UIStackView(arrangedSubviews: [following, followers, posts])
         infoStack.spacing = 60
         
         let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, npubView, descLabel, linkView, infoStack])
         mainStack.axis = .vertical
+        mainStack.alignment = .leading
         mainStack.setCustomSpacing(14, after: actionStack)
         mainStack.setCustomSpacing(8, after: primaryStack)
         mainStack.setCustomSpacing(12, after: secondaryLabel)

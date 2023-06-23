@@ -259,6 +259,7 @@ private extension ThreadViewController {
         textInputView.font = .appFont(withSize: 16, weight: .regular)
         textInputView.textColor = .foreground2
         textInputView.delegate = inputManager
+        textInputView.returnKeyType = .send
         
         setupMainStack()
         
