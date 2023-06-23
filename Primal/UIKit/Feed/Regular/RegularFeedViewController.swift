@@ -28,6 +28,7 @@ final class RegularFeedViewController: FeedViewController {
         }
         navigationItem.leftBarButtonItem = customBackButton
         
+        addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
         addFeedButton.addTarget(self, action: #selector(addFeedButtonPressed), for: .touchUpInside)
         addFeedButton.constrainToSize(44)
         navigationItem.rightBarButtonItem = .init(customView: addFeedButton)
@@ -50,19 +51,12 @@ final class RegularFeedViewController: FeedViewController {
         loadingSpinner.centerToSuperview().constrainToSize(100)
         
         updateTheme()
-        
-        IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
-            self?.updateFeedButton()
-        }
-        .store(in: &cancellables)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        updateFeedButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -77,26 +71,21 @@ final class RegularFeedViewController: FeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
-        updateFeedButton()
+        addFeedButton.tintColor = .foreground3
     }
     
     @objc func addFeedButtonPressed() {
         guard let search = feed.searchTerm else { return }
 
         if didAddToFeed {
-            IdentityManager.instance.removeFeedFromList(hex: feedHex)
+            view.showToast("Feed is already in your home feeds")
         } else {
             IdentityManager.instance.addFeedToList(feed: .init(name: "Search: \(search)", hex: feedHex))
-        }
-    }
-    
-    func updateFeedButton() {
-        if didAddToFeed {
-            addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
-            addFeedButton.tintColor = .red
-        } else {
-            addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
-            addFeedButton.tintColor = .foreground3
+            
+            view.showUndoToast("Added to your home feeds") { [weak self] in
+                guard let self = self else { return }
+                IdentityManager.instance.removeFeedFromList(hex: self.feedHex)
+            }
         }
     }
 }

@@ -78,7 +78,7 @@ final class ThreadViewController: FeedViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         if let cell = cell as? ThreadCell {
             let data = posts[indexPath.row]
             cell.update(data,
@@ -103,7 +103,7 @@ final class ThreadViewController: FeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
-        table.register(ThreadCell.self, forCellReuseIdentifier: "cell")
+        table.register(ThreadCell.self, forCellReuseIdentifier: postCellID)
         
         inputParent.backgroundColor = inputManager.isEditing ? .background2 : .background
         inputBackground.backgroundColor = inputManager.isEditing ? .background : .background3
@@ -119,7 +119,7 @@ private extension ThreadViewController {
     @objc func postButtonPressed() {
         guard textInputView.isEditable else { return }
         
-        let text = inputManager.postingText
+        let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !text.isEmpty else {
             showErrorMessage("Text mustn't be empty")
@@ -210,6 +210,11 @@ private extension ThreadViewController {
             self.usersTableView.reloadData()
         }
         .store(in: &cancellables)
+        
+        inputManager.returnPressed.sink { [weak self] _ in
+            self?.postButtonPressed()
+        }
+        .store(in: &cancellables)
     }
     
     func setup() {
@@ -270,7 +275,11 @@ private extension ThreadViewController {
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
-        [imageButton, cameraButton, UIView(), postButton].forEach {
+        let atButton = UIButton()
+        atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+        atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+        
+        [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
         

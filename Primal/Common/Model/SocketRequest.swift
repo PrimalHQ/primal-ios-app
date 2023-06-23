@@ -128,11 +128,11 @@ private extension SocketRequest {
             
             for element in contentArray {
                 guard
-                    let array = element.arrayValue,
-                    let name = array.first?.stringValue,
-                        let count = array.last?.doubleValue
+                    let object = element.objectValue,
+                    let name = object.keys.first,
+                    let count = object[name]?.doubleValue
                 else { continue }
-                pendingResult.popularHashtags.append(.init(title: name, apperances: Int(count)))
+                pendingResult.popularHashtags.append(.init(title: name, apperances: count))
             }
         default:
             assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(payload)")

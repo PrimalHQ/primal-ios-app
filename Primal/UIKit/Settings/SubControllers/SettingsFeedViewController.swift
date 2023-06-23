@@ -15,6 +15,8 @@ final class SettingsFeedViewController: UIViewController, Themeable {
     
     var cancellables: Set<AnyCancellable> = []
     
+    var didChange = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,6 +30,7 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         table.dataSource = self
         table.dragDelegate = self
         table.dragInteractionEnabled = true
+        table.keyboardDismissMode = .onDrag
         table.isEditing = true
         table.separatorStyle = .none
         table.register(SettingsFeedCell.self, forCellReuseIdentifier: "cell")
@@ -37,6 +40,7 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
             self?.feeds = settings?.content.feeds ?? []
             self?.table.reloadData()
+            self?.didChange = false
         }
         .store(in: &cancellables)
         
@@ -46,12 +50,19 @@ final class SettingsFeedViewController: UIViewController, Themeable {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        IdentityManager.instance.updateFeeds(feeds)
+        if didChange {
+            IdentityManager.instance.updateFeeds(feeds)
+            didChange = false
+        }
     }
     
     func updateTheme() {
         table.reloadData()
         table.backgroundColor = .background
+    }
+    
+    func shouldEditIndexPath(_ indexPath: IndexPath) -> Bool {
+        feeds[indexPath.row].name != "Latest"
     }
 }
 
@@ -67,31 +78,30 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
-        var content = cell.defaultContentConfiguration()
+        if let settingsCell = cell as? SettingsFeedCell {
+            settingsCell.inputField.text = feeds[indexPath.row].name
+            settingsCell.inputField.delegate = self
+            settingsCell.inputField.isEnabled = shouldEditIndexPath(indexPath)
+            if settingsCell.inputField.allTargets.isEmpty {
+                settingsCell.inputField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+            }
+            
+            settingsCell.updateTheme()
+        }
         
-        // Configure content.
-        content.text = feeds[indexPath.row].name
-
-        // Customize appearance.
-        content.textProperties.font = .appFont(withSize: 16, weight: .regular)
-        content.textProperties.color = .foreground
-
-        cell.contentConfiguration = content
-        cell.showsReorderControl = true
-        
-        (cell as? Themeable)?.updateTheme()
-
         return cell
     }
     
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        feeds[indexPath.row].name == "Latest" ? .none : .delete
+        shouldEditIndexPath(indexPath) ? .delete : .none
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
         feeds.remove(at: indexPath.row)
         tableView.deleteRows(at: [indexPath], with: .fade)
+        
+        didChange = true
     }
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
@@ -101,6 +111,8 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
         } else {
             feeds.append(feed)
         }
+        
+        didChange = true
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -116,8 +128,29 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
     }
 }
 
+extension SettingsFeedViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+private extension SettingsFeedViewController {
+    @objc func textFieldDidChange() {
+        guard let indexPaths = table.indexPathsForVisibleRows else { return }
+     
+        didChange = true
+        
+        for indexPath in indexPaths {
+            guard let text = (table.cellForRow(at: indexPath) as? SettingsFeedCell)?.inputField.text else { continue }
+            feeds[indexPath.row].name = text
+        }
+    }
+}
+
 final class SettingsFeedCell: UITableViewCell, Themeable {
     let border = SpacerView(height: 1)
+    let inputField = UITextField()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -125,6 +158,12 @@ final class SettingsFeedCell: UITableViewCell, Themeable {
         contentView.constrainToSize(height: 44)
         addSubview(border)
         border.pinToSuperview(edges: .bottom).pinToSuperview(edges: .leading, padding: 20).pinToSuperview(edges: .trailing, padding: 14)
+        
+        contentView.addSubview(inputField)
+        inputField.centerToSuperview(axis: .vertical).pinToSuperview(edges: .horizontal, padding: 56)
+        
+        inputField.font = .appFont(withSize: 16, weight: .regular)
+        inputField.returnKeyType = .done
     }
     
     required init?(coder: NSCoder) {
@@ -134,6 +173,7 @@ final class SettingsFeedCell: UITableViewCell, Themeable {
     func updateTheme() {
         border.backgroundColor = .foreground6
         backgroundColor = .background
+        inputField.textColor = .foreground
     }
 }
 

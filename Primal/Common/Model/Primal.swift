@@ -22,7 +22,7 @@ struct PrimalNoteStatus: Codable, Hashable {
 }
 
 struct PrimalSettingsFeed: Codable, Hashable {
-    let name: String
+    var name: String
     let hex: String
 }
 

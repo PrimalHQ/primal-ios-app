@@ -57,12 +57,29 @@ extension ImageCollectionView: UICollectionViewDataSource {
         
         let r = imageResources[indexPath.item]
         
-        if r.variants.first?.animated == true || r.url.hasSuffix("gif") {
-            print("ANIMATED ANIMATED")
-            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
-                .transition(.fade(0.1)),
-                .scaleFactor(UIScreen.main.scale),
-            ])
+        if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
+            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
+                guard let data = data else {
+                    return
+                }
+                                
+                let imageDecoder = DBImageDecoder()
+                imageDecoder.setData(data, allDataReceived: true)
+                                
+                guard let uiImage = imageDecoder.uiImage else {
+                    return
+                }
+                                
+                DispatchQueue.main.async {
+                    (cell as? ImageCell)?.imageView.image = uiImage
+                }
+            }
+                        
+            task.resume()
+//            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
+//                .transition(.fade(0.1)),
+//                .scaleFactor(UIScreen.main.scale),
+//            ])
         } else {
             (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
                 .processor(DownsamplingImageProcessor(size: frame.size)),

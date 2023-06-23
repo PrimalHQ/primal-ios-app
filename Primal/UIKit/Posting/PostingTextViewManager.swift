@@ -32,6 +32,7 @@ final class PostingTextViewManager: NSObject {
     var didChangeEvent = PassthroughSubject<UITextView, Never>()
     
     @Published var currentlyEditingToken: EditingToken?
+    let returnPressed = PassthroughSubject<Void, Never>()
     
     private var cancellables: Set<AnyCancellable> = []
     private var nextEditShouldBeManual = false
@@ -79,6 +80,10 @@ final class PostingTextViewManager: NSObject {
     
     var mentionedUsersPubkeys: [String] {
         tokens.map { $0.user.pubkey }
+    }
+    
+    @objc func atButtonPressed() {
+        _ = textView(textView, shouldChangeTextIn: textView.selectedRange, replacementText: "@")
     }
 }
 
@@ -143,22 +148,25 @@ extension PostingTextViewManager: UITextViewDelegate {
             }
         }
         
-        if text == " ", currentlyEditingToken != nil { // End searching if we were searching
-            currentlyEditingToken = nil
-            updateTokensForReplacingRange(range, replacementText: text)
-            updateText(newText as String, cursorPosition: cursorPosition)
-            return false
-        }
-        
-        if text == "@" { // Start new user search
+        switch text {
+        case " ":
+            if currentlyEditingToken != nil { // End searching if we were searching
+                currentlyEditingToken = nil
+                updateTokensForReplacingRange(range, replacementText: text)
+                updateText(newText as String, cursorPosition: cursorPosition)
+                return false
+            }
+        case "@":  // Start new user search
             currentlyEditingToken = .init(range: NSRange(location: range.location, length: 1), text: text)
             updateTokensForReplacingRange(range, replacementText: text)
             updateText(newText as String, cursorPosition: cursorPosition)
             return false
-        }
-        
-        if text == "" {
+        case "":
             nextEditShouldBeManual = true
+        case "\n":
+            returnPressed.send(())
+        default:
+            break
         }
         
         if nextEditShouldBeManual {

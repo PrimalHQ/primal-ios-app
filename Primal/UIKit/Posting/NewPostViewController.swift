@@ -17,7 +17,8 @@ class NewPostViewController: UIViewController {
     
     let imageButton = UIButton()
     let cameraButton = UIButton()
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, UIView()])
+    let atButton = UIButton()
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
     
     lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
     
@@ -81,6 +82,8 @@ private extension NewPostViewController {
         imageButton.constrainToSize(48)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         cameraButton.constrainToSize(48)
+        atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+        atButton.constrainToSize(48)
         
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
@@ -101,6 +104,7 @@ private extension NewPostViewController {
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         
         setupBindings()
     }

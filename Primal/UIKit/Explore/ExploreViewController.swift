@@ -34,7 +34,7 @@ final class ExploreViewController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
-        SocketRequest.init(name: "trending_hashtags", payload: nil).publisher()
+        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 self?.hashtags  = result.popularHashtags
