@@ -27,5 +27,5 @@ struct NostrRepost {
 
 public struct PopularHashtag {
     var title: String
-    var apperances: Int
+    var apperances: Double
 }

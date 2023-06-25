@@ -5,6 +5,7 @@
 //  Created by Nikola Lukovic on 31.5.23..
 //
 
+import Combine
 import Foundation
 import GenericJSON
 
@@ -50,6 +51,8 @@ final class IdentityManager {
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
 
     @Published var didFinishInit: Bool = false
+    
+    var cancellables: Set<AnyCancellable> = []
     
     func requestUserInfos() {
         let request: JSON = .object([
@@ -229,5 +232,57 @@ final class IdentityManager {
                 }
             }
         }
+    }
+    
+    func updateSettings(_ settings: PrimalSettings) {
+        userSettings = settings
+        
+        guard let keypair = get_saved_keypair() else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        guard let data = try? JSONEncoder().encode(settings.content) else {
+            print("Error encoding settings")
+            return
+        }
+        
+        let content = String(decoding: data, as: UTF8.self)
+        
+        let ev = make_settings_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, settings: settings.content)
+        
+        Connection.instance.requestCache(name: "set_app_settings", request: .object([
+            "settings_event":  .object([
+                "content": .string(content),
+                "created_at": .number(Double(ev.created_at)),
+                "id": .string(ev.id),
+                "kind": .number(30078),
+                "pubkey": .string(ev.pubkey),
+                "sig": .string(ev.sig),
+                "tags": .array(ev.tags.map { .array($0.map { s in .string(s) }) })
+            ])
+        ])) { result in
+            print(result)
+        }
+    }
+    
+    func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
+        guard var settings = userSettings else { return }
+        settings.content.feeds = feeds
+        updateSettings(settings)
+    }
+    
+    func addFeedToList(feed: PrimalSettingsFeed) {
+        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
+        settings.content.feeds.append(feed)
+        updateSettings(settings)
+    }
+    
+    func removeFeedFromList(hex: String) {
+        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
+        
+        settings.content.feeds.removeAll(where: { $0.hex == hex })
+        
+        updateSettings(settings)
     }
 }

@@ -21,6 +21,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
     
+    var postCellID = "cell" // Needed for updating the theme
+    
     var postSection: Int { 0 }
     var posts: [ParsedContent] = [] {
         didSet {
@@ -62,7 +64,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
             cell.update(data,
@@ -87,14 +89,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         navigationBarLengthner.backgroundColor = .background
         
-        table.removeFromSuperview()
-        table = UITableView() // We need to flush old cells
-        table.register(FeedCell.self, forCellReuseIdentifier: "cell")
-        table.dataSource = self
-        table.delegate = self
-        table.separatorStyle = .none
-        
-        stack.addArrangedSubview(table)
+        updateCellID()
+        table.register(FeedCell.self, forCellReuseIdentifier: postCellID)
+        table.reloadData()
         
         view.backgroundColor = .background
         table.backgroundColor = .background
@@ -102,12 +99,20 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
 }
 
 private extension FeedViewController {
+    func updateCellID() {
+        postCellID += "1"
+    }
+    
     func setup() {
         stack.axis = .vertical
         view.insertSubview(stack, at: 0)
         stack
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, safeArea: true)
+        
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .none
         
         updateTheme()
     }

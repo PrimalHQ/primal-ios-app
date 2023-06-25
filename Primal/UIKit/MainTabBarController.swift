@@ -116,13 +116,13 @@ private extension MainTabBarController {
             button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
         }
         
-        buttons[0].addTarget(self, action: #selector(homeButtonPressed), for: .touchUpInside)
-        buttons[1].addTarget(self, action: #selector(readButtonPressed), for: .touchUpInside)
-        buttons[2].addTarget(self, action: #selector(exploreButtonPressed), for: .touchUpInside)
-        buttons[3].addTarget(self, action: #selector(messagesButtonPressed), for: .touchUpInside)
-        buttons[4].addTarget(self, action: #selector(notificationsButtonPressed), for: .touchUpInside)
+        buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW
         
-        buttons[1].removeFromSuperview() // REMOVE READ FOR NOW
+        [home, explore, messages, notifications].forEach { nav in
+            buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
+                self?.menuButtonPressedForNav(nav)
+            }), for: .touchUpInside)
+        }
     }
     
     
@@ -132,64 +132,41 @@ private extension MainTabBarController {
         }
     }
     
-    @objc func readButtonPressed() {
-        guard pageVC.viewControllers?.contains(read) == true else {
-            pageVC.setViewControllers([read],
-                direction: currentPageIndex == 0 ? .forward : .reverse,
-                animated: true
-            )
-            currentPageIndex = 1
-            return
+    func indexForNav(_ nav: UINavigationController) -> Int {
+        switch nav {
+        case home:          return 0
+        case explore:       return 1
+        case messages:      return 2
+        case notifications: return 3
+        default:            return 0
         }
     }
     
-    @objc func exploreButtonPressed() {
-        guard pageVC.viewControllers?.contains(explore) == true else {
-            pageVC.setViewControllers([explore],
-                direction: currentPageIndex < 2 ? .forward : .reverse,
+    func menuButtonPressedForNav(_ nav: UINavigationController) {
+        guard pageVC.viewControllers?.contains(nav) == true else {
+            pageVC.setViewControllers([nav],
+                direction: currentPageIndex < indexForNav(nav) ? .forward : .reverse,
                 animated: true
             )
-            currentPageIndex = 2
-            return
-        }
-    }
-    
-    @objc func messagesButtonPressed() {
-        guard pageVC.viewControllers?.contains(messages) == true else {
-            pageVC.setViewControllers([messages],
-                direction: currentPageIndex < 3 ? .forward : .reverse,
-                animated: true
-            )
-            currentPageIndex = 3
-            return
-        }
-    }
-    
-    @objc func notificationsButtonPressed() {
-        guard pageVC.viewControllers?.contains(notifications) == true else {
-            pageVC.setViewControllers([notifications],
-                direction: currentPageIndex < 4 ? .forward : .reverse,
-                animated: true
-            )
-            currentPageIndex = 4
-            return
-        }
-    }
-    
-    @objc func homeButtonPressed() {
-        guard pageVC.viewControllers?.contains(home) == true else {
-            pageVC.setViewControllers([home], direction: .reverse, animated: true)
-            currentPageIndex = 0
+            currentPageIndex = indexForNav(nav)
             return
         }
         
-        guard let homeVC = (home.topViewController as? MenuContainerController)?.child as? HomeFeedViewController else {
-            home.popToRootViewController(animated: true)
+        if nav.viewControllers.count > 1 {
+            nav.popToRootViewController(animated: true)
             return
         }
         
-        if !homeVC.posts.isEmpty {
-            homeVC.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
+            tableViews.forEach {
+                if $0.indexPathsForVisibleRows?.isEmpty == false {
+                    $0.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: true)
+                }
+            }
+            return
         }
+        
+        guard let scrollViews: [UIScrollView] = nav.topViewController?.view.findAllSubviews() else { return }
+        scrollViews.forEach { $0.setContentOffset(.zero, animated: true) }
     }
 }

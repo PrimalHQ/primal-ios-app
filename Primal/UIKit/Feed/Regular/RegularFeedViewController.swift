@@ -9,13 +9,29 @@ import UIKit
 
 final class RegularFeedViewController: FeedViewController {
     
+    let addFeedButton = UIButton()
     let loadingSpinner = LoadingSpinnerView()
+    
+    var feedHex: String { "search;\(feed.searchTerm ?? "")" }
+    var didAddToFeed: Bool {
+        let hex = feedHex
+        return IdentityManager.instance.userSettings?.content.feeds.contains(where: { $0.hex == hex }) ?? false
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        title = feed.searchTerm
+
+        if let search = feed.searchTerm {
+            title = "Search: \(search)"
+        } else {
+            title = "Search"
+        }
         navigationItem.leftBarButtonItem = customBackButton
+        
+        addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
+        addFeedButton.addTarget(self, action: #selector(addFeedButtonPressed), for: .touchUpInside)
+        addFeedButton.constrainToSize(44)
+        navigationItem.rightBarButtonItem = .init(customView: addFeedButton)
         
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
@@ -50,5 +66,26 @@ final class RegularFeedViewController: FeedViewController {
         
         view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        addFeedButton.tintColor = .foreground3
+    }
+    
+    @objc func addFeedButtonPressed() {
+        guard let search = feed.searchTerm else { return }
+
+        if didAddToFeed {
+            view.showToast("Feed is already in your home feeds")
+        } else {
+            IdentityManager.instance.addFeedToList(feed: .init(name: search, hex: feedHex))
+            
+            view.showUndoToast("Added to your home feeds") { [weak self] in
+                guard let self = self else { return }
+                IdentityManager.instance.removeFeedFromList(hex: self.feedHex)
+            }
+        }
     }
 }

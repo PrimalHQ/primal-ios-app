@@ -43,25 +43,6 @@ final class UserInfoTableCell: UITableViewCell {
             followStack.isHidden = true
         }
     }
-    
-    func update(user: PrimalUser, count: Int?) {
-        nameLabel.text = user.atIdentifierWithoutAt
-        secondaryLabel.text = user.nip05
-        secondaryLabel.isHidden = user.nip05.isEmpty
-        
-        profileIcon.kf.setImage(with: URL(string: user.picture), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 36, height: 36))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
-        
-        if let count {
-            followersLabel.text = count.shortened()
-            followStack.isHidden = false
-        } else {
-            followStack.isHidden = true
-        }
-    }
 }
 
 private extension UserInfoTableCell {
