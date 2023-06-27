@@ -202,20 +202,52 @@ private extension OnboardingSigninController {
     }
     
     func signIn() {
+        let saveToKeychainAlert = UIAlertController(title: "ICloud Keychain", message: "Do you want to save your keypair to ICloud Keychain?", preferredStyle: UIAlertController.Style.alert)
+
+        saveToKeychainAlert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
+            guard let keypair = self.processLogin() else {
+                print("Error getting keypair after processing login")
+                
+                return
+            }
+            
+            let result = ICloudKeychain.instance.saveKeypair(npub: keypair.pubkey_bech32, nsec: keypair.privkey_bech32!)
+            
+            if !result {
+                print("Unsuccessfuly saved keypair to the ICloud Keychain")
+            }
+            
+            RootViewController.instance.reset()
+        }))
+        
+        saveToKeychainAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action: UIAlertAction!) in
+            guard let keypair = self.processLogin() else {
+                print("Error getting keypair after processing login")
+                
+                return
+            }
+            
+            RootViewController.instance.reset()
+        }))
+        
+        present(saveToKeychainAlert, animated: true, completion: nil)
+    }
+    
+    private func processLogin() -> Keypair? {
         guard let text = textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
             state = .ready
-            return
+            return nil
         }
         
         guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
         else {
             state = .invalidKey
-            return
+            return nil
         }
         
         guard process_login(parsed, is_pubkey: parsed.is_pub) else {
             state = .invalidKey
-            return
+            return nil
         }
         
         guard
@@ -224,18 +256,17 @@ private extension OnboardingSigninController {
         else {
             showErrorMessage("Unable to decode key.")
             state = .invalidKey
-            return
+            return nil
         }
         
-        guard let privkey = keypair.privkey_bech32 else {
+        guard let _ = keypair.privkey_bech32 else {
             showErrorMessage("Unable to decode key.")
             state = .invalidKey
-            return
+            return nil
         }
         
-        RootViewController.instance.reset()
+        return keypair
     }
-    
     // MARK: - UI actions
     
     @objc func confirmButtonPressed() {

@@ -8,13 +8,21 @@
 import Foundation
 import UIKit
 
-final class OnboardingExistingICloudKeychainLoginsViewController : UIViewController, Themeable {
-    lazy private var table = UITableView()
+final class OnboardingExistingICloudKeychainLoginsViewController : UIViewController {
+    var table = UITableView()
+    
+    private var npubs: [String] = [] {
+        didSet {
+            table.reloadData()
+        }
+    }
     
     init() {
         super.init(nibName: nil, bundle: nil)
         
         setup()
+        
+        self.npubs = ICloudKeychain.instance.getSavedNpubs()
     }
     
     required init?(coder: NSCoder) {
@@ -23,13 +31,100 @@ final class OnboardingExistingICloudKeychainLoginsViewController : UIViewControl
 }
 
 extension OnboardingExistingICloudKeychainLoginsViewController {
-    func updateTheme() {
-        view.backgroundColor = .background
-        table.backgroundColor = .background
+    func setup() {
+
+        let backButton = UIButton()
+        backButton.setImage(UIImage(named: "back"), for: .normal)
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.title = "iCloud Keychain keys"
+        
+        view.backgroundColor = .black
+        table.backgroundColor = .black
+        
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .singleLine
+        table.contentInsetAdjustmentBehavior = .never
+        table.sectionHeaderHeight = 70
+        
+        let buttonParent = UIView()
+        let cancelButton = FancyButton(title: "Sign in with nsec instead")
+        buttonParent.addSubview(cancelButton)
+        cancelButton.addTarget(self, action: #selector(cancelButtonPressed), for: .touchUpInside)
+        cancelButton
+            .pinToSuperview(edges: .horizontal, padding: 36)
+            .pinToSuperview(edges: .top, padding: 20)
+            .pinToSuperview(edges: .bottom, padding: 30, safeArea: true)
+        
+        let stack = UIStackView(arrangedSubviews: [table, buttonParent])
+        view.addSubview(stack)
+        stack.pinToSuperview(safeArea: true)
+        
+        stack.axis = .vertical
     }
     
-    func setup() {
-        navigationItem.title = "Already saved keys in ICloud Keychain"
+    @objc func cancelButtonPressed() {
+        let view = OnboardingSigninController()
+        show(view, sender: nil)
+    }
+}
+
+extension OnboardingExistingICloudKeychainLoginsViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        npubs.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
+        let npub = npubs[indexPath.row]
+        var content = cell.defaultContentConfiguration()
+        content.text = npub
+        cell.contentConfiguration = content
+        
+        return cell
+    }
+}
+
+extension OnboardingExistingICloudKeychainLoginsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let npub = npubs[indexPath.row]
+        
+        guard
+            let nsec = ICloudKeychain.instance.getSavedNsec(npub),
+            let _ = self.processLogin(nsec) else {
+            print("Error logging in with ICloud keychain nsec/npub")
+            return
+        }
+        
+        RootViewController.instance.reset()
+    }
+    
+    private func processLogin(_ text: String) -> Keypair? {
+        guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
+        else {
+            return nil
+        }
+        
+        guard process_login(parsed, is_pubkey: parsed.is_pub) else {
+            return nil
+        }
+        
+        guard
+            let keypair = get_saved_keypair(),
+            (try? bech32_decode(keypair.pubkey_bech32)) != nil
+        else {
+            showErrorMessage("Unable to decode key.")
+            return nil
+        }
+        
+        guard let _ = keypair.privkey_bech32 else {
+            showErrorMessage("Unable to decode key.")
+            return nil
+        }
+        
+        return keypair
     }
 }

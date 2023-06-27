@@ -10,7 +10,6 @@ import Foundation
 
 final class ICloudKeychain {
     private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal")
-        .accessibility(.whenUnlocked)
         .synchronizable(true)
 
     private init() {}
@@ -19,6 +18,9 @@ final class ICloudKeychain {
     static let instance: ICloudKeychain = ICloudKeychain()
     
     func hasSavedNpubs() -> Bool {
+        let items = keychain.allItems()
+        print(items)
+        
         guard let contains = try? keychain.contains(Self.savedNpubsKey) else {
             print("ICloudKeychain: There are no saved npubs in ICloud Keychain")
             return false
@@ -65,6 +67,11 @@ final class ICloudKeychain {
  
     func saveKeypair(npub: String, nsec: String) -> Bool {
         var npubs = getSavedNpubs()
+        
+        if npubs.contains(where: { $0 == npub }) {
+            return true
+        }
+        
         npubs.append(npub)
         
         do {
@@ -75,7 +82,7 @@ final class ICloudKeychain {
                 return false
             }
             
-            try keychain.set(Self.savedNpubsKey, key: npubsJSONString)
+            try keychain.set(npubsJSONString, key: Self.savedNpubsKey)
             try keychain.set(nsec, key: npub)
         } catch let error {
             print("ICloudKeychain: \(error)")
