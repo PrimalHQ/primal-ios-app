@@ -37,8 +37,11 @@ final class OnboardingStartViewController: UIViewController {
     }
     
     @objc func signinPressed() {
-        let signIn = OnboardingSigninController()
-        show(signIn, sender: nil)
+        let view = ICloudKeychain.instance.hasSavedNpubs()
+            ? OnboardingExistingICloudKeychainLoginsViewController()
+            : OnboardingSigninController()
+
+        show(view, sender: nil)
     }
 }
 

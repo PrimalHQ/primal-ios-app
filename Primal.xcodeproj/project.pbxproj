@@ -19,6 +19,8 @@
 		930497B629FADB0A003938F2 /* NostrFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B529FADB0A003938F2 /* NostrFilter.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
+		933B05B42A4B0443009C8ACD /* ICloudKeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B05B32A4B0443009C8ACD /* ICloudKeychainManager.swift */; };
+		933B05B62A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B05B52A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift */; };
 		933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDA92A112502008DCF1F /* NoteLexer.swift */; };
 		933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAB2A112508008DCF1F /* NoteParser.swift */; };
 		933DBDB02A1125A5008DCF1F /* NoteParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */; };
@@ -244,6 +246,8 @@
 		930497B529FADB0A003938F2 /* NostrFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrFilter.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
+		933B05B32A4B0443009C8ACD /* ICloudKeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudKeychainManager.swift; sourceTree = "<group>"; };
+		933B05B52A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingExistingICloudKeychainLoginsViewController.swift; sourceTree = "<group>"; };
 		933DBDA92A112502008DCF1F /* NoteLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLexer.swift; sourceTree = "<group>"; };
 		933DBDAB2A112508008DCF1F /* NoteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParser.swift; sourceTree = "<group>"; };
 		933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParserTests.swift; sourceTree = "<group>"; };
@@ -839,6 +843,7 @@
 				93F27DA92A27FB41004ADA55 /* PostManager.swift */,
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
 				939BDB542A374EAB00E80B2C /* ZapManager.swift */,
+				933B05B32A4B0443009C8ACD /* ICloudKeychainManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1083,6 +1088,7 @@
 				9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */,
 				9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */,
 				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
+				933B05B52A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -1368,6 +1374,7 @@
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color+Extra.swift in Sources */,
 				9393D8302A422C3D00F0C55A /* RelayConnection.swift in Sources */,
+				933B05B42A4B0443009C8ACD /* ICloudKeychainManager.swift in Sources */,
 				9E9F2F9529F6AB8A00A9CDF3 /* String+Extra.swift in Sources */,
 				9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
@@ -1488,6 +1495,7 @@
 				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
 				936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
+				933B05B62A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,

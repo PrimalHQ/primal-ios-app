@@ -227,6 +227,12 @@ private extension OnboardingSigninController {
             return
         }
         
+        guard let privkey = keypair.privkey_bech32 else {
+            showErrorMessage("Unable to decode key.")
+            state = .invalidKey
+            return
+        }
+        
         RootViewController.instance.reset()
     }
     
