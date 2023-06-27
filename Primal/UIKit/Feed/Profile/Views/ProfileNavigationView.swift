@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
-    
+    func tappedAddUserFeed()
 }
 
 class ProfileNavigationView: UIView, Themeable {
@@ -210,8 +210,8 @@ private extension ProfileNavigationView {
     }
     
     func setupMenuButton() {
-        let addFeed = UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { _ in
-            
+        let addFeed = UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { [weak self] _ in
+            self?.delegate?.tappedAddUserFeed()
         }
         
         let share = UIAction(title: "Share user profile", image: UIImage(named: "shareProfileIcon")) { _ in

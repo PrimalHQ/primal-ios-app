@@ -18,6 +18,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapZap(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
+    func postCellDidTapReply(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
     func postCellDidTapRepostedProfile(_ cell: PostCell)
 }
@@ -74,9 +75,9 @@ class PostCell: UITableViewCell {
         timeLabel.text = date.timeAgoDisplay()
         
         if !content.user.profileImage.variants.isEmpty {
-            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small))
+            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"))
         } else {
-            profileImageView.kf.setImage(with: URL(string: user.picture), options: [
+            profileImageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage
@@ -214,8 +215,7 @@ private extension PostCell {
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         zapButton.addTarget(self, action: #selector(zapTapped), for: .touchUpInside)
-        
-        replyButton.isUserInteractionEnabled = false
+        replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
     }
     
     @objc func zapTapped() {
@@ -240,6 +240,10 @@ private extension PostCell {
     
     @objc func repostTapped() {
         delegate?.postCellDidTapRepost(self)
+    }
+    
+    @objc func replyTapped() {
+        delegate?.postCellDidTapReply(self)
     }
     
     @objc func likeTapped() {

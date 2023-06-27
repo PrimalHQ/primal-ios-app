@@ -255,13 +255,13 @@ private extension MenuContainerController {
     }
     
     func update(_ user: PrimalUser) {
-        profileImage.kf.setImage(with: URL(string: user.picture), options: [
+        profileImage.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 52, height: 52))),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ])
         
-        menuProfileImage.kf.setImage(with: URL(string: user.picture), options: [
+        menuProfileImage.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
             .processor(DownsamplingImageProcessor(size: .init(width: 32, height: 32))),
             .scaleFactor(UIScreen.main.scale)
         ])

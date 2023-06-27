@@ -113,7 +113,7 @@ private extension NewPostViewController {
         IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
-            self.imageView.kf.setImage(with: URL(string: user.picture), options: [
+            self.imageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: 52, height: 52))),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage

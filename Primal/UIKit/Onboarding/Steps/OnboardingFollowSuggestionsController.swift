@@ -91,13 +91,11 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        Connection.instance.$isConnected.sink { connected in
-            if connected {
-                IdentityManager.instance.requestUserInfos()
-                IdentityManager.instance.requestUserProfile()
-                IdentityManager.instance.requestUserSettings()
-                IdentityManager.instance.requestUserContacts()
-            }
+        Connection.instance.$isConnected.filter { $0 }.first().sink { connected in
+            IdentityManager.instance.requestUserInfos()
+            IdentityManager.instance.requestUserProfile()
+            IdentityManager.instance.requestUserSettings()
+            IdentityManager.instance.requestUserContacts()
         }.store(in: &cancellables)
         Connection.instance.connect()
     }
@@ -172,7 +170,7 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
                 ])
                 
                 cell.nameLabel.text = nostrData.name
-                cell.usernameLabel.text = "@\(nostrData.display_name ?? "")"
+                cell.usernameLabel.text = nostrData.nip05
                 cell.followButton.isFollowing = selectedToFollow.contains(suggestion.pubkey)
                 cell.delegate = self
             }

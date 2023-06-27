@@ -61,6 +61,7 @@ class UndoToastMessageView: UIView {
         undoButton.setTitleColor(.foreground.withAlphaComponent(0.6), for: .highlighted)
         undoButton.titleLabel?.font = .appFont(withSize: 16, weight: .bold)
         undoButton.setContentHuggingPriority(.required, for: .horizontal)
+        undoButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         let stack = UIStackView(arrangedSubviews: [label, undoButton])
         stack.spacing = 12

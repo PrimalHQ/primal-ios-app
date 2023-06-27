@@ -42,29 +42,31 @@ final class RelayPool {
     func connect(_ relay: String) {
         let rc = RelayConnection(socketURL: relay, dispatchQueue: Self.dispatchQueue)
         
-        rc.state.sink(receiveCompletion: { _ in }, receiveValue: { state in
-            switch state {
-            case .connected:
-                self.atLeastOneConnected.send(true)
-                self.numOfConnected.send(self.numOfConnected.value + 1)
-                
-                for unsentEvent in self.unsentEvents.reversed() {
-                    if unsentEvent.identity == rc.identity {
-                        rc.request(unsentEvent.event, unsentEvent.callback)
-                        if let index = self.unsentEvents.firstIndex(of: unsentEvent) {
-                            self.unsentEvents.remove(at: index)
+        rc.state
+            .receive(on: Self.dispatchQueue)
+            .sink(receiveCompletion: { _ in }, receiveValue: { state in
+                switch state {
+                case .connected:
+                    self.atLeastOneConnected.send(true)
+                    self.numOfConnected.send(self.numOfConnected.value + 1)
+                    
+                    for unsentEvent in self.unsentEvents.reversed() {
+                        if unsentEvent.identity == rc.identity {
+                            rc.request(unsentEvent.event, unsentEvent.callback)
+                            if let index = self.unsentEvents.firstIndex(of: unsentEvent) {
+                                self.unsentEvents.remove(at: index)
+                            }
                         }
                     }
+                case .disconnected:
+                    let num = self.numOfConnected.value + 1
+                    self.numOfConnected.send(num < 0 ? 0 : num)
+                    self.atLeastOneConnected.send(num > 0)
+                case .connecting:
+                    // do nothing
+                    break
                 }
-            case .disconnected:
-                let num = self.numOfConnected.value + 1
-                self.numOfConnected.send(num < 0 ? 0 : num)
-                self.atLeastOneConnected.send(num > 0)
-            case .connecting:
-                // do nothing
-                break
-            }
-        }).store(in: &cancellables)
+            }).store(in: &cancellables)
         
         rc.connect()
         

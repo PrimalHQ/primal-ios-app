@@ -186,8 +186,11 @@ private extension ProfileViewController {
 }
 
 extension ProfileViewController: ProfileNavigationViewDelegate {
-    func profilePictureTapped() {
-        profilePicTapped()
+    func tappedAddUserFeed() {
+        IdentityManager.instance.addFeedToList(feed: .init(name: "\(profile.data.firstIdentifier)'s feed", hex: profile.data.pubkey))
+        view.showUndoToast("\(profile.data.firstIdentifier)'s feed added to the list of feeds") { [self] in
+            IdentityManager.instance.removeFeedFromList(hex: profile.data.pubkey)
+        }
     }
 }
 
