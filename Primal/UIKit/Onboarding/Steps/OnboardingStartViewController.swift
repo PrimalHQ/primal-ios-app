@@ -37,11 +37,17 @@ final class OnboardingStartViewController: UIViewController {
     }
     
     @objc func signinPressed() {
-        let view = ICloudKeychain.instance.hasSavedNpubs()
-            ? OnboardingExistingICloudKeychainLoginsViewController()
-            : OnboardingSigninController()
-
-        show(view, sender: nil)
+        
+        if ICloudKeychain.instance.hasSavedNpubs() {
+            ICloudKeychain.instance.fetchPrimalUsersForSavedNpubs { primalUsers in
+                DispatchQueue.main.async {
+                    self.show(OnboardingExistingICloudKeychainLoginsViewController(primalUsers: primalUsers), sender: nil)
+                }
+            }
+            return
+        } else {
+            show(OnboardingSigninController(), sender: nil)
+        }
     }
 }
 

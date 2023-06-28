@@ -21,6 +21,7 @@
 		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
 		933B05B42A4B0443009C8ACD /* ICloudKeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B05B32A4B0443009C8ACD /* ICloudKeychainManager.swift */; };
 		933B05B62A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B05B52A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift */; };
+		933B05B82A4C3E28009C8ACD /* TemporaryConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B05B72A4C3E28009C8ACD /* TemporaryConnection.swift */; };
 		933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDA92A112502008DCF1F /* NoteLexer.swift */; };
 		933DBDAC2A112508008DCF1F /* NoteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAB2A112508008DCF1F /* NoteParser.swift */; };
 		933DBDB02A1125A5008DCF1F /* NoteParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */; };
@@ -248,6 +249,7 @@
 		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
 		933B05B32A4B0443009C8ACD /* ICloudKeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudKeychainManager.swift; sourceTree = "<group>"; };
 		933B05B52A4B0747009C8ACD /* OnboardingExistingICloudKeychainLoginsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingExistingICloudKeychainLoginsViewController.swift; sourceTree = "<group>"; };
+		933B05B72A4C3E28009C8ACD /* TemporaryConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryConnection.swift; sourceTree = "<group>"; };
 		933DBDA92A112502008DCF1F /* NoteLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLexer.swift; sourceTree = "<group>"; };
 		933DBDAB2A112508008DCF1F /* NoteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParser.swift; sourceTree = "<group>"; };
 		933DBDAF2A1125A5008DCF1F /* NoteParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteParserTests.swift; sourceTree = "<group>"; };
@@ -817,6 +819,7 @@
 			isa = PBXGroup;
 			children = (
 				93F27D9D2A27DE32004ADA55 /* Connection.swift */,
+				933B05B72A4C3E28009C8ACD /* TemporaryConnection.swift */,
 			);
 			path = CacheServer;
 			sourceTree = "<group>";
@@ -1474,6 +1477,7 @@
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
+				933B05B82A4C3E28009C8ACD /* TemporaryConnection.swift in Sources */,
 				9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9ED416062A446F2A00892235 /* SettingsFeedViewController.swift in Sources */,

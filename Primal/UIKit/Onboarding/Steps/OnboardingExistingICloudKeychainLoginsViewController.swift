@@ -7,22 +7,22 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 final class OnboardingExistingICloudKeychainLoginsViewController : UIViewController {
     var table = UITableView()
     
-    private var npubs: [String] = [] {
+    private var primalUsers: [PrimalUser] = [] {
         didSet {
             table.reloadData()
         }
     }
     
-    init() {
+    init(primalUsers: [PrimalUser]) {
         super.init(nibName: nil, bundle: nil)
         
         setup()
-        
-        self.npubs = ICloudKeychain.instance.getSavedNpubs()
+        self.primalUsers = primalUsers
     }
     
     required init?(coder: NSCoder) {
@@ -73,15 +73,16 @@ extension OnboardingExistingICloudKeychainLoginsViewController {
 
 extension OnboardingExistingICloudKeychainLoginsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        npubs.count
+        primalUsers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
-        let npub = npubs[indexPath.row]
+        let primalUser = primalUsers[indexPath.row]
         var content = cell.defaultContentConfiguration()
-        content.text = npub
+        content.text = primalUser.name
+        
         cell.contentConfiguration = content
         
         return cell
@@ -90,9 +91,10 @@ extension OnboardingExistingICloudKeychainLoginsViewController: UITableViewDataS
 
 extension OnboardingExistingICloudKeychainLoginsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let npub = npubs[indexPath.row]
+        let primalUser = primalUsers[indexPath.row]
         
         guard
+            let npub = bech32_pubkey(primalUser.pubkey),
             let nsec = ICloudKeychain.instance.getSavedNsec(npub),
             let _ = self.processLogin(nsec) else {
             print("Error logging in with ICloud keychain nsec/npub")

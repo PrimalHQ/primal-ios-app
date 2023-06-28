@@ -7,10 +7,13 @@
 
 import KeychainAccess
 import Foundation
+import Combine
+import GenericJSON
 
 final class ICloudKeychain {
     private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal")
         .synchronizable(true)
+    private var cancellables = Set<AnyCancellable>()
 
     private init() {}
     
@@ -124,5 +127,53 @@ final class ICloudKeychain {
         }
         
         return true
+    }
+    
+    func fetchPrimalUsersForSavedNpubs(_ callback: @escaping (_ users: [PrimalUser]) -> Void) {
+        let conn = TemporaryConnection()
+        
+        conn.$isConnected.sink { isConnected in
+            if isConnected {
+                let npubs = self.getSavedNpubs()
+                let request: JSON = .object([
+                    "pubkeys": .array(npubs.compactMap { npub in
+                        guard let decoded = try? bech32_decode(npub) else {
+                            return nil
+                        }
+                        
+                        let pubkey = hex_encode(decoded.data)
+                        
+                        return .string(pubkey)
+                    })
+                ])
+                var result: [PrimalUser] = []
+                conn.requestCache(name: "user_infos", request: request) { res in
+                    for response in res {
+                        let kind = ResponseKind.fromGenericJSON(response)
+                        
+                        switch kind {
+                        case .metadata:
+                            let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
+                            if let primalUser = PrimalUser(nostrUser: nostrUser) {
+                                result.append(primalUser)
+                            }
+                        case .userScore:
+                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got userScore")
+                        case .mediaMetadata:
+                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got mediaMetada")
+                        default:
+                            assertionFailure("ICloudKeychainManager: nostrUserForSavedNpubs: Got unexpected event kind in response: \(response)")
+                        }
+                    }
+                    callback(result)
+                    conn.disconnect()
+                    for cancellable in self.cancellables {
+                        cancellable.cancel()
+                    }
+                }
+            }
+        }.store(in: &cancellables)
+        
+        conn.connect()
     }
 }
