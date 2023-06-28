@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import GenericJSON
 
 final class SettingsFeedViewController: UIViewController, Themeable {
     let table = UITableView()
@@ -126,7 +127,47 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let view =  tableView.dequeueReusableHeaderFooterView(withIdentifier: "footer")
         (view as? Themeable)?.updateTheme()
+        if let footer = view as? SettingsFeedRestoreView {
+            if footer.button.allTargets.isEmpty {
+                footer.button.addTarget(self, action: #selector(restoreButtonPressed), for: .touchUpInside)
+            }
+            footer.updateTheme()
+        }
         return view
+    }
+    
+    @objc func restoreButtonPressed() {
+        guard let userPubkey = IdentityManager.instance.user?.pubkey else { return }
+        
+        Connection.instance.requestCache(name: "get_default_app_settings", request: .object(["client": .string("Primal iOS")])) { result in
+            
+            var defaultFeeds: [PrimalSettingsFeed] = [.init(name: "Latest", hex: userPubkey)]
+            
+            for object in result {
+                guard
+                    let payload = object.arrayValue?.last?.objectValue,
+                    let kind = ResponseKind(rawValue: UInt32(payload["kind"]?.doubleValue ?? -1377)),
+                    case .defaultSettings = kind,
+                    let contentString = payload["content"]?.stringValue,
+                    let content = (try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)))?.objectValue,
+                    let feeds = content["feeds"]?.arrayValue
+                else { continue }
+                
+                for feed in feeds {
+                    guard
+                        let obj = feed.objectValue,
+                        let name = obj["name"]?.stringValue,
+                        let hex = obj["hex"]?.stringValue
+                    else {
+                        continue
+                    }
+                    
+                    defaultFeeds.append(.init(name: name, hex: hex))
+                }
+            }
+            
+            IdentityManager.instance.updateFeeds(defaultFeeds)
+        }
     }
 }
 

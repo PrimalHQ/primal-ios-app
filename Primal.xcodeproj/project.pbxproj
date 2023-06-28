@@ -204,6 +204,7 @@
 		9ED416062A446F2A00892235 /* SettingsFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416052A446F2A00892235 /* SettingsFeedViewController.swift */; };
 		9ED416092A45B2EC00892235 /* DBImageDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416082A45B2EC00892235 /* DBImageDecoder.swift */; };
 		9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */; };
+		9ED4160D2A48744600892235 /* RepostSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */; };
 		9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */; };
 		9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */; };
 		9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */; };
@@ -461,6 +462,7 @@
 		9ED416052A446F2A00892235 /* SettingsFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFeedViewController.swift; sourceTree = "<group>"; };
 		9ED416082A45B2EC00892235 /* DBImageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBImageDecoder.swift; sourceTree = "<group>"; };
 		9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToastMessageView.swift; sourceTree = "<group>"; };
+		9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepostSelectionViewController.swift; sourceTree = "<group>"; };
 		9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunriseWave.swift; sourceTree = "<group>"; };
 		9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetWave.swift; sourceTree = "<group>"; };
@@ -1117,7 +1119,7 @@
 				9E55CC692A03C6B3002D3DC4 /* Home */,
 				9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */,
 				9ECFD3212A013935000D1B2F /* FeedViewController.swift */,
-				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
+				9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1151,6 +1153,7 @@
 		9ED416002A42482700892235 /* Regular */ = {
 			isa = PBXGroup;
 			children = (
+				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 				9ED416012A42483D00892235 /* RegularFeedViewController.swift */,
 			);
 			path = Regular;
@@ -1382,6 +1385,7 @@
 				93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */,
 				93CACB0229F525B6003BBCE5 /* node_id.c in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
+				9ED4160D2A48744600892235 /* RepostSelectionViewController.swift in Sources */,
 				930497A529FAD6D7003938F2 /* EventRef.swift in Sources */,
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* ResponseKind.swift in Sources */,
@@ -1703,7 +1707,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.18.6;
+				MARKETING_VERSION = 0.19.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1744,7 +1748,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.18.6;
+				MARKETING_VERSION = 0.19.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

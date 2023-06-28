@@ -14,6 +14,7 @@ final class VerifiedImageView: UIView {
     init() {
         super.init(frame: .zero)
         setup()
+        verifiedBadge.isHidden = true
     }
     
     required init?(coder: NSCoder) {

@@ -21,7 +21,7 @@ final class ThreadViewController: FeedViewController {
     @Published private var didLoadData = false
     
     private var textHeightConstraint: NSLayoutConstraint?
-    private let textInputView = SelfSizingTextView()
+    let textInputView = SelfSizingTextView()
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
@@ -55,12 +55,12 @@ final class ThreadViewController: FeedViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }    
     
-    override func open(post: PrimalFeedPost) {
-        guard post.id != id else { return }
+    @discardableResult
+    override func open(post: PrimalFeedPost) -> FeedViewController? {
+        guard post.id != id else { return nil }
         
         guard let index = posts.firstIndex(where: { $0.post == post }) else {
-            super.open(post: post)
-            return
+            return super.open(post: post)
         }
         
         if index < mainPositionInThread {
@@ -69,12 +69,12 @@ final class ThreadViewController: FeedViewController {
                 if thread.id == post.id {
                     thread.didMoveToMain = false
                     navigationController?.popToViewController(vc, animated: true)
-                    return
+                    return thread
                 }
             }
         }
         
-        super.open(post: post)
+        return super.open(post: post)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -149,10 +149,13 @@ private extension ThreadViewController {
     
     func addPublishers() {
         feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
-            guard let self, !parsed.isEmpty else { return }
+            guard let self, let mainPost = parsed.first(where: { $0.post.id == self.id }) else { return }
             
-            self.posts = parsed.sorted(by: { $0.post.created_at < $1.post.created_at })
-            self.mainPositionInThread = self.posts.firstIndex(where: { $0.post.id == self.id }) ?? 0
+            let postsBefore = parsed.filter { $0.post.created_at < mainPost.post.created_at }
+            let postsAfter = parsed.filter { $0.post.created_at > mainPost.post.created_at }
+            
+            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
+            self.mainPositionInThread = postsBefore.count
             
             self.didLoadData = true
             
@@ -180,7 +183,9 @@ private extension ThreadViewController {
         })
         .store(in: &cancellables)
         
-        inputManager.$isEditing.sink { [unowned self] isEditing in
+        inputManager.$isEditing.sink { [weak self] isEditing in
+            guard let self = self else { return }
+            
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             UIView.animate(withDuration: 0.2) {
@@ -194,6 +199,12 @@ private extension ThreadViewController {
                 self.buttonStack.alpha = isEditing ? 1 : 0
                 
                 self.textInputView.layoutIfNeeded()
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                if self.mainPositionInThread < self.posts.count {
+                    self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: 0), at: .top, animated: true)
+                }
             }
         }
         .store(in: &cancellables)
@@ -210,11 +221,6 @@ private extension ThreadViewController {
             self.usersTableView.reloadData()
         }
         .store(in: &cancellables)
-        
-        inputManager.returnPressed.sink { [weak self] _ in
-            self?.postButtonPressed()
-        }
-        .store(in: &cancellables)
     }
     
     func setup() {
@@ -222,7 +228,7 @@ private extension ThreadViewController {
         
         title = "Thread"
         
-        table.keyboardDismissMode = .onDrag
+        table.keyboardDismissMode = .interactive
         
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)

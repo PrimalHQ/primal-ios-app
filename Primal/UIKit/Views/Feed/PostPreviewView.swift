@@ -40,7 +40,7 @@ final class PostPreviewView: UIView {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: user.picture), options: [
+        profileImageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 28, height: 28))),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage

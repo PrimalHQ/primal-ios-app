@@ -54,9 +54,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         heavy.prepare()
     }
     
-    func open(post: PrimalFeedPost) {
+    @discardableResult
+    func open(post: PrimalFeedPost) -> FeedViewController? {
         let threadVC = ThreadViewController(threadId: post.id)
         show(threadVC, sender: nil)
+        return threadVC
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -194,8 +196,33 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        PostManager.instance.sendRepostEvent(nostrContent: posts[indexPath.row].post.toRepostNostrContent())
-        cell.repostButton.animateTo(posts[indexPath.row].post.reposts + 1, filled: true)
+        let post = posts[indexPath.row].post
+        let popup = PopupMenuViewController()
+        
+        popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
+            PostManager.instance.sendRepostEvent(nostrContent: post.toRepostNostrContent())
+            cell.repostButton.animateTo(post.reposts + 1, filled: true)
+        }))
+        
+        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
+            guard let noteRef = bech32_note_id(post.id) else { return }
+            let new = NewPostViewController()
+            new.textView.text = "nostr:\(noteRef)\n\n"
+            self.present(new, animated: true)
+        }))
+        
+        present(popup, animated: true)
+    }
+    
+    func postCellDidTapReply(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let thread = open(post: posts[indexPath.row].post) as? ThreadViewController
+        else { return }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+            thread.textInputView.becomeFirstResponder()
+        }
     }
     
     func postCellDidTapPost(_ cell: PostCell) {

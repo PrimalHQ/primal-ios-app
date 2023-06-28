@@ -80,7 +80,11 @@ final class RegularFeedViewController: FeedViewController {
         if didAddToFeed {
             view.showToast("Feed is already in your home feeds")
         } else {
-            IdentityManager.instance.addFeedToList(feed: .init(name: search, hex: feedHex))
+            if search.hasPrefix("#") {
+                IdentityManager.instance.addFeedToList(feed: .init(name: search, hex: feedHex))
+            } else {
+                IdentityManager.instance.addFeedToList(feed: .init(name: "Search: \(search)", hex: feedHex))
+            }
             
             view.showUndoToast("Added to your home feeds") { [weak self] in
                 guard let self = self else { return }
