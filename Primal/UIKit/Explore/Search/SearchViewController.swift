@@ -114,19 +114,13 @@ extension SearchViewController: UITextFieldDelegate {
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        users.count + (userSearchText.isEmpty ? 0 : 1)
+        users.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if userSearchText.isEmpty {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
-            (cell as? UserInfoTableCell)?.update(user: users[indexPath.row])
-            return cell
-        }
-        
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "search", for: indexPath)
-            (cell as? SearchTermTableCell)?.termLabel.text = userSearchText
+            (cell as? SearchTermTableCell)?.termLabel.text = userSearchText.isEmpty ? "Enter text to search" : userSearchText
             return cell
         }
         
@@ -136,14 +130,9 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if userSearchText.isEmpty {
-            let profile = ProfileViewController(profile: users[indexPath.row])
-            searchView.inputField.resignFirstResponder()
-            show(profile, sender: nil)
-            return
-        }
-        
         if indexPath.row == 0 {
+            if userSearchText.isEmpty { return }
+            
             let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
             show(feed, sender: nil)
             return
