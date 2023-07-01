@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 3.5.23..
 //
 
+import Combine
 import UIKit
 
 extension UIViewController {
@@ -24,16 +25,26 @@ final class MainTabBarController: UIViewController, Themeable {
     
     lazy var buttons = (1...5).map { _ in UIButton() }
     
-    var currentPageIndex = 0 {
-        didSet {
-            updateButtons()
-        }
-    }
+    let notificationIndicator = UIImageView(image: UIImage(named: "newIndicator"))
     
     let closeMenuButton = UIButton()
     
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    var hasNewNotifications = false {
+        didSet {
+            notificationIndicator.isHidden = !hasNewNotifications
+        }
+    }
+    
+    var currentPageIndex = 0 {
+        didSet {
+            updateButtons()
+        }
+    }
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -93,6 +104,12 @@ private extension MainTabBarController {
         
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, safeArea: true)
+        
+        view.addSubview(notificationIndicator)
+        if let imageView = buttons.last?.imageView {
+            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
+        }
+        notificationIndicator.isHidden = true
         
         pageVC.didMove(toParent: self) // Notify child VC
         pageVC.setViewControllers([home], direction: .forward, animated: false)

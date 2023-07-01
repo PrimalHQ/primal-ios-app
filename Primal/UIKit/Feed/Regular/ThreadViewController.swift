@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class ThreadViewController: FeedViewController {
+final class ThreadViewController: PostFeedViewController {
     var request: AnyCancellable?
     let id: String
     

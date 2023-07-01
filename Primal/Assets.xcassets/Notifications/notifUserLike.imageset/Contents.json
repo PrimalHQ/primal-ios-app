@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "filename" : "post you were mentioned in was liked (1).svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "post you were mentioned in was liked.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

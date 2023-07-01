@@ -12,6 +12,8 @@ final class SunsetWave: AppTheme {
     
     let kind: Theme = .sunsetWave
     
+    let brandText: UIColor = .init(rgb: 0xD5D5D5)
+    
     let background: UIColor = .black
     let background2: UIColor = .init(rgb: 0x121212)
     let background3: UIColor = .init(rgb: 0x222222)

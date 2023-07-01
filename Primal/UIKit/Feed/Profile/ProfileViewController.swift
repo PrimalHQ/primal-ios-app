@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 import GenericJSON
 
-final class ProfileViewController: FeedViewController {
+final class ProfileViewController: PostFeedViewController {
     let profile: ParsedUser
     var userStats: NostrUserProfileInfo? {
         didSet {

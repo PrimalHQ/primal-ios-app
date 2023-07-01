@@ -30,8 +30,31 @@ struct PrimalSettingsContent: Codable, Hashable {
     var description: String?
     var theme: String?
     var feeds: [PrimalSettingsFeed]
+    var notifications: PrimalSettingsNotifications?
     var defaultZapAmount: Int64?
     var zapOptions: [Int64]?
+}
+
+struct PrimalSettingsNotifications: Codable, Hashable {
+    var NEW_USER_FOLLOWED_YOU: Bool
+    var USER_UNFOLLOWED_YOU: Bool
+
+    var YOUR_POST_WAS_ZAPPED: Bool
+    var YOUR_POST_WAS_LIKED: Bool
+    var YOUR_POST_WAS_REPOSTED: Bool
+    var YOUR_POST_WAS_REPLIED_TO: Bool
+    var YOU_WERE_MENTIONED_IN_POST: Bool
+    var YOUR_POST_WAS_MENTIONED_IN_POST: Bool
+
+    var POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED: Bool
+    var POST_YOU_WERE_MENTIONED_IN_WAS_LIKED: Bool
+    var POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED: Bool
+    var POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO: Bool
+
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED: Bool
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED: Bool
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED: Bool
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO: Bool
 }
 
 struct PrimalSearchPagination: Codable, Hashable {
@@ -289,4 +312,49 @@ struct PrimalPost : Codable, Hashable, Identifiable {
         
         return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)
     }
+}
+
+extension PrimalUser {
+    static let empty: PrimalUser = {
+        let userUUID = "empty"
+        return PrimalUser(
+            id: userUUID,
+            pubkey: userUUID,
+            npub: userUUID,
+            name: userUUID,
+            about: userUUID,
+            picture: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+            nip05: userUUID,
+            banner: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
+            displayName: userUUID,
+            location: userUUID,
+            lud06: userUUID,
+            lud16: userUUID,
+            website: userUUID,
+            tags: [[]],
+            created_at: Int32(Date.now.timeIntervalSince1970),
+            sig: userUUID
+        )
+    }()
+}
+
+extension PrimalFeedPost {
+    static let empty: PrimalFeedPost = {
+        let feedPostUUID = "empty"
+        return PrimalFeedPost(
+            id: feedPostUUID,
+            pubkey: feedPostUUID,
+            created_at: 1677374861,
+            tags: [[]],
+            content: "\(feedPostUUID) \(feedPostUUID)",
+            sig: feedPostUUID,
+            likes: 420,
+            mentions: 69,
+            replies: 42,
+            zaps: 666,
+            satszapped: 666,
+            score24h: 13,
+            reposts: 42
+        )
+    }()
 }

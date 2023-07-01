@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GenericJSON
 
 class PostRequestResult {
     var posts: [NostrContent] = []
@@ -17,7 +18,10 @@ class PostRequestResult {
     var stats: [String: NostrContentStats] = [:]
     var userScore: [String: Int] = [:]
     
+    var timestamps: [Date] = []
+    
     var popularHashtags: [PopularHashtag] = []
+    var notifications: [PrimalNotification] = []
 }
 
 struct NostrRepost {
