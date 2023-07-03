@@ -10,7 +10,6 @@ import Foundation
 struct LNUrlPayRequest: Decodable {
     let allowsNostr: Bool?
     let commentAllowed: Int?
-    let nostrPubkey: String?
     
     let callback: String?
 }
@@ -47,29 +46,11 @@ enum MakeZapRequest {
     }
 }
 
-protocol StringCodable {
-    init?(from string: String)
-    func to_string() -> String
-}
-
-enum ZapType: String, StringCodable {
+enum ZapType: String {
     case pub
     case anon
     case priv
     case non_zap
-    
-    init?(from string: String) {
-        guard let v = ZapType(rawValue: string) else {
-            return nil
-        }
-        
-        self = v
-    }
-    
-    func to_string() -> String {
-        return self.rawValue
-    }
-    
 }
 
 public struct NoteZapTarget: Equatable, Hashable {
@@ -109,272 +90,12 @@ struct ZapRequest {
     
 }
 
-enum ExtPendingZapStateType {
-    case fetching_invoice
-    case done
-}
-
-class ExtPendingZapState: Equatable {
-    static func == (lhs: ExtPendingZapState, rhs: ExtPendingZapState) -> Bool {
-        return lhs.state == rhs.state
-    }
-    
-    var state: ExtPendingZapStateType
-    
-    init(state: ExtPendingZapStateType) {
-        self.state = state
-    }
-}
-
-enum PendingZapState: Equatable {
-    case nwc(NWCPendingZapState)
-    case external(ExtPendingZapState)
-}
-
-
-enum NWCStateType: Equatable {
-    case fetching_invoice
-    case cancel_fetching_invoice
-    case postbox_pending(NostrEvent)
-    case confirmed
-    case failed
-}
-
-class NWCPendingZapState: Equatable {
-    private(set) var state: NWCStateType
-    let url: WalletConnectURL
-    
-    init(state: NWCStateType, url: WalletConnectURL) {
-        self.state = state
-        self.url = url
-    }
-    
-    //@discardableResult  -- not discardable, the ZapsDataModel may need to send objectWillChange but we don't force it
-    func update_state(state: NWCStateType) -> Bool {
-        guard state != self.state else {
-            return false
-        }
-        self.state = state
-        return true
-    }
-    
-    static func == (lhs: NWCPendingZapState, rhs: NWCPendingZapState) -> Bool {
-        return lhs.state == rhs.state && lhs.url == rhs.url
-    }
-}
-
-class ZapsDataModel: ObservableObject {
-    @Published var zaps: [Zapping]
-    
-    init(_ zaps: [Zapping]) {
-        self.zaps = zaps
-    }
-    
-    func confirm_nwc(reqid: String) {
-        guard let zap = zaps.first(where: { z in z.request.id == reqid }),
-              case .pending(let pzap) = zap
-        else {
-            return
-        }
-        
-        switch pzap.state {
-        case .external:
-            break
-        case .nwc(let nwc_state):
-            if nwc_state.update_state(state: .confirmed) {
-                self.objectWillChange.send()
-            }
-        }
-    }
-    
-    func from(_ pubkey: String) -> [Zapping] {
-        return self.zaps.filter { z in z.request.pubkey == pubkey }
-    }
-    
-    @discardableResult
-    func remove(reqid: String) -> Bool {
-        guard zaps.first(where: { z in z.request.id == reqid }) != nil else {
-            return false
-        }
-        
-        self.zaps = zaps.filter { z in z.request.id != reqid }
-        return true
-    }
-}
-
-class PendingZap {
-    let amount_msat: Int64
-    let target: ZapTarget
-    let request: ZapRequest
-    let type: ZapType
-    private(set) var state: PendingZapState
-    
-    init(amount_msat: Int64, target: ZapTarget, request: MakeZapRequest, type: ZapType, state: PendingZapState) {
-        self.amount_msat = amount_msat
-        self.target = target
-        self.request = request.private_inner_request
-        self.type = type
-        self.state = state
-    }
-    
-    @discardableResult
-    func update_state(model: ZapsDataModel, state: PendingZapState) -> Bool {
-        guard self.state != state else {
-            return false
-        }
-        
-        self.state = state
-        model.objectWillChange.send()
-        return true
-    }
-}
-
 struct ZapRequestId: Equatable {
     let reqid: String
-    
-    init(from_zap: Zapping) {
-        self.reqid = from_zap.request.id
-    }
     
     init(from_makezap: MakeZapRequest) {
         self.reqid = from_makezap.private_inner_request.ev.id
     }
-    
-    init(from_pending: PendingZap) {
-        self.reqid = from_pending.request.ev.id
-    }
-}
-
-enum Zapping {
-    case zap(Zap)
-    case pending(PendingZap)
-    
-    var is_pending: Bool {
-        switch self {
-        case .zap:
-            return false
-        case .pending:
-            return true
-        }
-    }
-    
-    var is_paid: Bool {
-        switch self {
-        case .zap:
-            // we have a zap so this is proof of payment
-            return true
-        case .pending(let pzap):
-            switch pzap.state {
-            case .external:
-                // It could be but we don't know. We have to wait for a zap to know.
-                return false
-            case .nwc(let nwc_state):
-                // nwc confirmed that we have a payment, but we might not have zap yet
-                return nwc_state.state == .confirmed
-            }
-        }
-    }
-    
-    var is_private: Bool {
-        switch self {
-        case .zap(let zap):
-            return zap.private_request != nil
-        case .pending(let pzap):
-            return pzap.type == .priv
-        }
-    }
-    
-    var target: ZapTarget {
-        switch self {
-        case .zap(let zap):
-            return zap.target
-        case .pending(let pzap):
-            return pzap.target
-        }
-    }
-    
-    var request: NostrEvent {
-        switch self {
-        case .zap(let zap):
-            return zap.request_ev
-        case .pending(let pzap):
-            return pzap.request.ev
-        }
-    }
-    
-    var created_at: Int64 {
-        switch self {
-        case .zap(let zap):
-            return zap.event.created_at
-        case .pending(let pzap):
-            // pending zaps are created right away
-            return pzap.request.ev.created_at
-        }
-    }
-    
-    var event: NostrEvent? {
-        switch self {
-        case .zap(let zap):
-            return zap.event
-        case .pending:
-            // pending zaps don't have a zap event
-            return nil
-        }
-    }
-    
-    var is_anon: Bool {
-        switch self {
-        case .zap(let zap):
-            return zap.is_anon
-        case .pending(let pzap):
-            return pzap.type == .anon
-        }
-    }
-}
-
-struct Zap {
-    public let event: NostrEvent
-    public let zapper: String /// zap authorizer
-    public let target: ZapTarget
-    public let request: ZapRequest
-    public let is_anon: Bool
-    public let private_request: NostrEvent?
-    
-    var request_ev: NostrEvent {
-        return private_request ?? self.request.ev
-    }
-}
-
-/// Fetches the description from either the invoice, or tags, depending on the type of invoice
-func get_zap_description(_ ev: NostrEvent, inv_desc: InvoiceDescription) -> String? {
-    switch inv_desc {
-    case .description(let string):
-        return string
-    case .description_hash(let deschash):
-        guard let desc = event_tag(ev, name: "description") else {
-            return nil
-        }
-        guard let data = desc.data(using: .utf8) else {
-            return nil
-        }
-        guard sha256(data) == deschash else {
-            return nil
-        }
-        
-        return desc
-    }
-}
-
-func determine_zap_target(_ ev: NostrEvent) -> ZapTarget? {
-    guard let ptag = event_tag(ev, name: "p") else {
-        return nil
-    }
-    
-    if let etag = event_tag(ev, name: "e") {
-        return ZapTarget.note(id: etag, author: ptag)
-    }
-    
-    return .profile(ptag)
 }
 
 func decode_bolt11(_ s: String) -> Invoice? {
@@ -406,44 +127,6 @@ func decode_bolt11(_ s: String) -> Invoice? {
     
     blocks_free(&bs)
     return invoice
-}
-
-func event_tag(_ ev: NostrEvent, name: String) -> String? {
-    for tag in ev.tags {
-        if tag.count >= 2 && tag[0] == name {
-            return tag[1]
-        }
-    }
-    
-    return nil
-}
-
-func decode_nostr_event_json(_ desc: String) -> NostrEvent? {
-    let decoder = JSONDecoder()
-    guard let dat = desc.data(using: .utf8) else {
-        return nil
-    }
-    guard let ev = try? decoder.decode(NostrEvent.self, from: dat) else {
-        return nil
-    }
-    
-    return ev
-}
-
-func fetch_zapper_from_lnurl(_ lnurl: String) async -> String? {
-    guard let endpoint = await fetch_static_payreq(lnurl) else {
-        return nil
-    }
-    
-    guard let allows = endpoint.allowsNostr, allows else {
-        return nil
-    }
-    
-    guard let key = endpoint.nostrPubkey, key.count == 64 else {
-        return nil
-    }
-    
-    return endpoint.nostrPubkey
 }
 
 func decode_lnurl(_ lnurl: String) -> URL? {
@@ -533,10 +216,6 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
     return result.pr
 }
 
-func initial_pending_zap_state(_ nwc: WalletConnectURL) -> PendingZapState {
-    return .nwc(NWCPendingZapState(state: .fetching_invoice, url: nwc))
-}
-
 struct WalletRequest<T: Codable>: Codable {
     let method: String
     let params: T?
@@ -544,8 +223,4 @@ struct WalletRequest<T: Codable>: Codable {
 
 struct PayInvoiceRequest: Codable {
     let invoice: String
-}
-
-struct PayInvoiceResponse: Decodable {
-    let preimage: String
 }

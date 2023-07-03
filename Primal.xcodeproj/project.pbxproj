@@ -52,8 +52,6 @@
 		93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */; };
 		93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE792A0AB118005AE313 /* AnyDecodable.swift */; };
 		93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */; };
-		93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */; };
-		93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE812A0AB1C9005AE313 /* Util.swift */; };
 		93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */; };
 		93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACAC829F525B6003BBCE5 /* bech32.c */; };
 		93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 93CACACB29F525B6003BBCE5 /* talstr.c */; };
@@ -264,8 +262,6 @@
 		93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		93B7FE792A0AB118005AE313 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
 		93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
-		93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubkeyView.swift; sourceTree = "<group>"; };
-		93B7FE812A0AB1C9005AE313 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationBootstrapper.swift; sourceTree = "<group>"; };
 		93CACAC529F525B5003BBCE5 /* Primal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Primal-Bridging-Header.h"; sourceTree = "<group>"; };
 		93CACAC629F525B6003BBCE5 /* amount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amount.h; sourceTree = "<group>"; };
@@ -757,8 +753,6 @@
 				93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */,
 				93B7FE792A0AB118005AE313 /* AnyDecodable.swift */,
 				93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */,
-				93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */,
-				93B7FE812A0AB1C9005AE313 /* Util.swift */,
 				93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */,
 				939BDB522A352ACF00E80B2C /* Zap.swift */,
 				939427132A436AF3001C1E10 /* RelayURL.swift */,
@@ -1424,7 +1418,6 @@
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */,
-				93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */,
 				9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
@@ -1470,7 +1463,6 @@
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeTwitterProfileView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
-				93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */,
 				933DBDB72A114532008DCF1F /* SyntaxNode.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
