@@ -195,7 +195,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
-    func npubPressed(in cell: ProfileInfoCell) {
+    func npubPressed() {
         UIPasteboard.general.string = profile.data.npub
         view.showToast("Key copied to clipboard")
     }

@@ -138,7 +138,7 @@ class PostCell: UITableViewCell {
 }
 
 extension PostCell: ImageCollectionViewDelegate {
-    func didTapImage(resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
+    func didTapImage(resource: MediaMetadata.Resource) {
         delegate?.postCellDidTapImages(resource: resource)
     }
 }
