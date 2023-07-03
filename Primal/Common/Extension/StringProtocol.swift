@@ -7,11 +7,6 @@
 
 import Foundation
 
-public extension StringProtocol {
-    subscript(_ offset: Int)                     -> Element     { self[index(startIndex, offsetBy: offset)] }
-    subscript(_ range: Range<Int>)               -> SubSequence { prefix(range.lowerBound+range.count).suffix(range.count) }
-}
-
 public extension LosslessStringConvertible {
     var string: String { .init(self) }
 }

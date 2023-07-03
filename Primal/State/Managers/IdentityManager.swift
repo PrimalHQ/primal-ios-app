@@ -13,21 +13,7 @@ final class IdentityManager {
     private init() {}
     
     static let instance = IdentityManager()
-    
-    var userHexExists: Bool {
-        get {
-            let result = get_saved_keypair()
-            
-            guard
-                let keypair = result,
-                let _ = try? bech32_decode(keypair.pubkey_bech32)
-            else {
-                return false
-            }
-            
-            return true
-        }
-    }
+
     var userHex: String {
         get {
             let result = get_saved_keypair()
@@ -43,7 +29,6 @@ final class IdentityManager {
         }
     }
     
-    @Published var userScore: UInt32 = 0
     @Published var user: PrimalUser?
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
@@ -51,9 +36,7 @@ final class IdentityManager {
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
 
     @Published var didFinishInit: Bool = false
-    
-    var cancellables: Set<AnyCancellable> = []
-    
+        
     func requestUserInfos() {
         let request: JSON = .object([
             "pubkeys": .array([.string(userHex)])
@@ -78,7 +61,7 @@ final class IdentityManager {
                             fatalError("IdentityManager: requestUserInfos: Unable to get user score")
                         }
                         
-                        self.userScore = score
+                        print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
                 case .mediaMetadata:
                     print("IdentityManager: requestUserInfos: Got mediaMetada")
@@ -192,7 +175,7 @@ final class IdentityManager {
                     
                     self.userRelays = relays
                     
-                    var relayKeys = Array(relays.keys)
+                    let relayKeys = Array(relays.keys)
                     
                     if
                         let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),

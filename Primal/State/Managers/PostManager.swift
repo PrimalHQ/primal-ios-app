@@ -15,8 +15,8 @@ final class PostManager {
     @Published var userReposts: Set<String> = []
     @Published var userReplied: Set<String> = []
     
-    public func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
-    public func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
+    func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
+    func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         guard let keypair = get_saved_keypair() else {
@@ -63,9 +63,10 @@ final class PostManager {
         self.userReplied.insert(post.id)
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            // do nothing
+            callback()
         }, errorHandler: {
             self.userReplied.remove(post.id)
+            callback()
         })
     }
 }

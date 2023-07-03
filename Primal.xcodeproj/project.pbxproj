@@ -142,7 +142,6 @@
 		9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F42A0A717400D4837B /* ThreadCell.swift */; };
 		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
 		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
-		9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */; };
 		9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */; };
 		9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */; };
 		9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */; };
@@ -379,7 +378,6 @@
 		9E9D46F42A0A717400D4837B /* ThreadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCell.swift; sourceTree = "<group>"; };
 		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
-		9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
 		9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroVideoController.swift; sourceTree = "<group>"; };
 		9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingImportTwitterController.swift; sourceTree = "<group>"; };
 		9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSigninController.swift; sourceTree = "<group>"; };
@@ -588,7 +586,6 @@
 				9E6B38CC29F9488400144073 /* Networking */,
 				9393313829A3E5C2003954C2 /* Font */,
 				9393313529A3E59D003954C2 /* Extension */,
-				9E9F2F5529F6AB4B00A9CDF3 /* ViewModifier */,
 				9393313029A3E565003954C2 /* Model */,
 				936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */,
 			);
@@ -953,15 +950,6 @@
 			);
 			path = PostCell;
 			sourceTree = "<group>";
-		};
-		9E9F2F5529F6AB4B00A9CDF3 /* ViewModifier */ = {
-			isa = PBXGroup;
-			children = (
-				9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */,
-			);
-			name = ViewModifier;
-			path = Primal/Common/ViewModifier;
-			sourceTree = SOURCE_ROOT;
 		};
 		9E9F2F6829F6AB6400A9CDF3 /* UIKit */ = {
 			isa = PBXGroup;
@@ -1351,7 +1339,6 @@
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
-				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
