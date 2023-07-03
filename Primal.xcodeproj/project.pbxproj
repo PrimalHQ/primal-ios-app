@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9300371E2A534D9400092B06 /* ImageViewerRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9300371C2A534D9400092B06 /* ImageViewerRemote.swift */; };
 		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
@@ -209,6 +210,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9300371C2A534D9400092B06 /* ImageViewerRemote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewerRemote.swift; sourceTree = "<group>"; };
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -459,6 +461,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		930037182A534D9400092B06 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				9300371B2A534D9400092B06 /* View */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
+		9300371B2A534D9400092B06 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9300371C2A534D9400092B06 /* ImageViewerRemote.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		933DBDA82A1124F7008DCF1F /* Notes */ = {
 			isa = PBXGroup;
 			children = (
@@ -534,6 +552,7 @@
 		939330F429A3E36F003954C2 /* Primal */ = {
 			isa = PBXGroup;
 			children = (
+				930037182A534D9400092B06 /* SwiftUI */,
 				9393313D29A3E6DE003954C2 /* Info.plist */,
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* UIKit */,
@@ -1404,6 +1423,7 @@
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
+				9300371E2A534D9400092B06 /* ImageViewerRemote.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
