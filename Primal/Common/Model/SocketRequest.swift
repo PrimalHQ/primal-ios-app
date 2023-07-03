@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import GenericJSON
 
-public struct SocketRequest {
+struct SocketRequest {
     let name: String
     let payload: JSON?
     

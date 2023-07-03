@@ -24,12 +24,6 @@ extension String : Identifiable {
     
     var isNotEmail: Bool { !contains("@") }
     
-    var transformURLStringToMarkdown: String {
-        let url = URL(string: self)!
-    
-        return "[\(url.host ?? self)](\(self))"
-    }
-    
     var isValidURLAndIsImage: Bool {
         isValidURL && isImageURL
     }
@@ -73,23 +67,6 @@ extension String : Identifiable {
         }
         
         return false
-    }
-    
-    func extractTextAndUrls() -> (String, [URL]) {
-        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let matches = detector.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
-        var urls: [URL] = []
-        var currentIndex = self.startIndex
-        var result = ""
-        for match in matches {
-            guard let range = Range(match.range, in: self) else { continue }
-            let precedingText = String(self[currentIndex..<range.lowerBound])
-            result += precedingText.trimmingCharacters(in: .whitespacesAndNewlines)
-            urls.append(match.url!)
-            currentIndex = range.upperBound
-        }
-        result += String(self[currentIndex...])
-        return (result, urls)
     }
 
     func extractTagsMentionsAndURLs() -> [String] {
