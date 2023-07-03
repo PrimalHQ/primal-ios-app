@@ -10,10 +10,6 @@
 		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
-		930497AE29FADA4E003938F2 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497AD29FADA4E003938F2 /* Parser.swift */; };
-		930497B029FADA85003938F2 /* PostBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497AF29FADA85003938F2 /* PostBlock.swift */; };
-		930497B229FADAC8003938F2 /* NostrPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B129FADAC8003938F2 /* NostrPost.swift */; };
-		930497B429FADAE9003938F2 /* NostrLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497B329FADAE9003938F2 /* NostrLink.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
 		933DBDAA2A112502008DCF1F /* NoteLexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDA92A112502008DCF1F /* NoteLexer.swift */; };
@@ -226,10 +222,6 @@
 /* Begin PBXFileReference section */
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
-		930497AD29FADA4E003938F2 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		930497AF29FADA85003938F2 /* PostBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBlock.swift; sourceTree = "<group>"; };
-		930497B129FADAC8003938F2 /* NostrPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrPost.swift; sourceTree = "<group>"; };
-		930497B329FADAE9003938F2 /* NostrLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrLink.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
 		933DBDA92A112502008DCF1F /* NoteLexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLexer.swift; sourceTree = "<group>"; };
@@ -761,10 +753,6 @@
 				932F90DF29FAD29E00F66593 /* NostrEvent.swift */,
 				930497A229FAD69B003938F2 /* Mentions.swift */,
 				930497A829FAD7C3003938F2 /* NostrResponse.swift */,
-				930497AD29FADA4E003938F2 /* Parser.swift */,
-				930497AF29FADA85003938F2 /* PostBlock.swift */,
-				930497B129FADAC8003938F2 /* NostrPost.swift */,
-				930497B329FADAE9003938F2 /* NostrLink.swift */,
 				93B7FE752A0AB0A5005AE313 /* Profile.swift */,
 				93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */,
 				93B7FE792A0AB118005AE313 /* AnyDecodable.swift */,
@@ -1368,7 +1356,6 @@
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */,
-				930497B029FADA85003938F2 /* PostBlock.swift in Sources */,
 				933DBDB52A114522008DCF1F /* SyntaxToken.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
@@ -1386,7 +1373,6 @@
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
 				9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */,
 				93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */,
-				930497B429FADAE9003938F2 /* NostrLink.swift in Sources */,
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
@@ -1433,7 +1419,6 @@
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
-				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
@@ -1472,7 +1457,6 @@
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
-				930497AE29FADA4E003938F2 /* Parser.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,

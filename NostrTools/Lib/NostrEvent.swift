@@ -547,22 +547,6 @@ func event_from_json(dat: String) -> NostrEvent? {
     return try? JSONDecoder().decode(NostrEvent.self, from: Data(dat.utf8))
 }
 
-func decrypt_dm(_ privkey: String?, pubkey: String, content: String, encoding: EncEncoding) -> String? {
-    guard let privkey = privkey else {
-        return nil
-    }
-    guard let shared_sec = get_shared_secret(privkey: privkey, pubkey: pubkey) else {
-        return nil
-    }
-    guard let dat = (encoding == .base64 ? decode_dm_base64(content) : decode_dm_bech32(content)) else {
-        return nil
-    }
-    guard let dat = aes_decrypt(data: dat.content, iv: dat.iv, shared_sec: shared_sec) else {
-        return nil
-    }
-    return String(data: dat, encoding: .utf8)
-}
-
 func get_shared_secret(privkey: String, pubkey: String) -> [UInt8]? {
     guard let privkey_bytes = try? privkey.bytes else {
         return nil
@@ -602,42 +586,10 @@ func get_shared_secret(privkey: String, pubkey: String) -> [UInt8]? {
     return shared_secret
 }
 
-struct DirectMessageBase64 {
-    let content: [UInt8]
-    let iv: [UInt8]
-}
-
-
-
 func encode_dm_bech32(content: [UInt8], iv: [UInt8]) -> String {
     let content_bech32 = bech32_encode(hrp: "pzap", content)
     let iv_bech32 = bech32_encode(hrp: "iv", iv)
     return content_bech32 + "_" + iv_bech32
-}
-
-func decode_dm_bech32(_ all: String) -> DirectMessageBase64? {
-    let parts = all.split(separator: "_")
-    guard parts.count == 2 else {
-        return nil
-    }
-    
-    let content_bech32 = String(parts[0])
-    let iv_bech32 = String(parts[1])
-    
-    guard let content_tup = try? bech32_decode(content_bech32) else {
-        return nil
-    }
-    guard let iv_tup = try? bech32_decode(iv_bech32) else {
-        return nil
-    }
-    guard content_tup.hrp == "pzap" else {
-        return nil
-    }
-    guard iv_tup.hrp == "iv" else {
-        return nil
-    }
-    
-    return DirectMessageBase64(content: content_tup.data.bytes, iv: iv_tup.data.bytes)
 }
 
 func encode_dm_base64(content: [UInt8], iv: [UInt8]) -> String {
@@ -646,43 +598,8 @@ func encode_dm_base64(content: [UInt8], iv: [UInt8]) -> String {
     return content_b64 + "?iv=" + iv_b64
 }
 
-func decode_dm_base64(_ all: String) -> DirectMessageBase64? {
-    let splits = Array(all.split(separator: "?"))
-    
-    if splits.count != 2 {
-        return nil
-    }
-    
-    guard let content = base64_decode(String(splits[0])) else {
-        return nil
-    }
-    
-    var sec = String(splits[1])
-    if !sec.hasPrefix("iv=") {
-        return nil
-    }
-    
-    sec = String(sec.dropFirst(3))
-    guard let iv = base64_decode(sec) else {
-        return nil
-    }
-    
-    return DirectMessageBase64(content: content, iv: iv)
-}
-
 func base64_encode(_ content: [UInt8]) -> String {
     return Data(content).base64EncodedString()
-}
-
-func base64_decode(_ content: String) -> [UInt8]? {
-    guard let dat = Data(base64Encoded: content) else {
-        return nil
-    }
-    return dat.bytes
-}
-
-func aes_decrypt(data: [UInt8], iv: [UInt8], shared_sec: [UInt8]) -> Data? {
-    return aes_operation(operation: CCOperation(kCCDecrypt), data: data, iv: iv, shared_sec: shared_sec)
 }
 
 func aes_encrypt(data: [UInt8], iv: [UInt8], shared_sec: [UInt8]) -> Data? {
