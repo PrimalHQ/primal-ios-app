@@ -8,7 +8,6 @@
 import Foundation
 
 enum EventRef {
-    case mention(Mention)
     case thread_id(ReferencedId)
     case reply(ReferencedId)
     case reply_to_root(ReferencedId)
@@ -57,44 +56,4 @@ func interp_event_refs_without_mentions(_ refs: [ReferencedId]) -> [EventRef] {
         }
     }
     return evrefs
-}
-
-func interp_event_refs_with_mentions(tags: [[String]], mention_indices: Set<Int>) -> [EventRef] {
-    var mentions: [EventRef] = []
-    var ev_refs: [ReferencedId] = []
-    var i: Int = 0
-    
-    for tag in tags {
-        if tag.count >= 2 && tag[0] == "e" {
-            let ref = tag_to_refid(tag)!
-            if mention_indices.contains(i) {
-                let mention = Mention(index: i, type: .event, ref: ref)
-                mentions.append(.mention(mention))
-            } else {
-                ev_refs.append(ref)
-            }
-        }
-        i += 1
-    }
-    
-    var replies = interp_event_refs_without_mentions(ev_refs)
-    replies.append(contentsOf: mentions)
-    return replies
-}
-
-func interpret_event_refs(blocks: [Block], tags: [[String]]) -> [EventRef] {
-    if tags.count == 0 {
-        return []
-    }
-    
-    /// build a set of indices for each event mention
-    let mention_indices = build_mention_indices(blocks, type: .event)
-    
-    /// simpler case with no mentions
-    if mention_indices.count == 0 {
-        let ev_refs = get_referenced_ids(tags: tags, key: "e")
-        return interp_event_refs_without_mentions(ev_refs)
-    }
-    
-    return interp_event_refs_with_mentions(tags: tags, mention_indices: mention_indices)
 }

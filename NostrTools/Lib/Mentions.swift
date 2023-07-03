@@ -27,11 +27,6 @@ struct Mention: Equatable {
     let ref: ReferencedId
 }
 
-struct IdBlock: Identifiable {
-    let id: String = UUID().description
-    let block: Block
-}
-
 typealias Invoice = LightningInvoice<Amount>
 
 enum InvoiceDescription {
@@ -72,33 +67,6 @@ enum Block: Equatable {
     case url(URL)
     case invoice(Invoice)
     case relay(String)
-}
-
-func render_blocks(blocks: [Block]) -> String {
-    return blocks.reduce("") { str, block in
-        switch block {
-        case .mention(let m):
-            if let idx = m.index {
-                return str + "#[\(idx)]"
-            } else if m.type == .pubkey, let pk = bech32_pubkey(m.ref.ref_id) {
-                return str + "nostr:\(pk)"
-            } else if let note_id = bech32_note_id(m.ref.ref_id) {
-                return str + "nostr:\(note_id)"
-            } else {
-                return str + m.ref.ref_id
-            }
-        case .relay(let relay):
-            return str + relay
-        case .text(let txt):
-            return str + txt
-        case .hashtag(let htag):
-            return str + "#" + htag
-        case .url(let url):
-            return str + url.absoluteString
-        case .invoice(let inv):
-            return str + inv.string
-        }
-    }
 }
 
 func parse_mentions(content: String, tags: [[String]]) -> [Block] {
@@ -289,84 +257,6 @@ func convert_mention_index_block(ind: Int32, tags: [[String]]) -> Block?
     return .mention(Mention(index: ind, type: mention_type, ref: ref))
 }
 
-func parse_while(_ p: Parser, match: (Character) -> Bool) -> String? {
-    var i: Int = 0
-    let sub = substring(p.str, start: p.pos, end: p.str.count)
-    let start = p.pos
-    for c in sub {
-        if match(c) {
-            p.pos += 1
-        } else {
-            break
-        }
-        i += 1
-    }
-    
-    let end = start + i
-    if start == end {
-        return nil
-    }
-    return String(substring(p.str, start: start, end: end))
-}
-
-func is_hashtag_char(_ c: Character) -> Bool {
-    return c.isLetter || c.isNumber
-}
-
-func prev_char(_ p: Parser, n: Int) -> Character? {
-    if p.pos - n < 0 {
-        return nil
-    }
-    
-    let ind = p.str.index(p.str.startIndex, offsetBy: p.pos - n)
-    return p.str[ind]
-}
-
-func is_punctuation(_ c: Character) -> Bool {
-    return c.isWhitespace || c.isPunctuation
-}
-
-func parse_hashtag(_ p: Parser) -> String? {
-    let start = p.pos
-    
-    if !parse_char(p, "#") {
-        return nil
-    }
-    
-    if let prev = prev_char(p, n: 2) {
-        // we don't allow adjacent hashtags
-        if !is_punctuation(prev) {
-            return nil
-        }
-    }
-    
-    guard let str = parse_while(p, match: is_hashtag_char) else {
-        p.pos = start
-        return nil
-    }
-    
-    return str
-}
-
-func find_tag_ref(type: String, id: String, tags: [[String]]) -> Int? {
-    var i: Int = 0
-    for tag in tags {
-        if tag.count >= 2 {
-            if tag[0] == type && tag[1] == id {
-                return i
-            }
-        }
-        i += 1
-    }
-    
-    return nil
-}
-
-struct PostTags {
-    let blocks: [Block]
-    let tags: [[String]]
-}
-
 func parse_mention_type(_ c: String) -> MentionType? {
     if c == "e" {
         return .event
@@ -375,45 +265,4 @@ func parse_mention_type(_ c: String) -> MentionType? {
     }
     
     return nil
-}
-
-/// Convert
-func make_post_tags(post_blocks: [PostBlock], tags: [[String]], silent_mentions: Bool) -> PostTags {
-    var new_tags = tags
-    var blocks: [Block] = []
-    
-    for post_block in post_blocks {
-        switch post_block {
-        case .ref(let ref):
-            guard let mention_type = parse_mention_type(ref.key) else {
-                continue
-            }
-            
-            if silent_mentions || mention_type == .event {
-                let mention = Mention(index: nil, type: mention_type, ref: ref)
-                let block = Block.mention(mention)
-                blocks.append(block)
-                continue
-            }
-            
-            if let ind = find_tag_ref(type: ref.key, id: ref.ref_id, tags: tags) {
-                let mention = Mention(index: ind, type: mention_type, ref: ref)
-                let block = Block.mention(mention)
-                blocks.append(block)
-            } else {
-                let ind = new_tags.count
-                new_tags.append(refid_to_tag(ref))
-                let mention = Mention(index: ind, type: mention_type, ref: ref)
-                let block = Block.mention(mention)
-                blocks.append(block)
-            }
-        case .hashtag(let hashtag):
-            new_tags.append(["t", hashtag.lowercased()])
-            blocks.append(.hashtag(hashtag))
-        case .text(let txt):
-            blocks.append(Block.text(txt))
-        }
-    }
-    
-    return PostTags(blocks: blocks, tags: new_tags)
 }

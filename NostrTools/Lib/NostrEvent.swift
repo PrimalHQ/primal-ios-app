@@ -47,12 +47,6 @@ enum NostrKind: Int, Codable {
     case nwc_response = 23195
 }
 
-enum ValidationResult: Decodable {
-    case ok
-    case bad_id
-    case bad_sig
-}
-
 struct ReferencedId: Identifiable, Hashable, Equatable {
     let ref_id: String
     let relay_id: String?
@@ -127,14 +121,6 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
     }
     
     private var _blocks: [Block]? = nil
-    func blocks(_ privkey: String?) -> [Block] {
-        if let bs = _blocks {
-            return bs
-        }
-        let blocks = get_blocks(content: self.get_content(privkey))
-        self._blocks = blocks
-        return blocks
-    }
     
     func get_blocks(content: String) -> [Block] {
         return parse_mentions(content: content, tags: self.tags)
@@ -327,14 +313,6 @@ func random_bytes(count: Int) -> Data {
         fatalError("can't copy secure random data")
     }
     return Data(bytes: bytes, count: count)
-}
-
-func refid_to_tag(_ ref: ReferencedId) -> [String] {
-    var tag = [ref.key, ref.ref_id]
-    if let relay_id = ref.relay_id {
-        tag.append(relay_id)
-    }
-    return tag
 }
 
 func tag_to_refid(_ tag: [String]) -> ReferencedId? {
@@ -564,10 +542,6 @@ func event_has_tag(ev: NostrEvent, tag: String) -> Bool {
     return false
 }
 
-func event_is_anonymous(ev: NostrEvent) -> Bool {
-    return ev.known_kind == .zap_request && event_has_tag(ev: ev, tag: "anon")
-}
-
 func make_private_zap_request_event(identity: FullKeypair, enc_key: FullKeypair, target: ZapTarget, message: String) -> PrivateZapRequest? {
     // target tags must be the same as zap request target tags
     let tags = zap_target_to_tags(target)
@@ -611,53 +585,6 @@ func encrypt_message(message: String, privkey: String, to_pk: String, encoding: 
         return encode_dm_bech32(content: enc_message.bytes, iv: iv)
     }
     
-}
-
-func decrypt_private_zap(our_privkey: String, zapreq: NostrEvent, target: ZapTarget) -> NostrEvent? {
-    guard let anon_tag = zapreq.tags.first(where: { t in t.count >= 2 && t[0] == "anon" }) else {
-        return nil
-    }
-    
-    let enc_note = anon_tag[1]
-    
-    var note = decrypt_note(our_privkey: our_privkey, their_pubkey: zapreq.pubkey, enc_note: enc_note, encoding: .bech32)
-    
-    // check to see if the private note was from us
-    if note == nil {
-        guard let our_private_keypair = generate_private_keypair(our_privkey: our_privkey, id: target.id, created_at: zapreq.created_at) else{
-            return nil
-        }
-        // use our private keypair and their pubkey to get the shared secret
-        note = decrypt_note(our_privkey: our_private_keypair.privkey, their_pubkey: target.pubkey, enc_note: enc_note, encoding: .bech32)
-    }
-    
-    guard let note else {
-        return nil
-    }
-    
-    guard note.kind == 9733 else {
-        return nil
-    }
-    
-    let zr_etag = zapreq.referenced_ids.first
-    let note_etag = note.referenced_ids.first
-    
-    guard zr_etag == note_etag else {
-        return nil
-    }
-    
-    let zr_ptag = zapreq.referenced_pubkeys.first
-    let note_ptag = note.referenced_pubkeys.first
-    
-    guard let zr_ptag, let note_ptag, zr_ptag == note_ptag else {
-        return nil
-    }
-    
-    guard validate_event(ev: note) == .ok else {
-        return nil
-    }
-    
-    return note
 }
 
 func generate_private_keypair(our_privkey: String, id: String, created_at: Int64) -> FullKeypair? {
@@ -864,35 +791,4 @@ func aes_operation(operation: CCOperation, data: [UInt8], iv: [UInt8], shared_se
     
     return Data(bytes: decrypted_data, count: num_bytes_decrypted)
     
-}
-
-
-
-func validate_event(ev: NostrEvent) -> ValidationResult {
-    let raw_id = sha256(calculate_event_commitment(ev: ev))
-    let id = hex_encode(raw_id)
-    
-    if id != ev.id {
-        return .bad_id
-    }
-    
-    // TODO: implement verify
-    guard var sig64 = hex_decode(ev.sig)?.bytes else {
-        return .bad_sig
-    }
-    
-    guard var ev_pubkey = hex_decode(ev.pubkey)?.bytes else {
-        return .bad_sig
-    }
-    
-    let ctx = secp256k1.Context.raw
-    var xonly_pubkey = secp256k1_xonly_pubkey.init()
-    var ok = secp256k1_xonly_pubkey_parse(ctx, &xonly_pubkey, &ev_pubkey) != 0
-    if !ok {
-        return .bad_sig
-    }
-    var raw_id_bytes = raw_id.bytes
-    
-    ok = secp256k1_schnorrsig_verify(ctx, &sig64, &raw_id_bytes, raw_id.count, &xonly_pubkey) > 0
-    return ok ? .ok : .bad_sig
 }
