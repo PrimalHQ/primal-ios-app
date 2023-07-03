@@ -12,7 +12,7 @@ import LinkPresentation
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
-    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource])
+    func postCellDidTapImages(resource: MediaMetadata.Resource)
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -139,7 +139,7 @@ class PostCell: UITableViewCell {
 
 extension PostCell: ImageCollectionViewDelegate {
     func didTapImage(resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
-        delegate?.postCellDidTapImages(self, resource: resource, resources: resources)
+        delegate?.postCellDidTapImages(resource: resource)
     }
 }
 

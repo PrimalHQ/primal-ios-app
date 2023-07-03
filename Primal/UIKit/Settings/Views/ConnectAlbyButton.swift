@@ -8,13 +8,9 @@
 import UIKit
 
 final class ConnectAlbyButton: MyButton {
-    var title: String {
-        get { label.text ?? "" }
-        set { label.text = newValue }
-    }
-    
     private let icon = UIImageView(image: UIImage(named: "albyIcon"))
     private let label = UILabel()
+    
     init() {
         super.init(frame: .zero)
         

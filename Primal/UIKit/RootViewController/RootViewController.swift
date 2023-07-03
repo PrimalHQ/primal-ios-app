@@ -12,7 +12,6 @@ import Kingfisher
 
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
-    static let easeoutTiming = CAMediaTimingFunction(controlPoints: 0.06, 1.1, 0.39, 0.97)
     
     static let logoScaleEaseInOut = CAMediaTimingFunction(controlPoints: 1, 0.51, 0.26, 0.87)
     static let postsEaseInOut = CAMediaTimingFunction(controlPoints: 0.9, 0.13, 0.14, 0.83)
@@ -109,7 +108,7 @@ final class RootViewController: UIViewController {
         
         guard
             let keypair = result,
-            let decoded = try? bech32_decode(keypair.pubkey_bech32)
+            let _ = try? bech32_decode(keypair.pubkey_bech32)
         else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())

@@ -33,7 +33,6 @@
 		9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */; };
 		9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */; };
 		9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */; };
-		9363DE792A30DE810060F4BD /* NostrWalletConnectSuccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */; };
 		9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */; };
 		936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */; };
 		936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */; };
@@ -148,7 +147,6 @@
 		9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C92A379672005DB548 /* NSRange+Extra.swift */; };
 		9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */; };
 		9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */; };
-		9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */; };
 		9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */; };
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
 		9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */; };
@@ -162,7 +160,6 @@
 		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
 		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
 		9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */; };
-		9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */; };
 		9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */; };
 		9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */; };
 		9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */; };
@@ -255,7 +252,6 @@
 		9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerProtocol.swift; sourceTree = "<group>"; };
 		9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerCoordinator.swift; sourceTree = "<group>"; };
 		9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectDeeplinkHandler.swift; sourceTree = "<group>"; };
-		9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectSuccessController.swift; sourceTree = "<group>"; };
 		9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectURL.swift; sourceTree = "<group>"; };
 		936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
 		936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNotifications.swift; sourceTree = "<group>"; };
@@ -406,7 +402,6 @@
 		9E8834C92A379672005DB548 /* NSRange+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRange+Extra.swift"; sourceTree = "<group>"; };
 		9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTableCell.swift; sourceTree = "<group>"; };
 		9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRangeTests.swift; sourceTree = "<group>"; };
-		9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCreateAccountController.swift; sourceTree = "<group>"; };
 		9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextField.swift; sourceTree = "<group>"; };
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
 		9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTwitterController.swift; sourceTree = "<group>"; };
@@ -420,7 +415,6 @@
 		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		9E9F2F5629F6AB4B00A9CDF3 /* Shimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shimmer.swift; sourceTree = "<group>"; };
-		9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroVideoPlayerView.swift; sourceTree = "<group>"; };
 		9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroVideoController.swift; sourceTree = "<group>"; };
 		9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingImportTwitterController.swift; sourceTree = "<group>"; };
 		9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSigninController.swift; sourceTree = "<group>"; };
@@ -564,14 +558,6 @@
 			children = (
 				9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */,
 				9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */,
-			);
-			path = Wallet;
-			sourceTree = "<group>";
-		};
-		9363DE772A30DE300060F4BD /* Wallet */ = {
-			isa = PBXGroup;
-			children = (
-				9363DE782A30DE810060F4BD /* NostrWalletConnectSuccessController.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -1042,7 +1028,6 @@
 		9E9F2F6829F6AB6400A9CDF3 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
-				9363DE772A30DE300060F4BD /* Wallet */,
 				9E88349A2A21150D005DB548 /* RootViewController */,
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
@@ -1075,7 +1060,6 @@
 				9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */,
 				9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */,
 				9E9F2F7029F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift */,
-				9E8DE4D329F7D8B50028D3C3 /* OnboardingCreateAccountController.swift */,
 				9E8DE4D929F7E73E0028D3C3 /* OnboardingTwitterController.swift */,
 				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
 			);
@@ -1089,7 +1073,6 @@
 				9E5BD93D2A1E6554008DFFBE /* Buttons */,
 				9E79D3A12A014DEE008404DB /* Feed */,
 				9E0DEAF729FD49F100145E08 /* FollowViews */,
-				9E9F2F6929F6AB6400A9CDF3 /* IntroVideoPlayerView.swift */,
 				9E9F2F7429F6AB6400A9CDF3 /* PrimalProgressView.swift */,
 				9E8DE4D529F7DA7C0028D3C3 /* BorderedTextField.swift */,
 				9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */,
@@ -1372,7 +1355,6 @@
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
 				9393D8362A430C8200F0C55A /* RelaysPostbox.swift in Sources */,
-				9E8DE4D429F7D8B50028D3C3 /* OnboardingCreateAccountController.swift in Sources */,
 				93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */,
 				9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */,
 				9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */,
@@ -1463,7 +1445,6 @@
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9ED416062A446F2A00892235 /* SettingsFeedViewController.swift in Sources */,
 				933DBDBB2A114575008DCF1F /* SyntaxKind.swift in Sources */,
-				9363DE792A30DE810060F4BD /* NostrWalletConnectSuccessController.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
@@ -1494,7 +1475,6 @@
 				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
-				9E9F2F7F29F6AB6400A9CDF3 /* IntroVideoPlayerView.swift in Sources */,
 				9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,

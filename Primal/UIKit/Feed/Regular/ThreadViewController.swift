@@ -9,7 +9,6 @@ import Combine
 import UIKit
 
 final class ThreadViewController: FeedViewController {
-    var request: AnyCancellable?
     let id: String
     
     var didPostNewComment = false
