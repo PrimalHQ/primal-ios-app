@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public let bootstrap_relays = [
+let bootstrap_relays = [
     "wss://relay.shitforce.one",
     "wss://nb.relay.center",
     "wss://nos.lol",

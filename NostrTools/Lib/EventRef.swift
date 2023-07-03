@@ -12,61 +12,6 @@ enum EventRef {
     case thread_id(ReferencedId)
     case reply(ReferencedId)
     case reply_to_root(ReferencedId)
-    
-    var is_mention: Mention? {
-        if case .mention(let m) = self {
-            return m
-        }
-        return nil
-    }
-    
-    var is_direct_reply: ReferencedId? {
-        switch self {
-        case .mention:
-            return nil
-        case .thread_id:
-            return nil
-        case .reply(let refid):
-            return refid
-        case .reply_to_root(let refid):
-            return refid
-        }
-    }
-    
-    var is_thread_id: ReferencedId? {
-        switch self {
-        case .mention:
-            return nil
-        case .thread_id(let referencedId):
-            return referencedId
-        case .reply:
-            return nil
-        case .reply_to_root(let referencedId):
-            return referencedId
-        }
-    }
-    
-    var is_reply: ReferencedId? {
-        switch self {
-        case .mention:
-            return nil
-        case .thread_id:
-            return nil
-        case .reply(let refid):
-            return refid
-        case .reply_to_root(let refid):
-            return refid
-        }
-    }
-}
-
-func has_any_e_refs(_ tags: [[String]]) -> Bool {
-    for tag in tags {
-        if tag.count >= 2 && tag[0] == "e" {
-            return true
-        }
-    }
-    return false
 }
 
 func build_mention_indices(_ blocks: [Block], type: MentionType) -> Set<Int> {
@@ -153,11 +98,3 @@ func interpret_event_refs(blocks: [Block], tags: [[String]]) -> [EventRef] {
     
     return interp_event_refs_with_mentions(tags: tags, mention_indices: mention_indices)
 }
-
-
-func event_is_reply(_ ev: NostrEvent, privkey: String?) -> Bool {
-    return ev.event_refs(privkey).contains { evref in
-        return evref.is_reply != nil
-    }
-}
-

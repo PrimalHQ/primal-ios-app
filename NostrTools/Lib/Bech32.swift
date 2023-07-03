@@ -10,34 +10,10 @@
 //  Inspired by Pieter Wuille C++ implementation
 import Foundation
 
-enum Bech32Object {
-    case nsec(String)
-    case npub(String)
-    case note(String)
-    
-    static func parse(_ str: String) -> Bech32Object? {
-        guard let decoded = try? bech32_decode(str) else {
-            return nil
-        }
-        
-        if decoded.hrp == "npub" {
-            return .npub(hex_encode(decoded.data))
-        } else if decoded.hrp == "nsec" {
-            return .nsec(hex_encode(decoded.data))
-        } else if decoded.hrp == "note" {
-            return .note(hex_encode(decoded.data))
-        }
-        
-        return nil
-    }
-}
-
 /// Bech32 checksum implementation
 fileprivate let gen: [UInt32] = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
 /// Bech32 checksum delimiter
 fileprivate let checksumMarker: String = "1"
-/// Bech32 character set for encoding
-fileprivate let encCharset: Data = "qpzry9x8gf2tvdw0s3jn54khce6mua7l".data(using: .utf8)!
 /// Bech32 character set for decoding
 fileprivate let decCharset: [Int8] = [
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -51,7 +27,7 @@ fileprivate let decCharset: [Int8] = [
 ]
 
 /// Find the polynomial with value coefficients mod the generator as 30-bit.
-public func bech32_polymod(_ values: Data) -> UInt32 {
+func bech32_polymod(_ values: Data) -> UInt32 {
     var chk: UInt32 = 1
     for v in values {
         let top = (chk >> 25)
@@ -77,26 +53,13 @@ func bech32_expand_hrp(_ s: String) -> Data {
 }
 
 /// Verify checksum
-public func bech32_verify(hrp: String, checksum: Data) -> Bool {
+func bech32_verify(hrp: String, checksum: Data) -> Bool {
     var data = bech32_expand_hrp(hrp)
     data.append(checksum)
     return bech32_polymod(data) == 1
 }
 
-/// Create checksum
-public func bech32_create_checksum(hrp: String, values: Data) -> Data {
-    var enc = bech32_expand_hrp(hrp)
-    enc.append(values)
-    enc.append(Data(repeating: 0x00, count: 6))
-    let mod: UInt32 = bech32_polymod(enc) ^ 1
-    var ret: Data = Data(repeating: 0x00, count: 6)
-    for i in 0..<6 {
-        ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
-    }
-    return ret
-}
-
-public func bech32_encode(hrp: String, _ input: [UInt8]) -> String {
+func bech32_encode(hrp: String, _ input: [UInt8]) -> String {
     let table: [Character] = Array("qpzry9x8gf2tvdw0s3jn54khce6mua7l")
     let bits = eightToFiveBits(input)
     let check_sum = bech32_checksum(hrp: hrp, data: bits)
@@ -166,7 +129,7 @@ func eightToFiveBits(_ input: [UInt8]) -> [UInt8] {
 
 /// Decode Bech32 string
 @discardableResult
-public func bech32_decode(_ str: String) throws -> (hrp: String, data: Data)? {
+func bech32_decode(_ str: String) throws -> (hrp: String, data: Data)? {
     guard let strBytes = str.data(using: .utf8) else {
         throw Bech32Error.nonUTF8String
     }
@@ -223,7 +186,7 @@ public func bech32_decode(_ str: String) throws -> (hrp: String, data: Data)? {
     return (hrp, converted)
 }
 
-public enum Bech32Error: LocalizedError {
+enum Bech32Error: LocalizedError {
     case nonUTF8String
     case nonPrintableCharacter
     case invalidCase
@@ -235,7 +198,7 @@ public enum Bech32Error: LocalizedError {
     case invalidCharacter
     case checksumMismatch
     
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .checksumMismatch:
             return "Checksum doesn't match"

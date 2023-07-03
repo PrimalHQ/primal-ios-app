@@ -173,10 +173,6 @@ final class Profile: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(value)
     }
-    
-    static func displayName(profile: Profile?, pubkey: String) -> DisplayName {
-        return parse_display_name(profile: profile, pubkey: pubkey)
-    }
 }
 
 func make_ln_url(_ str: String?) -> URL? {

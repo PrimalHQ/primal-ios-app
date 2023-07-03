@@ -187,10 +187,6 @@ class ZapsDataModel: ObservableObject {
         }
     }
     
-    var zap_total: Int64 {
-        zaps.reduce(0) { total, zap in total + zap.amount }
-    }
-    
     func from(_ pubkey: String) -> [Zapping] {
         return self.zaps.filter { z in z.request.pubkey == pubkey }
     }
@@ -288,15 +284,6 @@ enum Zapping {
         }
     }
     
-    var amount: Int64 {
-        switch self {
-        case .zap(let zap):
-            return zap.invoice.amount
-        case .pending(let pzap):
-            return pzap.amount_msat
-        }
-    }
-    
     var target: ZapTarget {
         switch self {
         case .zap(let zap):
@@ -347,7 +334,6 @@ enum Zapping {
 
 struct Zap {
     public let event: NostrEvent
-    public let invoice: ZapInvoice
     public let zapper: String /// zap authorizer
     public let target: ZapTarget
     public let request: ZapRequest
@@ -356,55 +342,6 @@ struct Zap {
     
     var request_ev: NostrEvent {
         return private_request ?? self.request.ev
-    }
-    
-    public static func from_zap_event(zap_ev: NostrEvent, zapper: String, our_privkey: String?) -> Zap? {
-        /// Make sure that we only create a zap event if it is authorized by the profile or event
-        guard zapper == zap_ev.pubkey else {
-            return nil
-        }
-        guard let bolt11_str = event_tag(zap_ev, name: "bolt11") else {
-            return nil
-        }
-        guard let bolt11 = decode_bolt11(bolt11_str) else {
-            return nil
-        }
-        /// Any amount invoices are not allowed
-        guard let zap_invoice = invoice_to_zap_invoice(bolt11) else {
-            return nil
-        }
-        // Some endpoints don't have this, let's skip the check for now. We're mostly trusting the zapper anyways
-        /*
-         guard let preimage = event_tag(zap_ev, name: "preimage") else {
-         return nil
-         }
-         guard preimage_matches_invoice(preimage, inv: zap_invoice) else {
-         return nil
-         }
-         */
-        guard let desc = get_zap_description(zap_ev, inv_desc: zap_invoice.description) else {
-            return nil
-        }
-        
-        guard let zap_req = decode_nostr_event_json(desc) else {
-            return nil
-        }
-        
-        guard validate_event(ev: zap_req) == .ok else {
-            return nil
-        }
-        
-        guard let target = determine_zap_target(zap_req) else {
-            return nil
-        }
-        
-        let private_request = our_privkey.flatMap {
-            decrypt_private_zap(our_privkey: $0, zapreq: zap_req, target: target)
-        }
-        
-        let is_anon = private_request == nil && event_is_anonymous(ev: zap_req)
-        
-        return Zap(event: zap_ev, invoice: zap_invoice, zapper: zapper, target: target, request: ZapRequest(ev: zap_req), is_anon: is_anon, private_request: private_request)
     }
 }
 
@@ -426,14 +363,6 @@ func get_zap_description(_ ev: NostrEvent, inv_desc: InvoiceDescription) -> Stri
         
         return desc
     }
-}
-
-func invoice_to_zap_invoice(_ invoice: Invoice) -> ZapInvoice? {
-    guard case .specific(let amt) = invoice.amount else {
-        return nil
-    }
-    
-    return ZapInvoice(description: invoice.description, amount: amt, string: invoice.string, expiry: invoice.expiry, payment_hash: invoice.payment_hash, created_at: invoice.created_at)
 }
 
 func determine_zap_target(_ ev: NostrEvent) -> ZapTarget? {

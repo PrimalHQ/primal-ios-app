@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
 		930497A529FAD6D7003938F2 /* EventRef.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A429FAD6D6003938F2 /* EventRef.swift */; };
-		930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A629FAD788003938F2 /* LocalizationUtil.swift */; };
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
 		930497AE29FADA4E003938F2 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497AD29FADA4E003938F2 /* Parser.swift */; };
@@ -59,7 +58,6 @@
 		93B7FE782A0AB0CB005AE313 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */; };
 		93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE792A0AB118005AE313 /* AnyDecodable.swift */; };
 		93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */; };
-		93B7FE7E2A0AB181005AE313 /* DisplayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7D2A0AB181005AE313 /* DisplayName.swift */; };
 		93B7FE802A0AB1A0005AE313 /* PubkeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */; };
 		93B7FE822A0AB1C9005AE313 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE812A0AB1C9005AE313 /* Util.swift */; };
 		93B7FE842A0ABEE6005AE313 /* AccountCreationBootstrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */; };
@@ -230,7 +228,6 @@
 /* Begin PBXFileReference section */
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A429FAD6D6003938F2 /* EventRef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRef.swift; sourceTree = "<group>"; };
-		930497A629FAD788003938F2 /* LocalizationUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationUtil.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
 		930497AD29FADA4E003938F2 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		930497AF29FADA85003938F2 /* PostBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBlock.swift; sourceTree = "<group>"; };
@@ -279,7 +276,6 @@
 		93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		93B7FE792A0AB118005AE313 /* AnyDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyDecodable.swift; sourceTree = "<group>"; };
 		93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyEncodable.swift; sourceTree = "<group>"; };
-		93B7FE7D2A0AB181005AE313 /* DisplayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayName.swift; sourceTree = "<group>"; };
 		93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubkeyView.swift; sourceTree = "<group>"; };
 		93B7FE812A0AB1C9005AE313 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationBootstrapper.swift; sourceTree = "<group>"; };
@@ -769,7 +765,6 @@
 				932F90DF29FAD29E00F66593 /* NostrEvent.swift */,
 				930497A229FAD69B003938F2 /* Mentions.swift */,
 				930497A429FAD6D6003938F2 /* EventRef.swift */,
-				930497A629FAD788003938F2 /* LocalizationUtil.swift */,
 				930497A829FAD7C3003938F2 /* NostrResponse.swift */,
 				930497AD29FADA4E003938F2 /* Parser.swift */,
 				930497AF29FADA85003938F2 /* PostBlock.swift */,
@@ -780,7 +775,6 @@
 				93B7FE772A0AB0CB005AE313 /* AnyCodable.swift */,
 				93B7FE792A0AB118005AE313 /* AnyDecodable.swift */,
 				93B7FE7B2A0AB139005AE313 /* AnyEncodable.swift */,
-				93B7FE7D2A0AB181005AE313 /* DisplayName.swift */,
 				93B7FE7F2A0AB1A0005AE313 /* PubkeyView.swift */,
 				93B7FE812A0AB1C9005AE313 /* Util.swift */,
 				93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */,
@@ -1360,7 +1354,6 @@
 				9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */,
 				9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
-				930497A729FAD788003938F2 /* LocalizationUtil.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
@@ -1437,7 +1430,6 @@
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
-				93B7FE7E2A0AB181005AE313 /* DisplayName.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,

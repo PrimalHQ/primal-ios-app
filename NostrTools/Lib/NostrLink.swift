@@ -101,61 +101,6 @@ func decode_universal_link(_ s: String) -> NostrLink? {
     return nil
 }
 
-func decode_nostr_bech32_uri(_ s: String) -> NostrLink? {
-    guard let obj = Bech32Object.parse(s) else {
-        return nil
-    }
-    
-    switch obj {
-    case .nsec(let privkey):
-        guard let pubkey = privkey_to_pubkey(privkey: privkey) else {
-            return nil
-        }
-        return .ref(ReferencedId(ref_id: pubkey, relay_id: nil, key: "p"))
-    case .npub(let pubkey):
-        return .ref(ReferencedId(ref_id: pubkey, relay_id: nil, key: "p"))
-    case .note(let id):
-        return .ref(ReferencedId(ref_id: id, relay_id: nil, key: "e"))
-    }
-}
-
-func decode_nostr_uri(_ s: String) -> NostrLink? {
-    if s.starts(with: "https://damus.io/") {
-        return decode_universal_link(s)
-    }
-    
-    var uri = s.replacingOccurrences(of: "nostr://", with: "")
-    uri = uri.replacingOccurrences(of: "nostr:", with: "")
-    
-    uri = uri.replacingOccurrences(of: "damus://", with: "")
-    uri = uri.replacingOccurrences(of: "damus:", with: "")
-    
-    let parts = uri.split(separator: ":")
-        .reduce(into: Array<String>()) { acc, str in
-            guard let decoded = str.removingPercentEncoding else {
-                return
-            }
-            acc.append(decoded)
-            return
-        }
-    
-    if tag_is_hashtag(parts) {
-        return .filter(NostrFilter.filter_hashtag([parts[1]]))
-    }
-    
-    if let rid = tag_to_refid(parts) {
-        return .ref(rid)
-    }
-    
-    guard parts.count == 1 else {
-        return nil
-    }
-    
-    let part = parts[0]
-    
-    return decode_nostr_bech32_uri(part)
-}
-
 func tag_is_hashtag(_ tag: [String]) -> Bool {
     // "hashtag" is deprecated, will remove in the future
     return tag.count >= 2 && (tag[0] == "hashtag" || tag[0] == "t")

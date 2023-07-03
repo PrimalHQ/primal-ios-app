@@ -48,24 +48,9 @@ enum NostrKind: Int, Codable {
 }
 
 enum ValidationResult: Decodable {
-    case unknown
     case ok
     case bad_id
     case bad_sig
-    
-    var is_bad: Bool {
-        return self == .bad_id || self == .bad_sig
-    }
-}
-
-struct OtherEvent {
-    let event_id: String
-    let relay_url: String
-}
-
-struct KeyEvent {
-    let key: String
-    let relay_url: String
 }
 
 struct ReferencedId: Identifiable, Hashable, Equatable {
@@ -75,14 +60,6 @@ struct ReferencedId: Identifiable, Hashable, Equatable {
     
     var id: String {
         return ref_id
-    }
-}
-
-struct EventId: Identifiable, CustomStringConvertible {
-    let id: String
-    
-    var description: String {
-        id
     }
 }
 
@@ -172,14 +149,6 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
     }()
     
     private var _event_refs: [EventRef]? = nil
-    func event_refs(_ privkey: String?) -> [EventRef] {
-        if let rs = _event_refs {
-            return rs
-        }
-        let refs = interpret_event_refs(blocks: self.blocks(privkey), tags: self.tags)
-        self._event_refs = refs
-        return refs
-    }
     
     var decrypted_content: String? = nil
     
@@ -218,21 +187,9 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
         }
         
         return content
-        
-        /*
-         switch validity {
-         case .ok:
-         return content
-         case .bad_id:
-         return content + "\n\n*WARNING: invalid note id, could be forged!*"
-         case .bad_sig:
-         return content + "\n\n*WARNING: invalid signature, could be forged!*"
-         }
-         */
     }
     
     var description: String {
-        //let p = pow.map { String($0) } ?? "?"
         return "NostrEvent { id: \(id) pubkey \(pubkey) kind \(kind) tags \(tags) content '\(content)' }"
     }
     
@@ -248,115 +205,15 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
         return Primal.get_referenced_ids(tags: self.tags, key: key)
     }
     
-    public func is_root_event() -> Bool {
-        for tag in tags {
-            if tag.count >= 1 && tag[0] == "e" {
-                return false
-            }
-        }
-        return true
-    }
-    
-    public func direct_replies(_ privkey: String?) -> [ReferencedId] {
-        return event_refs(privkey).reduce(into: []) { acc, evref in
-            if let direct_reply = evref.is_direct_reply {
-                acc.append(direct_reply)
-            }
-        }
-    }
-    
-    public func thread_id(privkey: String?) -> String {
-        for ref in event_refs(privkey) {
-            if let thread_id = ref.is_thread_id {
-                return thread_id.ref_id
-            }
-        }
-        
-        return self.id
-    }
-    
-    public func last_refid() -> ReferencedId? {
-        var mlast: Int? = nil
-        var i: Int = 0
-        for tag in tags {
-            if tag.count >= 2 && tag[0] == "e" {
-                mlast = i
-            }
-            i += 1
-        }
-        
-        guard let last = mlast else {
-            return nil
-        }
-        
-        return tag_to_refid(tags[last])
-    }
-    
-    public func references(id: String, key: String) -> Bool {
-        for tag in tags {
-            if tag.count >= 2 && tag[0] == key {
-                if tag[1] == id {
-                    return true
-                }
-            }
-        }
-        
-        return false
-    }
-    
-    func is_reply(_ privkey: String?) -> Bool {
-        return event_is_reply(self, privkey: privkey)
-    }
-    
-    func note_language(_ privkey: String?) -> String? {
-        // Rely on Apple's NLLanguageRecognizer to tell us which language it thinks the note is in
-        // and filter on only the text portions of the content as URLs and hashtags confuse the language recognizer.
-        let originalBlocks = blocks(privkey)
-        let originalOnlyText = originalBlocks.compactMap { $0.is_text }.joined(separator: " ")
-        
-        // Only accept language recognition hypothesis if there's at least a 50% probability that it's accurate.
-        let languageRecognizer = NLLanguageRecognizer()
-        languageRecognizer.processString(originalOnlyText)
-        
-        guard let locale = languageRecognizer.languageHypotheses(withMaximum: 1).first(where: { $0.value >= 0.5 })?.key.rawValue else {
-            return nil
-        }
-        
-        // Remove the variant component and just take the language part as translation services typically only supports the variant-less language.
-        // Moreover, speakers of one variant can generally understand other variants.
-        return localeToLanguage(locale)
-    }
-    
-    public var referenced_ids: [ReferencedId] {
+    var referenced_ids: [ReferencedId] {
         return get_referenced_ids(key: "e")
     }
     
-    public func count_ids() -> Int {
-        return count_refs("e")
-    }
-    
-    public func count_refs(_ type: String) -> Int {
-        var count: Int = 0
-        for tag in tags {
-            if tag.count >= 2 && tag[0] == "e" {
-                count += 1
-            }
-        }
-        return count
-    }
-    
-    public var referenced_pubkeys: [ReferencedId] {
+    var referenced_pubkeys: [ReferencedId] {
         return get_referenced_ids(key: "p")
     }
     
-    /// Make a local event
-    public static func local(content: String, pubkey: String) -> NostrEvent {
-        let ev = NostrEvent(content: content, pubkey: pubkey)
-        ev.flags |= 1
-        return ev
-    }
-    
-    public var is_local: Bool {
+    var is_local: Bool {
         return (self.flags & 1) != 0
     }
     
@@ -371,45 +228,9 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
         self.created_at = createdAt
     }
     
-    init(from: NostrEvent, content: String? = nil) {
-        self.id = from.id
-        self.sig = from.sig
-        
-        self.content = content ?? from.content
-        self.pubkey = from.pubkey
-        self.kind = from.kind
-        self.tags = from.tags
-        self.created_at = from.created_at
-    }
-    
     func calculate_id() {
         self.id = calculate_event_id(ev: self)
         //self.pow = count_hash_leading_zero_bits(self.id)
-    }
-    
-    // TODO: timeout
-    /*
-     func mine_id(pow: Int, done: @escaping (String) -> ()) {
-     let nonce_ind = self.ensure_nonce_tag()
-     let nonce: Int64 = 0
-     
-     DispatchQueue.global(qos: .background).async {
-     while
-     }
-     }
-     */
-    
-    private func ensure_nonce_tag() -> Int {
-        for (i, tags) in self.tags.enumerated() {
-            for tag in tags {
-                if tags.count == 2 && tag == "nonce" {
-                    return i
-                }
-            }
-        }
-        
-        self.tags.append(["nonce", "0"])
-        return self.tags.count - 1
     }
     
     func sign(privkey: String) {
@@ -540,18 +361,6 @@ func get_referenced_ids(tags: [[String]], key: String) -> [ReferencedId] {
                 relay_id = tag[2]
             }
             acc.append(ReferencedId(ref_id: tag[1], relay_id: relay_id, key: key))
-        }
-    }
-}
-
-func get_referenced_id_set(tags: [[String]], key: String) -> Set<ReferencedId> {
-    return tags.reduce(into: Set()) { (acc, tag) in
-        if tag.count >= 2 && tag[0] == key {
-            var relay_id: String? = nil
-            if tag.count >= 3 {
-                relay_id = tag[2]
-            }
-            acc.insert(ReferencedId(ref_id: tag[1], relay_id: relay_id, key: key))
         }
     }
 }
@@ -865,45 +674,8 @@ func generate_private_keypair(our_privkey: String, id: String, created_at: Int64
     return FullKeypair(pubkey: pubkey, privkey: privkey)
 }
 
-func uniq<T: Hashable>(_ xs: [T]) -> [T] {
-    var s = Set<T>()
-    var ys: [T] = []
-    
-    for x in xs {
-        if s.contains(x) {
-            continue
-        }
-        s.insert(x)
-        ys.append(x)
-    }
-    
-    return ys
-}
-
-func gather_reply_ids(our_pubkey: String, from: NostrEvent) -> [ReferencedId] {
-    var ids = get_referenced_ids(tags: from.tags, key: "e").first.map { [$0] } ?? []
-    
-    ids.append(ReferencedId(ref_id: from.id, relay_id: nil, key: "e"))
-    ids.append(contentsOf: uniq(from.referenced_pubkeys.filter { $0.ref_id != our_pubkey }))
-    if from.pubkey != our_pubkey {
-        ids.append(ReferencedId(ref_id: from.pubkey, relay_id: nil, key: "p"))
-    }
-    return ids
-}
-
 func event_from_json(dat: String) -> NostrEvent? {
     return try? JSONDecoder().decode(NostrEvent.self, from: Data(dat.utf8))
-}
-
-func event_to_json(ev: NostrEvent) -> String {
-    let encoder = JSONEncoder()
-    guard let res = try? encoder.encode(ev) else {
-        return "{}"
-    }
-    guard let str = String(data: res, encoding: .utf8) else {
-        return "{}"
-    }
-    return str
 }
 
 func decrypt_dm(_ privkey: String?, pubkey: String, content: String, encoding: EncEncoding) -> String? {
@@ -1123,65 +895,4 @@ func validate_event(ev: NostrEvent) -> ValidationResult {
     
     ok = secp256k1_schnorrsig_verify(ctx, &sig64, &raw_id_bytes, raw_id.count, &xonly_pubkey) > 0
     return ok ? .ok : .bad_sig
-}
-
-func last_etag(tags: [[String]]) -> String? {
-    var e: String? = nil
-    for tag in tags {
-        if tag.count >= 2 && tag[0] == "e" {
-            e = tag[1]
-        }
-    }
-    return e
-}
-
-func inner_event_or_self(ev: NostrEvent) -> NostrEvent {
-    guard let inner_ev = ev.inner_event else {
-        return ev
-    }
-    
-    return inner_ev
-}
-
-func first_eref_mention(ev: NostrEvent, privkey: String?) -> Mention? {
-    let blocks = ev.blocks(privkey).filter { block in
-        guard case .mention(let mention) = block else {
-            return false
-        }
-        
-        guard case .event = mention.type else {
-            return false
-        }
-        
-        if mention.ref.key != "e" {
-            return false
-        }
-        
-        return true
-    }
-    
-    /// MARK: - Preview
-    if let firstBlock = blocks.first, case .mention(let mention) = firstBlock, mention.ref.key == "e" {
-        return mention
-    }
-    
-    return nil
-}
-
-extension [ReferencedId] {
-    var pRefs: [ReferencedId] {
-        get {
-            Set(self).filter { ref in
-                ref.key == "p"
-            }
-        }
-    }
-    
-    var eRefs: [ReferencedId] {
-        get {
-            self.filter { ref in
-                ref.key == "e"
-            }
-        }
-    }
 }

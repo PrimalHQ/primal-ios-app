@@ -41,7 +41,6 @@ import Foundation
 
 @usableFromInline
 protocol _AnyDecodable {
-    var value: Any { get }
     init<T>(_ value: T?)
 }
 
