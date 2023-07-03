@@ -122,10 +122,6 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
     
     private var _blocks: [Block]? = nil
     
-    func get_blocks(content: String) -> [Block] {
-        return parse_mentions(content: content, tags: self.tags)
-    }
-    
     lazy var inner_event: NostrEvent? = {
         // don't try to deserialize an inner event if we know there won't be one
         if self.known_kind == .boost {
@@ -134,46 +130,7 @@ final class NostrEvent: Codable, Identifiable, CustomStringConvertible, Equatabl
         return nil
     }()
     
-    private var _event_refs: [EventRef]? = nil
-    
     var decrypted_content: String? = nil
-    
-    func decrypted(privkey: String?) -> String? {
-        if let decrypted_content = decrypted_content {
-            return decrypted_content
-        }
-        
-        guard let key = privkey else {
-            return nil
-        }
-        
-        guard let our_pubkey = privkey_to_pubkey(privkey: key) else {
-            return nil
-        }
-        
-        var pubkey = self.pubkey
-        // This is our DM, we need to use the pubkey of the person we're talking to instead
-        if our_pubkey == pubkey {
-            guard let refkey = self.referenced_pubkeys.first else {
-                return nil
-            }
-            
-            pubkey = refkey.ref_id
-        }
-        
-        let dec = decrypt_dm(key, pubkey: pubkey, content: self.content, encoding: .base64)
-        self.decrypted_content = dec
-        
-        return dec
-    }
-    
-    func get_content(_ privkey: String?) -> String {
-        if known_kind == .dm {
-            return decrypted(privkey: privkey) ?? "*failed to decrypt content*"
-        }
-        
-        return content
-    }
     
     var description: String {
         return "NostrEvent { id: \(id) pubkey \(pubkey) kind \(kind) tags \(tags) content '\(content)' }"
@@ -247,10 +204,6 @@ func encode_json<T: Encodable>(_ val: T) -> String? {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .withoutEscapingSlashes
     return (try? encoder.encode(val)).map { String(decoding: $0, as: UTF8.self) }
-}
-
-func decode_nostr_event_json(json: String) -> NostrEvent? {
-    return decode_json(json)
 }
 
 func decode_json<T: Decodable>(_ val: String) -> T? {
@@ -531,17 +484,6 @@ func nwc_pay(url: WalletConnectURL, invoice: String) -> NostrEvent? {
     return ev
 }
 
-
-func event_has_tag(ev: NostrEvent, tag: String) -> Bool {
-    for t in ev.tags {
-        if t.count >= 1 && t[0] == tag {
-            return true
-        }
-    }
-    
-    return false
-}
-
 func make_private_zap_request_event(identity: FullKeypair, enc_key: FullKeypair, target: ZapTarget, message: String) -> PrivateZapRequest? {
     // target tags must be the same as zap request target tags
     let tags = zap_target_to_tags(target)
@@ -619,14 +561,6 @@ func decrypt_dm(_ privkey: String?, pubkey: String, content: String, encoding: E
         return nil
     }
     return String(data: dat, encoding: .utf8)
-}
-
-func decrypt_note(our_privkey: String, their_pubkey: String, enc_note: String, encoding: EncEncoding) -> NostrEvent? {
-    guard let dec = decrypt_dm(our_privkey, pubkey: their_pubkey, content: enc_note, encoding: encoding) else {
-        return nil
-    }
-    
-    return decode_nostr_event_json(json: dec)
 }
 
 func get_shared_secret(privkey: String, pubkey: String) -> [UInt8]? {

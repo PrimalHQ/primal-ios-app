@@ -38,35 +38,9 @@ func parse_post_mention_type(_ p: Parser) -> MentionType? {
     return nil
 }
 
-func parse_post_reference(_ p: Parser) -> ReferencedId? {
-    let start = p.pos
-    
-    guard let typ = parse_post_mention_type(p) else {
-        return parse_nostr_ref_uri(p)
-    }
-    
-    if let ref = parse_post_mention(p, mention_type: typ) {
-        return ref
-    }
-    
-    p.pos = start
-    
-    return nil
-}
-
 func is_bech32_char(_ c: Character) -> Bool {
     let contains = "qpzry9x8gf2tvdw0s3jn54khce6mua7l".contains(c)
     return contains
-}
-
-func parse_post_mention(_ p: Parser, mention_type: MentionType) -> ReferencedId? {
-    if let id = parse_hexstr(p, len: 64) {
-        return ReferencedId(ref_id: id, relay_id: nil, key: mention_type.ref)
-    } else if let bech32_ref = parse_post_bech32_mention(p) {
-        return bech32_ref
-    } else {
-        return nil
-    }
 }
 
 func parse_post_bech32_mention(_ p: Parser) -> ReferencedId? {

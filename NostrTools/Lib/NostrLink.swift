@@ -7,12 +7,6 @@
 
 import Foundation
 
-
-enum NostrLink: Equatable {
-    case ref(ReferencedId)
-    case filter(NostrFilter)
-}
-
 func encode_pubkey_uri(_ ref: ReferencedId) -> String {
     return "p:" + ref.ref_id
 }
@@ -78,27 +72,6 @@ func parse_nostr_ref_uri(_ p: Parser) -> ReferencedId? {
     
     // TODO: parse relays from nostr uris
     return ReferencedId(ref_id: pk, relay_id: nil, key: typ)
-}
-
-func decode_universal_link(_ s: String) -> NostrLink? {
-    var uri = s.replacingOccurrences(of: "https://damus.io/r/", with: "")
-    uri = uri.replacingOccurrences(of: "https://damus.io/", with: "")
-    uri = uri.replacingOccurrences(of: "/", with: "")
-    
-    guard let decoded = try? bech32_decode(uri) else {
-        return nil
-    }
-    
-    let h = hex_encode(decoded.data)
-    
-    if decoded.hrp == "note" {
-        return .ref(ReferencedId(ref_id: h, relay_id: nil, key: "e"))
-    } else if decoded.hrp == "npub" {
-        return .ref(ReferencedId(ref_id: h, relay_id: nil, key: "p"))
-    }
-    // TODO: handle nprofile, etc
-    
-    return nil
 }
 
 func tag_is_hashtag(_ tag: [String]) -> Bool {

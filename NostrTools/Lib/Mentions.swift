@@ -10,15 +10,6 @@ import Foundation
 enum MentionType {
     case pubkey
     case event
-    
-    var ref: String {
-        switch self {
-        case .pubkey:
-            return "p"
-        case .event:
-            return "e"
-        }
-    }
 }
 
 struct Mention: Equatable {
@@ -67,35 +58,6 @@ enum Block: Equatable {
     case url(URL)
     case invoice(Invoice)
     case relay(String)
-}
-
-func parse_mentions(content: String, tags: [[String]]) -> [Block] {
-    var out: [Block] = []
-    
-    var bs = blocks()
-    bs.num_blocks = 0;
-    
-    blocks_init(&bs)
-    
-    let bytes = content.utf8CString
-    let _ = bytes.withUnsafeBufferPointer { p in
-        damus_parse_content(&bs, p.baseAddress)
-    }
-    
-    var i = 0
-    while (i < bs.num_blocks) {
-        let block = bs.blocks[i]
-        
-        if let converted = convert_block(block, tags: tags) {
-            out.append(converted)
-        }
-        
-        i += 1
-    }
-    
-    blocks_free(&bs)
-    
-    return out
 }
 
 func strblock_to_string(_ s: str_block_t) -> String? {
