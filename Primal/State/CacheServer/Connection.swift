@@ -11,6 +11,14 @@ import NWWebSocket
 import Network
 import GenericJSON
 
+struct ContinousConnection {
+    let id: String
+    
+    func end() {
+        Connection.instance.endContinous(id)
+    }
+}
+
 final class Connection {
     static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
@@ -19,8 +27,10 @@ final class Connection {
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
     private var socket: NWWebSocket?
-    private var subHandlers: [String: (_: [JSON]) -> Void] = [:]
+    private var subHandlers: [String: ([JSON]) -> Void] = [:]
     private var responseBuffer: [String: [JSON]] = [:]
+    
+    private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
     private init() {
         identity = UUID().uuidString
@@ -84,6 +94,54 @@ final class Connection {
         }
     }
     
+    
+    func requestCacheContinous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+        if let request {
+            return requestContinous(.object([
+                "cache" : .array(
+                    [.string(name), request]
+                )
+            ]), handler)
+        } else {
+            return requestContinous(.object([
+                "cache" : .array([.string(name)])
+            ]), handler)
+        }
+    }
+    
+    func requestContinous(_ request: JSON, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+        let subId = UUID().uuidString
+        let json: JSON = .array([.string("REQ"), .string(subId), request])
+        Self.dispatchQueue.async {
+            guard let jsonData = try? self.jsonEncoder.encode(json) else {
+                print("Error encoding req json")
+                return
+            }
+            let jsonStr = String(data: jsonData, encoding: .utf8)!
+                 
+            print("REQUEST:\n\(jsonStr)")
+//            self.continousConnectionIds.formUnion([subId])
+            self.continousSubHandlers[subId] = handler
+            self.socket?.send(string: jsonStr)
+        }
+        return .init(id: subId)
+    }
+    
+    func endContinous(_ id: String) {
+        let json = JSON.array([.string("CLOSE"), .string(id)])
+        Self.dispatchQueue.async {
+            guard let jsonData = try? self.jsonEncoder.encode(json) else {
+                print("Error encoding req json")
+                return
+            }
+            let jsonStr = String(data: jsonData, encoding: .utf8)!
+                 
+            print("REQUEST:\n\(jsonStr)")
+            self.continousSubHandlers[id] = nil
+            self.socket?.send(string: jsonStr)
+        }
+    }
+    
     private func processMessage(_ json: JSON) {
         guard
             let subId = json.arrayValue?[1].stringValue,
@@ -96,6 +154,8 @@ final class Connection {
         if type == "EVENT" {
             if responseBuffer.keys.contains(subId) {
                 responseBuffer[subId]?.append(json)
+            } else {
+                continousSubHandlers[subId]?(json)
             }
         } else if type == "EOSE" {
             if let handler = subHandlers[subId], let b = responseBuffer[subId] {
@@ -103,6 +163,8 @@ final class Connection {
             }
             responseBuffer[subId] = nil
             subHandlers[subId] = nil
+        } else {
+            print(json)
         }
     }
 }

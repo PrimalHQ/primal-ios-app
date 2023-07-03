@@ -20,61 +20,55 @@ final class NotificationsViewController: FeedViewController {
         didSet {
             // We must assign posts to an array of posts that match so we can pass control to the FeedViewController
             posts = notifications.map { $0.post ?? .init(post: .empty, user: ParsedUser(data: .empty)) }
-            table.reloadData()
         }
     }
     var separatorIndex: Int = -1
     
-    var preloadedNotifications: [GroupedNotification] = [] {
+    var isLoading = false
+    
+    var newNotifications: Int = 0 {
         didSet {
-            if notifications.isEmpty {
-                separatorIndex = preloadedSeparatorIndex
-                notifications = preloadedNotifications
-            }
+            let main: MainTabBarController? = RootViewController.instance.findInChildren()
+            
+            main?.hasNewNotifications = newNotifications > 0
         }
     }
-    var preloadedSeparatorIndex: Int = -1
+    
+    var continousConnection: ContinousConnection? {
+        didSet {
+            oldValue?.end()
+        }
+    }
     
     override init() {
         super.init()
         
-        
-        let payload = JSON.object([
-            "pubkey": .string(IdentityManager.instance.userHex),
-            "limit": .number(200)
-        ])
-        
-        Publishers.Merge(
-            Timer.publish(every: 5, on: .main, in: .default).autoconnect().first(),
-            Timer.publish(every: 30, on: .main, in: .default).autoconnect()
-        )
-        .flatMap { _ in
-            Publishers.CombineLatest(
-                SocketRequest(name: "get_notifications", payload: payload).publisher(),
-                SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": .string(IdentityManager.instance.userHex)])).publisher()
-            )
-        }
-        .map { newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
-            let lastSeen = seenResult.timestamps.first ?? .init(timeIntervalSince1970: 0)
-            let parsed = newResult.getParsedNotifications()
-            
-            let new = parsed.filter { $0.mainNotification.date >= lastSeen }
-            let old = parsed.filter { $0.mainNotification.date < lastSeen }
-            return (new.grouped(), old)
-        }
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] newResult, seenResult in
-            let main: MainTabBarController? = RootViewController.instance.findInChildren()
-            
-            main?.hasNewNotifications = !newResult.isEmpty
-            self?.preloadedSeparatorIndex = newResult.count - 1
-            self?.preloadedNotifications = newResult + seenResult
+        Connection.instance.$isConnected.filter { $0 }.sink { [weak self] _ in
+            self?.continousConnection = Connection.instance.requestCacheContinous(name: "notification_counts", request: .object([
+                "pubkey": .string(IdentityManager.instance.userHex)
+            ])) { response in
+                guard let resDict = response.arrayValue?.last?.objectValue else { return }
+                
+                var sum: Double = 0
+                for type in NotificationType.allCases {
+                    let key = String(type.rawValue)
+                    sum += resDict[key]?.doubleValue ?? 0
+                }
+                
+                DispatchQueue.main.async {
+                    self?.newNotifications = Int(sum)
+                }
+            }
         }
         .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        continousConnection?.end()
     }
     
     override func viewDidLoad() {
@@ -90,8 +84,35 @@ final class NotificationsViewController: FeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
-        separatorIndex = preloadedSeparatorIndex
-        notifications = preloadedNotifications
+        let payload = JSON.object([
+            "pubkey": .string(IdentityManager.instance.userHex),
+            "limit": .number(max(Double(newNotifications + 20), 50))
+        ])
+        
+        Publishers.CombineLatest(
+            SocketRequest(name: "get_notifications", payload: payload).publisher(),
+            SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": .string(IdentityManager.instance.userHex)])).publisher()
+        )
+        .map { newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
+            let lastSeen = seenResult.timestamps.first ?? .init(timeIntervalSince1970: 0)
+            let parsed = newResult.getParsedNotifications()
+            
+            let new = parsed.filter { $0.mainNotification.date >= lastSeen }
+            let old = parsed.filter { $0.mainNotification.date < lastSeen }
+            return (new.grouped(), old)
+        }
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] newResult, seenResult in
+            self?.separatorIndex = newResult.count - 1
+            self?.notifications = newResult + seenResult
+            self?.table.reloadData()
+            self?.isLoading = false
+            
+            if self?.notifications.isEmpty == false {
+                IdentityManager.instance.updateLastSeen()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     override func updateTheme() {
@@ -119,11 +140,31 @@ final class NotificationsViewController: FeedViewController {
             cell.border.backgroundColor = indexPath.row == separatorIndex ? .foreground : .foreground6
         }
         
+        if indexPath.row > posts.count - 10, !isLoading {
+            let payload = JSON.object([
+                "pubkey": .string(IdentityManager.instance.userHex),
+                "limit": .number(20),
+                "until": .number((notifications.last?.mainNotification.date ?? Date()).timeIntervalSince1970)
+            ])
+            
+            isLoading = true
+            SocketRequest(name: "get_notifications", payload: payload).publisher()
+                .map { $0.getParsedNotifications() }
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] notifications in
+                    guard let self, self.isLoading else { return }
+                    let oldCount = self.notifications.count
+                    self.notifications += notifications
+                    self.isLoading = false
+                }
+                .store(in: &cancellables)
+        }
+        
         return cell
     }
     
-    override func open(post: PrimalFeedPost) -> FeedViewController? {
-        if post.id == "empty" { return nil }
+    override func open(post: PrimalFeedPost) -> FeedViewController {
+        if post.id == "empty" { return self }
         return super.open(post: post)
     }
 }

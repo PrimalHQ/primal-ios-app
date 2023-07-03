@@ -85,6 +85,7 @@ final class RegularFeedViewController: PostFeedViewController {
             } else {
                 IdentityManager.instance.addFeedToList(feed: .init(name: "Search: \(search)", hex: feedHex))
             }
+            hapticGenerator.impactOccurred()
             
             view.showUndoToast("Added to your home feeds") { [weak self] in
                 guard let self = self else { return }

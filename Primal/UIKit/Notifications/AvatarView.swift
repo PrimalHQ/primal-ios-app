@@ -44,7 +44,10 @@ private extension AvatarView {
     func setup() {
         let stack = UIStackView(arrangedSubviews: avatarViews + [extraView])
         
-        avatarViews.forEach { $0.contentMode = .scaleAspectFill }
+        avatarViews.forEach {
+            $0.contentMode = .scaleAspectFill
+            $0.backgroundColor = .background
+        }
         
         stack.arrangedSubviews.forEach {
             $0.constrainToSize(32)

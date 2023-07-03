@@ -55,7 +55,7 @@ extension PostRequestResult {
   
         let all = reposts + normalPosts
         
-        return posts.compactMap { post in all.first(where: { $0.post.id == post.id }) }
+        return order.compactMap { id in all.first(where: { $0.post.id == id }) }
     }
     
     func parse(

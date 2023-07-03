@@ -49,7 +49,7 @@ final class IdentityManager {
     @Published var userSettings: PrimalSettings?
     @Published var userRelays: [String: RelayInfo]?
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
-
+    
     @Published var didFinishInit: Bool = false
     
     var cancellables: Set<AnyCancellable> = []
@@ -58,7 +58,7 @@ final class IdentityManager {
         let request: JSON = .object([
             "pubkeys": .array([.string(userHex)])
         ])
-
+        
         Connection.instance.requestCache(name: "user_infos", request: request) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
@@ -130,7 +130,7 @@ final class IdentityManager {
         }
         
         let ev = make_settings_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, settings: settingsJson)
-                
+        
         let request: JSON = .object([
             "cache": .array([
                 .string("get_app_settings"),
@@ -147,7 +147,7 @@ final class IdentityManager {
                 ])
             ])
         ])
-
+        
         Connection.instance.request(request) { res in
             for response in res {
                 let kind = ResponseKind.fromGenericJSON(response)
@@ -201,7 +201,7 @@ final class IdentityManager {
                     }
                     
                     RelaysPostbox.instance.connect(relayKeys)
-                                        
+                    
                     var tags: [String]?
                     if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
                         if isEmpty {
@@ -264,6 +264,36 @@ final class IdentityManager {
         ])) { result in
             print(result)
         }
+    }
+    
+    func updateLastSeen() {
+        guard let keypair = get_saved_keypair(), let privkey = keypair.privkey else {
+            print("Error getting saved keypair")
+            return
+        }
+        
+        let ev = NostrEvent(
+            content: "{\"description\": \"update notifications last seen timestamp\"}",
+            pubkey: userHex,
+            kind: NostrKind.settings.rawValue,
+            tags: [],
+            createdAt: Int64(Date().timeIntervalSince1970)
+        )
+        
+        ev.calculate_id()
+        ev.sign(privkey: privkey)
+        
+        Connection.instance.requestCache(name: "set_notifications_seen", request: .object([
+            "event_from_user":  .object([
+                "content": .string(ev.content),
+                "created_at": .number(Double(ev.created_at)),
+                "id": .string(ev.id),
+                "kind": .number(Double(ev.kind)),
+                "pubkey": .string(ev.pubkey),
+                "sig": .string(ev.sig),
+                "tags": .array([])
+            ])
+        ])) { _ in }
     }
     
     func updateNotifications(_ notifications: PrimalSettingsNotifications) {

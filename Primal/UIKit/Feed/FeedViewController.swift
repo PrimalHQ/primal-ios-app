@@ -53,7 +53,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     @discardableResult
-    func open(post: PrimalFeedPost) -> FeedViewController? {
+    func open(post: PrimalFeedPost) -> FeedViewController {
         let threadVC = ThreadViewController(threadId: post.id)
         show(threadVC, sender: nil)
         return threadVC
