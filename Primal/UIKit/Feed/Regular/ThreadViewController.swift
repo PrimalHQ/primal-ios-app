@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class ThreadViewController: FeedViewController {
+final class ThreadViewController: PostFeedViewController {
     let id: String
     
     var didPostNewComment = false

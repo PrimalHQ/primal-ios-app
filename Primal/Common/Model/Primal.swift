@@ -137,6 +137,25 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.sig = nostrUser?.sig ?? ""
     }
     
+    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Int32, sig: String) {
+        self.id = id
+        self.pubkey = pubkey
+        self.npub = npub
+        self.name = name
+        self.about = about
+        self.picture = picture
+        self.nip05 = nip05
+        self.banner = banner
+        self.displayName = displayName
+        self.location = location
+        self.lud06 = lud06
+        self.lud16 = lud16
+        self.website = website
+        self.tags = tags
+        self.created_at = created_at
+        self.sig = sig
+    }
+    
     func getDomainNip05() -> String {
         if self.nip05.isEmpty {
             return ""
@@ -205,6 +224,22 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.satszapped = nostrPostStats.satszapped
         self.score24h = nostrPostStats.score24h
         self.reposts = nostrPostStats.reposts
+    }
+    
+    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
+        self.id = id
+        self.pubkey = pubkey
+        self.created_at = created_at
+        self.tags = tags
+        self.content = content
+        self.sig = sig
+        self.likes = likes
+        self.mentions = mentions
+        self.replies = replies
+        self.zaps = zaps
+        self.satszapped = satszapped
+        self.score24h = score24h
+        self.reposts = reposts
     }
     
     func toRepostNostrContent() -> NostrContent {
