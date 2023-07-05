@@ -22,6 +22,8 @@
 		9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */; };
 		936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */; };
 		936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */; };
+		93906B912A55A17700962A94 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B902A55A17700962A94 /* Crypto.swift */; };
+		93906B942A55B5D000962A94 /* Nostr_Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B932A55B5D000962A94 /* Nostr_Event.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
 		939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330FC29A3E370003954C2 /* Preview Assets.xcassets */; };
 		9393310729A3E370003954C2 /* PrimalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393310629A3E370003954C2 /* PrimalTests.swift */; };
@@ -240,6 +242,8 @@
 		9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectURL.swift; sourceTree = "<group>"; };
 		936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
 		936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNotifications.swift; sourceTree = "<group>"; };
+		93906B902A55A17700962A94 /* Crypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
+		93906B932A55B5D000962A94 /* Nostr_Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nostr_Event.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F929A3E370003954C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		939330FC29A3E370003954C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -545,6 +549,22 @@
 			path = Wallet;
 			sourceTree = "<group>";
 		};
+		93906B8F2A55A17000962A94 /* Crypto */ = {
+			isa = PBXGroup;
+			children = (
+				93906B902A55A17700962A94 /* Crypto.swift */,
+			);
+			path = Crypto;
+			sourceTree = "<group>";
+		};
+		93906B922A55B5C500962A94 /* Nostr */ = {
+			isa = PBXGroup;
+			children = (
+				93906B932A55B5D000962A94 /* Nostr_Event.swift */,
+			);
+			path = Nostr;
+			sourceTree = "<group>";
+		};
 		939330E929A3E36F003954C2 = {
 			isa = PBXGroup;
 			children = (
@@ -615,6 +635,9 @@
 			children = (
 				9E83DF752A573F1C00F2C379 /* Helpers */,
 				9E83DF6A2A573DE800F2C379 /* Protocols */,
+				93906B922A55B5C500962A94 /* Nostr */,
+				93906B8F2A55A17000962A94 /* Crypto */,
+				9ED416072A45B2CE00892235 /* Supporting */,
 				9363DE742A30DDD80060F4BD /* Wallet */,
 				9363DE6F2A30DD880060F4BD /* DeepLinking */,
 				933DBDA82A1124F7008DCF1F /* Notes */,
@@ -1357,6 +1380,7 @@
 				939BDB552A374EAB00E80B2C /* ZapManager.swift in Sources */,
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
+				93906B912A55A17700962A94 /* Crypto.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
 				9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
@@ -1481,6 +1505,7 @@
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
+				93906B942A55B5D000962A94 /* Nostr_Event.swift in Sources */,
 				936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,

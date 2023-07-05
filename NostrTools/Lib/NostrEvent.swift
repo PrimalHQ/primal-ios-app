@@ -249,7 +249,6 @@ func calculate_event_id(ev: NostrEvent) -> String {
     return hex_encode(hash)
 }
 
-
 func sha256(_ data: Data) -> Data {
     var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
     data.withUnsafeBytes {
