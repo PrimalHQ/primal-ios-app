@@ -9,18 +9,13 @@ import SwiftUI
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = {
         return DeeplinkCoordinator(handlers: [
-            NostrWalletConnectDeeplinkHandler(rootViewController: self.rootViewController)
+            NostrWalletConnectDeeplinkHandler()
         ])
     }()
     
     var window: UIWindow?
-    
-    var rootViewController: UIViewController? {
-        return window?.rootViewController
-    }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }

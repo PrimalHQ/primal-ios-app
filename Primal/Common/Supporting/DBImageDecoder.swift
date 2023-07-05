@@ -49,16 +49,6 @@ final class DBImageDecoder {
         CGImageSourceUpdateData(imageSource, data as CFData, allDataReceived)
     }
 
-    func setDataProvider(_ dataProvider: CGDataProvider, allDataReceived: Bool) {
-        assert(!isAllDataReceived)
-        isAllDataReceived = allDataReceived
-        CGImageSourceUpdateDataProvider(imageSource, dataProvider, allDataReceived)
-    }
-
-    var uti: String? {
-        CGImageSourceGetType(imageSource) as String?
-    }
-
     var frameCount: Int {
         CGImageSourceGetCount(imageSource)
     }
@@ -137,16 +127,6 @@ final class DBImageDecoder {
         }
 
         return image
-    }
-
-    func isFrameComplete(at index: Int) -> Bool {
-        assert(frameCount > index)
-
-        if index == frameCount - 1 {
-            return CGImageSourceGetStatus(imageSource) == .statusComplete
-        }
-
-        return CGImageSourceGetStatusAtIndex(imageSource, index) == .statusComplete
     }
 
     // MARK: - Private

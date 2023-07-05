@@ -23,7 +23,6 @@ final class Connection {
     private var responseBuffer: [String: [JSON]] = [:]
     
     private init() {
-        identity = UUID().uuidString
         self.connect()
     }
     
@@ -32,8 +31,6 @@ final class Connection {
     }
     
     static let instance = Connection()
-    
-    let identity: String
     
     @Published var isConnected: Bool = false
     

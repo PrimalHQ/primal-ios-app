@@ -115,18 +115,6 @@ final class Profile: Codable {
         }
     }
     
-    func cache_lnurl() {
-        guard self._lnurl == nil else {
-            return
-        }
-        
-        guard let addr = lud16 ?? lud06 else {
-            return
-        }
-        
-        self._lnurl = lnaddress_to_lnurl(addr)
-    }
-    
     private var _lnurl: String? = nil
     var lnurl: String? {
         if let _lnurl {
@@ -173,19 +161,10 @@ final class Profile: Codable {
         var container = encoder.singleValueContainer()
         try container.encode(value)
     }
-    
-    static func displayName(profile: Profile?, pubkey: String) -> DisplayName {
-        return parse_display_name(profile: profile, pubkey: pubkey)
-    }
 }
 
 func make_ln_url(_ str: String?) -> URL? {
     return str.flatMap { URL(string: "lightning:" + $0) }
-}
-
-struct NostrSubscription {
-    let sub_id: String
-    let filter: NostrFilter
 }
 
 func lnaddress_to_lnurl(_ lnaddr: String) -> String? {

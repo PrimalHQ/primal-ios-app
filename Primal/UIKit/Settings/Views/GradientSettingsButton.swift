@@ -11,10 +11,7 @@ final class GradientSettingsButton: MyButton {
     private let icon = UIImageView()
     private let label = UILabel()
     
-    let title: String
-    
     init(title: String) {
-        self.title = title
         super.init(frame: .zero)
         
         icon.image = UIImage(named: "copyIcon")

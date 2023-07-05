@@ -32,11 +32,6 @@ final class LinkableLabel: UILabel {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func setText(_ attributedText: NSAttributedString) {
-        
-    }
-    
 }
 private extension LinkableLabel {    
     @objc func tapped(_ gesture: UITapGestureRecognizer) {
@@ -49,35 +44,6 @@ private extension LinkableLabel {
             }
         }
         delegate?.didTapOutsideURL()
-    }
-    
-    func updateLinks() {
-        guard
-            let input = text,
-            let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        else {
-            return
-        }
-        
-        links = []
-        
-        let matches = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
-        for match in matches {
-            guard let range = Range(match.range, in: input) else { continue }
-            let urlString = input[range]
-            if let url = URL(string: String(urlString)) {
-                links.append((match.range, url))
-                print(url)
-            }
-        }
-
-        let attrString = NSMutableAttributedString(attributedString: attributedText ?? .init(string: input))
-        for (range, _) in links {
-            attrString.addAttributes([
-                .foregroundColor: UIColor(rgb: 0xCA079F)
-            ], range: range)
-        }
-        attributedText = attrString
     }
     
     func didTapAttributedTextInRange(_ targetRange: NSRange, gesture: UITapGestureRecognizer) -> Bool {

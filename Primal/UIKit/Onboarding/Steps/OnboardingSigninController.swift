@@ -213,7 +213,7 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard process_login(parsed, is_pubkey: parsed.is_pub) else {
+        guard process_login(parsed) else {
             state = .invalidKey
             return
         }

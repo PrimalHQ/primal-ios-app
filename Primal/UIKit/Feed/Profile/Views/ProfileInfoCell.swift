@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ProfileInfoCellDelegate: AnyObject {
-    func npubPressed(in cell: ProfileInfoCell)
+    func npubPressed()
     func followPressed(in cell: ProfileInfoCell)
 }
 
@@ -119,7 +119,7 @@ private extension ProfileInfoCell {
     }
     
     @objc func npubPressed() {
-        delegate?.npubPressed(in: self)
+        delegate?.npubPressed()
     }
     
     @objc func followPressed() {
