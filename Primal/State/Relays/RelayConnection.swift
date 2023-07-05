@@ -35,10 +35,10 @@ final class RelayConnection {
     var state: CurrentValueSubject = CurrentValueSubject<RelayConnectionState, RelayConnectionError>(.disconnected)
     var identity: String
     
-    init(socketURL: String, dispatchQueue: DispatchQueue = DispatchQueue.main) {
-        self.socketURL = URL(string: socketURL)!
+    init(socketURL: URL, dispatchQueue: DispatchQueue) {
+        self.socketURL = socketURL
         self.dispatchQueue = dispatchQueue
-        self.identity = socketURL
+        self.identity = socketURL.absoluteString
     }
     
     deinit {

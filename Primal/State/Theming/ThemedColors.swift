@@ -8,6 +8,8 @@
 import UIKit
 
 extension UIColor {
+    static var brandText: UIColor { Theme.current.brandText }
+    
     static var background: UIColor { Theme.current.background }
     static var background2: UIColor { Theme.current.background2 }
     static var background3: UIColor { Theme.current.background3 }

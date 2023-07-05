@@ -249,6 +249,12 @@ final class IdentityManager {
         }
     }
     
+    func updateNotifications(_ notifications: PrimalSettingsNotifications) {
+        guard var settings = userSettings else { return }
+        settings.content.notifications = notifications
+        updateSettings(settings)
+    }
+    
     func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
         guard var settings = userSettings else { return }
         settings.content.feeds = feeds

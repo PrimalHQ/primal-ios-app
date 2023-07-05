@@ -92,6 +92,9 @@ private extension SettingsMainViewController {
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)
         wallet.addTarget(self, action: #selector(walletPressed), for: .touchUpInside)
         feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
+        notifications.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsNotificationsViewController(), sender: nil)
+        }), for: .touchUpInside)
     }
     
     @objc func feedsPressed() {

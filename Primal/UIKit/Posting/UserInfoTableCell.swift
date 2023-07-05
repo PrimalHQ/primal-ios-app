@@ -37,7 +37,7 @@ final class UserInfoTableCell: UITableViewCell {
         ])
         
         if let count = user.likes {
-            followersLabel.text = count.shortened()
+            followersLabel.text = Int32(count).shortened()
             followStack.isHidden = false
         } else {
             followStack.isHidden = true

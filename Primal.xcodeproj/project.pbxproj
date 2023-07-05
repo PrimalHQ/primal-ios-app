@@ -184,6 +184,13 @@
 		9ED416092A45B2EC00892235 /* DBImageDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416082A45B2EC00892235 /* DBImageDecoder.swift */; };
 		9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */; };
 		9ED4160D2A48744600892235 /* RepostSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */; };
+		9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160E2A4B7A8500892235 /* Notification.swift */; };
+		9ED416122A4CAC5A00892235 /* NotificationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416112A4CAC5A00892235 /* NotificationsCell.swift */; };
+		9ED416142A4E03E500892235 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416132A4E03E500892235 /* AvatarView.swift */; };
+		9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416152A4E0D6200892235 /* PostFeedViewController.swift */; };
+		9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416172A4F7A6A00892235 /* RoundedCornersView.swift */; };
+		9ED4161A2A4F7C8800892235 /* SettingsToggleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416192A4F7C8800892235 /* SettingsToggleCell.swift */; };
+		9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */; };
 		9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */; };
 		9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */; };
 		9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */; };
@@ -421,6 +428,13 @@
 		9ED416082A45B2EC00892235 /* DBImageDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBImageDecoder.swift; sourceTree = "<group>"; };
 		9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToastMessageView.swift; sourceTree = "<group>"; };
 		9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepostSelectionViewController.swift; sourceTree = "<group>"; };
+		9ED4160E2A4B7A8500892235 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		9ED416112A4CAC5A00892235 /* NotificationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsCell.swift; sourceTree = "<group>"; };
+		9ED416132A4E03E500892235 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
+		9ED416152A4E0D6200892235 /* PostFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFeedViewController.swift; sourceTree = "<group>"; };
+		9ED416172A4F7A6A00892235 /* RoundedCornersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornersView.swift; sourceTree = "<group>"; };
+		9ED416192A4F7C8800892235 /* SettingsToggleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsToggleCell.swift; sourceTree = "<group>"; };
+		9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNotificationsViewController.swift; sourceTree = "<group>"; };
 		9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunriseWave.swift; sourceTree = "<group>"; };
 		9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunsetWave.swift; sourceTree = "<group>"; };
@@ -783,6 +797,7 @@
 			children = (
 				9344DB302A1D28EB00C9F281 /* ResponseKind.swift */,
 				93F27DAE2A280F4C004ADA55 /* PostRequestResult.swift */,
+				9ED4160E2A4B7A8500892235 /* Notification.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -840,6 +855,8 @@
 				9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */,
 				9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */,
 				9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */,
+				9ED416172A4F7A6A00892235 /* RoundedCornersView.swift */,
+				9ED416192A4F7C8800892235 /* SettingsToggleCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -850,6 +867,7 @@
 				9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */,
 				936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */,
 				9ED416052A446F2A00892235 /* SettingsFeedViewController.swift */,
+				9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */,
 			);
 			path = SubControllers;
 			sourceTree = "<group>";
@@ -977,6 +995,7 @@
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
+				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
@@ -984,7 +1003,6 @@
 				9E9C42122A13FC8B00F9D7ED /* Read */,
 				9E55F2882A1FA6CD00D5D523 /* Settings */,
 				9E9C42182A1403D400F9D7ED /* MessagesViewController.swift */,
-				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -1048,6 +1066,7 @@
 				9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */,
 				9ECFD3212A013935000D1B2F /* FeedViewController.swift */,
 				9ED4160C2A48744600892235 /* RepostSelectionViewController.swift */,
+				9ED416152A4E0D6200892235 /* PostFeedViewController.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1093,6 +1112,16 @@
 				9ED416082A45B2EC00892235 /* DBImageDecoder.swift */,
 			);
 			path = Supporting;
+			sourceTree = "<group>";
+		};
+		9ED416102A4CAC2300892235 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
+				9ED416112A4CAC5A00892235 /* NotificationsCell.swift */,
+				9ED416132A4E03E500892235 /* AvatarView.swift */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		9EE07AB12A1CF39E00FB6C86 /* Theming */ = {
@@ -1306,8 +1335,10 @@
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
+				9ED4161A2A4F7C8800892235 /* SettingsToggleCell.swift in Sources */,
 				93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */,
 				93CACB0229F525B6003BBCE5 /* node_id.c in Sources */,
+				9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
 				9ED4160D2A48744600892235 /* RepostSelectionViewController.swift in Sources */,
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
@@ -1326,6 +1357,7 @@
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
+				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				9E8834C02A328966005DB548 /* GradientButton.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
@@ -1358,6 +1390,8 @@
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E8DE4DA29F7E73E0028D3C3 /* OnboardingTwitterController.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
+				9E9F2F5729F6AB4B00A9CDF3 /* Shimmer.swift in Sources */,
+				9ED416122A4CAC5A00892235 /* NotificationsCell.swift in Sources */,
 				9E9C42142A13FCE500F9D7ED /* ReadViewController.swift in Sources */,
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
@@ -1381,8 +1415,11 @@
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				9ED416062A446F2A00892235 /* SettingsFeedViewController.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
+				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
+				930497B229FADAC8003938F2 /* NostrPost.swift in Sources */,
+				9ED416142A4E03E500892235 /* AvatarView.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
@@ -1424,6 +1461,7 @@
 				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				9300371E2A534D9400092B06 /* ImageViewerRemote.swift in Sources */,
+				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
@@ -1614,7 +1652,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.19.1;
+				MARKETING_VERSION = 0.19.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1655,7 +1693,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.19.1;
+				MARKETING_VERSION = 0.19.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

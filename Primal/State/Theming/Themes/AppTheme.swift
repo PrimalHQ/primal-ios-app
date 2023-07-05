@@ -14,6 +14,8 @@ extension String {
 protocol AppTheme {
     var kind: Theme { get }
     
+    var brandText: UIColor { get }
+    
     var background: UIColor { get }
     var background2: UIColor { get }
     var background3: UIColor { get }

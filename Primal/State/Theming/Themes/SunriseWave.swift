@@ -13,6 +13,8 @@ final class SunriseWave: AppTheme {
     
     let kind: Theme = .sunriseWave
     
+    let brandText: UIColor = .init(rgb: 0x444444)
+    
     let background: UIColor = .init(rgb: 0xF5F5F5)
     let background2: UIColor = .init(rgb: 0xFFFFFF)
     let background3: UIColor = .init(rgb: 0xE5E5E5)

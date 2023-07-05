@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeFeedViewController: FeedViewController {
+final class HomeFeedViewController: PostFeedViewController {
     
     let loadingSpinner = LoadingSpinnerView()
     let feedButton = UIButton()

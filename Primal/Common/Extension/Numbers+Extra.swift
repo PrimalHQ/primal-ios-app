@@ -13,7 +13,7 @@ extension FloatingPoint {
     }
 }
 
-extension Int {
+extension Int32 {
     func shortened() -> String {
         if self < 1000 {
             return "\(self)"
@@ -40,9 +40,7 @@ extension Int {
         
         return "1t+"
     }
-}
-
-extension Int32 {
+    
     func localized() -> String {
         let nf = NumberFormatter()
         nf.numberStyle = .decimal
