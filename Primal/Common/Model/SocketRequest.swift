@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import GenericJSON
 
-public struct SocketRequest {
+struct SocketRequest {
     let name: String
     let payload: JSON?
     
@@ -47,6 +47,13 @@ private extension SocketRequest {
             }
             
             pendingResult.stats[nostrContentStats.event_id] = nostrContentStats
+        case .notification:
+            guard
+                let content = payload["content"]?.stringValue,
+                let json = try? JSONDecoder().decode(JSON.self, from: Data(content.utf8)),
+                let notification = PrimalNotification.fromJSON(json)
+            else { return }
+            pendingResult.notifications.append(notification)
         case .searchPaginationSettingsEvent:
             guard
                 let content = payload["content"]?.stringValue,
@@ -134,8 +141,11 @@ private extension SocketRequest {
                 else { continue }
                 pendingResult.popularHashtags.append(.init(title: name, apperances: count))
             }
+        case .timestamp:
+            guard let contentString = payload["content"]?.stringValue, let timeStamp = Int(contentString) else { return }
+            pendingResult.timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
         default:
-            assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(payload)")
+            print("Unhandled response \(payload)")
         }
     }
 }

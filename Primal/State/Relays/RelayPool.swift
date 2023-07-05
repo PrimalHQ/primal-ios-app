@@ -10,7 +10,7 @@ import Combine
 import GenericJSON
 
 final class RelayPool {
-    static let dispatchQueue = DispatchQueue(label: "com.primal.relaypool", qos: .background, attributes: .concurrent)
+    static let dispatchQueue = DispatchQueue(label: "com.primal.relaypool", qos: .background)
     
     private var connections: Set<RelayConnection> = []
     private var unsentEvents: [UnsentEvent] = []
@@ -40,7 +40,8 @@ final class RelayPool {
     }
     
     func connect(_ relay: String) {
-        let rc = RelayConnection(socketURL: relay, dispatchQueue: Self.dispatchQueue)
+        guard let url = URL(string: relay) else { return }
+        let rc = RelayConnection(socketURL: url, dispatchQueue: Self.dispatchQueue)
         
         rc.state
             .receive(on: Self.dispatchQueue)

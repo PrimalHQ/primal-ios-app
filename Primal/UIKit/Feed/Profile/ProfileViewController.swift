@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 import GenericJSON
 
-final class ProfileViewController: FeedViewController {
+final class ProfileViewController: PostFeedViewController {
     let profile: ParsedUser
     var userStats: NostrUserProfileInfo? {
         didSet {
@@ -195,7 +195,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
-    func npubPressed(in cell: ProfileInfoCell) {
+    func npubPressed() {
         UIPasteboard.general.string = profile.data.npub
         view.showToast("Key copied to clipboard")
     }

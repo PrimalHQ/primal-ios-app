@@ -12,7 +12,7 @@ import UIKit
 import Combine
 import Kingfisher
 
-public struct ImageViewerRemote: View {
+struct ImageViewerRemote: View {
     @Binding var viewerShown: Bool
     @Binding var imageURL: String
     
@@ -25,7 +25,7 @@ public struct ImageViewerRemote: View {
     @State var dragOffset: CGSize = CGSize.zero
     @State var dragOffsetPredicted: CGSize = CGSize.zero
         
-    public init(imageURL: Binding<String>, viewerShown: Binding<Bool>, aspectRatio: Binding<CGFloat>? = nil, caption: Text? = nil, closeButtonTopRight: Bool? = false) {
+    init(imageURL: Binding<String>, viewerShown: Binding<Bool>, aspectRatio: Binding<CGFloat>? = nil, caption: Text? = nil, closeButtonTopRight: Bool? = false) {
         _imageURL = imageURL
         _viewerShown = viewerShown
         self.aspectRatio = aspectRatio
@@ -34,7 +34,7 @@ public struct ImageViewerRemote: View {
     }
     
     @ViewBuilder
-    public var body: some View {
+    var body: some View {
         VStack {
             if(viewerShown && imageURL.count > 0) {
                 ZStack {
@@ -284,48 +284,5 @@ struct PinchToZoom: ViewModifier {
 extension View {
     func pinchToZoom() -> some View {
         self.modifier(PinchToZoom())
-    }
-}
-
-
-
-
-
-
-final class ImageLoader: ObservableObject {
-    @Published var image: UIImage?
-    private let url: Binding<String>
-    private var cancellable: AnyCancellable?
-    
-    func getURLRequest(url: String) -> URLRequest {
-        let url = URL(string: url) ?? URL(string: "https://via.placeholder.com/150.png")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        return request;
-    }
-    
-    init(url: Binding<String>) {
-        self.url = url
-        
-        if(url.wrappedValue.count > 0) {
-            load()
-        }
-    }
-    
-    deinit {
-        cancellable?.cancel()
-    }
-    
-    func load() {
-        cancellable = URLSession.shared.dataTaskPublisher(for: getURLRequest(url: self.url.wrappedValue))
-            .map { UIImage(data: $0.data) }
-            .replaceError(with: nil)
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.image, on: self)
-    }
-    
-    func cancel() {
-        cancellable?.cancel()
     }
 }

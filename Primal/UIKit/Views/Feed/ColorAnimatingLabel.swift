@@ -47,7 +47,7 @@ final class ColorAnimatingLabel: UIView {
         }
     }
     
-    init(title: String? = nil) {
+    init() {
         super.init(frame: .zero)
         addSubview(backLabel)
         addSubview(frontLabel)

@@ -11,12 +11,6 @@ import Foundation
 import UIKit
 import Kingfisher
 
-extension UIViewController {
-    var menuContainer: MenuContainerController? {
-        parent as? MenuContainerController ?? parent?.menuContainer
-    }
-}
-
 final class MenuContainerController: UIViewController, Themeable {
     private let profileImage = UIImageView()
     private let nameLabel = UILabel()
@@ -39,7 +33,6 @@ final class MenuContainerController: UIViewController, Themeable {
         get { child.navigationItem }
     }
     
-    private var isShowingMenu = false
     private var childLeftConstraint: NSLayoutConstraint?
     private var cancellables: Set<AnyCancellable> = []
     

@@ -8,13 +8,7 @@
 import Foundation
 import UIKit
 
-final class NostrWalletConnectDeeplinkHandler : DeeplinkHandlerProtocol {
-    private weak var rootViewController: UIViewController?
-
-    init(rootViewController: UIViewController?) {
-        self.rootViewController = rootViewController
-    }
-    
+final class NostrWalletConnectDeeplinkHandler : DeeplinkHandlerProtocol {    
     func canOpenURL(_ url: URL) -> Bool {
         return url.absoluteString.starts(with: "nostrwalletconnect://")
     }

@@ -14,18 +14,6 @@ final class RelaysPostbox {
     
     static let instance = RelaysPostbox()
     
-    var atLeastOneConnected: CurrentValueSubject<Bool, Error> {
-        get {
-            return self.pool.atLeastOneConnected
-        }
-    }
-    
-    var numOfConnected: CurrentValueSubject<Int, Error> {
-        get {
-            return self.pool.numOfConnected
-        }
-    }
-    
     var relays: CurrentValueSubject<[String], Error> {
         get {
             return self.pool.relays

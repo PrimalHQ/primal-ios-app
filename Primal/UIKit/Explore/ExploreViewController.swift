@@ -10,7 +10,6 @@ import Combine
 
 final class ExploreViewController: UIViewController, Themeable {
     let navigationBarExtender = UIView()
-    let backgroundView = UIView()
     
     var hashtags: [PopularHashtag] = [] {
         didSet {

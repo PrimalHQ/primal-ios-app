@@ -30,16 +30,15 @@ final class RelayConnection {
     private var subHandlers: [String: (_ result: [JSON], _ relay: String) -> Void] = [:]
     private var responseBuffer: [String: [JSON]] = [:]
     
-    private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
     var state: CurrentValueSubject = CurrentValueSubject<RelayConnectionState, RelayConnectionError>(.disconnected)
     var identity: String
     
-    init(socketURL: String, dispatchQueue: DispatchQueue = DispatchQueue.main) {
-        self.socketURL = URL(string: socketURL)!
+    init(socketURL: URL, dispatchQueue: DispatchQueue) {
+        self.socketURL = socketURL
         self.dispatchQueue = dispatchQueue
-        self.identity = socketURL
+        self.identity = socketURL.absoluteString
     }
     
     deinit {
@@ -54,12 +53,6 @@ final class RelayConnection {
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
-    }
-    
-    func reconnect() {
-        socket?.delegate = nil
-        socket?.disconnect()
-        connect()
     }
     
     func disconnect() {

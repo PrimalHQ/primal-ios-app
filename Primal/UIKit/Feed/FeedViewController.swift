@@ -16,7 +16,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let navigationBarLengthner = SpacerView(height: 7)
     var table = UITableView()
     lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
-    let feed: FeedManager
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -37,8 +36,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
     var cancellables: Set<AnyCancellable> = []
     
-    init(feed: FeedManager) {
-        self.feed = feed
+    init() {
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -75,10 +73,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
                         didZap: ZapManager.instance.hasZapped(data.post.id)
             )
             cell.delegate = self
-        }
-        
-        if indexPath.row > posts.count - 10  {
-            feed.requestNewPage()
         }
         return cell
     }
@@ -264,7 +258,7 @@ extension FeedViewController: PostCellDelegate {
         present(safari, animated: true)
     }
     
-    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
+    func postCellDidTapImages(resource: MediaMetadata.Resource) {
         weak var viewController: UIViewController?
         let binding = UIHostingController(rootView: ImageViewerRemote(
             imageURL: .init(get: { resource.url }, set: { _ in }),

@@ -10,7 +10,6 @@ import UIKit
 import Kingfisher
 
 final class OnboardingFollowSuggestionsController: UIViewController {
-    typealias Suggestion = FollowSuggestionsRequest.Response.Suggestion
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
