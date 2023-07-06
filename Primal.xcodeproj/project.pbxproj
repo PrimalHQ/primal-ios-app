@@ -23,7 +23,7 @@
 		936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */; };
 		936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */; };
 		93906B912A55A17700962A94 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B902A55A17700962A94 /* Crypto.swift */; };
-		93906B942A55B5D000962A94 /* Nostr_Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B932A55B5D000962A94 /* Nostr_Event.swift */; };
+		93906B942A55B5D000962A94 /* NostrObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B932A55B5D000962A94 /* NostrObject.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
 		939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330FC29A3E370003954C2 /* Preview Assets.xcassets */; };
 		9393310729A3E370003954C2 /* PrimalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393310629A3E370003954C2 /* PrimalTests.swift */; };
@@ -243,7 +243,7 @@
 		936DD9F62A3B559900A65F79 /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
 		936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNotifications.swift; sourceTree = "<group>"; };
 		93906B902A55A17700962A94 /* Crypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
-		93906B932A55B5D000962A94 /* Nostr_Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nostr_Event.swift; sourceTree = "<group>"; };
+		93906B932A55B5D000962A94 /* NostrObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrObject.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		939330F929A3E370003954C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		939330FC29A3E370003954C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -560,7 +560,7 @@
 		93906B922A55B5C500962A94 /* Nostr */ = {
 			isa = PBXGroup;
 			children = (
-				93906B932A55B5D000962A94 /* Nostr_Event.swift */,
+				93906B932A55B5D000962A94 /* NostrObject.swift */,
 			);
 			path = Nostr;
 			sourceTree = "<group>";
@@ -1505,7 +1505,7 @@
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
-				93906B942A55B5D000962A94 /* Nostr_Event.swift in Sources */,
+				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,

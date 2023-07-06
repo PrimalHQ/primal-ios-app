@@ -89,6 +89,18 @@ final class RelayPool {
         }
     }
     
+    func request(_ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
+        Self.dispatchQueue.async {
+            for connection in self.connections {
+                if connection.state.value == .connected {
+                    connection.request(ev, handler)
+                } else {
+                    self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev.toNostrEvent(), callback: handler))
+                }
+            }
+        }
+    }
+    
     func requestTo(_ specificRelay: String, _ ev: NostrEvent, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
         Self.dispatchQueue.async {
             for connection in self.connections {
@@ -97,6 +109,20 @@ final class RelayPool {
                         connection.request(ev, handler)
                     } else {
                         self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                    }
+                }
+            }
+        }
+    }
+    
+    func requestTo(_ specificRelay: String, _ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
+        Self.dispatchQueue.async {
+            for connection in self.connections {
+                if connection.identity == specificRelay {
+                    if connection.state.value == .connected {
+                        connection.request(ev, handler)
+                    } else {
+                        self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev.toNostrEvent(), callback: handler))
                     }
                 }
             }

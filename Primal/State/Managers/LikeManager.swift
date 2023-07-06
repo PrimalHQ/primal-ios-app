@@ -17,16 +17,16 @@ final class LikeManager {
     func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
-        guard
-            !hasLiked(post.id),
-            let keypair = get_saved_keypair()
-        else {
+        guard !hasLiked(post.id) else {
             print("Error getting saved keypair")
             return
         }
                 
-        let ev  = make_like_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, post: post)
-        
+        guard let ev = createNostrLikeEvent(post: post) else {
+            print("Error creating nostr like event")
+            return
+        }
+                
         userLikes.insert(post.id)
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in

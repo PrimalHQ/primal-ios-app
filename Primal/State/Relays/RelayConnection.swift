@@ -74,6 +74,22 @@ final class RelayConnection {
         }
     }
     
+    func request(_ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
+        self.dispatchQueue.async {
+            guard
+                let jsonData = try? JSONEncoder().encode(ev.toEventJSON()),
+                let jsonStr = String(data: jsonData, encoding: .utf8)
+            else {
+                return
+            }
+            
+            print("REQUEST:\n\(jsonStr)")
+            self.responseBuffer[ev.id] = .init()
+            self.subHandlers[ev.id] = handler
+            self.socket?.send(string: jsonStr)
+        }
+    }
+    
     private func processMessage(_ json: JSON) {
         guard
             let subId = json.arrayValue?[1].stringValue,
