@@ -10,7 +10,7 @@ import Kingfisher
 import FLAnimatedImage
 
 protocol ImageCollectionViewDelegate: AnyObject {
-    func didTapImage(resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource])
+    func didTapImage(resource: MediaMetadata.Resource)
 }
 
 final class ImageCollectionView: UICollectionView {
@@ -44,7 +44,7 @@ extension ImageCollectionView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageDelegate?.didTapImage(resource: imageResources[indexPath.item], resources: imageResources)
+        imageDelegate?.didTapImage(resource: imageResources[indexPath.item])
     }
 }
 

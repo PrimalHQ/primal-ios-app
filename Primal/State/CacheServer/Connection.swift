@@ -33,7 +33,6 @@ final class Connection {
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
     private init() {
-        identity = UUID().uuidString
         self.connect()
     }
     
@@ -42,8 +41,6 @@ final class Connection {
     }
     
     static let instance = Connection()
-    
-    let identity: String
     
     @Published var isConnected: Bool = false
     

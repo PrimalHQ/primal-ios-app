@@ -32,7 +32,7 @@ final class SelfSizingTextView: UITextView {
         guard let width = preferredMaxLayoutWidth else {
             return super.intrinsicContentSize
         }
-        return CGSize(width: width, height: textHeightForWidth(width))
+        return CGSize(width: width, height: textHeightForWidth())
     }
     
     override func layoutSubviews() {
@@ -47,7 +47,7 @@ private extension UIEdgeInsets {
 }
 
 private extension UITextView {
-    func textHeightForWidth(_ width: CGFloat) -> CGFloat {
+    func textHeightForWidth() -> CGFloat {
         let storage = NSTextStorage(attributedString: attributedText)
         let width = bounds.width - textContainerInset.horizontal
         let containerSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)

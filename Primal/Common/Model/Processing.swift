@@ -222,15 +222,6 @@ extension NSString {
     }
 }
 
-extension NSItemProvider {
-    static var webImageProvider: NSItemProvider? {
-        if let url = Bundle.main.url(forResource: "Web", withExtension: "png") {
-            return .init(contentsOf: url)
-        }
-        return nil
-    }
-}
-
 extension PrimalUser {
     var firstIdentifier: String {
         if !displayName.isEmpty {

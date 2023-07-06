@@ -8,10 +8,6 @@
 import UIKit
 
 final class GradientInGradientButton: MyButton {
-    var cornerRadius: CGFloat {
-        get { borderGradient.cornerRadius }
-        set { borderGradient.cornerRadius = newValue }
-    }
     
     private let borderGradient = GradientBorderView(
         gradientColors: [

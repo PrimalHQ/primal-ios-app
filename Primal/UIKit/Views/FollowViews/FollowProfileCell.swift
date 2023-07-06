@@ -27,10 +27,6 @@ final class FollowProfileCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func update() {
-        
-    }
 }
 
 private extension FollowProfileCell {

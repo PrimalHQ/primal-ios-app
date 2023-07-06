@@ -258,7 +258,7 @@ extension FeedViewController: PostCellDelegate {
         present(safari, animated: true)
     }
     
-    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource, resources: [MediaMetadata.Resource]) {
+    func postCellDidTapImages(resource: MediaMetadata.Resource) {
         weak var viewController: UIViewController?
         let binding = UIHostingController(rootView: ImageViewerRemote(
             imageURL: .init(get: { resource.url }, set: { _ in }),

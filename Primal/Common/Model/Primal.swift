@@ -72,16 +72,6 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     let sig: String
     let tags: [[String]]
     
-    init(kind: Int32, content: PrimalSettingsContent, id: String, created_at: Int32, pubkey: String, sig: String, tags: [[String]]) {
-        self.kind = kind
-        self.content = content
-        self.id = id
-        self.created_at = created_at
-        self.pubkey = pubkey
-        self.sig = sig
-        self.tags = tags
-    }
-    
     init?(json: JSON) {
         guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
             print("Error decoding PrimalSettingsContent to json")
@@ -180,13 +170,9 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         return domain
     }
     
-    // private var _lnurl: String? = nil
     var lnurl: String? {
-//        if let _lnurl {
-//            return _lnurl
-//        }
-        
         var addr: String = ""
+        
         if lud16 == "" && lud06 == "" {
             return nil
         }
@@ -194,12 +180,9 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         addr = lud16 == "" ? lud06 : lud16
         
         if addr.contains("@") {
-            // this is a heavy op and is used a lot in views, cache it!
             let addr = lnaddress_to_lnurl(addr);
-            // _lnurl = addr
             return addr
         }
-        
         if !addr.lowercased().hasPrefix("lnurl") {
             return nil
         }
@@ -271,46 +254,6 @@ struct PrimalPost : Codable, Hashable, Identifiable {
     
     static func == (lhs: PrimalPost, rhs: PrimalPost) -> Bool {
         return lhs.post.id == rhs.post.id
-    }
-    
-    static func example() -> PrimalPost {
-        let userUUID = UUID().uuidString
-        let user: PrimalUser = PrimalUser(
-            id: userUUID,
-            pubkey: userUUID,
-            npub: userUUID,
-            name: userUUID,
-            about: userUUID,
-            picture: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
-            nip05: userUUID,
-            banner: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y",
-            displayName: userUUID,
-            location: userUUID,
-            lud06: userUUID,
-            lud16: userUUID,
-            website: userUUID,
-            tags: [[]],
-            created_at: Int32(Date.now.timeIntervalSince1970),
-            sig: userUUID
-        )
-        let feedPostUUID = UUID().uuidString
-        let feedPost: PrimalFeedPost = PrimalFeedPost(
-            id: feedPostUUID,
-            pubkey: feedPostUUID,
-            created_at: 1677374861,
-            tags: [[]],
-            content: "\(feedPostUUID) \(feedPostUUID)\n \(userUUID)",
-            sig: feedPostUUID,
-            likes: 420,
-            mentions: 69,
-            replies: 42,
-            zaps: 666,
-            satszapped: 666,
-            score24h: 13,
-            reposts: 42
-        )
-        
-        return PrimalPost(id: UUID().uuidString, user: user, post: feedPost)
     }
 }
 

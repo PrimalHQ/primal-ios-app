@@ -25,7 +25,6 @@ final class FeedManager {
     @Published var currentFeed: String = ""
     @Published var parsedPosts: [ParsedContent] = []
     @Published var searchPaginationEvent: PrimalSearchPagination?
-    @Published var feedUsers: [PrimalUser] = []
     
     var searchTerm: String?
     var profilePubkey: String?
@@ -164,8 +163,6 @@ final class FeedManager {
     }
     
     private func generateProfileFeedRequest(_ profileId: String, limit: Double = 20) -> JSON {
-        let subId = "feed_profile\(profileId)"
-        
         let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
         
         return .object([

@@ -13,13 +13,11 @@ final class ZapManager {
     private var cancellables = Set<AnyCancellable>()
     private var relayURLString: String = ""
     private var handleEvent: ((NostrConnectionEvent) -> Void)?
-    private var handleZapEvent: (() -> Void)?
     
     private init() {}
     
     static let instance: ZapManager = ZapManager()
     
-    @Published private(set) var isConnected = false
     @Published private(set) var isConnecting = false
     @Published var userZapped: [String: Int64] = [:]
     
@@ -58,7 +56,6 @@ final class ZapManager {
             cancellable.cancel()
         }
         
-        isConnected = false
         isConnecting = false
     }
     func reconnect() {
@@ -70,10 +67,8 @@ final class ZapManager {
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
-    func amountZapped(_ eventId: String) -> Int64 { userZapped[eventId, default: 0] }
     
     func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
-        self.handleZapEvent = callback
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
             return
@@ -173,7 +168,6 @@ final class ZapManager {
         switch event {
         case .connected:
             DispatchQueue.main.async {
-                self.isConnected = true
                 self.isConnecting = false
                 print("✅ Success: NWCRelayConnection (\(self.relayURLString)) has connected")
             }
@@ -184,7 +178,6 @@ final class ZapManager {
                 print("⚠️ Warning: NWCRelayConnection (\(self.relayURLString)) closed with code \(closeCode), reason: \(String(describing: reason))")
             }
             DispatchQueue.main.async {
-                self.isConnected = false
                 self.isConnecting = false
                 self.reconnect()
             }
@@ -196,7 +189,6 @@ final class ZapManager {
                 return
             }
             DispatchQueue.main.async {
-                self.isConnected = false
                 self.isConnecting = false
                 self.reconnect()
             }

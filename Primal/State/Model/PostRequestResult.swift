@@ -31,7 +31,7 @@ struct NostrRepost {
     let post: NostrContent
 }
 
-public struct PopularHashtag {
+struct PopularHashtag {
     var title: String
     var apperances: Double
 }
