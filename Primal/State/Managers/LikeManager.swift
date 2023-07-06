@@ -22,7 +22,7 @@ final class LikeManager {
             return
         }
                 
-        guard let ev = createNostrLikeEvent(post: post) else {
+        guard let ev = NostrObject.like(post: post) else {
             print("Error creating nostr like event")
             return
         }

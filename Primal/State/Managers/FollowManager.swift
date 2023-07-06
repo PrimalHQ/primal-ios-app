@@ -16,18 +16,15 @@ final class FollowManager {
     func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
     
     func sendBatchFollowEvent(_ pubkeys: [String]) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         var contacts = IdentityManager.instance.userContacts.contacts
         contacts.append(contentsOf: pubkeys)
         IdentityManager.instance.userContacts.contacts = contacts
         
         let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
         
-        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
+        guard let ev = NostrObject.contacts(contacts, relays: relays) else {
+            return
+        }
         
         //    RelaysPostBox_bkp.the.send(ev)
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
@@ -38,18 +35,15 @@ final class FollowManager {
     }
     
     private func follow(_ pubkey: String) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         var contacts = IdentityManager.instance.userContacts.contacts
         contacts.append(pubkey)
         IdentityManager.instance.userContacts.contacts = contacts
         
         let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
         
-        let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: contacts, relays: relays)
+        guard let ev = NostrObject.contacts(contacts, relays: relays) else {
+            return
+        }
         
         //    RelaysPostBox_bkp.the.send(ev)
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
@@ -66,11 +60,6 @@ final class FollowManager {
     }
     
     private func unfollow(_ pubkey: String) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         let indexOfPubkeyToRemove = IdentityManager.instance.userContacts.contacts.firstIndex(of: pubkey)
         
         if let index = indexOfPubkeyToRemove {
@@ -78,7 +67,9 @@ final class FollowManager {
             
             let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
             
-            let ev = make_contacts_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, contacts: IdentityManager.instance.userContacts.contacts, relays: relays)
+            guard let ev = NostrObject.contacts(IdentityManager.instance.userContacts.contacts, relays: relays) else {
+                return
+            }
             
             //    RelaysPostBox_bkp.the.send(ev)
             RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in

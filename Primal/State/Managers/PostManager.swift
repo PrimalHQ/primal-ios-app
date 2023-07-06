@@ -24,7 +24,7 @@ final class PostManager {
             return
         }
         
-        let ev = make_repost_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, nostrContent: nostrContent)
+        let ev = NostrObject.repost(nostrContent)
         
         if let repostEvent = ev {
             self.userReposts.insert(repostEvent.id)
@@ -43,7 +43,9 @@ final class PostManager {
             return
         }
         
-        let ev = make_post_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, mentionedPubkeys: mentionedPubkeys)
+        guard let ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
+            return
+        }
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
             callback()
@@ -58,7 +60,9 @@ final class PostManager {
             return
         }
         
-        let ev = make_reply_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, content: content, post: post, mentionedPubkeys: mentionedPubkeys)
+        guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
+            return
+        }
         
         self.userReplied.insert(post.id)
         
