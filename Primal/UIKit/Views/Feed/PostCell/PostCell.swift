@@ -18,6 +18,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapZap(_ cell: PostCell)
+    func postCellDidLongTapZap(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
     func postCellDidTapReply(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
@@ -229,12 +230,21 @@ private extension PostCell {
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
-        zapButton.addTarget(self, action: #selector(zapTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
+        let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
+        tap.require(toFail: long)
+        zapButton.addGestureRecognizer(tap)
+        zapButton.addGestureRecognizer(long)
     }
     
     @objc func zapTapped() {
         delegate?.postCellDidTapZap(self)
+    }
+    
+    @objc func zapLongPressed() {
+        delegate?.postCellDidLongTapZap(self)
     }
     
     @objc func linkPreviewTapped() {

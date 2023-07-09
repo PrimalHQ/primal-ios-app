@@ -34,6 +34,11 @@ final class AvatarView: UIView {
             ])
         }
         
+        if images.isEmpty, let first = avatarViews.first {
+            first.image = UIImage(named: "Profile")
+            first.isHidden = false
+        }
+        
         extraView.isHidden = images.count <= 10
         let extraCount = min(images.count - 10, 99)
         extraLabel.text = "+\(extraCount)"

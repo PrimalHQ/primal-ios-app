@@ -19,6 +19,10 @@ struct SocketRequest {
         Future { promise in
             Connection.instance.requestCache(name: name, request: payload) { result in
                 result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { handlePostEvent($0) }
+                
+                var stats = result.compactMap { $0.arrayValue?.last?.objectValue?["kind"]?.doubleValue } .reduce(into: Dictionary<Double, Int>(), { $0[$1] = ($0[$1] ?? 0) + 1 })
+                print(stats)
+                
                 promise(.success(pendingResult))
             }
         }.eraseToAnyPublisher()
@@ -36,7 +40,7 @@ private extension SocketRequest {
                 pendingResult.users[nostrUser.pubkey] = user
             }
         case .text:
-            pendingResult.posts.append(NostrContent(json: .object(payload)))
+            pendingResult.posts.append(NostrContent(jsonData: payload))
         case .noteStats:
             guard
                 let content = payload["content"]?.stringValue,

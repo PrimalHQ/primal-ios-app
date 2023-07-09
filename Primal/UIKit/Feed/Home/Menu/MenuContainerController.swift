@@ -241,8 +241,8 @@ private extension MenuContainerController {
         IdentityManager.instance.$userStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
             guard let stats, let self else { return }
             
-            self.followersLabel.text = stats.followers_count.localized()
-            self.followingLabel.text = stats.follows_count.localized()
+            self.followersLabel.text = stats.followers.localized()
+            self.followingLabel.text = stats.follows.localized()
         }
         .store(in: &cancellables)
     }

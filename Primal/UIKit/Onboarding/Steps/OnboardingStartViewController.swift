@@ -32,13 +32,11 @@ final class OnboardingStartViewController: UIViewController {
     }
     
     @objc func signupPressed() {
-        let signUp = OnboardingSignUpStartController()
-        show(signUp, sender: nil)
+        show(OnboardingCreateAccountController(), sender: nil)
     }
     
     @objc func signinPressed() {
-        let signIn = OnboardingSigninController()
-        show(signIn, sender: nil)
+        show(OnboardingSigninController(), sender: nil)
     }
 }
 

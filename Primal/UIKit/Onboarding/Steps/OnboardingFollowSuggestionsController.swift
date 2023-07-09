@@ -14,7 +14,7 @@ final class OnboardingFollowSuggestionsController: UIViewController {
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
     lazy var table = UITableView()
-    lazy var continueButton = FancyButton(title: "Finish")
+    lazy var continueButton = GradientBackgroundUIButton(title: "Finish")
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -55,6 +55,7 @@ private extension OnboardingFollowSuggestionsController {
             .pinToSuperview(edges: .horizontal, padding: 36)
             .pinToSuperview(edges: .top, padding: 20)
             .pinToSuperview(edges: .bottom, padding: 30, safeArea: true)
+            .constrainToSize(height: 58)
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
         
         let stack = UIStackView(arrangedSubviews: [table, buttonParent])

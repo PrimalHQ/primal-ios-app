@@ -64,7 +64,7 @@ private extension OnboardingImportTwitterController {
                     self?.showErrorMessage("We couldn't fetch that profile at this time. Please try again.")
                 }
             }, receiveValue: { [weak self] profile in
-                let twitter = OnboardingTwitterController(profile: profile)
+                let twitter = OnboardingProfileController(profile: profile, uploader: nil)
                 self?.show(twitter, sender: nil)
             })
             .store(in: &cancellables)

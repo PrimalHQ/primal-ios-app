@@ -288,6 +288,7 @@ private extension ThreadViewController {
         [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
+        atButton.widthAnchor.constraint(equalTo: imageButton.widthAnchor).isActive = true
         
         buttonStack.alignment = .center
         

@@ -40,6 +40,8 @@ final class NotificationsViewController: FeedViewController {
         }
     }
     
+    let loadingSpinner = LoadingSpinnerView()
+    
     override init() {
         super.init()
         
@@ -77,6 +79,10 @@ final class NotificationsViewController: FeedViewController {
         title = "Notifications"
         
         updateTheme()
+        
+        view.addSubview(loadingSpinner)
+        loadingSpinner.centerToSuperview().constrainToSize(100)
+        loadingSpinner.play()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -107,6 +113,9 @@ final class NotificationsViewController: FeedViewController {
             self?.notifications = newResult + seenResult
             self?.table.reloadData()
             self?.isLoading = false
+            
+            self?.loadingSpinner.isHidden = true
+            self?.loadingSpinner.stop()
             
             if self?.notifications.isEmpty == false {
                 IdentityManager.instance.updateLastSeen()
@@ -153,7 +162,6 @@ final class NotificationsViewController: FeedViewController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] notifications in
                     guard let self, self.isLoading else { return }
-                    let oldCount = self.notifications.count
                     self.notifications += notifications
                     self.isLoading = false
                 }
@@ -191,6 +199,8 @@ extension Array where Element == GroupedNotification {
                 for notification in notifications {
                     if let index = groupedByPost.firstIndex(where: { $0.post?.post.id == notification.post?.post.id }) {
                         groupedByPost[index].users += notification.users
+                    } else {
+                        groupedByPost.append(notification)
                     }
                 }
                 grouped += groupedByPost
