@@ -30,7 +30,7 @@ final class UserInfoTableCell: UITableViewCell {
         secondaryLabel.text = user.data.nip05
         secondaryLabel.isHidden = user.data.nip05.isEmpty
         
-        profileIcon.kf.setImage(with: user.profileImage.url(for: .small), options: [
+        profileIcon.kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 36, height: 36))),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage

@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import FLAnimatedImage
 
 protocol ImageCollectionViewDelegate: AnyObject {
     func didTapImage(resource: MediaMetadata.Resource)
@@ -62,24 +63,14 @@ extension ImageCollectionView: UICollectionViewDataSource {
                 guard let data = data else {
                     return
                 }
-                                
-                let imageDecoder = DBImageDecoder()
-                imageDecoder.setData(data, allDataReceived: true)
-                                
-                guard let uiImage = imageDecoder.uiImage else {
-                    return
-                }
-                                
+                
+                let anim = FLAnimatedImage(gifData: data)
+                
                 DispatchQueue.main.async {
-                    (cell as? ImageCell)?.imageView.image = uiImage
+                    (cell as? ImageCell)?.imageView.animatedImage = anim
                 }
             }
-                        
             task.resume()
-//            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
-//                .transition(.fade(0.1)),
-//                .scaleFactor(UIScreen.main.scale),
-//            ])
         } else {
             (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
                 .processor(DownsamplingImageProcessor(size: frame.size)),
@@ -93,7 +84,7 @@ extension ImageCollectionView: UICollectionViewDataSource {
 }
 
 final class ImageCell: UICollectionViewCell {
-    let imageView = UIImageView()
+    let imageView = FLAnimatedImageView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -1,5 +1,5 @@
 //
-//  LargeTwitterProfileView.swift
+//  LargeProfileView.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 25.4.23..
@@ -7,14 +7,14 @@
 
 import UIKit
 
-final class LargeTwitterProfileView: UIView {
+final class LargeProfileView: UIView {
     let coverImageView = UIImageView()
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
     let descriptionLabel = LinkableLabel()
     
-    var profile: TwitterUserRequest.Response? {
+    var profile: SignupProfileProtocol? {
         didSet {
             updateView()
         }
@@ -30,7 +30,7 @@ final class LargeTwitterProfileView: UIView {
     }
 }
 
-private extension LargeTwitterProfileView {
+private extension LargeProfileView {
     func updateView() {
         guard let profile else { return }
         profileImageView.kf.setImage(with: URL(string: profile.avatar))

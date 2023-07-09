@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import Kingfisher
 import LinkPresentation
+import FLAnimatedImage
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
@@ -17,6 +18,7 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
     func postCellDidTapZap(_ cell: PostCell)
+    func postCellDidLongTapZap(_ cell: PostCell)
     func postCellDidTapRepost(_ cell: PostCell)
     func postCellDidTapReply(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
@@ -29,7 +31,7 @@ class PostCell: UITableViewCell {
     
     let backgroundColorView = UIView()
     let threeDotsButton = UIButton()
-    let profileImageView = UIImageView()
+    let profileImageView = FLAnimatedImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
@@ -74,10 +76,24 @@ class PostCell: UITableViewCell {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        if !content.user.profileImage.variants.isEmpty {
-            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"))
+        if content.user.data.picture.hasSuffix("gif") {
+            profileImageView.image = UIImage(named: "Profile")
+            if let url = content.user.profileImage.url(for: .small) {
+                let task = URLSession.shared.dataTask(with: url) { data, _, _ in
+                    guard let data = data else {
+                        return
+                    }
+                    
+                    let anim = FLAnimatedImage(gifData: data)
+                    
+                    DispatchQueue.main.async {
+                        self.profileImageView.animatedImage = anim
+                    }
+                }
+                task.resume()
+            }
         } else {
-            profileImageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
+            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage
@@ -214,12 +230,21 @@ private extension PostCell {
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
-        zapButton.addTarget(self, action: #selector(zapTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
+        let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
+        tap.require(toFail: long)
+        zapButton.addGestureRecognizer(tap)
+        zapButton.addGestureRecognizer(long)
     }
     
     @objc func zapTapped() {
         delegate?.postCellDidTapZap(self)
+    }
+    
+    @objc func zapLongPressed() {
+        delegate?.postCellDidLongTapZap(self)
     }
     
     @objc func linkPreviewTapped() {

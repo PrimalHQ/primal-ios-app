@@ -56,5 +56,6 @@ private extension OnboardingSignUpStartController {
     }
     
     @objc func createAccountPressed() {
+        show(OnboardingCreateAccountController(), sender: nil)
     }
 }

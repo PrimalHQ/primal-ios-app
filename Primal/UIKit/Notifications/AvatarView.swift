@@ -34,6 +34,11 @@ final class AvatarView: UIView {
             ])
         }
         
+        if images.isEmpty, let first = avatarViews.first {
+            first.image = UIImage(named: "Profile")
+            first.isHidden = false
+        }
+        
         extraView.isHidden = images.count <= 10
         let extraCount = min(images.count - 10, 99)
         extraLabel.text = "+\(extraCount)"
@@ -44,7 +49,10 @@ private extension AvatarView {
     func setup() {
         let stack = UIStackView(arrangedSubviews: avatarViews + [extraView])
         
-        avatarViews.forEach { $0.contentMode = .scaleAspectFill }
+        avatarViews.forEach {
+            $0.contentMode = .scaleAspectFill
+            $0.backgroundColor = .background
+        }
         
         stack.arrangedSubviews.forEach {
             $0.constrainToSize(32)

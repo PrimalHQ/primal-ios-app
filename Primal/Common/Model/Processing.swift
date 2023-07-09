@@ -55,7 +55,10 @@ extension PostRequestResult {
   
         let all = reposts + normalPosts
         
-        return posts.compactMap { post in all.first(where: { $0.post.id == post.id }) }
+        if order.isEmpty {
+            return all
+        }
+        return order.compactMap { id in all.first(where: { $0.post.id == id }) }
     }
     
     func parse(
@@ -151,9 +154,19 @@ extension PostRequestResult {
             // It's slow to generate noteRef and searchString for every mention for every post, can be generated once and passed with the mentions
             guard let noteRef = bech32_note_id(mention.post.id) else { continue }
             let searchString = "nostr:\(noteRef)"
+            let searchString2 = "nostr:nevent..."
+            
             if text.contains(searchString) {
                 if removeExtractedPost {
                     itemsToRemove.append(searchString)
+                }
+                p.embededPost = mention
+                break
+            }
+            
+            if text.contains(searchString2) {
+                if removeExtractedPost {
+                    itemsToRemove.append(searchString2)
                 }
                 p.embededPost = mention
                 break

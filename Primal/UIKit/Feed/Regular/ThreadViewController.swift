@@ -55,8 +55,8 @@ final class ThreadViewController: PostFeedViewController {
     }    
     
     @discardableResult
-    override func open(post: PrimalFeedPost) -> FeedViewController? {
-        guard post.id != id else { return nil }
+    override func open(post: PrimalFeedPost) -> FeedViewController {
+        guard post.id != id else { return self }
         
         guard let index = posts.firstIndex(where: { $0.post == post }) else {
             return super.open(post: post)
@@ -288,6 +288,7 @@ private extension ThreadViewController {
         [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
+        atButton.widthAnchor.constraint(equalTo: imageButton.widthAnchor).isActive = true
         
         buttonStack.alignment = .center
         

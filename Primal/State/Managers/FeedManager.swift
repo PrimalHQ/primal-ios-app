@@ -199,7 +199,9 @@ final class FeedManager {
         case .text:
             guard let contentJSON = response.arrayValue?[2].objectValue else { return }
             
-            pendingResult?.posts.append(NostrContent(json: .object(contentJSON)))
+            let content = NostrContent(json: .object(contentJSON))
+            pendingResult?.posts.append(content)
+            pendingResult?.order.append(content.id)
         case .noteStats:
             guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding NostrContentStats to json")
@@ -238,7 +240,9 @@ final class FeedManager {
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             
-            pendingResult?.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON)))
+            let content = NostrContent(json: contentJSON)
+            pendingResult?.reposts.append(.init(pubkey: pubKey, post: content))
+            pendingResult?.order.append(content.id)
         case .mentions:
             guard
                 let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,

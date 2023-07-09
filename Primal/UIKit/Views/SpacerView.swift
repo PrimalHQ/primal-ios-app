@@ -11,9 +11,13 @@ final class SpacerView: UIView {
     weak var widthConstraint: NSLayoutConstraint?
     weak var heightConstraint: NSLayoutConstraint?
     
-    init(width: CGFloat? = nil, height: CGFloat? = nil, priority: UILayoutPriority = .defaultHigh) {
+    init(width: CGFloat? = nil, height: CGFloat? = nil, color: UIColor? = nil, priority: UILayoutPriority = .defaultHigh) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
+        
+        if let color {
+            backgroundColor = color
+        }
         
         if let width {
             let widthC = widthAnchor.constraint(equalToConstant: width)

@@ -53,7 +53,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     @discardableResult
-    func open(post: PrimalFeedPost) -> FeedViewController? {
+    func open(post: PrimalFeedPost) -> FeedViewController {
         let threadVC = ThreadViewController(threadId: post.id)
         show(threadVC, sender: nil)
         return threadVC
@@ -140,6 +140,35 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidLongTapZap(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        
+        let post = posts[index].post
+        let postUser = posts[index].user.data
+        
+        guard let lnurl = postUser.lnurl else {
+            showErrorMessage("User you're trying to zap didn't set up their lightning wallet")
+            return
+        }
+        
+        guard UserDefaults.standard.nwc != nil else {
+            let walletSettings = SettingsWalletViewController()
+            show(walletSettings, sender: nil)
+            return
+        }
+        
+        let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount in
+            let newZapAmount = post.satszapped + Int32(zapAmount)
+            
+            self?.animateZap(cell, amount: newZapAmount)
+    
+            ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [weak self] in
+    
+            }
+        }
+        present(popup, animated: true)
+    }
+    
     func postCellDidTapZap(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row else { return }
 

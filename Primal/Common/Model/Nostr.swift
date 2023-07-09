@@ -36,6 +36,16 @@ struct NostrContent: Codable {
         self.sig = json.objectValue?["sig"]?.stringValue ?? ""
         self.tags = json.objectValue?["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? []
     }
+    
+    init(jsonData: [String: JSON]) {
+        kind = Int32(jsonData["kind"]?.doubleValue ?? -1)
+        content = jsonData["content"]?.stringValue ?? ""
+        id = jsonData["id"]?.stringValue ?? ""
+        created_at = Int32(jsonData["created_at"]?.doubleValue ?? -1)
+        pubkey = jsonData["pubkey"]?.stringValue ?? ""
+        sig = jsonData["sig"]?.stringValue ?? ""
+        tags = jsonData["tags"]?.arrayValue?.compactMap { $0.arrayValue?.map { $0.stringValue ?? "" } } ?? []
+    }
 }
 
 struct NostrContentStats: Codable {
@@ -51,10 +61,14 @@ struct NostrContentStats: Codable {
 }
 
 struct NostrUserProfileInfo: Codable {
-    let follows_count: Int32
-    let followers_count: Int32
-    let note_count: Int32
+    let follows_count: Int32?
+    let followers_count: Int32?
+    let note_count: Int32?
     let time_joined: Int32?
+    
+    var follows: Int32 { follows_count ?? 0 }
+    var followers: Int32 { followers_count ?? 0 }
+    var notes: Int32 { note_count ?? 0 }
 }
 
 enum MediaSize: String {
