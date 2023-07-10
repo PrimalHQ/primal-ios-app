@@ -15,7 +15,7 @@ final class RegularFeedViewController: PostFeedViewController {
     var feedHex: String { "search;\(feed.searchTerm ?? "")" }
     var didAddToFeed: Bool {
         let hex = feedHex
-        return IdentityManager.instance.userSettings?.content.feeds.contains(where: { $0.hex == hex }) ?? false
+        return IdentityManager.instance.userSettings?.content.feeds?.contains(where: { $0.hex == hex }) ?? false
     }
     
     override func viewDidLoad() {

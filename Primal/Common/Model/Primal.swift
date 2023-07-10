@@ -27,12 +27,46 @@ struct PrimalSettingsFeed: Codable, Hashable {
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
-    var description: String?
+    var description: String? = "Sync app settings"
     var theme: String?
-    var feeds: [PrimalSettingsFeed]
+    var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
     var defaultZapAmount: Int64?
     var zapOptions: [Int64]?
+    
+    mutating func merge(with settings: PrimalSettingsContent) {
+        if self.description == nil {
+            self.description = "Sync app settings"
+        }
+        
+        if self.theme == nil {
+            self.theme = settings.theme
+        }
+        
+        if self.feeds == nil {
+            self.feeds = settings.feeds
+        }
+        
+        if self.notifications == nil {
+            self.notifications = settings.notifications
+        }
+        
+        if self.defaultZapAmount == nil {
+            self.defaultZapAmount = settings.defaultZapAmount
+        }
+        
+        if self.zapOptions == nil {
+            self.zapOptions = settings.zapOptions
+        }
+    }
+    
+    func isBorked() -> Bool {
+        return self.feeds == nil
+            || self.theme == nil
+            || self.notifications == nil
+            || self.zapOptions == nil
+            || self.defaultZapAmount == nil
+    }
 }
 
 struct PrimalSettingsNotifications: Codable, Hashable {
@@ -73,9 +107,13 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     let tags: [[String]]
     
     init?(json: JSON) {
-        guard let settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+        guard var settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
             print("Error decoding PrimalSettingsContent to json")
             return nil
+        }
+        
+        if settingsContent.description == nil {
+            settingsContent.description = "Sync app settings"
         }
         
         self.kind = Int32(json.arrayValue?[2].objectValue?["kind"]?.doubleValue ?? -1)

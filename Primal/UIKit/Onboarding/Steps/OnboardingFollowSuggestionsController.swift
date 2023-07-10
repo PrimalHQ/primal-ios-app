@@ -92,6 +92,8 @@ private extension OnboardingFollowSuggestionsController {
             .store(in: &cancellables)
         
         Connection.instance.$isConnected.filter { $0 }.first().sink { connected in
+            IdentityManager.instance.isNewUser = true
+            
             IdentityManager.instance.requestUserInfos()
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()

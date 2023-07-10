@@ -29,6 +29,8 @@ final class IdentityManager {
         }
     }
     
+    var isNewUser: Bool = false
+    
     @Published var user: PrimalUser?
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
@@ -102,6 +104,37 @@ final class IdentityManager {
             }
         }
     }
+    func requestDefaultSettings(_ callback: @escaping (_: PrimalSettings) -> Void) {
+        let request: JSON = .object([
+            "cache": .array([
+                .string("get_default_app_settings"),
+                .object([
+                    "client": "Primal-iOS App"
+                ])
+            ])
+        ])
+        
+        Connection.instance.request(request) { res in
+            for response in res {
+                let kind = ResponseKind.fromGenericJSON(response)
+                
+                switch kind {
+                case .defaultSettings:
+                    var primalSettings = PrimalSettings(json: response)
+                    // Ensure Latest feed *always* exists
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    if !latestFeedExists {
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                    }
+                    if let settings = primalSettings {
+                        callback(settings)
+                    }
+                default:
+                    assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
+                }
+            }
+        }
+    }
     func requestUserSettings() {
         guard let keypair = get_saved_keypair() else {
             print("Error getting saved keypair")
@@ -140,11 +173,31 @@ final class IdentityManager {
                     fallthrough
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
-                    let latestFeedExists = primalSettings?.content.feeds.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    // Ensure Latest feed *always* exists
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
                     }
-                    self.userSettings = primalSettings
+                    guard var settings = primalSettings else { return }
+                    
+                    // There were breaking changes to how settings work over the time
+                    // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
+                    if settings.content.isBorked() {
+                        self.requestDefaultSettings { defaultSettings in
+                            settings.content.merge(with: defaultSettings.content)
+                            self.userSettings = settings
+                            self.updateSettings(settings)
+                        }
+                    } else {
+                        self.userSettings = settings
+                    }
+                    
+                    // Cache server starts tracking notifications for users *only* when they update their settings
+                    // If we're a new user start tracking as soon as possible by updating their settings with default one
+                    if self.isNewUser {
+                        self.updateSettings(settings)
+                        self.isNewUser = false
+                    }
                 default:
                     assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
                 }
@@ -292,15 +345,25 @@ final class IdentityManager {
     }
     
     func addFeedToList(feed: PrimalSettingsFeed) {
-        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
-        settings.content.feeds.append(feed)
+        guard
+            var settings = userSettings,
+            let feeds = settings.content.feeds,
+            !feeds.isEmpty
+        else { return }
+        
+        settings.content.feeds?.append(feed)
+        
         updateSettings(settings)
     }
     
     func removeFeedFromList(hex: String) {
-        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
+        guard
+            var settings = userSettings,
+            let feeds = settings.content.feeds,
+            !feeds.isEmpty
+        else { return }
         
-        settings.content.feeds.removeAll(where: { $0.hex == hex })
+        settings.content.feeds?.removeAll(where: { $0.hex == hex })
         
         updateSettings(settings)
     }

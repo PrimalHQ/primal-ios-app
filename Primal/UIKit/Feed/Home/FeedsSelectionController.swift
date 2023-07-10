@@ -39,7 +39,7 @@ private extension FeedsSelectionController {
         if let pc = presentationController as? UISheetPresentationController {
             if #available(iOS 16.0, *) {
                 pc.detents = [.custom(resolver: { context in
-                    guard let count = IdentityManager.instance.userSettings?.content.feeds.count else { return 700 }
+                    guard let count = IdentityManager.instance.userSettings?.content.feeds?.count else { return 700 }
                     
                     return 100 + CGFloat(count) * 66
                 })]

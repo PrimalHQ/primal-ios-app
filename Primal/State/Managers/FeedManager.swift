@@ -91,7 +91,7 @@ final class FeedManager {
         Publishers.CombineLatest3(IdentityManager.instance.$didFinishInit, Connection.instance.$isConnected.removeDuplicates(), IdentityManager.instance.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
             guard didInit, isConnected, self?.parsedPosts.isEmpty == true, let settings = currentUserSettings else { return }
             
-            guard let feedName = settings.content.feeds.first?.name else { fatalError("no feed detected") }
+            guard let feedName = settings.content.feeds?.first?.name else { fatalError("no feed detected") }
             
             self?.currentFeed = feedName
             self?.refresh()
@@ -116,7 +116,7 @@ final class FeedManager {
             return generateProfileFeedRequest(profilePubkey)
         } else if let searchTerm {
             return generateFeedPageRequest("search;\(searchTerm)", limit: limit)
-        } else if let feed = IdentityManager.instance.userSettings?.content.feeds.first(where: { $0.name == currentFeed }) {
+        } else if let feed = IdentityManager.instance.userSettings?.content.feeds?.first(where: { $0.name == currentFeed }) {
             return generateFeedPageRequest(feed.hex, limit: limit)
         } else {
             fatalError("feed should exist at all times")
