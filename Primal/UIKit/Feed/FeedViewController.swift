@@ -53,8 +53,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     @discardableResult
-    func open(post: PrimalFeedPost) -> FeedViewController {
-        let threadVC = ThreadViewController(threadId: post.id)
+    func open(post: ParsedContent) -> FeedViewController {
+        let threadVC = ThreadViewController(threadId: post.post.id)
         show(threadVC, sender: nil)
         return threadVC
     }
@@ -240,7 +240,7 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapReply(_ cell: PostCell) {
         guard
             let indexPath = table.indexPath(for: cell),
-            let thread = open(post: posts[indexPath.row].post) as? ThreadViewController
+            let thread = open(post: posts[indexPath.row]) as? ThreadViewController
         else { return }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
@@ -250,13 +250,13 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapPost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        open(post: posts[indexPath.row].post)
+        open(post: posts[indexPath.row])
     }
     
     func postCellDidTapEmbededPost(_ cell: PostCell) {
         guard
             let indexPath = table.indexPath(for: cell),
-            let post = posts[indexPath.row].embededPost?.post
+            let post = posts[indexPath.row].embededPost
         else { return }
         
         open(post: post)
@@ -310,6 +310,6 @@ extension FeedViewController: PostCellDelegate {
 
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        open(post: posts[indexPath.row].post)
+        open(post: posts[indexPath.row])
     }
 }

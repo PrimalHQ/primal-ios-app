@@ -19,7 +19,7 @@ final class NotificationsViewController: FeedViewController {
     var notifications: [GroupedNotification] = [] {
         didSet {
             // We must assign posts to an array of posts that match so we can pass control to the FeedViewController
-            posts = notifications.map { $0.post ?? .init(post: .empty, user: ParsedUser(data: .empty)) }
+            posts = notifications.map { $0.post ?? .init(post: .empty, user: $0.users.first ?? ParsedUser(data: .empty)) }
         }
     }
     var separatorIndex: Int = -1
@@ -171,8 +171,15 @@ final class NotificationsViewController: FeedViewController {
         return cell
     }
     
-    override func open(post: PrimalFeedPost) -> FeedViewController {
-        if post.id == "empty" { return self }
+    override func open(post: ParsedContent) -> FeedViewController {
+        if post.post.id == "empty" {
+            if post.user.data.id != "empty" {
+                let profile = ProfileViewController(profile: post.user)
+                show(profile, sender: nil)
+                return profile
+            }
+            return self
+        }
         return super.open(post: post)
     }
 }

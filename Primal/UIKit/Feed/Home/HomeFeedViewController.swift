@@ -23,6 +23,8 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
+    let refresh = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,13 +33,16 @@ final class HomeFeedViewController: PostFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
-                self?.posts = posts
                 if posts.isEmpty {
-                    self?.loadingSpinner.isHidden = false
-                    self?.loadingSpinner.play()
+                    if self?.posts.isEmpty == true {
+                        self?.loadingSpinner.isHidden = false
+                        self?.loadingSpinner.play()
+                    }
                 } else {
+                    self?.posts = posts
                     self?.loadingSpinner.isHidden = true
                     self?.loadingSpinner.stop()
+                    self?.refresh.endRefreshing()
                 }
                 
                 DispatchQueue.main.async {
@@ -70,6 +75,12 @@ final class HomeFeedViewController: PostFeedViewController {
         postButton.constrainToSize(56).pinToSuperview(edges: [.trailing, .bottom], padding: 8, safeArea: true)
         
         updateTheme()
+        
+        refresh.addAction(.init(handler: { [weak self] _ in
+            self?.feed.refresh()
+        }), for: .valueChanged)
+        refresh.tintColor = .accent
+        table.addSubview(refresh)
     }
     
     override func viewWillAppear(_ animated: Bool) {

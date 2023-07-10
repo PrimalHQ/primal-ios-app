@@ -13,7 +13,7 @@ extension FloatingPoint {
     }
 }
 
-extension Int32 {
+extension FixedWidthInteger {
     func shortened() -> String {
         if self < 1000 {
             return "\(self)"
@@ -44,7 +44,7 @@ extension Int32 {
     func localized() -> String {
         let nf = NumberFormatter()
         nf.numberStyle = .decimal
-        return nf.string(from: self as NSNumber) ?? ""
+        return nf.string(from: Int(self) as NSNumber) ?? ""
     }
 }
 

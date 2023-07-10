@@ -260,10 +260,10 @@ final class KeyKeychainInfoView: UIView {
         hStack.alignment = .center
         hStack.spacing = 12
         
-        titleLabel.text = "Your Nostr key is safely stored on your Apple keychain."
+        titleLabel.text = "Your Nostr key is safely stored on your phone. You can access it in app settings."
         titleLabel.textColor = .white
         titleLabel.font = .appFont(withSize: 16, weight: .semibold)
-        titleLabel.numberOfLines = 2
+        titleLabel.numberOfLines = 3
         titleLabel.adjustsFontSizeToFitWidth = true
         
         subtitleLabel.text = "You can use the “Sign in with Apple” option in the future. You can also access your key in the Primal app settings."
@@ -271,6 +271,7 @@ final class KeyKeychainInfoView: UIView {
         subtitleLabel.font = .appFont(withSize: 16, weight: .regular)
         subtitleLabel.numberOfLines = 4
         subtitleLabel.adjustsFontSizeToFitWidth = true
+        subtitleLabel.isHidden = true
         
         backgroundColor = .init(rgb: 0x181818)
         layer.cornerRadius = 12
