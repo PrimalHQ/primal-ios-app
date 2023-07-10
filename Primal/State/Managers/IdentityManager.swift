@@ -140,9 +140,10 @@ final class IdentityManager {
                     fallthrough
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
-                    let latestFeedExists = primalSettings?.content.feeds.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    // Ensure Latest feed *always* exists
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
                     }
                     self.userSettings = primalSettings
                 default:
@@ -292,15 +293,25 @@ final class IdentityManager {
     }
     
     func addFeedToList(feed: PrimalSettingsFeed) {
-        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
-        settings.content.feeds.append(feed)
+        guard
+            var settings = userSettings,
+            var feeds = settings.content.feeds,
+            !feeds.isEmpty
+        else { return }
+        
+        settings.content.feeds?.append(feed)
+        
         updateSettings(settings)
     }
     
     func removeFeedFromList(hex: String) {
-        guard var settings = userSettings, !settings.content.feeds.isEmpty else { return }
+        guard
+            var settings = userSettings,
+            var feeds = settings.content.feeds,
+            !feeds.isEmpty
+        else { return }
         
-        settings.content.feeds.removeAll(where: { $0.hex == hex })
+        settings.content.feeds?.removeAll(where: { $0.hex == hex })
         
         updateSettings(settings)
     }
