@@ -186,6 +186,7 @@ final class IdentityManager {
                         self.requestDefaultSettings { defaultSettings in
                             settings.content.merge(with: defaultSettings.content)
                             self.userSettings = settings
+                            self.updateSettings(settings)
                         }
                     } else {
                         self.userSettings = settings
