@@ -61,19 +61,6 @@ final class RelayConnection {
         state.send(.disconnected)
     }
     
-    func request(_ ev: NostrEvent, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
-        self.dispatchQueue.async {
-            guard let jsonStr = ev.toJSONString() else {
-                return
-            }
-            
-            print("REQUEST:\n\(jsonStr)")
-            self.responseBuffer[ev.id] = .init()
-            self.subHandlers[ev.id] = handler
-            self.socket?.send(string: jsonStr)
-        }
-    }
-    
     func request(_ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
         self.dispatchQueue.async {
             guard

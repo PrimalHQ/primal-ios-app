@@ -151,10 +151,10 @@ private extension OnboardingProfileController {
                 nip05: self.profile.nip05
             )
             let keypair = generate_new_keypair()
-            guard let metadata_ev = make_metadata_event(keypair: keypair, metadata: profile) else {
+            guard let metadata_ev = NostrObject.metadata(profile) else {
                 fatalError("Unable to create metadata, this shouldn't be possible")
             }
-            guard let contacts_ev = make_first_contact_event(keypair: keypair, bootstrap_relays: bootstrap_relays) else {
+            guard let contacts_ev = NostrObject.firstContact(bootstrap_relays) else {
                 fatalError("Unable to create contacts, this shouldn't be possible")
             }
             

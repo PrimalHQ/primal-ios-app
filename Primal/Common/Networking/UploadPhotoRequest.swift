@@ -40,14 +40,7 @@ class UploadPhotoRequest {
         let strBase64:String = "data:image/svg+xml;base64," + imageData.base64EncodedString()
         let requestID = UUID().uuidString
 
-        let event = NostrEvent(
-            content: strBase64,
-            pubkey: "9e487da417dbf839138ab9c80ad8fda7367fd4609e64a6087222d76b1ff4989f",
-            kind: 10000120,
-            tags: []
-        )
-        event.calculate_id()
-        event.sign(privkey: "e6e416a0f74ec354ebd9d997eaf1dcffbff877cc31e7fc8e2bff570382e7a13e")
+        guard let event = NostrObject.create(content: strBase64, kind: 10000120) else { return }
         
         let encoder = JSONEncoder()
         guard let encoded = try? encoder.encode(event), let string = String(data: encoded, encoding: .utf8) else { return }

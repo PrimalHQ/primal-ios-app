@@ -282,21 +282,7 @@ final class IdentityManager {
     }
     
     func updateLastSeen() {
-        guard let keypair = get_saved_keypair(), let privkey = keypair.privkey else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        let ev = NostrEvent(
-            content: "{\"description\": \"update notifications last seen timestamp\"}",
-            pubkey: userHex,
-            kind: NostrKind.settings.rawValue,
-            tags: [],
-            createdAt: Int64(Date().timeIntervalSince1970)
-        )
-        
-        ev.calculate_id()
-        ev.sign(privkey: privkey)
+        guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
         Connection.instance.requestCache(name: "set_notifications_seen", request: .object([
             "event_from_user":  .object([

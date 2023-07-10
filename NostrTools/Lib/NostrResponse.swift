@@ -14,7 +14,7 @@ struct CommandResult {
 }
 
 enum NostrResponse: Decodable {
-    case event(String, NostrEvent)
+    case event(String, NostrObject)
     case notice(String)
     case eose(String)
     case ok(CommandResult)
@@ -26,9 +26,9 @@ enum NostrResponse: Decodable {
         let typ = try container.decode(String.self)
         if typ == "EVENT" {
             let sub_id = try container.decode(String.self)
-            var ev: NostrEvent
+            var ev: NostrObject
             do {
-                ev = try container.decode(NostrEvent.self)
+                ev = try container.decode(NostrObject.self)
             } catch {
                 print(error)
                 throw error

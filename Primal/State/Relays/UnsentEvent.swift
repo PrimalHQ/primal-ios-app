@@ -12,7 +12,7 @@ struct UnsentEvent : Identifiable {
     let id: String = UUID().uuidString
     
     let identity: String
-    let event: NostrEvent
+    let event: NostrObject
     let callback: (_ result: [JSON], _ relay: String) -> Void
 }
 

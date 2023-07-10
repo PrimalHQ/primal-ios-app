@@ -28,10 +28,6 @@ extension NostrObject {
             self.toJSON()
         ])
     }
-    
-    func toNostrEvent() -> NostrEvent {
-        return NostrEvent(content: self.content, pubkey: self.pubkey)
-    }
 }
 
 extension NostrObject {
@@ -65,6 +61,14 @@ extension NostrObject {
     
     static func updateSettings(_ settings: PrimalSettingsContent) -> NostrObject? {
         return createNostrUpdateSettingsEvent(settings)
+    }
+    
+    static func metadata(_ metadata: Profile) -> NostrObject? {
+        return createNostrMetadataEvent(metadata)
+    }
+    
+    static func firstContact(_ relays: [String]) -> NostrObject? {
+        return createNostrFirstContactEvent(relays)
     }
 }
 
@@ -144,6 +148,48 @@ fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsConten
     }
     
     return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
+}
+fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
+    guard let metadataJSONData = try? jsonEncoder.encode(metadata) else {
+        print("Unable to encode tags to Data")
+        return nil
+    }
+    
+    guard let metadataJSONString =  String(data: metadataJSONData, encoding: .utf8) else {
+        print("Unable to encode tags json Data to String")
+        return nil
+    }
+
+    return createNostrObject(content: metadataJSONString, kind: NostrKind.metadata.rawValue)
+}
+fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject? {
+    let rw_relay_info = RelayInfo(read: true, write: true)
+    var relays: [String: RelayInfo] = [:]
+    
+    for relay in bootstrap_relays {
+        relays[relay] = rw_relay_info
+    }
+    
+    guard let relaysJSONData = try? jsonEncoder.encode(relays) else {
+        print("Unable to encode tags to Data")
+        return nil
+    }
+    
+    guard let relaysJSONString =  String(data: relaysJSONData, encoding: .utf8) else {
+        print("Unable to encode tags json Data to String")
+        return nil
+    }
+    
+    guard
+        let keypair = get_saved_keypair()
+    else {
+        print("Unable to get keypair")
+        return nil
+    }
+    
+    let tags = [["p", keypair.pubkey]]
+    
+    return createNostrObject(content: relaysJSONString, kind: NostrKind.contacts.rawValue, tags: tags)
 }
 fileprivate func createNostrObjectId(pubkey: String, tags: [[String]], content: String, created_at: Int64, kind: Int) -> String? {
     let defaultOutputFormatting = jsonEncoder.outputFormatting
