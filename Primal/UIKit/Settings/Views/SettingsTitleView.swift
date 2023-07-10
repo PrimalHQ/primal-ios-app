@@ -29,6 +29,7 @@ final class SettingsTitleViewVibrant: UILabel, Themeable {
         super.init(frame: .zero)
         text = title
         font = .appFont(withSize: 14, weight: .medium)
+        adjustsFontSizeToFitWidth = true
         updateTheme()
     }
     

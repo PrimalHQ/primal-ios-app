@@ -38,6 +38,32 @@ final class RoundedCornersView: UIView {
         }
     }
     
+    var leftBorder = UIView()
+    lazy var leftBorderWidthC = leftBorder.widthAnchor.constraint(equalToConstant: 0)
+    
+    var rightBorder = UIView()
+    lazy var rightBorderWidthC = rightBorder.widthAnchor.constraint(equalToConstant: 0)
+    
+    var borderColor: UIColor {
+        get { .black }
+        set {
+            topView.layer.borderColor = newValue.cgColor
+            bottomView.layer.borderColor = newValue.cgColor
+            leftBorder.backgroundColor = newValue
+            rightBorder.backgroundColor = newValue
+        }
+    }
+    
+    var borderWidth: CGFloat {
+        get { leftBorderWidthC.constant }
+        set {
+//            leftBorderWidthC.constant = newValue
+//            rightBorderWidthC.constant = newValue
+//            topView.layer.borderWidth = newValue
+//            bottomView.layer.borderWidth = newValue
+        }
+    }
+    
     init(rounded: Corners? = nil, radius: CGFloat) {
         roundedCorners = rounded
         cornerRadius = radius
@@ -53,6 +79,13 @@ final class RoundedCornersView: UIView {
         stack.distribution = .fillEqually
         addSubview(stack)
         stack.pinToSuperview()
+        
+        backgroundMaskView.addSubview(leftBorder)
+        backgroundMaskView.addSubview(rightBorder)
+        leftBorder.pinToSuperview(edges: [.leading, .vertical])
+        rightBorder.pinToSuperview(edges: [.trailing, .vertical])
+        
+        NSLayoutConstraint.activate([leftBorderWidthC, rightBorderWidthC])
     }
     
     func updateCorners() {

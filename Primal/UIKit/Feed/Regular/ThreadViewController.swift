@@ -55,17 +55,17 @@ final class ThreadViewController: PostFeedViewController {
     }    
     
     @discardableResult
-    override func open(post: PrimalFeedPost) -> FeedViewController {
-        guard post.id != id else { return self }
+    override func open(post: ParsedContent) -> FeedViewController {
+        guard post.post.id != id else { return self }
         
-        guard let index = posts.firstIndex(where: { $0.post == post }) else {
+        guard let index = posts.firstIndex(where: { $0.post == post.post }) else {
             return super.open(post: post)
         }
         
         if index < mainPositionInThread {
             for vc in navigationController?.viewControllers ?? [] {
                 guard let thread = vc as? ThreadViewController else { continue }
-                if thread.id == post.id {
+                if thread.id == post.post.id {
                     thread.didMoveToMain = false
                     navigationController?.popToViewController(vc, animated: true)
                     return thread

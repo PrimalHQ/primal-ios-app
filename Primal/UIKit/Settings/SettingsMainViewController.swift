@@ -78,7 +78,7 @@ private extension SettingsMainViewController {
         deleteButton.setTitleColor(.accent.withAlphaComponent(0.5), for: .highlighted)
         deleteButton.titleLabel?.font  = .appFont(withSize: 20, weight: .regular)
         deleteButton.contentHorizontalAlignment = .left
-        deleteButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0);
+        deleteButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
         deleteButton.layer.cornerRadius = 8
         deleteButton.constrainToSize(height: 48)
         
@@ -94,6 +94,10 @@ private extension SettingsMainViewController {
         feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
         notifications.addAction(.init(handler: { [weak self] _ in
             self?.show(SettingsNotificationsViewController(), sender: nil)
+        }), for: .touchUpInside)
+        
+        zaps.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsZapsViewController(), sender: nil)
         }), for: .touchUpInside)
     }
     
