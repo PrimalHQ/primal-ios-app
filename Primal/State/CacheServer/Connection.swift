@@ -45,6 +45,9 @@ final class Connection {
     @Published var isConnected: Bool = false
     
     func connect() {
+        if isConnected {
+            disconnect()
+        }
         socket = NWWebSocket(url: socketURL, connectionQueue: Self.dispatchQueue)
         socket?.delegate = self
         socket?.connect()

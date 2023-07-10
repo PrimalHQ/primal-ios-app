@@ -29,6 +29,8 @@ final class IdentityManager {
         }
     }
     
+    var isNewUser: Bool = false
+    
     @Published var user: PrimalUser?
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
@@ -187,6 +189,13 @@ final class IdentityManager {
                         }
                     } else {
                         self.userSettings = settings
+                    }
+                    
+                    // Cache server starts tracking notifications for users *only* when they update their settings
+                    // If we're a new user start tracking as soon as possible by updating their settings with default one
+                    if self.isNewUser {
+                        self.updateSettings(settings)
+                        self.isNewUser = false
                     }
                 default:
                     assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
