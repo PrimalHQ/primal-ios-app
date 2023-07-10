@@ -58,6 +58,14 @@ extension NostrObject {
     static func contacts(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
         return createNostrContactsEvent(contacts, relays: relays)
     }
+    
+    static func getSettings() -> NostrObject? {
+        return createNostrGetSettingsEvent()
+    }
+    
+    static func updateSettings(_ settings: PrimalSettingsContent) -> NostrObject? {
+        return createNostrUpdateSettingsEvent(settings)
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()
@@ -101,6 +109,41 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     let p = ["p", post.pubkey]
     
     return createNostrObject(content: content, kind: 1, tags: [e, p] + mentionedPubkeys.map { ["p", $0, "", "mention"] })
+}
+fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
+    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    
+    guard let settingsJSON: JSON = try? JSON(["description": "Sync app settings"]) else {
+        print ("Error encoding settings")
+        return nil
+    }
+    
+    guard let settingsJSONData = try? jsonEncoder.encode(settingsJSON) else {
+        print("Unable to encode tags to Data")
+        return nil
+    }
+    
+    guard let settingsJSONString =  String(data: settingsJSONData, encoding: .utf8) else {
+        print("Unable to encode tags json Data to String")
+        return nil
+    }
+    
+    return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
+}
+fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsContent) -> NostrObject? {
+    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    
+    guard let settingsJSONData = try? jsonEncoder.encode(settings) else {
+        print("Unable to encode tags to Data")
+        return nil
+    }
+    
+    guard let settingsJSONString =  String(data: settingsJSONData, encoding: .utf8) else {
+        print("Unable to encode tags json Data to String")
+        return nil
+    }
+    
+    return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
 }
 fileprivate func createNostrObjectId(pubkey: String, tags: [[String]], content: String, created_at: Int64, kind: Int) -> String? {
     let defaultOutputFormatting = jsonEncoder.outputFormatting

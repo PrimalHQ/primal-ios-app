@@ -136,16 +136,7 @@ final class IdentityManager {
         }
     }
     func requestUserSettings() {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        guard let settingsJson: JSON = try? JSON(["description": "Sync app settings"]) else {
-            print ("Error encoding settings")
-            return
-        }
-        
-        let ev = make_settings_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, settings: settingsJson)
+        guard let ev = NostrObject.getSettings() else { return }
         
         let request: JSON = .object([
             "cache": .array([
@@ -273,23 +264,11 @@ final class IdentityManager {
     func updateSettings(_ settings: PrimalSettings) {
         userSettings = settings
         
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        guard let data = try? JSONEncoder().encode(settings.content) else {
-            print("Error encoding settings")
-            return
-        }
-        
-        let content = String(decoding: data, as: UTF8.self)
-        
-        let ev = make_settings_event(pubkey: keypair.pubkey, privkey: keypair.privkey!, settings: settings.content)
+        guard let ev = NostrObject.updateSettings(settings.content) else { return }
         
         Connection.instance.requestCache(name: "set_app_settings", request: .object([
             "settings_event":  .object([
-                "content": .string(content),
+                "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),
                 "id": .string(ev.id),
                 "kind": .number(30078),
