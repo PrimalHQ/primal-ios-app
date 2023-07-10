@@ -33,6 +33,36 @@ struct PrimalSettingsContent: Codable, Hashable {
     var notifications: PrimalSettingsNotifications?
     var defaultZapAmount: Int64?
     var zapOptions: [Int64]?
+    
+    mutating func merge(with settings: PrimalSettingsContent) {
+        if self.theme == nil {
+            self.theme = settings.theme
+        }
+        
+        if self.feeds == nil {
+            self.feeds = settings.feeds
+        }
+        
+        if self.notifications == nil {
+            self.notifications = settings.notifications
+        }
+        
+        if self.defaultZapAmount == nil {
+            self.defaultZapAmount = settings.defaultZapAmount
+        }
+        
+        if self.zapOptions == nil {
+            self.zapOptions = settings.zapOptions
+        }
+    }
+    
+    func isBorked() -> Bool {
+        return self.feeds == nil
+            || self.theme == nil
+            || self.notifications == nil
+            || self.zapOptions == nil
+            || self.defaultZapAmount == nil
+    }
 }
 
 struct PrimalSettingsNotifications: Codable, Hashable {
