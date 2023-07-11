@@ -7,6 +7,18 @@
 
 import Foundation
 
+struct NostrMetadata: Codable {
+    let display_name: String?
+    let name: String?
+    let about: String?
+    let website: String?
+    let nip05: String?
+    let picture: String?
+    let banner: String?
+    let lud06: String?
+    let lud16: String?
+}
+
 func char_to_hex(_ c: UInt8) -> UInt8?
 {
     // 0 && 9

@@ -186,7 +186,7 @@ final class FeedManager {
     }
     
     private func handlePostEvent(_ response: JSON) {
-        let kind = ResponseKind.fromGenericJSON(response)
+        let kind = NostrKind.fromGenericJSON(response)
         
         switch kind {
         case .metadata:

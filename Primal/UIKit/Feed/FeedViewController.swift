@@ -162,8 +162,8 @@ extension FeedViewController: PostCellDelegate {
             
             self?.animateZap(cell, amount: newZapAmount)
     
-            ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [weak self] in
-    
+            ZapManager.instance.zap(lnurl: lnurl, target: .note(NoteZapTarget(eventId: post.id, authorPubkey: post.pubkey)), type: .pub, amount: zapAmount) {
+                // do nothing
             }
         }
         present(popup, animated: true)
@@ -191,8 +191,8 @@ extension FeedViewController: PostCellDelegate {
         
         animateZap(cell, amount: newZapAmount)
         
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(id: post.id, author: post.pubkey), type: .pub, amount: zapAmount) { [weak self] in
-            
+        ZapManager.instance.zap(lnurl: lnurl, target: .note(NoteZapTarget(eventId: post.id, authorPubkey: post.pubkey)), type: .pub, amount: zapAmount) {
+            // do nothing
         }
     }
     

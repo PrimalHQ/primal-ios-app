@@ -151,7 +151,7 @@ private extension ProfileViewController {
             Connection.instance.requestCache(request) { [weak self] res in
                 DispatchQueue.main.async {
                     for response in res {
-                        let kind = ResponseKind.fromGenericJSON(response)
+                        let kind = NostrKind.fromGenericJSON(response)
                         
                         switch kind {
                         case .metadata:

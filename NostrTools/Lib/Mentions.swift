@@ -1,11 +1,39 @@
 //
 //  Mentions.swift
+//  Primal
 //  damus
 //
 //  Created by William Casarin on 2022-05-04.
+//  Modified by Nikola Lukovic on 11.7.23..
 //
 
 import Foundation
+
+struct ReferencedId: Identifiable, Hashable, Equatable {
+    let ref_id: String
+    let relay_id: String?
+    let key: String
+    
+    var id: String {
+        return ref_id
+    }
+}
+
+func tag_to_refid(_ tag: [String]) -> ReferencedId? {
+    if tag.count == 0 {
+        return nil
+    }
+    if tag.count == 1 {
+        return nil
+    }
+    
+    var relay_id: String? = nil
+    if tag.count > 2 {
+        relay_id = tag[2]
+    }
+    
+    return ReferencedId(ref_id: tag[1], relay_id: relay_id, key: tag[0])
+}
 
 enum MentionType {
     case pubkey

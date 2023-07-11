@@ -62,5 +62,15 @@ enum NostrResponse: Decodable {
         
         throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "expected EVENT, NOTICE or OK, got \(typ)"))
     }
+    
+    static func fromJSONString(_ str: String) -> NostrResponse? {
+        guard
+            let strData = str.data(using: .utf8),
+            let res = try? JSONDecoder().decode(NostrResponse.self, from: strData) else {
+            return nil
+        }
+        
+        return res
+    }
 }
 

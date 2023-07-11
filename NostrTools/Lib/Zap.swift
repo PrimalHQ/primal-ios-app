@@ -12,10 +12,30 @@ struct LNUrlPayRequest: Decodable {
     let commentAllowed: Int?
     
     let callback: String?
+    
+    static func fromJSON(_ str: String) -> LNUrlPayRequest? {
+        guard
+            let strData = str.data(using: .utf8),
+            let res = try? JSONDecoder().decode(LNUrlPayRequest.self, from: strData) else {
+            return nil
+        }
+        
+        return res
+    }
 }
 
 struct LNUrlPayResponse: Decodable {
     let pr: String
+    
+    static func fromJSON(_ str: String) -> LNUrlPayResponse? {
+        guard
+            let strData = str.data(using: .utf8),
+            let res = try? JSONDecoder().decode(LNUrlPayResponse.self, from: strData) else {
+            return nil
+        }
+        
+        return res
+    }
 }
 
 struct PrivateZapRequest {
@@ -53,41 +73,8 @@ enum ZapType: String {
     case non_zap
 }
 
-public struct NoteZapTarget: Equatable, Hashable {
-    public let note_id: String
-    public let author: String
-}
-
-public enum ZapTarget: Equatable {
-    case profile(String)
-    case note(NoteZapTarget)
-    
-    public static func note(id: String, author: String) -> ZapTarget {
-        return .note(NoteZapTarget(note_id: id, author: author))
-    }
-    
-    var pubkey: String {
-        switch self {
-        case .profile(let pk):
-            return pk
-        case .note(let note_target):
-            return note_target.author
-        }
-    }
-    
-    var id: String {
-        switch self {
-        case .note(let note_target):
-            return note_target.note_id
-        case .profile(let pk):
-            return pk
-        }
-    }
-}
-
 struct ZapRequest {
-    let ev: NostrEvent
-    
+    let ev: NostrObject
 }
 
 struct ZapRequestId: Equatable {
@@ -153,14 +140,14 @@ func fetch_static_payreq(_ lnurl: String) async -> LNUrlPayRequest? {
     
     let json_str = String(decoding: ret.0, as: UTF8.self)
     
-    guard let endpoint: LNUrlPayRequest = decode_json(json_str) else {
+    guard let endpoint: LNUrlPayRequest = LNUrlPayRequest.fromJSON(json_str) else {
         return nil
     }
     
     return endpoint
 }
 
-func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: Int64, zap_type: ZapType, comment: String?) async -> String? {
+func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrObject, msats: Int64, zap_type: ZapType, comment: String?) async -> String? {
     guard var base_url = payreq.callback.flatMap({ URLComponents(string: $0) }) else {
         return nil
     }
@@ -169,7 +156,7 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
     
     var query = [URLQueryItem(name: "amount", value: "\(msats)")]
     
-    if zappable && zap_type != .non_zap, let json = encode_json(zapreq) {
+    if zappable && zap_type != .non_zap, let json = zapreq.toJSONString() {
         print("zapreq json: \(json)")
         query.append(URLQueryItem(name: "nostr", value: json))
     }
@@ -201,7 +188,7 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
     }
     
     let json_str = String(decoding: ret.0, as: UTF8.self)
-    guard let result: LNUrlPayResponse = decode_json(json_str) else {
+    guard let result: LNUrlPayResponse = LNUrlPayResponse.fromJSON(json_str) else {
         print("fetch_zap_invoice error: \(json_str)")
         return nil
     }
@@ -219,6 +206,20 @@ func fetch_zap_invoice(_ payreq: LNUrlPayRequest, zapreq: NostrEvent?, msats: In
 struct WalletRequest<T: Codable>: Codable {
     let method: String
     let params: T?
+    
+    func toJSONString() -> String? {
+        guard let walletRequestJSONData = try? JSONEncoder().encode(self) else {
+            print("Unable to encode WalletRequest to Data")
+            return nil
+        }
+        
+        guard let walletRequestJSONString =  String(data: walletRequestJSONData, encoding: .utf8) else {
+            print("Unable to encode WalletRequest json Data to String")
+            return nil
+        }
+        
+        return walletRequestJSONString
+    }
 }
 
 struct PayInvoiceRequest: Codable {

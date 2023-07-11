@@ -46,7 +46,7 @@ final class IdentityManager {
         
         Connection.instance.requestCache(name: "user_infos", request: request) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
+                let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .metadata:
@@ -55,7 +55,7 @@ final class IdentityManager {
                 case .userScore:
                     if let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue {
                         guard let content: [String: UInt32] = try? JSONDecoder().decode([String: UInt32].self, from: contentString.data(using: .utf8)!) else {
-                            print("IdentityManager: requestUserInfos: Unable to decode content json for kind: \(ResponseKind.userScore.rawValue)")
+                            print("IdentityManager: requestUserInfos: Unable to decode content json for kind: \(NostrKind.userScore.rawValue)")
                             break
                         }
                         
@@ -85,7 +85,7 @@ final class IdentityManager {
         
         Connection.instance.request(request) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
+                let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .metadata:
@@ -116,7 +116,7 @@ final class IdentityManager {
         
         Connection.instance.request(request) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
+                let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .defaultSettings:
@@ -157,7 +157,7 @@ final class IdentityManager {
         
         Connection.instance.request(request) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
+                let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .settings:
@@ -208,7 +208,7 @@ final class IdentityManager {
         
         Connection.instance.request(request) { res in
             for response in res {
-                let kind = ResponseKind.fromGenericJSON(response)
+                let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .contacts:

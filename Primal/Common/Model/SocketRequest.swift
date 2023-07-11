@@ -20,9 +20,6 @@ struct SocketRequest {
             Connection.instance.requestCache(name: name, request: payload) { result in
                 result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { handlePostEvent($0) }
                 
-                var stats = result.compactMap { $0.arrayValue?.last?.objectValue?["kind"]?.doubleValue } .reduce(into: Dictionary<Double, Int>(), { $0[$1] = ($0[$1] ?? 0) + 1 })
-                print(stats)
-                
                 promise(.success(pendingResult))
             }
         }.eraseToAnyPublisher()
@@ -31,7 +28,7 @@ struct SocketRequest {
 
 private extension SocketRequest {
     private func handlePostEvent(_ payload: [String: JSON]) {
-        guard let kind = ResponseKind(rawValue: UInt32(payload["kind"]?.doubleValue ?? -1337)) else { return }
+        guard let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)) else { return }
         
         switch kind {
         case .metadata:

@@ -9,6 +9,34 @@ import Foundation
 import secp256k1_implementation
 import GenericJSON
 
+public struct NoteZapTarget: Equatable, Hashable {
+    public let eventId: String
+    public let authorPubkey: String
+}
+
+public enum ZapTarget: Equatable {
+    case profile(String)
+    case note(NoteZapTarget)
+    
+    var authorPubkey: String {
+        switch self {
+        case .profile(let pubkey):
+            return pubkey
+        case .note(let note):
+            return note.authorPubkey
+        }
+    }
+    
+    var eventId: String {
+        switch self {
+        case .note(let note):
+            return note.eventId
+        case .profile(let pubkey):
+            return pubkey
+        }
+    }
+}
+
 extension NostrObject {
     func toJSON() -> JSON {
         return .object([
@@ -28,11 +56,53 @@ extension NostrObject {
             self.toJSON()
         ])
     }
+    
+    func toJSONString() -> String? {
+        let outputFormatting = jsonEncoder.outputFormatting
+        jsonEncoder.outputFormatting = .withoutEscapingSlashes
+        defer { jsonEncoder.outputFormatting = outputFormatting }
+        
+        guard let nostrObjectJSONData = try? jsonEncoder.encode(self) else {
+            print("Unable to encode NostrObject to Data")
+            return nil
+        }
+        
+        guard let nostrObjectJSONString =  String(data: nostrObjectJSONData, encoding: .utf8) else {
+            print("Unable to encode NostrObject json Data to String")
+            return nil
+        }
+        
+        return nostrObjectJSONString
+    }
+    
+    func toEventJSONString() -> String? {
+        let json = self.toEventJSON()
+        
+        let outputFormatting = jsonEncoder.outputFormatting
+        jsonEncoder.outputFormatting = .withoutEscapingSlashes
+        defer { jsonEncoder.outputFormatting = outputFormatting }
+        
+        guard let nostrEventJSONData = try? jsonEncoder.encode(json) else {
+            print("Unable to encode NostrObject to Data")
+            return nil
+        }
+        
+        guard let nostrEventJSONString =  String(data: nostrEventJSONData, encoding: .utf8) else {
+            print("Unable to encode NostrObject json Data to String")
+            return nil
+        }
+        
+        return nostrEventJSONString
+    }
 }
 
 extension NostrObject {
     static func create(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
         return createNostrObject(content: content, kind: kind, tags: tags, createdAt: createdAt)
+    }
+    
+    static func createAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
+        return createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
     static func like(post: PrimalFeedPost) -> NostrObject? {
@@ -70,6 +140,10 @@ extension NostrObject {
     static func firstContact(_ relays: [String]) -> NostrObject? {
         return createNostrFirstContactEvent(relays)
     }
+    
+    static func zap(_ comment: String = "", target: ZapTarget, relays: [String]) -> NostrObject? {
+        return createNostrPublicZapEvent(comment, target: target, relays: relays)
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()
@@ -77,28 +151,50 @@ fileprivate let jsonEncoder = JSONEncoder()
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
         let keypair = get_saved_keypair(),
-        let privkey = keypair.privkey,
-        let id = createNostrObjectId(pubkey: keypair.pubkey, tags: tags, content: content, created_at: createdAt, kind: kind),
-        let sig = createNostrObjectSig(privkey: privkey, id: id) else {
-        
+        let privkey = keypair.privkey
+    else {
         return nil
     }
     
-    return NostrObject(id: id, sig: sig, tags: tags, pubkey: keypair.pubkey, created_at: createdAt, kind: kind, content: content)
+    return createNostrObjectAndSign(pubkey: keypair.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
+
+fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
+    guard
+        let id = createNostrObjectId(pubkey: pubkey, tags: tags, content: content, created_at: createdAt, kind: kind),
+        let sig = createNostrObjectSig(privkey: privkey, id: id)
+    else {
+        return nil
+    }
+    
+    return NostrObject(id: id, sig: sig, tags: tags, pubkey: pubkey, created_at: createdAt, kind: kind, content: content)
+}
+
 fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
     return createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
 }
+
 fileprivate func createNostrContactsEvent(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
-    let content_json = encode_json(relays)!
+    guard let relaysJSONData = try? jsonEncoder.encode(relays) else {
+        print("Unable to encode Relays to Data")
+        return nil
+    }
+    
+    guard let relaysJSONString =  String(data: relaysJSONData, encoding: .utf8) else {
+        print("Unable to encode Relays json Data to String")
+        return nil
+    }
+    
     let tags = contacts.map {
         return ["p", $0]
     }
-    return createNostrObject(content: content_json, kind: 3, tags: tags)
+    return createNostrObject(content: relaysJSONString, kind: 3, tags: tags)
 }
+
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
     return createNostrObject(content: content, kind: 1, tags: mentionedPubkeys.map { ["p", $0, "", "mention"] })
 }
+
 fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrObject? {
     guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
         print("Error encoding post json for repost")
@@ -108,12 +204,14 @@ fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrOb
     
     return createNostrObject(content: jsonStr, kind: 6, tags: [["e", nostrContent.id], ["p", nostrContent.pubkey]])
 }
+
 fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
     let e = ["e", post.id, "", "reply"]
     let p = ["p", post.pubkey]
     
     return createNostrObject(content: content, kind: 1, tags: [e, p] + mentionedPubkeys.map { ["p", $0, "", "mention"] })
 }
+
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
     let tags: [[String]] = [["d", "Primal-iOS App"]]
     
@@ -134,6 +232,7 @@ fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
     
     return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
 }
+
 fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsContent) -> NostrObject? {
     let tags: [[String]] = [["d", "Primal-iOS App"]]
     
@@ -149,6 +248,7 @@ fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsConten
     
     return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
 }
+
 fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
     guard let metadataJSONData = try? jsonEncoder.encode(metadata) else {
         print("Unable to encode tags to Data")
@@ -162,6 +262,7 @@ fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
 
     return createNostrObject(content: metadataJSONString, kind: NostrKind.metadata.rawValue)
 }
+
 fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject? {
     let rw_relay_info = RelayInfo(read: true, write: true)
     var relays: [String: RelayInfo] = [:]
@@ -191,6 +292,32 @@ fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject
     
     return createNostrObject(content: relaysJSONString, kind: NostrKind.contacts.rawValue, tags: tags)
 }
+
+fileprivate func createNostrPublicZapEvent(_ comment: String = "", target: ZapTarget, relays: [String]) -> NostrObject? {
+    let tags = createZapTags(target, relays)
+    
+    return createNostrObject(content: comment, kind: 9734, tags: tags)
+}
+
+fileprivate func createZapTags(_ target: ZapTarget, _ relays: [String]) -> [[String]] {
+    var tags: [[String]] = []
+    
+    switch target {
+    case .profile(let pubkey):
+        tags.append(["p", pubkey])
+    case .note(let noteTarget):
+        tags.append(["e", noteTarget.eventId])
+        tags.append(["p", noteTarget.authorPubkey])
+    }
+    
+    var relaysTag = ["relays"]
+    relaysTag.append(contentsOf: relays)
+    
+    tags.append(relaysTag)
+    
+    return tags
+}
+
 fileprivate func createNostrObjectId(pubkey: String, tags: [[String]], content: String, created_at: Int64, kind: Int) -> String? {
     let defaultOutputFormatting = jsonEncoder.outputFormatting
     jsonEncoder.outputFormatting = .withoutEscapingSlashes
@@ -225,6 +352,7 @@ fileprivate func createNostrObjectId(pubkey: String, tags: [[String]], content: 
     
     return hex_encode(hash)
 }
+
 fileprivate func createNostrObjectSig(privkey: String, id: String) -> String? {
     guard let privkeyBytes = try? privkey.bytes else {
         print("Unable to get bytes from privkey")
@@ -249,4 +377,40 @@ fileprivate func createNostrObjectSig(privkey: String, id: String) -> String? {
     }
     
     return hex_encode(sig.rawRepresentation)
+}
+
+@discardableResult
+func nwc_pay(url: WalletConnectURL, invoice: String) -> NostrObject? {
+    let req = make_wallet_pay_invoice_request(invoice: invoice)
+    guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
+        return nil
+    }
+    
+    return ev
+}
+
+func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoiceRequest> {
+    let data = PayInvoiceRequest(invoice: invoice)
+    return WalletRequest(method: "pay_invoice", params: data)
+}
+
+func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypair: FullKeypair) -> NostrObject? {
+    let tags = [["p", to_pk]]
+    let created_at = Int64(Date().timeIntervalSince1970)
+    guard let content = req.toJSONString() else {
+        return nil
+    }
+    return create_encrypted_event(content, to_pk: to_pk, tags: tags, keypair: keypair, created_at: created_at, kind: 23194)
+}
+
+func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: FullKeypair, created_at: Int64, kind: Int) -> NostrObject? {
+    let privkey = keypair.privkey
+    
+    guard let enc_content = encrypt_message(message: message, privkey: privkey, to_pk: to_pk) else {
+        return nil
+    }
+    
+    let ev = NostrObject.createAndSign(pubkey: keypair.pubkey, privkey: privkey, content: enc_content, kind: kind, tags: tags, createdAt: created_at)
+    
+    return ev
 }

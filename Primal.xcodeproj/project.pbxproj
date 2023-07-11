@@ -10,13 +10,13 @@
 		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
+		9309B4FC2A5D957B0088C1E8 /* CryptoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */; };
-		932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932F90DF29FAD29E00F66593 /* NostrEvent.swift */; };
 		933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 933DBDB22A1126CE008DCF1F /* secp256k1 */; };
 		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
 		933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */; };
-		9344DB312A1D28EB00C9F281 /* ResponseKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9344DB302A1D28EB00C9F281 /* ResponseKind.swift */; };
+		9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9344DB302A1D28EB00C9F281 /* NostrKind.swift */; };
 		9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */; };
 		9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */; };
 		9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */; };
@@ -170,7 +170,7 @@
 		9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */; };
 		9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */; };
 		9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */; };
-		9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */; };
+		9E9F2F9529F6AB8A00A9CDF3 /* String+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8D29F6AB8A00A9CDF3 /* String+Extra.swift */; };
 		9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */; };
 		9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */; };
 		9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */; };
@@ -232,12 +232,12 @@
 /* Begin PBXFileReference section */
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
+		9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelpers.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NostrObject+Extra.swift"; sourceTree = "<group>"; };
-		932F90DF29FAD29E00F66593 /* NostrEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrEvent.swift; sourceTree = "<group>"; };
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
 		933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedContent.swift; sourceTree = "<group>"; };
-		9344DB302A1D28EB00C9F281 /* ResponseKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseKind.swift; sourceTree = "<group>"; };
+		9344DB302A1D28EB00C9F281 /* NostrKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrKind.swift; sourceTree = "<group>"; };
 		9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerProtocol.swift; sourceTree = "<group>"; };
 		9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerCoordinator.swift; sourceTree = "<group>"; };
 		9363DE752A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectDeeplinkHandler.swift; sourceTree = "<group>"; };
@@ -426,7 +426,7 @@
 		9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Font+Extra.swift"; sourceTree = "<group>"; };
 		9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extra.swift"; sourceTree = "<group>"; };
 		9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extra.swift"; sourceTree = "<group>"; };
-		9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		9E9F2F8D29F6AB8A00A9CDF3 /* String+Extra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extra.swift"; sourceTree = "<group>"; };
 		9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoFlex-All.ttf"; sourceTree = "<group>"; };
@@ -640,7 +640,6 @@
 				9E83DF6A2A573DE800F2C379 /* Protocols */,
 				93906B922A55B5C500962A94 /* Nostr */,
 				93906B8F2A55A17000962A94 /* Crypto */,
-				9ED416072A45B2CE00892235 /* Supporting */,
 				9363DE742A30DDD80060F4BD /* Wallet */,
 				9363DE6F2A30DD880060F4BD /* DeepLinking */,
 				933DBDA82A1124F7008DCF1F /* Notes */,
@@ -682,7 +681,7 @@
 			children = (
 				9E9F2F8829F6AB8A00A9CDF3 /* Color.swift */,
 				9E9F2F8929F6AB8A00A9CDF3 /* Font+Extra.swift */,
-				9E9F2F8D29F6AB8A00A9CDF3 /* String.swift */,
+				9E9F2F8D29F6AB8A00A9CDF3 /* String+Extra.swift */,
 				9E9F2F8A29F6AB8A00A9CDF3 /* UIView+Extra.swift */,
 				9E9F2F8B29F6AB8A00A9CDF3 /* UIViewController+Extra.swift */,
 				9E79D3A22A01530B008404DB /* Date+Extra.swift */,
@@ -774,7 +773,6 @@
 				93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */,
 				93CACB1229F7D136003BBCE5 /* Keys.swift */,
 				93CACB1A29F7D23A003BBCE5 /* Bech32.swift */,
-				932F90DF29FAD29E00F66593 /* NostrEvent.swift */,
 				930497A229FAD69B003938F2 /* Mentions.swift */,
 				930497A829FAD7C3003938F2 /* NostrResponse.swift */,
 				93B7FE752A0AB0A5005AE313 /* Profile.swift */,
@@ -784,6 +782,7 @@
 				93B7FE832A0ABEE6005AE313 /* AccountCreationBootstrapper.swift */,
 				939BDB522A352ACF00E80B2C /* Zap.swift */,
 				939427132A436AF3001C1E10 /* RelayURL.swift */,
+				9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -825,7 +824,7 @@
 		93F27DAD2A280F37004ADA55 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9344DB302A1D28EB00C9F281 /* ResponseKind.swift */,
+				9344DB302A1D28EB00C9F281 /* NostrKind.swift */,
 				93F27DAE2A280F4C004ADA55 /* PostRequestResult.swift */,
 				9ED4160E2A4B7A8500892235 /* Notification.swift */,
 			);
@@ -1391,7 +1390,8 @@
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9393D8302A422C3D00F0C55A /* RelayConnection.swift in Sources */,
-				9E9F2F9529F6AB8A00A9CDF3 /* String.swift in Sources */,
+				9309B4FC2A5D957B0088C1E8 /* CryptoHelpers.swift in Sources */,
+				9E9F2F9529F6AB8A00A9CDF3 /* String+Extra.swift in Sources */,
 				9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
@@ -1418,7 +1418,7 @@
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
 				9ED4160D2A48744600892235 /* PopupMenuViewController.swift in Sources */,
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
-				9344DB312A1D28EB00C9F281 /* ResponseKind.swift in Sources */,
+				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
@@ -1453,7 +1453,6 @@
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
-				932F90E029FAD29E00F66593 /* NostrEvent.swift in Sources */,
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */,

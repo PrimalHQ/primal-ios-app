@@ -88,16 +88,10 @@ final class ZapManager {
         
         let relays = Array(RelaysPostbox.instance.relays.value.prefix(10))
         
-        guard let mzapreq = make_zap_request_event(keypair: fullKeypair, content: comment, relays: relays, target: target, zap_type: type) else {
-            // this should never happen
-            return
-        }
-        
         let amount_msat = amount * 1000
-        let zapreq = mzapreq.potentially_anon_outer_request.ev
-        let reqid = ZapRequestId(from_makezap: mzapreq)
+        guard let zapreq = NostrObject.zap(comment, target: target, relays: relays) else { return }
         
-        userZapped[target.id] = amount
+        userZapped[target.eventId] = amount
         
         Task {
             let mpayreq = await fetch_static_payreq(lnurl)
@@ -132,23 +126,24 @@ final class ZapManager {
                     }
                 }
                 
-                print("nwc: sending request \(ev.id) zap_req_id \(reqid.reqid)")
+                print("nwc: sending request \(ev.id)")
             }
         }
     }
     
-    private func send(_ req: NostrEvent, _ handler: @escaping (NostrConnectionEvent) -> Void) {
-        guard let req = req.toJSONString() else {
+    private func send(_ req: NostrObject, _ handler: @escaping (NostrConnectionEvent) -> Void) {
+        guard let req = req.toEventJSONString() else {
             print("failed to encode nostr req: \(req)")
             return
         }
         self.handleEvent = handler
         self.nwcRelayConnection?.send(.string(req))
     }
+    
     private func receive(message: URLSessionWebSocketTask.Message) {
         switch message {
         case .string(let messageString):
-            if let ev = decode_nostr_event(txt: messageString) {
+            if let ev = NostrResponse.fromJSONString(messageString) {
                 DispatchQueue.main.async {
                     if let handler = self.handleEvent {
                         handler(.nostr_event(ev))

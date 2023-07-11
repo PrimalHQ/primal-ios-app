@@ -146,7 +146,7 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
             for object in result {
                 guard
                     let payload = object.arrayValue?.last?.objectValue,
-                    let kind = ResponseKind(rawValue: UInt32(payload["kind"]?.doubleValue ?? -1377)),
+                    let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1377)),
                     case .defaultSettings = kind,
                     let contentString = payload["content"]?.stringValue,
                     let content = (try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)))?.objectValue,

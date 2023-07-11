@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-enum ResponseKind: UInt32 {
+enum NostrKind: Int {
     case metadata = 0
     case text = 1
     case recommendRelay = 2
@@ -43,9 +43,9 @@ enum ResponseKind: UInt32 {
     case mediaMetadata = 10_000_119
 }
 
-extension ResponseKind {
-    static func fromGenericJSON(_ json: JSON) -> ResponseKind {
-        guard let kind = ResponseKind(rawValue: UInt32(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) else {
+extension NostrKind {
+    static func fromGenericJSON(_ json: JSON) -> NostrKind {
+        guard let kind = NostrKind(rawValue: Int(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) else {
             fatalError("ResponseKind: fromGenericJSON: Unable to extract kind from json: \(json)")
         }
         
