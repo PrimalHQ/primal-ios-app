@@ -1,8 +1,10 @@
 //
 //  WalletConnectURL.swift
+//  Damus
 //  Primal
 //
-//  Created by Nikola Lukovic on 7.6.23..
+//  Created by William Casarin on 2023-03-22.
+//  Modified by Nikola Lukovic on 7.6.23..
 //
 
 import Foundation

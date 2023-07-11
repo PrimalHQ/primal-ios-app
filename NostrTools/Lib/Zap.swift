@@ -7,6 +7,34 @@
 
 import Foundation
 
+public struct NoteZapTarget: Equatable, Hashable {
+    public let eventId: String
+    public let authorPubkey: String
+}
+
+public enum ZapTarget: Equatable {
+    case profile(String)
+    case note(NoteZapTarget)
+    
+    var authorPubkey: String {
+        switch self {
+        case .profile(let pubkey):
+            return pubkey
+        case .note(let note):
+            return note.authorPubkey
+        }
+    }
+    
+    var eventId: String {
+        switch self {
+        case .note(let note):
+            return note.eventId
+        case .profile(let pubkey):
+            return pubkey
+        }
+    }
+}
+
 struct LNUrlPayRequest: Decodable {
     let allowsNostr: Bool?
     let commentAllowed: Int?
@@ -43,6 +71,42 @@ enum ZapType: String {
     case anon
     case priv
     case non_zap
+}
+
+@discardableResult
+func nwc_pay(url: WalletConnectURL, invoice: String) -> NostrObject? {
+    let req = make_wallet_pay_invoice_request(invoice: invoice)
+    guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
+        return nil
+    }
+    
+    return ev
+}
+
+func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoiceRequest> {
+    let data = PayInvoiceRequest(invoice: invoice)
+    return WalletRequest(method: "pay_invoice", params: data)
+}
+
+func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypair: FullKeypair) -> NostrObject? {
+    let tags = [["p", to_pk]]
+    let created_at = Int64(Date().timeIntervalSince1970)
+    guard let content = req.toJSONString() else {
+        return nil
+    }
+    return create_encrypted_event(content, to_pk: to_pk, tags: tags, keypair: keypair, created_at: created_at, kind: 23194)
+}
+
+func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: FullKeypair, created_at: Int64, kind: Int) -> NostrObject? {
+    let privkey = keypair.privkey
+    
+    guard let enc_content = encrypt_message(message: message, privkey: privkey, to_pk: to_pk) else {
+        return nil
+    }
+    
+    let ev = NostrObject.createAndSign(pubkey: keypair.pubkey, privkey: privkey, content: enc_content, kind: kind, tags: tags, createdAt: created_at)
+    
+    return ev
 }
 
 func decode_bolt11(_ s: String) -> Invoice? {

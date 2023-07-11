@@ -18,5 +18,6 @@ let bootstrap_relays = [
     "wss://universe.nostrich.land",
     "wss://relay.wellorder.net",
     "wss://e.nos.lol",
-    "wss://damus.relay.center"
+    "wss://damus.relay.center",
+    "wss://relay.primal.net"
 ]
