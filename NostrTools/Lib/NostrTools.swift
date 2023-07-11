@@ -674,8 +674,10 @@
 // <https://www.gnu.org/licenses/why-not-lgpl.html>.
 //
 //  Nostr.swift
+//  damus
 //  Primal
 //
+//  Modified by Nikola Lukovic in 2023
 //  Created by William Casarin on 2022-04-11.
 //
 

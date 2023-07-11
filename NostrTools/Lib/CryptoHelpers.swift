@@ -675,11 +675,11 @@
 //
 //  Crypto.swift
 //
-//  Primal
 //  damus
+//  Primal
 //
+//  Modified by Nikola Lukovic in 2023
 //  Created by William Casarin on 2022-04-11.
-//  Modified by Nikola Lukovic on 11.7.23..
 //
 
 import Foundation
