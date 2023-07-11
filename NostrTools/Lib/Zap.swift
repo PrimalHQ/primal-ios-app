@@ -38,51 +38,11 @@ struct LNUrlPayResponse: Decodable {
     }
 }
 
-struct PrivateZapRequest {
-    let req: ZapRequest
-    let enc: String
-}
-
-enum MakeZapRequest {
-    case priv(ZapRequest, PrivateZapRequest)
-    case normal(ZapRequest)
-    
-    var private_inner_request: ZapRequest {
-        switch self {
-        case .priv(_, let pzr):
-            return pzr.req
-        case .normal(let zr):
-            return zr
-        }
-    }
-    
-    var potentially_anon_outer_request: ZapRequest {
-        switch self {
-        case .priv(let zr, _):
-            return zr
-        case .normal(let zr):
-            return zr
-        }
-    }
-}
-
 enum ZapType: String {
     case pub
     case anon
     case priv
     case non_zap
-}
-
-struct ZapRequest {
-    let ev: NostrObject
-}
-
-struct ZapRequestId: Equatable {
-    let reqid: String
-    
-    init(from_makezap: MakeZapRequest) {
-        self.reqid = from_makezap.private_inner_request.ev.id
-    }
 }
 
 func decode_bolt11(_ s: String) -> Invoice? {
