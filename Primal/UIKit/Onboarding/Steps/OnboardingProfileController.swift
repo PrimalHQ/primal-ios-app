@@ -150,25 +150,25 @@ private extension OnboardingProfileController {
                 lud16: self.profile.lightningWallet,
                 nip05: self.profile.nip05
             )
-            let keypair = generate_new_keypair()
+
             guard let metadata_ev = NostrObject.metadata(profile) else {
                 fatalError("Unable to create metadata, this shouldn't be possible")
             }
-            guard let contacts_ev = NostrObject.firstContact(bootstrap_relays) else {
+            guard let contacts_ev = NostrObject.firstContact() else {
                 fatalError("Unable to create contacts, this shouldn't be possible")
             }
             
             RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
                 RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
-                    do {
-                        try save_keypair(pubkey: keypair.hexPubkey, privkey: keypair.hexPrivkey!)
-                        print("NSEC: \(keypair.nsec!)")
-                        
-                        RelaysPostbox.instance.disconnect()
-                        self.state = .created
-                    } catch {
-                        print("Failed to save keys")
+                    guard
+                        let keypair = IdentityManager.instance.newUserKeypair,
+                        ICloudKeychainManager.instance.upsertFirstKeypair(keypair)
+                    else {
+                        fatalError("Unable to save keypair to the keychain, this shouldn't be possible")
                     }
+                    RelaysPostbox.instance.disconnect()
+                    
+                    self.state = .created
                 }, errorHandler: {
                     self.state = .ready
                 })

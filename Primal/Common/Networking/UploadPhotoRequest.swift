@@ -37,10 +37,17 @@ class UploadPhotoRequest {
     
     func uploadImage() {
         guard let imageData = image.pngData() else { return }
+        
         let strBase64:String = "data:image/svg+xml;base64," + imageData.base64EncodedString()
         let requestID = UUID().uuidString
-
-        guard let event = NostrObject.create(content: strBase64, kind: 10000120) else { return }
+        
+        guard
+            let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair() ?? IdentityManager.instance.newUserKeypair
+        else { return }
+        
+        guard
+            let event = NostrObject.createAndSign(pubkey: keypair.hexVariant.pubkey, privkey: keypair.hexVariant.privkey, content: strBase64, kind: 10000120)
+        else { return }
         
         let encoder = JSONEncoder()
         guard let encoded = try? encoder.encode(event), let string = String(data: encoded, encoding: .utf8) else { return }

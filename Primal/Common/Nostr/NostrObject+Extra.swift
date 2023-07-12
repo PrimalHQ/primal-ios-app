@@ -109,8 +109,8 @@ extension NostrObject {
         return createNostrMetadataEvent(metadata)
     }
     
-    static func firstContact(_ relays: [String]) -> NostrObject? {
-        return createNostrFirstContactEvent(relays)
+    static func firstContact() -> NostrObject? {
+        return createNostrFirstContactEvent()
     }
     
     static func zap(_ comment: String = "", target: ZapTarget, relays: [String]) -> NostrObject? {
@@ -236,7 +236,7 @@ fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
     return createNostrObject(content: metadataJSONString, kind: NostrKind.metadata.rawValue)
 }
 
-fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject? {
+fileprivate func createNostrFirstContactEvent() -> NostrObject? {
     let rw_relay_info = RelayInfo(read: true, write: true)
     var relays: [String: RelayInfo] = [:]
     

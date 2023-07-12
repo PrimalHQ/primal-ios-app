@@ -61,6 +61,12 @@ final class OnboardingCreateAccountController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        guard let keypair = NostrKeypair.generate() else {
+            fatalError("Unable to generate a new keypair, this shouldn't be possible")
+        }
+        
+        IdentityManager.instance.newUserKeypair = keypair
+        
         setup()
     }
 }

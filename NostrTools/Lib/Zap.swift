@@ -683,23 +683,14 @@
 
 import Foundation
 
-public struct NoteZapTarget: Equatable, Hashable {
-    public let eventId: String
-    public let authorPubkey: String
+struct NoteZapTarget: Equatable, Hashable {
+    let eventId: String
+    let authorPubkey: String
 }
 
-public enum ZapTarget: Equatable {
+enum ZapTarget: Equatable {
     case profile(String)
     case note(NoteZapTarget)
-    
-    var authorPubkey: String {
-        switch self {
-        case .profile(let pubkey):
-            return pubkey
-        case .note(let note):
-            return note.authorPubkey
-        }
-    }
     
     var eventId: String {
         switch self {
@@ -764,7 +755,7 @@ func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoic
     return WalletRequest(method: "pay_invoice", params: data)
 }
 
-func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypair: FullKeypair) -> NostrObject? {
+func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypair: NostrKeypair) -> NostrObject? {
     let tags = [["p", to_pk]]
     let created_at = Int64(Date().timeIntervalSince1970)
     guard let content = req.toJSONString() else {
@@ -773,14 +764,14 @@ func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypai
     return create_encrypted_event(content, to_pk: to_pk, tags: tags, keypair: keypair, created_at: created_at, kind: 23194)
 }
 
-func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: FullKeypair, created_at: Int64, kind: Int) -> NostrObject? {
-    let privkey = keypair.privkey
+func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: NostrKeypair, created_at: Int64, kind: Int) -> NostrObject? {
+    let privkey = keypair.hexVariant.privkey
     
     guard let enc_content = encrypt_message(message: message, privkey: privkey, to_pk: to_pk) else {
         return nil
     }
     
-    let ev = NostrObject.createAndSign(pubkey: keypair.pubkey, privkey: privkey, content: enc_content, kind: kind, tags: tags, createdAt: created_at)
+    let ev = NostrObject.createAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: enc_content, kind: kind, tags: tags, createdAt: created_at)
     
     return ev
 }

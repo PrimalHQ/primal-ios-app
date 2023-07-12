@@ -53,7 +53,6 @@ extension NKeypair {
             return false
         }
         
-        let hexed = hex_encode(decoded.data)
         if decoded.hrp == "nsec" {
             return true
         }
@@ -102,5 +101,33 @@ extension HexKeypair {
         }
         
         return nil
+    }
+}
+
+extension NostrKeypair {
+    static func generate() -> NostrKeypair? {
+        guard let key = try? secp256k1.Signing.PrivateKey() else { return nil }
+        let privkey = hex_encode(key.rawRepresentation)
+        let pubkey = hex_encode(Data(key.publicKey.xonly.bytes))
+        
+        return HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)
+    }
+}
+
+extension HexKeypair: Equatable {
+    static func == (lhs: HexKeypair, rhs: HexKeypair) -> Bool {
+        return lhs.privkey == rhs.privkey && lhs.pubkey == rhs.pubkey
+    }
+}
+
+extension NKeypair: Equatable {
+    static func == (lhs: NKeypair, rhs: NKeypair) -> Bool {
+        return lhs.nsec == rhs.nsec && lhs.npub == rhs.npub
+    }
+}
+
+extension NostrKeypair: Equatable {
+    static func == (lhs: NostrKeypair, rhs: NostrKeypair) -> Bool {
+        return lhs.hexVariant == rhs.hexVariant && lhs.nVariant == rhs.nVariant
     }
 }

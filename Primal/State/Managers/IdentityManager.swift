@@ -27,6 +27,7 @@ final class IdentityManager {
     }
     
     var isNewUser: Bool = false
+    var newUserKeypair: NostrKeypair? = nil
     
     @Published var user: PrimalUser?
     @Published var userStats: NostrUserProfileInfo?
@@ -185,6 +186,7 @@ final class IdentityManager {
                     if self.isNewUser {
                         self.updateSettings(settings)
                         self.isNewUser = false
+                        self.newUserKeypair = nil
                     }
                 default:
                     assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")

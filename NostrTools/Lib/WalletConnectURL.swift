@@ -691,7 +691,7 @@ struct WalletConnectURL: Equatable {
     }
     
     let relay: RelayURL
-    let keypair: FullKeypair
+    let keypair: NostrKeypair
     let pubkey: String
     let lud16: String?
     
@@ -701,7 +701,7 @@ struct WalletConnectURL: Equatable {
         urlComponents.host = pubkey
         urlComponents.queryItems = [
             URLQueryItem(name: "relay", value: relay.id),
-            URLQueryItem(name: "secret", value: keypair.privkey)
+            URLQueryItem(name: "secret", value: keypair.hexVariant.privkey)
         ]
         
         if let lud16 {
@@ -727,11 +727,11 @@ struct WalletConnectURL: Equatable {
         }
         
         let lud16 = items.first(where: { qi in qi.name == "lud16" })?.value
-        let keypair = FullKeypair(pubkey: our_pk, privkey: secret)
+        guard let keypair = HexKeypair.nostrKeypair(hexPubkey: our_pk, hexPrivkey: secret) else { return nil }
         self = WalletConnectURL(pubkey: pk, relay: relay_url, keypair: keypair, lud16: lud16)
     }
     
-    init(pubkey: String, relay: RelayURL, keypair: FullKeypair, lud16: String?) {
+    init(pubkey: String, relay: RelayURL, keypair: NostrKeypair, lud16: String?) {
         self.pubkey = pubkey
         self.relay = relay
         self.keypair = keypair

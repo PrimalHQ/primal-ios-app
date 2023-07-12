@@ -178,23 +178,15 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
+        guard
+            NKeypair.isValidNsec(text), // allow only nsec for now
+            let _  = HexKeypair.nsecToHexPrivkey(text)
         else {
             if !paste {
                 validateAndProcessKey(paste: true)
                 return
             }
             state = .invalidKey
-            return
-        }
-        
-        if let error = get_error(parsed_key: parsed) {
-            if !paste {
-                validateAndProcessKey(paste: true)
-                return
-            }
-            state = .invalidKey
-            showErrorMessage(error)
             return
         }
         
@@ -208,7 +200,7 @@ private extension OnboardingSigninController {
         }
         
         guard
-            NKeypair.isValidNsec(text),
+            NKeypair.isValidNsec(text), // allow only nsec for now
             let privkey  = HexKeypair.nsecToHexPrivkey(text),
             let pubkey = HexKeypair.privkeyToPubkey(privkey),
             let keypair = HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)
