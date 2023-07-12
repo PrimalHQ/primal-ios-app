@@ -735,6 +735,13 @@ enum ParsedKey {
         return false
     }
 
+    var privkey: String? {
+        if case .priv(let string) = self {
+            return string
+        }
+        
+        return nil
+    }
 }
 
 func parse_key(_ thekey: String) -> ParsedKey? {

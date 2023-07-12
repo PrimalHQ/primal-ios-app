@@ -16,16 +16,13 @@ final class IdentityManager {
 
     var userHex: String {
         get {
-            let result = get_saved_keypair()
-            
             guard
-                let keypair = result,
-                let decoded = try? bech32_decode(keypair.npub)
+                let result = ICloudKeychainManager.instance.getFirstSavedKeypair()
             else {
                 return ""
             }
             
-            return hex_encode(decoded.data)
+            return result.hexVariant.pubkey
         }
     }
     

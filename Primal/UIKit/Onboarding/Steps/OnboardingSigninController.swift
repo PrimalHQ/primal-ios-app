@@ -207,22 +207,19 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard let parsed = parse_key(text), !parsed.is_pub // allow only nsec for now
+        guard
+            NKeypair.isValidNsec(text),
+            let privkey  = HexKeypair.nsecToHexPrivkey(text),
+            let pubkey = HexKeypair.privkeyToPubkey(privkey),
+            let keypair = HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)
         else {
-            state = .invalidKey
-            return
-        }
-        
-        guard process_login(parsed) else {
             state = .invalidKey
             return
         }
         
         guard
-            let keypair = get_saved_keypair(),
-            (try? bech32_decode(keypair.npub)) != nil
+            ICloudKeychainManager.instance.upsertFirstKeypair(keypair)
         else {
-            showErrorMessage("Unable to decode key.")
             state = .invalidKey
             return
         }

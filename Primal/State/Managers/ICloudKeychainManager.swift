@@ -110,7 +110,11 @@ final class ICloudKeychainManager {
     func upsertFirstKeypair(_ keypair: NostrKeypair) -> Bool {
         var npubs = getSavedNpubs()
         
-        npubs[0] = keypair.nVariant.npub
+        if npubs.count == 0 {
+            npubs.append(keypair.nVariant.npub)
+        } else {
+            npubs[0] = keypair.nVariant.npub
+        }
         
         do {
             let npubsJSONData = try JSONEncoder().encode(npubs)

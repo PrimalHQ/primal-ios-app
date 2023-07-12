@@ -103,12 +103,8 @@ final class RootViewController: UIViewController {
         CATransaction.commit()
     }
     
-    func quickReset() {
-        let result = get_saved_keypair()
-        
-        guard
-            let keypair = result,
-            let _ = try? bech32_decode(keypair.npub)
+    func quickReset() {        
+        guard let _ = ICloudKeychainManager.instance.getFirstSavedKeypair()
         else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())

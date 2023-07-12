@@ -26,25 +26,39 @@ struct NostrKeypair {
 extension NKeypair {
     static func nostrKeypair(npub: String, nsec: String) -> NostrKeypair? {
         guard
-            let decodedHexPubkey = try? bech32_decode(npub),
-            let hexPubkey = String(data: decodedHexPubkey.data, encoding: .utf8)
+            let decodedHexPubkey = try? bech32_decode(npub)
         else {
             print("NKeypair: Failed to convert npub to hex")
             return nil
         }
-        
+
         guard
-            let decodedHexPrivkey = try? bech32_decode(nsec),
-            let hexPrivkey = String(data: decodedHexPrivkey.data, encoding: .utf8)
+            let decodedHexPrivkey = try? bech32_decode(nsec)
         else {
             print("NKeypair: Failed to convert nsec to hex")
             return nil
         }
         
+        let hexPubkey = hex_encode(decodedHexPubkey.data)
+        let hexPrivkey = hex_encode(decodedHexPrivkey.data)
+        
         let nkeypair = NKeypair(npub: npub, nsec: nsec)
         let hexkeypair = HexKeypair(pubkey: hexPubkey, privkey: hexPrivkey)
         
         return NostrKeypair(hexVariant: hexkeypair, nVariant: nkeypair)
+    }
+    
+    static func isValidNsec(_ key: String) -> Bool {
+        guard let decoded = try? bech32_decode(key) else {
+            return false
+        }
+        
+        let hexed = hex_encode(decoded.data)
+        if decoded.hrp == "nsec" {
+            return true
+        }
+        
+        return false
     }
 }
 
@@ -76,5 +90,17 @@ extension HexKeypair {
         }
         
         return hex_encode(Data(key.publicKey.xonly.bytes))
+    }
+    
+    static func nsecToHexPrivkey(_ nsec: String) -> String? {
+        guard let decoded = try? bech32_decode(nsec) else {
+            return nil
+        }
+        
+        if decoded.hrp == "nsec" {
+            return hex_encode(decoded.data)
+        }
+        
+        return nil
     }
 }

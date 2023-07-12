@@ -69,16 +69,6 @@ final class ZapManager {
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
     
     func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
-        guard let fullKeypair = keypair.to_full() else {
-            print("Error transforming keypair to full keypair")
-            return
-        }
-        
         guard
             let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
             let nwc = WalletConnectURL(str: nwcUrl)

@@ -122,13 +122,14 @@ fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
-        let keypair = get_saved_keypair(),
-        let privkey = keypair.hexPrivkey
+        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
     else {
         return nil
     }
     
-    return createNostrObjectAndSign(pubkey: keypair.hexPubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
+    let privkey = keypair.hexVariant.privkey
+    
+    return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
 
 fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
@@ -254,13 +255,13 @@ fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject
     }
     
     guard
-        let keypair = get_saved_keypair()
+        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
     else {
         print("Unable to get keypair")
         return nil
     }
     
-    let tags = [["p", keypair.hexPubkey]]
+    let tags = [["p", keypair.hexVariant.pubkey]]
     
     return createNostrObject(content: relaysJSONString, kind: NostrKind.contacts.rawValue, tags: tags)
 }

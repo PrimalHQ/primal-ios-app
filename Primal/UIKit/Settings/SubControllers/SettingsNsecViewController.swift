@@ -68,7 +68,7 @@ private extension SettingsNsecViewController {
         secLabel.adjustsFontSizeToFitWidth = false
         secLabel.theme = { $0.textColor = .foreground }
         
-        secLabel.text = get_saved_keypair()?.nsec
+        secLabel.text = ICloudKeychainManager.instance.getFirstSavedKeypair()?.nVariant.nsec
     }
     
     func setupView() {
@@ -139,7 +139,7 @@ private extension SettingsNsecViewController {
         
         pubLabel.font = .appFont(withSize: 14, weight: .medium)
         pubLabel.numberOfLines = 2
-        pubLabel.text = get_saved_keypair()?.npub
+        pubLabel.text = ICloudKeychainManager.instance.getFirstSavedKeypair()?.nVariant.npub
         
         pubLabelDesc.font = .appFont(withSize: 14, weight: .regular)
         pubLabelDesc.numberOfLines = 0
@@ -160,7 +160,7 @@ private extension SettingsNsecViewController {
     
     // MARK: - @objc methods
     @objc func copyPubPressed() {
-        guard let pub = get_saved_keypair()?.npub else {
+        guard let pub = ICloudKeychainManager.instance.getFirstSavedKeypair()?.nVariant.npub else {
             showErrorMessage("Unable to find your public key")
             return
         }
@@ -169,7 +169,7 @@ private extension SettingsNsecViewController {
     }
     
     @objc func copySecPressed() {
-        guard let sec = get_saved_keypair()?.nsec else {
+        guard let sec = ICloudKeychainManager.instance.getFirstSavedKeypair()?.nVariant.nsec else {
             showErrorMessage("Unable to find your secret key")
             return
         }

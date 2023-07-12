@@ -19,11 +19,6 @@ final class PostManager {
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         let ev = NostrObject.repost(nostrContent)
         
         if let repostEvent = ev {
@@ -38,11 +33,6 @@ final class PostManager {
         }
     }
     func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping () -> Void) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         guard let ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
@@ -55,11 +45,6 @@ final class PostManager {
     }
     
     func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
-        guard let keypair = get_saved_keypair() else {
-            print("Error getting saved keypair")
-            return
-        }
-        
         guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
