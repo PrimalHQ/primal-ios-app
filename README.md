@@ -78,14 +78,19 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://primal.net)
+<div align="center">
+    <img src="https://primal.net/assets/primal_iphone-834937d2.png" alt="iPhone Screenshot">
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
 
-* [![Next][Xcode]][Xcode-url]
-* [![Swift][Swift]][Swift-url]
+[![Next][Xcode]][Xcode-url]
+
+[![Swift][Swift]][Swift-url]
+
+[![C][C]][C-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -148,3 +153,5 @@ Project Link: [https://github.com/PrimalHQ/primal-ios-app](https://github.com/Pr
 [Xcode-url]: https://developer.apple.com/xcode
 [Swift]: https://img.shields.io/badge/swift-000000?style=for-the-badge&logo=swift&logoColor=white
 [Swift-url]: https://www.swift.org
+[C]: https://img.shields.io/badge/c-000000?style=for-the-badge&logo=c&logoColor=white
+[C-url]: https://www.learn-c.org/
