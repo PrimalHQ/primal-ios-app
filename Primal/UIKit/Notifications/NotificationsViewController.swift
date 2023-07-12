@@ -42,12 +42,14 @@ final class NotificationsViewController: FeedViewController {
     
     let loadingSpinner = LoadingSpinnerView()
     
+    let idJsonID: JSON = .string(IdentityManager.instance.userHex)
+    
     override init() {
         super.init()
         
         Connection.instance.$isConnected.filter { $0 }.sink { [weak self] _ in
             self?.continousConnection = Connection.instance.requestCacheContinous(name: "notification_counts", request: .object([
-                "pubkey": .string(IdentityManager.instance.userHex)
+                "pubkey": self?.idJsonID ?? .string("")
             ])) { response in
                 guard let resDict = response.arrayValue?.last?.objectValue else { return }
                 
@@ -91,13 +93,13 @@ final class NotificationsViewController: FeedViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
         let payload = JSON.object([
-            "pubkey": .string(IdentityManager.instance.userHex),
+            "pubkey": idJsonID,
             "limit": .number(max(Double(newNotifications + 20), 50))
         ])
         
         Publishers.CombineLatest(
             SocketRequest(name: "get_notifications", payload: payload).publisher(),
-            SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": .string(IdentityManager.instance.userHex)])).publisher()
+            SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": idJsonID])).publisher()
         )
         .map { newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
             let lastSeen = seenResult.timestamps.first ?? .init(timeIntervalSince1970: 0)
@@ -151,7 +153,7 @@ final class NotificationsViewController: FeedViewController {
         
         if indexPath.row > posts.count - 10, !isLoading {
             let payload = JSON.object([
-                "pubkey": .string(IdentityManager.instance.userHex),
+                "pubkey": idJsonID,
                 "limit": .number(20),
                 "until": .number((notifications.last?.mainNotification.date ?? Date()).timeIntervalSince1970)
             ])

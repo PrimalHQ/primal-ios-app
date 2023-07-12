@@ -23,6 +23,11 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapReply(_ cell: PostCell)
     func postCellDidTapEmbededPost(_ cell: PostCell)
     func postCellDidTapRepostedProfile(_ cell: PostCell)
+    
+    func postCellDidTapShare(_ cell: PostCell)
+    func postCellDidTapCopyLink(_ cell: PostCell)
+    func postCellDidTapCopyContent(_ cell: PostCell)
+    func postCellDidTapCopyJSON(_ cell: PostCell)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -232,6 +237,26 @@ private extension PostCell {
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
         
+        threeDotsButton.menu = .init(children: [
+            UIAction(title: "Share note", handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapShare(self)
+            }),
+            UIAction(title: "Copy note link", handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyLink(self)
+            }),
+            UIAction(title: "Copy text", handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyContent(self)
+            }),
+            UIAction(title: "Copy note JSON", handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyJSON(self)
+            }),
+        ])
+        threeDotsButton.showsMenuAsPrimaryAction = true
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
         let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
         tap.require(toFail: long)
@@ -243,7 +268,9 @@ private extension PostCell {
         delegate?.postCellDidTapZap(self)
     }
     
-    @objc func zapLongPressed() {
+    @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
+        guard case .began = recognizer.state else { return }
+
         delegate?.postCellDidLongTapZap(self)
     }
     

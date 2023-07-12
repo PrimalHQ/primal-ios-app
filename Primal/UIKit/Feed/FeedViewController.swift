@@ -186,7 +186,7 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 10;
+        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
         let newZapAmount = post.satszapped + Int32(zapAmount)
         
         animateZap(cell, amount: newZapAmount)
@@ -305,6 +305,45 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidLoadImage(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         table.reloadRows(at: [indexPath], with: .none)
+    }
+    
+    // MARK: - Menu actions
+    func postCellDidTapShare(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let url = posts[indexPath.row].webURL()
+        else { return }
+        
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        present(activityViewController, animated: true, completion: nil)
+    }
+    
+    func postCellDidTapCopyLink(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let url = posts[indexPath.row].webURL()
+        else { return }
+        
+        UIPasteboard.general.url = url
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyContent(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        
+        UIPasteboard.general.string = posts[indexPath.row].attributedText.string
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyJSON(_ cell: PostCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let data = try? JSONEncoder().encode(posts[indexPath.row].post),
+            let string = String(data: data, encoding: .utf8)
+        else { return }
+        
+        UIPasteboard.general.string = string
+        view.showToast("Copied!")
     }
 }
 

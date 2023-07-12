@@ -33,13 +33,19 @@ final class HomeFeedViewController: PostFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
+                if self?.refresh.isRefreshing == false {
+                    self?.posts = posts
+                } else if !posts.isEmpty {
+                    self?.posts = []
+                    self?.posts = posts
+                }
+                
                 if posts.isEmpty {
-                    if self?.posts.isEmpty == true {
+                    if self?.refresh.isRefreshing == false {
                         self?.loadingSpinner.isHidden = false
                         self?.loadingSpinner.play()
                     }
                 } else {
-                    self?.posts = posts
                     self?.loadingSpinner.isHidden = true
                     self?.loadingSpinner.stop()
                     self?.refresh.endRefreshing()

@@ -87,4 +87,8 @@ extension ParsedContent {
         
         attributedText = result
     }
+    
+    func webURL() -> URL? {
+        URL(string: "https://primal.net/thread/\(post.id)")
+    }
 }

@@ -49,6 +49,10 @@ class SettingsZapsViewController: UIViewController, Themeable {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+        if let currentlyEditingField {
+            textFieldDidEndEditing(currentlyEditingField)
+        }
+        
         if didChange {
             guard var settings = IdentityManager.instance.userSettings else { return }
             settings.content.defaultZapAmount = defaultZapAmount

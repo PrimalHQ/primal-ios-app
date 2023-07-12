@@ -141,7 +141,7 @@ private extension ThreadViewController {
                 self.placeholderLabel.isHidden = false
                 self.didPostNewComment = true
                 self.didMoveToMain = false
-                self.feed.requestThread(postId: self.id)
+                self.feed.requestThread(postId: self.id) 
             }
         }
     }
@@ -174,7 +174,8 @@ private extension ThreadViewController {
             if self.didPostNewComment {
                 self.didPostNewComment = false
                 DispatchQueue.main.async {
-                    self.table.scrollToRow(at: IndexPath(row: self.posts.count - 1, section: 0), at: .top, animated: true)
+                    let index = min(self.posts.count - 1, self.mainPositionInThread + 1)
+                    self.table.scrollToRow(at: IndexPath(row: index, section: 0), at: .top, animated: true)
                 }
             } else {
                 self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
