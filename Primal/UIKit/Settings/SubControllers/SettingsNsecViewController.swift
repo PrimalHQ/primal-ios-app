@@ -68,7 +68,7 @@ private extension SettingsNsecViewController {
         secLabel.adjustsFontSizeToFitWidth = false
         secLabel.theme = { $0.textColor = .foreground }
         
-        secLabel.text = get_saved_keypair()?.privkey_bech32
+        secLabel.text = get_saved_keypair()?.nsec
     }
     
     func setupView() {
@@ -139,7 +139,7 @@ private extension SettingsNsecViewController {
         
         pubLabel.font = .appFont(withSize: 14, weight: .medium)
         pubLabel.numberOfLines = 2
-        pubLabel.text = get_saved_keypair()?.pubkey_bech32
+        pubLabel.text = get_saved_keypair()?.npub
         
         pubLabelDesc.font = .appFont(withSize: 14, weight: .regular)
         pubLabelDesc.numberOfLines = 0
@@ -160,7 +160,7 @@ private extension SettingsNsecViewController {
     
     // MARK: - @objc methods
     @objc func copyPubPressed() {
-        guard let pub = get_saved_keypair()?.pubkey_bech32 else {
+        guard let pub = get_saved_keypair()?.npub else {
             showErrorMessage("Unable to find your public key")
             return
         }
@@ -169,7 +169,7 @@ private extension SettingsNsecViewController {
     }
     
     @objc func copySecPressed() {
-        guard let sec = get_saved_keypair()?.privkey_bech32 else {
+        guard let sec = get_saved_keypair()?.nsec else {
             showErrorMessage("Unable to find your secret key")
             return
         }

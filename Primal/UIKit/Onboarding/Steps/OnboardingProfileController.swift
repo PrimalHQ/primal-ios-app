@@ -161,8 +161,8 @@ private extension OnboardingProfileController {
             RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
                 RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
                     do {
-                        try save_keypair(pubkey: keypair.pubkey, privkey: keypair.privkey!)
-                        print("NSEC: \(keypair.privkey_bech32!)")
+                        try save_keypair(pubkey: keypair.hexPubkey, privkey: keypair.hexPrivkey!)
+                        print("NSEC: \(keypair.nsec!)")
                         
                         RelaysPostbox.instance.disconnect()
                         self.state = .created

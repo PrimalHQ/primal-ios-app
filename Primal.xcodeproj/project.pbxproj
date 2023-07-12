@@ -11,6 +11,11 @@
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 930497AB29FAD9FD003938F2 /* secp256k1 */; };
 		9309B4FC2A5D957B0088C1E8 /* CryptoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */; };
+		9309D22C2A5EA7A300FD2127 /* ICloudKeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */; };
+		9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309D22D2A5EA7C500FD2127 /* TemporaryConnection.swift */; };
+		9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 9309D2302A5EA7EF00FD2127 /* KeychainAccess */; };
+		9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309D2322A5EA82A00FD2127 /* Array+Extra.swift */; };
+		9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */; };
 		933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 933DBDB22A1126CE008DCF1F /* secp256k1 */; };
@@ -232,6 +237,10 @@
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
 		9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelpers.swift; sourceTree = "<group>"; };
+		9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudKeychainManager.swift; sourceTree = "<group>"; };
+		9309D22D2A5EA7C500FD2127 /* TemporaryConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemporaryConnection.swift; sourceTree = "<group>"; };
+		9309D2322A5EA82A00FD2127 /* Array+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extra.swift"; sourceTree = "<group>"; };
+		9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrKeypair.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NostrObject+Extra.swift"; sourceTree = "<group>"; };
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
@@ -475,6 +484,7 @@
 				930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				93CACB1929F7D1F4003BBCE5 /* Vault in Frameworks */,
+				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -553,6 +563,7 @@
 			children = (
 				93906B932A55B5D000962A94 /* NostrObject.swift */,
 				932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */,
+				9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */,
 			);
 			path = Nostr;
 			sourceTree = "<group>";
@@ -681,6 +692,7 @@
 				9E8834C92A379672005DB548 /* NSRange+Extra.swift */,
 				9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */,
 				9E83DF6F2A573E5100F2C379 /* UIStackView+Extra.swift */,
+				9309D2322A5EA82A00FD2127 /* Array+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -780,6 +792,7 @@
 			isa = PBXGroup;
 			children = (
 				93F27D9D2A27DE32004ADA55 /* Connection.swift */,
+				9309D22D2A5EA7C500FD2127 /* TemporaryConnection.swift */,
 			);
 			path = CacheServer;
 			sourceTree = "<group>";
@@ -806,6 +819,7 @@
 				93F27DA92A27FB41004ADA55 /* PostManager.swift */,
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
 				939BDB542A374EAB00E80B2C /* ZapManager.swift */,
+				9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1228,6 +1242,7 @@
 				930497AB29FAD9FD003938F2 /* secp256k1 */,
 				9E0DEAEC29FD2F6900145E08 /* Lottie */,
 				9E83DF5E2A53308200F2C379 /* FLAnimatedImage */,
+				9309D2302A5EA7EF00FD2127 /* KeychainAccess */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -1313,6 +1328,7 @@
 				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */,
 				9E0DEAEB29FD2F6900145E08 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
+				9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -1412,6 +1428,7 @@
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
 				9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
+				9309D22C2A5EA7A300FD2127 /* ICloudKeychainManager.swift in Sources */,
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
 				9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */,
@@ -1424,6 +1441,7 @@
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				9E8834C02A328966005DB548 /* GradientButton.swift in Sources */,
+				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
@@ -1476,6 +1494,7 @@
 				9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
+				9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
@@ -1502,6 +1521,7 @@
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
+				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
@@ -1902,6 +1922,14 @@
 				revision = 40b4b38b3b1c83f7088c76189a742870e0ca06a9;
 			};
 		};
+		9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/iwill/generic-json-swift";
@@ -1957,6 +1985,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
+		};
+		9309D2302A5EA7EF00FD2127 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 		933DBDB22A1126CE008DCF1F /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;

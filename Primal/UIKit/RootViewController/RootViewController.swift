@@ -108,7 +108,7 @@ final class RootViewController: UIViewController {
         
         guard
             let keypair = result,
-            let _ = try? bech32_decode(keypair.pubkey_bech32)
+            let _ = try? bech32_decode(keypair.npub)
         else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())

@@ -20,7 +20,7 @@ final class IdentityManager {
             
             guard
                 let keypair = result,
-                let decoded = try? bech32_decode(keypair.pubkey_bech32)
+                let decoded = try? bech32_decode(keypair.npub)
             else {
                 return ""
             }

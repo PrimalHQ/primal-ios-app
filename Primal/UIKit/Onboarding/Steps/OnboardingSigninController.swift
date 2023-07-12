@@ -220,7 +220,7 @@ private extension OnboardingSigninController {
         
         guard
             let keypair = get_saved_keypair(),
-            (try? bech32_decode(keypair.pubkey_bech32)) != nil
+            (try? bech32_decode(keypair.npub)) != nil
         else {
             showErrorMessage("Unable to decode key.")
             state = .invalidKey

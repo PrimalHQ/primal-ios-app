@@ -123,12 +123,12 @@ fileprivate let jsonEncoder = JSONEncoder()
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
         let keypair = get_saved_keypair(),
-        let privkey = keypair.privkey
+        let privkey = keypair.hexPrivkey
     else {
         return nil
     }
     
-    return createNostrObjectAndSign(pubkey: keypair.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
+    return createNostrObjectAndSign(pubkey: keypair.hexPubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
 
 fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
@@ -260,7 +260,7 @@ fileprivate func createNostrFirstContactEvent(_ relays: [String]) -> NostrObject
         return nil
     }
     
-    let tags = [["p", keypair.pubkey]]
+    let tags = [["p", keypair.hexPubkey]]
     
     return createNostrObject(content: relaysJSONString, kind: NostrKind.contacts.rawValue, tags: tags)
 }

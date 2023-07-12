@@ -691,24 +691,24 @@ struct FullKeypair: Equatable {
 }
 
 struct Keypair {
-    let pubkey: String
-    let privkey: String?
-    let pubkey_bech32: String
-    let privkey_bech32: String?
+    let hexPubkey: String
+    let hexPrivkey: String?
+    let npub: String
+    let nsec: String?
     
     func to_full() -> FullKeypair? {
-        guard let privkey = self.privkey else {
+        guard let privkey = self.hexPrivkey else {
             return nil
         }
         
-        return FullKeypair(pubkey: pubkey, privkey: privkey)
+        return FullKeypair(pubkey: hexPubkey, privkey: privkey)
     }
     
     init(pubkey: String, privkey: String?) {
-        self.pubkey = pubkey
-        self.privkey = privkey
-        self.pubkey_bech32 = bech32_pubkey(pubkey) ?? pubkey
-        self.privkey_bech32 = privkey.flatMap { bech32_privkey($0) }
+        self.hexPubkey = pubkey
+        self.hexPrivkey = privkey
+        self.npub = bech32_pubkey(pubkey) ?? pubkey
+        self.nsec = privkey.flatMap { bech32_privkey($0) }
     }
 }
 
@@ -769,6 +769,7 @@ func process_login(_ key: ParsedKey) -> Bool {
         guard let pk = privkey_to_pubkey(privkey: priv) else {
             return false
         }
+        
         do {
             try save_keypair(pubkey: pk, privkey: priv)
         } catch {
