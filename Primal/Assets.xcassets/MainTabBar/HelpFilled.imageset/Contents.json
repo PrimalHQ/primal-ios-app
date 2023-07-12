@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "HelpFilled.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
