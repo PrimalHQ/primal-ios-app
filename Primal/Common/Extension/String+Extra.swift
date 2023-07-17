@@ -39,7 +39,11 @@ extension String : Identifiable {
     var isHashtag: Bool {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
         
-        guard let hashtagRegex = try? Regex(hashtagPattern) else { fatalError("Unable to create hashtag pattern regex") }
+        guard let hashtagRegex = try? Regex(hashtagPattern) else {
+            print("Unable to create hashtag pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: hashtagRegex) {
             return !matches.isEmpty
         }
@@ -50,7 +54,11 @@ extension String : Identifiable {
     var isNip08Mention: Bool {
         let mentionPattern = "\\#\\[([0-9]*)\\]"
         
-        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        guard let mentionRegex = try? Regex(mentionPattern) else {
+            print("Unable to create mention pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: mentionRegex) {
             return !matches.isEmpty
         }
@@ -61,7 +69,11 @@ extension String : Identifiable {
     var isNip27Mention: Bool {
         let mentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
         
-        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        guard let mentionRegex = try? Regex(mentionPattern) else {
+            print("Unable to create mention pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: mentionRegex) {
             return !matches.isEmpty
         }

@@ -201,7 +201,7 @@ final class ICloudKeychainManager {
                         case .mediaMetadata:
                             print("ICloudKeychainManager: nostrUserForSavedNpubs: Got mediaMetada")
                         default:
-                            assertionFailure("ICloudKeychainManager: nostrUserForSavedNpubs: Got unexpected event kind in response: \(response)")
+                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got unexpected event kind in response: \(response)")
                         }
                     }
                     callback(result)

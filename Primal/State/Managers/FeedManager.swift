@@ -128,7 +128,10 @@ final class FeedManager {
         Publishers.CombineLatest3(IdentityManager.instance.$didFinishInit, Connection.instance.$isConnected.removeDuplicates(), IdentityManager.instance.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
             guard didInit, isConnected, self?.parsedPosts.isEmpty == true, let settings = currentUserSettings else { return }
             
-            guard let feedName = settings.content.feeds?.first?.name else { fatalError("no feed detected") }
+            guard let feedName = settings.content.feeds?.first?.name else {
+                print("no feed detected")
+                return
+            }
             
             self?.currentFeed = feedName
             self?.refresh()
@@ -295,7 +298,7 @@ final class FeedManager {
             
             pendingResult?.mediaMetadata.append(metadata)
         default:
-            assertionFailure("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
+            print("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
         }
     }
 }

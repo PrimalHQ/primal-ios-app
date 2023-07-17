@@ -46,7 +46,7 @@ enum NostrKind: Int {
 extension NostrKind {
     static func fromGenericJSON(_ json: JSON) -> NostrKind {
         guard let kind = NostrKind(rawValue: Int(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) else {
-            fatalError("ResponseKind: fromGenericJSON: Unable to extract kind from json: \(json)")
+            return .metadata
         }
         
         return kind
