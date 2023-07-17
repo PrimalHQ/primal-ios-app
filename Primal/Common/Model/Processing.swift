@@ -40,13 +40,10 @@ extension PostRequestResult {
             .compactMap { (primalPost: PrimalFeedPost, user: ParsedUser, repost: NostrRepost) in
                 let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
                 
-                guard
-                    let nostrUser = users[repost.pubkey]
-                else {
-                    return post
-                }
+                guard let nostrUser = users[repost.pubkey] else { return post }
                 
-                post.reposted = createParsedUser(nostrUser)
+                post.reposted = .init(user: createParsedUser(nostrUser), date: repost.date)
+                
                 return post
             }
         

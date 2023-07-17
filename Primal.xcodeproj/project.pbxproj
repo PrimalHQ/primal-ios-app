@@ -129,6 +129,7 @@
 		9E83DF792A57FDEC00F2C379 /* UploadPhotoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */; };
 		9E83DF7B2A5800D400F2C379 /* ImageViewerRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF7A2A5800D400F2C379 /* ImageViewerRemote.swift */; };
 		9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */; };
+		9E83DF7F2A61E58E00F2C379 /* NewPostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF7E2A61E58E00F2C379 /* NewPostsView.swift */; };
 		9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E88349B2A211577005DB548 /* RootAnimatorToSignIn.swift */; };
 		9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A32A274A0D005DB548 /* PostPreviewView.swift */; };
 		9E8834A62A274A88005DB548 /* Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834A52A274A88005DB548 /* Processing.swift */; };
@@ -388,6 +389,7 @@
 		9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoRequest.swift; sourceTree = "<group>"; };
 		9E83DF7A2A5800D400F2C379 /* ImageViewerRemote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewerRemote.swift; sourceTree = "<group>"; };
 		9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsZapsViewController.swift; sourceTree = "<group>"; };
+		9E83DF7E2A61E58E00F2C379 /* NewPostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostsView.swift; sourceTree = "<group>"; };
 		9E88349B2A211577005DB548 /* RootAnimatorToSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootAnimatorToSignIn.swift; sourceTree = "<group>"; };
 		9E8834A32A274A0D005DB548 /* PostPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostPreviewView.swift; sourceTree = "<group>"; };
 		9E8834A52A274A88005DB548 /* Processing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Processing.swift; sourceTree = "<group>"; };
@@ -862,6 +864,7 @@
 				9EB219E72A067B7B0037C3E5 /* Menu */,
 				9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */,
 				9E55CC6A2A03C6D1002D3DC4 /* FeedsSelectionController.swift */,
+				9E83DF7E2A61E58E00F2C379 /* NewPostsView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -1558,6 +1561,7 @@
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
+				9E83DF7F2A61E58E00F2C379 /* NewPostsView.swift in Sources */,
 				9ED416022A42483D00892235 /* RegularFeedViewController.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 			);
@@ -1738,7 +1742,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.22.1;
+				MARKETING_VERSION = 0.22.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1779,7 +1783,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.22.1;
+				MARKETING_VERSION = 0.22.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

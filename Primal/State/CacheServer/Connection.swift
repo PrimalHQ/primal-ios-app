@@ -173,7 +173,7 @@ final class Connection {
         
         connect()
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
             self?.autoReconnect()
         }
     }

@@ -63,7 +63,12 @@ final class ParsedContent {
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     
     var embededPost: ParsedContent?
-    var reposted: ParsedUser?
+    var reposted: ParsedRepost?
+}
+
+struct ParsedRepost {
+    var user: ParsedUser
+    var date: Date
 }
 
 extension ParsedContent {

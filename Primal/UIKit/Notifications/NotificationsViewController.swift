@@ -155,7 +155,7 @@ final class NotificationsViewController: FeedViewController {
             let payload = JSON.object([
                 "pubkey": idJsonID,
                 "limit": .number(20),
-                "until": .number((notifications.last?.mainNotification.date ?? Date()).timeIntervalSince1970)
+                "until": .number(((notifications.last?.mainNotification.date ?? Date()).timeIntervalSince1970).rounded())
             ])
             
             isLoading = true

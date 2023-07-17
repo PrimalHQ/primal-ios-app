@@ -128,7 +128,7 @@ class PostCell: UITableViewCell {
             postPreview.isHidden = true
         }
         
-        if let reposted = content.reposted?.data {
+        if let reposted = content.reposted?.user.data {
             repostIndicator.update(user: reposted)
             repostIndicator.isHidden = false
         } else {

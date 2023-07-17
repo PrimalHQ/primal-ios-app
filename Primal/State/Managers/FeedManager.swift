@@ -30,6 +30,16 @@ final class FeedManager {
     var profilePubkey: String?
     var didReachEnd = false
     
+    var feedDirective: String? {
+        if let searchTerm {
+            return "search;\(searchTerm)"
+        }
+        if let feed = IdentityManager.instance.userSettings?.content.feeds?.first(where: { $0.name == currentFeed }) {
+            return feed.hex
+        }
+        return nil
+    }
+    
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
         initPostsEmitterSubscription()
@@ -114,13 +124,12 @@ final class FeedManager {
     private func generateRequestByFeedType(limit: Int32 = 20) -> JSON {
         if let profilePubkey {
             return generateProfileFeedRequest(profilePubkey)
-        } else if let searchTerm {
-            return generateFeedPageRequest("search;\(searchTerm)", limit: limit)
-        } else if let feed = IdentityManager.instance.userSettings?.content.feeds?.first(where: { $0.name == currentFeed }) {
-            return generateFeedPageRequest(feed.hex, limit: limit)
-        } else {
-            fatalError("feed should exist at all times")
         }
+        if let feedDirective {
+            return generateFeedPageRequest(feedDirective, limit: limit)
+        }
+        print("No feed error")
+        return .object([:])
     }
     
     func requestThread(postId: String, limit: Int32 = 100) {
@@ -147,7 +156,7 @@ final class FeedManager {
     }
     
     private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON {
-        let until = searchPaginationEvent?.since ?? parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
+        let until = searchPaginationEvent?.since ?? parsedPosts.last?.post.created_at ?? Date().timeIntervalSince1970
         
         return .object([
             "cache": .array([
@@ -156,14 +165,14 @@ final class FeedManager {
                     "directive": .string(criteria),
                     "user_pubkey": .string(IdentityManager.instance.userHex),
                     "limit": .number(Double(limit)),
-                    "until": .number(Double(until))
+                    "until": .number(until.rounded())
                 ])
             ])
         ])
     }
     
     private func generateProfileFeedRequest(_ profileId: String, limit: Double = 20) -> JSON {
-        let until = parsedPosts.last?.post.created_at ?? Int32(Date().timeIntervalSince1970)
+        let until = parsedPosts.last?.post.created_at ?? Date().timeIntervalSince1970
         
         return .object([
             "cache": .array([
@@ -173,7 +182,7 @@ final class FeedManager {
                     "user_pubkey": .string(IdentityManager.instance.userHex),
                     "notes": .string("authored"),
                     "limit": .number(limit),
-                    "until": .number(Double(until))
+                    "until": .number(until.rounded())
                 ])
             ])
         ])
@@ -235,13 +244,15 @@ final class FeedManager {
             }
         case .repost:
             guard
-                let pubKey = response.arrayValue?[2].objectValue?["pubkey"]?.stringValue,
-                let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue,
+                let payload = response.arrayValue?[2].objectValue,
+                let pubKey = payload["pubkey"]?.stringValue,
+                let contentString = payload["content"]?.stringValue,
+                let dateNum = payload["created_at"]?.doubleValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             
             let content = NostrContent(json: contentJSON)
-            pendingResult?.reposts.append(.init(pubkey: pubKey, post: content))
+            pendingResult?.reposts.append(.init(pubkey: pubKey, post: content, date: .init(timeIntervalSince1970: dateNum)))
             pendingResult?.order.append(content.id)
         case .mentions:
             guard

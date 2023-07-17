@@ -29,6 +29,7 @@ class PostRequestResult {
 struct NostrRepost {
     let pubkey: String
     let post: NostrContent
+    let date: Date
 }
 
 struct PopularHashtag {

@@ -90,10 +90,11 @@ private extension SocketRequest {
             guard
                 let pubKey = payload["pubkey"]?.stringValue,
                 let contentString = payload["content"]?.stringValue,
+                let dateNum = payload["created_at"]?.doubleValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             
-            pendingResult.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON)))
+            pendingResult.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
         case .mentions:
             guard
                 let contentString = payload["content"]?.stringValue,
