@@ -122,7 +122,7 @@ fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
-        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
+        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair() ?? IdentityManager.instance.newUserKeypair
     else {
         return nil
     }
@@ -228,7 +228,7 @@ fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
         return nil
     }
     
-    guard let metadataJSONString =  String(data: metadataJSONData, encoding: .utf8) else {
+    guard let metadataJSONString = String(data: metadataJSONData, encoding: .utf8) else {
         print("Unable to encode tags json Data to String")
         return nil
     }
@@ -255,7 +255,7 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
     }
     
     guard
-        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
+        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair() ?? IdentityManager.instance.newUserKeypair
     else {
         print("Unable to get keypair")
         return nil

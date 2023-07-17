@@ -78,6 +78,33 @@ final class FeedManager {
         }
     }
     
+    func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
+        guard
+            let directive = feedDirective,
+            let first = parsedPosts.first
+        else {
+            return Just([]).eraseToAnyPublisher()
+        }
+        
+        let since = first.reposted?.date.timeIntervalSince1970 ?? first.post.created_at
+        
+        return Connection.instance.$isConnected
+            .filter { $0 }
+            .first()
+            .flatMap { _ in
+                SocketRequest(name: "feed_directive", payload: .object([
+                    "directive": .string(directive),
+                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "limit": .number(Double(40)),
+                    "since": .number(since.rounded())
+                ]))
+                .publisher()
+            }
+            .map { $0.process() }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
     private func initPostsEmitterSubscription() {
         postsEmitter.sink { [weak self] result in
             guard let self else { return }

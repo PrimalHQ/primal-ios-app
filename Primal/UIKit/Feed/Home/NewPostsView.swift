@@ -32,19 +32,31 @@ final class NewPostsView: MyButton {
             $0.backgroundColor = .init(rgb: 0xAAAAAA)
         }
         
-        let stack = UIStackView(avatars + [label])
+        let avatarStack = UIStackView(avatars)
+        let stack = UIStackView([avatarStack, label])
+        
+        avatarStack.alignment = .center
+        avatarStack.spacing = -8
+        
         stack.alignment = .center
-        stack.spacing = -8
-        if let last = avatars.last {
-            stack.setCustomSpacing(10, after: last)
-        }
+        stack.spacing = 10
+        
         addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 5).centerToSuperview()
+        stack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview()
         
         constrainToSize(height: 40)
         
         label.font = .appFont(withSize: 14, weight: .regular)
         label.textColor = .white
+    }
+    
+    var oldSize: CGSize = .zero
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if oldSize != bounds.size {
+            oldSize = bounds.size
+            backgroundColor = .gradientColor(bounds: oldSize)
+        }
     }
     
     func setCount(_ count: Int, avatarURLs: [URL]) {
@@ -54,7 +66,15 @@ final class NewPostsView: MyButton {
             label.text = "\(count) new replies"
         }
         
-        zip(avatarURLs, avatars).forEach { url, avatar in
+        for avatar in avatars {
+            avatar.isHidden = true
+        }
+        
+        guard count > 0 else { return }
+        
+        zip((1...count), zip(avatarURLs, avatars)).forEach { (_, arg1) in
+            let (url, avatar) = arg1
+            avatar.isHidden = false
             avatar.kf.setImage(with: url, placeholder: UIImage(named: "Profile"))
         }
     }
