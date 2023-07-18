@@ -9,6 +9,8 @@ import Combine
 import Foundation
 import GenericJSON
 
+let APP_NAME = "Primal-iOS App"
+
 final class IdentityManager {
     private init() {}
     
@@ -107,7 +109,7 @@ final class IdentityManager {
             "cache": .array([
                 .string("get_default_app_settings"),
                 .object([
-                    "client": "Primal-iOS App"
+                    "client": .string(APP_NAME)
                 ])
             ])
         ])

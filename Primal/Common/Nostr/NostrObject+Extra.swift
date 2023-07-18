@@ -186,7 +186,7 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
-    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    let tags: [[String]] = [["d", APP_NAME]]
     
     guard let settingsJSON: JSON = try? JSON(["description": "Sync app settings"]) else {
         print ("Error encoding settings")
@@ -207,7 +207,7 @@ fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
 }
 
 fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsContent) -> NostrObject? {
-    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    let tags: [[String]] = [["d", APP_NAME]]
     
     guard let settingsJSONData = try? jsonEncoder.encode(settings) else {
         print("Unable to encode tags to Data")
