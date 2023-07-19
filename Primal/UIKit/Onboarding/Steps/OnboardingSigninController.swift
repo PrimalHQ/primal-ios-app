@@ -200,17 +200,14 @@ private extension OnboardingSigninController {
         }
         
         guard
-            NKeypair.isValidNsec(text), // allow only nsec for now
-            let privkey  = HexKeypair.nsecToHexPrivkey(text),
-            let pubkey = HexKeypair.privkeyToPubkey(privkey),
-            let keypair = HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)
+            NKeypair.isValidNsecOrNpub(text)
         else {
             state = .invalidKey
             return
         }
         
         guard
-            ICloudKeychainManager.instance.upsertFirstKeypair(keypair)
+            LoginManager.instance.login(text)
         else {
             state = .invalidKey
             return

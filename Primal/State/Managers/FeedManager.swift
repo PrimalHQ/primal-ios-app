@@ -133,7 +133,7 @@ final class FeedManager {
                 .object([
                     "event_id": .string(postId),
                     "limit": .number(Double(limit)),
-                    "user_pubkey": .string(IdentityManager.instance.userHex)
+                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
                 ])
             ])
         ])
@@ -154,7 +154,7 @@ final class FeedManager {
                 .string("feed_directive"),
                 .object([
                     "directive": .string(criteria),
-                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                     "limit": .number(Double(limit)),
                     "until": .number(Double(until))
                 ])
@@ -170,7 +170,7 @@ final class FeedManager {
                 .string("feed"),
                 .object([
                     "pubkey": .string(profileId),
-                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                     "notes": .string("authored"),
                     "limit": .number(limit),
                     "until": .number(Double(until))

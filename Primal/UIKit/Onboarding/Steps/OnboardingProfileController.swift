@@ -162,7 +162,7 @@ private extension OnboardingProfileController {
                 RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
                     guard
                         let keypair = IdentityManager.instance.newUserKeypair,
-                        ICloudKeychainManager.instance.upsertFirstKeypair(keypair)
+                        LoginManager.instance.login(keypair.nVariant.nsec)
                     else {
                         fatalError("Unable to save keypair to the keychain, this shouldn't be possible")
                     }

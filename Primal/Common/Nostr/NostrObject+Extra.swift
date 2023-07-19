@@ -122,6 +122,7 @@ fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
+        LoginManager.instance.state == .nsecLoggedIn,
         let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
     else {
         return nil
@@ -255,6 +256,7 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
     }
     
     guard
+        LoginManager.instance.state == .nsecLoggedIn,
         let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair()
     else {
         print("Unable to get keypair")

@@ -95,7 +95,7 @@ final class ICloudKeychainManager {
     }
     
     // Used until we get to support multiple accounts
-    func getFirstSavedKeypair() -> NostrKeypair? {
+    func getLoginInfo() -> NostrKeypair? {
         if !hasSavedNpubs() {
             return nil
         }
@@ -107,13 +107,13 @@ final class ICloudKeychainManager {
         return NKeypair.nostrKeypair(npub: npubs[0], nsec: firstNsec)
     }
     // Used until we get to support multiple accounts
-    func upsertFirstKeypair(_ keypair: NostrKeypair) -> Bool {
+    func upsertLogin(npub: String, nsec: String? = nil) -> Bool {
         var npubs = getSavedNpubs()
         
         if npubs.count == 0 {
-            npubs.append(keypair.nVariant.npub)
+            npubs.append(npub)
         } else {
-            npubs[0] = keypair.nVariant.npub
+            npubs[0] = npub
         }
         
         do {
@@ -125,7 +125,9 @@ final class ICloudKeychainManager {
             }
             
             try keychain.set(npubsJSONString, key: Self.savedNpubsKey)
-            try keychain.set(keypair.nVariant.nsec, key: keypair.nVariant.npub)
+            if let privkey = nsec {
+                try keychain.set(privkey, key: npub)
+            }
         } catch let error {
             print("ICloudKeychain: \(error)")
             return false

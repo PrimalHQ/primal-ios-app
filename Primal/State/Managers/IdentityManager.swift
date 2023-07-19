@@ -16,7 +16,7 @@ final class IdentityManager {
     
     static let instance = IdentityManager()
 
-    var userHex: String {
+    var userHexPubkey: String {
         get {
             guard
                 let result = ICloudKeychainManager.instance.getFirstSavedKeypair()
@@ -41,7 +41,7 @@ final class IdentityManager {
         
     func requestUserInfos() {
         let request: JSON = .object([
-            "pubkeys": .array([.string(userHex)])
+            "pubkeys": .array([.string(userHexPubkey)])
         ])
         
         Connection.instance.requestCache(name: "user_infos", request: request) { res in
@@ -78,7 +78,7 @@ final class IdentityManager {
             "cache": .array([
                 "user_profile",
                 .object([
-                    "pubkey": .string(userHex)
+                    "pubkey": .string(userHexPubkey)
                 ])
             ])
         ])
@@ -122,9 +122,9 @@ final class IdentityManager {
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
                     // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
                     }
                     if let settings = primalSettings {
                         callback(settings)
@@ -165,9 +165,9 @@ final class IdentityManager {
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
                     // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
                     }
                     guard var settings = primalSettings else { return }
                     
@@ -202,7 +202,7 @@ final class IdentityManager {
             "cache": .array([
                 "contact_list",
                 .object([
-                    "pubkey": .string(userHex)
+                    "pubkey": .string(userHexPubkey)
                 ])
             ])
         ])

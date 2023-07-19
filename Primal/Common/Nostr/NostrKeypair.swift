@@ -10,17 +10,23 @@ import secp256k1
 
 struct HexKeypair {
     let pubkey: String
-    let privkey: String
+    let privkey: String?
 }
 
 struct NKeypair {
     let npub: String
-    let nsec: String
+    let nsec: String?
 }
 
 struct NostrKeypair {
     let hexVariant: HexKeypair
     let nVariant: NKeypair
+    let isNpub: Bool
+}
+
+enum KeyType {
+    case npub
+    case nsec
 }
 
 extension NKeypair {
@@ -58,6 +64,36 @@ extension NKeypair {
         }
         
         return false
+    }
+    
+    static func isValidNpub(_ key: String) -> Bool {
+        guard let decoded = try? bech32_decode(key) else {
+            return false
+        }
+        
+        if decoded.hrp == "npub" {
+            return true
+        }
+        
+        return false
+    }
+    
+    static func isValidNsecOrNpub(_ key: String) -> Bool {
+        return isValidNsec(key) || isValidNpub(key)
+    }
+    
+    static func type(_ key: String) -> KeyType? {
+        guard let decoded = try? bech32_decode(key) else {
+            return nil
+        }
+        
+        if decoded.hrp == "npub" {
+            return .npub
+        } else if decoded.hrp == "nsec" {
+            return .nsec
+        }
+        
+        return nil
     }
 }
 
