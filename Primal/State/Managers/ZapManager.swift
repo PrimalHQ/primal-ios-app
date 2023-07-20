@@ -69,6 +69,8 @@ final class ZapManager {
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
     
     func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
+        if LoginManager.instance.state() != .nsecLoggedIn { return }
+
         guard
             let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
             let nwc = WalletConnectURL(str: nwcUrl)

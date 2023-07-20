@@ -102,12 +102,12 @@ final class ICloudKeychainManager {
         
         let npubs = getSavedNpubs()
         
-        guard let firstNsec = getSavedNsec(npubs[0]) else { return nil }
+        let firstNsec = getSavedNsec(npubs[0])
         
         return NKeypair.nostrKeypair(npub: npubs[0], nsec: firstNsec)
     }
     // Used until we get to support multiple accounts
-    func upsertLogin(npub: String, nsec: String? = nil) -> Bool {
+    func upsertLoginInfo(npub: String, nsec: String? = nil) -> Bool {
         var npubs = getSavedNpubs()
         
         if npubs.count == 0 {

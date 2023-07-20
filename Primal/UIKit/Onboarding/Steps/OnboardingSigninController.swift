@@ -178,10 +178,7 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard
-            NKeypair.isValidNsec(text), // allow only nsec for now
-            let _  = HexKeypair.nsecToHexPrivkey(text)
-        else {
+        guard NKeypair.isValidNsecOrNpub(text) else {
             if !paste {
                 validateAndProcessKey(paste: true)
                 return
@@ -199,16 +196,12 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard
-            NKeypair.isValidNsecOrNpub(text)
-        else {
+        guard NKeypair.isValidNsecOrNpub(text) else {
             state = .invalidKey
             return
         }
         
-        guard
-            LoginManager.instance.login(text)
-        else {
+        guard LoginManager.instance.login(text) else {
             state = .invalidKey
             return
         }

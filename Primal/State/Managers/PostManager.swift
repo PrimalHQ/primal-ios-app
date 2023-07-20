@@ -19,6 +19,8 @@ final class PostManager {
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     
     func sendRepostEvent(nostrContent: NostrContent) {
+        if LoginManager.instance.state() != .nsecLoggedIn { return }
+
         let ev = NostrObject.repost(nostrContent)
         
         if let repostEvent = ev {
@@ -33,6 +35,8 @@ final class PostManager {
         }
     }
     func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping () -> Void) {
+        if LoginManager.instance.state() != .nsecLoggedIn { return }
+
         guard let ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
@@ -45,6 +49,8 @@ final class PostManager {
     }
     
     func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
+        if LoginManager.instance.state() != .nsecLoggedIn { return }
+
         guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
