@@ -94,7 +94,7 @@ final class FeedManager {
             .flatMap { _ in
                 SocketRequest(name: "feed_directive", payload: .object([
                     "directive": .string(directive),
-                    "user_pubkey": .string(IdentityManager.instance.userHex),
+                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                     "limit": .number(Double(40)),
                     "since": .number(since.rounded())
                 ]))
