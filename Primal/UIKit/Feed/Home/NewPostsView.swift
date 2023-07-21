@@ -61,9 +61,9 @@ final class NewPostsView: MyButton {
     
     func setCount(_ count: Int, avatarURLs: [URL]) {
         if count == 1 {
-            label.text = "1 new reply"
+            label.text = "1 new note"
         } else {
-            label.text = "\(count) new replies"
+            label.text = "\(count) new notes"
         }
         
         for avatar in avatars {

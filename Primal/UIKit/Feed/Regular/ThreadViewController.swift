@@ -125,23 +125,25 @@ private extension ThreadViewController {
             return
         }
         
+        textInputView.resignFirstResponder()
         textInputView.isEditable = false
         
-        var runOnce = true
-        
-        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] in
-            guard runOnce else { return }
-            runOnce = false
+        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] success in
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                 guard let self else { return }
                 
                 self.textInputView.isEditable = true
-                self.textInputView.text = ""
-                self.placeholderLabel.isHidden = false
-                self.didPostNewComment = true
-                self.didMoveToMain = false
-                self.feed.requestThread(postId: self.id) 
+                
+                if success {
+                    self.textInputView.text = ""
+                    self.placeholderLabel.isHidden = false
+                    self.didPostNewComment = true
+                    self.didMoveToMain = false
+                    self.feed.requestThread(postId: self.id)
+                } else {
+                    self.textInputView.becomeFirstResponder()
+                }
             }
         }
     }
@@ -153,6 +155,7 @@ private extension ThreadViewController {
             let postsBefore = parsed.filter { $0.post.created_at < mainPost.post.created_at }
             let postsAfter = parsed.filter { $0.post.created_at > mainPost.post.created_at }
             
+            self.posts = []
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
             

@@ -238,21 +238,17 @@ private extension PostCell {
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
         
         threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share note", handler: { [weak self] _ in
+            UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapShare(self)
             }),
-            UIAction(title: "Copy note link", handler: { [weak self] _ in
+            UIAction(title: "Copy note link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyLink(self)
             }),
-            UIAction(title: "Copy text", handler: { [weak self] _ in
+            UIAction(title: "Copy text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyContent(self)
-            }),
-            UIAction(title: "Copy note JSON", handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapCopyJSON(self)
             }),
         ])
         threeDotsButton.showsMenuAsPrimaryAction = true

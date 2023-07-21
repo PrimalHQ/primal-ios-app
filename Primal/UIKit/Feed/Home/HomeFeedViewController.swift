@@ -29,7 +29,10 @@ final class HomeFeedViewController: PostFeedViewController {
     
     var newPosts = 0 {
         didSet {
-            newPostsView.setCount(newPosts, avatarURLs: posts.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+            newPostsView.setCount(newPosts, avatarURLs: posts.prefix(3).compactMap {
+                $0.reposted?.user.profileImage.url(for: .small) ?? $0.user.profileImage.url(for: .small)
+            })
+            
             if newPosts == 0 {
                 UIView.animate(withDuration: 0.3) {
                     self.newPostsView.transform = .init(translationX: 0, y: -100)
@@ -76,6 +79,7 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
+            self.newPosts = 0
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
@@ -124,6 +128,12 @@ final class HomeFeedViewController: PostFeedViewController {
         guard indexPath.section == postSection, indexPath.row < newPosts else { return }
             
         newPosts = indexPath.row
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y < 50 {
+            newPosts = 0
+        }
     }
 }
 
@@ -191,7 +201,7 @@ private extension HomeFeedViewController {
         
         if sorted.isEmpty { return }
         
-        self.feed.parsedPosts.insert(contentsOf: sorted, at: 0)
         self.newPosts += sorted.count
+        self.feed.parsedPosts.insert(contentsOf: sorted, at: 0)
     }
 }

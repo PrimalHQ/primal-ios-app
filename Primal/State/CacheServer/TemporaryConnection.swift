@@ -12,7 +12,7 @@ import GenericJSON
 final class TemporaryConnection {
     static let dispatchQueue = DispatchQueue(label: "com.primal.temporary-connection")
     
-    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
+    private let socketURL = URL(string: "wss://cache0.primal.net/cache17")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     

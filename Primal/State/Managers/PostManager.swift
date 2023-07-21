@@ -32,19 +32,21 @@ final class PostManager {
             print("Error creating repost event")
         }
     }
-    func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping () -> Void) {
+    
+    func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping (Bool) -> Void) {
         guard let ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            callback()
+            callback(true)
         }, errorHandler: {
             print("Posting failed for id: \(ev.id)")
+            callback(false)
         })
     }
     
-    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping () -> Void) {
+    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool) -> Void) {
         guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
             return
         }
@@ -52,10 +54,10 @@ final class PostManager {
         self.userReplied.insert(post.id)
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            callback()
+            callback(true)
         }, errorHandler: {
             self.userReplied.remove(post.id)
-            callback()
+            callback(false)
         })
     }
 }
