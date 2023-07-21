@@ -223,6 +223,12 @@ final class IdentityManager {
                 let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
+                case .mediaMetadata:
+                    print(response)
+                case .userScore:
+                    print(response)
+                case .metadata:
+                    print(response)
                 case .contacts:
                     guard let relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                         print("Error decoding contacts to json")
