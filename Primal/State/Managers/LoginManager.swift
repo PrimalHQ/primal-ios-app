@@ -7,10 +7,9 @@
 
 import Foundation
 
-enum LoginState {
-    case notLoggedIn
-    case nsecLoggedIn
-    case npubLoggedIn
+enum LoginMethod {
+    case nsec
+    case npub
 }
 
 final class LoginManager {
@@ -31,7 +30,7 @@ final class LoginManager {
         return ICloudKeychainManager.instance.clearSavedKeys()
     }
     
-    func state() -> LoginState { loginState() }
+    func method() -> LoginMethod? { loginMethod() }
     
     private func login(npub: String) -> Bool {
         return ICloudKeychainManager.instance.upsertLoginInfo(npub: npub)
@@ -52,22 +51,22 @@ final class LoginManager {
         return ICloudKeychainManager.instance.upsertLoginInfo(npub: npub, nsec: nsec)
     }
     
-    private func loginState() -> LoginState {
+    private func loginMethod() -> LoginMethod? {
         if !ICloudKeychainManager.instance.hasSavedNpubs() {
-            return .notLoggedIn
+            return nil
         }
         
         let npubs = ICloudKeychainManager.instance.getSavedNpubs()
         
         if npubs.count <= 0 {
-            return .notLoggedIn
+            return nil
         }
         
         // assume only one saved npub until multiple accounts feature is implemented
         if let _ = ICloudKeychainManager.instance.getSavedNsec(npubs[0]) {
-            return .nsecLoggedIn
+            return .nsec
         } else {
-            return .npubLoggedIn
+            return .npub
         }
     }
 }

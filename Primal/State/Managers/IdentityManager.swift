@@ -145,7 +145,7 @@ final class IdentityManager {
             ])
         ])
         
-        if LoginManager.instance.state() == .nsecLoggedIn {
+        if LoginManager.instance.method() == .nsec {
             guard let ev = NostrObject.getSettings() else { return }
             
             request = .object([
@@ -280,7 +280,7 @@ final class IdentityManager {
     }
     
     func updateSettings(_ settings: PrimalSettings) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         userSettings = settings
         
@@ -302,7 +302,7 @@ final class IdentityManager {
     }
     
     func updateLastSeen() {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
@@ -320,7 +320,7 @@ final class IdentityManager {
     }
     
     func updateNotifications(_ notifications: PrimalSettingsNotifications) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         guard var settings = userSettings else { return }
         settings.content.notifications = notifications
@@ -328,7 +328,7 @@ final class IdentityManager {
     }
     
     func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         guard var settings = userSettings else { return }
         settings.content.feeds = feeds
@@ -336,7 +336,7 @@ final class IdentityManager {
     }
     
     func addFeedToList(feed: PrimalSettingsFeed) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         guard
             var settings = userSettings,
@@ -350,7 +350,7 @@ final class IdentityManager {
     }
     
     func removeFeedFromList(hex: String) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         guard
             var settings = userSettings,

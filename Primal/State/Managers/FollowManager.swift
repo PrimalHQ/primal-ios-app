@@ -16,7 +16,7 @@ final class FollowManager {
     func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
     
     func sendBatchFollowEvent(_ pubkeys: [String]) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
         
         var contacts = IdentityManager.instance.userContacts.contacts
         contacts.append(contentsOf: pubkeys)
@@ -56,7 +56,7 @@ final class FollowManager {
     }
     
     func sendFollowEvent(_ pubkey: String) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         IdentityManager.instance.requestUserContacts() {
             self.follow(pubkey)
@@ -85,7 +85,7 @@ final class FollowManager {
     }
     
     func sendUnfollowEvent(_ pubkey: String) {
-        if LoginManager.instance.state() != .nsecLoggedIn { return }
+        if LoginManager.instance.method() != .nsec { return }
 
         IdentityManager.instance.requestUserContacts() {
             self.unfollow(pubkey)

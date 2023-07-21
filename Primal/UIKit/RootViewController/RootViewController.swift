@@ -104,7 +104,7 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {        
-        if LoginManager.instance.state() != .notLoggedIn {
+        if let _ = LoginManager.instance.method() {
             overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
             set(MainTabBarController())
             Connection.instance.connect()

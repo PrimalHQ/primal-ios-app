@@ -155,11 +155,6 @@ class PostCell: UITableViewCell {
         zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
-        
-        likeButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        zapButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        repostButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        replyButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
     }
 }
 
@@ -185,10 +180,10 @@ private extension PostCell {
         contentView.addSubview(backgroundColorView)
         backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
         
-        likeButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        zapButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        repostButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
-        replyButton.isEnabled = LoginManager.instance.state() == .nsecLoggedIn
+        likeButton.isEnabled = LoginManager.instance.method() == .nsec
+        zapButton.isEnabled = LoginManager.instance.method() == .nsec
+        repostButton.isEnabled = LoginManager.instance.method() == .nsec
+        replyButton.isEnabled = LoginManager.instance.method() == .nsec
         
         nameTimeStack.spacing = 6
         separatorLabel.text = "|"
