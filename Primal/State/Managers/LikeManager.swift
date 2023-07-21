@@ -17,6 +17,8 @@ final class LikeManager {
     func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
     func sendLikeEvent(post: PrimalFeedPost) {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard !hasLiked(post.id) else {
             print("Error getting saved keypair")
             return

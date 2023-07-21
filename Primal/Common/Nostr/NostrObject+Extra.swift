@@ -122,12 +122,12 @@ fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
-        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair() ?? IdentityManager.instance.newUserKeypair
+        LoginManager.instance.method() == .nsec,
+        let keypair = ICloudKeychainManager.instance.getLoginInfo(),
+        let privkey = keypair.hexVariant.privkey
     else {
         return nil
     }
-    
-    let privkey = keypair.hexVariant.privkey
     
     return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
@@ -186,7 +186,7 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
-    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    let tags: [[String]] = [["d", APP_NAME]]
     
     guard let settingsJSON: JSON = try? JSON(["description": "Sync app settings"]) else {
         print ("Error encoding settings")
@@ -207,7 +207,7 @@ fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
 }
 
 fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsContent) -> NostrObject? {
-    let tags: [[String]] = [["d", "Primal-iOS App"]]
+    let tags: [[String]] = [["d", APP_NAME]]
     
     guard let settingsJSONData = try? jsonEncoder.encode(settings) else {
         print("Unable to encode tags to Data")
@@ -255,7 +255,8 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
     }
     
     guard
-        let keypair = ICloudKeychainManager.instance.getFirstSavedKeypair() ?? IdentityManager.instance.newUserKeypair
+        LoginManager.instance.method() == .nsec,
+        let keypair = ICloudKeychainManager.instance.getLoginInfo()
     else {
         print("Unable to get keypair")
         return nil

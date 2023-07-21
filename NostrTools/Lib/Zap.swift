@@ -765,7 +765,7 @@ func make_wallet_connect_request<T>(req: WalletRequest<T>, to_pk: String, keypai
 }
 
 func create_encrypted_event(_ message: String, to_pk: String, tags: [[String]], keypair: NostrKeypair, created_at: Int64, kind: Int) -> NostrObject? {
-    let privkey = keypair.hexVariant.privkey
+    guard let privkey = keypair.hexVariant.privkey else { return nil }
     
     guard let enc_content = encrypt_message(message: message, privkey: privkey, to_pk: to_pk) else {
         return nil

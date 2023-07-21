@@ -22,7 +22,7 @@ struct ContinousConnection {
 final class Connection {
     static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
+    private let socketURL = URL(string: "wss://cache0.primal.net/cache17")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -48,7 +48,13 @@ final class Connection {
         if isConnected {
             disconnect()
         }
-        socket = NWWebSocket(url: socketURL, connectionQueue: Self.dispatchQueue)
+        let options = NWProtocolWebSocket.Options()
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let ua = "\(APP_NAME)/\(appVersion) (main)"
+        options.autoReplyPing = true // from default settings of NWWebsocket
+        options.setAdditionalHeaders([("User-Agent", ua)])
+        
+        socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)

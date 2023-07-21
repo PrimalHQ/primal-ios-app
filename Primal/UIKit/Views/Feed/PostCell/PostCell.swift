@@ -180,6 +180,11 @@ private extension PostCell {
         contentView.addSubview(backgroundColorView)
         backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
         
+        likeButton.isEnabled = LoginManager.instance.method() == .nsec
+        zapButton.isEnabled = LoginManager.instance.method() == .nsec
+        repostButton.isEnabled = LoginManager.instance.method() == .nsec
+        replyButton.isEnabled = LoginManager.instance.method() == .nsec
+        
         nameTimeStack.spacing = 6
         separatorLabel.text = "|"
         [timeLabel, separatorLabel, nipLabel].forEach {

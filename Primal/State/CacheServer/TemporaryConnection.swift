@@ -32,7 +32,13 @@ final class TemporaryConnection {
     @Published var isConnected: Bool = false
     
     func connect() {
-        socket = NWWebSocket(url: socketURL, connectionQueue: Self.dispatchQueue)
+        let options = NWProtocolWebSocket.Options()
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let ua = "\(APP_NAME)/\(appVersion) (temporary)"
+        options.autoReplyPing = true // from default settings of NWWebsocket
+        options.setAdditionalHeaders([("User-Agent", ua)])
+        
+        socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
