@@ -194,14 +194,13 @@ private extension HomeFeedViewController {
     }
     
     func processFuturePosts(_ sorted: [ParsedContent]) {
-        var sorted = sorted
-        if sorted.last?.post.id == self.feed.parsedPosts.first?.post.id {
-            sorted = sorted.dropLast()
+        let sorted = sorted.filter { post in
+            !posts.contains(where: { $0.post.id == post.post.id })
         }
         
         if sorted.isEmpty { return }
         
-        self.newPosts += sorted.count
-        self.feed.parsedPosts.insert(contentsOf: sorted, at: 0)
+        newPosts += sorted.count
+        feed.parsedPosts.insert(contentsOf: sorted, at: 0)
     }
 }
