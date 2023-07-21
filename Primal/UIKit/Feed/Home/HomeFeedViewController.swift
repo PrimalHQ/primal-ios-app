@@ -77,6 +77,8 @@ final class HomeFeedViewController: PostFeedViewController {
         postButton.setImage(UIImage(named: "AddPost"), for: .normal)
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
         
+        postButton.isEnabled = LoginManager.instance.method() == .nsec
+        
         view.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(edges: [.trailing, .bottom], padding: 8, safeArea: true)
         

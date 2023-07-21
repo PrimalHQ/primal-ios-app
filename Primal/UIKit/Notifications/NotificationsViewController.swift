@@ -42,7 +42,7 @@ final class NotificationsViewController: FeedViewController {
     
     let loadingSpinner = LoadingSpinnerView()
     
-    let idJsonID: JSON = .string(IdentityManager.instance.userHex)
+    let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
     
     override init() {
         super.init()

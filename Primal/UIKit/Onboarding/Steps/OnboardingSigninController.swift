@@ -178,10 +178,7 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard
-            NKeypair.isValidNsec(text), // allow only nsec for now
-            let _  = HexKeypair.nsecToHexPrivkey(text)
-        else {
+        guard NKeypair.isValidNsecOrNpub(text) else {
             if !paste {
                 validateAndProcessKey(paste: true)
                 return
@@ -199,19 +196,12 @@ private extension OnboardingSigninController {
             return
         }
         
-        guard
-            NKeypair.isValidNsec(text), // allow only nsec for now
-            let privkey  = HexKeypair.nsecToHexPrivkey(text),
-            let pubkey = HexKeypair.privkeyToPubkey(privkey),
-            let keypair = HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)
-        else {
+        guard NKeypair.isValidNsecOrNpub(text) else {
             state = .invalidKey
             return
         }
         
-        guard
-            ICloudKeychainManager.instance.upsertFirstKeypair(keypair)
-        else {
+        guard LoginManager.instance.login(text) else {
             state = .invalidKey
             return
         }

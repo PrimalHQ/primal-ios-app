@@ -104,18 +104,16 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset() {        
-        guard let _ = ICloudKeychainManager.instance.getFirstSavedKeypair()
-        else {
+        if let _ = LoginManager.instance.method() {
+            overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+            set(MainTabBarController())
+            Connection.instance.connect()
+        } else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())
             Connection.instance.disconnect()
             return
         }
-        
-        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
-        set(MainTabBarController())
-            
-        Connection.instance.connect()
     }
     
     func addIntro() {

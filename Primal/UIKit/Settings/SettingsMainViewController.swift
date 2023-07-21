@@ -57,6 +57,11 @@ private extension SettingsMainViewController {
         let deleteLabel = SettingsTitleView(title: "DELETE")
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
+        wallet.isEnabled = LoginManager.instance.method() == .nsec
+        notifications.isEnabled = LoginManager.instance.method() == .nsec
+        feeds.isEnabled = LoginManager.instance.method() == .nsec
+        zaps.isEnabled = LoginManager.instance.method() == .nsec
+        
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
         let stack = UIStackView(arrangedSubviews: [keys, wallet, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         

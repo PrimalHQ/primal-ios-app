@@ -16,10 +16,10 @@ final class IdentityManager {
     
     static let instance = IdentityManager()
 
-    var userHex: String {
+    var userHexPubkey: String {
         get {
             guard
-                let result = ICloudKeychainManager.instance.getFirstSavedKeypair()
+                let result = ICloudKeychainManager.instance.getLoginInfo()
             else {
                 return ""
             }
@@ -41,7 +41,7 @@ final class IdentityManager {
         
     func requestUserInfos() {
         let request: JSON = .object([
-            "pubkeys": .array([.string(userHex)])
+            "pubkeys": .array([.string(userHexPubkey)])
         ])
         
         Connection.instance.requestCache(name: "user_infos", request: request) { res in
@@ -78,7 +78,7 @@ final class IdentityManager {
             "cache": .array([
                 "user_profile",
                 .object([
-                    "pubkey": .string(userHex)
+                    "pubkey": .string(userHexPubkey)
                 ])
             ])
         ])
@@ -122,9 +122,9 @@ final class IdentityManager {
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
                     // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
                     }
                     if let settings = primalSettings {
                         callback(settings)
@@ -136,24 +136,35 @@ final class IdentityManager {
         }
     }
     func requestUserSettings() {
-        guard let ev = NostrObject.getSettings() else { return }
-        
-        let request: JSON = .object([
+        var request: JSON = .object([
             "cache": .array([
-                .string("get_app_settings"),
+                .string("get_default_app_settings"),
                 .object([
-                    "event_from_user": .object([
-                        "content": .string(ev.content),
-                        "created_at": .number(Double(ev.created_at)),
-                        "id": .string(ev.id),
-                        "kind": .number(30078),
-                        "pubkey": .string(ev.pubkey),
-                        "sig": .string(ev.sig),
-                        "tags": .array(ev.tags.map { .array($0.map { s in .string(s) }) })
-                    ])
+                    "client": .string(APP_NAME)
                 ])
             ])
         ])
+        
+        if LoginManager.instance.method() == .nsec {
+            guard let ev = NostrObject.getSettings() else { return }
+            
+            request = .object([
+                "cache": .array([
+                    .string("get_app_settings"),
+                    .object([
+                        "event_from_user": .object([
+                            "content": .string(ev.content),
+                            "created_at": .number(Double(ev.created_at)),
+                            "id": .string(ev.id),
+                            "kind": .number(30078),
+                            "pubkey": .string(ev.pubkey),
+                            "sig": .string(ev.sig),
+                            "tags": .array(ev.tags.map { .array($0.map { s in .string(s) }) })
+                        ])
+                    ])
+                ])
+            ])
+        }
         
         Connection.instance.request(request) { res in
             for response in res {
@@ -165,9 +176,9 @@ final class IdentityManager {
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
                     // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHex }) ?? false
+                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHex), at: 0)
+                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
                     }
                     guard var settings = primalSettings else { return }
                     
@@ -202,7 +213,7 @@ final class IdentityManager {
             "cache": .array([
                 "contact_list",
                 .object([
-                    "pubkey": .string(userHex)
+                    "pubkey": .string(userHexPubkey)
                 ])
             ])
         ])
@@ -212,6 +223,12 @@ final class IdentityManager {
                 let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
+                case .mediaMetadata:
+                    print(response)
+                case .userScore:
+                    print(response)
+                case .metadata:
+                    print(response)
                 case .contacts:
                     guard let relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                         print("Error decoding contacts to json")
@@ -263,6 +280,8 @@ final class IdentityManager {
     }
     
     func updateSettings(_ settings: PrimalSettings) {
+        if LoginManager.instance.method() != .nsec { return }
+
         userSettings = settings
         
         guard let ev = NostrObject.updateSettings(settings.content) else { return }
@@ -283,6 +302,8 @@ final class IdentityManager {
     }
     
     func updateLastSeen() {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
         Connection.instance.requestCache(name: "set_notifications_seen", request: .object([
@@ -299,18 +320,24 @@ final class IdentityManager {
     }
     
     func updateNotifications(_ notifications: PrimalSettingsNotifications) {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard var settings = userSettings else { return }
         settings.content.notifications = notifications
         updateSettings(settings)
     }
     
     func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard var settings = userSettings else { return }
         settings.content.feeds = feeds
         updateSettings(settings)
     }
     
     func addFeedToList(feed: PrimalSettingsFeed) {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard
             var settings = userSettings,
             let feeds = settings.content.feeds,
@@ -323,6 +350,8 @@ final class IdentityManager {
     }
     
     func removeFeedFromList(hex: String) {
+        if LoginManager.instance.method() != .nsec { return }
+
         guard
             var settings = userSettings,
             let feeds = settings.content.feeds,
