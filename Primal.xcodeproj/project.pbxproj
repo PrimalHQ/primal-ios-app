@@ -1735,6 +1735,8 @@
 				INFOPLIST_FILE = Primal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use camera to add photos to the app.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photos to the app from the library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -1776,6 +1778,8 @@
 				INFOPLIST_FILE = Primal/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use camera to add photos to the app.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add photos to the app from the library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = "";
