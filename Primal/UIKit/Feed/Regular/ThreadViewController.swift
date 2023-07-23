@@ -116,7 +116,7 @@ final class ThreadViewController: PostFeedViewController {
 
 private extension ThreadViewController {
     @objc func postButtonPressed() {
-        guard textInputView.isEditable else { return }
+        guard textInputView.isEditable, !posts.isEmpty else { return }
         
         let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         

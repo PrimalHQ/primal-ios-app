@@ -30,6 +30,7 @@ final class NewPostsView: MyButton {
             $0.layer.borderWidth = 2
             $0.layer.borderColor = UIColor.white.cgColor
             $0.backgroundColor = .init(rgb: 0xAAAAAA)
+            $0.contentMode = .scaleAspectFill
         }
         
         let avatarStack = UIStackView(avatars)

@@ -27,20 +27,34 @@ final class HomeFeedViewController: PostFeedViewController {
     let refresh = UIRefreshControl()
     let newPostsView = NewPostsView()
     
-    var newPosts = 0 {
+    var newAddedPosts = 0 {
         didSet {
-            newPostsView.setCount(newPosts, avatarURLs: posts.prefix(3).compactMap {
-                $0.reposted?.user.profileImage.url(for: .small) ?? $0.user.profileImage.url(for: .small)
-            })
-            
-            if newPosts == 0 {
-                UIView.animate(withDuration: 0.3) {
-                    self.newPostsView.transform = .init(translationX: 0, y: -100)
-                }
-            } else if oldValue == 0 {
-                UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
-                    self.newPostsView.transform = .identity
-                }
+            updatePosts(oldValue + newPostObjects.count)
+        }
+    }
+    
+    var newPostObjects: [ParsedContent] = [] {
+        didSet {
+            updatePosts(newAddedPosts + oldValue.count)
+        }
+    }
+    
+    var newPosts: Int { newAddedPosts + newPostObjects.count }
+    
+    func updatePosts(_ oldValue: Int) {
+        if newPosts != 0 {
+            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts).prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+        }
+        
+        if newPosts == 0 {
+            UIView.animate(withDuration: 0.3) {
+                self.newPostsView.transform = .init(translationX: 0, y: -100)
+                self.newPostsView.alpha = 0.3
+            }
+        } else if oldValue == 0 {
+            UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
+                self.newPostsView.transform = .identity
+                self.newPostsView.alpha = 1
             }
         }
     }
@@ -79,7 +93,13 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
-            self.newPosts = 0
+            
+            if !newPostObjects.isEmpty {
+                self.feed.parsedPosts.insert(contentsOf: newPostObjects, at: 0)
+                newPostObjects = []
+            }
+            self.newAddedPosts = 0
+            
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
@@ -125,14 +145,14 @@ final class HomeFeedViewController: PostFeedViewController {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard indexPath.section == postSection, indexPath.row < newPosts else { return }
+        guard indexPath.section == postSection, indexPath.row < newAddedPosts else { return }
             
-        newPosts = indexPath.row
+        newAddedPosts = indexPath.row
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < 50 {
-            newPosts = 0
+            newAddedPosts = 0
         }
     }
 }
@@ -195,12 +215,19 @@ private extension HomeFeedViewController {
     
     func processFuturePosts(_ sorted: [ParsedContent]) {
         let sorted = sorted.filter { post in
-            !posts.contains(where: { $0.post.id == post.post.id })
+            !posts.contains(where: { $0.post.id == post.post.id && $0.reposted?.user.data.id == post.reposted?.user.data.id}) &&
+            !newPostObjects.contains(where: { $0.post.id == post.post.id && $0.reposted?.user.data.id == post.reposted?.user.data.id})
         }
         
         if sorted.isEmpty { return }
         
-        newPosts += sorted.count
-        feed.parsedPosts.insert(contentsOf: sorted, at: 0)
+        if table.contentOffset.y < 50 {
+            newPostObjects = sorted + newPostObjects
+            newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+        } else {
+            newAddedPosts += sorted.count
+            feed.parsedPosts.insert(contentsOf: sorted, at: 0)
+            newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+        }
     }
 }
