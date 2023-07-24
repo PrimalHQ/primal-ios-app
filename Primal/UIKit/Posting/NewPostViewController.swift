@@ -20,6 +20,8 @@ class NewPostViewController: UIViewController {
     let atButton = UIButton()
     lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
     
+    let post = GradientInGradientButton(title: "Post")
+    
     lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
     
     private var cancellables: Set<AnyCancellable> = []
@@ -49,8 +51,13 @@ private extension NewPostViewController {
             return
         }
         
-        PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] in
-            self?.dismiss(animated: true)
+        post.isEnabled = false
+        
+        PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] success in
+            self?.post.isEnabled = true
+            if success {
+                self?.dismiss(animated: true)
+            }
         }
     }
     
@@ -58,7 +65,6 @@ private extension NewPostViewController {
         view.backgroundColor = .background2
         
         let cancel = CancelButton()
-        let post = GradientInGradientButton(title: "Post")
         let topStack = UIStackView(arrangedSubviews: [cancel, UIView(), post])
         post.constrainToSize(width: 88, height: 32)
         cancel.constrainToSize(width: 88, height: 32)
@@ -77,6 +83,7 @@ private extension NewPostViewController {
         
         imageView.layer.cornerRadius = 26
         imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         imageButton.constrainToSize(48)

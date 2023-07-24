@@ -22,7 +22,7 @@ struct ContinousConnection {
 final class Connection {
     static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    private let socketURL = URL(string: "wss://cache0.primal.net/cache17")!
+    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -179,7 +179,7 @@ final class Connection {
         
         connect()
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
             self?.autoReconnect()
         }
     }
@@ -206,6 +206,8 @@ extension Connection: WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(error)")
+        
+        autoReconnect()
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {

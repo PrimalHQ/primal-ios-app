@@ -12,12 +12,12 @@ struct NostrContent: Codable {
     let kind: Int32
     let content: String
     let id: String
-    let created_at: Int32
+    let created_at: Double
     let pubkey: String
     let sig: String
     let tags: [[String]]
     
-    init(kind: Int32, content: String, id: String, created_at: Int32, pubkey: String, sig: String, tags: [[String]]) {
+    init(kind: Int32, content: String, id: String, created_at: Double, pubkey: String, sig: String, tags: [[String]]) {
         self.kind = kind
         self.content = content
         self.id = id
@@ -31,7 +31,7 @@ struct NostrContent: Codable {
         self.kind = Int32(json.objectValue?["kind"]?.doubleValue ?? -1)
         self.content = json.objectValue?["content"]?.stringValue ?? ""
         self.id = json.objectValue?["id"]?.stringValue ?? ""
-        self.created_at = Int32(json.objectValue?["created_at"]?.doubleValue ?? -1)
+        self.created_at = json.objectValue?["created_at"]?.doubleValue ?? -1
         self.pubkey = json.objectValue?["pubkey"]?.stringValue ?? ""
         self.sig = json.objectValue?["sig"]?.stringValue ?? ""
         self.tags = json.objectValue?["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? []
@@ -41,7 +41,7 @@ struct NostrContent: Codable {
         kind = Int32(jsonData["kind"]?.doubleValue ?? -1)
         content = jsonData["content"]?.stringValue ?? ""
         id = jsonData["id"]?.stringValue ?? ""
-        created_at = Int32(jsonData["created_at"]?.doubleValue ?? -1)
+        created_at = jsonData["created_at"]?.doubleValue ?? -1
         pubkey = jsonData["pubkey"]?.stringValue ?? ""
         sig = jsonData["sig"]?.stringValue ?? ""
         tags = jsonData["tags"]?.arrayValue?.compactMap { $0.arrayValue?.map { $0.stringValue ?? "" } } ?? []

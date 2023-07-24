@@ -176,6 +176,19 @@ extension PostingTextViewManager: UITextViewDelegate {
         }
         
         updateTokensForReplacingRange(range, replacementText: text)
+        
+        if text.containsOnlyEmoji {
+            // This is a workaround for issue 69 - https://github.com/PrimalHQ/primal-ios-app/issues/69
+            DispatchQueue.main.async {
+                UIView.setAnimationsEnabled(false)
+                textView.resignFirstResponder()
+                textView.becomeFirstResponder()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    UIView.setAnimationsEnabled(true)
+                }
+            }
+        }
+        
         return true
     }
 }
@@ -241,6 +254,11 @@ private extension PostingTextViewManager {
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
+                guard self?.userSearchText != nil else {
+                    self?.users = []
+                    return
+                }
+                
                 self?.users = result.users.values.map { result.createParsedUser($0) } .sorted(by: {
                     $0.likes ?? 0 > $1.likes ?? 0
                 })
@@ -254,6 +272,7 @@ private extension PostingTextViewManager {
         textView.backgroundColor = .background2
         textView.delegate = self
         textView.bounces = false
+        textView.keyboardType = .twitter
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self

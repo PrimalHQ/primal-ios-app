@@ -7,6 +7,33 @@
 
 import Foundation
 
+extension Character {
+    /// A simple emoji is one scalar and presented to the user as an Emoji
+    var isSimpleEmoji: Bool {
+        guard let firstScalar = unicodeScalars.first else { return false }
+        return firstScalar.properties.isEmoji && firstScalar.value > 0x238C
+    }
+
+    /// Checks if the scalars will be merged into an emoji
+    var isCombinedIntoEmoji: Bool { unicodeScalars.count > 1 && unicodeScalars.first?.properties.isEmoji ?? false }
+
+    var isEmoji: Bool { isSimpleEmoji || isCombinedIntoEmoji }
+}
+
+extension String {
+    var isSingleEmoji: Bool { count == 1 && containsEmoji }
+
+    var containsEmoji: Bool { contains { $0.isEmoji } }
+
+    var containsOnlyEmoji: Bool { !isEmpty && !contains { !$0.isEmoji } }
+
+    var emojiString: String { emojis.map { String($0) }.reduce("", +) }
+
+    var emojis: [Character] { filter { $0.isEmoji } }
+
+    var emojiScalars: [UnicodeScalar] { filter { $0.isEmoji }.flatMap { $0.unicodeScalars } }
+}
+
 extension String : Identifiable {
     public var id: String {
         return UUID().uuidString
@@ -39,7 +66,11 @@ extension String : Identifiable {
     var isHashtag: Bool {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
         
-        guard let hashtagRegex = try? Regex(hashtagPattern) else { fatalError("Unable to create hashtag pattern regex") }
+        guard let hashtagRegex = try? Regex(hashtagPattern) else {
+            print("Unable to create hashtag pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: hashtagRegex) {
             return !matches.isEmpty
         }
@@ -50,7 +81,11 @@ extension String : Identifiable {
     var isNip08Mention: Bool {
         let mentionPattern = "\\#\\[([0-9]*)\\]"
         
-        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        guard let mentionRegex = try? Regex(mentionPattern) else {
+            print("Unable to create mention pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: mentionRegex) {
             return !matches.isEmpty
         }
@@ -61,7 +96,11 @@ extension String : Identifiable {
     var isNip27Mention: Bool {
         let mentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
         
-        guard let mentionRegex = try? Regex(mentionPattern) else { fatalError("Unable to create mention pattern regex") }
+        guard let mentionRegex = try? Regex(mentionPattern) else {
+            print("Unable to create mention pattern regex")
+            return false
+        }
+        
         if let matches = self.wholeMatch(of: mentionRegex) {
             return !matches.isEmpty
         }

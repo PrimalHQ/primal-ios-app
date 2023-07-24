@@ -228,7 +228,7 @@ fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
         return nil
     }
     
-    guard let metadataJSONString =  String(data: metadataJSONData, encoding: .utf8) else {
+    guard let metadataJSONString = String(data: metadataJSONData, encoding: .utf8) else {
         print("Unable to encode tags json Data to String")
         return nil
     }

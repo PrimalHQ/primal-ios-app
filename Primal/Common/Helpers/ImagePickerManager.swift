@@ -70,7 +70,8 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
         guard let image = info[.originalImage] as? UIImage else {
-            fatalError("Expected a dictionary containing an image, but was provided the following: \(info)")
+            print("Expected a dictionary containing an image, but was provided the following: \(info)")
+            return
         }
         pickImageCallback(image)
     }

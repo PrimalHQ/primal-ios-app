@@ -164,7 +164,7 @@ private extension ProfileViewController {
                             
                             self?.userStats = nostrUserProfileInfo
                         default:
-                            assertionFailure("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
+                            print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
                         }
                     }
                 }

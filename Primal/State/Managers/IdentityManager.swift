@@ -59,16 +59,14 @@ final class IdentityManager {
                             break
                         }
                         
-                        guard let score = content.values.first else {
-                            fatalError("IdentityManager: requestUserInfos: Unable to get user score")
-                        }
+                        guard let score = content.values.first else { return }
                         
                         print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
                 case .mediaMetadata:
                     print("IdentityManager: requestUserInfos: Got mediaMetada")
                 default:
-                    assertionFailure("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(response)")
                 }
             }
         }
@@ -99,7 +97,7 @@ final class IdentityManager {
                     
                     self.userStats = nostrUserProfileInfo
                 default:
-                    assertionFailure("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
                 }
             }
         }
@@ -130,7 +128,7 @@ final class IdentityManager {
                         callback(settings)
                     }
                 default:
-                    assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
                 }
             }
         }
@@ -202,7 +200,7 @@ final class IdentityManager {
                         self.newUserKeypair = nil
                     }
                 default:
-                    assertionFailure("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
                 }
             }
             self.didFinishInit = true
@@ -273,7 +271,7 @@ final class IdentityManager {
                         }
                     }
                 default:
-                    assertionFailure("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(response)")
                 }
             }
         }

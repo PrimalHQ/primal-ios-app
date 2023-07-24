@@ -92,8 +92,8 @@ struct PrimalSettingsNotifications: Codable, Hashable {
 }
 
 struct PrimalSearchPagination: Codable, Hashable {
-    let since: Int32
-    let until: Int32
+    let since: Double
+    let until: Double
     let order_by: String
 }
 
@@ -141,7 +141,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let lud16: String
     let website: String
     let tags: [[String]]
-    let created_at: Int32
+    let created_at: Double
     let sig: String
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
@@ -175,7 +175,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.sig = nostrUser?.sig ?? ""
     }
     
-    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Int32, sig: String) {
+    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String) {
         self.id = id
         self.pubkey = pubkey
         self.npub = npub
@@ -236,7 +236,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
 struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let id: String
     let pubkey: String
-    let created_at: Int32
+    let created_at: Double
     let tags: [[String]]
     let content: String
     let sig: String
@@ -264,7 +264,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.reposts = nostrPostStats.reposts
     }
     
-    init(id: String, pubkey: String, created_at: Int32, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
+    init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
         self.id = id
         self.pubkey = pubkey
         self.created_at = created_at
@@ -313,7 +313,7 @@ extension PrimalUser {
             lud16: userUUID,
             website: userUUID,
             tags: [[]],
-            created_at: Int32(Date.now.timeIntervalSince1970),
+            created_at: Date.now.timeIntervalSince1970,
             sig: userUUID
         )
     }()

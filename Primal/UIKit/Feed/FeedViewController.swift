@@ -29,7 +29,16 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
                 table.reloadData()
                 return
             }
-            let indexes = (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
+            
+            let isAddingAtEnd = oldValue.first?.post.id == posts.first?.post.id
+            
+            let indexes: [IndexPath] = {
+                if isAddingAtEnd {
+                    return (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
+                }
+                return (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
+            }()
+            
             table.insertRows(at: indexes, with: .none)
         }
     }
@@ -203,7 +212,7 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func postCellDidTapRepostedProfile(_ cell: PostCell) {
-        guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted else { return }
+        guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted?.user else { return }
         show(ProfileViewController(profile: profile), sender: nil)
     }
     
