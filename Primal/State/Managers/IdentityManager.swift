@@ -63,10 +63,8 @@ final class IdentityManager {
                         
                         print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
-                case .mediaMetadata:
-                    print("IdentityManager: requestUserInfos: Got mediaMetadata")
                 default:
-                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(kind)")
                 }
             }
         }
@@ -97,7 +95,7 @@ final class IdentityManager {
                     
                     self.userStats = nostrUserProfileInfo
                 default:
-                    print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(kind)")
                 }
             }
         }
@@ -128,7 +126,7 @@ final class IdentityManager {
                         callback(settings)
                     }
                 default:
-                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(kind)")
                 }
             }
         }
@@ -200,7 +198,7 @@ final class IdentityManager {
                         self.newUserKeypair = nil
                     }
                 default:
-                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(kind)")
                 }
             }
             self.didFinishInit = true
@@ -221,12 +219,6 @@ final class IdentityManager {
                 let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
-                case .mediaMetadata:
-                    print(response)
-                case .userScore:
-                    print(response)
-                case .metadata:
-                    print(response)
                 case .contacts:
                     guard let relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                         print("Error decoding contacts to json")
@@ -271,7 +263,7 @@ final class IdentityManager {
                         }
                     }
                 default:
-                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(response)")
+                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(kind)")
                 }
             }
         }
