@@ -289,7 +289,7 @@ private extension MenuContainerController {
     }
     
     @objc func signoutPressed() {
-        let alert = UIAlertController(title: "Are you sure you want to sign out?", message: "If you didn't save your nsec, it will be irretrievably lost", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Are you sure you want to sign out?", message: "If you didn't save your private key, it will be irretrievably lost", preferredStyle: .alert)
         alert.addAction(.init(title: "Sign out", style: .destructive) { _ in
             let _ = ICloudKeychainManager.instance.clearSavedKeys()
             KingfisherManager.shared.cache.clearMemoryCache()

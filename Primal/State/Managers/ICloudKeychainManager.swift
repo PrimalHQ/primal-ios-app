@@ -11,7 +11,7 @@ import GenericJSON
 
 final class ICloudKeychainManager {
     private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal")
-        .synchronizable(true)
+        .synchronizable(false)
     private var cancellables = Set<AnyCancellable>()
     
     private init() {}

@@ -156,7 +156,7 @@ extension FeedViewController: PostCellDelegate {
         let postUser = posts[index].user.data
         
         guard let lnurl = postUser.lnurl else {
-            showErrorMessage("User you're trying to zap didn't set up their lightning wallet")
+            showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
             return
         }
         
@@ -185,7 +185,7 @@ extension FeedViewController: PostCellDelegate {
         let postUser = posts[index].user.data
              
         guard let lnurl = postUser.lnurl else {
-            showErrorMessage("User you're trying to zap didn't set up their lightning wallet")
+            showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
             return
         }
         

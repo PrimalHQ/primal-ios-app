@@ -271,7 +271,6 @@ private extension PostCell {
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
         guard case .began = recognizer.state else { return }
-
         delegate?.postCellDidLongTapZap(self)
     }
     
@@ -302,7 +301,7 @@ private extension PostCell {
     @objc func likeTapped() {
         likeButton.animView.play()
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
-        
+
         delegate?.postCellDidTapLike(self)
     }
 }

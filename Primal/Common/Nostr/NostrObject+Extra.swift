@@ -122,8 +122,8 @@ fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard
-        LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo(),
+        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
+        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
         let privkey = keypair.hexVariant.privkey
     else {
         return nil
@@ -255,8 +255,8 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
     }
     
     guard
-        LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo()
+        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
+        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair
     else {
         print("Unable to get keypair")
         return nil

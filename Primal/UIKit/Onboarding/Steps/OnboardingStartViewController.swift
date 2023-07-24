@@ -16,7 +16,7 @@ final class OnboardingStartViewController: UIViewController {
     )
     let signinButton = BigOnboardingButton(
         title: "Sign in",
-        subtitle: "Already have a Nostr account? Sign in via Apple or your Nostr key."
+        subtitle: "Already have a Nostr account? Sign in via your Nostr key."
     )
     
     override func viewDidLoad() {

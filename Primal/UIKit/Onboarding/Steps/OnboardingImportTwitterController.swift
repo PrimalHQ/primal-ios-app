@@ -61,7 +61,7 @@ private extension OnboardingImportTwitterController {
                     self?.state = .ready
                 case .failure:
                     self?.state = .notFound
-                    self?.showErrorMessage("We couldn't fetch that profile at this time. Please try again.")
+                    self?.showErrorMessage(title: "Can’t Show Profile", "We couldn't fetch that profile at this time. Please try again.")
                 }
             }, receiveValue: { [weak self] profile in
                 let twitter = OnboardingProfileController(profile: profile, uploader: nil)

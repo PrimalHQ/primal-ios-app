@@ -150,6 +150,9 @@ private extension OnboardingProfileController {
                 lud16: self.profile.lightningWallet,
                 nip05: self.profile.nip05
             )
+            
+            // yucky
+            IdentityManager.instance.isNewUser = true
 
             guard let metadata_ev = NostrObject.metadata(profile) else {
                 fatalError("Unable to create metadata, this shouldn't be possible")
@@ -267,7 +270,7 @@ final class KeyKeychainInfoView: UIView {
         titleLabel.numberOfLines = 3
         titleLabel.adjustsFontSizeToFitWidth = true
         
-        subtitleLabel.text = "You can use the “Sign in with Apple” option in the future. You can also access your key in the Primal app settings."
+        subtitleLabel.text = "You can access your key in the Primal app settings."
         subtitleLabel.textColor = .init(rgb: 0xAAAAAA)
         subtitleLabel.font = .appFont(withSize: 16, weight: .regular)
         subtitleLabel.numberOfLines = 4
