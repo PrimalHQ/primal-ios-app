@@ -10,7 +10,7 @@ import UIKit
 
 final class NostrWalletConnectDeeplinkHandler : DeeplinkHandlerProtocol {    
     func canOpenURL(_ url: URL) -> Bool {
-        return url.absoluteString.starts(with: "nostrwalletconnect://")
+        return url.absoluteString.starts(with: "nostrwalletconnect://") || url.absoluteString.starts(with: "nostr+walletconnect://")
     }
     
     func openURL(_ url: URL) {

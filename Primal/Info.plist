@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Add photos to the app from the library.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Use camera to add photos to the app.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -16,6 +12,26 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>nostrwalletconnect</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>net.primal.iosapp.Primal</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nostr+walletconnect</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>net.primal.iosapp.Primal</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>primal</string>
 			</array>
 		</dict>
 	</array>

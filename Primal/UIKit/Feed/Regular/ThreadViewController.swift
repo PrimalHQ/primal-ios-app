@@ -121,7 +121,7 @@ private extension ThreadViewController {
         let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !text.isEmpty else {
-            showErrorMessage("Text mustn't be empty")
+            showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
             return
         }
         
