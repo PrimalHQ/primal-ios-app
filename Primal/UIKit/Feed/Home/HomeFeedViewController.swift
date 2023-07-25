@@ -25,7 +25,7 @@ final class HomeFeedViewController: PostFeedViewController {
     }
     
     let refresh = UIRefreshControl()
-    let newPostsView = NewPostsView()
+    let newPostsView = NewPostsButton()
     
     var newAddedPosts = 0 {
         didSet {

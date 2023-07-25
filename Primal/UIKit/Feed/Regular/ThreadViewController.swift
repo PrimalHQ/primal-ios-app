@@ -25,10 +25,13 @@ final class ThreadViewController: PostFeedViewController {
     private let inputParent = UIView()
     private let inputBackground = UIView()
     
+    private let postButton = GradientInGradientButton(title: "Reply")
     private let buttonStack = UIStackView()
     private let replyingToLabel = UILabel()
     
-    let usersTableView = UITableView()
+    private let imagesCollectionView = PostingImageCollectionView(inset: .init(top: 0, left: 22, bottom: 0, right: 20))
+    private let usersTableView = UITableView()
+    private var inputContentMaxHeightConstraint: NSLayoutConstraint?
     
     private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView)
     
@@ -118,6 +121,15 @@ private extension ThreadViewController {
     @objc func postButtonPressed() {
         guard textInputView.isEditable, !posts.isEmpty else { return }
         
+        if inputManager.didUploadFail {
+            inputManager.restartFailedUploads()
+            return
+        }
+        
+        if inputManager.isUploadingImages {
+            return
+        }
+        
         let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !text.isEmpty else {
@@ -146,6 +158,10 @@ private extension ThreadViewController {
                 }
             }
         }
+    }
+    
+    @objc func inputSwippedDown() {
+        textInputView.resignFirstResponder()
     }
     
     func addPublishers() {
@@ -188,9 +204,14 @@ private extension ThreadViewController {
         
         inputManager.$isEditing.sink { [weak self] isEditing in
             guard let self = self else { return }
+            let images = self.inputManager.images
+            let users = self.inputManager.users
             
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
+            
+            let isImageHidden = !isEditing ||   images.isEmpty || !users.isEmpty
+            
             UIView.animate(withDuration: 0.2) {
                 self.inputParent.backgroundColor = isEditing ? .background2 : .background
                 self.inputBackground.backgroundColor = isEditing ? .background : .background3
@@ -200,6 +221,9 @@ private extension ThreadViewController {
                 
                 self.buttonStack.isHidden = !isEditing
                 self.buttonStack.alpha = isEditing ? 1 : 0
+                    
+                self.imagesCollectionView.isHidden = isImageHidden
+                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
                 
                 self.textInputView.layoutIfNeeded()
             }
@@ -224,6 +248,25 @@ private extension ThreadViewController {
             self.usersTableView.reloadData()
         }
         .store(in: &cancellables)
+        
+        inputManager.$images.receive(on: DispatchQueue.main).sink { [weak self] images in
+            self?.imagesCollectionView.imageResources = images
+            self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
+            self?.postButton.titleLabel.text = self?.inputManager.isUploadingImages == true ? "Uploading..." : "Reply"
+        }
+        .store(in: &cancellables)
+        
+        Publishers.CombineLatest(inputManager.$users, inputManager.$images)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] users, images in
+                guard let self else { return }
+                let isHidden = images.isEmpty || !users.isEmpty
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.imagesCollectionView.isHidden = isHidden
+                    self.imagesCollectionView.alpha = isHidden ? 0 : 1
+                })
+            }
+            .store(in: &cancellables)
     }
     
     func setup() {
@@ -241,12 +284,26 @@ private extension ThreadViewController {
         
         inputBackground.layer.cornerRadius = 6
         
-        let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, buttonStack])
+        let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, imagesCollectionView, buttonStack])
         inputStack.axis = .vertical
         
         inputParent.addSubview(inputStack)
         inputBackground.addSubview(placeholderLabel)
-        inputBackground.addSubview(textInputView)
+        
+        let textParent = UIView()
+        let contentStack = UIStackView(axis: .vertical, [textParent, imagesCollectionView])
+        contentStack.spacing = 12
+        
+        imagesCollectionView.imageDelegate = inputManager
+        imagesCollectionView.isHidden = true
+        imagesCollectionView.backgroundColor = .clear
+        
+        inputBackground.addSubview(contentStack)
+        textParent.addSubview(textInputView)
+        
+        contentStack
+            .pinToSuperview(edges: [.top, .horizontal])
+            .pinToSuperview(edges: .bottom, padding: 5)
         
         placeholderLabel
             .pinToSuperview(edges: .leading, padding: 21)
@@ -254,7 +311,8 @@ private extension ThreadViewController {
         
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .vertical, padding: 5)
+            .pinToSuperview(edges: .top, padding: 5)
+            .pinToSuperview(edges: .bottom)
         
         inputStack
             .pinToSuperview(edges: .horizontal, padding: 20)
@@ -275,12 +333,21 @@ private extension ThreadViewController {
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         imageButton.constrainToSize(48)
+        imageButton.addAction(.init(handler: { [unowned self] _ in
+            ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
+                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            }
+        }), for: .touchUpInside)
         
         let cameraButton = UIButton()
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         cameraButton.constrainToSize(48)
+        cameraButton.addAction(.init(handler: { [unowned self] _ in
+            ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
+                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            }
+        }), for: .touchUpInside)
         
-        let postButton = GradientInGradientButton(title: "Reply")
         postButton.titleLabel.font = .appFont(withSize: 14, weight: .medium)
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
@@ -303,9 +370,17 @@ private extension ThreadViewController {
         buttonStack.alpha = 0
         replyingToLabel.isHidden = true
         replyingToLabel.alpha = 0
+        replyingToLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(inputSwippedDown))
+        swipe.direction = .down
+        inputParent.addGestureRecognizer(swipe)
         
         textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
         textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
+        
+        inputContentMaxHeightConstraint?.priority = .defaultHigh
         
         view.addSubview(usersTableView)
         usersTableView.pin(to: inputParent, edges: .horizontal)

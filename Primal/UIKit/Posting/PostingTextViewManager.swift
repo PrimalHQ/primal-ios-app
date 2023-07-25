@@ -20,11 +20,25 @@ struct UserToken {
     var user: PrimalUser
 }
 
+struct PostingImage {
+    let id = UUID().uuidString
+    var image: UIImage
+    var isPNG: Bool
+    var state = State.uploading
+    
+    enum State {
+        case uploaded(String)
+        case failed
+        case uploading
+    }
+}
+
 final class PostingTextViewManager: NSObject {
     @Published var isEditing = false
     @Published var userSearchText: String?
     
     @Published var users: [ParsedUser] = []
+    @Published var images: [PostingImage] = []
     
     var tokens: [UserToken] = []
     
@@ -74,7 +88,30 @@ final class PostingTextViewManager: NSObject {
             tokens = updateTokensForReplacingRange(tokens: tokens, range: token.range, replacementText: replacement)
         }
         
+        for image in images {
+            guard case .uploaded(let url) = image.state else { continue }
+            currentText = currentText.appending("\n" + url) as NSString
+        }
+        
         return currentText as String
+    }
+    
+    var isUploadingImages: Bool {
+        for image in images {
+            if case .uploading = image.state {
+                return true
+            }
+        }
+        return false
+    }
+    
+    var didUploadFail: Bool {
+        for image in images {
+            if case .failed = image.state {
+                return true
+            }
+        }
+        return false
     }
     
     var mentionedUsersPubkeys: [String] {
@@ -83,6 +120,42 @@ final class PostingTextViewManager: NSObject {
     
     @objc func atButtonPressed() {
         _ = textView(textView, shouldChangeTextIn: textView.selectedRange, replacementText: "@")
+    }
+    
+    func processSelectedImage(_ image: UIImage, isPNG: Bool) {
+        let postingImage = PostingImage(image: image, isPNG: isPNG)
+        images.append(postingImage)
+        uploadSelectedImage(postingImage.id)
+    }
+    
+    func uploadSelectedImage(_ id: String) {
+        guard let postingIndex = images.firstIndex(where: { $0.id == id }) else { return }
+        
+        let postingImage = images[postingIndex]
+        
+        if case .uploaded = postingImage.state { return }
+        
+        images[postingIndex].state = .uploading
+        
+        UploadPhotoRequest(image: postingImage.image, isPNG: postingImage.isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+            guard case .failure(let error) = $0, let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
+                
+            self?.images[index].state = .failed
+            print(error)
+        }) { [weak self] urlString in
+            guard let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
+            
+            self?.images[index].state = .uploaded(urlString)
+        }
+        .store(in: &self.cancellables)
+    }
+    
+    func restartFailedUploads() {
+        for image in images {
+            if case .failed = image.state {
+                uploadSelectedImage(image.id)
+            }
+        }
     }
 }
 
@@ -272,7 +345,6 @@ private extension PostingTextViewManager {
         textView.backgroundColor = .background2
         textView.delegate = self
         textView.bounces = false
-        textView.keyboardType = .twitter
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self
@@ -317,3 +389,14 @@ extension PostingTextViewManager {
         "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
     ] }
 }
+
+extension PostingTextViewManager: PostingImageCollectionViewDelegate {
+    func didTapImage(resource: PostingImage) {
+        
+    }
+    
+    func didTapDeleteImage(resource: PostingImage) {
+        images = images.filter { $0.id != resource.id }
+    }
+}
+

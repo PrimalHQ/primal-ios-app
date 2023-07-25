@@ -173,13 +173,13 @@ private extension OnboardingCreateAccountController {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
-            ImagePickerManager(self) { [weak self] image in
+            ImagePickerManager(self) { [weak self] image, isPNG in
                 guard let self = self else { return }
                 self.avatarView.image = image
                 self.avatarView.contentMode = .scaleAspectFill
                 self.isUploadingAvatar = true
                 
-                UploadPhotoRequest(image: image).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+                UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                     switch $0 {
                     case .failure(let error):
                         self?.avatarView.image = UIImage(named: "Profile")
@@ -202,13 +202,13 @@ private extension OnboardingCreateAccountController {
         
         addBannerButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
-            ImagePickerManager(self) { [weak self] image in
+            ImagePickerManager(self) { [weak self] image, isPNG in
                 guard let self = self else { return }
                 self.bannerImageView.image = image
                 self.bannerImageView.contentMode = .scaleAspectFill
                 self.didUploadBanner = true
                 
-                UploadPhotoRequest(image: image).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+                UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                     switch $0 {
                     case .failure(let error):
                         self?.bannerImageView.image = nil

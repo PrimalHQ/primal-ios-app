@@ -17,9 +17,11 @@ class UploadPhotoRequest {
     
     lazy var socket = NWWebSocket(url: url, connectAutomatically: true, connectionQueue: Self.dispatchQueue)
     var image: UIImage
+    var isPNG: Bool
     
-    init(image: UIImage) {
+    init(image: UIImage, isPNG: Bool = true) {
         self.image = image
+        self.isPNG = isPNG
         socket.delegate  = self
     }
     
@@ -36,7 +38,9 @@ class UploadPhotoRequest {
     }
     
     func uploadImage() {
-        guard let imageData = image.pngData() else { return }
+        let resized = resizeImage(image: image, targetSize: 200)
+        
+        guard let imageData = isPNG ? image.pngData() : image.jpegData(compressionQuality: 0.9) else { return }
         
         let strBase64:String = "data:image/svg+xml;base64," + imageData.base64EncodedString()
         let requestID = UUID().uuidString
@@ -59,6 +63,34 @@ class UploadPhotoRequest {
         
         socket.send(string: requestString)
     }
+    
+    func resizeImage(image: UIImage, targetSize: CGFloat) -> UIImage {
+        let size = image.size
+        
+        guard size.width > targetSize || size.height > targetSize else { return image }
+        
+        let widthRatio  = targetSize  / size.width
+        let heightRatio = targetSize / size.height
+        
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        }
+        
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRect(origin: .zero, size: newSize)
+        
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage ?? image
+    }
+
 }
 
 extension UploadPhotoRequest: WebSocketConnectionDelegate {
