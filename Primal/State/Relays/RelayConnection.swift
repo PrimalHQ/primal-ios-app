@@ -145,12 +145,6 @@ extension RelayConnection : WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(self.socketURL) - \(error)")
-        
-//        state.send(.disconnected)
-//
-//        self.dispatchQueue.asyncAfter(deadline: .now() + 3) {
-//            self.connect()
-//        }
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {

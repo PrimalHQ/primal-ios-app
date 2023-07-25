@@ -28,7 +28,6 @@ final class FollowManager {
             return
         }
         
-        //    RelaysPostBox_bkp.the.send(ev)
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
             
         }, errorHandler: {

@@ -11,6 +11,14 @@ extension Notification.Name {
     static var nostrWalletConnect: Notification.Name {
         return Notification.Name("nostrWalletConnect")
     }
+    
+    static var primalNoteLink: Notification.Name {
+        return Notification.Name("primalNoteLink")
+    }
+    
+    static var primalProfileLink: Notification.Name {
+        return Notification.Name("primalProfileLink")
+    }
 }
 
 func notify(_ name: NSNotification.Name, _ object: Any?) {

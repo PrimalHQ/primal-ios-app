@@ -73,6 +73,8 @@
 		93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */; };
 		93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1229F7D136003BBCE5 /* Keys.swift */; };
 		93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CACB1A29F7D23A003BBCE5 /* Bech32.swift */; };
+		93D69B9B2A700E2700CF8F9E /* ProfileDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D69B9A2A700E2700CF8F9E /* ProfileDeeplinkHandler.swift */; };
+		93D69B9D2A700E3500CF8F9E /* NoteDeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D69B9C2A700E3500CF8F9E /* NoteDeeplinkHandler.swift */; };
 		93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E0A81C2A43A97C00C33A08 /* NWCRelayConnection.swift */; };
 		93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E0A81E2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift */; };
 		93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27D9D2A27DE32004ADA55 /* Connection.swift */; };
@@ -339,6 +341,8 @@
 		93CACB0C29F7CAF8003BBCE5 /* NostrTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrTools.swift; sourceTree = "<group>"; };
 		93CACB1229F7D136003BBCE5 /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		93CACB1A29F7D23A003BBCE5 /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		93D69B9A2A700E2700CF8F9E /* ProfileDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDeeplinkHandler.swift; sourceTree = "<group>"; };
+		93D69B9C2A700E3500CF8F9E /* NoteDeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDeeplinkHandler.swift; sourceTree = "<group>"; };
 		93E0A81C2A43A97C00C33A08 /* NWCRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCRelayConnection.swift; sourceTree = "<group>"; };
 		93E0A81E2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCRelayConnectionEvent.swift; sourceTree = "<group>"; };
 		93F27D9D2A27DE32004ADA55 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -552,6 +556,9 @@
 		9363DE6F2A30DD880060F4BD /* DeepLinking */ = {
 			isa = PBXGroup;
 			children = (
+				93D69B992A700E1800CF8F9E /* Note */,
+				93D69B982A700E0900CF8F9E /* Profile */,
+				9363DE742A30DDD80060F4BD /* Wallet */,
 				9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */,
 				9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */,
 			);
@@ -647,7 +654,6 @@
 				9E83DF752A573F1C00F2C379 /* Helpers */,
 				9E83DF6A2A573DE800F2C379 /* Protocols */,
 				93906B922A55B5C500962A94 /* Nostr */,
-				9363DE742A30DDD80060F4BD /* Wallet */,
 				9363DE6F2A30DD880060F4BD /* DeepLinking */,
 				933DBDA82A1124F7008DCF1F /* Notes */,
 				9E0DEAF029FD301D00145E08 /* Animations */,
@@ -794,6 +800,22 @@
 				9363DE7A2A30E1C40060F4BD /* WalletConnectURL.swift */,
 			);
 			path = Lib;
+			sourceTree = "<group>";
+		};
+		93D69B982A700E0900CF8F9E /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				93D69B9A2A700E2700CF8F9E /* ProfileDeeplinkHandler.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		93D69B992A700E1800CF8F9E /* Note */ = {
+			isa = PBXGroup;
+			children = (
+				93D69B9C2A700E3500CF8F9E /* NoteDeeplinkHandler.swift */,
+			);
+			path = Note;
 			sourceTree = "<group>";
 		};
 		93F27D9C2A27DE1C004ADA55 /* CacheServer */ = {
@@ -1479,6 +1501,7 @@
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadPhotoRequest.swift in Sources */,
 				9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */,
+				93D69B9B2A700E2700CF8F9E /* ProfileDeeplinkHandler.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
@@ -1558,6 +1581,7 @@
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
+				93D69B9D2A700E3500CF8F9E /* NoteDeeplinkHandler.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */,

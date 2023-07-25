@@ -11,7 +11,9 @@ import UIKit
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = {
         return DeeplinkCoordinator(handlers: [
-            NostrWalletConnectDeeplinkHandler()
+            NostrWalletConnectDeeplinkHandler(),
+            NoteDeeplinkHandler(),
+            ProfileDeeplinkHandler()
         ])
     }()
     
