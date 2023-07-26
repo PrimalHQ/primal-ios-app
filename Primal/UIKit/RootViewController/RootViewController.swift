@@ -23,8 +23,6 @@ final class RootViewController: UIViewController {
     private(set) var currentChild: UIViewController?
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
-    private var noteObserver: NSObjectProtocol?
-    private var profileObserver: NSObjectProtocol?
     
     var didAnimate = false
 
@@ -49,13 +47,7 @@ final class RootViewController: UIViewController {
     }
     
     deinit {
-        if let noteObserver {
-            NotificationCenter.default.removeObserver(noteObserver)
-        }
-        
-        if let profileObserver {
-            NotificationCenter.default.removeObserver(profileObserver)
-        }
+
     }
     
     required init?(coder: NSCoder) {
@@ -139,20 +131,6 @@ final class RootViewController: UIViewController {
         intro.didMove(toParent: self)
         
         introVC = intro
-    }
-    
-    func setup() {
-        noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { notification in
-            if let note = notification.object as? String {
-                
-            }
-        }
-        
-        profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { notification in
-            if let npub = notification.object as? String {
-                
-            }
-        }
     }
 }
 

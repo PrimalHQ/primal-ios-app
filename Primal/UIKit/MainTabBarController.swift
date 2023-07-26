@@ -31,6 +31,8 @@ final class MainTabBarController: UIViewController, Themeable {
     
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
+    private var noteObserver: NSObjectProtocol?
+    private var profileObserver: NSObjectProtocol?
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -58,6 +60,12 @@ final class MainTabBarController: UIViewController, Themeable {
     deinit {
         if let foregroundObserver {
             NotificationCenter.default.removeObserver(foregroundObserver)
+        }
+        if let noteObserver {
+            NotificationCenter.default.removeObserver(noteObserver)
+        }
+        if let profileObserver {
+            NotificationCenter.default.removeObserver(profileObserver)
         }
     }
     
@@ -127,6 +135,23 @@ private extension MainTabBarController {
         
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
             Connection.instance.reconnect()
+        }
+        noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
+            if let note = notification.object as? String {
+                if let self {
+                    self.menuButtonPressedForNav(self.home)
+                    let vc = ThreadViewController(threadId: note)
+                    self.home.pushViewController(vc, animated: true)
+                }
+            }
+        }
+        profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
+            if let npub = notification.object as? String {
+                if let self {
+                    let vc = ProfileViewController(profile: ParsedUser(data: PrimalUser.empty))
+                    self.show(vc, sender: nil)
+                }
+            }
         }
         
         for (index, button) in buttons.enumerated() {

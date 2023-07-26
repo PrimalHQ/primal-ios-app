@@ -57,16 +57,12 @@ final class NoteDeeplinkHandler : DeeplinkHandlerProtocol {
     }
     
     func openURL(_ url: URL) {
-        guard canOpenURL(url) else {
-            return
-        }
+        guard canOpenURL(url) else { return }
         
-        let note: String = url.absoluteString.replacingOccurrences(of: noteDeepLinkPrefix, with: "nostr:")
-        guard let valid = eventIdFromNote(note) else {
-            return
-        }
+        let note: String = url.absoluteString.replacingOccurrences(of: noteDeepLinkPrefix, with: "")
+        guard let decoded = try? bech32_decode(note) else { return }
+        let eventId = hex_encode(decoded.data)
         
-        
-        notify(.primalNoteLink, note)
+        notify(.primalNoteLink, eventId)
     }
 }
