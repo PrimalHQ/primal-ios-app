@@ -10,7 +10,13 @@ import SwiftUI
 import GenericJSON
 
 final class ProfileViewController: PostFeedViewController {
-    let profile: ParsedUser
+    var profile: ParsedUser {
+        didSet {
+            table.reloadSections([0], with: .none)
+            navigationBar.updateInfo(profile.data)
+        }
+    }
+    
     var userStats: NostrUserProfileInfo? {
         didSet {
             table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
@@ -196,6 +202,10 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func editProfilePressed() {
+        show(EditProfileViewController(profile: profile.data), sender: nil)
+    }
+    
     func npubPressed() {
         UIPasteboard.general.string = profile.data.npub
         view.showToast("Key copied to clipboard")

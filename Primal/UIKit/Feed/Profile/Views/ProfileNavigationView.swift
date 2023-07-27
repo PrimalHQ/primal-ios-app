@@ -68,6 +68,8 @@ class ProfileNavigationView: UIView, Themeable {
         
         primaryLabel.text = user.firstIdentifier
         checkboxIcon.isHidden = user.nip05.isEmpty
+        
+        menuButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
     }
     
     private var oldSize: CGFloat = 0

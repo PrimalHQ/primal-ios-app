@@ -52,10 +52,13 @@ final class GradientUIButton: UIButton {
         setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
-    override func setTitle(_ title: String?, for state: UIControl.State) {
-        super.setTitle(title, for: state)
-        DispatchQueue.main.async { [self] in
-            let gradientColor = UIColor.gradientColor(bounds: bounds.size)
+    var size = CGSize.zero
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if size != bounds.size {
+            size = bounds.size
+            let gradientColor = UIColor.gradientColor(bounds: size)
             setTitleColor(gradientColor, for: .normal)
             setTitleColor(gradientColor?.withAlphaComponent(0.5), for: .highlighted)
         }

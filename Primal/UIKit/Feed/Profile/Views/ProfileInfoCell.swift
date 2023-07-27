@@ -10,6 +10,7 @@ import UIKit
 protocol ProfileInfoCellDelegate: AnyObject {
     func npubPressed()
     func followPressed(in cell: ProfileInfoCell)
+    func editProfilePressed()
 }
 
 class ProfileInfoCell: UITableViewCell {
@@ -55,7 +56,7 @@ class ProfileInfoCell: UITableViewCell {
         followers.text = (stats?.followers_count ?? 0).localized()
         posts.text = (stats?.note_count ?? 0).localized()
         
-        if user.id == IdentityManager.instance.user?.id {
+        if user.pubkey == IdentityManager.instance.userHexPubkey {
             followButton.isHidden = true
             editProfile.isHidden = false
         } else {
@@ -116,6 +117,9 @@ private extension ProfileInfoCell {
         
         npubView.addTarget(self, action: #selector(npubPressed), for: .touchUpInside)
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
+        editProfile.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.editProfilePressed()
+        }), for: .touchUpInside)
     }
     
     @objc func npubPressed() {
