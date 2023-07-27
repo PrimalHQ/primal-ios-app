@@ -17,13 +17,14 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
-    private let navigationBar = ProfileNavigationView()
+    private let navigationBar: ProfileNavigationView
     private let loadingSpinner = LoadingSpinnerView()
     
     override var postSection: Int { 1 }
     
     init(profile: ParsedUser) {
         self.profile = profile
+        navigationBar = ProfileNavigationView(profile)
         super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
         setup()
     }

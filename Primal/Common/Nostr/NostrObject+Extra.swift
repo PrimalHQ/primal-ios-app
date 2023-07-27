@@ -11,21 +11,25 @@ import GenericJSON
 
 extension NostrObject {
     func toJSON() -> JSON {
-        return .object([
-            "id": .string(self.id),
-            "sig": .string(self.sig),
-            "tags": .array(self.tags.map { .array($0.map { s in .string(s) }) }),
-            "pubkey": .string(self.pubkey),
-            "created_at": .number(Double(self.created_at)),
-            "kind": .number(Double(self.kind)),
-            "content": .string(self.content)
+        .object([
+            "id": .string(id),
+            "sig": .string(sig),
+            "tags": .array(tags.map {
+                .array($0.map { s in
+                    .string(s)
+                })
+            }),
+            "pubkey": .string(pubkey),
+            "created_at": .number(Double(created_at)),
+            "kind": .number(Double(kind)),
+            "content": .string(content)
         ])
     }
     
     func toEventJSON() -> JSON {
-        return .array([
+        .array([
             .string("EVENT"),
-            self.toJSON()
+            toJSON()
         ])
     }
     
@@ -48,7 +52,7 @@ extension NostrObject {
     }
     
     func toEventJSONString() -> String? {
-        let json = self.toEventJSON()
+        let json = toEventJSON()
         
         let outputFormatting = jsonEncoder.outputFormatting
         jsonEncoder.outputFormatting = .withoutEscapingSlashes
@@ -70,51 +74,55 @@ extension NostrObject {
 
 extension NostrObject {
     static func create(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
-        return createNostrObject(content: content, kind: kind, tags: tags, createdAt: createdAt)
+        createNostrObject(content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
     static func createAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
-        return createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
+        createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
     static func like(post: PrimalFeedPost) -> NostrObject? {
-        return createNostrLikeEvent(post: post)
+        createNostrLikeEvent(post: post)
     }
     
     static func post(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-        return createNostrPostEvent(content, mentionedPubkeys: mentionedPubkeys)
+        createNostrPostEvent(content, mentionedPubkeys: mentionedPubkeys)
     }
     
     static func repost(_ nostrContent: NostrContent) -> NostrObject? {
-        return createNostrRepostEvent(nostrContent)
+        createNostrRepostEvent(nostrContent)
     }
     
     static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-        return createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
+        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
     static func contacts(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
-        return createNostrContactsEvent(contacts, relays: relays)
+        createNostrContactsEvent(contacts, relays: relays)
     }
     
     static func getSettings() -> NostrObject? {
-        return createNostrGetSettingsEvent()
+        createNostrGetSettingsEvent()
     }
     
     static func updateSettings(_ settings: PrimalSettingsContent) -> NostrObject? {
-        return createNostrUpdateSettingsEvent(settings)
+        createNostrUpdateSettingsEvent(settings)
     }
     
     static func metadata(_ metadata: Profile) -> NostrObject? {
-        return createNostrMetadataEvent(metadata)
+        createNostrMetadataEvent(metadata)
     }
     
     static func firstContact() -> NostrObject? {
-        return createNostrFirstContactEvent()
+        createNostrFirstContactEvent()
     }
     
     static func zap(_ comment: String = "", target: ZapTarget, relays: [String]) -> NostrObject? {
-        return createNostrPublicZapEvent(comment, target: target, relays: relays)
+        createNostrPublicZapEvent(comment, target: target, relays: relays)
+    }
+
+    static func muteList(_ mutedPubkeys: [String]) -> NostrObject? {
+        createNostrMuteListEvent(mutedPubkeys)
     }
 }
 
@@ -144,7 +152,7 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
 }
 
 fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
-    return createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
+    createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
 }
 
 fileprivate func createNostrContactsEvent(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
@@ -159,13 +167,15 @@ fileprivate func createNostrContactsEvent(_ contacts: [String], relays: [String:
     }
     
     let tags = contacts.map {
-        return ["p", $0]
+        ["p", $0]
     }
     return createNostrObject(content: relaysJSONString, kind: 3, tags: tags)
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-    return createNostrObject(content: content, kind: 1, tags: mentionedPubkeys.map { ["p", $0, "", "mention"] })
+    createNostrObject(content: content, kind: 1, tags: mentionedPubkeys.map {
+        ["p", $0, "", "mention"]
+    })
 }
 
 fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrObject? {
@@ -271,6 +281,12 @@ fileprivate func createNostrPublicZapEvent(_ comment: String = "", target: ZapTa
     let tags = createZapTags(target, relays)
     
     return createNostrObject(content: comment, kind: 9734, tags: tags)
+}
+
+fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObject? {
+    let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
+
+    return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
 }
 
 fileprivate func createZapTags(_ target: ZapTarget, _ relays: [String]) -> [[String]] {

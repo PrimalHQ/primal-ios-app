@@ -96,6 +96,8 @@ private extension OnboardingFollowSuggestionsController {
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()
             IdentityManager.instance.requestUserContacts()
+
+            MuteManager.instance.requestMuteList()
         }.store(in: &cancellables)
         Connection.instance.connect()
     }

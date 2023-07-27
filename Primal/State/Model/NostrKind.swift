@@ -23,6 +23,10 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case muteList = 10_000
+    
+    case categoryList = 30_000
+    
     case settings = 30_078
     
     case ack = 10_000_098
@@ -44,11 +48,5 @@ enum NostrKind: Int {
 }
 
 extension NostrKind {
-    static func fromGenericJSON(_ json: JSON) -> NostrKind {
-        guard let kind = NostrKind(rawValue: Int(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) else {
-            return .metadata
-        }
-        
-        return kind
-    }
+    static func fromGenericJSON(_ json: JSON) -> NostrKind? { NostrKind(rawValue: Int(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) }
 }

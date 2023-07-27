@@ -21,7 +21,7 @@ class ProfileNavigationView: UIView, Themeable {
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
     lazy var titleStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
     var overlayView = UIView()
-    
+
     let profilePictureParent = UIView()
     let profilePicture = UIImageView()
     
@@ -36,8 +36,10 @@ class ProfileNavigationView: UIView, Themeable {
     let minSize: CGFloat = 89
     
     weak var delegate: ProfileNavigationViewDelegate?
+    let profile: ParsedUser
     
-    init() {
+    init(_ profile: ParsedUser) {
+        self.profile = profile
         super.init(frame: .zero)
         setup()
     }
@@ -210,23 +212,31 @@ private extension ProfileNavigationView {
     }
     
     func setupMenuButton() {
-        let addFeed = UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { [weak self] _ in
-            self?.delegate?.tappedAddUserFeed()
-        }
-        
-        let share = UIAction(title: "Share user profile", image: UIImage(named: "shareProfileIcon")) { _ in
-            
-        }
-    
-        let report = UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { _ in
-            
-        }
-        
-        let block = UIAction(title: "Mute user", image: UIImage(named: "blockIcon"), attributes: .destructive) { _ in
-            
-        }
+        menuButton.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                if let self {
+                    let muteManager = MuteManager.instance
+                    let pubkey = self.profile.data.pubkey
+                    let muteTitle = muteManager.isMuted(pubkey) ? "Unmute user" : "Mute user"
 
-        menuButton.menu = UIMenu(children: [addFeed, share, report, block])
+                    let actions = [
+                        UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { _ in
+                            self.delegate?.tappedAddUserFeed()
+                        },
+                        UIAction(title: "Share user profile", image: UIImage(named: "shareProfileIcon")) { _ in
+
+                        },
+                        UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { _ in
+
+                        },
+                        UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { _ in
+                            muteManager.toggleMute(pubkey)
+                        }
+                    ]
+                    completion(actions)
+                }
+            }
+        ])
         menuButton.showsMenuAsPrimaryAction = true
     }
 }

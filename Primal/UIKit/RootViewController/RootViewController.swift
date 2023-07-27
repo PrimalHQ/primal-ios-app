@@ -40,6 +40,8 @@ final class RootViewController: UIViewController {
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
                 IdentityManager.instance.requestUserContacts()
+
+                MuteManager.instance.requestMuteList()
             }
         }.store(in: &cancellables)
     }

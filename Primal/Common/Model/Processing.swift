@@ -106,7 +106,7 @@ extension PostRequestResult {
                             return
                         }
 
-                        var parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
+                        let parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
                         p.parsedMetadata = parsed
 
                         DispatchQueue.global(qos: .background).async {

@@ -58,12 +58,12 @@ private extension SocketRequest {
         case .searchPaginationSettingsEvent:
             guard
                 let content = payload["content"]?.stringValue,
-                let searchPaginationEvent = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data(content.utf8))
+                let _ = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data(content.utf8))
             else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
-//            searchPaginationEvent = searchPaginationEvent
+            print("SocketRequest: Got search pagination event")
         case .noteActions:
             guard
                 let content = payload["content"]?.stringValue,

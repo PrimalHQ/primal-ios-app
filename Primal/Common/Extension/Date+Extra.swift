@@ -9,7 +9,7 @@ import Foundation
 
 extension Date {
     func timeAgoDisplay() -> String {
-        var seconds = Date().timeIntervalSince(self)
+        let seconds = Date().timeIntervalSince(self)
         
         let years = Int(seconds / 31622400)
         if years > 0 {
