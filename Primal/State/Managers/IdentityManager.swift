@@ -38,7 +38,7 @@ final class IdentityManager {
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
     
     @Published var didFinishInit: Bool = false
-        
+
     func requestUserInfos() {
         let request: JSON = .object([
             "pubkeys": .array([.string(userHexPubkey)])
@@ -64,7 +64,7 @@ final class IdentityManager {
                         print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
                 case .mediaMetadata:
-                    print("IdentityManager: requestUserInfos: Got mediaMetada")
+                    print("IdentityManager: requestUserInfos: Got mediaMetadata")
                 default:
                     print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(response)")
                 }
@@ -276,7 +276,7 @@ final class IdentityManager {
             }
         }
     }
-    
+
     func updateSettings(_ settings: PrimalSettings) {
         if LoginManager.instance.method() != .nsec { return }
 
