@@ -1,29 +1,18 @@
 //
-//  OnboardingCreateAccountController.swift
+//  EditProfileViewController.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 25.4.23..
+//  Created by Pavle D Stevanović on 26.7.23..
 //
 
 import Combine
 import UIKit
 
-struct AccountCreationData: SignupProfileProtocol {    
-    var avatar: String = ""
-    var banner: String = ""
-    var bio: String = ""
-    var username: String = ""
-    var displayname: String = ""
-    var lightningWallet: String = ""
-    var nip05: String = ""
-    var website: String = ""
-}
-
-final class OnboardingCreateAccountController: UIViewController {
+final class EditProfileViewController: UIViewController {
     let bannerImageView = UIImageView()
     let avatarView = UIImageView(image: UIImage(named: "Profile"))
-    let addPhotoButton = GradientUIButton(title: "add photo")
-    let addBannerButton = GradientUIButton(title: "add banner")
+    let addPhotoButton = GradientUIButton(title: "change photo")
+    let addBannerButton = GradientUIButton(title: "change banner")
     let displayNameInput = UITextField()
     let usernameInput = UITextField()
     let websiteInput = UITextField()
@@ -31,7 +20,7 @@ final class OnboardingCreateAccountController: UIViewController {
     let bitcoinInput = UITextField()
     let nip05Input = UITextField()
     let scrollView = UIScrollView()
-    let nextButton = GradientBackgroundUIButton(title: "Next").constrainToSize(height: 58)
+    let nextButton = GradientBackgroundUIButton(title: "Save Profile").constrainToSize(height: 58)
     
     var avatarURL = "" { didSet { updateIsUploading() } }
     var bannerURL = "" { didSet { updateIsUploading() } }
@@ -45,33 +34,63 @@ final class OnboardingCreateAccountController: UIViewController {
     
     var textFields: [UITextField] { [displayNameInput, usernameInput, websiteInput, bitcoinInput, nip05Input] }
     
-    var accountData: AccountCreationData {
-        AccountCreationData(
-            avatar: avatarURL,
-            banner: bannerURL,
-            bio: bioInput.text ?? "",
-            username: usernameInput.text ?? "",
-            displayname: displayNameInput.text ?? "",
-            lightningWallet: bitcoinInput.text ?? "",
-            nip05: nip05Input.text ?? "",
-            website: websiteInput.text ?? ""
+    var accountData: Profile {
+        let name: String = usernameInput.text ?? profile.name
+        let displayName: String = displayNameInput.text ?? profile.displayName
+        let about: String = bioInput.text ?? profile.about
+        let avatar: String = avatarURL.isEmpty ? profile.picture : avatarURL
+        let banner: String = bannerURL.isEmpty ? profile.banner : bannerURL
+        let website: String = websiteInput.text ?? profile.website
+        let lud16: String = bitcoinInput.text ?? profile.lud16
+        let nip05: String = nip05Input.text ?? profile.nip05
+        
+        return Profile(
+            name: name,
+            display_name: displayName,
+            about: about,
+            picture: avatar,
+            banner: banner,
+            website: website,
+            lud06: profile.lud06,
+            lud16: lud16,
+            nip05: nip05
         )
+    }
+    
+    let profile: PrimalUser
+    
+    init(profile: PrimalUser) {
+        self.profile = profile
+        super.init(nibName: nil, bundle: nil)
+        
+        avatarView.kf.setImage(with: URL(string: profile.picture), placeholder: UIImage(named: "Profile"))
+        bannerImageView.kf.setImage(with: URL(string: profile.banner))
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let keypair = NostrKeypair.generate() else {
-            fatalError("Unable to generate a new keypair, this shouldn't be possible")
-        }
-        
-        IdentityManager.instance.newUserKeypair = keypair
-        
         setup()
+        
+        bioInput.text = profile.about
+        usernameInput.text = profile.name
+        displayNameInput.text = profile.displayName
+        bitcoinInput.text = profile.lud16
+        nip05Input.text = profile.nip05
+        websiteInput.text = profile.website
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 }
 
-private extension OnboardingCreateAccountController {
+private extension EditProfileViewController {
     func updateIsUploading() {
         if  (isUploadingAvatar && avatarURL.isEmpty) ||
             (didUploadBanner && bannerURL.isEmpty)
@@ -84,14 +103,9 @@ private extension OnboardingCreateAccountController {
     }
     
     func setup() {
-        title = "New Account"
+        title = "Edit Profile"
         view.backgroundColor = .black
         navigationItem.leftBarButtonItem = customBackButton
-        
-        lazy var progressView = PrimalProgressView(progress: 1, total: 3)
-        let progressParent = UIView()
-        progressParent.addSubview(progressView)
-        progressView.pinToSuperview(edges: .top, padding: 5).pinToSuperview(edges: .bottom, padding: 22).centerToSuperview(axis: .horizontal)
         
         let spacerParent = UIView()
         let avatarStack = UIStackView(arrangedSubviews: [SpacerView(width: 6), avatarView, UIView(), addPhotoButton, spacerParent, addBannerButton, SpacerView(width: 36)])
@@ -135,7 +149,7 @@ private extension OnboardingCreateAccountController {
         nextButton.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .top, padding: 20).pinToSuperview(edges: .bottom, padding: 30, safeArea: true)
         
         let keyboardSpacer = SpacerView(height: 0, priority: .defaultLow)
-        let mainStack = UIStackView(axis: .vertical, [progressParent, scrollView, keyboardSpacer, nextParent])
+        let mainStack = UIStackView(axis: .vertical, [scrollView, keyboardSpacer, nextParent])
         view.addSubview(mainStack)
         mainStack.pinToSuperview(safeArea: true)
         keyboardSpacer.topAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
@@ -145,6 +159,7 @@ private extension OnboardingCreateAccountController {
         bannerImageView.constrainToSize(height: 124)
         bannerImageView.backgroundColor = .init(rgb: 0x181818)
         bannerImageView.layer.masksToBounds = true
+        bannerImageView.contentMode = .scaleAspectFill
         
         avatarView.constrainToSize(108)
         avatarView.backgroundColor = .black
@@ -152,6 +167,7 @@ private extension OnboardingCreateAccountController {
         avatarView.layer.masksToBounds = true
         avatarView.layer.borderWidth = 4
         avatarView.layer.borderColor = UIColor.black.cgColor
+        avatarView.contentMode = .scaleAspectFill
         
         formStack.spacing = 2
         
@@ -176,7 +192,6 @@ private extension OnboardingCreateAccountController {
             ImagePickerManager(self) { [weak self] image, isPNG in
                 guard let self = self else { return }
                 self.avatarView.image = image
-                self.avatarView.contentMode = .scaleAspectFill
                 self.isUploadingAvatar = true
                 
                 UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
@@ -205,7 +220,6 @@ private extension OnboardingCreateAccountController {
             ImagePickerManager(self) { [weak self] image, isPNG in
                 guard let self = self else { return }
                 self.bannerImageView.image = image
-                self.bannerImageView.contentMode = .scaleAspectFill
                 self.didUploadBanner = true
                 
                 UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
@@ -236,54 +250,84 @@ private extension OnboardingCreateAccountController {
                 return
             }
             
-            let data = self.accountData
-            
-            let profileVC = OnboardingProfileController(profile: data, uploader: self)
-            profileVC.twitterView.profileImageView.image = avatarView.image
-            profileVC.twitterView.coverImageView.image = bannerImageView.image
-            self.show(profileVC, sender: nil)
+            self.updateAccount()
         }), for: .touchUpInside)
+        
+        $isUploading.sink { [unowned self] isUploading in
+            self.nextButton.setTitle(isUploading ? "Uploading..." : "Save Profile", for: .normal)
+        }
+        .store(in: &cancellables)
     }
     
     @objc func viewTapped() {
         textFields.forEach { $0.resignFirstResponder() }
         bioInput.resignFirstResponder()
     }
+    
+    func updateAccount() {
+        nextButton.isEnabled = false
+        nextButton.setTitle("Updating", for: .normal)
+        
+        if isUploading {
+            $isUploading.filter { !$0 }.first().receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] _ in
+                self?.updateAccount()
+            })
+            .store(in: &cancellables)
+            return
+        }
+        
+        let profile = self.profile
+        let data: Profile = accountData
+        guard let metadata_ev = NostrObject.metadata(data) else {
+            fatalError("Unable to create metadata, this shouldn't be possible")
+        }
+        
+        RelaysPostbox.instance.connect(bootstrap_relays)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            
+            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+                if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
+                    
+                    let newProfile = PrimalUser(
+                        id: profile.id,
+                        pubkey: profile.pubkey,
+                        npub: profile.npub,
+                        name: data.name ?? profile.name,
+                        about: data.about ?? profile.about,
+                        picture: data.picture ?? profile.picture,
+                        nip05: data.nip05 ?? profile.nip05,
+                        banner: data.banner ?? profile.banner,
+                        displayName: data.display_name ?? profile.displayName,
+                        location: profile.location,
+                        lud06: data.lud06 ?? profile.lud06,
+                        lud16: data.lud16 ?? profile.lud16,
+                        website: data.website ?? profile.website,
+                        tags: metadata_ev.tags,
+                        created_at: Double(metadata_ev.created_at),
+                        sig: metadata_ev.sig
+                    )
+                    
+                    profileVC.profile = .init(data: newProfile)
+                }
+            }, errorHandler: { [weak self] in
+                self?.nextButton.isEnabled = true
+                self?.nextButton.setTitle("Save Profile", for: .normal)
+            })
+        }
+    }
 }
 
-extension OnboardingCreateAccountController: UITextFieldDelegate {
+extension EditProfileViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
     }
 }
 
-extension OnboardingCreateAccountController: UITextViewDelegate {
+extension EditProfileViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.scrollView.scrollRectToVisible(textView.convert(textView.bounds, to: self.scrollView), animated: true)
         }
-    }
-}
-
-final class InputParent: UIView {
-    init(input: UIView) {
-        super.init(frame: .zero)
-        
-        addSubview(input)
-        input.pinToSuperview(edges: .horizontal, padding: 15).centerToSuperview(axis: .vertical)
-        
-        backgroundColor = .init(rgb: 0x181818)
-        layer.cornerRadius = 12
-        
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
-    }
-    
-    @objc func tapped() {
-        guard let textInput: UITextField = findAllSubviews().first else { return }
-        textInput.becomeFirstResponder()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

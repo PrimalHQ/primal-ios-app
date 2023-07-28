@@ -15,28 +15,39 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
     var picker = UIImagePickerController()
     
     weak var viewController: UIViewController?
-    var pickImageCallback: (UIImage) -> () = { _ in }
+    var pickImageCallback: (UIImage, _ isPNG: Bool) -> () = { _,_  in }
     
     var strongSelf: ImagePickerManager?
     
+    enum Mode {
+        case gallery, camera, dialog
+    }
+    
     @discardableResult
-    init(_ vc: UIViewController, _ callback: @escaping (UIImage) -> ()) {
+    init(_ vc: UIViewController, mode: Mode = .dialog, _ callback: @escaping (UIImage, _ isPNG: Bool) -> ()) {
         viewController = vc
         super.init()
         
         picker.delegate = self
         pickImageCallback = callback
         
-        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
-        alert.popoverPresentationController?.sourceView = vc.view
-        alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
-            self.openCamera()
-        })
-        alert.addAction(UIAlertAction(title: "Gallery", style: .default) { _ in
-            self.openGallery()
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        viewController?.present(alert, animated: true, completion: nil)
+        switch mode {
+        case .camera:
+            openCamera()
+        case .gallery:
+            openGallery()
+        case .dialog:
+            let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+            alert.popoverPresentationController?.sourceView = vc.view
+            alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
+                self.openCamera()
+            })
+            alert.addAction(UIAlertAction(title: "Gallery", style: .default) { _ in
+                self.openGallery()
+            })
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            viewController?.present(alert, animated: true, completion: nil)
+        }
     }
     
     func openCamera() {
@@ -73,6 +84,12 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
             print("Expected a dictionary containing an image, but was provided the following: \(info)")
             return
         }
-        pickImageCallback(image)
+        
+        var isPNG = false
+        if let assetPath = info[.mediaURL] as? NSURL, assetPath.absoluteString?.hasSuffix("PNG") == true {
+            isPNG = true
+        }
+
+        pickImageCallback(image, isPNG)
     }
 }

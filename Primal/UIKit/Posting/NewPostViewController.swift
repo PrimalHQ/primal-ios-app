@@ -14,6 +14,7 @@ class NewPostViewController: UIViewController {
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
     let usersTableView = UITableView()
+    let imagesCollectionView = PostingImageCollectionView()
     
     let imageButton = UIButton()
     let cameraButton = UIButton()
@@ -44,7 +45,16 @@ class NewPostViewController: UIViewController {
 
 private extension NewPostViewController {
     @objc func postButtonPressed() {
-        let text = manager.postingText
+        if manager.didUploadFail {
+            manager.restartFailedUploads()
+            return
+        }
+        
+        if manager.isUploadingImages {
+            return
+        }
+        
+        let text = manager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !text.isEmpty else {
             showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
@@ -58,6 +68,18 @@ private extension NewPostViewController {
             if success {
                 self?.dismiss(animated: true)
             }
+        }
+    }
+    
+    @objc func galleryButtonPressed() {
+        ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
+            self?.manager.processSelectedImage(image, isPNG: isPNG)
+        }
+    }
+    
+    @objc func cameraButtonPressed() {
+        ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
+            self?.manager.processSelectedImage(image, isPNG: isPNG)
         }
     }
     
@@ -75,7 +97,7 @@ private extension NewPostViewController {
         let imageParent = UIView()
         imageParent.addSubview(imageView)
         imageView.constrainToSize(52).pinToSuperview(edges: [.horizontal, .top])
-        
+                
         let contentStack = UIStackView(arrangedSubviews: [imageParent, textView])
         contentStack.spacing = 10
         contentStack.isLayoutMarginsRelativeArrangement = true
@@ -99,10 +121,16 @@ private extension NewPostViewController {
         let border = SpacerView(height: 1, priority: .required)
         border.backgroundColor = .background3
         
-        let mainStack = UIStackView(arrangedSubviews: [topStack, contentStack, border, usersTableView, bottomStack])
+        let mainStack = UIStackView(arrangedSubviews: [topStack, contentStack, imagesCollectionView, border, usersTableView, bottomStack])
         mainStack.axis = .vertical
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top])
+        
+        mainStack.setCustomSpacing(16, after: imagesCollectionView)
+        
+        imagesCollectionView.imageDelegate = manager
+        imagesCollectionView.isHidden = true
+        imagesCollectionView.backgroundColor = .background2
         
         NSLayoutConstraint.activate([
             mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
@@ -112,6 +140,8 @@ private extension NewPostViewController {
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+        imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
+        cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         
         setupBindings()
     }
@@ -141,6 +171,16 @@ private extension NewPostViewController {
                 self.textView.scrollToCursorPosition()
             }
             self.usersTableView.reloadData()
+        }
+        .store(in: &cancellables)
+                
+        Publishers.CombineLatest(manager.$users, manager.$images).receive(on: DispatchQueue.main).sink { [weak self] users, images in
+            guard let self else { return }
+            self.imagesCollectionView.imageResources = images
+            
+            self.imagesCollectionView.isHidden = images.isEmpty || !users.isEmpty
+            
+            self.post.titleLabel.text = self.manager.isUploadingImages ? "Uploading..." : "Post"
         }
         .store(in: &cancellables)
     }

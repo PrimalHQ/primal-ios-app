@@ -147,23 +147,32 @@ extension PostRequestResult {
             }
         }
         
+        let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        let flatTags = post.tags.flatMap { $0 }
+        
         for mention in mentions {
             // It's slow to generate noteRef and searchString for every mention for every post, can be generated once and passed with the mentions
-            guard let noteRef = bech32_note_id(mention.post.id) else { continue }
-            let searchString = "nostr:\(noteRef)"
-            let searchString2 = "nostr:nevent..."
-            
-            if text.contains(searchString) {
-                if removeExtractedPost {
-                    itemsToRemove.append(searchString)
+            if flatTags.contains(mention.post.id) {
+                var stringFound = false
+                if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+                    profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                        if !stringFound, let matchRange = match?.range {
+                            itemsToRemove.append((text as NSString).substring(with: matchRange))
+                            stringFound = true
+                        }
+                    }
                 }
-                p.embededPost = mention
-                break
+                
+                if stringFound {
+                    p.embededPost = mention
+                    break
+                }
             }
             
-            if text.contains(searchString2) {
+            if let noteRef = bech32_note_id(mention.post.id), text.contains(noteRef) {
+                let searchString = "nostr:\(noteRef)"
                 if removeExtractedPost {
-                    itemsToRemove.append(searchString2)
+                    itemsToRemove.append(searchString)
                 }
                 p.embededPost = mention
                 break
@@ -196,6 +205,13 @@ extension PostRequestResult {
                     let decoded = try? bech32_decode(npub)
                 else { return nil }
                 let pubkey = hex_encode(decoded.data)
+                
+                for mentionedPub in users.keys {
+                    if pubkey.contains(mentionedPub) {
+                        return users[mentionedPub]
+                    }
+                }
+                
                 return users[pubkey]
             }() else { continue }
             

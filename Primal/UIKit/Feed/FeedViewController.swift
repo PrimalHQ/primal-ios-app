@@ -318,22 +318,16 @@ extension FeedViewController: PostCellDelegate {
     
     // MARK: - Menu actions
     func postCellDidTapShare(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let url = posts[indexPath.row].webURL()
-        else { return }
+        guard let indexPath = table.indexPath(for: cell) else { return }
         
-        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [posts[indexPath.row].webURL()], applicationActivities: nil)
         present(activityViewController, animated: true, completion: nil)
     }
     
     func postCellDidTapCopyLink(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let url = posts[indexPath.row].webURL()
-        else { return }
+        guard let indexPath = table.indexPath(for: cell) else { return }
         
-        UIPasteboard.general.url = url
+        UIPasteboard.general.string = posts[indexPath.row].webURL()
         view.showToast("Copied!")
     }
     

@@ -1,5 +1,5 @@
 //
-//  NewPostsView.swift
+//  NewPostsButton.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 14.7.23..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class NewPostsView: MyButton {
+final class NewPostsButton: MyButton {
     private let avatars: [UIImageView] = (0..<3).map { _ in UIImageView(image: UIImage(named: "Profile")) }
     private let label = UILabel()
     

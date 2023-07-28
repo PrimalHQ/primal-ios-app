@@ -29,9 +29,11 @@ final class GradientInGradientButton: MyButton {
         innerGradient.pinToSuperview()
         
         addSubview(titleLabel)
-        titleLabel.centerToSuperview()
+        titleLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 8)
         titleLabel.textColor = .white
         titleLabel.font = .appFont(withSize: 16, weight: .medium)
+        titleLabel.textAlignment = .center
+        titleLabel.adjustsFontSizeToFitWidth = true
         titleLabel.text = title
         
         borderGradient.cornerRadius = 8
