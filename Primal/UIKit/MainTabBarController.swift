@@ -163,12 +163,29 @@ private extension MainTabBarController {
             }
         }
         profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
-            if let npub = notification.object as? String {
-//                if let self {
-//                    let vc = ProfileViewController(profile: ParsedUser(data: PrimalUser.empty))
-//                    self.show(vc, sender: nil)
-//                }
+            guard
+                let self,
+                let npub = notification.object as? String,
+                let hex = HexKeypair.npubToHexPubkey(npub)
+                else {
+                return
             }
+
+            Connection.instance.$isConnected
+                .filter({ $0 })
+                .first()
+                .receive(on: DispatchQueue.main)
+                .sink { _ in
+                    ProfileManager.instance.requestProfileInfo(hex)
+                        .receive(on: DispatchQueue.main)
+                        .sink { parsedUser in
+                            self.menuButtonPressedForNav(self.home)
+                            let vc = ProfileViewController(profile: parsedUser)
+                            self.home.pushViewController(vc, animated: true)
+                        }
+                        .store(in: &self.cancellables)
+                }
+                .store(in: &cancellables)
         }
 
         for (index, button) in buttons.enumerated() {

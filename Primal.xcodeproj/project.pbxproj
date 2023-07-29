@@ -220,6 +220,7 @@
 		9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */; };
 		9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
+		C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -486,6 +487,7 @@
 		9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemedColors.swift; sourceTree = "<group>"; };
 		9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
+		C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -852,6 +854,7 @@
 				9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */,
 				939329452A66E82E00B96AAA /* LoginManager.swift */,
 				C1AF0026036532D4652C7322 /* MuteManager.swift */,
+				C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1604,6 +1607,7 @@
 				9ED416022A42483D00892235 /* RegularFeedViewController.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
+				C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
