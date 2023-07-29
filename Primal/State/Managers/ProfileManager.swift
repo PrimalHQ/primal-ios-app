@@ -11,17 +11,17 @@ final class ProfileManager {
 
     static let instance = ProfileManager()
 
-    func requestProfileInfo(_ hex: String) -> AnyPublisher<ParsedUser, Never> {
-        let request: JSON = .object([
-            "cache": .array([
-                "user_profile",
-                .object([
-                    "pubkey": .string(hex)
+    func requestProfileInfo(_ hex: String) async -> ParsedUser {
+        await withCheckedContinuation { continuation in
+            let request: JSON = .object([
+                "cache": .array([
+                    "user_profile",
+                    .object([
+                        "pubkey": .string(hex)
+                    ])
                 ])
             ])
-        ])
 
-        return Future { promise in
             Connection.instance.request(request) { res in
                 var parsedUser: ParsedUser? = nil
                 for response in res {
@@ -38,9 +38,9 @@ final class ProfileManager {
                 }
 
                 if let parsedUser {
-                    promise(.success(parsedUser))
+                    continuation.resume(returning: parsedUser)
                 }
             }
-        }.eraseToAnyPublisher()
+        }
     }
 }

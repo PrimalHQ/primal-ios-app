@@ -144,7 +144,7 @@ private extension ProfileViewController {
         navigationBar.profilePicOverlayBig = profileOverlay1
         navigationBar.profilePicOverlaySmall = profileOverlay2
     }
-    
+
     func requestUserProfile() {
         let profile = self.profile
         Connection.dispatchQueue.async {
@@ -154,12 +154,12 @@ private extension ProfileViewController {
                     "pubkey": .string(profile.data.pubkey)
                 ])
             ])
-            
+
             Connection.instance.requestCache(request) { [weak self] res in
                 DispatchQueue.main.async {
                     for response in res {
                         let kind = NostrKind.fromGenericJSON(response)
-                        
+
                         switch kind {
                         case .metadata:
                             break
@@ -168,7 +168,7 @@ private extension ProfileViewController {
                                 print("Error decoding nostr stats string to json")
                                 return
                             }
-                            
+
                             self?.userStats = nostrUserProfileInfo
                         default:
                             print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")

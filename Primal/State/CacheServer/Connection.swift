@@ -42,11 +42,7 @@ final class Connection {
     
     static let instance = Connection()
     
-    @Published var isConnected: Bool = false {
-        willSet {
-            print("Connection isConnected: \(newValue)")
-        }
-    }
+    @Published var isConnected: Bool = false
     
     func connect() {
         if isConnected {

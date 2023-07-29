@@ -175,15 +175,12 @@ private extension MainTabBarController {
                 .filter({ $0 })
                 .first()
                 .receive(on: DispatchQueue.main)
-                .sink { _ in
-                    ProfileManager.instance.requestProfileInfo(hex)
-                        .receive(on: DispatchQueue.main)
-                        .sink { parsedUser in
-                            self.menuButtonPressedForNav(self.home)
-                            let vc = ProfileViewController(profile: parsedUser)
-                            self.home.pushViewController(vc, animated: true)
-                        }
-                        .store(in: &self.cancellables)
+                .sinkAsync { _ in
+                    let parsedUser = await ProfileManager.instance.requestProfileInfo(hex)
+
+                    self.menuButtonPressedForNav(self.home)
+                    let vc = ProfileViewController(profile: parsedUser)
+                    self.home.pushViewController(vc, animated: true)
                 }
                 .store(in: &cancellables)
         }
