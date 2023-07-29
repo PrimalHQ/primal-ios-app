@@ -20,28 +20,30 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: MessagesViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
-    
+
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    
-    lazy var buttons = (1...5).map { _ in UIButton() }
-    
+
+    lazy var buttons = (1...5).map { _ in
+        UIButton()
+    }
+
     let notificationIndicator = UIImageView(image: UIImage(named: "newIndicator"))
-    
+
     let closeMenuButton = UIButton()
-    
+
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
     private var noteObserver: NSObjectProtocol?
     private var profileObserver: NSObjectProtocol?
-    
+
     var cancellables: Set<AnyCancellable> = []
-    
+
     var hasNewNotifications = false {
         didSet {
             notificationIndicator.isHidden = !hasNewNotifications
         }
     }
-    
+
     var currentPageIndex = 0 {
         didSet {
             updateButtons()
@@ -52,11 +54,11 @@ final class MainTabBarController: UIViewController, Themeable {
         super.init(nibName: nil, bundle: nil)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     deinit {
         if let foregroundObserver {
             NotificationCenter.default.removeObserver(foregroundObserver)
@@ -67,8 +69,12 @@ final class MainTabBarController: UIViewController, Themeable {
         if let profileObserver {
             NotificationCenter.default.removeObserver(profileObserver)
         }
+
+        for cancellable in cancellables {
+            cancellable.cancel()
+        }
     }
-    
+
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
@@ -78,7 +84,7 @@ final class MainTabBarController: UIViewController, Themeable {
             self.closeMenuButton.alpha = 1
         }
     }
-    
+
     func showButtons() {
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 1
@@ -87,93 +93,103 @@ final class MainTabBarController: UIViewController, Themeable {
             self.closeMenuButton.isHidden = true
         }
     }
-    
+
     func updateTheme() {
         view.backgroundColor = .background
-        
+
         closeMenuButton.tintColor = .foreground
         closeMenuButton.backgroundColor = .background
 
-        buttons.forEach { $0.backgroundColor = .background }
-        
+        buttons.forEach {
+            $0.backgroundColor = .background
+        }
+
         updateButtons()
-        
-        [home, read, explore, messages, notifications].forEach { $0.updateThemeIfThemeable() }
+
+        [home, read, explore, messages, notifications].forEach {
+            $0.updateThemeIfThemeable()
+        }
     }
 }
 
 private extension MainTabBarController {
     func setup() {
         updateTheme()
-        
+
         let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
         pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
-        
+
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, safeArea: true)
-        
+
         view.addSubview(notificationIndicator)
         if let imageView = buttons.last?.imageView {
             notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
         }
         notificationIndicator.isHidden = true
-        
+
         pageVC.didMove(toParent: self) // Notify child VC
         pageVC.setViewControllers([home], direction: .forward, animated: false)
-        
+
         buttonStack.distribution = .fillEqually
         buttonStack.constrainToSize(height: 68)
-        
+
         vStack.axis = .vertical
-        
+
         view.addSubview(closeMenuButton)
         closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
 
         closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
         closeMenuButton.isHidden = true
-        
+
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
             Connection.instance.reconnect()
         }
         noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
             if let note = notification.object as? String {
                 if let self {
-                    self.menuButtonPressedForNav(self.home)
-                    let vc = ThreadViewController(threadId: note)
-                    self.home.pushViewController(vc, animated: true)
+                    Connection.instance.$isConnected
+                        .filter({ $0 })
+                        .first()
+                        .receive(on: DispatchQueue.main)
+                        .sink { _ in
+                            self.menuButtonPressedForNav(self.home)
+                            let vc = ThreadViewController(threadId: note)
+                            self.home.pushViewController(vc, animated: true)
+                        }
+                        .store(in: &cancellables)
                 }
             }
         }
         profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
             if let npub = notification.object as? String {
-                if let self {
-                    let vc = ProfileViewController(profile: ParsedUser(data: PrimalUser.empty))
-                    self.show(vc, sender: nil)
-                }
+//                if let self {
+//                    let vc = ProfileViewController(profile: ParsedUser(data: PrimalUser.empty))
+//                    self.show(vc, sender: nil)
+//                }
             }
         }
-        
+
         for (index, button) in buttons.enumerated() {
             button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
         }
-        
+
         buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW
-        
+
         [home, explore, messages, notifications].forEach { nav in
             buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
                 self?.menuButtonPressedForNav(nav)
             }), for: .touchUpInside)
         }
     }
-    
-    
+
     func updateButtons() {
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
         }
     }
-    
+
     func indexForNav(_ nav: UINavigationController) -> Int {
         switch nav {
         case home:          return 0
@@ -183,22 +199,22 @@ private extension MainTabBarController {
         default:            return 0
         }
     }
-    
+
     func menuButtonPressedForNav(_ nav: UINavigationController) {
         guard pageVC.viewControllers?.contains(nav) == true else {
             pageVC.setViewControllers([nav],
-                direction: currentPageIndex < indexForNav(nav) ? .forward : .reverse,
-                animated: true
+                    direction: currentPageIndex < indexForNav(nav) ? .forward : .reverse,
+                    animated: true
             )
             currentPageIndex = indexForNav(nav)
             return
         }
-        
+
         if nav.viewControllers.count > 1 {
             nav.popToRootViewController(animated: true)
             return
         }
-        
+
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
             tableViews.forEach {
                 if $0.indexPathsForVisibleRows?.isEmpty == false {
@@ -207,8 +223,12 @@ private extension MainTabBarController {
             }
             return
         }
-        
-        guard let scrollViews: [UIScrollView] = nav.topViewController?.view.findAllSubviews() else { return }
-        scrollViews.forEach { $0.setContentOffset(.zero, animated: true) }
+
+        guard let scrollViews: [UIScrollView] = nav.topViewController?.view.findAllSubviews() else {
+            return
+        }
+        scrollViews.forEach {
+            $0.setContentOffset(.zero, animated: true)
+        }
     }
 }

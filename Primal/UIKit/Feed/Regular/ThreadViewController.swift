@@ -83,19 +83,23 @@ final class ThreadViewController: PostFeedViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         if let cell = cell as? ThreadCell {
             let data = posts[indexPath.row]
+            let position: ThreadCell.ThreadPosition
+            scope: do {
+                if mainPositionInThread < indexPath.row {
+                    position = .child
+                    break scope
+                }
+                if mainPositionInThread > indexPath.row {
+                    position = .parent
+                    break scope
+                }
+                position = .main
+            }
             cell.update(data,
-                        position: {
-                            if mainPositionInThread < indexPath.row {
-                                return .child
-                            }
-                            if mainPositionInThread > indexPath.row {
-                                return .parent
-                            }
-                            return .main
-                        }(),
-                        didLike: LikeManager.instance.hasLiked(data.post.id),
-                        didRepost: PostManager.instance.hasReposted(data.post.id),
-                        didZap: ZapManager.instance.hasZapped(data.post.id)
+                    position: position,
+                    didLike: LikeManager.instance.hasLiked(data.post.id),
+                    didRepost: PostManager.instance.hasReposted(data.post.id),
+                    didZap: ZapManager.instance.hasZapped(data.post.id)
             )
             cell.delegate = self
         }
