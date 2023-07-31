@@ -237,7 +237,7 @@ final class IdentityManager {
                     
                     RelaysPostbox.instance.connect(relayKeys)
                     
-                    var tags: [String]?
+                    var tags: Set<String>?
                     if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
                         if isEmpty {
                             tags = []
@@ -246,8 +246,12 @@ final class IdentityManager {
                                 if isInnerEmpty {
                                     tags = []
                                 } else {
-                                    tags = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
-                                        return $0.arrayValue?[1].stringValue ?? ""
+                                    let res = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                                        $0.arrayValue?[1].stringValue ?? ""
+                                    }
+
+                                    if let res {
+                                        tags = Set<String>(res)
                                     }
                                 }
                             }

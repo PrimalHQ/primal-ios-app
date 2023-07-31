@@ -97,7 +97,7 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
-    static func contacts(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
+    static func contacts(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
         createNostrContactsEvent(contacts, relays: relays)
     }
     
@@ -155,7 +155,7 @@ fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
     createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
 }
 
-fileprivate func createNostrContactsEvent(_ contacts: [String], relays: [String: RelayInfo]) -> NostrObject? {
+fileprivate func createNostrContactsEvent(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
     guard let relaysJSONData = try? jsonEncoder.encode(relays) else {
         print("Unable to encode Relays to Data")
         return nil
