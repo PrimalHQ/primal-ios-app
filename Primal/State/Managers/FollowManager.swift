@@ -15,7 +15,7 @@ final class FollowManager {
     
     func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
     
-    func sendBatchFollowEvent(_ pubkeys: [String]) {
+    func sendBatchFollowEvent(_ pubkeys: [String], successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         if LoginManager.instance.method() != .nsec { return }
         
         var contacts = IdentityManager.instance.userContacts.contacts
@@ -28,10 +28,14 @@ final class FollowManager {
             return
         }
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            
+        RelaysPostbox.instance.request(ev, specificRelay: nil, errorDelay: 5, successHandler: { _ in
+            if let successHandler {
+                successHandler()
+            }
         }, errorHandler: {
-            
+            if let errorHandler {
+                errorHandler()
+            }
         })
     }
     

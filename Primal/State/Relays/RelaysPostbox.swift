@@ -28,7 +28,7 @@ final class RelaysPostbox {
         self.pool.connect(relays: relays)
     }
     
-    func request(_ ev: NostrObject, specificRelay: String?, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {
+    func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 30, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {
         var receivedAlready = false
         
         func resultHandler(result: [JSON], relay: String) {
@@ -44,7 +44,7 @@ final class RelaysPostbox {
             self.pool.request(ev, resultHandler)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + errorDelay) {
             if !receivedAlready {
                 errorHandler()
             }

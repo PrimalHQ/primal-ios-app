@@ -10,6 +10,13 @@ import UIKit
 import Kingfisher
 
 final class OnboardingFollowSuggestionsController: UIViewController {
+    enum State {
+        case initial
+        case followRequesting
+        case followDone
+        case followFailed
+    }
+
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
@@ -27,6 +34,12 @@ final class OnboardingFollowSuggestionsController: UIViewController {
     var selectedToFollow: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []
+
+    private var state = State.initial {
+        didSet {
+            updateView()
+        }
+    }
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -101,10 +114,44 @@ private extension OnboardingFollowSuggestionsController {
         }.store(in: &cancellables)
         Connection.instance.connect()
     }
-    
+
+    func updateView() {
+        switch state {
+        case .initial:
+            continueButton.isEnabled = true
+            continueButton.setTitle("Finish", for: .normal)
+            break
+        case .followRequesting:
+            continueButton.isEnabled = false
+            continueButton.setTitle("Applying", for: .normal)
+            break
+        case .followFailed:
+            continueButton.isEnabled = true
+            continueButton.setTitle("Follow failed, try again", for: .normal)
+        case .followDone:
+            RootViewController.instance.reset()
+            break
+        }
+    }
+
+    func initiateFollow() {
+        state = .followRequesting
+
+        FollowManager.instance.sendBatchFollowEvent(Array(selectedToFollow), successHandler: { [weak self] in
+            self?.state = .followDone
+        }, errorHandler: { [weak self] in
+            self?.state = .followFailed
+        })
+    }
+
     @objc func continuePressed() {
-        FollowManager.instance.sendBatchFollowEvent(Array(selectedToFollow))
-        RootViewController.instance.reset()
+        switch state {
+        case .initial, .followFailed:
+            initiateFollow()
+            break
+        case .followDone, .followRequesting:
+            break
+        }
     }
 }
 
