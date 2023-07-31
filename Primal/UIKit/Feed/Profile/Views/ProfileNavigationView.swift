@@ -10,6 +10,9 @@ import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
     func tappedAddUserFeed()
+    func tappedShareProfile()
+    func tappedReportUser()
+    func tappedMuteUser()
 }
 
 class ProfileNavigationView: UIView, Themeable {
@@ -36,10 +39,8 @@ class ProfileNavigationView: UIView, Themeable {
     let minSize: CGFloat = 89
     
     weak var delegate: ProfileNavigationViewDelegate?
-    let profile: ParsedUser
     
-    init(_ profile: ParsedUser) {
-        self.profile = profile
+    init() {
         super.init(frame: .zero)
         setup()
     }
@@ -48,7 +49,7 @@ class ProfileNavigationView: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateInfo(_ user: PrimalUser) {
+    func updateInfo(_ user: PrimalUser, isMuted: Bool) {
         if let bannerUrl = URL(string: user.banner) {
             KingfisherManager.shared.retrieveImage(with: bannerUrl, options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: window?.screen.bounds.width ?? 400, height: maxSize))),
@@ -72,6 +73,8 @@ class ProfileNavigationView: UIView, Themeable {
         checkboxIcon.isHidden = user.nip05.isEmpty
         
         menuButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
+        
+        updateMenuButton(isMuted: isMuted)
     }
     
     private var oldSize: CGFloat = 0
@@ -210,29 +213,26 @@ private extension ProfileNavigationView {
         heightConstraint.isActive = true
         
         updateTheme()
-        setupMenuButton()
     }
     
-    func setupMenuButton() {
+    func updateMenuButton(isMuted: Bool) {
         menuButton.menu = UIMenu(children: [
             UIDeferredMenuElement.uncached { [weak self] completion in
                 if let self {
-                    let muteManager = MuteManager.instance
-                    let pubkey = self.profile.data.pubkey
-                    let muteTitle = muteManager.isMuted(pubkey) ? "Unmute user" : "Mute user"
+                    let muteTitle = isMuted ? "Unmute user" : "Mute user"
 
                     let actions = [
-                        UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { _ in
-                            self.delegate?.tappedAddUserFeed()
+                        UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { [weak self] _ in
+                            self?.delegate?.tappedAddUserFeed()
                         },
-                        UIAction(title: "Share user profile", image: UIImage(named: "shareProfileIcon")) { _ in
-
+                        UIAction(title: "Share user profile", image: UIImage(named: "MenuShare")) { [weak self] _ in
+                            self?.delegate?.tappedShareProfile()
                         },
-                        UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { _ in
-
+                        UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+                            self?.delegate?.tappedReportUser()
                         },
-                        UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { _ in
-                            muteManager.toggleMute(pubkey)
+                        UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
+                            self?.delegate?.tappedMuteUser()
                         }
                     ]
                     completion(actions)

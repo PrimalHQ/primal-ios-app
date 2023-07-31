@@ -117,9 +117,9 @@ final class FeedManager {
             
             if sorted.isEmpty {
                 didReachEnd = true
-            } else {
-                self.parsedPosts.append(contentsOf: sorted)
             }
+            
+            self.parsedPosts.append(contentsOf: sorted)
             self.isRequestingNewPage = false
         }
         .store(in: &cancellables)

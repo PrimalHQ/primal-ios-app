@@ -17,6 +17,7 @@ class ProfileInfoCell: UITableViewCell {
     let zapButton = GradientBorderIconButton(icon: UIImage(named: "profileZap"))
     let messageButton = GradientBorderIconButton(icon: UIImage(named: "profileMessage"))
     let followButton = GradientButton(title: "follow")
+    let unfollowButton = GradientBorderTextButton(text: "unfollow")
     let editProfile = GradientBorderTextButton(text: "edit profile")
     
     let primaryLabel = UILabel()
@@ -56,19 +57,20 @@ class ProfileInfoCell: UITableViewCell {
         followers.text = (stats?.followers_count ?? 0).localized()
         posts.text = (stats?.note_count ?? 0).localized()
         
+        editProfile.isHidden = user.pubkey != IdentityManager.instance.userHexPubkey
+        zapButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
+
         if user.pubkey == IdentityManager.instance.userHexPubkey {
             followButton.isHidden = true
-            editProfile.isHidden = false
+            unfollowButton.isHidden = true
         } else {
-            followButton.isHidden = false
-            editProfile.isHidden = true
-            
             updateFollowButton(FollowManager.instance.isFollowing(user.pubkey))
         }
     }
     
     func updateFollowButton(_ isFollowing: Bool) {
-        followButton.title = isFollowing ? "unfollow" : "follow"
+        followButton.isHidden = isFollowing
+        unfollowButton.isHidden = !isFollowing
     }
     
     required init?(coder: NSCoder) {
@@ -78,7 +80,7 @@ class ProfileInfoCell: UITableViewCell {
 
 private extension ProfileInfoCell {
     func setup() {
-        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 200, priority: .defaultLow), zapButton, messageButton, followButton, editProfile])
+        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 400, priority: .defaultLow), zapButton, messageButton, followButton, unfollowButton, editProfile])
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
@@ -117,6 +119,7 @@ private extension ProfileInfoCell {
         
         npubView.addTarget(self, action: #selector(npubPressed), for: .touchUpInside)
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
+        unfollowButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
         editProfile.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.editProfilePressed()
         }), for: .touchUpInside)

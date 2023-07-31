@@ -13,7 +13,7 @@ final class ProfileViewController: PostFeedViewController {
     var profile: ParsedUser {
         didSet {
             table.reloadSections([0], with: .none)
-            navigationBar.updateInfo(profile.data)
+            navigationBar.updateInfo(profile.data, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         }
     }
     
@@ -23,14 +23,13 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
-    private let navigationBar: ProfileNavigationView
+    private let navigationBar = ProfileNavigationView()
     private let loadingSpinner = LoadingSpinnerView()
     
     override var postSection: Int { 1 }
     
     init(profile: ParsedUser) {
         self.profile = profile
-        navigationBar = ProfileNavigationView(profile)
         super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
         setup()
     }
@@ -43,12 +42,12 @@ final class ProfileViewController: PostFeedViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        mainTabBarController?.setTabBarHidden(false, animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
         
         view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
@@ -58,7 +57,7 @@ final class ProfileViewController: PostFeedViewController {
         super.updateTheme()
         
         table.contentInsetAdjustmentBehavior = .never
-        table.register(ProfileInfoCell.self, forCellReuseIdentifier: "profile")
+        table.register(ProfileInfoCell.self, forCellReuseIdentifier: postCellID + "profile")
         table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
     }
     
@@ -75,7 +74,7 @@ final class ProfileViewController: PostFeedViewController {
             return super.tableView(tableView, cellForRowAt: indexPath)
         }
         
-        let cell = table.dequeueReusableCell(withIdentifier: "profile", for: indexPath)
+        let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
         (cell as? ProfileInfoCell)?.update(user: profile.data, stats: userStats, delegate: self)
         return cell
     }
@@ -96,31 +95,29 @@ private extension ProfileViewController {
         title = ""
         navigationItem.hidesBackButton = true
         
-        feed.$parsedPosts
+        feed.$parsedPosts.dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 guard let self else { return }
                 self.posts = posts
                 self.table.contentInset = .init(top: self.navigationBar.maxSize, left: 0, bottom: 0, right: 0)
-                if posts.isEmpty {
-                    self.loadingSpinner.isHidden = false
-                    self.loadingSpinner.play()
-                } else {
-                    self.loadingSpinner.isHidden = true
-                    self.loadingSpinner.stop()
-                }
+                
+                self.loadingSpinner.isHidden = true
+                self.loadingSpinner.stop()
             }
             .store(in: &cancellables)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview(axis: .horizontal).constrainToSize(100)
         loadingSpinner.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 200).isActive = true
+        loadingSpinner.isHidden = false
+        loadingSpinner.play()
         
         table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
-        navigationBar.updateInfo(profile.data)
+        navigationBar.updateInfo(profile.data, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         navigationBar.delegate = self
         
         navigationBarLengthner.removeFromSuperview()
@@ -193,6 +190,19 @@ private extension ProfileViewController {
 }
 
 extension ProfileViewController: ProfileNavigationViewDelegate {
+    func tappedShareProfile() {
+        let activityViewController = UIActivityViewController(activityItems: [profile.webURL()], applicationActivities: nil)
+        present(activityViewController, animated: true, completion: nil)
+    }
+    
+    func tappedReportUser() {
+        
+    }
+    
+    func tappedMuteUser() {
+        MuteManager.instance.toggleMute(profile.data.pubkey)
+    }
+    
     func tappedAddUserFeed() {
         hapticGenerator.impactOccurred()
         IdentityManager.instance.addFeedToList(feed: .init(name: "\(profile.data.firstIdentifier)'s feed", hex: profile.data.pubkey))

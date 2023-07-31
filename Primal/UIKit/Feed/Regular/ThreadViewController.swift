@@ -99,7 +99,8 @@ final class ThreadViewController: PostFeedViewController {
                     position: position,
                     didLike: LikeManager.instance.hasLiked(data.post.id),
                     didRepost: PostManager.instance.hasReposted(data.post.id),
-                    didZap: ZapManager.instance.hasZapped(data.post.id)
+                    didZap: ZapManager.instance.hasZapped(data.post.id),
+                    isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
             )
             cell.delegate = self
         }

@@ -27,7 +27,8 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapShare(_ cell: PostCell)
     func postCellDidTapCopyLink(_ cell: PostCell)
     func postCellDidTapCopyContent(_ cell: PostCell)
-    func postCellDidTapCopyJSON(_ cell: PostCell)
+    func postCellDidTapReport(_ cell: PostCell)
+    func postCellDidTapMute(_ cell: PostCell)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -66,7 +67,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool) {
+    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -155,6 +156,31 @@ class PostCell: UITableViewCell {
         zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
+        
+        
+        let muteTitle = isMuted ? "Unmute" : "Mute"
+        threeDotsButton.menu = .init(children: [
+            UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapShare(self)
+            }),
+            UIAction(title: "Copy note link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyLink(self)
+            }),
+            UIAction(title: "Copy text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyContent(self)
+            }),
+            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapReport(self)
+            },
+            UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapMute(self)
+            }
+        ])
     }
 }
 
@@ -242,20 +268,6 @@ private extension PostCell {
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
         
-        threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapShare(self)
-            }),
-            UIAction(title: "Copy note link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapCopyLink(self)
-            }),
-            UIAction(title: "Copy text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapCopyContent(self)
-            }),
-        ])
         threeDotsButton.showsMenuAsPrimaryAction = true
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))

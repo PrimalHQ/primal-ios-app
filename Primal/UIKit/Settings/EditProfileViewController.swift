@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class EditProfileViewController: UIViewController {
+final class EditProfileViewController: UIViewController, Themeable {
     let bannerImageView = UIImageView()
     let avatarView = UIImageView(image: UIImage(named: "Profile"))
     let addPhotoButton = GradientUIButton(title: "change photo")
@@ -75,6 +75,7 @@ final class EditProfileViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        updateTheme()
         
         bioInput.text = profile.about
         usernameInput.text = profile.name
@@ -86,7 +87,27 @@ final class EditProfileViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
+    }
+    
+    func updateTheme() {
+        view.backgroundColor = .background
+        
+        avatarView.layer.borderColor = UIColor.background.cgColor
+        avatarView.backgroundColor = .background
+        
+        bioInput.backgroundColor = .init(rgb: 0x181818)
+        
+        let inputParents: [InputParent] = view.findAllSubviews()
+        inputParents.forEach { $0.backgroundColor = .background3 }
+        
+        for view in [displayNameInput, usernameInput, websiteInput, bioInput, bitcoinInput, nip05Input] as [TextRepresenting] {
+            view.contentFont = .appFont(withSize: 18, weight: .medium)
+            view.contentColor = .foreground
+            view.backgroundColor = .background3
+            view.superview?.backgroundColor = .background3
+        }
     }
 }
 
@@ -104,7 +125,6 @@ private extension EditProfileViewController {
     
     func setup() {
         title = "Edit Profile"
-        view.backgroundColor = .black
         navigationItem.leftBarButtonItem = customBackButton
         
         let spacerParent = UIView()
@@ -118,7 +138,9 @@ private extension EditProfileViewController {
         
         let formParent = UIView()
         let atLabel = UILabel()
+        atLabel.textColor = .init(rgb: 0x666666)
         atLabel.text = "@"
+        atLabel.font = .appFont(withSize: 18, weight: .medium)
         let formStack = UIStackView(axis: .vertical, [
             FormHeaderView(title: "DISPLAY NAME", required: true),
             InputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
@@ -162,24 +184,15 @@ private extension EditProfileViewController {
         bannerImageView.contentMode = .scaleAspectFill
         
         avatarView.constrainToSize(108)
-        avatarView.backgroundColor = .black
         avatarView.layer.cornerRadius = 54
         avatarView.layer.masksToBounds = true
         avatarView.layer.borderWidth = 4
-        avatarView.layer.borderColor = UIColor.black.cgColor
         avatarView.contentMode = .scaleAspectFill
         
         formStack.spacing = 2
         
         bioInput.constrainToSize(height: 120)
-        bioInput.backgroundColor = .init(rgb: 0x181818)
         bioInput.delegate = self
-        
-        for view in [atLabel, displayNameInput, usernameInput, websiteInput, bioInput] as [TextRepresenting] {
-            view.contentFont = .appFont(withSize: 18, weight: .medium)
-            view.contentColor = .init(rgb: 0xAAAAAA)
-        }
-        atLabel.contentColor = .init(rgb: 0x666666)
         
         textFields.forEach {
             $0.delegate = self

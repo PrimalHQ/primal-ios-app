@@ -15,9 +15,7 @@ final class MenuContainerController: UIViewController, Themeable {
     private let profileImage = UIImageView()
     private let nameLabel = UILabel()
     private let checkbox1 = UIImageView(image: UIImage(named: "verifiedBadge"))
-    private let usernameLabel = UILabel()
-    private let checkbox2 = UIImageView(image: UIImage(named: "menuVerifiedBadge"))
-    private let checkDomainLabel = UILabel()
+    private let domainLabel = UILabel()
     private let followingLabel = UILabel()
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
@@ -121,7 +119,7 @@ final class MenuContainerController: UIViewController, Themeable {
         
         coverView.backgroundColor = .background.withAlphaComponent(0.5)
         
-        [usernameLabel, checkDomainLabel, followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
+        [domainLabel, followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
             $0.font = .appFont(withSize: 15, weight: .regular)
             $0.textColor = .foreground5
         }
@@ -136,7 +134,6 @@ private extension MenuContainerController {
         updateTheme()
         
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
-        let usernameStack = UIStackView(arrangedSubviews: [usernameLabel, checkbox2, checkDomainLabel])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
         let signOut = MenuItemButton(title: "SIGN OUT")
@@ -145,7 +142,7 @@ private extension MenuContainerController {
         let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
         
         [
-            profileImage, titleStack, usernameStack, followStack,
+            profileImage, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
@@ -159,7 +156,7 @@ private extension MenuContainerController {
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(17, after: profileImage)
         mainStack.setCustomSpacing(13, after: titleStack)
-        mainStack.setCustomSpacing(10, after: usernameStack)
+        mainStack.setCustomSpacing(10, after: domainLabel)
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
         
@@ -170,9 +167,6 @@ private extension MenuContainerController {
         titleStack.alignment = .center
         titleStack.spacing = 4
         titleStack.setCustomSpacing(12, after: checkbox1)
-        
-        usernameStack.alignment = .center
-        usernameStack.spacing = 1
         
         followersDescLabel.text = "Followers"
         followingDescLabel.text = "Following"
@@ -260,10 +254,9 @@ private extension MenuContainerController {
         ])
         
         nameLabel.text = user.displayName
-        usernameLabel.text = user.name
-        checkDomainLabel.text = user.getDomainNip05()
+        domainLabel.text = user.nip05.isEmpty ? user.name : user.nip05
         
-        [checkbox1, checkbox2].forEach { $0.isHidden = user.nip05.isEmpty }
+        checkbox1.isHidden = user.nip05.isEmpty
     }
     
     // MARK: - Objc methods
