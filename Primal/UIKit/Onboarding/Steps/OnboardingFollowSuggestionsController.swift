@@ -137,7 +137,7 @@ private extension OnboardingFollowSuggestionsController {
     func initiateFollow() {
         state = .followRequesting
 
-        FollowManager.instance.sendBatchFollowEvent(Array(selectedToFollow), successHandler: { [weak self] in
+        FollowManager.instance.sendBatchFollowEvent(selectedToFollow, successHandler: { [weak self] in
             self?.state = .followDone
         }, errorHandler: { [weak self] in
             self?.state = .followFailed

@@ -10,7 +10,7 @@ import GenericJSON
 
 struct Contacts {
     let created_at: Int
-    var contacts: [String]
+    var contacts: Set<String>
 }
 
 struct PrimalNoteStatus: Codable, Hashable {

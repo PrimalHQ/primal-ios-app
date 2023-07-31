@@ -15,11 +15,13 @@ final class FollowManager {
     
     func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
     
-    func sendBatchFollowEvent(_ pubkeys: [String], successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
+    func sendBatchFollowEvent(_ pubkeys: Set<String>, successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         if LoginManager.instance.method() != .nsec { return }
         
         var contacts = IdentityManager.instance.userContacts.contacts
-        contacts.append(contentsOf: pubkeys)
+        for pubkey in pubkeys {
+            contacts.insert(pubkey)
+        }
         IdentityManager.instance.userContacts.contacts = contacts
         
         let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
@@ -41,7 +43,7 @@ final class FollowManager {
     
     private func follow(_ pubkey: String) {
         var contacts = IdentityManager.instance.userContacts.contacts
-        contacts.append(pubkey)
+        contacts.insert(pubkey)
         IdentityManager.instance.userContacts.contacts = contacts
         
         let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
