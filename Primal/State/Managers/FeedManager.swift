@@ -298,7 +298,7 @@ final class FeedManager {
             
             pendingResult?.mediaMetadata.append(metadata)
         default:
-            print("FeedManager: requestNewPage: Got unexpected event kind in response: \(response)")
+            print("FeedManager: requestNewPage: Got unexpected event kind in response: \(kind)")
         }
     }
 }

@@ -11,7 +11,9 @@ import UIKit
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = {
         return DeeplinkCoordinator(handlers: [
-            NostrWalletConnectDeeplinkHandler()
+            NostrWalletConnectDeeplinkHandler(),
+            NoteDeeplinkHandler(),
+            ProfileDeeplinkHandler()
         ])
     }()
     
@@ -24,13 +26,17 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = RootViewController.instance
         self.window = window
         window.makeKeyAndVisible()
+
+        if let url = connectionOptions.urlContexts.first?.url {
+            deeplinkCoordinator.handleURL(url)
+        }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let firstUrl = URLContexts.first?.url else {
             return
         }
-        
+
         deeplinkCoordinator.handleURL(firstUrl)
     }
 }
