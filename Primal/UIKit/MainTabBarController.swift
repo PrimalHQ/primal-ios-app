@@ -110,6 +110,33 @@ final class MainTabBarController: UIViewController, Themeable {
             $0.updateThemeIfThemeable()
         }
     }
+    
+    func setTabBarHidden(_ hidden: Bool, animated: Bool) {
+        if !animated {
+            buttonStack.alpha = hidden ? 0 : 1
+            buttonStack.isHidden = hidden
+            notificationIndicator.alpha = hidden ? 0 : 1
+            return
+        }
+        
+        if hidden {
+            UIView.animate(withDuration: 0.3) {
+                self.buttonStack.isHidden = hidden
+                self.buttonStack.alpha = hidden ? 0 : 1
+                self.notificationIndicator.alpha = hidden ? 0 : 1
+            }
+            return
+        }
+        
+        UIView.animate(withDuration: 0.1) {
+            self.buttonStack.isHidden = hidden
+        } completion: { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.buttonStack.alpha = hidden ? 0 : 1
+                self.notificationIndicator.alpha = hidden ? 0 : 1
+            }
+        }
+    }
 }
 
 private extension MainTabBarController {

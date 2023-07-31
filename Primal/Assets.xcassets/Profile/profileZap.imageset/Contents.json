@@ -1,6 +1,16 @@
 {
   "images" : [
     {
+      "filename" : "Feed - Zaps.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
       "filename" : "Union (5).svg",
       "idiom" : "universal"
     }

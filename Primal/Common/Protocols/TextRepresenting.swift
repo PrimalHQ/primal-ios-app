@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol TextRepresenting: AnyObject {
+protocol TextRepresenting: UIView {
     var contentColor: UIColor { get set }
     var contentFont: UIFont { get set }
 }

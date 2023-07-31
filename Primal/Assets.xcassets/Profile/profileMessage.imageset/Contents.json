@@ -1,6 +1,16 @@
 {
   "images" : [
     {
+      "filename" : "Profile - Message (1).svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
       "filename" : "Profile - Message.svg",
       "idiom" : "universal"
     }

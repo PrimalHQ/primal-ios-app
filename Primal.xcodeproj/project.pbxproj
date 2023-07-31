@@ -1361,7 +1361,7 @@
 				9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */,
 				9393312229A3E45E003954C2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9393312529A3E475003954C2 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
-				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */,
+				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */,
 				9E0DEAEB29FD2F6900145E08 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
 				9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
@@ -1788,7 +1788,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.23.4;
+				MARKETING_VERSION = 0.24.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1831,7 +1831,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.23.4;
+				MARKETING_VERSION = 0.24.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1962,7 +1962,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */ = {
+		930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jb55/secp256k1.swift";
 			requirement = {
@@ -2023,7 +2023,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		930497AB29FAD9FD003938F2 /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
 		};
 		9309D2302A5EA7EF00FD2127 /* KeychainAccess */ = {
@@ -2033,7 +2033,7 @@
 		};
 		933DBDB22A1126CE008DCF1F /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
 		};
 		9393312029A3E44D003954C2 /* GenericJSON */ = {

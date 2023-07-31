@@ -71,6 +71,12 @@ struct ParsedRepost {
     var date: Date
 }
 
+extension ParsedUser {
+    func webURL() -> String {
+        "https://primal.net/p/\(data.npub)"
+    }
+}
+
 extension ParsedContent {
     var elements: [ParsedElement] { httpUrls + notes + mentions + hashtags }
     

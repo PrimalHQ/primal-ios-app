@@ -26,12 +26,12 @@ final class ThreadCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool) {
-        update(parsedContent, position: .child, didLike: didLike, didRepost: didRepost, didZap: didZap)
+    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
+        update(parsedContent, position: .child, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
     }
     
-    func update(_ parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool, didZap: Bool) {
-        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap)
+    func update(_ parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
+        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.imageResources.isEmpty

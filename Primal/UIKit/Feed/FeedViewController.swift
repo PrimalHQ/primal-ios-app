@@ -79,7 +79,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             cell.update(data,
                         didLike: LikeManager.instance.hasLiked(data.post.id),
                         didRepost: PostManager.instance.hasReposted(data.post.id),
-                        didZap: ZapManager.instance.hasZapped(data.post.id)
+                        didZap: ZapManager.instance.hasZapped(data.post.id),
+                        isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
             )
             cell.delegate = self
         }
@@ -338,15 +339,15 @@ extension FeedViewController: PostCellDelegate {
         view.showToast("Copied!")
     }
     
-    func postCellDidTapCopyJSON(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let data = try? JSONEncoder().encode(posts[indexPath.row].post),
-            let string = String(data: data, encoding: .utf8)
-        else { return }
+    func postCellDidTapReport(_ cell: PostCell) {
         
-        UIPasteboard.general.string = string
-        view.showToast("Copied!")
+    }
+    
+    @objc func postCellDidTapMute(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        let pubkey = posts[indexPath.row].user.data.pubkey
+        let mm = MuteManager.instance
+        mm.toggleMute(pubkey)
     }
 }
 

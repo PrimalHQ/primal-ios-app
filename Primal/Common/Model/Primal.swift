@@ -194,20 +194,6 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.sig = sig
     }
     
-    func getDomainNip05() -> String {
-        if self.nip05.isEmpty {
-            return ""
-        }
-        
-        let components = self.nip05.components(separatedBy: "@")
-        
-        guard let domain = components[safe: 1] else {
-            return ""
-        }
-        
-        return domain
-    }
-    
     var lnurl: String? {
         var addr: String = ""
         
