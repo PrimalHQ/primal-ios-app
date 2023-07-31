@@ -147,6 +147,18 @@ extension HexKeypair {
         
         return nil
     }
+
+    static func npubToHexPubkey(_ npub: String) -> String? {
+        guard let decoded = try? bech32_decode(npub) else {
+            return nil
+        }
+
+        if decoded.hrp == "npub" {
+            return hex_encode(decoded.data)
+        }
+
+        return nil
+    }
 }
 
 extension NostrKeypair {
