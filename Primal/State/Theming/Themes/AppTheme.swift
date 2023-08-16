@@ -37,5 +37,8 @@ protocol AppTheme {
     var statusBarStyle: UIStatusBarStyle { get }
     var userInterfaceStyle: UIUserInterfaceStyle { get }
     
-    var mockupImage: UIImage? { get }
+    var gradient: [UIColor] { get }
+    
+    var shortTitle: String { get }
+    var settingsImage: UIImage? { get }
 }

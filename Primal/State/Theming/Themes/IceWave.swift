@@ -1,17 +1,16 @@
 //
-//  SunriseWave.swift
+//  IceWave.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 23.5.23..
+//  Created by Pavle D Stevanović on 15.8.23..
 //
 
 import UIKit
 
-/// LIGHT DEFAULT THEME
-final class SunriseWave: AppTheme {
-    static let instance = SunriseWave()
+final class IceWave: AppTheme {
+    static let instance = IceWave()
     
-    let kind: Theme = .sunriseWave
+    let kind: Theme = .iceWave
     
     let brandText: UIColor = .init(rgb: 0x444444)
     
@@ -27,7 +26,7 @@ final class SunriseWave: AppTheme {
     let foreground5: UIColor = .init(rgb: 0x808080)
     var foreground6: UIColor = .init(rgb: 0xC8C8C8)
     
-    let accent: UIColor = .init(rgb: 0xCA079F)
+    let accent: UIColor = .init(rgb: 0x2394EF)
     
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     
@@ -36,8 +35,8 @@ final class SunriseWave: AppTheme {
     var statusBarStyle: UIStatusBarStyle { .darkContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .light }
     
-    var gradient: [UIColor] { [UIColor(rgb: 0xFA4343), UIColor(rgb: 0x5B12A4)] }
+    var gradient: [UIColor] { [UIColor(rgb: 0x0090F8), UIColor(rgb: 0x4C00C7)] }
     
-    var shortTitle: String { "sunrise" }
+    var shortTitle: String { "ice" }
     var settingsImage: UIImage? { UIImage(named: "themeImageLight") }
 }

@@ -73,7 +73,7 @@ extension PostRequestResult {
         var hashtags: [String] = []
         var itemsToRemove: [String] = []
         var itemsToReplace: [String] = []
-        var markedMentions: [String] = []
+        var markedMentions: [(String, ref: String)] = []
         
         for str in result {
             if str.isValidURLAndIsImage {
@@ -188,36 +188,37 @@ extension PostRequestResult {
         }
         
         for item in itemsToReplace {
-            guard let user: PrimalUser = {
-                if item.isNip08Mention {
-                    guard
-                        let index = Int(item[safe: 2]?.string ?? ""),
-                        let tag = post.tags[safe: index],
-                        let pubkey = tag[safe: 1]
-                    else { return nil }
-                                
-                    return users[pubkey]
-                }
-                
-                guard
-                    item.isNip27Mention,
-                    let npub = item.split(separator: ":")[safe: 1]?.string,
-                    let decoded = try? bech32_decode(npub)
-                else { return nil }
-                let pubkey = hex_encode(decoded.data)
-                
-                for mentionedPub in users.keys {
-                    if pubkey.contains(mentionedPub) {
-                        return users[mentionedPub]
+            guard
+                let pubkey: String = {
+                    if item.isNip08Mention {
+                        guard
+                            let index = Int(item[safe: 2]?.string ?? ""),
+                            let tag = post.tags[safe: index]
+                        else { return nil }
+                                    
+                        return tag[safe: 1]
                     }
-                }
-                
-                return users[pubkey]
-            }() else { continue }
+                    
+                    guard
+                        item.isNip27Mention,
+                        let npub = item.split(separator: ":")[safe: 1]?.string,
+                        let decoded = try? bech32_decode(npub)
+                    else { return nil }
+                    let pubkey = hex_encode(decoded.data)
+                    for mentionedPub in users.keys {
+                        if pubkey.contains(mentionedPub) {
+                            return mentionedPub
+                        }
+                    }
+                    return pubkey
+                }(),
+                let user = users[pubkey]
+            else { continue }
             
             let mention = "@\(user.name)"
             text = text.replacingOccurrences(of: item, with: mention)
-            markedMentions.append(mention)
+            markedMentions.append((mention, ref: pubkey))
+            p.mentionedUsers.append(user)
         }
         
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -227,9 +228,9 @@ extension PostRequestResult {
         if p.imageResources.isEmpty {
             p.imageResources = imageURLs.map { .init(url: $0, variants: []) }
         }
-        p.hashtags = hashtags.compactMap { nsText.position(of: $0) }
-        p.mentions = markedMentions.compactMap { nsText.position(of: $0) }
-        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0) }
+        p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }
+        p.mentions = markedMentions.compactMap { nsText.position(of: $0.0, reference: $0.ref) }
+        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0, reference: $0) }
         p.text = text
         p.buildContentString()
         
@@ -238,11 +239,11 @@ extension PostRequestResult {
 }
 
 extension NSString {
-    func position(of substring: String) -> ParsedElement? {
+    func position(of substring: String, reference: String) -> ParsedElement? {
         let position = range(of: substring)
         
         if position.location != NSNotFound {
-            return .init(position: position.location, length: position.length, text: substring)
+            return .init(position: position.location, length: position.length, text: substring, reference: reference)
         }
         return nil
     }

@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "nantes",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/instacart/Nantes/",
+      "state" : {
+        "revision" : "a82b861bc7863b22c798601e28ff2e8ec86ce4ee",
+        "version" : "0.1.2"
+      }
+    },
+    {
       "identity" : "nwwebsocket",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/NWWebSocket.git",

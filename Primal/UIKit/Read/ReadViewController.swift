@@ -28,6 +28,5 @@ final class ReadViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        image.image = Theme.current.mockupImage
     }
 }

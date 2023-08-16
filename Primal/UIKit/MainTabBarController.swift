@@ -14,6 +14,10 @@ extension UIViewController {
     }
 }
 
+enum MainTab {
+    case home, read, explore, messages, notifications
+}
+
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
     lazy var read = ReadNavigationController()
@@ -135,6 +139,29 @@ final class MainTabBarController: UIViewController, Themeable {
                 self.buttonStack.alpha = hidden ? 0 : 1
                 self.notificationIndicator.alpha = hidden ? 0 : 1
             }
+        }
+    }
+    
+    func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
+        let nav: UINavigationController = {
+            switch tab {
+            case .home:
+                return home
+            case .read:
+                return read
+            case .explore:
+                return explore
+            case .messages:
+                return messages
+            case .notifications:
+                return notifications
+            }
+        }()
+        
+        pageVC.setViewControllers([nav], direction: .forward, animated: true)
+        currentPageIndex = indexForNav(nav)
+        if let vc {
+            nav.pushViewController(vc, animated: true)
         }
     }
 }

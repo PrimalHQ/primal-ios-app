@@ -17,11 +17,13 @@ final class ParsedElement: Equatable {
     var position: Int
     let length: Int
     let text: String
+    let reference: String
     
-    init(position: Int, length: Int, text: String) {
+    init(position: Int, length: Int, text: String, reference: String) {
         self.position = position
         self.length = length
         self.text = text
+        self.reference = reference
     }
 }
 
@@ -64,6 +66,8 @@ final class ParsedContent {
     
     var embededPost: ParsedContent?
     var reposted: ParsedRepost?
+    
+    var mentionedUsers: [PrimalUser] = []
 }
 
 struct ParsedRepost {
@@ -78,21 +82,61 @@ extension ParsedUser {
 }
 
 extension ParsedContent {
-    var elements: [ParsedElement] { httpUrls + notes + mentions + hashtags }
-    
     func buildContentString() {
+        let fs = FontSelection.current
         let style = NSMutableParagraphStyle()
-        style.lineSpacing = 4
+        style.lineSpacing = fs.contentLineSpacing
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .font: UIFont.appFont(withSize: fs.contentSize, weight: .regular),
             .paragraphStyle: style
         ])
         
-        for element in elements {
+        for element in httpUrls {
+            guard let url = URL(string: element.text) else { continue }
             result.addAttributes([
-                .foregroundColor: UIColor.accent
+                .foregroundColor: UIColor.accent,
+                .link: url
+            ], range: .init(location: element.position, length: element.length))
+        }
+        
+        for element in notes {
+            guard let url = URL(string: "note://\(element.text)") else {
+                result.addAttributes([
+                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                ], range: .init(location: element.position, length: element.length))
+                continue
+            }
+            result.addAttributes([
+                .foregroundColor: UIColor.accent,
+                .link: url
+            ], range: .init(location: element.position, length: element.length))
+        }
+        
+        for element in mentions {
+            guard let url = URL(string: "mention://\(element.text)") else {
+                result.addAttributes([
+                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                ], range: .init(location: element.position, length: element.length))
+                continue
+            }
+            result.addAttributes([
+                .foregroundColor: UIColor.accent,
+                .link: url
+            ], range: .init(location: element.position, length: element.length))
+        }
+        
+        for element in hashtags {
+            guard let url = URL(string: "hashtag://\(element.text)") else {
+                result.addAttributes([
+                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                ], range: .init(location: element.position, length: element.length))
+                continue
+            }
+            result.addAttributes([
+                .foregroundColor: UIColor.accent,
+                .link: url
             ], range: .init(location: element.position, length: element.length))
         }
         

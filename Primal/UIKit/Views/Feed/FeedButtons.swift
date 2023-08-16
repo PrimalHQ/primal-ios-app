@@ -108,7 +108,7 @@ final class FeedLikeButton: AnimatedFeedButton {
     override var normalIcon: UIImage? { UIImage(named: "feedHeart") }
     override var filledIcon: UIImage? { UIImage(named: "feedHeartFilled") }
 
-    override var filledColor: UIColor { .accent }
+    override var filledColor: UIColor { .init(rgb: 0xCA079F) }
     
     override func setup() {
         super.setup()

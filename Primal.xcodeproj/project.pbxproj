@@ -219,6 +219,12 @@
 		9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07AB82A1CF6CA00FB6C86 /* ThemingManager.swift */; };
 		9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */; };
 		9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */; };
+		9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */ = {isa = PBXBuildFile; productRef = 9EF4BFBF2A8A633B003396AA /* Nantes */; };
+		9EF4BFC22A8BE96F003396AA /* MidnightWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC12A8BE96F003396AA /* MidnightWave.swift */; };
+		9EF4BFC42A8BE9C5003396AA /* IceWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC32A8BE9C5003396AA /* IceWave.swift */; };
+		9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */; };
+		9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */; };
+		9EF4BFCA2A8BFD16003396AA /* FontSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC92A8BFD16003396AA /* FontSlider.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */; };
 /* End PBXBuildFile section */
@@ -486,6 +492,11 @@
 		9EE07AB82A1CF6CA00FB6C86 /* ThemingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemingManager.swift; sourceTree = "<group>"; };
 		9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemedColors.swift; sourceTree = "<group>"; };
 		9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		9EF4BFC12A8BE96F003396AA /* MidnightWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MidnightWave.swift; sourceTree = "<group>"; };
+		9EF4BFC32A8BE9C5003396AA /* IceWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IceWave.swift; sourceTree = "<group>"; };
+		9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppearanceViewController.swift; sourceTree = "<group>"; };
+		9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeButton.swift; sourceTree = "<group>"; };
+		9EF4BFC92A8BFD16003396AA /* FontSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSlider.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -502,6 +513,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
+				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -926,6 +938,8 @@
 				9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */,
 				9ED416172A4F7A6A00892235 /* RoundedCornersView.swift */,
 				9ED416192A4F7C8800892235 /* SettingsToggleCell.swift */,
+				9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */,
+				9EF4BFC92A8BFD16003396AA /* FontSlider.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -938,6 +952,7 @@
 				9ED416052A446F2A00892235 /* SettingsFeedViewController.swift */,
 				9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */,
 				9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */,
+				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 			);
 			path = SubControllers;
 			sourceTree = "<group>";
@@ -1252,6 +1267,8 @@
 				9EE07AB22A1CF3C500FB6C86 /* AppTheme.swift */,
 				9EE07AB42A1CF50200FB6C86 /* SunriseWave.swift */,
 				9EE07AB62A1CF61600FB6C86 /* SunsetWave.swift */,
+				9EF4BFC12A8BE96F003396AA /* MidnightWave.swift */,
+				9EF4BFC32A8BE9C5003396AA /* IceWave.swift */,
 			);
 			path = Themes;
 			sourceTree = "<group>";
@@ -1280,6 +1297,7 @@
 				9E0DEAEC29FD2F6900145E08 /* Lottie */,
 				9E83DF5E2A53308200F2C379 /* FLAnimatedImage */,
 				9309D2302A5EA7EF00FD2127 /* KeychainAccess */,
+				9EF4BFBF2A8A633B003396AA /* Nantes */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -1365,6 +1383,7 @@
 				9E0DEAEB29FD2F6900145E08 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
 				9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -1457,6 +1476,7 @@
 				9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */,
 				9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
+				9EF4BFC22A8BE96F003396AA /* MidnightWave.swift in Sources */,
 				9ED4160D2A48744600892235 /* PopupMenuViewController.swift in Sources */,
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
@@ -1467,9 +1487,11 @@
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				9309D22C2A5EA7A300FD2127 /* ICloudKeychainManager.swift in Sources */,
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
+				9EF4BFCA2A8BFD16003396AA /* FontSlider.swift in Sources */,
 				9393313229A3E56F003954C2 /* Nostr.swift in Sources */,
 				9363DE762A30DDF10060F4BD /* NostrWalletConnectDeeplinkHandler.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
+				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */,
 				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
@@ -1495,6 +1517,7 @@
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
+				9EF4BFC42A8BE9C5003396AA /* IceWave.swift in Sources */,
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* MessagesViewController.swift in Sources */,
@@ -1545,6 +1568,7 @@
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
 				9ED416142A4E03E500892235 /* AvatarView.swift in Sources */,
+				9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
@@ -1788,7 +1812,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.24.3;
+				MARKETING_VERSION = 0.25.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1831,7 +1855,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.24.3;
+				MARKETING_VERSION = 0.25.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -2018,6 +2042,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/instacart/Nantes/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2060,6 +2092,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */;
 			productName = FLAnimatedImage;
+		};
+		9EF4BFBF2A8A633B003396AA /* Nantes */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */;
+			productName = Nantes;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

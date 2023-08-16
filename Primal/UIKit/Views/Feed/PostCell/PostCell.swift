@@ -10,6 +10,7 @@ import UIKit
 import Kingfisher
 import LinkPresentation
 import FLAnimatedImage
+import Nantes
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
@@ -41,7 +42,7 @@ class PostCell: UITableViewCell {
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
-    let mainLabel = LinkableLabel()
+    let mainLabel = NantesLabel()
     let mainImages = ImageCollectionView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
@@ -190,13 +191,9 @@ extension PostCell: ImageCollectionViewDelegate {
     }
 }
 
-extension PostCell: LinkableLabelDelegate {
-    func didTapURL(_ url: URL) {
-        delegate?.postCellDidTapURL(self, url: url)
-    }
-    
-    func didTapOutsideURL() {
-        delegate?.postCellDidTapPost(self)
+extension PostCell: NantesLabelDelegate {
+    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
+        delegate?.postCellDidTapURL(self, url: link)
     }
 }
 
@@ -204,7 +201,7 @@ private extension PostCell {
     func setup() {
         contentView.backgroundColor = .background
         contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 5)
+        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 2)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -212,9 +209,9 @@ private extension PostCell {
         replyButton.isEnabled = LoginManager.instance.method() == .nsec
         
         nameTimeStack.spacing = 6
-        separatorLabel.text = "|"
+        separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
-            $0.font = .appFont(withSize: 16, weight: .regular)
+            $0.font = .appFont(withSize: FontSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
             $0.adjustsFontSizeToFitWidth = true
         }
@@ -230,12 +227,14 @@ private extension PostCell {
         profileImageView.isUserInteractionEnabled = true
         
         nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: 16, weight: .bold)
-        nameLabel.adjustsFontSizeToFitWidth = true
+        nameLabel.font = .appFont(withSize: FontSelection.current.nameSize, weight: .bold)
         
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: 16, weight: .regular)
+        mainLabel.font = UIFont.appFont(withSize: FontSelection.current.contentSize, weight: .regular)
         mainLabel.delegate = self
+        mainLabel.labelTappedBlock = { [unowned self] in
+            self.delegate?.postCellDidTapPost(self)
+        }
         
         mainImages.layer.cornerRadius = 8
         mainImages.layer.masksToBounds = true

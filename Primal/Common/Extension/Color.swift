@@ -18,8 +18,6 @@ extension UIColor {
         )
     }
     
-    static let gradient: [UIColor] = [UIColor(rgb: 0xFA4343), UIColor(rgb: 0x5B12A4)]
-    
     static func gradientColor(
         _ colors: [UIColor] = gradient,
         bounds: CGSize,

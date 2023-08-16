@@ -35,27 +35,37 @@ final class FeedCell: PostCell {
 
 private extension FeedCell {
     func setup() {
-        let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, namesStack, threeDotsButton])
         let buttonStackStandIn = UIView()
-        let mainStack = UIStackView(arrangedSubviews: [
-            repostIndicator, horizontalStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
+        let nameStack = UIStackView([nameLabel, nipLabel, separatorLabel, timeLabel, UIView()])
+        let contentStack = UIStackView(axis: .vertical, [
+            nameStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
         ])
         
+        let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, contentStack])
+        
+        let mainStack = UIStackView(arrangedSubviews: [repostIndicator, horizontalStack])
+        
         contentView.addSubview(mainStack)
-        mainStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .top, padding: 21)
+        mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
     
-        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
-        bottomC.priority = .defaultHigh
+        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        bottomC.priority = .required
         bottomC.isActive = true
         
+        contentView.addSubview(threeDotsButton)
+        threeDotsButton.pinToSuperview(edges: [.top, .trailing]).constrainToSize(44)
+        
+        contentStack.spacing = 6
+        
+        nameStack.alignment = .top
+        nameStack.spacing = 4
+        
         mainStack.axis = .vertical
-        mainStack.spacing = 16
+        mainStack.spacing = 14
         
         buttonStackStandIn.constrainToSize(height: 24)
         contentView.addSubview(bottomButtonStack)
-        bottomButtonStack.pin(to: buttonStackStandIn, edges: .horizontal).centerToView(buttonStackStandIn)
+        bottomButtonStack.pin(to: buttonStackStandIn, edges: .horizontal, padding: -8).centerToView(buttonStackStandIn)
         
         horizontalStack.alignment = .top
         horizontalStack.spacing = 12
@@ -70,7 +80,7 @@ private extension FeedCell {
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: 16, weight: .regular)
+        seeMoreLabel.font = .appFont(withSize: FontSelection.current.contentSize, weight: .regular)
         seeMoreLabel.textColor = .accent
     }
 }

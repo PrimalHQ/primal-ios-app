@@ -10,13 +10,10 @@ import UIKit
 final class GradientInGradientButton: MyButton {
     
     private let borderGradient = GradientBorderView(
-        gradientColors: [
-            UIColor(rgb: 0xFA4343).withAlphaComponent(0.75),
-            UIColor(rgb: 0x5B12A4).withAlphaComponent(0.75)
-        ],
-        backgroundColor: UIColor(rgb: 0xFA4343)
+        gradientColors: UIColor.gradient.withAlphaComponent(0.75),
+        backgroundColor: UIColor.gradient.first!
     )
-    private let innerGradient = GradientView(colors: [UIColor(rgb: 0xFA4343),UIColor(rgb: 0x5B12A4)])
+    private let innerGradient = GradientView(colors: UIColor.gradient)
     let titleLabel = UILabel()
     
     init(title: String) {

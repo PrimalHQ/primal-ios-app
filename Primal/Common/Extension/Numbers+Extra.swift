@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension FloatingPoint {
+extension Comparable {
     func clamp(_ minimum: Self, _ maximum: Self) -> Self {
         min(maximum, max(minimum, self))
     }

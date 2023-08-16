@@ -273,28 +273,60 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func postCellDidTapURL(_ cell: PostCell, url: URL?) {
-        guard let url else {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let url = url ?? posts[indexPath.row].firstExtractedURL
+        else { return }
+        
+        let post = posts[indexPath.row]
+        let urlString = url.absoluteString
+        
+        guard !urlString.isValidURL || !urlString.hasPrefix("http") else {
+            if urlString.isVideoURL {
+                let player = AVPlayerViewController()
+                player.player = AVPlayer(url: url)
+                present(player, animated: true) {
+                    player.player?.play()
+                }
+                return
+            }
+            
+            if urlString.isValidURL {
+                let safari = SFSafariViewController(url: url)
+                present(safari, animated: true)
+            }
+            
+            return
+        }
+        
+        guard let infoSub = urlString.split(separator: "//").last else { return }
+        let info = String(infoSub)
+        
+        if urlString.hasPrefix("hashtag"), info.isHashtag {
+            let feed = RegularFeedViewController(feed: FeedManager(search: info))
+            show(feed, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("mention") {
             guard
-                let indexPath = table.indexPath(for: cell),
-                let url = posts[indexPath.row].firstExtractedURL
+                let ref = post.mentions.first(where: { $0.text == info })?.reference,
+                let user = post.mentionedUsers.first(where: { $0.pubkey == ref })
             else { return }
             
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
+            let profile = ProfileViewController(profile: .init(data: user))
+            show(profile, sender: nil)
             return
         }
         
-        if url.absoluteString.isVideoURL {
-            let player = AVPlayerViewController()
-            player.player = AVPlayer(url: url)
-            present(player, animated: true) {
-                player.player?.play()
-            }
+        if urlString.hasPrefix("note") {
+            guard let ref = post.notes.first(where: { $0.text == info })?.reference else { return }
+            
+            print(ref)
             return
         }
         
-        let safari = SFSafariViewController(url: url)
-        present(safari, animated: true)
+        return
     }
     
     func postCellDidTapImages(resource: MediaMetadata.Resource) {

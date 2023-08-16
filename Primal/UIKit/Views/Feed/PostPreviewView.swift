@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import Nantes
 
 final class PostPreviewView: UIView {
     let profileImageView = UIImageView()
@@ -14,7 +15,7 @@ final class PostPreviewView: UIView {
     let timeLabel = UILabel()
     let secondaryIdentifierLabel = UILabel()
     let verifiedBadge = UIImageView(image: UIImage(named: "feedVerifiedBadge"))
-    let mainLabel = LinkableLabel()
+    let mainLabel = NantesLabel()
     let seeMoreLabel = UILabel()
     let imageView = UIImageView()
     let linkPreview = LinkPreview()
@@ -101,29 +102,30 @@ private extension PostPreviewView {
         let separatorLabel = UILabel()
         separatorLabel.text = "|"
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
-            $0.font = .appFont(withSize: 16, weight: .regular)
+            $0.font = .appFont(withSize: FontSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
             $0.adjustsFontSizeToFitWidth = true
         }
         
-        profileImageView.constrainToSize(28)
-        profileImageView.layer.cornerRadius = 14
+        profileImageView.constrainToSize(24)
+        profileImageView.layer.cornerRadius = 12
         profileImageView.layer.masksToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
         
         nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: 16, weight: .bold)
+        nameLabel.font = .appFont(withSize: FontSelection.current.nameSize, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: 16, weight: .regular)
+        mainLabel.font = UIFont.appFont(withSize: FontSelection.current.contentSize, weight: .regular)
         mainLabel.numberOfLines = 10
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: 16, weight: .regular)
+        seeMoreLabel.font = .appFont(withSize: FontSelection.current.contentSize, weight: .regular)
         seeMoreLabel.textColor = .accent
         
         imageView.contentMode = .scaleAspectFill
@@ -147,8 +149,8 @@ private extension PostPreviewView {
         addSubview(mainStack)
         
         mainStack
-            .pinToSuperview(edges: .horizontal, padding: 20)
-            .pinToSuperview(edges: .vertical, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .vertical, padding: 12)
         
         // USER INTERACTION DISABLED FOR SUBVIEWS
         mainStack.isUserInteractionEnabled = false

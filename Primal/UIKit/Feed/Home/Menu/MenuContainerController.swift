@@ -278,6 +278,10 @@ private extension MenuContainerController {
             Theme.defaultTheme = SunsetWave.instance
         case .sunsetWave:
             Theme.defaultTheme = SunriseWave.instance
+        case .midnightWave:
+            Theme.defaultTheme = IceWave.instance
+        case .iceWave:
+            Theme.defaultTheme = MidnightWave.instance
         }
     }
     

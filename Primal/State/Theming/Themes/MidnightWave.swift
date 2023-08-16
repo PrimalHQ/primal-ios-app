@@ -1,16 +1,16 @@
 //
-//  SunsetWave.swift
+//  MidnightWave.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 23.5.23..
+//  Created by Pavle D Stevanović on 15.8.23..
 //
 
 import UIKit
 
-final class SunsetWave: AppTheme {
-    static let instance = SunsetWave()
+final class MidnightWave: AppTheme {
+    static let instance = MidnightWave()
     
-    let kind: Theme = .sunsetWave
+    let kind: Theme = .midnightWave
     
     let brandText: UIColor = .init(rgb: 0xD5D5D5)
     
@@ -26,7 +26,7 @@ final class SunsetWave: AppTheme {
     let foreground5: UIColor = .init(rgb: 0x666666)
     var foreground6: UIColor = .init(rgb: 0x444444)
     
-    let accent: UIColor = .init(rgb: 0xF800C1)
+    let accent: UIColor = .init(rgb: 0x2394EF)
     
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)
     
@@ -35,8 +35,8 @@ final class SunsetWave: AppTheme {
     var statusBarStyle: UIStatusBarStyle { .lightContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .dark }
     
-    var gradient: [UIColor] { [UIColor(rgb: 0xFA4343), UIColor(rgb: 0x5B12A4)] }
+    var gradient: [UIColor] { [UIColor(rgb: 0x0090F8), UIColor(rgb: 0x4C00C7)] }
     
-    var shortTitle: String { "sunset" }
+    var shortTitle: String { "midnight" }
     var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
 }
