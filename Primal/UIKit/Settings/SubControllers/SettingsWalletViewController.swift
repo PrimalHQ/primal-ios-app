@@ -27,7 +27,8 @@ final class SettingsWalletViewController : UIViewController, Themeable {
     private lazy var checkbox = CheckboxView()
     private lazy var descriptionLabel = UILabel()
     
-    private let connectButton = ConnectAlbyButton()
+    private let connectAlbyButton = ConnectSpecialWalletButton.Alby()
+    private let connectMutinyButton = ConnectSpecialWalletButton.Mutiny()
     private lazy var infoView = WalletInfoView()
     private lazy var disconnectButton = GradientSettingsButton(title: "Disconnect Wallet")
     
@@ -62,7 +63,7 @@ final class SettingsWalletViewController : UIViewController, Themeable {
 
 private extension SettingsWalletViewController {
     func saveNewNWC(_ wcu: WalletConnectURL) {
-        defaults.nwc = wcu.to_url().absoluteString
+        defaults.nwc = wcu.toURL().absoluteString
     }
     
     func setup() {
@@ -86,7 +87,8 @@ private extension SettingsWalletViewController {
             
             iconParent.layer.borderWidth = 0
             
-            connectButton.isHidden = false
+            connectAlbyButton.isHidden = false
+            connectMutinyButton.isHidden = false
             checkbox.isHidden = true
             infoView.isHidden = true
             disconnectButton.isHidden = true
@@ -96,11 +98,12 @@ private extension SettingsWalletViewController {
         title = "Wallet Connected"
         descriptionLabel.text = "You are currently using the following bitcoin lightning wallet:"
         infoView.firstLabel.text = wcu.relay.url.absoluteString
-        infoView.secondLabel.text = wcu.lud16
+        infoView.secondLabel.text = wcu.lud16 ?? IdentityManager.instance.user?.lud16
         
         iconParent.layer.borderWidth = 7
         
-        connectButton.isHidden = true
+        connectAlbyButton.isHidden = true
+        connectMutinyButton.isHidden = true
         checkbox.isHidden = false
         infoView.isHidden = false
         disconnectButton.isHidden = false
@@ -111,7 +114,7 @@ private extension SettingsWalletViewController {
         descriptionLabel.numberOfLines = 0
         descriptionLabel.textAlignment = .center
         
-        let actionStack = UIStackView(arrangedSubviews: [descriptionLabel, connectButton, infoView, disconnectButton])
+        let actionStack = UIStackView(arrangedSubviews: [descriptionLabel, connectAlbyButton, connectMutinyButton, infoView, disconnectButton])
         actionStack.axis = .vertical
         actionStack.spacing = 20
         
@@ -135,7 +138,8 @@ private extension SettingsWalletViewController {
         view.addSubview(checkbox)
         checkbox.pin(to: iconParent, edges: [.trailing, .bottom], padding: -6)
         
-        connectButton.addTarget(self, action: #selector(connectButtonTapped), for: .touchUpInside)
+        connectAlbyButton.addTarget(self, action: #selector(connectAlbyButtonTapped), for: .touchUpInside)
+        connectMutinyButton.addTarget(self, action: #selector(connectMutinyButtonTapped), for: .touchUpInside)
         disconnectButton.addTarget(self, action: #selector(disconnectButtonTapped), for: .touchUpInside)
     }
     
@@ -144,8 +148,13 @@ private extension SettingsWalletViewController {
         updateView()
     }
     
-    @objc func connectButtonTapped() {
+    @objc func connectAlbyButtonTapped() {
         guard let url = URL(string:"https://nwc.getalby.com/apps/new?c=Primal-iOS") else { return }
+        UIApplication.shared.open(url)
+    }
+    
+    @objc func connectMutinyButtonTapped() {
+        guard let url = URL(string:"https://nwc-callback.mutiny-web.pages.dev/settings/connections?callbackUri=primal&name=Primal-iOS") else { return }
         UIApplication.shared.open(url)
     }
 }

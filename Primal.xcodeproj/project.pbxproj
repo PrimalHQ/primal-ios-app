@@ -191,7 +191,6 @@
 		9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */; };
 		9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */; };
 		9ECCC8902A3CACBC00BE8F62 /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCC88F2A3CACBC00BE8F62 /* zap-medium.json */; };
-		9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */; };
 		9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */; };
 		9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */; };
 		9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECFD3212A013935000D1B2F /* FeedViewController.swift */; };
@@ -220,6 +219,7 @@
 		9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */; };
 		9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
+		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
 		C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -458,7 +458,6 @@
 		9EC63E6929FD6193006DC1C4 /* FollowSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSectionHeader.swift; sourceTree = "<group>"; };
 		9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextView+Extra.swift"; sourceTree = "<group>"; };
 		9ECCC88F2A3CACBC00BE8F62 /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
-		9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectAlbyButton.swift; sourceTree = "<group>"; };
 		9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSettingsButton.swift; sourceTree = "<group>"; };
 		9ECFD31F2A0138BF000D1B2F /* FeedNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedNavigationController.swift; sourceTree = "<group>"; };
 		9ECFD3212A013935000D1B2F /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
@@ -487,6 +486,7 @@
 		9EE07ABB2A1CFD4F00FB6C86 /* ThemedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemedColors.swift; sourceTree = "<group>"; };
 		9EE07ABD2A1CFDB800FB6C86 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
+		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -922,10 +922,10 @@
 				9E55F2942A1FBDB600D5D523 /* BorderView.swift */,
 				9E55F28C2A1FAA6F00D5D523 /* SettingsOptionButton.swift */,
 				9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */,
-				9ECCC8912A3CF2A200BE8F62 /* ConnectAlbyButton.swift */,
 				9ECCC8932A3F1CE700BE8F62 /* GradientSettingsButton.swift */,
 				9ED416172A4F7A6A00892235 /* RoundedCornersView.swift */,
 				9ED416192A4F7C8800892235 /* SettingsToggleCell.swift */,
+				C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1528,7 +1528,6 @@
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
-				9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
@@ -1608,6 +1607,7 @@
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
 				C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */,
+				C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

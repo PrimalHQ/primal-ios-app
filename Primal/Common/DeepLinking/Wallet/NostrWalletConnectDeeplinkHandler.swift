@@ -8,20 +8,20 @@
 import Foundation
 import UIKit
 
-final class NostrWalletConnectDeeplinkHandler : DeeplinkHandlerProtocol {    
+final class NostrWalletConnectDeeplinkHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {
-        return url.absoluteString.starts(with: "nostrwalletconnect://") || url.absoluteString.starts(with: "nostr+walletconnect://")
+        return WalletConnectURL.canParseURL(url)
     }
-    
+
     func openURL(_ url: URL) {
         guard canOpenURL(url) else {
             return
         }
-        
+
         guard let nwc = WalletConnectURL(str: url.absoluteString) else {
             return
         }
-        
+
         notify(.nostrWalletConnect, nwc)
     }
 }
