@@ -154,7 +154,7 @@ private extension SettingsWalletViewController {
     }
     
     @objc func connectMutinyButtonTapped() {
-        guard let url = URL(string:"https://nwc-callback.mutiny-web.pages.dev/settings/connections?callbackUri=primal&name=Primal-iOS") else { return }
+        guard let url = URL(string:"https://app.mutinywallet.com/settings/connections?callbackUri=primal&name=Primal-iOS") else { return }
         UIApplication.shared.open(url)
     }
 }
