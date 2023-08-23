@@ -12,6 +12,9 @@ final class HomeFeedViewController: PostFeedViewController {
     
     let loadingSpinner = LoadingSpinnerView()
     let feedButton = UIButton()
+
+    let postButtonParent = UIView()
+    let postButton = NewPostButton()
     
     var onLoad: (() -> ())? {
         didSet {
@@ -48,7 +51,7 @@ final class HomeFeedViewController: PostFeedViewController {
         
         if newPosts == 0 {
             UIView.animate(withDuration: 0.3) {
-                self.newPostsView.transform = .init(translationX: 0, y: -100)
+                self.newPostsView.transform = .init(translationX: 0, y: -200)
                 self.newPostsView.alpha = 0.3
             }
         } else if oldValue == 0 {
@@ -80,12 +83,11 @@ final class HomeFeedViewController: PostFeedViewController {
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
         
-        let postButton = UIButton()
-        postButton.setImage(UIImage(named: "AddPost"), for: .normal)
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
-        
-        view.addSubview(postButton)
-        postButton.constrainToSize(56).pinToSuperview(edges: [.trailing, .bottom], padding: 8, safeArea: true)
+        view.addSubview(postButtonParent)
+        postButtonParent.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: [.trailing, .bottom], safeArea: true)
         
         view.addSubview(newPostsView)
         newPostsView.pinToSuperview(edges: .top, padding: 47, safeArea: true).centerToSuperview(axis: .horizontal)
@@ -150,10 +152,27 @@ final class HomeFeedViewController: PostFeedViewController {
         newAddedPosts = indexPath.row
     }
     
+    private var lastContentOffset: CGFloat = 0
+    
+    @Published private var isAnimatingBars = false
+    @Published private var isShowingBars = true
+    @Published private var shouldShowBars = true
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y < 50 {
+        if scrollView.contentOffset.y < 100 {
             newAddedPosts = 0
+            shouldShowBars = true
+        } else if scrollView.isTracking {
+            if (lastContentOffset > scrollView.contentOffset.y) {
+                shouldShowBars = shouldShowBars || (lastContentOffset - scrollView.contentOffset.y > 15)
+            }
+            if (lastContentOffset < scrollView.contentOffset.y) {
+                shouldShowBars = shouldShowBars && (scrollView.contentOffset.y - lastContentOffset < 25)
+            }
         }
+
+        // update the new position acquired
+        lastContentOffset = scrollView.contentOffset.y
     }
 }
 
@@ -211,6 +230,13 @@ private extension HomeFeedViewController {
                 self?.title = name
             }
             .store(in: &cancellables)
+        
+        Publishers.CombineLatest3($isShowingBars, $shouldShowBars, $isAnimatingBars)
+            .receive(on: DispatchQueue.main).sink { [weak self] isShowing, shouldShow, isAnimating in
+                guard isShowing != shouldShow, !isAnimating else { return }
+                self?.animateBars()
+            }
+            .store(in: &cancellables)
     }
     
     func processFuturePosts(_ sorted: [ParsedContent]) {
@@ -228,6 +254,39 @@ private extension HomeFeedViewController {
             newAddedPosts += sorted.count
             feed.parsedPosts.insert(contentsOf: sorted, at: 0)
             newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+        }
+    }
+    
+    func animateBars() {
+        guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
+        
+        let target = shouldShowBars
+        isAnimatingBars = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(900)) {
+            self.isShowingBars = target
+            self.isAnimatingBars = false
+        }
+        
+        let oldValue = !shouldShowBars
+        
+        if shouldShowBars {
+            mainTabBarController?.buttonStack.alpha = 1
+            mainTabBarController?.notificationIndicator.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.53, delay: shouldShowBars ? 0.4 : 0) {
+            self.postButton.transform = self.shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
+        }
+        
+        UIView.animate(withDuration: 0.9) {
+            self.postButtonParent.transform = self.shouldShowBars ? .identity : .init(translationX: 0, y: 100)
+        }
+        
+        UIView.animate(withDuration: 0.73) {
+            self.navigationController?.setNavigationBarHidden(oldValue, animated: false)
+            self.mainTabBarController?.setTabBarHidden(oldValue, animated: false)
+            self.safeAreaSpacer.isHidden = oldValue
+            self.navigationBarLengthner.isHidden = oldValue
         }
     }
 }

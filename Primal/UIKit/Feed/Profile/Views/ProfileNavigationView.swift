@@ -160,6 +160,8 @@ class ProfileNavigationView: UIView, Themeable {
         bannerViewBig.backgroundColor = .background
         
         overlayView.backgroundColor = .background.withAlphaComponent(0.5)
+        
+        checkboxIcon.tintColor = .accent
     }
 }
 
@@ -182,6 +184,8 @@ private extension ProfileNavigationView {
         profilePicture.layer.borderWidth = 3
         profilePicture.layer.masksToBounds = true
         profilePicture.contentMode = .scaleAspectFill
+        
+        checkboxIcon.constrainToSize(20)
         
         profilePictureParent.addSubview(profilePicture)
         profilePicture.pinToSuperview()

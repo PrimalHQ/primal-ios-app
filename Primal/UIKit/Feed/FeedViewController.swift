@@ -14,8 +14,9 @@ import Lottie
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let navigationBarLengthner = SpacerView(height: 7)
-    var table = UITableView()
-    lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
+    let table = UITableView()
+    let safeAreaSpacer = UIView()
+    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, navigationBarLengthner, table])
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -96,7 +97,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         navigationBarLengthner.backgroundColor = .background
         
         updateCellID()
-        table.register(FeedCell.self, forCellReuseIdentifier: postCellID)
+        table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
         view.backgroundColor = .background
@@ -112,13 +113,13 @@ private extension FeedViewController {
     func setup() {
         stack.axis = .vertical
         view.insertSubview(stack, at: 0)
-        stack
-            .pinToSuperview(edges: [.horizontal, .bottom])
-            .pinToSuperview(edges: .top, safeArea: true)
+        stack.pinToSuperview()
         
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
+        
+        safeAreaSpacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         
         updateTheme()
     }
@@ -275,7 +276,7 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapURL(_ cell: PostCell, url: URL?) {
         guard
             let indexPath = table.indexPath(for: cell),
-            let url = url ?? posts[indexPath.row].firstExtractedURL
+            let url = url ?? posts[indexPath.row].linkPreview?.url
         else { return }
         
         let post = posts[indexPath.row]

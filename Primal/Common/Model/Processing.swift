@@ -88,63 +88,28 @@ extension PostRequestResult {
             }
         }
         
-        if let index = otherURLs.firstIndex(where: { $0.isValidURL && $0.isNotEmail }) {
-            let firstURL = otherURLs.remove(at: index)
-            itemsToRemove.append(firstURL)
-
-            if let url = URL(string: firstURL.hasPrefix("http") ? firstURL : "https://\(firstURL)") {
-                p.firstExtractedURL = url
-                p.parsedMetadata = .loadingMetadata(url)
-
-                let provider = LPMetadataProvider()
-                provider.startFetchingMetadata(for: url) { metadata, error in
-                    DispatchQueue.main.async {
-                        _ = provider
-
-                        guard let metadata else {
-                            p.parsedMetadata = .failedToLoad(url)
-                            return
-                        }
-
-                        let parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
-                        p.parsedMetadata = parsed
-
-                        DispatchQueue.global(qos: .background).async {
-                            let imageKey = p.linkMetadataImageKey
-                            if KingfisherManager.shared.cache.isCached(forKey: imageKey) {
-                                DispatchQueue.main.async {
-                                    p.parsedMetadata?.imageKey = imageKey
-                                }
-                            } else if let imageProvider = metadata.imageProvider {
-                                imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                    DispatchQueue.main.async {
-                                        guard let image = image as? UIImage else { return }
-                                        
-                                        KingfisherManager.shared.cache.store(image, forKey: imageKey)
-                                        p.parsedMetadata?.imageKey =  imageKey
-                                    }
-                                }
-                            }
-
-                            let iconKey = p.linkMetadataIconKey
-                            if KingfisherManager.shared.cache.isCached(forKey: iconKey) {
-                                DispatchQueue.main.async {
-                                    p.parsedMetadata?.iconKey = iconKey
-                                }
-                            } else if let iconProvider = metadata.iconProvider {
-                                iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
-                                    DispatchQueue.main.async {
-                                        guard let icon = icon as? UIImage else { return }
-                                        
-                                        KingfisherManager.shared.cache.store(icon, forKey: iconKey)
-                                        p.parsedMetadata?.iconKey = iconKey
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        for preview in webPreviews.first(where: { $0.event_id == post.id })?.resources ?? [] {
+            guard let urlIndex = otherURLs.firstIndex(where: { $0.contains(preview.url) }) else { continue }
+            let urlString = otherURLs[urlIndex]
+            guard let url = URL(string: urlString.hasPrefix("http") ? urlString : "https://\(urlString)") else { continue }
+            
+            guard
+                preview.icon_url?.isEmpty == false ||
+                preview.md_title?.isEmpty == false ||
+                preview.md_description?.isEmpty == false ||
+                preview.md_image?.isEmpty == false
+            else { continue }
+            
+            otherURLs.remove(at: urlIndex)
+            itemsToRemove.append(urlString)
+            
+            p.linkPreview = LinkMetadata(
+                url: url,
+                imagesData: mediaMetadata.filter { $0.event_id == post.id }.flatMap { $0.resources },
+                data: preview
+            )
+            
+            break // Leave the loop as we only want the first link preview
         }
         
         let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
@@ -184,7 +149,7 @@ extension PostRequestResult {
         }
         
         for media in mediaMetadata where media.event_id == post.id {
-            p.imageResources = media.resources
+            p.imageResources = media.resources.filter { text.contains($0.url) }
         }
         
         for item in itemsToReplace {

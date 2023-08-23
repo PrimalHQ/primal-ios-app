@@ -8,6 +8,26 @@
 import Combine
 import UIKit
 
+extension FeedDesign {
+    var threadCellClass: AnyClass {
+        switch self {
+        case .standard:
+            return DefaultThreadCell.self
+        case .fullWidth:
+            return FullWidthThreadCell.self
+        }
+    }
+    
+    var threadMainCellClass: AnyClass {
+        switch self {
+        case .standard:
+            return DefaultMainThreadCell.self
+        case .fullWidth:
+            return FullWidthThreadCell.self
+        }
+    }
+}
+
 final class ThreadViewController: PostFeedViewController {
     let id: String
     
@@ -80,21 +100,22 @@ final class ThreadViewController: PostFeedViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        if let cell = cell as? ThreadCell {
-            let data = posts[indexPath.row]
-            let position: ThreadCell.ThreadPosition
-            scope: do {
-                if mainPositionInThread < indexPath.row {
-                    position = .child
-                    break scope
-                }
-                if mainPositionInThread > indexPath.row {
-                    position = .parent
-                    break scope
-                }
-                position = .main
+        let data = posts[indexPath.row]
+        let position: ThreadCell.ThreadPosition
+        scope: do {
+            if mainPositionInThread < indexPath.row {
+                position = .child
+                break scope
             }
+            if mainPositionInThread > indexPath.row {
+                position = .parent
+                break scope
+            }
+            position = .main
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
+        if let cell = cell as? ThreadCell {
             cell.update(data,
                     position: position,
                     didLike: LikeManager.instance.hasLiked(data.post.id),
@@ -110,7 +131,10 @@ final class ThreadViewController: PostFeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
-        table.register(ThreadCell.self, forCellReuseIdentifier: postCellID)
+        navigationItem.leftBarButtonItem = customBackButton
+        
+        table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
+        table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
         inputParent.backgroundColor = inputManager.isEditing ? .background2 : .background
         inputBackground.backgroundColor = inputManager.isEditing ? .background : .background3
@@ -280,12 +304,6 @@ private extension ThreadViewController {
         title = "Thread"
         
         table.keyboardDismissMode = .interactive
-        
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        button.constrainToSize(44)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         inputBackground.layer.cornerRadius = 6
         

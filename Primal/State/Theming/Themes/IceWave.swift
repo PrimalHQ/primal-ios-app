@@ -31,11 +31,15 @@ final class IceWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButtonLight") }
+    var backButtonImage: UIImage? { UIImage(named: "backBlue") }
+    var tabBarDotImage: UIImage? { UIImage(named: "newIndicatorBlue") }
     
     var statusBarStyle: UIStatusBarStyle { .darkContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .light }
     
-    var gradient: [UIColor] { [UIColor(rgb: 0x0090F8), UIColor(rgb: 0x4C00C7)] }
+    var gradient: [UIColor] { [UIColor(rgb: 0x14B9FF), UIColor(rgb: 0x690DFF)] }
+    
+    var loadingSpinnerAnimation: AnimationType { .loadingSpinnerBlue }
     
     var shortTitle: String { "ice" }
     var settingsImage: UIImage? { UIImage(named: "themeImageLight") }

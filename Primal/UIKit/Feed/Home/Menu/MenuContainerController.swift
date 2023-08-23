@@ -14,7 +14,7 @@ import Kingfisher
 final class MenuContainerController: UIViewController, Themeable {
     private let profileImage = UIImageView()
     private let nameLabel = UILabel()
-    private let checkbox1 = UIImageView(image: UIImage(named: "verifiedBadge"))
+    private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
     private let followingLabel = UILabel()
     private let followersLabel = UILabel()
@@ -257,6 +257,7 @@ private extension MenuContainerController {
         domainLabel.text = user.nip05.isEmpty ? user.name : user.nip05
         
         checkbox1.isHidden = user.nip05.isEmpty
+        checkbox1.isExtraVerified = user.nip05.hasSuffix("@primal.net")
     }
     
     // MARK: - Objc methods

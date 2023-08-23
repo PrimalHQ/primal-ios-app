@@ -225,6 +225,9 @@
 		9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */; };
 		9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */; };
 		9EF4BFCA2A8BFD16003396AA /* FontSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC92A8BFD16003396AA /* FontSlider.swift */; };
+		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
+		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
+		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */; };
 /* End PBXBuildFile section */
@@ -497,6 +500,9 @@
 		9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppearanceViewController.swift; sourceTree = "<group>"; };
 		9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeButton.swift; sourceTree = "<group>"; };
 		9EF4BFC92A8BFD16003396AA /* FontSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSlider.swift; sourceTree = "<group>"; };
+		9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedView.swift; sourceTree = "<group>"; };
+		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
+		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -888,6 +894,7 @@
 				9ECCC88F2A3CACBC00BE8F62 /* zap-medium.json */,
 				9E0DEAF329FD35A000145E08 /* iconZap.json */,
 				9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */,
+				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
 				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
 				9EB219EB2A06D2AF0037C3E5 /* splash.json */,
 			);
@@ -1010,6 +1017,7 @@
 				9E4AAAA72A1155F200C962BD /* GradientBorderView.swift */,
 				9E8834A72A2775FF005DB548 /* RepostedIndicatorView.swift */,
 				9E8834AD2A2A33A3005DB548 /* LinkPreview.swift */,
+				9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -1179,6 +1187,7 @@
 				9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */,
 				9E8834C12A33BE24005DB548 /* ToastMessageView.swift */,
 				9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */,
+				9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1402,6 +1411,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
+				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
 				9ECCC8902A3CACBC00BE8F62 /* zap-medium.json in Resources */,
 				9E40D6EE2A0D22D4008AE854 /* loadingSpinner.json in Resources */,
 				9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */,
@@ -1507,6 +1517,7 @@
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
 				9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */,
+				9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */,
 				932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */,
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
 				9E8834B62A323C3B005DB548 /* NPubDisplayView.swift in Sources */,
@@ -1551,6 +1562,7 @@
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
+				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
 				9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */,
@@ -1812,7 +1824,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.25.1;
+				MARKETING_VERSION = 0.26.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1855,7 +1867,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.25.1;
+				MARKETING_VERSION = 0.26.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

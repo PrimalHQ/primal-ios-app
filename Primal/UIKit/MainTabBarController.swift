@@ -31,8 +31,8 @@ final class MainTabBarController: UIViewController, Themeable {
         UIButton()
     }
 
-    let notificationIndicator = UIImageView(image: UIImage(named: "newIndicator"))
-
+    let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
+    let safeAreaSpacer = UIView()
     let closeMenuButton = UIButton()
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
@@ -101,6 +101,8 @@ final class MainTabBarController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
 
+        notificationIndicator.image = Theme.current.tabBarDotImage
+        
         closeMenuButton.tintColor = .foreground
         closeMenuButton.backgroundColor = .background
 
@@ -120,25 +122,29 @@ final class MainTabBarController: UIViewController, Themeable {
             buttonStack.alpha = hidden ? 0 : 1
             buttonStack.isHidden = hidden
             notificationIndicator.alpha = hidden ? 0 : 1
-            return
-        }
-        
-        if hidden {
-            UIView.animate(withDuration: 0.3) {
-                self.buttonStack.isHidden = hidden
-                self.buttonStack.alpha = hidden ? 0 : 1
-                self.notificationIndicator.alpha = hidden ? 0 : 1
+            safeAreaSpacer.isHidden = hidden
+            
+            if !hidden {
+                buttonStack.transform = .identity
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+                    self.buttonStack.transform = .init(translationX: 0, y: self.view.bounds.height)
+                })
             }
+            
             return
         }
         
-        UIView.animate(withDuration: 0.1) {
+        if !hidden {
+            buttonStack.transform = .init(translationX: 0, y: view.bounds.height)
+        }
+        
+        UIView.animate(withDuration: 0.3) {
             self.buttonStack.isHidden = hidden
-        } completion: { _ in
-            UIView.animate(withDuration: 0.2) {
-                self.buttonStack.alpha = hidden ? 0 : 1
-                self.notificationIndicator.alpha = hidden ? 0 : 1
-            }
+            self.buttonStack.alpha = hidden ? 0 : 1
+            self.buttonStack.transform = .identity
+            self.safeAreaSpacer.isHidden = hidden
+            self.notificationIndicator.alpha = hidden ? 0 : 1
         }
     }
     
@@ -170,12 +176,13 @@ private extension MainTabBarController {
     func setup() {
         updateTheme()
 
-        let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
+        let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack, safeAreaSpacer])
         pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
 
         view.addSubview(vStack)
-        vStack.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, safeArea: true)
+        vStack.pinToSuperview()
+        safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         view.addSubview(notificationIndicator)
         if let imageView = buttons.last?.imageView {

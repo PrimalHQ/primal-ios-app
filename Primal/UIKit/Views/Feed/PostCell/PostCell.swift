@@ -39,6 +39,7 @@ class PostCell: UITableViewCell {
     let backgroundColorView = UIView()
     let threeDotsButton = UIButton()
     let profileImageView = FLAnimatedImageView()
+    let checkbox = VerifiedView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
@@ -52,8 +53,7 @@ class PostCell: UITableViewCell {
     let postPreview = PostPreviewView()
     let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
-    lazy var nameTimeStack = UIStackView(arrangedSubviews: [nameLabel, separatorLabel, timeLabel])
-    lazy var namesStack = UIStackView(arrangedSubviews: [nameTimeStack, nipLabel])
+    lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -79,6 +79,8 @@ class PostCell: UITableViewCell {
             nipLabel.text = user.nip05
         }
         nipLabel.isHidden = user.nip05.isEmpty
+        checkbox.isHidden = user.nip05.isEmpty
+        checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
@@ -107,18 +109,9 @@ class PostCell: UITableViewCell {
             ])
         }
         
-        if let metadata = content.parsedMetadata {
+        if let metadata = content.linkPreview {
             linkPresentation.data = metadata
             linkPresentation.isHidden = false
-            
-            let didHaveImage = metadata.imageKey != nil
-            metadataUpdater = content.$parsedMetadata.sink { [weak self] in
-                var data = $0 ?? .failedToLoad(metadata.url)
-                if !didHaveImage {
-                    data.imageKey = nil
-                }
-                self?.linkPresentation.data = data
-            }
         } else {
             linkPresentation.isHidden = true
         }
@@ -208,17 +201,24 @@ private extension PostCell {
         repostButton.isEnabled = LoginManager.instance.method() == .nsec
         replyButton.isEnabled = LoginManager.instance.method() == .nsec
         
-        nameTimeStack.spacing = 6
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
-            $0.font = .appFont(withSize: FontSelection.current.nameSize, weight: .regular)
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
-            $0.adjustsFontSizeToFitWidth = true
         }
         
-        namesStack.axis = .vertical
-        namesStack.spacing = 3
-        namesStack.alignment = .leading
+        [nameLabel, nipLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
+        
+        nipLabel.lineBreakMode = .byTruncatingTail
+        separatorLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
+        
+        nameStack.alignment = .center
+        nameStack.spacing = 4
         
         bottomButtonStack.distribution = .equalSpacing
         
@@ -227,10 +227,10 @@ private extension PostCell {
         profileImageView.isUserInteractionEnabled = true
         
         nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSelection.current.nameSize, weight: .bold)
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
         
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: FontSelection.current.contentSize, weight: .regular)
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         mainLabel.delegate = self
         mainLabel.labelTappedBlock = { [unowned self] in
             self.delegate?.postCellDidTapPost(self)
@@ -250,6 +250,7 @@ private extension PostCell {
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
+        threeDotsButton.tintColor = .foreground3
         
         backgroundColorView.backgroundColor = .background2
         backgroundColorView.layer.cornerRadius = 8

@@ -14,7 +14,7 @@ final class PostPreviewView: UIView {
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let secondaryIdentifierLabel = UILabel()
-    let verifiedBadge = UIImageView(image: UIImage(named: "feedVerifiedBadge"))
+    let verifiedBadge = VerifiedView()
     let mainLabel = NantesLabel()
     let seeMoreLabel = UILabel()
     let imageView = UIImageView()
@@ -78,7 +78,7 @@ final class PostPreviewView: UIView {
             imageView.isHidden = true
         }
         
-        if let data = content.parsedMetadata {
+        if let data = content.linkPreview {
             linkPreview.data = data
             linkPreview.isHidden = false
         } else {
@@ -100,32 +100,41 @@ private extension PostPreviewView {
         layer.borderColor = UIColor.background3.cgColor
         
         let separatorLabel = UILabel()
-        separatorLabel.text = "|"
+        separatorLabel.text = "·"
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
-            $0.font = .appFont(withSize: FontSelection.current.nameSize, weight: .regular)
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
-            $0.adjustsFontSizeToFitWidth = true
         }
         
+        [nameLabel, secondaryIdentifierLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
+        
+        secondaryIdentifierLabel.lineBreakMode = .byTruncatingTail
+        separatorLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        secondaryIdentifierLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         profileImageView.constrainToSize(24)
         profileImageView.layer.cornerRadius = 12
         profileImageView.layer.masksToBounds = true
         profileImageView.contentMode = .scaleAspectFill
         
         nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSelection.current.nameSize, weight: .bold)
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
+        verifiedBadge.constrainToSize(FontSizeSelection.current.contentFontSize)
+        
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: FontSelection.current.contentSize, weight: .regular)
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         mainLabel.numberOfLines = 10
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: FontSelection.current.contentSize, weight: .regular)
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent
         
         imageView.contentMode = .scaleAspectFill
@@ -141,11 +150,11 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 12), imageView, linkPreview
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), imageView, linkPreview
         ])
         mainStack.axis = .vertical
-        mainStack.setCustomSpacing(12, after: nameTimeStack)
-        mainStack.setCustomSpacing(12, after: imageView)
+        mainStack.setCustomSpacing(6, after: nameTimeStack)
+        mainStack.setCustomSpacing(6, after: imageView)
         addSubview(mainStack)
         
         mainStack

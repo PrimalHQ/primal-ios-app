@@ -48,8 +48,10 @@ final class FontSlider: UIControl {
     }
     
     lazy var stack = UIStackView([dotView()])
-    var sliderIndicator = UIImageView(image: .init(named: "fontSliderHandle"))
+    var sliderIndicator = UIView().constrainToSize(24).dropShadow()
     var sliderXConstraint: NSLayoutConstraint?
+    
+    private let impactGenerator = UIImpactFeedbackGenerator(style: .light)
     
     init() {
         super.init(frame: .zero)
@@ -63,6 +65,7 @@ final class FontSlider: UIControl {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let firstPos = touches.first?.location(in: self) else { return }
+        impactGenerator.prepare()
         updateForTouchPosition(firstPos)
     }
     
@@ -83,6 +86,7 @@ private extension FontSlider {
         if selectedNumber != newNumber {
             selectedNumber = newNumber
             sendActions(for: .valueChanged)
+            impactGenerator.impactOccurred()
         }
     }
     
@@ -118,8 +122,10 @@ private extension FontSlider {
         addSubview(stack)
         stack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 20)
         
+        sliderIndicator.backgroundColor = .white
+        sliderIndicator.layer.cornerRadius = 12
         stack.addSubview(sliderIndicator)
-        sliderIndicator.pinToSuperview(edges: .top, padding: 0)
+        sliderIndicator.centerToSuperview(axis: .vertical)
         updateSliderPosition()
         
         constrainToSize(height: 30)

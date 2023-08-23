@@ -21,7 +21,7 @@ class ProfileInfoCell: UITableViewCell {
     let editProfile = GradientBorderTextButton(text: "edit profile")
     
     let primaryLabel = UILabel()
-    let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
+    let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
     
     let secondaryLabel = UILabel()
     
@@ -46,6 +46,8 @@ class ProfileInfoCell: UITableViewCell {
         primaryLabel.text = user.firstIdentifier
         
         checkboxIcon.isHidden = user.nip05.isEmpty
+        checkboxIcon.tintColor = .accent
+        
         secondaryLabel.isHidden = user.nip05.isEmpty
         secondaryLabel.text = user.nip05
         

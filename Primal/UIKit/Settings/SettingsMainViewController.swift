@@ -33,18 +33,14 @@ class SettingsMainViewController: UIViewController, Themeable {
         deleteButton.backgroundColor = .background3
         
         versionLabel.textColor = .foreground
+        
+        navigationItem.leftBarButtonItem = customBackButton
     }
 }
 
 private extension SettingsMainViewController {
     func setupView() {
         title = "Settings"
-        
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        button.constrainToSize(44)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let keys = SettingsOptionButton(title: "Keys")
         let wallet = SettingsOptionButton(title: "Wallet")

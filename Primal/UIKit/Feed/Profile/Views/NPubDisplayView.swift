@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NPubDisplayView: MyButton {
+class NPubDisplayView: MyButton, Themeable {
     
     var npub = "" {
         didSet {
@@ -21,6 +21,7 @@ class NPubDisplayView: MyButton {
         }
     }
     
+    private let copy = UIImageView(image: UIImage(named: "purpleCopy"))
     private let label = UILabel()
     
     init() {
@@ -31,7 +32,7 @@ class NPubDisplayView: MyButton {
             SpacerView(width: 6),
             label,
             SpacerView(width: 8),
-            UIImageView(image: UIImage(named: "purpleCopy")),
+            copy,
             UIView()
         ])
         stack.alignment = .center
@@ -41,9 +42,15 @@ class NPubDisplayView: MyButton {
         
         addSubview(stack)
         stack.pinToSuperview()
+        
+        updateTheme()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        copy.tintColor = .accent
     }
 }

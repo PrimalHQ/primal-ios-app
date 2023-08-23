@@ -55,11 +55,7 @@ final class ParsedContent {
     var httpUrls: [ParsedElement] = []
     
     var imageResources: [MediaMetadata.Resource] = []
-    var firstExtractedURL: URL?
-    
-    @Published var parsedMetadata: LinkMetadata?
-    var linkMetadataImageKey: String { post.id + "linkImageKey" }
-    var linkMetadataIconKey: String { post.id + "linkIconKey" }
+    var linkPreview: LinkMetadata?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
@@ -83,13 +79,14 @@ extension ParsedUser {
 
 extension ParsedContent {
     func buildContentString() {
-        let fs = FontSelection.current
+        let fs = FontSizeSelection.current
         let style = NSMutableParagraphStyle()
         style.lineSpacing = fs.contentLineSpacing
+        style.maximumLineHeight = fs.contentLineHeight
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: fs.contentSize, weight: .regular),
+            .font: UIFont.appFont(withSize: fs.contentFontSize, weight: .regular),
             .paragraphStyle: style
         ])
         

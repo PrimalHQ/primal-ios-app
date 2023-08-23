@@ -249,7 +249,7 @@ final class FeedManager {
             
             pendingResult?.stats[nostrContentStats.event_id] = nostrContentStats
         case .searchPaginationSettingsEvent:
-            guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+            guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data((response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").utf8)) else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
@@ -286,17 +286,24 @@ final class FeedManager {
             pendingResult?.order.append(content.id)
         case .mentions:
             guard
-                let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,
+                let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             pendingResult?.mentions.append(NostrContent(json: contentJSON))
         case .mediaMetadata:
             guard
-                let contentString = response.arrayValue?[2].objectValue!["content"]?.stringValue,
+                let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue,
                 let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8))
             else { return }
             
             pendingResult?.mediaMetadata.append(metadata)
+        case .webPreview:
+            guard
+                let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue,
+                let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8))
+            else { return }
+            
+            pendingResult?.webPreviews.append(webPreview)
         default:
             print("FeedManager: requestNewPage: Got unexpected event kind in response: \(kind)")
         }

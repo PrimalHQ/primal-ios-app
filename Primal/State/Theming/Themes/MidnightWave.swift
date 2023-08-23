@@ -31,12 +31,16 @@ final class MidnightWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButton") }
+    var backButtonImage: UIImage? { UIImage(named: "backBlue") }
+    var tabBarDotImage: UIImage? { UIImage(named: "newIndicatorBlue") }
     
     var statusBarStyle: UIStatusBarStyle { .lightContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .dark }
     
     var gradient: [UIColor] { [UIColor(rgb: 0x0090F8), UIColor(rgb: 0x4C00C7)] }
     
+    var loadingSpinnerAnimation: AnimationType { .loadingSpinnerBlue }
+    
     var shortTitle: String { "midnight" }
-    var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
+    var settingsImage: UIImage? { UIImage(named: "themeImageLight") }
 }

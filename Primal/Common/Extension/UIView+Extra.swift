@@ -9,6 +9,19 @@ import UIKit
 import SwiftUI
 
 extension UIView {
+    @discardableResult
+    func dropShadow(scale: Bool = true) -> Self {
+        layer.masksToBounds = false
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.2
+        layer.shadowOffset = .init(width: 0, height: 3)
+        layer.shadowRadius = 1
+        layer.shouldRasterize = true
+        layer.rasterizationScale = scale ? UIScreen.main.scale : 1
+        
+        return self
+    }
+
     func findAllSubviews<T>() -> [T] {
         var result = [T]()
 

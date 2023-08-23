@@ -32,12 +32,16 @@ final class SunriseWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButtonLight") }
+    var backButtonImage: UIImage? { UIImage(named: "back") }
+    var tabBarDotImage: UIImage? { UIImage(named: "newIndicator") }
     
     var statusBarStyle: UIStatusBarStyle { .darkContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .light }
     
-    var gradient: [UIColor] { [UIColor(rgb: 0xFA4343), UIColor(rgb: 0x5B12A4)] }
+    var gradient: [UIColor] { [UIColor(rgb: 0xFF4F28), UIColor(rgb: 0x9600DC)] }
+
+    var loadingSpinnerAnimation: AnimationType { .loadingSpinner }
     
     var shortTitle: String { "sunrise" }
-    var settingsImage: UIImage? { UIImage(named: "themeImageLight") }
+    var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
 }

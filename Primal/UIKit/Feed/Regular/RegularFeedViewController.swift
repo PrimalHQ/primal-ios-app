@@ -26,7 +26,6 @@ final class RegularFeedViewController: PostFeedViewController {
         } else {
             title = "Search"
         }
-        navigationItem.leftBarButtonItem = customBackButton
         
         addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
         addFeedButton.addTarget(self, action: #selector(addFeedButtonPressed), for: .touchUpInside)
@@ -70,6 +69,8 @@ final class RegularFeedViewController: PostFeedViewController {
     
     override func updateTheme() {
         super.updateTheme()
+        
+        navigationItem.leftBarButtonItem = customBackButton
         
         addFeedButton.tintColor = .foreground3
     }

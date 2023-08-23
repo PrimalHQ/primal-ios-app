@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class NewPostsButton: MyButton {
+final class NewPostsButton: MyButton, Themeable {
     private let avatars: [UIImageView] = (0..<3).map { _ in UIImageView(image: UIImage(named: "Profile")) }
     private let label = UILabel()
     
@@ -82,5 +82,11 @@ final class NewPostsButton: MyButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        if oldSize.width > 1 {
+            backgroundColor = .gradientColor(bounds: oldSize)
+        }
     }
 }

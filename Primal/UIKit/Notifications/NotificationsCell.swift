@@ -99,7 +99,7 @@ private extension NotificationsCell {
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: 16, weight: .regular)
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent
         
         mainStack.alignment = .top

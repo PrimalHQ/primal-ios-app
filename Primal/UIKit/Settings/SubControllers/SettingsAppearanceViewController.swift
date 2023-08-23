@@ -8,7 +8,9 @@
 import UIKit
 
 class SettingsAppearanceViewController: UIViewController, Themeable {
-    let previewTable = UITableView()
+    var previewTable = UITableView()
+    let mainParent = UIView()
+    lazy var stack = UIStackView(axis: .vertical, [mainParent])
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,12 +19,20 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
     }
     
     
-    var cell = 0
-    var cellID: String { "cell\(cell)"}
+    var cellID: String { "cell"}
     func updateTheme() {
         view.backgroundColor = .background
-        cell += 1
-        previewTable.register(FeedCell.self, forCellReuseIdentifier: cellID)
+        navigationItem.leftBarButtonItem = customBackButton
+        
+        previewTable.removeFromSuperview()
+        previewTable = UITableView()
+        stack.addArrangedSubview(previewTable)
+        
+        previewTable.dataSource = self
+        previewTable.isUserInteractionEnabled = false
+        previewTable.backgroundColor = .clear
+        previewTable.separatorStyle = .none
+        previewTable.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: cellID)
         previewTable.reloadData()
     }
 }
@@ -30,8 +40,6 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
 private extension SettingsAppearanceViewController {
     func setupView() {
         title = "Appearance"
-        navigationItem.leftBarButtonItem = customBackButton
-        updateTheme()
         
         let themeStack = UIStackView([
             ThemeButton(theme: .sunsetWave),
@@ -43,16 +51,18 @@ private extension SettingsAppearanceViewController {
         themeStack.spacing = 14
         
         let slider = FontSliderParent()
-        slider.slider.selectedNumber = FontSelection.current.rawValue + 1
+        slider.slider.selectedNumber = FontSizeSelection.current.rawValue + 1
         slider.slider.addAction(.init(handler: { [weak slider] _ in
-            guard let newValue = slider?.slider.selectedNumber, let selection = FontSelection(rawValue: newValue - 1) else { return }
-            FontSelection.current = selection
+            guard let newValue = slider?.slider.selectedNumber, let selection = FontSizeSelection(rawValue: newValue - 1) else { return }
+            FontSizeSelection.current = selection
         }), for: .valueChanged)
         
-        previewTable.dataSource = self
-        previewTable.register(FeedCell.self, forCellReuseIdentifier: cellID)
-        previewTable.isUserInteractionEnabled = false
-        previewTable.separatorStyle = .none
+        let toggle = SettingsToggleView(title: "Use full width layout")
+        toggle.toggle.setOn(FeedDesign.current == .fullWidth, animated: false)
+        toggle.toggle.addAction(.init(handler: { [weak toggle] _ in
+            guard let newValue = toggle?.toggle.isOn else { return }
+            FeedDesign.current = newValue ? .fullWidth : .standard
+        }), for: .valueChanged)
         
         let mainStack = UIStackView(axis: .vertical, [
             SettingsTitleViewVibrant(title: "THEME"),       SpacerView(height: 12),
@@ -62,17 +72,17 @@ private extension SettingsAppearanceViewController {
             slider,                                         SpacerView(height: 20),
             BorderView(),                                   SpacerView(height: 16),
             SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12),
-            SettingsToggleView(title: "Use compact layout"),SpacerView(height: 16),
+            toggle,                                         SpacerView(height: 16),
             BorderView(),                                   SpacerView(height: 16),
             SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12),
         ])
-        let mainParent = UIView()
         mainParent.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical)
         
-        let stack = UIStackView(axis: .vertical, [mainParent, previewTable])
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
+        
+        updateTheme()
     }
 }
 

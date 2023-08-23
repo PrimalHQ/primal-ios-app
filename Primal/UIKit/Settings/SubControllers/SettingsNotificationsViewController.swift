@@ -41,7 +41,6 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         super.viewDidLoad()
         
         title = "Notifications"
-        navigationItem.leftBarButtonItem = customBackButton
         
         view.addSubview(table)
         table.pinToSuperview(edges: [.leading, .top], safeArea: true).pinToSuperview(edges: .trailing, padding: 6)
@@ -77,6 +76,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
     func updateTheme() {
         table.reloadData()
         table.backgroundColor = .background
+        
+        navigationItem.leftBarButtonItem = customBackButton
     }
 }
 
