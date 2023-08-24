@@ -120,6 +120,7 @@ private extension ProfileViewController {
         navigationBar.updateInfo(profile.data, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         navigationBar.delegate = self
         
+        safeAreaSpacer.removeFromSuperview()
         navigationBarLengthner.removeFromSuperview()
         stack.removeFromSuperview()
         view.insertSubview(stack, at: 0)

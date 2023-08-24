@@ -112,7 +112,10 @@ private extension ProfileInfoCell {
         mainStack.setCustomSpacing(16, after: infoStack)
         
         contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(padding: 12)
+        mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
+        let bot = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        bot.priority = .defaultHigh
+        bot.isActive = true
         
         contentView.backgroundColor = .background2
         primaryLabel.textColor = .foreground

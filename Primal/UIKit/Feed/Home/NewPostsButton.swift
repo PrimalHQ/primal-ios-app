@@ -43,7 +43,7 @@ final class NewPostsButton: MyButton, Themeable {
         stack.spacing = 10
         
         addSubview(stack)
-        stack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview()
+        stack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview(axis: .vertical)
         
         constrainToSize(height: 40)
         
