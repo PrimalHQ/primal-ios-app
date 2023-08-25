@@ -112,7 +112,7 @@ extension ParsedContent {
         }
         
         for element in mentions {
-            guard let url = URL(string: "mention://\(element.text)") else {
+            guard let url = URL(string: "mention://\(element.reference)") else {
                 result.addAttributes([
                     .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
                 ], range: .init(location: element.position, length: element.length))

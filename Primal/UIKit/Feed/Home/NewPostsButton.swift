@@ -20,7 +20,7 @@ final class NewPostsButton: MyButton, Themeable {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .gradientColor(bounds: .init(width: 192, height: 40))
+        backgroundColor = .gradientColor(bounds: .init(width: 192, height: 40), startPoint: .zero, endPoint: .init(x: 1, y: 1))
         layer.cornerRadius = 20
         
         avatars.forEach {
@@ -56,7 +56,7 @@ final class NewPostsButton: MyButton, Themeable {
         super.layoutSubviews()
         if oldSize != bounds.size {
             oldSize = bounds.size
-            backgroundColor = .gradientColor(bounds: oldSize)
+            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
         }
     }
     
@@ -86,7 +86,7 @@ final class NewPostsButton: MyButton, Themeable {
     
     func updateTheme() {
         if oldSize.width > 1 {
-            backgroundColor = .gradientColor(bounds: oldSize)
+            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
         }
     }
 }

@@ -16,8 +16,6 @@ final class HomeFeedViewController: PostFeedViewController {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
-    var safeAreaSpacerHeight: CGFloat = 0
-    
     var onLoad: (() -> ())? {
         didSet {
             if !posts.isEmpty, let onLoad {
@@ -29,7 +27,6 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
-    let refresh = UIRefreshControl()
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
     
@@ -54,12 +51,10 @@ final class HomeFeedViewController: PostFeedViewController {
         
         if newPosts == 0 {
             UIView.animate(withDuration: 0.3) {
-                self.newPostsView.transform = .init(translationX: 0, y: -200)
-                self.newPostsView.alpha = 0.3
+                self.newPostsView.alpha = 0
             }
         } else if oldValue == 0 {
             UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
-                self.newPostsView.transform = .identity
                 self.newPostsView.alpha = 1
             }
         }
@@ -94,10 +89,10 @@ final class HomeFeedViewController: PostFeedViewController {
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 47, safeArea: true).pinToSuperview(edges: .horizontal)
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).pinToSuperview(edges: .horizontal)
         
         newPostsView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
-        newPostsView.transform = .init(translationX: 0, y: -100)
+        newPostsView.alpha = 0
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
@@ -108,16 +103,18 @@ final class HomeFeedViewController: PostFeedViewController {
             }
             self.newAddedPosts = 0
             
+            UIView.animate(withDuration: 0.3) {
+                self.newPostsView.alpha = 0
+            }
+            
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
-        updateTheme()
-        
-        refresh.addAction(.init(handler: { [weak self] _ in
+        refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
         }), for: .valueChanged)
-        refresh.tintColor = .accent
-        table.addSubview(refresh)
+        
+        updateTheme()
      
         setupPublishers()
     }
@@ -126,7 +123,6 @@ final class HomeFeedViewController: PostFeedViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        scrollDirectionCounter = 100
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -159,27 +155,31 @@ final class HomeFeedViewController: PostFeedViewController {
         newAddedPosts = indexPath.row
     }
     
-    private var lastContentOffset: CGFloat = 0
-    
-    @Published private var isAnimatingBars = false
-    @Published private var isShowingBars = true
-    @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
         if scrollView.contentOffset.y < 100 {
             newAddedPosts = 0
-            scrollDirectionCounter = 100
-        } else {
-            if (lastContentOffset > scrollView.contentOffset.y) {
-                scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
-            }
-            if (lastContentOffset < scrollView.contentOffset.y) {
-                scrollDirectionCounter = min(-1, scrollDirectionCounter - 1)
-            }
         }
-
-        // update the new position acquired
-        lastContentOffset = scrollView.contentOffset.y
+    }
+    
+    override func animateBars() {
+        let shouldShowBars = shouldShowBars
+        
+        super.animateBars()
+        
+        UIView.animate(withDuration: 0.53, delay: shouldShowBars ? 0.2 : 0) {
+            self.postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
+        }
+        
+        UIView.animate(withDuration: 0.7) {
+            self.postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 100)
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+            self.newPostsViewParent.alpha = shouldShowBars ? 1 : 0
+        }
     }
 }
 
@@ -206,7 +206,7 @@ private extension HomeFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
-                if self?.refresh.isRefreshing == false {
+                if self?.refreshControl.isRefreshing == false {
                     self?.posts = posts
                 } else if !posts.isEmpty {
                     self?.posts = []
@@ -214,14 +214,14 @@ private extension HomeFeedViewController {
                 }
                 
                 if posts.isEmpty {
-                    if self?.refresh.isRefreshing == false {
+                    if self?.refreshControl.isRefreshing == false {
                         self?.loadingSpinner.isHidden = false
                         self?.loadingSpinner.play()
                     }
                 } else {
                     self?.loadingSpinner.isHidden = true
                     self?.loadingSpinner.stop()
-                    self?.refresh.endRefreshing()
+                    self?.refreshControl.endRefreshing()
                 }
                 
                 DispatchQueue.main.async {
@@ -235,15 +235,6 @@ private extension HomeFeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
                 self?.title = name
-            }
-            .store(in: &cancellables)
-        
-        Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
-            .receive(on: DispatchQueue.main).sink { [weak self] isShowing, directionCounter, isAnimating in
-                if abs(directionCounter) < 5 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
-                let shouldShow = directionCounter >= 0
-                guard isShowing != shouldShow, !isAnimating else { return }
-                self?.animateBars()
             }
             .store(in: &cancellables)
     }
@@ -263,55 +254,6 @@ private extension HomeFeedViewController {
             newAddedPosts += sorted.count
             feed.parsedPosts.insert(contentsOf: sorted, at: 0)
             newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
-        }
-    }
-    
-    func animateBars() {
-        let shouldShowBars = scrollDirectionCounter >= 0
-        guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
-        
-        isAnimatingBars = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(900)) {
-            self.isShowingBars = shouldShowBars
-            self.isAnimatingBars = false
-        }
-        
-        let oldValue = !shouldShowBars
-        
-        safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height + navigationBarLengthner.frame.height)
-        
-        if shouldShowBars {
-            mainTabBarController?.buttonStack.alpha = 1
-            mainTabBarController?.notificationIndicator.alpha = 1
-            
-            navigationBarLengthner.isHidden = oldValue
-        } else {
-            // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
-            self.safeAreaSpacer.isHidden = oldValue
-            self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y - self.safeAreaSpacerHeight)
-        }
-        
-        UIView.animate(withDuration: 0.53, delay: shouldShowBars ? 0.2 : 0) {
-            self.postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
-        }
-        
-        UIView.animate(withDuration: 0.7) {
-            self.postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 100)
-        }
-        
-        navigationController?.setNavigationBarHidden(oldValue, animated: true)
-        mainTabBarController?.setTabBarHidden(oldValue, animated: true)
-        
-        UIView.animate(withDuration: 0.3) {
-            self.newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -200)
-            self.newPostsViewParent.alpha = shouldShowBars ? 1 : 0
-        } completion: { _ in
-            if shouldShowBars {
-                self.safeAreaSpacer.isHidden = oldValue
-                self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y + self.safeAreaSpacerHeight)
-            } else {
-                self.navigationBarLengthner.isHidden = oldValue
-            }
         }
     }
 }

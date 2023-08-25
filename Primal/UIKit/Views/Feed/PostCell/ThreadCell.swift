@@ -195,9 +195,12 @@ final class FullWidthThreadCell: ThreadCell {
         contentView.addSubview(mainStack)
         
         mainStack
-            .pinToSuperview(edges: .leading, padding: 16)
-            .pinToSuperview(edges: .trailing, padding: 16)
-            .pinToSuperview(edges: .vertical, padding: 12)
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .top, padding: 12)
+        
+        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        bottomC.priority = .defaultLow
+        bottomC.isActive = true
         
         actionButtonStandin.constrainToSize(height: 18)
         contentView.addSubview(bottomButtonStack)

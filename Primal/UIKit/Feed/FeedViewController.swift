@@ -13,10 +13,10 @@ import SafariServices
 import Lottie
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
-    let navigationBarLengthner = SpacerView(height: 7)
+    let refreshControl = UIRefreshControl()
     let table = UITableView()
     let safeAreaSpacer = UIView()
-    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, navigationBarLengthner, table])
+    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, table])
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -62,6 +62,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         heavy.prepare()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        scrollDirectionCounter = 100
+    }
+    
     @discardableResult
     func open(post: ParsedContent) -> FeedViewController {
         let threadVC = ThreadViewController(threadId: post.post.id)
@@ -94,14 +100,82 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             $0.embededPost?.buildContentString()
         }
         
-        navigationBarLengthner.backgroundColor = .background
-        
         updateCellID()
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
+        refreshControl.tintColor = .accent
+        
         view.backgroundColor = .background
         table.backgroundColor = .background
+    }
+    
+    private(set) var lastContentOffset: CGFloat = 0
+    private(set) var safeAreaSpacerHeight: CGFloat = 0
+    @Published private(set) var isAnimatingBars = false
+    @Published private(set) var isShowingBars = true
+    var shouldShowBars: Bool { scrollDirectionCounter >= 0 }
+    @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y < 100 {
+            scrollDirectionCounter = 100
+        } else {
+            if (lastContentOffset > scrollView.contentOffset.y) {
+                scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
+            }
+            if (lastContentOffset < scrollView.contentOffset.y) {
+                scrollDirectionCounter = min(-1, scrollDirectionCounter - 1)
+            }
+        }
+
+        // update the new position acquired
+        lastContentOffset = scrollView.contentOffset.y
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool { isShowingBars }
+    
+    func animateBars() {
+        let shouldShowBars = scrollDirectionCounter >= 0
+        guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
+        
+        isAnimatingBars = true
+        table.bounces = shouldShowBars
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(900)) {
+            self.isShowingBars = shouldShowBars
+            self.isAnimatingBars = false
+        }
+        
+        let oldValue = !shouldShowBars
+        
+        safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
+        
+        var shouldMoveOffset = safeAreaSpacer.superview != nil
+        
+        if shouldShowBars {
+            mainTabBarController?.buttonStack.alpha = 1
+            mainTabBarController?.notificationIndicator.alpha = 1
+        } else {
+            // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
+            safeAreaSpacer.isHidden = oldValue
+            if shouldMoveOffset {
+                table.contentOffset = .init(x: 0, y: table.contentOffset.y - safeAreaSpacerHeight)
+            }
+        }
+        
+        mainTabBarController?.setTabBarHidden(oldValue, animated: true)
+        
+        UIView.animate(withDuration: 0.3) {
+            self.navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+        } completion: { _ in
+            if shouldShowBars {
+                self.safeAreaSpacer.isHidden = oldValue
+                if shouldMoveOffset {
+                    self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y + self.safeAreaSpacerHeight)
+                }
+            }
+        }
     }
 }
 
@@ -118,10 +192,22 @@ private extension FeedViewController {
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
+        table.contentInsetAdjustmentBehavior = .never
         
         safeAreaSpacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         
+        table.refreshControl = refreshControl
+        
         updateTheme()
+    
+        Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
+            .receive(on: DispatchQueue.main).sink { [weak self] isShowing, directionCounter, isAnimating in
+                if abs(directionCounter) < 10 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
+                let shouldShow = directionCounter > 0
+                guard isShowing != shouldShow, !isAnimating else { return }
+                self?.animateBars()
+            }
+            .store(in: &cancellables)
     }
     
     func animateZap(_ cell: PostCell, amount: Int32) {
@@ -310,10 +396,7 @@ extension FeedViewController: PostCellDelegate {
         }
         
         if urlString.hasPrefix("mention") {
-            guard
-                let ref = post.mentions.first(where: { $0.text == info })?.reference,
-                let user = post.mentionedUsers.first(where: { $0.pubkey == ref })
-            else { return }
+            guard let user = post.mentionedUsers.first(where: { $0.pubkey == info }) else { return }
             
             let profile = ProfileViewController(profile: .init(data: user))
             show(profile, sender: nil)

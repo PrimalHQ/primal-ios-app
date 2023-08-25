@@ -144,12 +144,12 @@ extension PostRequestResult {
             }
         }
         
-        for item in itemsToRemove {
-            text = text.replacingOccurrences(of: item, with: "")
-        }
-        
         for media in mediaMetadata where media.event_id == post.id {
             p.imageResources = media.resources.filter { text.contains($0.url) }
+        }
+        
+        for item in itemsToRemove {
+            text = text.replacingOccurrences(of: item, with: "")
         }
         
         for item in itemsToReplace {
@@ -180,7 +180,7 @@ extension PostRequestResult {
                 let user = users[pubkey]
             else { continue }
             
-            let mention = "@\(user.name)"
+            let mention = user.atIdentifier
             text = text.replacingOccurrences(of: item, with: mention)
             markedMentions.append((mention, ref: pubkey))
             p.mentionedUsers.append(user)
@@ -225,7 +225,7 @@ extension PrimalUser {
         return npub
     }
     
-    var atIdentifier: String { "@" + atIdentifierWithoutAt }
+    var atIdentifier: String { "@" + atIdentifierWithoutAt.trimmingCharacters(in: .whitespacesAndNewlines) }
     
     var atIdentifierWithoutAt: String {
         if !name.isEmpty {

@@ -151,7 +151,6 @@ class PostCell: UITableViewCell {
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
         
-        
         let muteTitle = isMuted ? "Unmute" : "Mute"
         threeDotsButton.menu = .init(children: [
             UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in

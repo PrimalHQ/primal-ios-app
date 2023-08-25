@@ -194,12 +194,12 @@ private extension MainTabBarController {
         pageVC.setViewControllers([home], direction: .forward, animated: false)
 
         buttonStack.distribution = .fillEqually
-        buttonStack.constrainToSize(height: 68)
+        buttonStack.constrainToSize(height: 56)
 
         vStack.axis = .vertical
 
         view.addSubview(closeMenuButton)
-        closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
+        closeMenuButton.constrainToSize(width: 56, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
 
         closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
         closeMenuButton.isHidden = true

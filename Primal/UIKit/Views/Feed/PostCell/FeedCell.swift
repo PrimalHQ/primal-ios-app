@@ -34,6 +34,7 @@ class FeedCell: PostCell {
         mainLabel.numberOfLines = 20
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
+        mainLabel.setContentHuggingPriority(.required, for: .vertical)
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural

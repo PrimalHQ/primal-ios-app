@@ -85,6 +85,10 @@ final class NotificationsViewController: FeedViewController {
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
         loadingSpinner.play()
+        
+        refreshControl.addAction(.init(handler: { [weak self] _ in
+            self?.refresh()
+        }), for: .valueChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -92,6 +96,17 @@ final class NotificationsViewController: FeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
+        refresh()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        table.register(NotificationsCell.self, forCellReuseIdentifier: postCellID)
+        table.reloadData()
+    }
+    
+    func refresh() {
         let payload = JSON.object([
             "pubkey": idJsonID,
             "limit": .number(max(Double(newNotifications + 20), 50))
@@ -118,19 +133,13 @@ final class NotificationsViewController: FeedViewController {
             
             self?.loadingSpinner.isHidden = true
             self?.loadingSpinner.stop()
+            self?.refreshControl.endRefreshing()
             
             if self?.notifications.isEmpty == false {
                 IdentityManager.instance.updateLastSeen()
             }
         }
         .store(in: &cancellables)
-    }
-    
-    override func updateTheme() {
-        super.updateTheme()
-        
-        table.register(NotificationsCell.self, forCellReuseIdentifier: postCellID)
-        table.reloadData()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { notifications.count }

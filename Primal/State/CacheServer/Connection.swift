@@ -22,7 +22,7 @@ struct ContinousConnection {
 final class Connection {
     static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    private let socketURL = URL(string: "wss://cache0.primal.net/cache17")!
+    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     

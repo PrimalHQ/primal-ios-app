@@ -144,6 +144,25 @@ final class ThreadViewController: PostFeedViewController {
         placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.data.displayName)"
         replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.data.name)
     }
+    
+    override func animateBars() {
+        guard posts.count > 10 else { return }
+        let shouldShowBars = shouldShowBars
+        
+        super.animateBars()
+        
+        if shouldShowBars {
+            self.inputParent.isHidden = false
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.inputParent.alpha = shouldShowBars ? 1 : 0
+        } completion: { _ in
+            if !shouldShowBars {
+                self.inputParent.isHidden = true
+            }
+        }
+    }
 }
 
 private extension ThreadViewController {
@@ -203,6 +222,8 @@ private extension ThreadViewController {
             self.posts = []
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
+            
+            self.refreshControl.endRefreshing()
             
             self.didLoadData = true
             
@@ -305,6 +326,8 @@ private extension ThreadViewController {
         
         table.keyboardDismissMode = .interactive
         
+        stack.addArrangedSubview(inputParent)
+        
         inputBackground.layer.cornerRadius = 6
         
         let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, imagesCollectionView, buttonStack])
@@ -350,8 +373,6 @@ private extension ThreadViewController {
         textInputView.textColor = .foreground2
         textInputView.delegate = inputManager
         textInputView.returnKeyType = .send
-        
-        setupMainStack()
         
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
@@ -409,21 +430,14 @@ private extension ThreadViewController {
         usersTableView.pin(to: inputParent, edges: .horizontal)
         usersTableView.isHidden = true
         
+        refreshControl.addAction(.init(handler: { [unowned self] _ in
+            self.feed.requestThread(postId: self.id)
+        }), for: .valueChanged)
+        
         NSLayoutConstraint.activate([
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
-    }
-    
-    func setupMainStack() {
-        [navigationBarLengthner, table].forEach { $0.removeFromSuperview() }
-        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent])
-        view.addSubview(stack)
-        
-        stack.axis = .vertical
-        
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
     }
     
     func replyToString(name: String) -> NSAttributedString {
