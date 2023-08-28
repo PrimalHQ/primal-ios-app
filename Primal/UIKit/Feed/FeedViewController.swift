@@ -51,6 +51,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         setup()
     }
     
+    deinit {
+        if let barForegroundObserver {
+            NotificationCenter.default.removeObserver(barForegroundObserver)
+        }
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -110,11 +116,15 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         table.backgroundColor = .background
     }
     
+    private var barForegroundObserver: NSObjectProtocol?
     private(set) var lastContentOffset: CGFloat = 0
     private(set) var safeAreaSpacerHeight: CGFloat = 0
     @Published private(set) var isAnimatingBars = false
     @Published private(set) var isShowingBars = true
-    var shouldShowBars: Bool { scrollDirectionCounter >= 0 }
+    var shouldShowBars: Bool {
+        get { scrollDirectionCounter >= 0 }
+        set { scrollDirectionCounter = newValue ? 100 : -100 }
+    }
     @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -151,7 +161,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
         
-        var shouldMoveOffset = safeAreaSpacer.superview != nil
+        let shouldMoveOffset = safeAreaSpacer.superview != nil
         
         if shouldShowBars {
             mainTabBarController?.buttonStack.alpha = 1
@@ -208,6 +218,13 @@ private extension FeedViewController {
                 self?.animateBars()
             }
             .store(in: &cancellables)
+        
+        barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.shouldShowBars = true
+            }
+        }
     }
     
     func animateZap(_ cell: PostCell, amount: Int32) {

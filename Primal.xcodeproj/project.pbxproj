@@ -90,6 +90,7 @@
 		9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAF829FD4A0600145E08 /* FollowButton.swift */; };
 		9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAFA29FD4B3300145E08 /* FollowProfileCell.swift */; };
 		9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAFC29FD4D4B00145E08 /* VerifiedImageView.swift */; };
+		9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E25ACBE2A98F9F800F0B395 /* UIImage+Extra.swift */; };
 		9E40D6EE2A0D22D4008AE854 /* loadingSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */; };
 		9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4AAAA72A1155F200C962BD /* GradientBorderView.swift */; };
 		9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E4AAAA92A12288600C962BD /* UILabel+Extra.swift */; };
@@ -367,6 +368,7 @@
 		9E0DEAF829FD4A0600145E08 /* FollowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButton.swift; sourceTree = "<group>"; };
 		9E0DEAFA29FD4B3300145E08 /* FollowProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowProfileCell.swift; sourceTree = "<group>"; };
 		9E0DEAFC29FD4D4B00145E08 /* VerifiedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedImageView.swift; sourceTree = "<group>"; };
+		9E25ACBE2A98F9F800F0B395 /* UIImage+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extra.swift"; sourceTree = "<group>"; };
 		9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinner.json; sourceTree = "<group>"; };
 		9E4AAAA72A1155F200C962BD /* GradientBorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderView.swift; sourceTree = "<group>"; };
 		9E4AAAA92A12288600C962BD /* UILabel+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extra.swift"; sourceTree = "<group>"; };
@@ -727,6 +729,7 @@
 				9ECCC88D2A3B6A6F00BE8F62 /* UITextView+Extra.swift */,
 				9E83DF6F2A573E5100F2C379 /* UIStackView+Extra.swift */,
 				9309D2322A5EA82A00FD2127 /* Array+Extra.swift */,
+				9E25ACBE2A98F9F800F0B395 /* UIImage+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1637,6 +1640,7 @@
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeProfileView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
+				9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */,
 				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
 				9E83DF7F2A61E58E00F2C379 /* NewPostsButton.swift in Sources */,
@@ -1824,7 +1828,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.26.7;
+				MARKETING_VERSION = 0.26.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1867,7 +1871,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.26.7;
+				MARKETING_VERSION = 0.26.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

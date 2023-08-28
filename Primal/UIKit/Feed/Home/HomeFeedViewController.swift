@@ -196,6 +196,7 @@ private extension HomeFeedViewController {
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 guard let self else { return }
+                
                 self.feed.futurePostsPublisher().sink { [weak self] sorted in
                     self?.processFuturePosts(sorted)
                 }

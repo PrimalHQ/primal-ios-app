@@ -53,6 +53,13 @@ final class MainTabBarController: UIViewController, Themeable {
             updateButtons()
         }
     }
+    
+    var buttonIndex: Int {
+        if currentPageIndex < 1 {
+            return currentPageIndex
+        }
+        return currentPageIndex + 1
+    }
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -82,7 +89,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
-        closeMenuButton.setImage(UIImage(named: "tabIcon\(currentPageIndex + 1)"), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon\(buttonIndex + 1)")?.scalePreservingAspectRatio(size: 20), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
             self.closeMenuButton.alpha = 1
@@ -247,7 +254,7 @@ private extension MainTabBarController {
         }
 
         for (index, button) in buttons.enumerated() {
-            button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
+            button.setImage(UIImage(named: "tabIcon\(index + 1)")?.scalePreservingAspectRatio(size: 20), for: .normal)
         }
 
         buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW
