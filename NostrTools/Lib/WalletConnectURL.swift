@@ -689,31 +689,19 @@ struct WalletConnectURL: Equatable {
         lhs.pubkey == rhs.pubkey &&
         lhs.relay == rhs.relay
     }
+
+    static func canParseURL(_ url: URL) -> Bool {
+        return url.scheme == "nostrwalletconnect" || url.scheme == "nostr+walletconnect" || url.scheme == "primal"
+    }
     
     let relay: RelayURL
     let keypair: NostrKeypair
     let pubkey: String
     let lud16: String?
-    
-    func to_url() -> URL {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "nostrwalletconnect"
-        urlComponents.host = pubkey
-        urlComponents.queryItems = [
-            URLQueryItem(name: "relay", value: relay.id),
-            URLQueryItem(name: "secret", value: keypair.hexVariant.privkey)
-        ]
-        
-        if let lud16 {
-            urlComponents.queryItems?.append(URLQueryItem(name: "lud16", value: lud16))
-        }
-        
-        return urlComponents.url!
-    }
-    
+
     init?(str: String) {
         guard let url = URL(string: str),
-              url.scheme == "nostrwalletconnect" || url.scheme == "nostr+walletconnect",
+              Self.canParseURL(url),
               let pk = url.host, pk.utf8.count == 64,
               let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
               let items = components.queryItems,
@@ -736,5 +724,21 @@ struct WalletConnectURL: Equatable {
         self.relay = relay
         self.keypair = keypair
         self.lud16 = lud16
+    }
+
+    func toURL() -> URL {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "nostrwalletconnect"
+        urlComponents.host = pubkey
+        urlComponents.queryItems = [
+            URLQueryItem(name: "relay", value: relay.id),
+            URLQueryItem(name: "secret", value: keypair.hexVariant.privkey)
+        ]
+
+        if let lud16 {
+            urlComponents.queryItems?.append(URLQueryItem(name: "lud16", value: lud16))
+        }
+
+        return urlComponents.url!
     }
 }
