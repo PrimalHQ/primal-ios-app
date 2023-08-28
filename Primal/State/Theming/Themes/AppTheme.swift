@@ -33,9 +33,16 @@ protocol AppTheme {
     var extraColorMenu: UIColor { get }
     
     var menuButtonImage: UIImage? { get }
+    var backButtonImage: UIImage? { get }
+    var tabBarDotImage: UIImage? { get }
     
     var statusBarStyle: UIStatusBarStyle { get }
     var userInterfaceStyle: UIUserInterfaceStyle { get }
     
-    var mockupImage: UIImage? { get }
+    var gradient: [UIColor] { get }
+    
+    var loadingSpinnerAnimation: AnimationType { get }
+    
+    var shortTitle: String { get }
+    var settingsImage: UIImage? { get }
 }

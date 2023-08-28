@@ -24,7 +24,7 @@ extension UIViewController {
     
     var customBackButton: UIBarButtonItem {
         let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
+        button.setImage(Theme.current.backButtonImage, for: .normal)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)
         return UIBarButtonItem(customView: button)

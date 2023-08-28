@@ -13,6 +13,7 @@ class PostRequestResult {
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
     var mediaMetadata: [MediaMetadata] = []
+    var webPreviews: [WebPreviews] = []
     
     var order: [String] = []
     

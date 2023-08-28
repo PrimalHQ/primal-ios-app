@@ -12,6 +12,9 @@ final class HomeFeedViewController: PostFeedViewController {
     
     let loadingSpinner = LoadingSpinnerView()
     let feedButton = UIButton()
+
+    let postButtonParent = UIView()
+    let postButton = NewPostButton()
     
     var onLoad: (() -> ())? {
         didSet {
@@ -24,7 +27,7 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
-    let refresh = UIRefreshControl()
+    let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
     
     var newAddedPosts = 0 {
@@ -33,11 +36,7 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
-    var newPostObjects: [ParsedContent] = [] {
-        didSet {
-            updatePosts(newAddedPosts + oldValue.count)
-        }
-    }
+    var newPostObjects: [ParsedContent] = []
     
     var newPosts: Int { newAddedPosts + newPostObjects.count }
     
@@ -48,12 +47,10 @@ final class HomeFeedViewController: PostFeedViewController {
         
         if newPosts == 0 {
             UIView.animate(withDuration: 0.3) {
-                self.newPostsView.transform = .init(translationX: 0, y: -100)
-                self.newPostsView.alpha = 0.3
+                self.newPostsView.alpha = 0
             }
         } else if oldValue == 0 {
             UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
-                self.newPostsView.transform = .identity
                 self.newPostsView.alpha = 1
             }
         }
@@ -74,22 +71,25 @@ final class HomeFeedViewController: PostFeedViewController {
         
         feedButton.constrainToSize(44)
         feedButton.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
-        feedButton.setImage(UIImage(named: "feedPicker"), for: .normal)
+        feedButton.setImage(UIImage(named: "feedPicker")?.scalePreservingAspectRatio(targetSize: .init(width: 22, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: feedButton)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
+        loadingSpinner.isHidden = true
         
-        let postButton = UIButton()
-        postButton.setImage(UIImage(named: "AddPost"), for: .normal)
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
+        view.addSubview(postButtonParent)
+        postButtonParent.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         
-        view.addSubview(postButton)
-        postButton.constrainToSize(56).pinToSuperview(edges: [.trailing, .bottom], padding: 8, safeArea: true)
+        view.addSubview(newPostsViewParent)
+        newPostsViewParent.addSubview(newPostsView)
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).pinToSuperview(edges: .horizontal)
         
-        view.addSubview(newPostsView)
-        newPostsView.pinToSuperview(edges: .top, padding: 47, safeArea: true).centerToSuperview(axis: .horizontal)
-        newPostsView.transform = .init(translationX: 0, y: -100)
+        newPostsView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
+        newPostsView.alpha = 0
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
@@ -103,13 +103,11 @@ final class HomeFeedViewController: PostFeedViewController {
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
-        updateTheme()
-        
-        refresh.addAction(.init(handler: { [weak self] _ in
+        refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
         }), for: .valueChanged)
-        refresh.tintColor = .accent
-        table.addSubview(refresh)
+        
+        updateTheme()
      
         setupPublishers()
     }
@@ -150,9 +148,30 @@ final class HomeFeedViewController: PostFeedViewController {
         newAddedPosts = indexPath.row
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y < 50 {
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
+        if scrollView.contentOffset.y < 100 {
             newAddedPosts = 0
+        }
+    }
+    
+    override func animateBars() {
+        let shouldShowBars = shouldShowBars
+        
+        super.animateBars()
+        
+        UIView.animate(withDuration: 0.53, delay: shouldShowBars ? 0.2 : 0) {
+            self.postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
+        }
+        
+        UIView.animate(withDuration: 0.6, delay: shouldShowBars ? 0 : 0.2) {
+            self.postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 200)
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+            self.newPostsViewParent.alpha = shouldShowBars ? 1 : 0
         }
     }
 }
@@ -170,6 +189,7 @@ private extension HomeFeedViewController {
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 guard let self else { return }
+                
                 self.feed.futurePostsPublisher().sink { [weak self] sorted in
                     self?.processFuturePosts(sorted)
                 }
@@ -177,30 +197,36 @@ private extension HomeFeedViewController {
             }
         }
         
-        feed.$parsedPosts
+        feed.newParsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in
-                if self?.refresh.isRefreshing == false {
-                    self?.posts = posts
-                } else if !posts.isEmpty {
-                    self?.posts = []
-                    self?.posts = posts
-                }
-                
-                if posts.isEmpty {
-                    if self?.refresh.isRefreshing == false {
-                        self?.loadingSpinner.isHidden = false
-                        self?.loadingSpinner.play()
-                    }
+            .sink { [weak self] newPosts in
+                if self?.refreshControl.isRefreshing == false && self?.loadingSpinner.isHidden == true {
+                    self?.posts += newPosts
                 } else {
-                    self?.loadingSpinner.isHidden = true
-                    self?.loadingSpinner.stop()
-                    self?.refresh.endRefreshing()
+                    self?.posts = []
+                    self?.posts = newPosts
                 }
                 
                 DispatchQueue.main.async {
                     self?.onLoad?()
                     self?.onLoad = nil
+                }
+            }
+            .store(in: &cancellables)
+        
+        feed.$parsedPosts
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] posts in
+                if posts.isEmpty {
+                    if self?.refreshControl.isRefreshing == false {
+                        self?.posts = []
+                        self?.loadingSpinner.isHidden = false
+                        self?.loadingSpinner.play()
+                    }
+                } else if self?.loadingSpinner.isHidden == false || self?.refreshControl.isRefreshing == true {
+                    self?.loadingSpinner.isHidden = true
+                    self?.loadingSpinner.stop()
+                    self?.refreshControl.endRefreshing()
                 }
             }
             .store(in: &cancellables)
@@ -222,12 +248,12 @@ private extension HomeFeedViewController {
         if sorted.isEmpty { return }
         
         if table.contentOffset.y < 50 {
+            let old = newPosts
             newPostObjects = sorted + newPostObjects
-            newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+            updatePosts(old)
         } else {
-            newAddedPosts += sorted.count
             feed.parsedPosts.insert(contentsOf: sorted, at: 0)
-            newPostsView.setCount(newPosts, avatarURLs: sorted.prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+            newAddedPosts += sorted.count
         }
     }
 }

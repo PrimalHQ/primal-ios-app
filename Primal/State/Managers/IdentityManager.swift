@@ -63,6 +63,8 @@ final class IdentityManager {
                         
                         print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
+                case .mediaMetadata, .metadata, .userScore:
+                    break // NO ACTION
                 default:
                     print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(kind)")
                 }
@@ -266,6 +268,8 @@ final class IdentityManager {
                             }
                         }
                     }
+                case .metadata, .userScore, .mediaMetadata:
+                    break // NO ACTION
                 default:
                     print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(kind)")
                 }

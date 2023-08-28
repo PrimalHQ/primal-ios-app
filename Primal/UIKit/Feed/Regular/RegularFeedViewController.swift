@@ -26,7 +26,6 @@ final class RegularFeedViewController: PostFeedViewController {
         } else {
             title = "Search"
         }
-        navigationItem.leftBarButtonItem = customBackButton
         
         addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
         addFeedButton.addTarget(self, action: #selector(addFeedButtonPressed), for: .touchUpInside)
@@ -36,19 +35,24 @@ final class RegularFeedViewController: PostFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
-                self?.posts = posts
                 if posts.isEmpty {
                     self?.loadingSpinner.isHidden = false
                     self?.loadingSpinner.play()
                 } else {
+                    self?.posts = posts
                     self?.loadingSpinner.isHidden = true
                     self?.loadingSpinner.stop()
+                    self?.refreshControl.endRefreshing()
                 }
             }
             .store(in: &cancellables)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview().constrainToSize(100)
+        
+        refreshControl.addAction(.init(handler: { [weak self] _ in
+            self?.feed.refresh()
+        }), for: .valueChanged)
         
         updateTheme()
     }
@@ -70,6 +74,8 @@ final class RegularFeedViewController: PostFeedViewController {
     
     override func updateTheme() {
         super.updateTheme()
+        
+        navigationItem.leftBarButtonItem = customBackButton
         
         addFeedButton.tintColor = .foreground3
     }

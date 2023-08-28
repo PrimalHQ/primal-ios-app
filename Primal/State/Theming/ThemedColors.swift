@@ -25,4 +25,6 @@ extension UIColor {
     static var accent: UIColor { Theme.current.accent }
     
     static var extraColorMenu: UIColor { Theme.current.extraColorMenu }
+    
+    static var gradient: [UIColor] { Theme.current.gradient }
 }

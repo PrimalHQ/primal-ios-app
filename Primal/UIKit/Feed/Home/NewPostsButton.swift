@@ -7,20 +7,23 @@
 
 import UIKit
 
-final class NewPostsButton: MyButton {
+final class NewPostsButton: MyButton, Themeable {
     private let avatars: [UIImageView] = (0..<3).map { _ in UIImageView(image: UIImage(named: "Profile")) }
     private let label = UILabel()
     
+    lazy var avatarStack = UIStackView(avatars)
+    lazy var stack = UIStackView([avatarStack, label])
+    
     override var isPressed: Bool {
         didSet {
-            alpha = isPressed ? 0.5 : 1
+            stack.alpha = isPressed ? 0.5 : 1
         }
     }
     
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .gradientColor(bounds: .init(width: 192, height: 40))
+        backgroundColor = .gradientColor(bounds: .init(width: 192, height: 40), startPoint: .zero, endPoint: .init(x: 1, y: 1))
         layer.cornerRadius = 20
         
         avatars.forEach {
@@ -33,8 +36,6 @@ final class NewPostsButton: MyButton {
             $0.contentMode = .scaleAspectFill
         }
         
-        let avatarStack = UIStackView(avatars)
-        let stack = UIStackView([avatarStack, label])
         
         avatarStack.alignment = .center
         avatarStack.spacing = -8
@@ -43,7 +44,7 @@ final class NewPostsButton: MyButton {
         stack.spacing = 10
         
         addSubview(stack)
-        stack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview()
+        stack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview(axis: .vertical)
         
         constrainToSize(height: 40)
         
@@ -56,7 +57,7 @@ final class NewPostsButton: MyButton {
         super.layoutSubviews()
         if oldSize != bounds.size {
             oldSize = bounds.size
-            backgroundColor = .gradientColor(bounds: oldSize)
+            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
         }
     }
     
@@ -82,5 +83,11 @@ final class NewPostsButton: MyButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        if oldSize.width > 1 {
+            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
+        }
     }
 }

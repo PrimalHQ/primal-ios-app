@@ -47,6 +47,8 @@ class SettingsNsecViewController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
+        
+        navigationItem.leftBarButtonItem = customBackButton
     }
 }
 
@@ -73,12 +75,6 @@ private extension SettingsNsecViewController {
     
     func setupView() {
         title = "Keys"
-        
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        button.constrainToSize(44)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         
         let pubTitle = SettingsTitleViewVibrant(title: "YOUR PUBLIC KEY")
         let pubLabelParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }

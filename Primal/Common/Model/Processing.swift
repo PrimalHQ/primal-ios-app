@@ -73,7 +73,7 @@ extension PostRequestResult {
         var hashtags: [String] = []
         var itemsToRemove: [String] = []
         var itemsToReplace: [String] = []
-        var markedMentions: [String] = []
+        var markedMentions: [(String, ref: String)] = []
         
         for str in result {
             if str.isValidURLAndIsImage {
@@ -88,63 +88,28 @@ extension PostRequestResult {
             }
         }
         
-        if let index = otherURLs.firstIndex(where: { $0.isValidURL && $0.isNotEmail }) {
-            let firstURL = otherURLs.remove(at: index)
-            itemsToRemove.append(firstURL)
-
-            if let url = URL(string: firstURL.hasPrefix("http") ? firstURL : "https://\(firstURL)") {
-                p.firstExtractedURL = url
-                p.parsedMetadata = .loadingMetadata(url)
-
-                let provider = LPMetadataProvider()
-                provider.startFetchingMetadata(for: url) { metadata, error in
-                    DispatchQueue.main.async {
-                        _ = provider
-
-                        guard let metadata else {
-                            p.parsedMetadata = .failedToLoad(url)
-                            return
-                        }
-
-                        let parsed: LinkMetadata = .init(url: url, lpMetadata: metadata, title: metadata.title)
-                        p.parsedMetadata = parsed
-
-                        DispatchQueue.global(qos: .background).async {
-                            let imageKey = p.linkMetadataImageKey
-                            if KingfisherManager.shared.cache.isCached(forKey: imageKey) {
-                                DispatchQueue.main.async {
-                                    p.parsedMetadata?.imageKey = imageKey
-                                }
-                            } else if let imageProvider = metadata.imageProvider {
-                                imageProvider.loadObject(ofClass: UIImage.self) { image, error in
-                                    DispatchQueue.main.async {
-                                        guard let image = image as? UIImage else { return }
-                                        
-                                        KingfisherManager.shared.cache.store(image, forKey: imageKey)
-                                        p.parsedMetadata?.imageKey =  imageKey
-                                    }
-                                }
-                            }
-
-                            let iconKey = p.linkMetadataIconKey
-                            if KingfisherManager.shared.cache.isCached(forKey: iconKey) {
-                                DispatchQueue.main.async {
-                                    p.parsedMetadata?.iconKey = iconKey
-                                }
-                            } else if let iconProvider = metadata.iconProvider {
-                                iconProvider.loadObject(ofClass: UIImage.self) { icon, error in
-                                    DispatchQueue.main.async {
-                                        guard let icon = icon as? UIImage else { return }
-                                        
-                                        KingfisherManager.shared.cache.store(icon, forKey: iconKey)
-                                        p.parsedMetadata?.iconKey = iconKey
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        for preview in webPreviews.first(where: { $0.event_id == post.id })?.resources ?? [] {
+            guard let urlIndex = otherURLs.firstIndex(where: { $0.contains(preview.url) }) else { continue }
+            let urlString = otherURLs[urlIndex]
+            guard let url = URL(string: urlString.hasPrefix("http") ? urlString : "https://\(urlString)") else { continue }
+            
+            guard
+                preview.icon_url?.isEmpty == false ||
+                preview.md_title?.isEmpty == false ||
+                preview.md_description?.isEmpty == false ||
+                preview.md_image?.isEmpty == false
+            else { continue }
+            
+            otherURLs.remove(at: urlIndex)
+            itemsToRemove.append(urlString)
+            
+            p.linkPreview = LinkMetadata(
+                url: url,
+                imagesData: mediaMetadata.filter { $0.event_id == post.id }.flatMap { $0.resources },
+                data: preview
+            )
+            
+            break // Leave the loop as we only want the first link preview
         }
         
         let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
@@ -179,45 +144,46 @@ extension PostRequestResult {
             }
         }
         
+        for media in mediaMetadata where media.event_id == post.id {
+            p.imageResources = media.resources.filter { text.contains($0.url) }
+        }
+        
         for item in itemsToRemove {
             text = text.replacingOccurrences(of: item, with: "")
         }
         
-        for media in mediaMetadata where media.event_id == post.id {
-            p.imageResources = media.resources
-        }
-        
         for item in itemsToReplace {
-            guard let user: PrimalUser = {
-                if item.isNip08Mention {
-                    guard
-                        let index = Int(item[safe: 2]?.string ?? ""),
-                        let tag = post.tags[safe: index],
-                        let pubkey = tag[safe: 1]
-                    else { return nil }
-                                
-                    return users[pubkey]
-                }
-                
-                guard
-                    item.isNip27Mention,
-                    let npub = item.split(separator: ":")[safe: 1]?.string,
-                    let decoded = try? bech32_decode(npub)
-                else { return nil }
-                let pubkey = hex_encode(decoded.data)
-                
-                for mentionedPub in users.keys {
-                    if pubkey.contains(mentionedPub) {
-                        return users[mentionedPub]
+            guard
+                let pubkey: String = {
+                    if item.isNip08Mention {
+                        guard
+                            let index = Int(item[safe: 2]?.string ?? ""),
+                            let tag = post.tags[safe: index]
+                        else { return nil }
+                                    
+                        return tag[safe: 1]
                     }
-                }
-                
-                return users[pubkey]
-            }() else { continue }
+                    
+                    guard
+                        item.isNip27Mention,
+                        let npub = item.split(separator: ":")[safe: 1]?.string,
+                        let decoded = try? bech32_decode(npub)
+                    else { return nil }
+                    let pubkey = hex_encode(decoded.data)
+                    for mentionedPub in users.keys {
+                        if pubkey.contains(mentionedPub) {
+                            return mentionedPub
+                        }
+                    }
+                    return pubkey
+                }(),
+                let user = users[pubkey]
+            else { continue }
             
-            let mention = "@\(user.name)"
+            let mention = user.atIdentifier
             text = text.replacingOccurrences(of: item, with: mention)
-            markedMentions.append(mention)
+            markedMentions.append((mention, ref: pubkey))
+            p.mentionedUsers.append(user)
         }
         
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -227,9 +193,9 @@ extension PostRequestResult {
         if p.imageResources.isEmpty {
             p.imageResources = imageURLs.map { .init(url: $0, variants: []) }
         }
-        p.hashtags = hashtags.compactMap { nsText.position(of: $0) }
-        p.mentions = markedMentions.compactMap { nsText.position(of: $0) }
-        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0) }
+        p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }
+        p.mentions = markedMentions.compactMap { nsText.position(of: $0.0, reference: $0.ref) }
+        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0, reference: $0) }
         p.text = text
         p.buildContentString()
         
@@ -238,11 +204,11 @@ extension PostRequestResult {
 }
 
 extension NSString {
-    func position(of substring: String) -> ParsedElement? {
+    func position(of substring: String, reference: String) -> ParsedElement? {
         let position = range(of: substring)
         
         if position.location != NSNotFound {
-            return .init(position: position.location, length: position.length, text: substring)
+            return .init(position: position.location, length: position.length, text: substring, reference: reference)
         }
         return nil
     }
@@ -259,7 +225,7 @@ extension PrimalUser {
         return npub
     }
     
-    var atIdentifier: String { "@" + atIdentifierWithoutAt }
+    var atIdentifier: String { "@" + atIdentifierWithoutAt.trimmingCharacters(in: .whitespacesAndNewlines) }
     
     var atIdentifierWithoutAt: String {
         if !name.isEmpty {

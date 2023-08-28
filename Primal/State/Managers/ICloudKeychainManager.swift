@@ -21,7 +21,6 @@ final class ICloudKeychainManager {
     
     func hasSavedNpubs() -> Bool {
         let items = keychain.allItems()
-        print(items)
         
         guard let contains = try? keychain.contains(Self.savedNpubsKey) else {
             print("ICloudKeychain: There are no saved npubs in ICloud Keychain")

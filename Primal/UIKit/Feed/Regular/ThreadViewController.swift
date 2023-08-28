@@ -8,6 +8,26 @@
 import Combine
 import UIKit
 
+extension FeedDesign {
+    var threadCellClass: AnyClass {
+        switch self {
+        case .standard:
+            return DefaultThreadCell.self
+        case .fullWidth:
+            return FullWidthThreadCell.self
+        }
+    }
+    
+    var threadMainCellClass: AnyClass {
+        switch self {
+        case .standard:
+            return DefaultMainThreadCell.self
+        case .fullWidth:
+            return FullWidthThreadCell.self
+        }
+    }
+}
+
 final class ThreadViewController: PostFeedViewController {
     let id: String
     
@@ -80,21 +100,22 @@ final class ThreadViewController: PostFeedViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        if let cell = cell as? ThreadCell {
-            let data = posts[indexPath.row]
-            let position: ThreadCell.ThreadPosition
-            scope: do {
-                if mainPositionInThread < indexPath.row {
-                    position = .child
-                    break scope
-                }
-                if mainPositionInThread > indexPath.row {
-                    position = .parent
-                    break scope
-                }
-                position = .main
+        let data = posts[indexPath.row]
+        let position: ThreadCell.ThreadPosition
+        scope: do {
+            if mainPositionInThread < indexPath.row {
+                position = .child
+                break scope
             }
+            if mainPositionInThread > indexPath.row {
+                position = .parent
+                break scope
+            }
+            position = .main
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
+        if let cell = cell as? ThreadCell {
             cell.update(data,
                     position: position,
                     didLike: LikeManager.instance.hasLiked(data.post.id),
@@ -110,7 +131,10 @@ final class ThreadViewController: PostFeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
-        table.register(ThreadCell.self, forCellReuseIdentifier: postCellID)
+        navigationItem.leftBarButtonItem = customBackButton
+        
+        table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
+        table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
         inputParent.backgroundColor = inputManager.isEditing ? .background2 : .background
         inputBackground.backgroundColor = inputManager.isEditing ? .background : .background3
@@ -119,6 +143,25 @@ final class ThreadViewController: PostFeedViewController {
         
         placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.data.displayName)"
         replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.data.name)
+    }
+    
+    override func animateBars() {
+        guard posts.count > 10 else { return }
+        let shouldShowBars = shouldShowBars
+        
+        super.animateBars()
+        
+        if shouldShowBars {
+            self.inputParent.isHidden = false
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.inputParent.alpha = shouldShowBars ? 1 : 0
+        } completion: { _ in
+            if !shouldShowBars {
+                self.inputParent.isHidden = true
+            }
+        }
     }
 }
 
@@ -179,6 +222,8 @@ private extension ThreadViewController {
             self.posts = []
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
+            
+            self.refreshControl.endRefreshing()
             
             self.didLoadData = true
             
@@ -281,11 +326,7 @@ private extension ThreadViewController {
         
         table.keyboardDismissMode = .interactive
         
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        button.constrainToSize(44)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        stack.addArrangedSubview(inputParent)
         
         inputBackground.layer.cornerRadius = 6
         
@@ -332,8 +373,6 @@ private extension ThreadViewController {
         textInputView.textColor = .foreground2
         textInputView.delegate = inputManager
         textInputView.returnKeyType = .send
-        
-        setupMainStack()
         
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
@@ -391,21 +430,14 @@ private extension ThreadViewController {
         usersTableView.pin(to: inputParent, edges: .horizontal)
         usersTableView.isHidden = true
         
+        refreshControl.addAction(.init(handler: { [unowned self] _ in
+            self.feed.requestThread(postId: self.id)
+        }), for: .valueChanged)
+        
         NSLayoutConstraint.activate([
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
-    }
-    
-    func setupMainStack() {
-        [navigationBarLengthner, table].forEach { $0.removeFromSuperview() }
-        let stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table, inputParent])
-        view.addSubview(stack)
-        
-        stack.axis = .vertical
-        
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
     }
     
     func replyToString(name: String) -> NSAttributedString {

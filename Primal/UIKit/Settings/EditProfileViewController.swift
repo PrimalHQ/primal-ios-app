@@ -93,6 +93,7 @@ final class EditProfileViewController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
+        navigationItem.leftBarButtonItem = customBackButton
         
         avatarView.layer.borderColor = UIColor.background.cgColor
         avatarView.backgroundColor = .background
@@ -125,7 +126,6 @@ private extension EditProfileViewController {
     
     func setup() {
         title = "Edit Profile"
-        navigationItem.leftBarButtonItem = customBackButton
         
         let spacerParent = UIView()
         let avatarStack = UIStackView(arrangedSubviews: [SpacerView(width: 6), avatarView, UIView(), addPhotoButton, spacerParent, addBannerButton, SpacerView(width: 36)])

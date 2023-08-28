@@ -28,7 +28,10 @@ struct SocketRequest {
 
 private extension SocketRequest {
     private func handlePostEvent(_ payload: [String: JSON]) {
-        guard let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)) else { return }
+        guard
+            let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
+            let contentString = payload["content"]?.stringValue
+        else { return }
         
         switch kind {
         case .metadata:
@@ -39,36 +42,27 @@ private extension SocketRequest {
         case .text:
             pendingResult.posts.append(NostrContent(jsonData: payload))
         case .noteStats:
-            guard
-                let content = payload["content"]?.stringValue,
-                let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: Data(content.utf8))
-            else {
+            guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: Data(contentString.utf8)) else {
                 print("Error decoding NostrContentStats to json")
                 return
             }
-            
+
             pendingResult.stats[nostrContentStats.event_id] = nostrContentStats
         case .notification:
             guard
-                let content = payload["content"]?.stringValue,
-                let json = try? JSONDecoder().decode(JSON.self, from: Data(content.utf8)),
+                let json = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
                 let notification = PrimalNotification.fromJSON(json)
             else { return }
+            
             pendingResult.notifications.append(notification)
         case .searchPaginationSettingsEvent:
-            guard
-                let content = payload["content"]?.stringValue,
-                let _ = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data(content.utf8))
-            else {
+            guard let _ = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data(contentString.utf8)) else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
-            print("SocketRequest: Got search pagination event")
+//            print("SocketRequest: Got search pagination event")
         case .noteActions:
-            guard
-                let content = payload["content"]?.stringValue,
-                let noteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: Data(content.utf8))
-            else {
+            guard let noteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: Data(contentString.utf8)) else {
                 print("Error decoding PrimalNoteStatus to json")
                 return
             }
@@ -85,42 +79,37 @@ private extension SocketRequest {
             if noteStatus.zapped {
                 ZapManager.instance.userZapped[noteStatus.event_id] = 0
             }
-            
         case .repost:
             guard
                 let pubKey = payload["pubkey"]?.stringValue,
-                let contentString = payload["content"]?.stringValue,
                 let dateNum = payload["created_at"]?.doubleValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
-            else { return }
+            else {
+                print("Error decoding reposts string to json")
+                return
+            }
             
             pendingResult.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
         case .mentions:
-            guard
-                let contentString = payload["content"]?.stringValue,
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
-            else { return }
+            guard let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)) else {
+                print("Error decoding mentions string to json")
+                return
+            }
             
             pendingResult.mentions.append(NostrContent(json: contentJSON))
         case .mediaMetadata:
-            guard
-                let contentString = payload["content"]?.stringValue,
-                let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8))
-            else { return }
+            guard let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8)) else {
+                print("Error decoding metadata string to json")
+                return
+            }
             
             pendingResult.mediaMetadata.append(metadata)
         case .userScore:
-            guard
-                let contentString = payload["content"]?.stringValue,
-                let info = try? JSONDecoder().decode([String: Int].self, from: Data(contentString.utf8))
-            else { return }
+            guard let info = try? JSONDecoder().decode([String: Int].self, from: Data(contentString.utf8)) else { return }
             
             pendingResult.userScore = info
         case .userStats:
-            guard
-                let contentString = payload["content"]?.stringValue,
-                let nostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: Data(contentString.utf8))
-            else {
+            guard let nostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: Data(contentString.utf8)) else {
                 print("Error decoding nostr stats string to json")
                 return
             }
@@ -144,8 +133,15 @@ private extension SocketRequest {
                 pendingResult.popularHashtags.append(.init(title: name, apperances: count))
             }
         case .timestamp:
-            guard let contentString = payload["content"]?.stringValue, let timeStamp = Int(contentString) else { return }
+            guard let timeStamp = Int(contentString) else { return }
             pendingResult.timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
+        case .webPreview:
+            guard
+                let contentString = payload["content"]?.stringValue,
+                let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8))
+            else { return }
+            
+            pendingResult.webPreviews.append(webPreview)
         default:
             print("Unhandled response \(payload)")
         }

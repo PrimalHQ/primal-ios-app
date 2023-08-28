@@ -12,20 +12,10 @@ import Kingfisher
 
 struct LinkMetadata {
     var url: URL
-    var lpMetadata: LPLinkMetadata?
     
-    var imageKey: String?
-    var iconKey: String?
+    var imagesData: [MediaMetadata.Resource]
     
-    var title: String?
-    
-    static func loadingMetadata(_ url: URL) -> LinkMetadata {
-        .init(url: url, title: "Loading preview...")
-    }
-    
-    static func failedToLoad(_ url: URL) -> LinkMetadata {
-        .init(url: url, title: "Failed to load preview...")
-    }
+    var data: WebPreview
 }
 
 final class LinkPreview: UIView {
@@ -40,6 +30,7 @@ final class LinkPreview: UIView {
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private let textLabel = UILabel()
     private weak var imageAspectConstraint: NSLayoutConstraint?
     
     init() {
@@ -54,37 +45,39 @@ final class LinkPreview: UIView {
 
 private extension LinkPreview {
     func set(data: LinkMetadata) {
-        if let imageKey = data.imageKey, KingfisherManager.shared.cache.isCached(forKey: imageKey) {
-            KingfisherManager.shared.cache.retrieveImage(forKey: imageKey) { [weak self] result in
-                guard let self, case .success(let cachedImage) = result, let image = cachedImage.image else { return }
+        if let imageString = data.data.md_image, let metadata = data.imagesData.first(where: { $0.url == imageString }) {
+            imageView.kf.setImage(with: metadata.url(for: .large))
+            imageView.isHidden = false
+            
+            
+            let aspectMultiplier: CGFloat = {
+                guard let variant = metadata.variants.first else { return 1 }
                 
-                self.imageView.image = image
-                
-                self.imageAspectConstraint?.isActive = false
-                let aspect = self.imageView.widthAnchor.constraint(equalTo: self.imageView.heightAnchor, multiplier: image.size.width / image.size.height)
-                self.imageAspectConstraint = aspect
-                
-                aspect.priority = .defaultHigh
-                aspect.isActive = true
-            }
+                return CGFloat(variant.width) / CGFloat(variant.height)
+            }()
+            
+            self.imageAspectConstraint?.isActive = false
+            let aspect = self.imageView.widthAnchor.constraint(equalTo: self.imageView.heightAnchor, multiplier: aspectMultiplier)
+            self.imageAspectConstraint = aspect
+            
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
         } else {
             imageView.isHidden = true
         }
         
-        if let iconKey = data.iconKey, KingfisherManager.shared.cache.isCached(forKey: iconKey) {
-            KingfisherManager.shared.cache.retrieveImage(forKey: iconKey) { [weak self] result in
-                guard let self, case .success(let cachedImage) = result, let icon = cachedImage.image else { return }
-                
-                self.iconView.image = icon
-                self.iconView.layer.cornerRadius = 18
-            }
+        if let iconString = data.data.icon_url, let url = data.imagesData.first(where: { $0.url == iconString })?.url(for: .small) ?? URL(string: iconString) {
+            iconView.kf.setImage(with: url, placeholder: UIImage(named: "webPreviewIcon"))
+            iconView.isHidden = false
         } else {
-            iconView.image = UIImage(named: "webPreviewIcon")
-            iconView.layer.cornerRadius = 0
+            iconView.isHidden = true
         }
         
-        titleLabel.text = data.title
-        titleLabel.isHidden = data.title == nil
+        titleLabel.text = data.data.md_title
+        titleLabel.isHidden = data.data.md_title?.isEmpty != false
+        
+        textLabel.text = data.data.md_description
+        textLabel.isHidden = data.data.md_description?.isEmpty != false
         
         subtitleLabel.text = data.url.host()
     }
@@ -96,36 +89,42 @@ private extension LinkPreview {
         addSubview(mainStack)
         mainStack.pinToSuperview()
                 
-        let titleStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        let iconTitleStack = UIStackView(arrangedSubviews: [iconView, titleStack])
+        let subtitleStack = UIStackView(arrangedSubviews: [iconView, subtitleLabel])
+        let contentStack = UIStackView(axis: .vertical, [subtitleStack, titleLabel, textLabel])
         
-        backgroundView.addSubview(iconTitleStack)
-        iconTitleStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 16)
+        backgroundView.addSubview(contentStack)
+        contentStack.pinToSuperview(padding: 12)
         
-        iconTitleStack.spacing = 12
-        iconTitleStack.alignment = .center
+        subtitleStack.spacing = 6
+        subtitleStack.alignment = .center
         
-        titleStack.axis = .vertical
-        titleStack.spacing = 4
+        contentStack.spacing = 4
+        contentStack.setCustomSpacing(6, after: subtitleStack)
         
         backgroundView.backgroundColor = .background3
         
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
         
-        iconView.constrainToSize(36)
+        iconView.constrainToSize(24)
         iconView.clipsToBounds = true
+        iconView.layer.cornerRadius = 12
         
         layer.cornerRadius = 8
         layer.masksToBounds = true
         layer.borderWidth = 1
         layer.borderColor = UIColor.background3.withAlphaComponent(0.4).cgColor
         
-        subtitleLabel.font = .appFont(withSize: 16, weight: .regular)
-        subtitleLabel.textColor = .foreground5
+        subtitleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        subtitleLabel.textColor = .foreground4
         
-        titleLabel.font = .appFont(withSize: 18, weight: .bold)
+        titleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .semibold)
         titleLabel.textColor = .foreground
+        titleLabel.numberOfLines = 4
+        
+        textLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        textLabel.textColor = .foreground4
+        textLabel.numberOfLines = 4
         
         addInteraction(UIContextMenuInteraction(delegate: self))
     }

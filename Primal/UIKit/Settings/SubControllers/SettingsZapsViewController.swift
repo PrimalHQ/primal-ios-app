@@ -63,6 +63,8 @@ class SettingsZapsViewController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
+        
+        navigationItem.leftBarButtonItem = customBackButton
     }
 }
 
@@ -89,7 +91,6 @@ private extension SettingsZapsViewController {
     
     func setupView() {
         title = "Zaps"
-        navigationItem.leftBarButtonItem = customBackButton
         
         let inputContainer = UIView()
         inputContainer.addSubview(defaultInput)

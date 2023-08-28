@@ -14,6 +14,10 @@ extension UIViewController {
     }
 }
 
+enum MainTab {
+    case home, read, explore, messages, notifications
+}
+
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
     lazy var read = ReadNavigationController()
@@ -27,8 +31,10 @@ final class MainTabBarController: UIViewController, Themeable {
         UIButton()
     }
 
-    let notificationIndicator = UIImageView(image: UIImage(named: "newIndicator"))
-
+    let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
+    
+    lazy var vStack = UIStackView(arrangedSubviews: [buttonStack, safeAreaSpacer])
+    let safeAreaSpacer = UIView()
     let closeMenuButton = UIButton()
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
@@ -48,6 +54,13 @@ final class MainTabBarController: UIViewController, Themeable {
         didSet {
             updateButtons()
         }
+    }
+    
+    var buttonIndex: Int {
+        if currentPageIndex < 1 {
+            return currentPageIndex
+        }
+        return currentPageIndex + 1
     }
 
     init() {
@@ -78,7 +91,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
-        closeMenuButton.setImage(UIImage(named: "tabIcon\(currentPageIndex + 1)"), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon\(buttonIndex + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
             self.closeMenuButton.alpha = 1
@@ -96,7 +109,10 @@ final class MainTabBarController: UIViewController, Themeable {
 
     func updateTheme() {
         view.backgroundColor = .background
+        safeAreaSpacer.backgroundColor = .background
 
+        notificationIndicator.image = Theme.current.tabBarDotImage
+        
         closeMenuButton.tintColor = .foreground
         closeMenuButton.backgroundColor = .background
 
@@ -113,28 +129,37 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
-            buttonStack.alpha = hidden ? 0 : 1
-            buttonStack.isHidden = hidden
             notificationIndicator.alpha = hidden ? 0 : 1
+            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             return
         }
         
-        if hidden {
-            UIView.animate(withDuration: 0.3) {
-                self.buttonStack.isHidden = hidden
-                self.buttonStack.alpha = hidden ? 0 : 1
-                self.notificationIndicator.alpha = hidden ? 0 : 1
-            }
-            return
+        UIView.animate(withDuration: 0.3) {
+            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
+            self.notificationIndicator.alpha = hidden ? 0 : 1
         }
-        
-        UIView.animate(withDuration: 0.1) {
-            self.buttonStack.isHidden = hidden
-        } completion: { _ in
-            UIView.animate(withDuration: 0.2) {
-                self.buttonStack.alpha = hidden ? 0 : 1
-                self.notificationIndicator.alpha = hidden ? 0 : 1
+    }
+    
+    func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
+        let nav: UINavigationController = {
+            switch tab {
+            case .home:
+                return home
+            case .read:
+                return read
+            case .explore:
+                return explore
+            case .messages:
+                return messages
+            case .notifications:
+                return notifications
             }
+        }()
+        
+        pageVC.setViewControllers([nav], direction: .forward, animated: true)
+        currentPageIndex = indexForNav(nav)
+        if let vc {
+            nav.pushViewController(vc, animated: true)
         }
     }
 }
@@ -142,13 +167,15 @@ final class MainTabBarController: UIViewController, Themeable {
 private extension MainTabBarController {
     func setup() {
         updateTheme()
-
-        let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack])
+        
         pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
-
+        view.addSubview(pageVC.view)
+        pageVC.view.pinToSuperview()
+        
         view.addSubview(vStack)
-        vStack.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, safeArea: true)
+        vStack.pinToSuperview(edges: [.bottom, .horizontal])
+        safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         view.addSubview(notificationIndicator)
         if let imageView = buttons.last?.imageView {
@@ -160,14 +187,14 @@ private extension MainTabBarController {
         pageVC.setViewControllers([home], direction: .forward, animated: false)
 
         buttonStack.distribution = .fillEqually
-        buttonStack.constrainToSize(height: 68)
+        buttonStack.constrainToSize(height: 56)
 
         vStack.axis = .vertical
 
         view.addSubview(closeMenuButton)
-        closeMenuButton.constrainToSize(width: 68, height: 68).pin(to: buttonStack, edges: [.trailing, .top])
+        closeMenuButton.constrainToSize(width: 70, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
 
-        closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon1")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         closeMenuButton.isHidden = true
 
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
@@ -213,7 +240,7 @@ private extension MainTabBarController {
         }
 
         for (index, button) in buttons.enumerated() {
-            button.setImage(UIImage(named: "tabIcon\(index + 1)"), for: .normal)
+            button.setImage(UIImage(named: "tabIcon\(index + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         }
 
         buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW

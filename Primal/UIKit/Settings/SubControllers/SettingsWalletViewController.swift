@@ -52,6 +52,7 @@ final class SettingsWalletViewController : UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
+        navigationItem.leftBarButtonItem = customBackButton
         
         iconParent.backgroundColor = .background3
         iconParent.layer.borderColor = UIColor(rgb: 0x209C00).withAlphaComponent(0.65).cgColor
@@ -74,7 +75,6 @@ private extension SettingsWalletViewController {
             }
         }
         
-        navigationItem.leftBarButtonItem = customBackButton
         setupStack()
         updateView()
         updateTheme()

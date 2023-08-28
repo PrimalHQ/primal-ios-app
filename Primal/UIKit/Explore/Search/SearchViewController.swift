@@ -47,6 +47,7 @@ final class SearchViewController: UIViewController, Themeable {
     func updateTheme() {
         searchView.updateTheme()
         
+        navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
         navigationExtender.backgroundColor = .background
         navigationBorder.backgroundColor = .background3
@@ -56,7 +57,6 @@ final class SearchViewController: UIViewController, Themeable {
 private extension SearchViewController {
     func setup() {
         navigationItem.titleView = searchView
-        navigationItem.leftBarButtonItem = customBackButton
         updateTheme()
         setBindings()
         

@@ -84,9 +84,21 @@ final class ProfileViewController: PostFeedViewController {
         super.tableView(tableView, didSelectRowAt: indexPath)
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
         let offest = -scrollView.contentOffset.y
         navigationBar.updateSize(offest - navigationBar.maxSize)
+    }
+    
+    override func animateBars() {
+        let shouldShowBars = shouldShowBars
+        
+        super.animateBars()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -200)
+        }
     }
 }
 
@@ -104,6 +116,7 @@ private extension ProfileViewController {
                 
                 self.loadingSpinner.isHidden = true
                 self.loadingSpinner.stop()
+                self.refreshControl.endRefreshing()
             }
             .store(in: &cancellables)
         
@@ -113,6 +126,10 @@ private extension ProfileViewController {
         loadingSpinner.isHidden = false
         loadingSpinner.play()
         
+        refreshControl.addAction(.init(handler: { [weak self] _ in
+            self?.feed.refresh()
+        }), for: .valueChanged)
+        
         table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
         
         view.addSubview(navigationBar)
@@ -120,10 +137,7 @@ private extension ProfileViewController {
         navigationBar.updateInfo(profile.data, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         navigationBar.delegate = self
         
-        navigationBarLengthner.removeFromSuperview()
-        stack.removeFromSuperview()
-        view.insertSubview(stack, at: 0)
-        stack.pinToSuperview()
+        safeAreaSpacer.removeFromSuperview()
         
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         

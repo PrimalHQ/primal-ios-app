@@ -106,3 +106,18 @@ struct MediaMetadata: Codable {
         }
     }
 }
+
+struct WebPreviews: Codable {
+    var event_id: String
+    var resources: [WebPreview]
+}
+
+struct WebPreview: Codable {
+    var icon_url: String?
+    var md_image: String?
+    
+    var md_title: String?
+    var md_description: String?
+    
+    var url: String
+}

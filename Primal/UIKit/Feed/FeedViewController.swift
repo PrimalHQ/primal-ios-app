@@ -13,9 +13,10 @@ import SafariServices
 import Lottie
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
-    let navigationBarLengthner = SpacerView(height: 7)
-    var table = UITableView()
-    lazy var stack = UIStackView(arrangedSubviews: [navigationBarLengthner, table])
+    let refreshControl = UIRefreshControl()
+    let table = UITableView()
+    let safeAreaSpacer = UIView()
+    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, table])
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -50,6 +51,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         setup()
     }
     
+    deinit {
+        if let barForegroundObserver {
+            NotificationCenter.default.removeObserver(barForegroundObserver)
+        }
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -59,6 +66,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         hapticGenerator.prepare()
         heavy.prepare()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        scrollDirectionCounter = 100
     }
     
     @discardableResult
@@ -93,14 +106,82 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             $0.embededPost?.buildContentString()
         }
         
-        navigationBarLengthner.backgroundColor = .background
-        
         updateCellID()
-        table.register(FeedCell.self, forCellReuseIdentifier: postCellID)
+        table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
+        
+        refreshControl.tintColor = .accent
         
         view.backgroundColor = .background
         table.backgroundColor = .background
+    }
+    
+    private var barForegroundObserver: NSObjectProtocol?
+    private(set) var lastContentOffset: CGFloat = 0
+    private(set) var safeAreaSpacerHeight: CGFloat = 0
+    @Published private(set) var isAnimatingBars = false
+    @Published private(set) var isShowingBars = true
+    var shouldShowBars: Bool {
+        get { scrollDirectionCounter >= 0 }
+        set { scrollDirectionCounter = newValue ? 100 : -100 }
+    }
+    @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y < 100 {
+            scrollDirectionCounter = 100
+        } else {
+            if (lastContentOffset > scrollView.contentOffset.y) {
+                scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
+            }
+            if (lastContentOffset < scrollView.contentOffset.y) {
+                scrollDirectionCounter = min(-1, scrollDirectionCounter - 1)
+            }
+        }
+
+        // update the new position acquired
+        lastContentOffset = scrollView.contentOffset.y
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool { isShowingBars && shouldShowBars }
+    
+    func animateBars() {
+        let shouldShowBars = scrollDirectionCounter >= 0
+        guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
+        
+        isAnimatingBars = true
+        table.bounces = shouldShowBars
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+            self.isShowingBars = shouldShowBars
+            self.isAnimatingBars = false
+        }
+        
+        let oldValue = !shouldShowBars
+        
+        safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
+        
+        let shouldMoveOffset = safeAreaSpacer.superview != nil
+        
+        if !shouldShowBars {
+            // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
+            safeAreaSpacer.isHidden = oldValue
+            if shouldMoveOffset {
+                table.contentOffset = .init(x: 0, y: table.contentOffset.y - safeAreaSpacerHeight)
+            }
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.mainTabBarController?.setTabBarHidden(oldValue, animated: false)
+            self.navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+        } completion: { _ in
+            if shouldShowBars {
+                self.safeAreaSpacer.isHidden = oldValue
+                if shouldMoveOffset {
+                    self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y + self.safeAreaSpacerHeight)
+                }
+            }
+        }
     }
 }
 
@@ -112,15 +193,34 @@ private extension FeedViewController {
     func setup() {
         stack.axis = .vertical
         view.insertSubview(stack, at: 0)
-        stack
-            .pinToSuperview(edges: [.horizontal, .bottom])
-            .pinToSuperview(edges: .top, safeArea: true)
+        stack.pinToSuperview()
         
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
+        table.contentInsetAdjustmentBehavior = .never
+        
+        safeAreaSpacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        
+        table.refreshControl = refreshControl
         
         updateTheme()
+    
+        Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
+            .receive(on: DispatchQueue.main).sink { [weak self] isShowing, directionCounter, isAnimating in
+                if abs(directionCounter) < 10 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
+                let shouldShow = directionCounter > 0
+                guard isShowing != shouldShow, !isAnimating else { return }
+                self?.animateBars()
+            }
+            .store(in: &cancellables)
+        
+        barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.shouldShowBars = true
+            }
+        }
     }
     
     func animateZap(_ cell: PostCell, amount: Int32) {
@@ -273,28 +373,57 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func postCellDidTapURL(_ cell: PostCell, url: URL?) {
-        guard let url else {
-            guard
-                let indexPath = table.indexPath(for: cell),
-                let url = posts[indexPath.row].firstExtractedURL
-            else { return }
-            
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
-            return
-        }
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let url = url ?? posts[indexPath.row].linkPreview?.url
+        else { return }
         
-        if url.absoluteString.isVideoURL {
-            let player = AVPlayerViewController()
-            player.player = AVPlayer(url: url)
-            present(player, animated: true) {
-                player.player?.play()
+        let post = posts[indexPath.row]
+        let urlString = url.absoluteString
+        
+        guard !urlString.isValidURL || !urlString.hasPrefix("http") else {
+            if urlString.isVideoURL {
+                let player = AVPlayerViewController()
+                player.player = AVPlayer(url: url)
+                present(player, animated: true) {
+                    player.player?.play()
+                }
+                return
             }
+            
+            if urlString.isValidURL {
+                let safari = SFSafariViewController(url: url)
+                present(safari, animated: true)
+            }
+            
             return
         }
         
-        let safari = SFSafariViewController(url: url)
-        present(safari, animated: true)
+        guard let infoSub = urlString.split(separator: "//").last else { return }
+        let info = String(infoSub)
+        
+        if urlString.hasPrefix("hashtag"), info.isHashtag {
+            let feed = RegularFeedViewController(feed: FeedManager(search: info))
+            show(feed, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("mention") {
+            guard let user = post.mentionedUsers.first(where: { $0.pubkey == info }) else { return }
+            
+            let profile = ProfileViewController(profile: .init(data: user))
+            show(profile, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("note") {
+            guard let ref = post.notes.first(where: { $0.text == info })?.reference else { return }
+            
+            print(ref)
+            return
+        }
+        
+        return
     }
     
     func postCellDidTapImages(resource: MediaMetadata.Resource) {

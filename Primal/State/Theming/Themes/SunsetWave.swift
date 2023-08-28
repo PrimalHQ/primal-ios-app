@@ -31,9 +31,16 @@ final class SunsetWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButton") }
+    var backButtonImage: UIImage? { UIImage(named: "back") }
+    var tabBarDotImage: UIImage? { UIImage(named: "newIndicator") }
     
     var statusBarStyle: UIStatusBarStyle { .lightContent }
     var userInterfaceStyle: UIUserInterfaceStyle { .dark }
     
-    var mockupImage: UIImage? { UIImage(named: "readMockup")}
+    var gradient: [UIColor] { [UIColor(rgb: 0xEF404A), UIColor(rgb: 0x5B12A4)] }
+
+    var loadingSpinnerAnimation: AnimationType { .loadingSpinner }
+    
+    var shortTitle: String { "sunset" }
+    var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
 }

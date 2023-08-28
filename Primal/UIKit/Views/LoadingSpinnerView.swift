@@ -13,6 +13,7 @@ enum AnimationType {
     case iconLike
     case splash
     case loadingSpinner
+    case loadingSpinnerBlue
     
     case zapMedium
     
@@ -20,11 +21,12 @@ enum AnimationType {
     
     var name: String {
         switch self {
-        case .iconZap:          return "iconZap"
-        case .iconLike:         return "iconLike"
-        case .splash:           return "splashAlpha"
-        case .loadingSpinner:   return "loadingSpinner"
-        case .zapMedium:        return "zap-medium"
+        case .iconZap:              return "iconZap"
+        case .iconLike:             return "iconLike"
+        case .splash:               return "splashAlpha"
+        case .loadingSpinner:       return "loadingSpinner"
+        case .loadingSpinnerBlue:   return "loadingSpinnerBlue"
+        case .zapMedium:        	return "zap-medium"
         }
     }
     
@@ -38,13 +40,17 @@ enum AnimationType {
     }
 }
 
-final class LoadingSpinnerView: LottieAnimationView {
+final class LoadingSpinnerView: LottieAnimationView, Themeable {
     init() {
-        super.init(animation: AnimationType.loadingSpinner.animation)
+        super.init(animation: Theme.current.loadingSpinnerAnimation.animation)
         loopMode = .loop
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        animation = Theme.current.loadingSpinnerAnimation.animation
     }
 }
