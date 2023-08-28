@@ -118,13 +118,13 @@ private extension LinkPreview {
         subtitleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         subtitleLabel.textColor = .foreground4
         
-        titleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        titleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .semibold)
         titleLabel.textColor = .foreground
-        titleLabel.numberOfLines = 0
+        titleLabel.numberOfLines = 4
         
         textLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         textLabel.textColor = .foreground4
-        textLabel.numberOfLines = 0
+        textLabel.numberOfLines = 4
         
         addInteraction(UIContextMenuInteraction(delegate: self))
     }

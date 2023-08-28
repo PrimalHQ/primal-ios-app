@@ -23,6 +23,8 @@ final class FeedManager {
     let postsEmitter: PassthroughSubject<PostRequestResult, Never> = .init()
     
     @Published var currentFeed: String = ""
+    
+    let newParsedPosts: PassthroughSubject<[ParsedContent], Never> = .init()
     @Published var parsedPosts: [ParsedContent] = []
     @Published var searchPaginationEvent: PrimalSearchPagination?
     
@@ -119,6 +121,7 @@ final class FeedManager {
                 didReachEnd = true
             }
             
+            self.newParsedPosts.send(sorted)
             self.parsedPosts.append(contentsOf: sorted)
             self.isRequestingNewPage = false
         }

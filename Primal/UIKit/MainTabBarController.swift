@@ -32,6 +32,8 @@ final class MainTabBarController: UIViewController, Themeable {
     }
 
     let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
+    
+    lazy var vStack = UIStackView(arrangedSubviews: [buttonStack, safeAreaSpacer])
     let safeAreaSpacer = UIView()
     let closeMenuButton = UIButton()
 
@@ -89,7 +91,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
-        closeMenuButton.setImage(UIImage(named: "tabIcon\(buttonIndex + 1)")?.scalePreservingAspectRatio(size: 20), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon\(buttonIndex + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
             self.closeMenuButton.alpha = 1
@@ -107,6 +109,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
     func updateTheme() {
         view.backgroundColor = .background
+        safeAreaSpacer.backgroundColor = .background
 
         notificationIndicator.image = Theme.current.tabBarDotImage
         
@@ -126,31 +129,13 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
-            buttonStack.alpha = hidden ? 0 : 1
-            buttonStack.isHidden = hidden
             notificationIndicator.alpha = hidden ? 0 : 1
-            safeAreaSpacer.isHidden = hidden
-            
-            if !hidden {
-                buttonStack.transform = .identity
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
-                    self.buttonStack.transform = .init(translationX: 0, y: self.view.bounds.height)
-                })
-            }
-            
+            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             return
         }
         
-        if !hidden {
-            buttonStack.transform = .init(translationX: 0, y: view.bounds.height)
-        }
-        
         UIView.animate(withDuration: 0.3) {
-            self.buttonStack.isHidden = hidden
-            self.buttonStack.alpha = hidden ? 0 : 1
-            self.buttonStack.transform = .identity
-            self.safeAreaSpacer.isHidden = hidden
+            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
             self.notificationIndicator.alpha = hidden ? 0 : 1
         }
     }
@@ -182,13 +167,14 @@ final class MainTabBarController: UIViewController, Themeable {
 private extension MainTabBarController {
     func setup() {
         updateTheme()
-
-        let vStack = UIStackView(arrangedSubviews: [pageVC.view, buttonStack, safeAreaSpacer])
+        
         pageVC.willMove(toParent: self)
         addChild(pageVC) // Add child VC
-
+        view.addSubview(pageVC.view)
+        pageVC.view.pinToSuperview()
+        
         view.addSubview(vStack)
-        vStack.pinToSuperview()
+        vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         view.addSubview(notificationIndicator)
@@ -206,9 +192,9 @@ private extension MainTabBarController {
         vStack.axis = .vertical
 
         view.addSubview(closeMenuButton)
-        closeMenuButton.constrainToSize(width: 56, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
+        closeMenuButton.constrainToSize(width: 70, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
 
-        closeMenuButton.setImage(UIImage(named: "tabIcon1"), for: .normal)
+        closeMenuButton.setImage(UIImage(named: "tabIcon1")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         closeMenuButton.isHidden = true
 
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
@@ -254,7 +240,7 @@ private extension MainTabBarController {
         }
 
         for (index, button) in buttons.enumerated() {
-            button.setImage(UIImage(named: "tabIcon\(index + 1)")?.scalePreservingAspectRatio(size: 20), for: .normal)
+            button.setImage(UIImage(named: "tabIcon\(index + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         }
 
         buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW

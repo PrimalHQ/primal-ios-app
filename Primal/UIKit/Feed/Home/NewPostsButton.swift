@@ -11,9 +11,12 @@ final class NewPostsButton: MyButton, Themeable {
     private let avatars: [UIImageView] = (0..<3).map { _ in UIImageView(image: UIImage(named: "Profile")) }
     private let label = UILabel()
     
+    lazy var avatarStack = UIStackView(avatars)
+    lazy var stack = UIStackView([avatarStack, label])
+    
     override var isPressed: Bool {
         didSet {
-            alpha = isPressed ? 0.5 : 1
+            stack.alpha = isPressed ? 0.5 : 1
         }
     }
     
@@ -33,8 +36,6 @@ final class NewPostsButton: MyButton, Themeable {
             $0.contentMode = .scaleAspectFill
         }
         
-        let avatarStack = UIStackView(avatars)
-        let stack = UIStackView([avatarStack, label])
         
         avatarStack.alignment = .center
         avatarStack.spacing = -8

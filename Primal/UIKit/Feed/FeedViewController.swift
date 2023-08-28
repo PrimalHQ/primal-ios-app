@@ -143,7 +143,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         lastContentOffset = scrollView.contentOffset.y
     }
     
-    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool { isShowingBars }
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool { isShowingBars && shouldShowBars }
     
     func animateBars() {
         let shouldShowBars = scrollDirectionCounter >= 0
@@ -152,7 +152,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         isAnimatingBars = true
         table.bounces = shouldShowBars
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(900)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
             self.isShowingBars = shouldShowBars
             self.isAnimatingBars = false
         }
@@ -163,10 +163,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         let shouldMoveOffset = safeAreaSpacer.superview != nil
         
-        if shouldShowBars {
-            mainTabBarController?.buttonStack.alpha = 1
-            mainTabBarController?.notificationIndicator.alpha = 1
-        } else {
+        if !shouldShowBars {
             // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
             safeAreaSpacer.isHidden = oldValue
             if shouldMoveOffset {
@@ -174,9 +171,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             }
         }
         
-        mainTabBarController?.setTabBarHidden(oldValue, animated: true)
-        
         UIView.animate(withDuration: 0.3) {
+            self.mainTabBarController?.setTabBarHidden(oldValue, animated: false)
             self.navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
         } completion: { _ in
             if shouldShowBars {

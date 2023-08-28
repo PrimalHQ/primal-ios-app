@@ -50,7 +50,7 @@ final class MuteManager {
                     for tag in nostrContent.tags {
                         self.muteList.insert(tag[1])
                     }
-                case .categoryList:
+                case .categoryList, .mediaMetadata, .userScore, .metadata:
                     // Ignore apps who don't use default NIP standard for mute lists
                     break
                 default:

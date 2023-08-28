@@ -130,9 +130,6 @@ class PostCell: UITableViewCell {
             repostIndicator.isHidden = true
         }
         
-        mainLabel.attributedText = content.attributedText
-        mainImages.imageResources = content.imageResources
-        
         imageAspectConstraint?.isActive = false
         if let first = content.imageResources.first?.variants.first {
             let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
@@ -145,6 +142,9 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         }
+        
+        mainLabel.attributedText = content.attributedText
+        mainImages.imageResources = content.imageResources
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
         zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
@@ -237,6 +237,7 @@ private extension PostCell {
         
         mainImages.layer.cornerRadius = 8
         mainImages.layer.masksToBounds = true
+        mainImages.backgroundColor = .background2
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
