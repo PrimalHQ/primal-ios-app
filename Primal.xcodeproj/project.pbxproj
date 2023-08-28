@@ -227,8 +227,10 @@
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
+		C1AF02811D5F3AE7312A0B38 /* NostrCachesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0F860422AE372F90223B /* NostrCachesRequest.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
 		C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */; };
+		C1AF0C770034B3E7F7D6F937 /* NostrCachesShuffledRoundRobinIterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0A8A9FF5F3536DF8CA7E /* NostrCachesShuffledRoundRobinIterator.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
 /* End PBXBuildFile section */
 
@@ -502,9 +504,11 @@
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
+		C1AF0A8A9FF5F3536DF8CA7E /* NostrCachesShuffledRoundRobinIterator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrCachesShuffledRoundRobinIterator.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0D4587DEC08B64587ED3 /* ProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
+		C1AF0F860422AE372F90223B /* NostrCachesRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrCachesRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -818,6 +822,8 @@
 			children = (
 				93F27D9D2A27DE32004ADA55 /* Connection.swift */,
 				9309D22D2A5EA7C500FD2127 /* TemporaryConnection.swift */,
+				C1AF0F860422AE372F90223B /* NostrCachesRequest.swift */,
+				C1AF0A8A9FF5F3536DF8CA7E /* NostrCachesShuffledRoundRobinIterator.swift */,
 			);
 			path = CacheServer;
 			sourceTree = "<group>";
@@ -1629,6 +1635,8 @@
 				C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */,
 				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
+				C1AF02811D5F3AE7312A0B38 /* NostrCachesRequest.swift in Sources */,
+				C1AF0C770034B3E7F7D6F937 /* NostrCachesShuffledRoundRobinIterator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
