@@ -34,7 +34,7 @@ final class NotificationsViewController: FeedViewController {
         }
     }
     
-    var continousConnection: ContinousConnection? {
+    var continousConnection: ContinuousConnection? {
         didSet {
             oldValue?.end()
         }
@@ -48,7 +48,7 @@ final class NotificationsViewController: FeedViewController {
         super.init()
         
         Connection.instance.$isConnected.filter { $0 }.sink { [weak self] _ in
-            self?.continousConnection = Connection.instance.requestCacheContinous(name: "notification_counts", request: .object([
+            self?.continousConnection = Connection.instance.requestCacheContinuous(name: "notification_counts", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in
                 guard let resDict = response.arrayValue?.last?.objectValue else { return }

@@ -11,11 +11,11 @@ import NWWebSocket
 import Network
 import GenericJSON
 
-struct ContinousConnection {
+struct ContinuousConnection {
     let id: String
     
     func end() {
-        Connection.instance.endContinous(id)
+        Connection.instance.endContinuous(id)
     }
 }
 
@@ -30,7 +30,7 @@ final class Connection {
     private var subHandlers: [String: ([JSON]) -> Void] = [:]
     private var responseBuffer: [String: [JSON]] = [:]
     
-    private var continousSubHandlers: [String: (JSON) -> Void] = [:]
+    private var continuousSubHandlers: [String: (JSON) -> Void] = [:]
     
     private init() {
         self.connect()
@@ -101,21 +101,21 @@ final class Connection {
     }
     
     
-    func requestCacheContinous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+    func requestCacheContinuous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinuousConnection {
         if let request {
-            return requestContinous(.object([
+            return requestContinuous(.object([
                 "cache" : .array(
                     [.string(name), request]
                 )
             ]), handler)
         } else {
-            return requestContinous(.object([
+            return requestContinuous(.object([
                 "cache" : .array([.string(name)])
             ]), handler)
         }
     }
     
-    func requestContinous(_ request: JSON, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+    func requestContinuous(_ request: JSON, _ handler: @escaping (JSON) -> Void) -> ContinuousConnection {
         let subId = UUID().uuidString
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
@@ -126,14 +126,13 @@ final class Connection {
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
             print("REQUEST:\n\(jsonStr)")
-//            self.continousConnectionIds.formUnion([subId])
-            self.continousSubHandlers[subId] = handler
+            self.continuousSubHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
         }
         return .init(id: subId)
     }
     
-    func endContinous(_ id: String) {
+    func endContinuous(_ id: String) {
         let json = JSON.array([.string("CLOSE"), .string(id)])
         Self.dispatchQueue.async {
             guard let jsonData = try? self.jsonEncoder.encode(json) else {
@@ -143,7 +142,7 @@ final class Connection {
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
             print("REQUEST:\n\(jsonStr)")
-            self.continousSubHandlers[id] = nil
+            self.continuousSubHandlers[id] = nil
             self.socket?.send(string: jsonStr)
         }
     }
@@ -161,7 +160,7 @@ final class Connection {
             if responseBuffer.keys.contains(subId) {
                 responseBuffer[subId]?.append(json)
             } else {
-                continousSubHandlers[subId]?(json)
+                continuousSubHandlers[subId]?(json)
             }
         } else if type == "EOSE" {
             if let handler = subHandlers[subId], let b = responseBuffer[subId] {
