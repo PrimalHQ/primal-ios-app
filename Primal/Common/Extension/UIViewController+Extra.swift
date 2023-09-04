@@ -30,6 +30,14 @@ extension UIViewController {
         return UIBarButtonItem(customView: button)
     }
     
+    var customRedBackButton: UIBarButtonItem {
+        let button = UIButton()
+        button.setImage(SunriseWave.instance.backButtonImage, for: .normal)
+        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.constrainToSize(44)
+        return UIBarButtonItem(customView: button)
+    }
+    
     func findInChildren<T>() -> T? {
         for child in children {
             if let t = child as? T ?? child.findInChildren() {

@@ -13,7 +13,7 @@ protocol FollowSectionHeaderDelegate: AnyObject {
 
 final class FollowSectionHeader: UITableViewHeaderFooterView {
     let title = UILabel()
-    let followAll = FollowButton("Follow All", "Unfollow All")
+    let followAll = FollowButton("Follow All", "Unfollow All", colors: SunsetWave.instance.gradient)
     
     weak var delegate: FollowSectionHeaderDelegate?
     

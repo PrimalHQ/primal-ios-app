@@ -47,9 +47,9 @@ final class OnboardingProfileController: UIViewController {
     let twitterView = LargeProfileView()
     let successLabel = UILabel()
     let instructionLabel = UILabel()
-    let continueButton = GradientBackgroundUIButton(title: "Create Nostr account").constrainToSize(height: 58)
+    let continueButton = GradientBackgroundUIButton(title: "Create Nostr account", colors: SunsetWave.instance.gradient).constrainToSize(height: 58)
     let keychainInfo = KeyKeychainInfoView()
-    let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 100)
+    let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 70)
     
     var isUploading: Bool = false {
         didSet {

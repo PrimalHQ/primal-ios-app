@@ -8,20 +8,20 @@ import GenericJSON
 
 final class MuteManager {
     private init() {}
-    private var muteList: Set<String> = []
+    private(set) var muteList: Set<String> = []
 
     static let instance = MuteManager()
 
     func isMuted(_ pubkey: String) -> Bool { muteList.contains(pubkey) }
 
-    func toggleMute(_ pubkey: String) {
+    func toggleMute(_ pubkey: String, callback: (() -> Void)? = nil) {
         if isMuted(pubkey) {
             muteList.remove(pubkey)
         } else {
             muteList.insert(pubkey)
         }
 
-        updateMuteList(muteList)
+        updateMuteList(muteList, callback: callback)
     }
 
     func requestMuteList(callback: (() -> Void)? = nil) {

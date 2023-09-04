@@ -14,7 +14,14 @@ final class GradientBackgroundUIButton: UIButton {
         }
     }
     
-    init(title: String) {
+    var colors: [UIColor] {
+        didSet {
+            updateBackground()
+        }
+    }
+    
+    init(title: String, colors: [UIColor] = UIColor.gradient) {
+        self.colors = colors
         super.init(frame: .init(origin: .zero, size: .init(width: 305, height: 58)))
         
         setTitle(title, for: .normal)
@@ -36,7 +43,7 @@ final class GradientBackgroundUIButton: UIButton {
     
     func updateBackground() {
         if isEnabled {
-            backgroundColor = .gradientColor(bounds: bounds.size, startPoint: .init(x: 0, y: 0), endPoint: .init(x: 1, y: 1))
+            backgroundColor = .gradientColor(colors, bounds: bounds.size, startPoint: .init(x: 0, y: 0), endPoint: .init(x: 1, y: 1))
         } else {
             backgroundColor = .init(rgb: 0x181818)
         }
@@ -44,7 +51,14 @@ final class GradientBackgroundUIButton: UIButton {
 }
 
 final class GradientUIButton: UIButton {
-    init(title: String) {
+    var colors: [UIColor] {
+        didSet {
+            updateColors()
+        }
+    }
+    
+    init(title: String, colors: [UIColor] = UIColor.gradient) {
+        self.colors = colors
         super.init(frame: .init(origin: .zero, size: .init(width: 80, height: 20)))
         
         setTitle(title, for: .normal)
@@ -58,10 +72,14 @@ final class GradientUIButton: UIButton {
         
         if size != bounds.size {
             size = bounds.size
-            let gradientColor = UIColor.gradientColor(bounds: size)
-            setTitleColor(gradientColor, for: .normal)
-            setTitleColor(gradientColor?.withAlphaComponent(0.5), for: .highlighted)
+            updateColors()
         }
+    }
+    
+    func updateColors() {
+        let gradientColor = UIColor.gradientColor(colors, bounds: size)
+        setTitleColor(gradientColor, for: .normal)
+        setTitleColor(gradientColor?.withAlphaComponent(0.5), for: .highlighted)
     }
     
     required init?(coder: NSCoder) {

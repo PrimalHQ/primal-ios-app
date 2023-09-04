@@ -34,6 +34,7 @@ final class SearchViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.navigationBar.transform = .identity
         
         searchView.inputField.becomeFirstResponder()
     }

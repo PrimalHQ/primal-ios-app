@@ -49,7 +49,6 @@ private extension LinkPreview {
             imageView.kf.setImage(with: metadata.url(for: .large))
             imageView.isHidden = false
             
-            
             let aspectMultiplier: CGFloat = {
                 guard let variant = metadata.variants.first else { return 1 }
                 

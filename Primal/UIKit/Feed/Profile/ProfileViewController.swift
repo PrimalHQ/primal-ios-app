@@ -23,8 +23,13 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
+    var followsUser = false {
+        didSet {
+            table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+        }
+    }
+    
     private let navigationBar = ProfileNavigationView()
-    private let loadingSpinner = LoadingSpinnerView()
     
     override var postSection: Int { 1 }
     
@@ -49,7 +54,6 @@ final class ProfileViewController: PostFeedViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
     }
     
@@ -58,6 +62,7 @@ final class ProfileViewController: PostFeedViewController {
         
         table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileInfoCell.self, forCellReuseIdentifier: postCellID + "profile")
+        table.register(MutedUserCell.self, forCellReuseIdentifier: postCellID + "muted")
         table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 0, right: 0)
     }
     
@@ -66,7 +71,10 @@ final class ProfileViewController: PostFeedViewController {
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? 1 : super.tableView(tableView, numberOfRowsInSection: section)
+        if section == 0 {
+            return MuteManager.instance.isMuted(profile.data.pubkey) ? 2 : 1
+        }
+        return super.tableView(tableView, numberOfRowsInSection: section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -74,8 +82,17 @@ final class ProfileViewController: PostFeedViewController {
             return super.tableView(tableView, cellForRowAt: indexPath)
         }
         
+        guard indexPath.row == 0 else {
+            let cell = table.dequeueReusableCell(withIdentifier: postCellID + "muted", for: indexPath)
+            if let cell = cell as? MutedUserCell {
+                cell.delegate = self
+                cell.update(user: profile.data)
+            }
+            return cell
+        }
+        
         let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
-        (cell as? ProfileInfoCell)?.update(user: profile.data, stats: userStats, delegate: self)
+        (cell as? ProfileInfoCell)?.update(user: profile.data, stats: userStats, followsUser: followsUser, delegate: self)
         return cell
     }
     
@@ -89,6 +106,14 @@ final class ProfileViewController: PostFeedViewController {
         
         let offest = -scrollView.contentOffset.y
         navigationBar.updateSize(offest - navigationBar.maxSize)
+    }
+    
+    override func updateBars() {
+        let shouldShowBars = shouldShowBars
+        
+        super.updateBars()
+        
+        navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -200)
     }
     
     override func animateBars() {
@@ -120,11 +145,7 @@ private extension ProfileViewController {
             }
             .store(in: &cancellables)
         
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview(axis: .horizontal).constrainToSize(100)
-        loadingSpinner.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 200).isActive = true
-        loadingSpinner.isHidden = false
-        loadingSpinner.play()
+        loadingSpinner.transform = .init(translationX: 0, y: 200)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
@@ -158,6 +179,18 @@ private extension ProfileViewController {
 
     func requestUserProfile() {
         let profile = self.profile
+        
+        SocketRequest(name: "is_user_following", payload: [
+            "pubkey": .string(profile.data.pubkey),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
+            self?.followsUser = result.isFollowingUser ?? false
+        }
+        .store(in: &cancellables)
+        
         Connection.dispatchQueue.async {
             let request: JSON = .array([
                 .string("user_profile"),
@@ -214,7 +247,19 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     }
     
     func tappedMuteUser() {
-        MuteManager.instance.toggleMute(profile.data.pubkey)
+        let pubkey = profile.data.pubkey
+        MuteManager.instance.toggleMute(pubkey) { [weak self] in
+            self?.posts = []
+            self?.table.reloadData()
+            
+            if !MuteManager.instance.isMuted(pubkey) {
+                self?.loadingSpinner.isHidden = false
+                self?.loadingSpinner.play()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                    self?.feed.refresh()
+                }
+            }
+        }
     }
     
     func tappedAddUserFeed() {
@@ -223,6 +268,12 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         view.showUndoToast("\(profile.data.firstIdentifier)'s feed added to the list of feeds") { [self] in
             IdentityManager.instance.removeFeedFromList(hex: profile.data.pubkey)
         }
+    }
+}
+
+extension ProfileViewController: MutedUserCellDelegate {
+    func didTapUnmute() {
+        tappedMuteUser()
     }
 }
 

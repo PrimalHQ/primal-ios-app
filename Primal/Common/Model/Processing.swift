@@ -69,6 +69,7 @@ extension PostRequestResult {
         var text: String = post.content
         let result: [String] = text.extractTagsMentionsAndURLs()
         var imageURLs: [String] = []
+        var videoURLS: [String] = []
         var otherURLs: [String] = []
         var hashtags: [String] = []
         var itemsToRemove: [String] = []
@@ -76,11 +77,16 @@ extension PostRequestResult {
         var markedMentions: [(String, ref: String)] = []
         
         for str in result {
-            if str.isValidURLAndIsImage {
-                imageURLs.append(str)
-                itemsToRemove.append(str)
-            } else if str.isValidURL && !str.isImageURL {
-                otherURLs.append(str)
+            if str.isValidURL {
+                if str.isImageURL {
+                    imageURLs.append(str)
+                    itemsToRemove.append(str)
+                } else if str.isVideoURL {
+                    videoURLS.append(str)
+                    itemsToRemove.append(str)
+                } else {
+                    otherURLs.append(str)
+                }
             } else if str.isNip08Mention || str.isNip27Mention {
                 itemsToReplace.append(str)
             } else if str.isHashtag {
@@ -193,6 +199,11 @@ extension PostRequestResult {
         if p.imageResources.isEmpty {
             p.imageResources = imageURLs.map { .init(url: $0, variants: []) }
         }
+        
+        for string in videoURLS.reversed() {
+            p.imageResources.insert(.init(url: string, variants: []), at: 0)
+        }
+        
         p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }
         p.mentions = markedMentions.compactMap { nsText.position(of: $0.0, reference: $0.ref) }
         p.httpUrls = otherURLs.compactMap { nsText.position(of: $0, reference: $0) }

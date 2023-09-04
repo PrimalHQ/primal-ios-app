@@ -10,6 +10,8 @@ import UIKit
 import Kingfisher
 
 class NewPostViewController: UIViewController {
+    let postButtonText = "Post"
+    
     let textView = UITextView()
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
@@ -21,7 +23,7 @@ class NewPostViewController: UIViewController {
     let atButton = UIButton()
     lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
     
-    let post = GradientInGradientButton(title: "Post")
+    lazy var postButton = GradientInGradientButton(title: postButtonText)
     
     lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
     
@@ -61,12 +63,16 @@ private extension NewPostViewController {
             return
         }
         
-        post.isEnabled = false
+        postButton.isEnabled = false
+        postButton.titleLabel.text = "Posting..."
         
         PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] success in
-            self?.post.isEnabled = true
             if success {
+                self?.postButton.titleLabel.text = "Posted"
                 self?.dismiss(animated: true)
+            } else {
+                self?.postButton.titleLabel.text = self?.postButtonText
+                self?.postButton.isEnabled = true
             }
         }
     }
@@ -87,8 +93,8 @@ private extension NewPostViewController {
         view.backgroundColor = .background2
         
         let cancel = CancelButton()
-        let topStack = UIStackView(arrangedSubviews: [cancel, UIView(), post])
-        post.constrainToSize(width: 88, height: 32)
+        let topStack = UIStackView(arrangedSubviews: [cancel, UIView(), postButton])
+        postButton.constrainToSize(width: 88, height: 32)
         cancel.constrainToSize(width: 88, height: 32)
         
         topStack.isLayoutMarginsRelativeArrangement = true
@@ -132,13 +138,16 @@ private extension NewPostViewController {
         imagesCollectionView.isHidden = true
         imagesCollectionView.backgroundColor = .background2
         
+        let keyboardConstraint = mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        keyboardConstraint.priority = .defaultHigh // Constraint breaks when dismmising the view controller (keyboard is showing)
+        
         NSLayoutConstraint.activate([
-            mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            keyboardConstraint,
             textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
         ])
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        post.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
@@ -173,6 +182,12 @@ private extension NewPostViewController {
             self.usersTableView.reloadData()
         }
         .store(in: &cancellables)
+        
+        Publishers.CombineLatest3(manager.$users, manager.$images, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
+            guard let self else { return }
+            self.postButton.isEnabled = !isEmpty && !self.manager.isUploadingImages
+        }
+        .store(in: &cancellables)
                 
         Publishers.CombineLatest(manager.$users, manager.$images).receive(on: DispatchQueue.main).sink { [weak self] users, images in
             guard let self else { return }
@@ -180,7 +195,7 @@ private extension NewPostViewController {
             
             self.imagesCollectionView.isHidden = images.isEmpty || !users.isEmpty
             
-            self.post.titleLabel.text = self.manager.isUploadingImages ? "Uploading..." : "Post"
+            self.postButton.titleLabel.text = self.manager.isUploadingImages ? "Uploading..." : self.postButtonText
         }
         .store(in: &cancellables)
     }

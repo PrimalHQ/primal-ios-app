@@ -13,10 +13,13 @@ final class FollowButton: MyButton {
             titleLabel.text = isFollowing ? titles.1 : titles.0
         }
     }
+    
+    let colors: [UIColor]
+    
     let titleLabel = UILabel()
     private let b1 = UIImageView(image: UIImage(named: "followButtonBackgroundBack"))
-    private let b2 = GradientBorderView(
-        gradientColors: UIColor.gradient.withAlphaComponent(0.85),
+    private lazy var b2 = GradientBorderView(
+        gradientColors: colors.withAlphaComponent(0.85),
         backgroundColor: .black,
         cornerRadius: 8
     )
@@ -32,13 +35,14 @@ final class FollowButton: MyButton {
             b1.isHidden = isFollowing
             titleLabel.textColor = isFollowing ? UIColor(rgb: 0xCCCCCC) : .white
             titleLabel.text = isFollowing ? titles.1 : titles.0
-            b2.colors = isFollowing ? [UIColor(rgb: 0x444444), UIColor(rgb: 0x444444)] : UIColor.gradient.withAlphaComponent(0.85)
+            b2.colors = isFollowing ? [UIColor(rgb: 0x444444), UIColor(rgb: 0x444444)] : colors.withAlphaComponent(0.85)
             b2.backgroundColor = isFollowing ? UIColor(rgb: 0x181818) : .black
         }
     }
     
-    init(_ followTitle: String = "Follow", _ unfollowTitle: String = "Unfollow") {
+    init(_ followTitle: String = "Follow", _ unfollowTitle: String = "Unfollow", colors: [UIColor] = UIColor.gradient) {
         self.titles = (followTitle, unfollowTitle)
+        self.colors = colors
         super.init(frame: .zero)
         setup()
     }

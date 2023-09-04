@@ -22,6 +22,7 @@ class ProfileInfoCell: UITableViewCell {
     
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
+    let followsYou = FollowsYouView()
     
     let secondaryLabel = UILabel()
     
@@ -40,10 +41,12 @@ class ProfileInfoCell: UITableViewCell {
         setup()
     }
     
-    func update(user: PrimalUser, stats: NostrUserProfileInfo?, delegate: ProfileInfoCellDelegate?) {
+    func update(user: PrimalUser, stats: NostrUserProfileInfo?, followsUser: Bool, delegate: ProfileInfoCellDelegate?) {
         self.delegate = delegate
         
         primaryLabel.text = user.firstIdentifier
+        
+        followsYou.isHidden = !followsUser
         
         checkboxIcon.isHidden = user.nip05.isEmpty
         checkboxIcon.tintColor = .accent
@@ -86,12 +89,14 @@ private extension ProfileInfoCell {
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
-        let primaryStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
+        let primaryStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, followsYou, UIView()])
         primaryStack.spacing = 4
         primaryStack.alignment = .center
         
         primaryLabel.font = .appFont(withSize: 20, weight: .bold)
         primaryLabel.adjustsFontSizeToFitWidth = true
+        
+        followsYou.isHidden = true
         
         secondaryLabel.font = .appFont(withSize: 14, weight: .regular)
         
@@ -136,5 +141,29 @@ private extension ProfileInfoCell {
     
     @objc func followPressed() {
         delegate?.followPressed(in: self)
+    }
+}
+
+final class FollowsYouView: UIView {
+    let label = UILabel()
+    
+    init() {
+        super.init(frame: .zero)
+        
+        addSubview(label)
+        label.pinToSuperview(edges: .horizontal, padding: 8).centerToSuperview()
+        label.font = .appFont(withSize: 14, weight: .thin)
+        label.text = "follows you"
+        
+        constrainToSize(height: 22)
+        
+        layer.cornerRadius = 4
+        
+        label.textColor = .foreground3
+        backgroundColor = .background3
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

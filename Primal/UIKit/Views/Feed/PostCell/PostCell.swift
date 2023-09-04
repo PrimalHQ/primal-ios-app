@@ -137,14 +137,16 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
+            let multiplier: CGFloat = content.imageResources.first?.url.isVideoURL == true ? (9 / 16) : 1
+            
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.imageResources = content.imageResources
+        mainImages.resources = content.imageResources
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
         zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
@@ -178,7 +180,7 @@ class PostCell: UITableViewCell {
 }
 
 extension PostCell: ImageCollectionViewDelegate {
-    func didTapImage(resource: MediaMetadata.Resource) {
+    func didTapMedia(resource: MediaMetadata.Resource) {
         delegate?.postCellDidTapImages(resource: resource)
     }
 }
@@ -213,6 +215,8 @@ private extension PostCell {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
         
         checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
         

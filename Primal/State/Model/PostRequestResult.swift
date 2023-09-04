@@ -25,6 +25,8 @@ class PostRequestResult {
     
     var popularHashtags: [PopularHashtag] = []
     var notifications: [PrimalNotification] = []
+    
+    var isFollowingUser: Bool?
 }
 
 struct NostrRepost {

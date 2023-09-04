@@ -142,6 +142,14 @@ private extension SocketRequest {
             else { return }
             
             pendingResult.webPreviews.append(webPreview)
+            
+        case .followingUser:
+            guard let contentString = payload["content"]?.stringValue, let isFollowing = Bool(contentString) else {
+                print("Error decoding isFollowing response")
+                return
+            }
+            
+            pendingResult.isFollowingUser = isFollowing
         default:
             print("Unhandled response \(payload)")
         }

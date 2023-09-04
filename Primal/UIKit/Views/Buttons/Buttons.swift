@@ -37,7 +37,6 @@ class MyButton: UIControl {
 final class FancyButton: MyButton {
     let titleLabel = UILabel()
     
-    private let b1 = UIImageView(image: UIImage(named: "fancyButtonBackgroundBack"))
     private let b2 = UIImageView(image: UIImage(named: "fancyButtonBackgroundFront"))
     
     override var isPressed: Bool {
@@ -48,7 +47,6 @@ final class FancyButton: MyButton {
     
     override var isEnabled: Bool {
         didSet {
-            b1.isHidden = !isEnabled
             b2.isHidden = !isEnabled
             
             backgroundColor = isEnabled ? .clear : UIColor(rgb: 0x111111)
@@ -68,9 +66,7 @@ final class FancyButton: MyButton {
     }
     
     func setup() {
-        addSubview(b1)
         addSubview(b2)
-        b1.pinToSuperview(padding: -25)
         b2.pinToSuperview()
         
         addSubview(titleLabel)
@@ -107,13 +103,10 @@ final class BigOnboardingButton: MyButton {
 private extension BigOnboardingButton {
     func setup() {
         layer.masksToBounds = false
-        let background0 = UIImageView(image: UIImage(named: "bigButtonBackgroundBack"))
         let background1 = UIImageView(image: UIImage(named: "bigButtonBackgroundFront"))
         
-        addSubview(background0)
         addSubview(background1)
         
-        background0.pinToSuperview(padding: -25)
         background1.pinToSuperview()
         
         let verticalStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])

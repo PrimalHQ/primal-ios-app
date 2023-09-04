@@ -114,7 +114,7 @@ private extension OnboardingImportTwitterController {
         progressView.pinToSuperview(edges: .vertical).centerToSuperview()
         
         spinnerParent.addSubview(spinner)
-        spinner.pinToSuperview(edges: .vertical).centerToSuperview().constrainToSize(100)
+        spinner.pinToSuperview(edges: .vertical).centerToSuperview().constrainToSize(70)
         
         instruction.font = .appFont(withSize: 20, weight: .regular)
         instruction.textColor = .init(rgb: 0xAAAAAA)

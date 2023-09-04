@@ -45,6 +45,7 @@ private extension SettingsMainViewController {
         let keys = SettingsOptionButton(title: "Keys")
         let wallet = SettingsOptionButton(title: "Wallet")
         let appearance = SettingsOptionButton(title: "Appearance")
+        let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
         let network = SettingsOptionButton(title: "Network")
         let feeds = SettingsOptionButton(title: "Feeds")
@@ -59,7 +60,7 @@ private extension SettingsMainViewController {
         zaps.isEnabled = LoginManager.instance.method() == .nsec
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, appearance, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
@@ -96,6 +97,10 @@ private extension SettingsMainViewController {
         
         appearance.addAction(.init(handler: { [weak self] _ in
             self?.show(SettingsAppearanceViewController(), sender: nil)
+        }), for: .touchUpInside)
+        
+        muted.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsMutedViewController(), sender: nil)
         }), for: .touchUpInside)
         
         notifications.addAction(.init(handler: { [weak self] _ in

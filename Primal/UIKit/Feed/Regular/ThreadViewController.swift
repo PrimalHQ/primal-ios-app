@@ -44,8 +44,11 @@ final class ThreadViewController: PostFeedViewController {
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
+    private let bottomBarSpacer = UIView()
     
-    private let postButton = GradientInGradientButton(title: "Reply")
+    private let postButtonText = "Reply"
+    
+    private lazy var postButton = GradientInGradientButton(title: postButtonText)
     private let buttonStack = UIStackView()
     private let replyingToLabel = UILabel()
     
@@ -70,6 +73,9 @@ final class ThreadViewController: PostFeedViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
         didLoadView = true
+        
+        view.bringSubviewToFront(loadingSpinner)
+        loadingSpinner.play()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -145,22 +151,46 @@ final class ThreadViewController: PostFeedViewController {
         replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.data.name)
     }
     
+    override func updateBars() {
+        guard posts.count > 10 else { return }
+        
+        let shouldShowBars = shouldShowBars
+        
+        super.updateBars()
+        
+        inputParent.isHidden = !shouldShowBars
+        bottomBarSpacer.isHidden = !shouldShowBars
+        inputParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 300)
+        inputParent.alpha = shouldShowBars ? 1 : 0
+    }
+    
     override func animateBars() {
         guard posts.count > 10 else { return }
         let shouldShowBars = shouldShowBars
         
         super.animateBars()
         
-        if shouldShowBars {
-            self.inputParent.isHidden = false
+        if !shouldShowBars {
+            inputParent.isHidden = true
+            bottomBarSpacer.isHidden = true
         }
         
         UIView.animate(withDuration: 0.3) {
+            self.inputParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 300)
             self.inputParent.alpha = shouldShowBars ? 1 : 0
         } completion: { _ in
-            if !shouldShowBars {
-                self.inputParent.isHidden = true
+            if shouldShowBars {
+                self.inputParent.isHidden = false
+                self.bottomBarSpacer.isHidden = false
             }
+        }
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
+        if inputManager.isEditing {
+            shouldShowBars = true
         }
     }
 }
@@ -224,6 +254,10 @@ private extension ThreadViewController {
             self.mainPositionInThread = postsBefore.count
             
             self.refreshControl.endRefreshing()
+            if !parsed.isEmpty {
+                self.loadingSpinner.stop()
+                self.loadingSpinner.isHidden = true
+            }
             
             self.didLoadData = true
             
@@ -302,7 +336,13 @@ private extension ThreadViewController {
         inputManager.$images.receive(on: DispatchQueue.main).sink { [weak self] images in
             self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
-            self?.postButton.titleLabel.text = self?.inputManager.isUploadingImages == true ? "Uploading..." : "Reply"
+            self?.postButton.titleLabel.text = self?.inputManager.isUploadingImages == true ? "Uploading..." : self?.postButtonText
+        }
+        .store(in: &cancellables)
+        
+        Publishers.CombineLatest(inputManager.$images, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] _, isEmpty in
+            guard let self else { return }
+            self.postButton.isEnabled = !isEmpty && !self.inputManager.isUploadingImages
         }
         .store(in: &cancellables)
         
@@ -325,8 +365,10 @@ private extension ThreadViewController {
         title = "Thread"
         
         table.keyboardDismissMode = .interactive
+        table.contentInset = .init(top: 0, left: 0, bottom: 50, right: 0)
         
         stack.addArrangedSubview(inputParent)
+        stack.addArrangedSubview(bottomBarSpacer)
         
         inputBackground.layer.cornerRadius = 6
         
@@ -364,6 +406,12 @@ private extension ThreadViewController {
             .pinToSuperview(edges: .horizontal, padding: 20)
             .pinToSuperview(edges: .top, padding: 16)
             .pinToSuperview(edges: .bottom)
+        
+        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        bottomC.priority = .defaultLow
+        bottomC.isActive = true
+        
+        bottomBarSpacer.topAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
         inputStack.spacing = 4
         inputStack.setCustomSpacing(8, after: replyingToLabel)
