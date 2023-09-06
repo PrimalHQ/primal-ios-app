@@ -20,10 +20,10 @@ final class RepostedIndicatorView: MyButton {
         ])
         
         stack.alignment = .center
-        stack.spacing = 6
+        stack.spacing = 4
         
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        nameLabel.textColor = .accent
+        nameLabel.textColor = .foreground3
         nameLabel.adjustsFontSizeToFitWidth = true
         
         repostedLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
@@ -33,7 +33,7 @@ final class RepostedIndicatorView: MyButton {
         repostedImageView.tintColor = .foreground3
         
         addSubview(stack)
-        stack.pinToSuperview()
+        stack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -7)
     }
     
     func update(user: PrimalUser) {

@@ -27,7 +27,7 @@ final class OnboardingImportTwitterController: UIViewController {
     private lazy var input = BorderedTextField(showAtSymbol: true)
     private lazy var infoLabel = UILabel()
     private lazy var spinner = LoadingSpinnerView()
-    private lazy var confirmButton = FancyButton(title: "Find Twitter profile")
+    private lazy var confirmButton = GradientBackgroundUIButton(title: "Find Twitter profile", colors: SunsetWave.instance.gradient).constrainToSize(height: 58)
     private lazy var instruction = UILabel()
     private lazy var textStack = UIStackView(arrangedSubviews: [instruction, input, infoLabel])
     private let spinnerParent = UIView()

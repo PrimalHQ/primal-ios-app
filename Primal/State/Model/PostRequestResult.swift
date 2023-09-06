@@ -26,6 +26,8 @@ class PostRequestResult {
     var popularHashtags: [PopularHashtag] = []
     var notifications: [PrimalNotification] = []
     
+    var encryptedMessages: [String] = []
+    
     var isFollowingUser: Bool?
 }
 

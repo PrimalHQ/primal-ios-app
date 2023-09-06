@@ -201,7 +201,9 @@ extension PostRequestResult {
         }
         
         for string in videoURLS.reversed() {
-            p.imageResources.insert(.init(url: string, variants: []), at: 0)
+            if !p.imageResources.contains(where: { $0.url == string }) {
+                p.imageResources.insert(.init(url: string, variants: []), at: 0)
+            }
         }
         
         p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }

@@ -78,13 +78,14 @@ private extension DefaultFeedCell {
     func setup() {
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
+            nameStack, textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), buttonStackStandIn
         ])
         
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, contentStack])
         
         mainStack.addArrangedSubview(horizontalStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
+        mainStack.setCustomSpacing(7, after: repostIndicator)
         
         contentStack.spacing = 6
         

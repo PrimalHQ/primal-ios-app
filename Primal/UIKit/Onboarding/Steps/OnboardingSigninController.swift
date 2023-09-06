@@ -22,7 +22,7 @@ final class OnboardingSigninController: UIViewController {
     lazy var infoLabel = UILabel()
     lazy var placeholderLabel = UILabel()
     
-    lazy var confirmButton = FancyButton(title: "Paste your key")
+    lazy var confirmButton = GradientBackgroundUIButton(title: "Paste your key", colors: SunsetWave.instance.gradient).constrainToSize(height: 58)
     
     private var foregroundObserver: NSObjectProtocol?
     
@@ -63,14 +63,14 @@ private extension OnboardingSigninController {
     func updateView() {
         switch state {
         case .ready:
-            confirmButton.titleLabel.text = "Paste your key"
+            confirmButton.setTitle("Paste your key", for: .normal)
             progressView.progress = 1
             
             textViewParent.layer.borderWidth = 0
             textView.isEditable = true
             infoLabel.isHidden = true
         case .invalidKey:
-            confirmButton.titleLabel.text = "Paste new key"
+            confirmButton.setTitle("Paste new key", for: .normal)
             progressView.progress = 1
             
             textViewParent.layer.borderColor = UIColor(rgb: 0xE20505).withAlphaComponent(0.5).cgColor
@@ -81,7 +81,7 @@ private extension OnboardingSigninController {
             
             textView.isEditable = true
         case .validKey:
-            confirmButton.titleLabel.text = "Sign In"
+            confirmButton.setTitle("Sign In", for: .normal)
             progressView.progress = 2
             
             textViewParent.layer.borderColor = UIColor(rgb: 0x66E205).withAlphaComponent(0.5).cgColor

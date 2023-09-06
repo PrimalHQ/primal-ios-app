@@ -40,14 +40,19 @@ final class HomeFeedViewController: PostFeedViewController {
     
     func updatePosts(_ oldValue: Int) {
         if newPosts != 0 {
-            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts).prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts.prefix(newAddedPosts)).compactMap { $0.user.profileImage.url(for: .small) })
         }
         
         if newPosts == 0 {
             UIView.animate(withDuration: 0.3) {
                 self.newPostsView.alpha = 0
+            } completion: { finished in
+                if finished {
+                    self.newPostsViewParent.isHidden = true
+                }
             }
         } else if oldValue == 0 {
+            newPostsViewParent.isHidden = false
             UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
                 self.newPostsView.alpha = 1
             }
@@ -86,6 +91,7 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
         newPostsView.alpha = 0
+        newPostsViewParent.isHidden = true
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }

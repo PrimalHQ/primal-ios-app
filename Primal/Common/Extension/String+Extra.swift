@@ -60,7 +60,11 @@ extension String : Identifiable {
     }
     
     var isVideoURL: Bool {
-        hasSuffix(".mov") || hasSuffix(".mp4") || isYoutubeVideo
+        isVideoButNotYoutube || isYoutubeVideo
+    }
+    
+    var isVideoButNotYoutube: Bool {
+        hasSuffix(".mov") || hasSuffix(".mp4")
     }
     
     var isYoutubeVideo: Bool {

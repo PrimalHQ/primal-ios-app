@@ -137,7 +137,7 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let multiplier: CGFloat = content.imageResources.first?.url.isVideoURL == true ? (9 / 16) : 1
+            let multiplier: CGFloat = content.imageResources.first?.url.isVideoButNotYoutube == true ? (9 / 16) : 1
             
             let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh
@@ -195,7 +195,7 @@ private extension PostCell {
     func setup() {
         contentView.backgroundColor = .background
         contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 2)
+        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 1)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -251,14 +251,13 @@ private extension PostCell {
         }
         imageAspectConstraint = height
         
-        linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
+        linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
+        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         
         backgroundColorView.backgroundColor = .background2
-        backgroundColorView.layer.cornerRadius = 8
-        backgroundColorView.layer.masksToBounds = true
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
         

@@ -25,15 +25,21 @@ class SettingsMutedViewController: UIViewController, Themeable {
         view.addSubview(table)
         table.pinToSuperview(safeArea: true)
         
-        mutedUserNPUBs = MuteManager.instance.muteList.sorted()
-        
         table.dataSource = self
+        table.delegate = self
         table.register(UnmuteUserCell.self, forCellReuseIdentifier: "cell")
         table.register(EmptyMuteListCell.self, forCellReuseIdentifier: "empty")
         table.separatorStyle = .none
-        table.allowsSelection = false
         
         updateTheme()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        
+        mutedUserNPUBs = MuteManager.instance.muteList.sorted()
         
         SocketRequest(name: "user_infos", payload: .object(["pubkeys": .array(mutedUserNPUBs.map { .string($0) })])).publisher()
             .receive(on: DispatchQueue.main)
@@ -94,6 +100,14 @@ extension SettingsMutedViewController: UITableViewDataSource {
         cell.usernameLabel.text = nostrData.nip05
         
         return cell
+    }
+}
+
+extension SettingsMutedViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let user = loadedUsers[mutedUserNPUBs[indexPath.row]] else { return }
+        let profile = ProfileViewController(profile: .init(data: user))
+        show(profile, sender: nil)
     }
 }
 

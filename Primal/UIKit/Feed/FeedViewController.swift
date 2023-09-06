@@ -11,6 +11,7 @@ import UIKit
 import SwiftUI
 import SafariServices
 import Lottie
+import Kingfisher
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let refreshControl = UIRefreshControl()
@@ -113,6 +114,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             )
             cell.delegate = self
         }
+        
+        if let postToPreload = posts[safe: indexPath.row + 10], let url = postToPreload.imageResources.first?.url(for: .large), url.absoluteString.isImageURL {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
+        
         return cell
     }
     
