@@ -18,6 +18,9 @@
 		9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */; };
 		9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */; };
 		932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */; };
+		933B85722A9E027900C48FF6 /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = 933B85712A9E027900C48FF6 /* FLAnimatedImage */; };
+		933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 933B85742A9F6EC400C48FF6 /* CryptoSwift */; };
+		933B85772A9F6EE300C48FF6 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B85762A9F6EE300C48FF6 /* Utils.swift */; };
 		933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */ = {isa = PBXBuildFile; productRef = 933DBDB22A1126CE008DCF1F /* secp256k1 */; };
 		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
 		933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */; };
@@ -259,6 +262,7 @@
 		9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrKeypair.swift; sourceTree = "<group>"; };
 		9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NostrObject+Extra.swift"; sourceTree = "<group>"; };
+		933B85762A9F6EE300C48FF6 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
 		933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedContent.swift; sourceTree = "<group>"; };
 		9344DB302A1D28EB00C9F281 /* NostrKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrKind.swift; sourceTree = "<group>"; };
@@ -514,6 +518,7 @@
 			files = (
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				930497AC29FAD9FD003938F2 /* secp256k1 in Frameworks */,
+				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
@@ -528,6 +533,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				933DBDB32A1126CE008DCF1F /* secp256k1 in Frameworks */,
+				933B85722A9E027900C48FF6 /* FLAnimatedImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -589,6 +595,7 @@
 				93906B932A55B5D000962A94 /* NostrObject.swift */,
 				932D84DA2A5755FE007DA0E8 /* NostrObject+Extra.swift */,
 				9309D2342A5EAFDF00FD2127 /* NostrKeypair.swift */,
+				933B85762A9F6EE300C48FF6 /* Utils.swift */,
 			);
 			path = Nostr;
 			sourceTree = "<group>";
@@ -1291,6 +1298,7 @@
 				9E83DF5E2A53308200F2C379 /* FLAnimatedImage */,
 				9309D2302A5EA7EF00FD2127 /* KeychainAccess */,
 				9EF4BFBF2A8A633B003396AA /* Nantes */,
+				933B85742A9F6EC400C48FF6 /* CryptoSwift */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -1312,6 +1320,7 @@
 			name = PrimalTests;
 			packageProductDependencies = (
 				933DBDB22A1126CE008DCF1F /* secp256k1 */,
+				933B85712A9E027900C48FF6 /* FLAnimatedImage */,
 			);
 			productName = PrimalTests;
 			productReference = 9393310229A3E370003954C2 /* PrimalTests.xctest */;
@@ -1372,11 +1381,12 @@
 				9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */,
 				9393312229A3E45E003954C2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9393312529A3E475003954C2 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
-				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */,
+				930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */,
 				9E0DEAEB29FD2F6900145E08 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
 				9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */,
+				933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -1545,7 +1555,6 @@
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
-				9ECCC8922A3CF2A200BE8F62 /* ConnectAlbyButton.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
@@ -1565,6 +1574,7 @@
 				9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
 				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
+				933B85772A9F6EE300C48FF6 /* Utils.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* FeedViewController.swift in Sources */,
@@ -1983,7 +1993,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */ = {
+		930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jb55/secp256k1.swift";
 			requirement = {
@@ -1997,6 +2007,14 @@
 			requirement = {
 				branch = master;
 				kind = branch;
+			};
+		};
+		933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */ = {
@@ -2052,7 +2070,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		930497AB29FAD9FD003938F2 /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
 		};
 		9309D2302A5EA7EF00FD2127 /* KeychainAccess */ = {
@@ -2060,9 +2078,19 @@
 			package = 9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
 		};
+		933B85712A9E027900C48FF6 /* FLAnimatedImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9E83DF5D2A53308200F2C379 /* XCRemoteSwiftPackageReference "FLAnimatedImage" */;
+			productName = FLAnimatedImage;
+		};
+		933B85742A9F6EC400C48FF6 /* CryptoSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			productName = CryptoSwift;
+		};
 		933DBDB22A1126CE008DCF1F /* secp256k1 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1.swift" */;
+			package = 930497AA29FAD9FD003938F2 /* XCRemoteSwiftPackageReference "secp256k1" */;
 			productName = secp256k1;
 		};
 		9393312029A3E44D003954C2 /* GenericJSON */ = {
