@@ -10,7 +10,6 @@ import UIKit
 final class RegularFeedViewController: PostFeedViewController {
     
     let addFeedButton = UIButton()
-    let loadingSpinner = LoadingSpinnerView()
     
     var feedHex: String { "search;\(feed.searchTerm ?? "")" }
     var didAddToFeed: Bool {
@@ -47,9 +46,6 @@ final class RegularFeedViewController: PostFeedViewController {
             }
             .store(in: &cancellables)
         
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(100)
-        
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
         }), for: .valueChanged)
@@ -68,7 +64,6 @@ final class RegularFeedViewController: PostFeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
-        view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
     }
     

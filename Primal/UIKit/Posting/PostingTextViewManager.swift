@@ -35,6 +35,7 @@ struct PostingImage {
 
 final class PostingTextViewManager: NSObject {
     @Published var isEditing = false
+    @Published var isEmpty = true
     @Published var userSearchText: String?
     
     @Published var users: [ParsedUser] = []
@@ -171,12 +172,26 @@ extension PostingTextViewManager: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         textView.invalidateIntrinsicContentSize() // Necessary for self sizing text field
         didChangeEvent.send(textView)
+        
+        isEmpty = postingText.isEmpty
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let oldText = textView.text as NSString
         let newText = oldText.replacingCharacters(in: range, with: text) as NSString
         let replacementText = text as NSString
+        
+        if text.containsOnlyEmoji {
+            // This is a workaround for issue 69 - https://github.com/PrimalHQ/primal-ios-app/issues/69
+            DispatchQueue.main.async {
+                UIView.setAnimationsEnabled(false)
+                textView.resignFirstResponder()
+                textView.becomeFirstResponder()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    UIView.setAnimationsEnabled(true)
+                }
+            }
+        }
         
         let cursorPosition = range.location + replacementText.length
         
@@ -207,6 +222,7 @@ extension PostingTextViewManager: UITextViewDelegate {
                     tokens.remove(at: index)
                     updateTokensForReplacingRange(range, replacementText: text)
                     updateText(newText as String, cursorPosition: cursorPosition)
+                    textViewDidChange(textView)
                     return false
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -226,12 +242,14 @@ extension PostingTextViewManager: UITextViewDelegate {
                 currentlyEditingToken = nil
                 updateTokensForReplacingRange(range, replacementText: text)
                 updateText(newText as String, cursorPosition: cursorPosition)
+                textViewDidChange(textView)
                 return false
             }
         case "@":  // Start new user search
             currentlyEditingToken = .init(range: NSRange(location: range.location, length: 1), text: text)
             updateTokensForReplacingRange(range, replacementText: text)
             updateText(newText as String, cursorPosition: cursorPosition)
+            textViewDidChange(textView)
             return false
         case "":
             nextEditShouldBeManual = true
@@ -245,22 +263,11 @@ extension PostingTextViewManager: UITextViewDelegate {
             nextEditShouldBeManual = text == ""
             updateTokensForReplacingRange(range, replacementText: text)
             updateText(newText as String, cursorPosition: cursorPosition)
+            textViewDidChange(textView)
             return false
         }
         
         updateTokensForReplacingRange(range, replacementText: text)
-        
-        if text.containsOnlyEmoji {
-            // This is a workaround for issue 69 - https://github.com/PrimalHQ/primal-ios-app/issues/69
-            DispatchQueue.main.async {
-                UIView.setAnimationsEnabled(false)
-                textView.resignFirstResponder()
-                textView.becomeFirstResponder()
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    UIView.setAnimationsEnabled(true)
-                }
-            }
-        }
         
         return true
     }

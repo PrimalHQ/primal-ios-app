@@ -130,12 +130,14 @@ final class MainTabBarController: UIViewController, Themeable {
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
             notificationIndicator.alpha = hidden ? 0 : 1
+            notificationIndicator.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             return
         }
         
         UIView.animate(withDuration: 0.3) {
             self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
+            self.notificationIndicator.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
             self.notificationIndicator.alpha = hidden ? 0 : 1
         }
     }
@@ -296,7 +298,9 @@ private extension MainTabBarController {
             return
         }
         scrollViews.forEach {
-            $0.setContentOffset(.zero, animated: true)
+            if $0.delegate?.scrollViewShouldScrollToTop?($0) ?? true {
+                $0.setContentOffset(.zero, animated: true)
+            }
         }
     }
 }

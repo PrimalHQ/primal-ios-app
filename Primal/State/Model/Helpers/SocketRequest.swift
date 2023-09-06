@@ -117,10 +117,10 @@ private extension SocketRequest {
             print(nostrUserProfileInfo)
         case .popular_hashtags:
             guard
-                let contentString = payload["content"]?.stringValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
                 case .array(let contentArray) = contentJSON
             else {
+                print("Error decoding popular hashtags")
                 return
             }
             
@@ -133,15 +133,27 @@ private extension SocketRequest {
                 pendingResult.popularHashtags.append(.init(title: name, apperances: count))
             }
         case .timestamp:
-            guard let timeStamp = Int(contentString) else { return }
+            guard let timeStamp = Int(contentString) else {
+                print("Error decoding timestamp")
+                return
+            }
             pendingResult.timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
         case .webPreview:
-            guard
-                let contentString = payload["content"]?.stringValue,
-                let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8))
-            else { return }
+            guard let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8)) else {
+                print("Error decoding webpreview")
+                return
+            }
             
             pendingResult.webPreviews.append(webPreview)
+        case .followingUser:
+            guard let isFollowing = Bool(contentString) else {
+                print("Error decoding isFollowing response")
+                return
+            }
+            
+            pendingResult.isFollowingUser = isFollowing
+        case .encryptedDirectMessage:
+            pendingResult.encryptedMessages.append(contentString)
         default:
             print("Unhandled response \(payload)")
         }

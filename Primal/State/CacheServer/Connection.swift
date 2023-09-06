@@ -11,11 +11,19 @@ import NWWebSocket
 import Network
 import GenericJSON
 
-struct ContinousConnection {
+class ContinousConnection {
     let id: String
+    
+    init(id: String) {
+        self.id = id
+    }
     
     func end() {
         Connection.instance.endContinous(id)
+    }
+    
+    deinit {
+        end()
     }
 }
 
@@ -54,7 +62,9 @@ final class Connection {
         options.autoReplyPing = true // from default settings of NWWebsocket
         options.setAdditionalHeaders([("User-Agent", ua)])
         
-        socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
+        if socket == nil {
+            socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
+        }
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
@@ -206,6 +216,8 @@ extension Connection: WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(error)")
+        
+        isConnected = false
         
         autoReconnect()
     }

@@ -15,7 +15,7 @@ final class FollowProfileCell: UITableViewCell {
     let profileImage = VerifiedImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
-    let followButton = FollowButton()
+    let followButton = FollowButton(colors: SunsetWave.instance.gradient)
     
     weak var delegate: FollowProfileCellDelegate?
     

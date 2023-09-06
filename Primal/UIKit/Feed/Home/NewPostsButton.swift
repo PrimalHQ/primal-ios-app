@@ -74,7 +74,7 @@ final class NewPostsButton: MyButton, Themeable {
         
         guard count > 0 else { return }
         
-        zip((1...count), zip(avatarURLs, avatars)).forEach { (_, arg1) in
+        zip((1...count), zip(avatarURLs.unique(), avatars)).forEach { (_, arg1) in
             let (url, avatar) = arg1
             avatar.isHidden = false
             avatar.kf.setImage(with: url, placeholder: UIImage(named: "Profile"))

@@ -21,7 +21,7 @@ final class OnboardingFollowSuggestionsController: UIViewController {
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
     lazy var table = UITableView()
-    lazy var continueButton = GradientBackgroundUIButton(title: "Finish")
+    lazy var continueButton = GradientBackgroundUIButton(title: "Finish", colors: SunsetWave.instance.gradient)
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -56,11 +56,7 @@ private extension OnboardingFollowSuggestionsController {
     func setup() {
         navigationItem.title = "People to follow"
         view.backgroundColor = .black
-        
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        navigationItem.leftBarButtonItem = customRedBackButton
         
         let buttonParent = UIView()
         buttonParent.addSubview(continueButton)

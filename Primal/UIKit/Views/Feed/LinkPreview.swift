@@ -27,7 +27,6 @@ final class LinkPreview: UIView {
     }
     
     private let imageView = UIImageView()
-    private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let textLabel = UILabel()
@@ -49,7 +48,6 @@ private extension LinkPreview {
             imageView.kf.setImage(with: metadata.url(for: .large))
             imageView.isHidden = false
             
-            
             let aspectMultiplier: CGFloat = {
                 guard let variant = metadata.variants.first else { return 1 }
                 
@@ -64,13 +62,6 @@ private extension LinkPreview {
             aspect.isActive = true
         } else {
             imageView.isHidden = true
-        }
-        
-        if let iconString = data.data.icon_url, let url = data.imagesData.first(where: { $0.url == iconString })?.url(for: .small) ?? URL(string: iconString) {
-            iconView.kf.setImage(with: url, placeholder: UIImage(named: "webPreviewIcon"))
-            iconView.isHidden = false
-        } else {
-            iconView.isHidden = true
         }
         
         titleLabel.text = data.data.md_title
@@ -89,26 +80,20 @@ private extension LinkPreview {
         addSubview(mainStack)
         mainStack.pinToSuperview()
                 
-        let subtitleStack = UIStackView(arrangedSubviews: [iconView, subtitleLabel])
-        let contentStack = UIStackView(axis: .vertical, [subtitleStack, titleLabel, textLabel])
+        let contentStack = UIStackView(axis: .vertical, [subtitleLabel, titleLabel, textLabel])
         
         backgroundView.addSubview(contentStack)
         contentStack.pinToSuperview(padding: 12)
         
-        subtitleStack.spacing = 6
-        subtitleStack.alignment = .center
-        
         contentStack.spacing = 4
-        contentStack.setCustomSpacing(6, after: subtitleStack)
+        contentStack.setCustomSpacing(6, after: subtitleLabel)
         
         backgroundView.backgroundColor = .background3
         
         imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         
-        iconView.constrainToSize(24)
-        iconView.clipsToBounds = true
-        iconView.layer.cornerRadius = 12
+        imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         
         layer.cornerRadius = 8
         layer.masksToBounds = true
@@ -149,5 +134,13 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
             // Create and return a UIMenu with the share action
             return UIMenu(children: [copy])
         })
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+            if let preview = animator.previewViewController {
+                RootViewController.instance.present(preview, animated: true)
+            }
+        }
     }
 }

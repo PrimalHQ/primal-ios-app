@@ -137,14 +137,16 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
+            let multiplier: CGFloat = content.imageResources.first?.url.isVideoButNotYoutube == true ? (9 / 16) : 1
+            
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.imageResources = content.imageResources
+        mainImages.resources = content.imageResources
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
         zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
@@ -178,7 +180,7 @@ class PostCell: UITableViewCell {
 }
 
 extension PostCell: ImageCollectionViewDelegate {
-    func didTapImage(resource: MediaMetadata.Resource) {
+    func didTapMedia(resource: MediaMetadata.Resource) {
         delegate?.postCellDidTapImages(resource: resource)
     }
 }
@@ -193,7 +195,7 @@ private extension PostCell {
     func setup() {
         contentView.backgroundColor = .background
         contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 2)
+        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 1)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -213,6 +215,8 @@ private extension PostCell {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
         
         checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
         
@@ -247,14 +251,13 @@ private extension PostCell {
         }
         imageAspectConstraint = height
         
-        linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 600).isActive = true
+        linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
+        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         
         backgroundColorView.backgroundColor = .background2
-        backgroundColorView.layer.cornerRadius = 8
-        backgroundColorView.layer.masksToBounds = true
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
         

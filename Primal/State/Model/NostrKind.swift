@@ -45,6 +45,7 @@ enum NostrKind: Int {
     case noteActions = 10_000_115
     case popular_hashtags = 10_000_116
     case mediaMetadata = 10_000_119
+    case followingUser = 10_000_125
     case webPreview = 10_000_128
 }
 

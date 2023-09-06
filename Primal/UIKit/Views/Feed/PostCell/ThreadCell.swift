@@ -101,7 +101,7 @@ final class DefaultThreadCell: ThreadCell {
         contentView.addSubview(bottomButtonStack)
         bottomButtonStack
             .centerToView(actionButtonStandin)
-            .pin(to: actionButtonStandin, edges: .horizontal)
+            .pin(to: actionButtonStandin, edges: .horizontal, padding: -7)
         
         horizontalContentStack.spacing = 8
         
@@ -109,6 +109,7 @@ final class DefaultThreadCell: ThreadCell {
             $0.axis = .vertical
             $0.spacing = 6
         }
+        mainStack.setCustomSpacing(7, after: repostIndicator)
     }
 }
 
@@ -162,6 +163,7 @@ final class DefaultMainThreadCell: ThreadCell {
             $0.axis = .vertical
             $0.spacing = 6
         }
+        mainStack.setCustomSpacing(7, after: repostIndicator)
     }
 }
 
@@ -216,5 +218,6 @@ final class FullWidthThreadCell: ThreadCell {
             $0.axis = .vertical
             $0.spacing = 6
         }
+        mainStack.setCustomSpacing(7, after: repostIndicator)
     }
 }

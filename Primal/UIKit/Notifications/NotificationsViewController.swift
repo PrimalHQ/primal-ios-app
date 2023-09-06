@@ -40,8 +40,6 @@ final class NotificationsViewController: FeedViewController {
         }
     }
     
-    let loadingSpinner = LoadingSpinnerView()
-    
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
     
     override init() {
@@ -80,11 +78,9 @@ final class NotificationsViewController: FeedViewController {
         
         title = "Notifications"
         
-        updateTheme()
+        loadingSpinner.transform = .init(translationX: 0, y: -70)
         
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(100)
-        loadingSpinner.play()
+        updateTheme()
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
@@ -97,6 +93,8 @@ final class NotificationsViewController: FeedViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
         refresh()
+        
+        loadingSpinner.play()
     }
     
     override func updateTheme() {

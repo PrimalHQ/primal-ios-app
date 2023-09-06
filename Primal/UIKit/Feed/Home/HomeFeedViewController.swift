@@ -9,8 +9,6 @@ import Combine
 import UIKit
 
 final class HomeFeedViewController: PostFeedViewController {
-    
-    let loadingSpinner = LoadingSpinnerView()
     let feedButton = UIButton()
 
     let postButtonParent = UIView()
@@ -42,14 +40,19 @@ final class HomeFeedViewController: PostFeedViewController {
     
     func updatePosts(_ oldValue: Int) {
         if newPosts != 0 {
-            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts).prefix(3).compactMap { $0.user.profileImage.url(for: .small) })
+            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts.prefix(newAddedPosts)).compactMap { $0.user.profileImage.url(for: .small) })
         }
         
         if newPosts == 0 {
             UIView.animate(withDuration: 0.3) {
                 self.newPostsView.alpha = 0
+            } completion: { finished in
+                if finished {
+                    self.newPostsViewParent.isHidden = true
+                }
             }
         } else if oldValue == 0 {
+            newPostsViewParent.isHidden = false
             UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
                 self.newPostsView.alpha = 1
             }
@@ -69,14 +72,12 @@ final class HomeFeedViewController: PostFeedViewController {
         
         title = "Latest with Replies"
         
+        loadingSpinner.transform = .init(translationX: 0, y: -70)
+        
         feedButton.constrainToSize(44)
         feedButton.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
         feedButton.setImage(UIImage(named: "feedPicker")?.scalePreservingAspectRatio(targetSize: .init(width: 22, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: feedButton)
-        
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(100)
-        loadingSpinner.isHidden = true
         
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
         view.addSubview(postButtonParent)
@@ -90,6 +91,7 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
         newPostsView.alpha = 0
+        newPostsViewParent.isHidden = true
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
@@ -123,7 +125,6 @@ final class HomeFeedViewController: PostFeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
-        view.bringSubviewToFront(loadingSpinner)
         loadingSpinner.play()
     }
     
@@ -154,6 +155,17 @@ final class HomeFeedViewController: PostFeedViewController {
         if scrollView.contentOffset.y < 100 {
             newAddedPosts = 0
         }
+    }
+    
+    override func updateBars() {
+        let shouldShowBars = shouldShowBars
+        
+        super.updateBars()
+        
+        postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
+        postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 200)
+        newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+        newPostsViewParent.alpha = shouldShowBars ? 1 : 0
     }
     
     override func animateBars() {
@@ -217,6 +229,10 @@ private extension HomeFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
+                if posts.first?.post.id != self?.posts.first?.post.id, !posts.isEmpty {
+                    self?.posts = posts
+                }
+                
                 if posts.isEmpty {
                     if self?.refreshControl.isRefreshing == false {
                         self?.posts = []

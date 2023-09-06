@@ -6,32 +6,38 @@
 //
 
 import UIKit
+import Combine
 import Kingfisher
 import FLAnimatedImage
+import AVFoundation
 
 protocol ImageCollectionViewDelegate: AnyObject {
-    func didTapImage(resource: MediaMetadata.Resource)
+    func didTapMedia(resource: MediaMetadata.Resource)
 }
 
 final class ImageCollectionView: UICollectionView {
     weak var imageDelegate: ImageCollectionViewDelegate?
 
-    var imageResources: [MediaMetadata.Resource] {
+    var resources: [MediaMetadata.Resource] {
         didSet {
             reloadData()
         }
     }
 
     init(resources: [MediaMetadata.Resource] = []) {
-        imageResources = resources
+        self.resources = resources
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         super.init(frame: .zero, collectionViewLayout: layout)
         dataSource = self
         delegate = self
         bounces = false
-        register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+        register(ImageCell.self, forCellWithReuseIdentifier: "image")
+        register(VideoCell.self, forCellWithReuseIdentifier: "video")
+        register(YoutubeVideoCell.self, forCellWithReuseIdentifier: "youtube")
     }
+    
+    func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideo ? "youtube" : "video") : "image" }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -44,21 +50,40 @@ extension ImageCollectionView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageDelegate?.didTapImage(resource: imageResources[indexPath.item])
+        imageDelegate?.didTapMedia(resource: resources[indexPath.item])
     }
 }
 
 extension ImageCollectionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageResources.count
+        resources.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        let r = resources[indexPath.item]
         
-        let r = imageResources[indexPath.item]
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdForURL(r.url), for: indexPath)
         
-        if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
+        if r.url.isVideoURL {
+            if r.url.isYoutubeVideo {
+//                (cell as? YoutubeVideoCell)?.videoView.cueVideo(byURL: r.url, startSeconds: 0)
+                
+                (cell as? YoutubeVideoCell)?.loadURL(r.url)
+                return cell
+            }
+            
+            let player: VideoPlayer
+            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == r.url {
+                player = current
+            } else {
+                player = .init(url: r.url)
+            }
+            
+            if let cell = cell as? VideoCell {
+                cell.player = player
+            }
+            player.play()
+        } else if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
             let task = URLSession.shared.dataTask(with: url) { data, _, _ in
                 guard let data = data else {
                     return
@@ -80,6 +105,17 @@ extension ImageCollectionView: UICollectionViewDataSource {
             ])
         }
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let videoCell = cell as? VideoCell {
+            if videoCell.player?.avPlayer.rate ?? 0 > 0 {
+                videoCell.player?.delayedPause()
+            }
+        }
+        if let cell = cell as? YoutubeVideoCell {
+            cell.videoView.metadata = .init()
+        }
     }
 }
 

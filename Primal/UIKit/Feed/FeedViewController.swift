@@ -11,6 +11,7 @@ import UIKit
 import SwiftUI
 import SafariServices
 import Lottie
+import Kingfisher
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let refreshControl = UIRefreshControl()
@@ -20,6 +21,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
+    
+    let loadingSpinner = LoadingSpinnerView()
     
     var postCellID = "cell" // Needed for updating the theme
     
@@ -66,12 +69,26 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         hapticGenerator.prepare()
         heavy.prepare()
+        
+        let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url
+        if posts.contains(where: { post in  post.imageResources.contains(where: { $0.url == playingRN }) }) {
+            DispatchQueue.main.async {
+                VideoPlaybackManager.instance.currentlyPlaying?.play()
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        scrollDirectionCounter = 100
+        shouldShowBars = true
+        if animated {
+            animateBars()
+        } else {
+            updateBars()
+        }
+        
+        VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
     }
     
     @discardableResult
@@ -97,6 +114,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             )
             cell.delegate = self
         }
+        
+        if let postToPreload = posts[safe: indexPath.row + 10], let url = postToPreload.imageResources.first?.url(for: .large), url.absoluteString.isImageURL {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
+        
         return cell
     }
     
@@ -143,7 +165,23 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         lastContentOffset = scrollView.contentOffset.y
     }
     
-    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool { isShowingBars && shouldShowBars }
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        shouldShowBars = true
+        return true
+    }
+    
+    func updateBars() {
+        let shouldShowBars = self.shouldShowBars
+        
+        safeAreaSpacer.isHidden = !shouldShowBars
+        mainTabBarController?.setTabBarHidden(!shouldShowBars, animated: false)
+        navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
+        table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
+
+        isAnimatingBars = true
+        isShowingBars = shouldShowBars
+        isAnimatingBars = false
+    }
     
     func animateBars() {
         let shouldShowBars = scrollDirectionCounter >= 0
@@ -204,10 +242,13 @@ private extension FeedViewController {
         
         table.refreshControl = refreshControl
         
+        view.addSubview(loadingSpinner)
+        loadingSpinner.centerToSuperview().constrainToSize(70)
+        
         updateTheme()
     
         Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
-            .receive(on: DispatchQueue.main).sink { [weak self] isShowing, directionCounter, isAnimating in
+            .sink { [weak self] isShowing, directionCounter, isAnimating in
                 if abs(directionCounter) < 10 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
                 let shouldShow = directionCounter > 0
                 guard isShowing != shouldShow, !isAnimating else { return }
@@ -427,15 +468,32 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func postCellDidTapImages(resource: MediaMetadata.Resource) {
-        weak var viewController: UIViewController?
-        let binding = UIHostingController(rootView: ImageViewerRemote(
-            imageURL: .init(get: { resource.url }, set: { _ in }),
-            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
-        ))
-        viewController = binding
-        binding.view.backgroundColor = .clear
-        binding.modalPresentationStyle = .overFullScreen
-        present(binding, animated: true)
+        guard resource.url.isVideoURL else {
+            weak var viewController: UIViewController?
+            let binding = UIHostingController(rootView: ImageViewerRemote(
+                imageURL: .init(get: { resource.url }, set: { _ in }),
+                viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
+            ))
+            viewController = binding
+            binding.view.backgroundColor = .clear
+            binding.modalPresentationStyle = .overFullScreen
+            present(binding, animated: true)
+            return
+        }
+        
+        if VideoPlaybackManager.instance.currentlyPlaying?.url != resource.url {
+            VideoPlaybackManager.instance.currentlyPlaying = .init(url: resource.url)
+        }
+        
+        guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
+        
+        let playerVC = AVPlayerViewController()
+        playerVC.player = player.avPlayer
+        playerVC.delegate = self
+        present(playerVC, animated: true) {
+            player.avPlayer.isMuted = false
+            player.play()
+        }
     }
     
     func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL]) {
@@ -483,5 +541,12 @@ extension FeedViewController: PostCellDelegate {
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         open(post: posts[indexPath.row])
+    }
+}
+
+extension FeedViewController: AVPlayerViewControllerDelegate {
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        guard let current = VideoPlaybackManager.instance.currentlyPlaying else { return }
+        current.avPlayer.isMuted = current.isMuted
     }
 }

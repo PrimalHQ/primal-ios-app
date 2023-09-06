@@ -151,7 +151,7 @@ private extension MenuContainerController {
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
             .pinToSuperview(edges: .top, padding: 70)
-            .pinToSuperview(edges: .bottom)
+            .pinToSuperview(edges: .bottom, padding: 80)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(17, after: profileImage)
@@ -253,8 +253,14 @@ private extension MenuContainerController {
             .scaleFactor(UIScreen.main.scale)
         ])
         
-        nameLabel.text = user.displayName
-        domainLabel.text = user.nip05.isEmpty ? user.name : user.nip05
+        if user.displayName.isEmpty {
+            nameLabel.text = user.nip05.isEmpty ? user.name : user.nip05
+            domainLabel.isHidden = true
+        } else {
+            nameLabel.text = user.displayName
+            domainLabel.text = user.nip05.isEmpty ? user.name : user.nip05
+            domainLabel.isHidden = false
+        }
         
         checkbox1.isHidden = user.nip05.isEmpty
         checkbox1.isExtraVerified = user.nip05.hasSuffix("@primal.net")

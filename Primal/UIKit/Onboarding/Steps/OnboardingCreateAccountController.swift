@@ -22,8 +22,8 @@ struct AccountCreationData: SignupProfileProtocol {
 final class OnboardingCreateAccountController: UIViewController {
     let bannerImageView = UIImageView()
     let avatarView = UIImageView(image: UIImage(named: "Profile"))
-    let addPhotoButton = GradientUIButton(title: "add photo")
-    let addBannerButton = GradientUIButton(title: "add banner")
+    let addPhotoButton = GradientUIButton(title: "add photo", colors: SunsetWave.instance.gradient)
+    let addBannerButton = GradientUIButton(title: "add banner", colors: SunsetWave.instance.gradient)
     let displayNameInput = UITextField()
     let usernameInput = UITextField()
     let websiteInput = UITextField()
@@ -31,7 +31,7 @@ final class OnboardingCreateAccountController: UIViewController {
     let bitcoinInput = UITextField()
     let nip05Input = UITextField()
     let scrollView = UIScrollView()
-    let nextButton = GradientBackgroundUIButton(title: "Next").constrainToSize(height: 58)
+    let nextButton = GradientBackgroundUIButton(title: "Next", colors: SunsetWave.instance.gradient).constrainToSize(height: 58)
     
     var avatarURL = "" { didSet { updateIsUploading() } }
     var bannerURL = "" { didSet { updateIsUploading() } }
@@ -86,7 +86,7 @@ private extension OnboardingCreateAccountController {
     func setup() {
         title = "New Account"
         view.backgroundColor = .black
-        navigationItem.leftBarButtonItem = customBackButton
+        navigationItem.leftBarButtonItem = customRedBackButton
         
         lazy var progressView = PrimalProgressView(progress: 1, total: 3)
         let progressParent = UIView()
