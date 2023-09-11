@@ -32,6 +32,8 @@ final class FeedManager {
     var profilePubkey: String?
     var didReachEnd = false
     
+    var muteObserver: AnyObject?
+    
     var feedDirective: String? {
         if let searchTerm {
             return "search;\(searchTerm)"
@@ -57,6 +59,12 @@ final class FeedManager {
     init(threadId: String) {
         initPostsEmitterSubscription()
         requestThread(postId: threadId)
+    }
+    
+    deinit {
+        if let muteObserver {
+            NotificationCenter.default.removeObserver(muteObserver)
+        }
     }
     
     func setCurrentFeed(_ feed: String) {
@@ -107,7 +115,14 @@ final class FeedManager {
             .eraseToAnyPublisher()
     }
     
+    
     private func initPostsEmitterSubscription() {
+        muteObserver = NotificationCenter.default.addObserver(forName: .userMuted, object: nil, queue: .main) { [weak self] notification in
+            guard let self, let pubkey = notification.object as? String else { return }
+            
+            self.parsedPosts = self.parsedPosts.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user.data.pubkey != pubkey }
+        }
+        
         postsEmitter.sink { [weak self] result in
             guard let self else { return }
             

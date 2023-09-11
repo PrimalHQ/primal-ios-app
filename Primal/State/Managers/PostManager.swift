@@ -56,6 +56,7 @@ final class PostManager {
         if LoginManager.instance.method() != .nsec { return }
 
         guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
+            callback(false)
             return
         }
         

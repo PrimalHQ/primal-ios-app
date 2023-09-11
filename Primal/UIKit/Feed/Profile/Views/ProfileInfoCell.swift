@@ -32,7 +32,7 @@ class ProfileInfoCell: UITableViewCell {
     
     let following = ProfileStatDisplayView("Following")
     let followers = ProfileStatDisplayView("Followers")
-    let posts = ProfileStatDisplayView("Posts")
+    let posts = ProfileStatDisplayView("Notes")
     
     weak var delegate: ProfileInfoCellDelegate?
     

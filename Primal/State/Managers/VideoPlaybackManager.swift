@@ -17,7 +17,6 @@ final class VideoPlaybackManager {
                 oldValue?.pause()
             }
             
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
             currentlyPlaying?.avPlayer.play()
         }
     }
@@ -31,6 +30,9 @@ class VideoPlayer {
     
     @Published var isMuted = true {
         didSet {
+            if !isMuted {
+                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            }
             avPlayer.isMuted = isMuted
         }
     }

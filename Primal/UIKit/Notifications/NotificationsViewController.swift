@@ -85,6 +85,13 @@ final class NotificationsViewController: FeedViewController {
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
         }), for: .valueChanged)
+        
+        let button = UIButton()
+        button.setImage(.init(named: "settingsIcon"), for: .normal)
+        button.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsNotificationsViewController(), sender: nil)
+        }), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = .init(customView: button)
     }
     
     override func viewWillAppear(_ animated: Bool) {

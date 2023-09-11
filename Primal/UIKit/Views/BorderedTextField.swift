@@ -10,7 +10,7 @@ import UIKit
 final class BorderedTextField: UIView {
     let input = UITextField()
     private let atSymbol = UILabel()
-    init(showAtSymbol: Bool) {
+    init(showAtSymbol: Bool = false) {
         super.init(frame: .zero)
         atSymbol.isHidden = !showAtSymbol
         setup()

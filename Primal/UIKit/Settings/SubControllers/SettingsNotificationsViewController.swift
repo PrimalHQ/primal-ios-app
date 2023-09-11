@@ -62,6 +62,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         .store(in: &cancellables)
         
         IdentityManager.instance.requestUserSettings()
+        
+        updateTheme()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

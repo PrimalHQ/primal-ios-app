@@ -85,29 +85,7 @@ class PostCell: UITableViewCell {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        if content.user.data.picture.hasSuffix("gif") {
-            profileImageView.image = UIImage(named: "Profile")
-            if let url = content.user.profileImage.url(for: .small) {
-                let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                    guard let data = data else {
-                        return
-                    }
-                    
-                    let anim = FLAnimatedImage(gifData: data)
-                    
-                    DispatchQueue.main.async {
-                        self.profileImageView.animatedImage = anim
-                    }
-                }
-                task.resume()
-            }
-        } else {
-            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
-            ])
-        }
+        profileImageView.setUserImage(content.user)
         
         if let metadata = content.linkPreview {
             linkPresentation.data = metadata
@@ -149,7 +127,7 @@ class PostCell: UITableViewCell {
         mainImages.resources = content.imageResources
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
-        zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
+        zapButton.set(content.post.satszapped + ZapManager.instance.userZapped[content.post.id, default: 0], filled: didZap)
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
         
@@ -193,9 +171,9 @@ extension PostCell: NantesLabelDelegate {
 
 private extension PostCell {
     func setup() {
-        contentView.backgroundColor = .background
+        contentView.backgroundColor = .background3
         contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 1)
+        backgroundColorView.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, padding: 1)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -257,7 +235,7 @@ private extension PostCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         
-        backgroundColorView.backgroundColor = .background2
+        backgroundColorView.backgroundColor = .background
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
         
@@ -318,5 +296,32 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
         delegate?.postCellDidTapLike(self)
+    }
+}
+
+extension FLAnimatedImageView {
+    func setUserImage(_ user: ParsedUser) {
+        guard user.data.picture.hasSuffix("gif"), let url = user.profileImage.url(for: .small) else {
+            kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
+                .processor(DownsamplingImageProcessor(size: frame.size)),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ])
+            return
+        }
+        
+        image = UIImage(named: "Profile")
+        
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                return
+            }
+            
+            let anim = FLAnimatedImage(gifData: data)
+            
+            DispatchQueue.main.async {
+                self.animatedImage = anim
+            }
+        }.resume()
     }
 }

@@ -15,15 +15,15 @@ class SettingsZapsViewController: UIViewController, Themeable {
         return view
     }
     private let emojis = ["👍", "🌿", "🤙", "💜", "🔥", "🚀"]
-    private let defaultAmounts: [Int64] = [21, 420, 1000, 5000, 10000, 100000]
-    private var zapOptions: [Int64] = [] {
+    private let defaultAmounts: [Int] = [21, 420, 1000, 5000, 10000, 100000]
+    private var zapOptions: [Int] = [] {
         didSet {
             updateView()
         }
     }
     let defaultInput = SettingsZapInputView().constrainToSize(width: 120, height: 44)
     
-    private var defaultZapAmount: Int64 = 100 {
+    private var defaultZapAmount: Int = 100 {
         didSet {
             defaultInput.field.text = defaultZapAmount.localized()
         }
@@ -166,7 +166,7 @@ extension SettingsZapsViewController: UITextFieldDelegate {
             }
         }
         
-        guard let amount = Int64(textField.text ?? "") else { return }
+        guard let amount = Int(textField.text ?? "") else { return }
         
         didChange = true
         

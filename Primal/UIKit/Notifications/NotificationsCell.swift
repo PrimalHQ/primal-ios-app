@@ -60,7 +60,7 @@ final class NotificationsCell: PostCell {
 
 private extension NotificationsCell {
     func setup() {
-        backgroundColorView.removeFromSuperview()
+//        backgroundColorView.removeFromSuperview()
         
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         let contentStack = UIStackView(arrangedSubviews: [avatarStack, titleLabel, postContentStack])

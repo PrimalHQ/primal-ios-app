@@ -9,8 +9,6 @@ import UIKit
 import Combine
 
 final class ExploreViewController: UIViewController, Themeable {
-    let navigationBarExtender = UIView()
-    
     var hashtags: [PopularHashtag] = [] {
         didSet {
             collectionView.reloadData()
@@ -49,7 +47,6 @@ final class ExploreViewController: UIViewController, Themeable {
     
     func updateTheme() {
         collectionView.backgroundColor = .background2
-        navigationBarExtender.backgroundColor = .background
         
         searchView.updateTheme()
     }
@@ -60,10 +57,8 @@ private extension ExploreViewController {
         navigationItem.titleView = searchView
         searchView.addTarget(self, action: #selector(searchTapped), for: .touchDown)
         
-        let stack = UIStackView(arrangedSubviews: [navigationBarExtender, collectionView])
-        stack.axis = .vertical
         view.addSubview(collectionView)
-        collectionView.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 7, safeArea: true)
+        collectionView.pinToSuperview(safeArea: true)
         
         collectionView.dataSource = self
         collectionView.delegate = self

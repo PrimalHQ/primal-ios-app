@@ -38,7 +38,7 @@ class FeedButton: MyButton {
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
     }
         
-    func set(_ count: Int32, filled: Bool) {
+    func set(_ count: Int, filled: Bool) {
         iconView.image = filled ? filledIcon : normalIcon
         iconView.tintColor = filled ? filledColor : normalColor
         titleLabel.textColor = filled ? filledColor : normalColor
@@ -46,7 +46,7 @@ class FeedButton: MyButton {
         titleLabel.isHidden = count < 1
     }
     
-    func animateTo(_ count: Int32, filled: Bool) {
+    func animateTo(_ count: Int, filled: Bool) {
         iconView.image = filled ? filledIcon : normalIcon
         let color = filled ? filledColor : normalColor
         titleLabel.animateToColor(color: color)
@@ -70,7 +70,7 @@ final class FeedRepostButton: FeedButton {
     
     override var filledColor: UIColor { .init(rgb: 0x52CE0A) }
     
-    override func animateTo(_ count: Int32, filled: Bool) {
+    override func animateTo(_ count: Int, filled: Bool) {
         iconView.transform = .identity
         UIView.animate(withDuration: 0.3) {
             self.iconView.transform = .init(rotationAngle: .pi)
@@ -91,7 +91,7 @@ class AnimatedFeedButton: FeedButton {
         animView.isHidden = true
     }
     
-    override func animateTo(_ count: Int32, filled: Bool) {
+    override func animateTo(_ count: Int, filled: Bool) {
         iconView.alpha = 0.01
         
         super.animateTo(count, filled: filled)

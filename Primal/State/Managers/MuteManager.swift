@@ -6,6 +6,10 @@ import Foundation
 import Combine
 import GenericJSON
 
+extension NSNotification.Name {
+    static let userMuted: NSNotification.Name = .init(rawValue: "userMutedNotification")
+}
+
 final class MuteManager {
     private init() {}
     private(set) var muteList: Set<String> = []
@@ -19,6 +23,7 @@ final class MuteManager {
             muteList.remove(pubkey)
         } else {
             muteList.insert(pubkey)
+            NotificationCenter.default.post(name: .userMuted, object: pubkey)
         }
 
         updateMuteList(muteList, callback: callback)

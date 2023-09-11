@@ -17,7 +17,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     let refreshControl = UIRefreshControl()
     let table = UITableView()
     let safeAreaSpacer = UIView()
-    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, table])
+    let navigationBorder = UIView().constrainToSize(height: 1)
+    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, navigationBorder, table])
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -134,8 +135,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         refreshControl.tintColor = .accent
         
-        view.backgroundColor = .background
-        table.backgroundColor = .background
+        view.backgroundColor = .background3
+        table.backgroundColor = .background3
+        
+        navigationBorder.backgroundColor = .background3
     }
     
     private var barForegroundObserver: NSObjectProtocol?
@@ -174,6 +177,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         let shouldShowBars = self.shouldShowBars
         
         safeAreaSpacer.isHidden = !shouldShowBars
+        navigationBorder.isHidden = !shouldShowBars
         mainTabBarController?.setTabBarHidden(!shouldShowBars, animated: false)
         navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
         table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
@@ -215,6 +219,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         } completion: { _ in
             if shouldShowBars {
                 self.safeAreaSpacer.isHidden = oldValue
+                self.navigationBorder.isHidden = oldValue
                 if shouldMoveOffset {
                     self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y + self.safeAreaSpacerHeight)
                 }
@@ -257,14 +262,16 @@ private extension FeedViewController {
             .store(in: &cancellables)
         
         barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                self.shouldShowBars = true
+            for i in 1...3 { // This is the only way it works, if we call it only once sometimes it gets stuck
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(i * 100)) {
+                    guard let self else { return }
+                    self.shouldShowBars = true
+                }
             }
         }
     }
     
-    func animateZap(_ cell: PostCell, amount: Int32) {
+    func animateZap(_ cell: PostCell, amount: Int) {
         let animView = LottieAnimationView(animation: AnimationType.zapMedium.animation)
         view.addSubview(animView)
         animView
@@ -309,7 +316,7 @@ extension FeedViewController: PostCellDelegate {
         }
         
         let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount in
-            let newZapAmount = post.satszapped + Int32(zapAmount)
+            let newZapAmount = post.satszapped + zapAmount
             
             self?.animateZap(cell, amount: newZapAmount)
     
@@ -338,7 +345,7 @@ extension FeedViewController: PostCellDelegate {
         }
         
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
-        let newZapAmount = post.satszapped + Int32(zapAmount)
+        let newZapAmount = post.satszapped + zapAmount
         
         animateZap(cell, amount: newZapAmount)
         

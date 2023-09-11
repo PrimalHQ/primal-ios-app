@@ -136,7 +136,7 @@ final class Connection {
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
             print("REQUEST:\n\(jsonStr)")
-//            self.continousConnectionIds.formUnion([subId])
+
             self.continousSubHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
         }

@@ -41,6 +41,7 @@ final class ThreadViewController: PostFeedViewController {
     
     private var textHeightConstraint: NSLayoutConstraint?
     let textInputView = SelfSizingTextView()
+    let textInputLoadingIndicator = LoadingSpinnerView().constrainToSize(30)
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
@@ -217,6 +218,8 @@ private extension ThreadViewController {
         
         textInputView.resignFirstResponder()
         textInputView.isEditable = false
+        textInputLoadingIndicator.isHidden = false
+        textInputLoadingIndicator.play()
         
         PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] success in
             
@@ -224,6 +227,8 @@ private extension ThreadViewController {
                 guard let self else { return }
                 
                 self.textInputView.isEditable = true
+                self.textInputLoadingIndicator.isHidden = true
+                self.textInputLoadingIndicator.stop()
                 
                 if success {
                     self.textInputView.text = ""
@@ -388,6 +393,10 @@ private extension ThreadViewController {
         
         inputBackground.addSubview(contentStack)
         textParent.addSubview(textInputView)
+        
+        textParent.addSubview(textInputLoadingIndicator)
+        textInputLoadingIndicator.centerToView(textInputView)
+        textInputLoadingIndicator.isHidden = true
         
         contentStack
             .pinToSuperview(edges: [.top, .horizontal])

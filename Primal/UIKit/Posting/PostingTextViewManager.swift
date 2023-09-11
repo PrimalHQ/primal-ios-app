@@ -259,7 +259,7 @@ extension PostingTextViewManager: UITextViewDelegate {
             break
         }
         
-        if nextEditShouldBeManual {
+        if nextEditShouldBeManual && rangeMatchesTokens(range) {
             nextEditShouldBeManual = text == ""
             updateTokensForReplacingRange(range, replacementText: text)
             updateText(newText as String, cursorPosition: cursorPosition)
@@ -278,6 +278,20 @@ private extension PostingTextViewManager {
         for i in tokens.indices where tokens[i].range.location >= range.location {
             tokens[i].range.location += (replacementText as NSString).length - range.length
         }
+    }
+    
+    func rangeMatchesTokens(_ range: NSRange) -> Bool {
+        for t in tokens {
+            if t.range.location >= range.location && t.range.location <= range.endLocation {
+                return true
+            }
+            
+            if t.range.endLocation >= range.location && t.range.endLocation <= range.endLocation {
+                return true
+            }
+        }
+        
+        return false
     }
     
     func updateTokensForReplacingRange(tokens: [UserToken], range: NSRange, replacementText: String) -> [UserToken] {
@@ -352,6 +366,7 @@ private extension PostingTextViewManager {
         textView.backgroundColor = .background2
         textView.delegate = self
         textView.bounces = false
+//        textView.autocapitalizationType = .none
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self
