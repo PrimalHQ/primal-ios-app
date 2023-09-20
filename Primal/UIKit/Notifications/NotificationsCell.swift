@@ -177,8 +177,6 @@ extension GroupedNotification {
         switch mainNotification.type {
         case .NEW_USER_FOLLOWED_YOU:
             return "followed you"
-        case .USER_UNFOLLOWED_YOU:
-            return "unfollowed you"
         case .YOUR_POST_WAS_ZAPPED:
             guard let sats = post?.post.satszapped.shortened() else { return "zapped your post" }
             return "zapped your note for a total of \(sats) sats"
@@ -227,8 +225,6 @@ extension NotificationType {
         switch self {
         case .NEW_USER_FOLLOWED_YOU:
             return "notifFollow"
-        case .USER_UNFOLLOWED_YOU:
-            return "notifUnfollow"
         case .YOUR_POST_WAS_ZAPPED:
             return "feedZapFilled"
         case .YOUR_POST_WAS_LIKED:

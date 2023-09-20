@@ -206,7 +206,7 @@ extension Array where Element == GroupedNotification {
         
         NotificationType.allCases.forEach { type in
             switch type {
-            case .NEW_USER_FOLLOWED_YOU, .USER_UNFOLLOWED_YOU:
+            case .NEW_USER_FOLLOWED_YOU:
                 let notifications = filter { $0.mainNotification.type == type }
                 
                 if var first = notifications.first {

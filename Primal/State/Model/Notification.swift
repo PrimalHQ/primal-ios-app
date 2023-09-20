@@ -10,7 +10,6 @@ import GenericJSON
 
 enum NotificationType: Int, CaseIterable {
     case NEW_USER_FOLLOWED_YOU = 1
-    case USER_UNFOLLOWED_YOU = 2
     
     case YOUR_POST_WAS_ZAPPED = 3
     case YOUR_POST_WAS_LIKED = 4
@@ -75,9 +74,6 @@ enum NostrNotification {
         case .NEW_USER_FOLLOWED_YOU:
             guard let follower = object["follower"]?.stringValue else { return nil }
             return .userFollowed(userId: follower)
-        case .USER_UNFOLLOWED_YOU:
-            guard let follower = object["follower"]?.stringValue else { return nil }
-            return .userUnfollowed(userId: follower)
         case .YOUR_POST_WAS_ZAPPED:
             guard
                 let your_post = object["your_post"]?.stringValue,

@@ -71,7 +71,6 @@ struct PrimalSettingsContent: Codable, Hashable {
 
 struct PrimalSettingsNotifications: Codable, Hashable {
     var NEW_USER_FOLLOWED_YOU: Bool
-    var USER_UNFOLLOWED_YOU: Bool
 
     var YOUR_POST_WAS_ZAPPED: Bool
     var YOUR_POST_WAS_LIKED: Bool
