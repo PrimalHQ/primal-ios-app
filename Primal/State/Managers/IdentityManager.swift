@@ -249,7 +249,7 @@ final class IdentityManager {
                                     tags = []
                                 } else {
                                     let res = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
-                                        $0.arrayValue?[1].stringValue ?? ""
+                                        $0.arrayValue?[safe: 1]?.stringValue ?? ""
                                     }
 
                                     if let res {

@@ -20,7 +20,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
     
     var tableData: [Section] = [
         .init(text: "CORE NOTIFICATIONS", notifications: [
-            .NEW_USER_FOLLOWED_YOU, .USER_UNFOLLOWED_YOU, .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_LIKED,
+            .NEW_USER_FOLLOWED_YOU, .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_LIKED,
             .YOUR_POST_WAS_REPOSTED, .YOUR_POST_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST
         ]),
         .init(text: "A POST YOU WERE MENTIONED IN WAS:", notifications: [
@@ -134,8 +134,6 @@ extension NotificationType {
         switch self {
         case .NEW_USER_FOLLOWED_YOU:
             return "new user followed you"
-        case .USER_UNFOLLOWED_YOU:
-            return "a user unfollowed you"
         case .YOUR_POST_WAS_ZAPPED:
             return "your note was zapped"
         case .YOUR_POST_WAS_LIKED:
@@ -173,8 +171,6 @@ extension PrimalSettingsNotifications {
         switch type {
         case .NEW_USER_FOLLOWED_YOU:
             return NEW_USER_FOLLOWED_YOU
-        case .USER_UNFOLLOWED_YOU:
-            return USER_UNFOLLOWED_YOU
         case .YOUR_POST_WAS_ZAPPED:
             return YOUR_POST_WAS_ZAPPED
         case .YOUR_POST_WAS_LIKED:
@@ -210,8 +206,6 @@ extension PrimalSettingsNotifications {
         switch type {
         case .NEW_USER_FOLLOWED_YOU:
             NEW_USER_FOLLOWED_YOU = value
-        case .USER_UNFOLLOWED_YOU:
-            USER_UNFOLLOWED_YOU = value
         case .YOUR_POST_WAS_ZAPPED:
             YOUR_POST_WAS_ZAPPED = value
         case .YOUR_POST_WAS_LIKED:
