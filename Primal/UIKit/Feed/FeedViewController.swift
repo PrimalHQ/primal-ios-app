@@ -116,8 +116,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             cell.delegate = self
         }
         
-        if let postToPreload = posts[safe: indexPath.row + 10], let url = postToPreload.imageResources.first?.url(for: .large), url.absoluteString.isImageURL {
-            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        if let postToPreload = posts[safe: indexPath.row + 10] {
+            if let url = postToPreload.imageResources.first?.url(for: .large), url.absoluteString.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            }
+            if let url = postToPreload.user.profileImage.url(for: .small) {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            }
         }
         
         return cell
@@ -133,10 +138,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
-        refreshControl.tintColor = .accent
-        
-        view.backgroundColor = .background3
-        table.backgroundColor = .background3
+        view.backgroundColor = .background
+        table.backgroundColor = .background
         
         navigationBorder.backgroundColor = .background3
     }
@@ -498,6 +501,7 @@ extension FeedViewController: PostCellDelegate {
         playerVC.player = player.avPlayer
         playerVC.delegate = self
         present(playerVC, animated: true) {
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
             player.avPlayer.isMuted = false
             player.play()
         }

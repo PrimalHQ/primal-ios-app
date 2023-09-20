@@ -17,7 +17,7 @@ final class PostPreviewView: UIView {
     let verifiedBadge = VerifiedView()
     let mainLabel = NantesLabel()
     let seeMoreLabel = UILabel()
-    let imageView = UIImageView()
+    let mainImages = ImageCollectionView()
     let linkPreview = LinkPreview()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -47,36 +47,26 @@ final class PostPreviewView: UIView {
             .cacheOriginalImage
         ])
         
-        if let image = content.imageResources.first {
-            let aspectMultiplier: CGFloat = {
-                guard let first = image.variants.first else { return 1 }
-                return CGFloat(first.width) / CGFloat(first.height)
-            }()
-            
-            imageAspectConstraint?.isActive = false
-            let aspect = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: aspectMultiplier)
+        
+        imageAspectConstraint?.isActive = false
+        if let first = content.imageResources.first?.variants.first {
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
-            
-            if imageView.frame.size.width > 10 {
-                imageView.kf.setImage(with: image.url(for: .large), options: [
-                    .processor(DownsamplingImageProcessor(size: .init(width: imageView.frame.width, height: imageView.frame.width / aspectMultiplier))),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage
-                ])
-            } else {
-                imageView.kf.setImage(with: image.url(for: .large), options: [
-                    .processor(DownsamplingImageProcessor(size: .init(width: 300, height: 300 / aspectMultiplier))),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage
-                ])
-            }
-            
-            imageView.isHidden = false
         } else {
-            imageView.isHidden = true
+            let url = content.imageResources.first?.url
+            
+            let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
+            
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
         }
+        
+        mainImages.resources = content.imageResources
+        mainImages.isHidden = content.imageResources.isEmpty
         
         if let data = content.linkPreview {
             linkPreview.data = data
@@ -137,10 +127,9 @@ private extension PostPreviewView {
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent
         
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = 8
-        imageView.isHidden = true
+        mainImages.layer.masksToBounds = true
+        mainImages.layer.cornerRadius = 8
+        mainImages.isHidden = true
         
         let nameTimeStack = UIStackView(arrangedSubviews: [
             profileImageView, nameLabel, verifiedBadge, secondaryIdentifierLabel,
@@ -150,11 +139,11 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), imageView, linkPreview
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), mainImages, linkPreview
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)
-        mainStack.setCustomSpacing(6, after: imageView)
+        mainStack.setCustomSpacing(6, after: mainImages)
         addSubview(mainStack)
         
         mainStack

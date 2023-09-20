@@ -20,30 +20,12 @@ struct UserToken {
     var user: PrimalUser
 }
 
-struct PostingImage {
-    let id = UUID().uuidString
-    var image: UIImage
-    var isPNG: Bool
-    var state = State.uploading
-    
-    enum State {
-        case uploaded(String)
-        case failed
-        case uploading
-    }
-}
-
-final class PostingTextViewManager: NSObject {
-    @Published var isEditing = false
-    @Published var isEmpty = true
+final class PostingTextViewManager: TextViewManager {
     @Published var userSearchText: String?
     
     @Published var users: [ParsedUser] = []
-    @Published var images: [PostingImage] = []
     
     var tokens: [UserToken] = []
-    
-    var didChangeEvent = PassthroughSubject<UITextView, Never>()
     
     @Published var currentlyEditingToken: EditingToken?
     let returnPressed = PassthroughSubject<Void, Never>()
@@ -51,13 +33,11 @@ final class PostingTextViewManager: NSObject {
     private var cancellables: Set<AnyCancellable> = []
     private var nextEditShouldBeManual = false
     
-    let textView: UITextView
     let usersTableView: UITableView
     var usersHeightConstraint: NSLayoutConstraint!
     init(textView: UITextView, usersTable: UITableView) {
-        self.textView = textView
         usersTableView = usersTable
-        super.init()
+        super.init(textView: textView)
         connectPublishers()
         setup()
     }
@@ -78,9 +58,10 @@ final class PostingTextViewManager: NSObject {
         nextEditShouldBeManual = true
     }
     
-    var postingText: String {
+    override var postingText: String {
+        var currentText = super.postingText as NSString
+        
         var tokens = self.tokens
-        var currentText = textView.text as NSString
         
         for i in tokens.indices {
             let token = tokens[i]
@@ -97,83 +78,12 @@ final class PostingTextViewManager: NSObject {
         return currentText as String
     }
     
-    var isUploadingImages: Bool {
-        for image in images {
-            if case .uploading = image.state {
-                return true
-            }
-        }
-        return false
-    }
-    
-    var didUploadFail: Bool {
-        for image in images {
-            if case .failed = image.state {
-                return true
-            }
-        }
-        return false
-    }
-    
     var mentionedUsersPubkeys: [String] {
         tokens.map { $0.user.pubkey }
     }
     
     @objc func atButtonPressed() {
         _ = textView(textView, shouldChangeTextIn: textView.selectedRange, replacementText: "@")
-    }
-    
-    func processSelectedImage(_ image: UIImage, isPNG: Bool) {
-        let postingImage = PostingImage(image: image, isPNG: isPNG)
-        images.append(postingImage)
-        uploadSelectedImage(postingImage.id)
-    }
-    
-    func uploadSelectedImage(_ id: String) {
-        guard let postingIndex = images.firstIndex(where: { $0.id == id }) else { return }
-        
-        let postingImage = images[postingIndex]
-        
-        if case .uploaded = postingImage.state { return }
-        
-        images[postingIndex].state = .uploading
-        
-        UploadPhotoRequest(image: postingImage.image, isPNG: postingImage.isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
-            guard case .failure(let error) = $0, let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
-                
-            self?.images[index].state = .failed
-            print(error)
-        }) { [weak self] urlString in
-            guard let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
-            
-            self?.images[index].state = .uploaded(urlString)
-        }
-        .store(in: &self.cancellables)
-    }
-    
-    func restartFailedUploads() {
-        for image in images {
-            if case .failed = image.state {
-                uploadSelectedImage(image.id)
-            }
-        }
-    }
-}
-
-extension PostingTextViewManager: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        isEditing = true
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        isEditing = false
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        textView.invalidateIntrinsicContentSize() // Necessary for self sizing text field
-        didChangeEvent.send(textView)
-        
-        isEmpty = postingText.isEmpty
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -411,14 +321,3 @@ extension PostingTextViewManager {
         "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
     ] }
 }
-
-extension PostingTextViewManager: PostingImageCollectionViewDelegate {
-    func didTapImage(resource: PostingImage) {
-        
-    }
-    
-    func didTapDeleteImage(resource: PostingImage) {
-        images = images.filter { $0.id != resource.id }
-    }
-}
-

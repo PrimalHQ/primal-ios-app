@@ -13,6 +13,19 @@ final class ChatViewController: UIViewController, Themeable {
     
     let chatManager = ChatManager()
     
+    private var textHeightConstraint: NSLayoutConstraint?
+    let textInputView = SelfSizingTextView()
+    let textInputLoadingIndicator = LoadingSpinnerView().constrainToSize(30)
+    private let placeholderLabel = UILabel()
+    private let inputParent = UIView()
+    private let inputBackground = UIView()
+    private let bottomBarSpacer = UIView()
+    
+    private lazy var postButton = GradientInGradientButton(title: "Reply")
+    private let buttonStack = UIStackView()
+    
+    private var inputContentMaxHeightConstraint: NSLayoutConstraint?
+    
     var messages: [ProcessedMessage] = [] {
         didSet {
             table.reloadData()
@@ -49,6 +62,9 @@ final class ChatViewController: UIViewController, Themeable {
         navigationItem.titleView = navigationBarTitle(for: user)
         
         view.backgroundColor = .background
+        
+        inputParent.backgroundColor = false ? .background2 : .background
+        inputBackground.backgroundColor = false ? .background : .background3
     }
 }
 
@@ -56,12 +72,113 @@ private extension ChatViewController {
     func setup() {
         updateTheme()
         
-        view.addSubview(table)
-        table.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        let stack = UIStackView(axis: .vertical, [table, inputParent, bottomBarSpacer])
+        view.addSubview(stack)
+        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         table.transform = .init(rotationAngle: .pi)
         table.dataSource = self
         table.separatorStyle = .none
         table.register(ChatMessageCell.self, forCellReuseIdentifier: "cell")
+        
+        inputBackground.layer.cornerRadius = 6
+        
+        let inputStack = UIStackView(arrangedSubviews: [inputBackground, buttonStack])
+        inputStack.axis = .vertical
+        
+        inputParent.addSubview(inputStack)
+        inputBackground.addSubview(placeholderLabel)
+        
+        let textParent = UIView()
+        let contentStack = UIStackView(axis: .vertical, [textParent])
+        contentStack.spacing = 12
+        
+        inputBackground.addSubview(contentStack)
+        textParent.addSubview(textInputView)
+        
+        textParent.addSubview(textInputLoadingIndicator)
+        textInputLoadingIndicator.centerToView(textInputView)
+        textInputLoadingIndicator.isHidden = true
+        
+        contentStack
+            .pinToSuperview(edges: [.top, .horizontal])
+            .pinToSuperview(edges: .bottom, padding: 5)
+        
+        placeholderLabel
+            .pinToSuperview(edges: .leading, padding: 21)
+            .pinToSuperview(edges: .top, padding: 13)
+        
+        textInputView
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .top, padding: 5)
+            .pinToSuperview(edges: .bottom)
+        
+        inputStack
+            .pinToSuperview(edges: .horizontal, padding: 20)
+            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .bottom)
+        
+        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        bottomC.priority = .defaultLow
+        bottomC.isActive = true
+        
+        bottomBarSpacer.topAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        
+        inputStack.spacing = 4
+        
+        textInputView.backgroundColor = .clear
+        textInputView.font = .appFont(withSize: 16, weight: .regular)
+        textInputView.textColor = .foreground2
+//        textInputView.delegate = inputManager
+        textInputView.returnKeyType = .send
+        
+        let imageButton = UIButton()
+        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
+        imageButton.constrainToSize(48)
+        imageButton.addAction(.init(handler: { [unowned self] _ in
+            ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
+//                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            }
+        }), for: .touchUpInside)
+        
+        let cameraButton = UIButton()
+        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
+        cameraButton.constrainToSize(48)
+        cameraButton.addAction(.init(handler: { [unowned self] _ in
+            ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
+//                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            }
+        }), for: .touchUpInside)
+        
+        postButton.titleLabel.font = .appFont(withSize: 14, weight: .medium)
+        postButton.constrainToSize(width: 80, height: 28)
+//        postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
+        
+        let atButton = UIButton()
+        atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+//        atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+        
+        [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
+            buttonStack.addArrangedSubview($0)
+        }
+        atButton.widthAnchor.constraint(equalTo: imageButton.widthAnchor).isActive = true
+        
+        buttonStack.alignment = .center
+        
+        placeholderLabel.font = .appFont(withSize: 16, weight: .regular)
+        placeholderLabel.textColor = .foreground4
+        
+        buttonStack.isHidden = true
+        buttonStack.alpha = 0
+        
+        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(inputSwippedDown))
+        swipe.direction = .down
+        inputParent.addGestureRecognizer(swipe)
+        
+        textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
+        textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
+        
+        inputContentMaxHeightConstraint?.priority = .defaultHigh
     }
     
     func navigationBarTitle(for user: ParsedUser) -> UIView {
@@ -99,6 +216,10 @@ private extension ChatViewController {
         parent.addSubview(button)
         button.pinToSuperview()
         return .init(customView: parent)
+    }
+    
+    @objc func inputSwippedDown() {
+        textInputView.resignFirstResponder()
     }
 }
 

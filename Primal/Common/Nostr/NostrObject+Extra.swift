@@ -124,6 +124,10 @@ extension NostrObject {
     static func muteList(_ mutedPubkeys: [String]) -> NostrObject? {
         createNostrMuteListEvent(mutedPubkeys)
     }
+    
+    static func message(_ content: String, recipientPubkey: String) -> NostrObject? {
+        createNostrMessageEvent(content: content, recipientPubkey: recipientPubkey)
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()
@@ -287,6 +291,10 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
     let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
 
     return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
+}
+
+fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {
+    return createNostrObject(content: content, kind: 4, tags: [["p", recipientPubkey]])
 }
 
 fileprivate func createZapTags(_ target: ZapTarget, _ relays: [String]) -> [[String]] {

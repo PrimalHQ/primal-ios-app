@@ -31,7 +31,10 @@ private extension SocketRequest {
         guard
             let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
             let contentString = payload["content"]?.stringValue
-        else { return }
+        else {
+            print("UNKNOWN KIND")
+            return
+        }
         
         switch kind {
         case .metadata:

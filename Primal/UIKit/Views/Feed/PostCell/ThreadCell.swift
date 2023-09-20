@@ -13,7 +13,8 @@ class ThreadCell: PostCell {
         case parent, main, child
     }
     
-    let gradient = GradientView(colors: UIColor.gradient)
+    var topConstraint: NSLayoutConstraint?
+    var bottomConstraint: NSLayoutConstraint?
     lazy var contentSpacer = UIView()
     lazy var parentIndicator = UIView()
     
@@ -29,16 +30,28 @@ class ThreadCell: PostCell {
         
         switch position {
         case .parent:
-            gradient.isHidden = true
             contentSpacer.isHidden = false
             parentIndicator.isHidden = false
+            contentView.backgroundColor = .clear
+            bottomBorder.backgroundColor = .clear
+            topConstraint?.constant = 0
+            bottomConstraint?.constant = -24
         case .main:
-            gradient.isHidden = false
             contentSpacer.isHidden = true
+            contentView.backgroundColor = .clear
+            bottomBorder.backgroundColor = .background3
+            topConstraint?.constant = 0
+            bottomConstraint?.constant = -12
+            
+            parsedContent.buildContentString(enlarge: true)
+            mainLabel.attributedText = parsedContent.attributedText
         case .child:
-            gradient.isHidden = true
             contentSpacer.isHidden = false
             parentIndicator.isHidden = true
+            contentView.backgroundColor = .background2
+            bottomBorder.backgroundColor = .background3
+            topConstraint?.constant = 12
+            bottomConstraint?.constant = -12
         }
     }
 }
@@ -51,14 +64,12 @@ extension ThreadCell {
         contentSpacer.addSubview(parentIndicator)
         parentIndicator
             .centerToSuperview(axis: .horizontal)
-            .pinToSuperview(edges: .vertical, padding: 0)
+            .pinToSuperview(edges: .top)
+            .pinToSuperview(edges: .bottom, padding: -24)
             .constrainToSize(width: 2)
         
         parentIndicator.backgroundColor = UIColor(rgb: 0x444444)
         parentIndicator.layer.cornerRadius = 1
-        
-        backgroundColorView.addSubview(gradient)
-        gradient.pinToSuperview(edges: [.leading, .vertical]).constrainToSize(width: 5)
     }
 }
 
@@ -93,9 +104,13 @@ final class DefaultThreadCell: ThreadCell {
             .pinToSuperview(edges: .horizontal, padding: 16)
             .pinToSuperview(edges: .top, padding: 12)
     
+        topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
+        topConstraint?.isActive = true
+        
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         bottomC.priority = .defaultHigh
         bottomC.isActive = true
+        bottomConstraint = bottomC
         
         actionButtonStandin.constrainToSize(height: 18)
         contentView.addSubview(bottomButtonStack)
@@ -144,11 +159,14 @@ final class DefaultMainThreadCell: ThreadCell {
         
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .top, padding: 12)
+
+        topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
+        topConstraint?.isActive = true
             
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         bottomC.priority = .defaultLow
         bottomC.isActive = true
+        bottomConstraint = bottomC
         
         actionButtonStandin.constrainToSize(height: 18)
         contentView.addSubview(bottomButtonStack)
@@ -198,11 +216,14 @@ final class FullWidthThreadCell: ThreadCell {
         
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .top, padding: 12)
+        
+        topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
+        topConstraint?.isActive = true
         
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         bottomC.priority = .defaultLow
         bottomC.isActive = true
+        bottomConstraint = bottomC
         
         actionButtonStandin.constrainToSize(height: 18)
         contentView.addSubview(bottomButtonStack)

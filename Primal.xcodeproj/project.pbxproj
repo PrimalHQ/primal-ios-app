@@ -241,6 +241,8 @@
 		B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */; };
 		B94A0E2B2AAB4B0900DEBFE1 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2A2AAB4B0900DEBFE1 /* ChatViewController.swift */; };
 		B94A0E2D2AAB577400DEBFE1 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2C2AAB577400DEBFE1 /* ChatMessageCell.swift */; };
+		B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */; };
+		B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
@@ -530,6 +532,8 @@
 		B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSearchController.swift; sourceTree = "<group>"; };
 		B94A0E2A2AAB4B0900DEBFE1 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		B94A0E2C2AAB577400DEBFE1 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
+		B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextViewManager.swift; sourceTree = "<group>"; };
+		B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewManager.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
@@ -869,6 +873,7 @@
 		93F27DA22A27E7F5004ADA55 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				B94A0E2E2ABA228700DEBFE1 /* TextViewManagers */,
 				93F27DA32A27EA04004ADA55 /* FollowManager.swift */,
 				93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */,
 				93F27DA72A27FA8E004ADA55 /* LikeManager.swift */,
@@ -990,7 +995,6 @@
 			isa = PBXGroup;
 			children = (
 				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
-				9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */,
 				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
 				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
 			);
@@ -1327,6 +1331,16 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		B94A0E2E2ABA228700DEBFE1 /* TextViewManagers */ = {
+			isa = PBXGroup;
+			children = (
+				B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */,
+				9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */,
+				B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */,
+			);
+			path = TextViewManagers;
+			sourceTree = "<group>";
+		};
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
 			isa = PBXGroup;
 			children = (
@@ -1535,6 +1549,7 @@
 				9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
+				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
@@ -1543,6 +1558,7 @@
 				93CACB0229F525B6003BBCE5 /* node_id.c in Sources */,
 				9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */,
 				9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */,
+				B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
 				9EF4BFC22A8BE96F003396AA /* MidnightWave.swift in Sources */,
 				9ED4160D2A48744600892235 /* PopupMenuViewController.swift in Sources */,
@@ -1895,7 +1911,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.28.5;
+				MARKETING_VERSION = 0.29.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1938,7 +1954,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.28.5;
+				MARKETING_VERSION = 0.29.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

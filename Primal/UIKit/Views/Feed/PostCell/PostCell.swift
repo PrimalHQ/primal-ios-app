@@ -36,7 +36,7 @@ protocol PostCellDelegate: AnyObject {
 class PostCell: UITableViewCell {
     weak var delegate: PostCellDelegate?
     
-    let backgroundColorView = UIView()
+    let bottomBorder = UIView()
     let threeDotsButton = UIButton()
     let profileImageView = FLAnimatedImageView()
     let checkbox = VerifiedView()
@@ -115,7 +115,9 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let multiplier: CGFloat = content.imageResources.first?.url.isVideoButNotYoutube == true ? (9 / 16) : 1
+            let url = content.imageResources.first?.url
+            
+            let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
             
             let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh
@@ -171,9 +173,10 @@ extension PostCell: NantesLabelDelegate {
 
 private extension PostCell {
     func setup() {
-        contentView.backgroundColor = .background3
-        contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: [.horizontal, .top]).pinToSuperview(edges: .bottom, padding: 1)
+        backgroundColor = .clear
+        contentView.backgroundColor = .background2
+        contentView.addSubview(bottomBorder)
+        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -235,7 +238,7 @@ private extension PostCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         
-        backgroundColorView.backgroundColor = .background
+        bottomBorder.backgroundColor = .background3
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
         
@@ -302,8 +305,10 @@ private extension PostCell {
 extension FLAnimatedImageView {
     func setUserImage(_ user: ParsedUser) {
         guard user.data.picture.hasSuffix("gif"), let url = user.profileImage.url(for: .small) else {
+            let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
+            
             kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: frame.size)),
+                .processor(DownsamplingImageProcessor(size: size)),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage
             ])

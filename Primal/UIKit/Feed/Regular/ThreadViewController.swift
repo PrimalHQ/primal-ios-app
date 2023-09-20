@@ -370,7 +370,7 @@ private extension ThreadViewController {
         title = "Thread"
         
         table.keyboardDismissMode = .interactive
-        table.contentInset = .init(top: 0, left: 0, bottom: 50, right: 0)
+        table.contentInset = .init(top: 12, left: 0, bottom: 50, right: 0)
         
         stack.addArrangedSubview(inputParent)
         stack.addArrangedSubview(bottomBarSpacer)
