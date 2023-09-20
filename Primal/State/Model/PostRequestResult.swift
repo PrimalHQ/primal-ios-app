@@ -26,7 +26,8 @@ class PostRequestResult {
     var popularHashtags: [PopularHashtag] = []
     var notifications: [PrimalNotification] = []
     
-    var encryptedMessages: [String] = []
+    var encryptedMessages: [EncryptedMessage] = []
+    var chatsMetadata: [String: ChatMetadata] = [:]
     
     var isFollowingUser: Bool?
 }
@@ -40,4 +41,18 @@ struct NostrRepost {
 struct PopularHashtag {
     var title: String
     var apperances: Double
+}
+
+struct EncryptedMessage {
+    var id: String
+    var pubkey: String
+    var recipientPubkey: String
+    var date: Date
+    var message: String
+}
+
+struct ChatMetadata: Codable {
+    var cnt: Int
+    var latest_at: Double
+    var latest_event_id: String
 }

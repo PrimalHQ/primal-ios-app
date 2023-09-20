@@ -31,8 +31,8 @@ struct PrimalSettingsContent: Codable, Hashable {
     var theme: String?
     var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
-    var defaultZapAmount: Int64?
-    var zapOptions: [Int64]?
+    var defaultZapAmount: Int?
+    var zapOptions: [Int]?
     
     mutating func merge(with settings: PrimalSettingsContent) {
         if self.description == nil {
@@ -175,6 +175,10 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.sig = nostrUser?.sig ?? ""
     }
     
+    init(pubkey: String) {
+        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "")
+    }
+    
     init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String) {
         self.id = id
         self.pubkey = pubkey
@@ -226,13 +230,13 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let tags: [[String]]
     let content: String
     let sig: String
-    let likes: Int32
-    let mentions: Int32
-    let replies: Int32
-    let zaps: Int32
-    var satszapped: Int32
-    let score24h: Int32
-    let reposts: Int32
+    let likes: Int
+    let mentions: Int
+    let replies: Int
+    let zaps: Int
+    var satszapped: Int
+    let score24h: Int
+    let reposts: Int
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id
@@ -250,7 +254,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.reposts = nostrPostStats.reposts
     }
     
-    init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int32, mentions: Int32, replies: Int32, zaps: Int32, satszapped: Int32, score24h: Int32, reposts: Int32) {
+    init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int, mentions: Int, replies: Int, zaps: Int, satszapped: Int, score24h: Int, reposts: Int) {
         self.id = id
         self.pubkey = pubkey
         self.created_at = created_at

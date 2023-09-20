@@ -64,7 +64,7 @@ private extension NewPostViewController {
         }
         
         postButton.isEnabled = false
-        postButton.titleLabel.text = "Posting..."
+        postButton.titleLabel.text = " " + postButtonText + " "
         
         PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] success in
             if success {
@@ -185,7 +185,7 @@ private extension NewPostViewController {
         
         Publishers.CombineLatest3(manager.$users, manager.$images, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
             guard let self else { return }
-            self.postButton.isEnabled = !isEmpty && !self.manager.isUploadingImages
+            self.postButton.isEnabled = !isEmpty && !self.manager.isUploadingImages && self.postButton.titleLabel.text == self.postButtonText
         }
         .store(in: &cancellables)
                 

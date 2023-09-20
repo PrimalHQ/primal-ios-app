@@ -82,18 +82,7 @@ enum FontSizeSelection: Int {
         }
     }
     
-    var nameSize: CGFloat {
-        switch self {
-        case .small:
-            return 14
-        case .standard:
-            return 15
-        case .large:
-            return 17
-        case .huge:
-            return 19
-        }
-    }
+    var nameSize: CGFloat { contentFontSize }
     
     var contentFontSize: CGFloat {
         switch self {

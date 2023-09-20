@@ -62,6 +62,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         .store(in: &cancellables)
         
         IdentityManager.instance.requestUserSettings()
+        
+        updateTheme()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -135,17 +137,17 @@ extension NotificationType {
         case .USER_UNFOLLOWED_YOU:
             return "a user unfollowed you"
         case .YOUR_POST_WAS_ZAPPED:
-            return "your post was zapped"
+            return "your note was zapped"
         case .YOUR_POST_WAS_LIKED:
-            return "your post was liked"
+            return "your note was liked"
         case .YOUR_POST_WAS_REPOSTED:
-            return "your post was reposted"
+            return "your note was reposted"
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "your post was replied to"
+            return "your note was replied to"
         case .YOU_WERE_MENTIONED_IN_POST:
             return "you were mentioned"
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
-            return "your post was mentioned"
+            return "your note was mentioned"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
             return "zapped"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:

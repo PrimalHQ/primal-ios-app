@@ -36,7 +36,7 @@ protocol PostCellDelegate: AnyObject {
 class PostCell: UITableViewCell {
     weak var delegate: PostCellDelegate?
     
-    let backgroundColorView = UIView()
+    let bottomBorder = UIView()
     let threeDotsButton = UIButton()
     let profileImageView = FLAnimatedImageView()
     let checkbox = VerifiedView()
@@ -85,29 +85,7 @@ class PostCell: UITableViewCell {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        if content.user.data.picture.hasSuffix("gif") {
-            profileImageView.image = UIImage(named: "Profile")
-            if let url = content.user.profileImage.url(for: .small) {
-                let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                    guard let data = data else {
-                        return
-                    }
-                    
-                    let anim = FLAnimatedImage(gifData: data)
-                    
-                    DispatchQueue.main.async {
-                        self.profileImageView.animatedImage = anim
-                    }
-                }
-                task.resume()
-            }
-        } else {
-            profileImageView.kf.setImage(with: content.user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: CGSize(width: 40, height: 40))),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
-            ])
-        }
+        profileImageView.setUserImage(content.user)
         
         if let metadata = content.linkPreview {
             linkPresentation.data = metadata
@@ -137,7 +115,9 @@ class PostCell: UITableViewCell {
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let multiplier: CGFloat = content.imageResources.first?.url.isVideoButNotYoutube == true ? (9 / 16) : 1
+            let url = content.imageResources.first?.url
+            
+            let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
             
             let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh
@@ -149,7 +129,7 @@ class PostCell: UITableViewCell {
         mainImages.resources = content.imageResources
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
-        zapButton.set(content.post.satszapped + Int32(ZapManager.instance.userZapped[content.post.id, default: 0]), filled: didZap)
+        zapButton.set(content.post.satszapped + ZapManager.instance.userZapped[content.post.id, default: 0], filled: didZap)
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
         
@@ -193,9 +173,10 @@ extension PostCell: NantesLabelDelegate {
 
 private extension PostCell {
     func setup() {
-        contentView.backgroundColor = .background
-        contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 1)
+        backgroundColor = .clear
+        contentView.backgroundColor = .background2
+        contentView.addSubview(bottomBorder)
+        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
         likeButton.isEnabled = LoginManager.instance.method() == .nsec
         zapButton.isEnabled = LoginManager.instance.method() == .nsec
@@ -257,7 +238,7 @@ private extension PostCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         
-        backgroundColorView.backgroundColor = .background2
+        bottomBorder.backgroundColor = .background3
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
         
@@ -318,5 +299,34 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
         delegate?.postCellDidTapLike(self)
+    }
+}
+
+extension FLAnimatedImageView {
+    func setUserImage(_ user: ParsedUser) {
+        guard user.data.picture.hasSuffix("gif"), let url = user.profileImage.url(for: .small) else {
+            let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
+            
+            kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
+                .processor(DownsamplingImageProcessor(size: size)),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ])
+            return
+        }
+        
+        image = UIImage(named: "Profile")
+        
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                return
+            }
+            
+            let anim = FLAnimatedImage(gifData: data)
+            
+            DispatchQueue.main.async {
+                self.animatedImage = anim
+            }
+        }.resume()
     }
 }

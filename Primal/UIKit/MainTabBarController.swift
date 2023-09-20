@@ -22,7 +22,7 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
     lazy var read = ReadNavigationController()
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
-    lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: MessagesViewController()))
+    lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
 
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
@@ -33,9 +33,11 @@ final class MainTabBarController: UIViewController, Themeable {
 
     let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
     
-    lazy var vStack = UIStackView(arrangedSubviews: [buttonStack, safeAreaSpacer])
+    let buttonStackParent = UIView()
+    lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
     let safeAreaSpacer = UIView()
     let closeMenuButton = UIButton()
+    let navigationBorder = UIView().constrainToSize(height: 1)
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
@@ -110,21 +112,19 @@ final class MainTabBarController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
         safeAreaSpacer.backgroundColor = .background
+        buttonStackParent.backgroundColor = .background
 
         notificationIndicator.image = Theme.current.tabBarDotImage
         
         closeMenuButton.tintColor = .foreground
-        closeMenuButton.backgroundColor = .background
-
-        buttons.forEach {
-            $0.backgroundColor = .background
-        }
 
         updateButtons()
 
         [home, read, explore, messages, notifications].forEach {
             $0.updateThemeIfThemeable()
         }
+        
+        navigationBorder.backgroundColor = .background3
     }
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
@@ -179,6 +179,10 @@ private extension MainTabBarController {
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
+        buttonStackParent.addSubview(buttonStack)
+        buttonStack.pinToSuperview().constrainToSize(height: 56)
+        buttonStack.distribution = .fillEqually
+        
         view.addSubview(notificationIndicator)
         if let imageView = buttons.last?.imageView {
             notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
@@ -187,9 +191,6 @@ private extension MainTabBarController {
 
         pageVC.didMove(toParent: self) // Notify child VC
         pageVC.setViewControllers([home], direction: .forward, animated: false)
-
-        buttonStack.distribution = .fillEqually
-        buttonStack.constrainToSize(height: 56)
 
         vStack.axis = .vertical
 

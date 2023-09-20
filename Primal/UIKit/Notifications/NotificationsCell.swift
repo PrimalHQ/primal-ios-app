@@ -60,7 +60,7 @@ final class NotificationsCell: PostCell {
 
 private extension NotificationsCell {
     func setup() {
-        backgroundColorView.removeFromSuperview()
+//        backgroundColorView.removeFromSuperview()
         
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         let contentStack = UIStackView(arrangedSubviews: [avatarStack, titleLabel, postContentStack])
@@ -181,39 +181,39 @@ extension GroupedNotification {
             return "unfollowed you"
         case .YOUR_POST_WAS_ZAPPED:
             guard let sats = post?.post.satszapped.shortened() else { return "zapped your post" }
-            return "zapped your post for a total of \(sats) sats"
+            return "zapped your note for a total of \(sats) sats"
         case .YOUR_POST_WAS_LIKED:
-            return "liked your post"
+            return "liked your note"
         case .YOUR_POST_WAS_REPOSTED:
-            return "reposted your post"
+            return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "replied to your post"
+            return "replied to your note"
         case .YOU_WERE_MENTIONED_IN_POST:
-            return "mentioned you in a post"
+            return "mentioned you in a note"
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
-            return "mentioned your post"
+            return "mentioned your note"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
             guard let sats = post?.post.satszapped.shortened() else {
-                return "zapped a post you were mentioned in"
+                return "zapped a note you were mentioned in"
             }
-            return "zapped a post you were mentioned in for a total of \(sats) sats"
+            return "zapped a note you were mentioned in for a total of \(sats) sats"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:
-            return "liked a post you were mentioned in"
+            return "liked a note you were mentioned in"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED:
-            return "reposted a post you were mentioned in"
+            return "reposted a note you were mentioned in"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
-            return "replied to a post you were mentioned in"
+            return "replied to a note you were mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
             guard let sats = post?.post.satszapped.shortened() else {
-                return "zapped a post your post was mentioned in"
+                return "zapped a note your note was mentioned in"
             }
-            return "zapped a post your post was mentioned in for a total of \(sats) sats"
+            return "zapped a note your note was mentioned in for a total of \(sats) sats"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
-            return "liked a post your post was mentioned in"
+            return "liked a note your note was mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
-            return "reposted a post your post was mentioned in"
+            return "reposted a note your note was mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
-            return "replied to a post your post was mentioned in"
+            return "replied to a note your note was mentioned in"
         }
     }
     

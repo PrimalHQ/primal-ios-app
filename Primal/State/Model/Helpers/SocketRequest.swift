@@ -31,7 +31,10 @@ private extension SocketRequest {
         guard
             let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
             let contentString = payload["content"]?.stringValue
-        else { return }
+        else {
+            print("UNKNOWN KIND")
+            return
+        }
         
         switch kind {
         case .metadata:
@@ -83,7 +86,7 @@ private extension SocketRequest {
             guard
                 let pubKey = payload["pubkey"]?.stringValue,
                 let dateNum = payload["created_at"]?.doubleValue,
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
+                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.isEmpty ? "{}".utf8 : contentString.utf8))
             else {
                 print("Error decoding reposts string to json")
                 return
@@ -153,7 +156,22 @@ private extension SocketRequest {
             
             pendingResult.isFollowingUser = isFollowing
         case .encryptedDirectMessage:
-            pendingResult.encryptedMessages.append(contentString)
+            guard
+                let pubkey = payload["pubkey"]?.stringValue,
+                let id = payload["id"]?.stringValue,
+                let date = payload["created_at"]?.doubleValue,
+                let recipientPubkey = payload["tags"]?.arrayValue?.first?.arrayValue?.last?.stringValue
+            else {
+                print("Error decoding encrypted message")
+                return
+            }
+            pendingResult.encryptedMessages.append(.init(id: id, pubkey: pubkey, recipientPubkey: recipientPubkey, date: .init(timeIntervalSince1970: date), message: contentString))
+        case .messagesMetadata:
+            guard let chats = try? JSONDecoder().decode([String: ChatMetadata].self, from: Data(contentString.utf8)) else {
+                print("Error decoding messagesMetadata")
+                return
+            }
+            pendingResult.chatsMetadata = chats
         default:
             print("Unhandled response \(payload)")
         }

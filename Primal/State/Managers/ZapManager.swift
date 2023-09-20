@@ -19,7 +19,7 @@ final class ZapManager {
     static let instance: ZapManager = ZapManager()
     
     @Published private(set) var isConnecting = false
-    @Published var userZapped: [String: Int64] = [:]
+    @Published var userZapped: [String: Int] = [:]
     
     deinit {
         self.disconnect()
@@ -68,7 +68,7 @@ final class ZapManager {
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId] != nil }
     
-    func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int64,  _ callback: @escaping () -> Void) {
+    func zap(comment: String = "", lnurl: String, target: ZapTarget, type: ZapType, amount: Int,  _ callback: @escaping () -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
         guard
@@ -92,7 +92,7 @@ final class ZapManager {
                 return
             }
             
-            guard let inv = await fetch_zap_invoice(payreq, zapreq: zapreq, msats: amount_msat, zap_type: type, comment: comment) else {
+            guard let inv = await fetch_zap_invoice(payreq, zapreq: zapreq, msats: Int64(amount_msat), zap_type: type, comment: comment) else {
                 return
             }
              

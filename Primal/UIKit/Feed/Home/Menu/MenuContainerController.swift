@@ -151,7 +151,7 @@ private extension MenuContainerController {
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
             .pinToSuperview(edges: .top, padding: 70)
-            .pinToSuperview(edges: .bottom, padding: 80)
+            .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(17, after: profileImage)

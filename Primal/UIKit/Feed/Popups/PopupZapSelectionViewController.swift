@@ -12,7 +12,7 @@ final class PopupZapSelectionViewController: UIViewController {
     let userToZap: PrimalUser
     
     private let emojis = ["👍", "🌿", "🤙", "💜", "🔥", "🚀"]
-    private var zapOptions: [Int32] = [] {
+    private var zapOptions: [Int] = [] {
         didSet {
             zip(zapOptions, buttons).forEach { option, button in
                 button.title = option.shortened()
@@ -46,7 +46,7 @@ final class PopupZapSelectionViewController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(userToZap: PrimalUser, _ callback: @escaping (Int64) -> Void) {
+    init(userToZap: PrimalUser, _ callback: @escaping (Int) -> Void) {
         self.userToZap = userToZap
         super.init(nibName: nil, bundle: nil)
         
@@ -55,14 +55,14 @@ final class PopupZapSelectionViewController: UIViewController {
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] settings in
                 guard let options = settings?.content.zapOptions else { return }
-                self?.zapOptions = options.map { Int32($0) }
+                self?.zapOptions = options.map { Int($0) }
             })
             .store(in: &cancellables)
         
         zapButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             self.dismiss(animated: true) { 
-                callback(Int64(self.zapOptions[safe: self.selectedOptionIndex] ?? 0))
+                callback(self.zapOptions[safe: self.selectedOptionIndex] ?? 0)
             }
         }), for: .touchUpInside)
     }

@@ -66,8 +66,6 @@ extension ImageCollectionView: UICollectionViewDataSource {
         
         if r.url.isVideoURL {
             if r.url.isYoutubeVideo {
-//                (cell as? YoutubeVideoCell)?.videoView.cueVideo(byURL: r.url, startSeconds: 0)
-                
                 (cell as? YoutubeVideoCell)?.loadURL(r.url)
                 return cell
             }

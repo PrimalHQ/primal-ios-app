@@ -50,14 +50,18 @@ struct NostrContent: Codable {
 
 struct NostrContentStats: Codable {
     let event_id: String
-    let likes: Int32
-    let mentions: Int32
-    let replies: Int32
-    let zaps: Int32
-    let satszapped: Int32
-    let score: Int32
-    let score24h: Int32
-    let reposts: Int32
+    let likes: Int
+    let mentions: Int
+    let replies: Int
+    let zaps: Int
+    let satszapped: Int
+    let score: Int
+    let score24h: Int
+    let reposts: Int
+    
+    static func empty(_ id: String) -> NostrContentStats {
+        .init(event_id: id, likes: 0, mentions: 0, replies: 0, zaps: 0, satszapped: 0, score: 0, score24h: 0, reposts: 0)
+    }
 }
 
 struct NostrUserProfileInfo: Codable {

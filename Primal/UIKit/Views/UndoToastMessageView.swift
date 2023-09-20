@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIView {
-    func showUndoToast(_ text: String, durationSeconds: Int = 3, undoCallback: @escaping () -> ()) {
+    func showUndoToast(_ text: String, durationSeconds: Int = 3, extraPadding: Bool = true, undoCallback: @escaping () -> ()) {
         let view = UndoToastMessageView(text: text)
         addSubview(view)
         
@@ -22,7 +22,7 @@ extension UIView {
             }
         }), for: .touchUpInside)
         
-        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: 12)
+        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: extraPadding ? 102 : 12)
         
         view.alpha = 0
         view.transform = .init(translationX: 0, y: 50)

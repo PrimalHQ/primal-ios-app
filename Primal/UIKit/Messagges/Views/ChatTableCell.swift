@@ -1,0 +1,92 @@
+//
+//  ChatTableCell.swift
+//  Primal
+//
+//  Created by Pavle Stevanović on 6.9.23..
+//
+
+import UIKit
+import Kingfisher
+import FLAnimatedImage
+
+final class ChatTableCell: UITableViewCell, Themeable {
+    let background = UIView()
+    let profileImageView = FLAnimatedImageView(image: UIImage(named: "Profile")).constrainToSize(52)
+    let nameLabel = UILabel()
+    let timeLabel = UILabel()
+    let separator = UIView().constrainToSize(width: 1)
+    let newIndicator = UIView().constrainToSize(12)
+    let messageLabel = UILabel()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        contentView.backgroundColor = .background
+        background.backgroundColor = .background2
+        newIndicator.backgroundColor = .gradientColor(bounds: .init(width: 12, height: 12), startPoint: .zero, endPoint: .init(x: 1, y: 1))
+        
+        nameLabel.textColor = .foreground
+        timeLabel.textColor = .foreground5
+        separator.backgroundColor = .foreground5
+        messageLabel.textColor = .foreground3
+        
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .bold)
+        timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        messageLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+    }
+    
+    func setup(chat: Chat) {
+        nameLabel.text = chat.user.data.firstIdentifier
+        timeLabel.text = chat.latest.date.timeAgoDisplay()
+        newIndicator.isHidden = chat.newMessagesCount == 0
+        
+        if chat.latest.user.data.id != chat.user.data.id {
+            messageLabel.text = "You: \(chat.latest.message)"
+        } else {
+            messageLabel.text = chat.latest.message
+        }
+        
+        profileImageView.setUserImage(chat.user)
+    }
+}
+
+private extension ChatTableCell {
+    func setup() {
+        let nameStack = UIStackView([nameLabel, separator, timeLabel, newIndicator])
+        nameLabel.setContentHuggingPriority(.required, for: .horizontal)
+        separator.pin(to: nameLabel, edges: .vertical)
+        
+        nameStack.spacing = 6
+        nameStack.alignment = .center
+        
+        let vStack = UIStackView(axis: .vertical, [nameStack, messageLabel])
+        let hStack = UIStackView([profileImageView, vStack])
+        
+        contentView.addSubview(background)
+        background.addSubview(hStack)
+        hStack.pinToSuperview(padding: 12)
+        background.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 2)
+        
+        vStack.spacing = 4
+        hStack.alignment = .center
+        hStack.spacing = 12
+        hStack.alignment = .top
+        
+        background.layer.cornerRadius = 8
+    
+        profileImageView.layer.cornerRadius = 26
+        profileImageView.layer.masksToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
+        newIndicator.layer.cornerRadius = 6
+        
+        messageLabel.numberOfLines = 2
+    }
+}

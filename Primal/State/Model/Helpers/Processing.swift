@@ -10,11 +10,9 @@ import LinkPresentation
 import Kingfisher
 
 extension PostRequestResult {
-    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
-        guard
-            let nostrUser = users[content.pubkey],
-            let nostrPostStats = stats[content.id]
-        else { return nil }
+    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser) {
+        let nostrUser = users[content.pubkey] ?? .init(pubkey: content.pubkey)
+        let nostrPostStats = stats[content.id] ?? .empty(content.id)
         
         let primalFeedPost = PrimalFeedPost(nostrPost: content, nostrPostStats: nostrPostStats)
         
@@ -29,12 +27,12 @@ extension PostRequestResult {
     
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
-            .compactMap({ createPrimalPost(content: $0) })
+            .map({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
         
         let reposts: [ParsedContent] = reposts
-            .compactMap {
-                guard let (post, user) = createPrimalPost(content: $0.post) else { return nil }
+            .map {
+                let (post, user) = createPrimalPost(content: $0.post)
                 return (post, user, $0)
             }
             .compactMap { (primalPost: PrimalFeedPost, user: ParsedUser, repost: NostrRepost) in
@@ -250,14 +248,5 @@ extension PrimalUser {
         return npub
     }
     
-    var secondIdentifier: String? {
-        let identifiers = [displayName, name, nip05, npub]
-        var didFindFirst = false
-        for identifier in identifiers where !identifier.isEmpty {
-            guard !didFindFirst else { return identifier }
-            
-            didFindFirst = true
-        }
-        return nil
-    }
+    var secondIdentifier: String? { [nip05, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
 }

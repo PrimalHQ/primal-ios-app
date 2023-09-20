@@ -78,15 +78,17 @@ extension ParsedUser {
 }
 
 extension ParsedContent {
-    func buildContentString() {
+    func buildContentString(enlarge: Bool = false) {
+        let enlargingAmount: CGFloat = 2
+        
         let fs = FontSizeSelection.current
         let style = NSMutableParagraphStyle()
         style.lineSpacing = fs.contentLineSpacing
-        style.maximumLineHeight = fs.contentLineHeight
+        style.maximumLineHeight = fs.contentLineHeight + (enlarge ? enlargingAmount : 0)
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: fs.contentFontSize, weight: .regular),
+            .font: UIFont.appFont(withSize: fs.contentFontSize + (enlarge ? enlargingAmount : 0), weight: .regular),
             .paragraphStyle: style
         ])
         

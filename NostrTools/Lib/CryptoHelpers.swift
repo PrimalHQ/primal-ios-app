@@ -784,6 +784,13 @@ func base64_encode(_ content: [UInt8]) -> String {
     return Data(content).base64EncodedString()
 }
 
+func base64_decode(_ content: String) -> [UInt8]? {
+    guard let dat = Data(base64Encoded: content) else {
+        return nil
+    }
+    return dat.bytes
+}
+
 func aes_encrypt(data: [UInt8], iv: [UInt8], shared_sec: [UInt8]) -> Data? {
     return aes_operation(operation: CCOperation(kCCEncrypt), data: data, iv: iv, shared_sec: shared_sec)
 }
