@@ -8,6 +8,8 @@
 import Combine
 import Foundation
 import GenericJSON
+import UIKit
+import Kingfisher
 
 let APP_NAME = "Primal-iOS App"
 
@@ -52,6 +54,9 @@ final class IdentityManager {
                 case .metadata:
                     let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
                     self.user = PrimalUser(nostrUser: nostrUser)
+                    if self.user?.deleted ?? false {
+                        self.handleDeletedAccount()
+                    }
                 case .userScore:
                     if let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue {
                         guard let content: [String: UInt32] = try? JSONDecoder().decode([String: UInt32].self, from: contentString.data(using: .utf8)!) else {
@@ -63,10 +68,8 @@ final class IdentityManager {
                         
                         print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
-                case .mediaMetadata, .metadata, .userScore:
-                    break // NO ACTION
                 default:
-                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(kind)")
+                        print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -89,6 +92,9 @@ final class IdentityManager {
                 case .metadata:
                     let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
                     self.user = PrimalUser(nostrUser: nostrUser)
+                    if self.user?.deleted ?? false {
+                        self.handleDeletedAccount()
+                    }
                 case .userStats:
                     guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                         print("Error decoding nostr stats string to json")
@@ -97,7 +103,7 @@ final class IdentityManager {
                     
                     self.userStats = nostrUserProfileInfo
                 default:
-                    print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(kind)")
+                        print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -128,7 +134,7 @@ final class IdentityManager {
                         callback(settings)
                     }
                 default:
-                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(kind)")
+                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -200,7 +206,7 @@ final class IdentityManager {
                         self.newUserKeypair = nil
                     }
                 default:
-                    print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(kind)")
+                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
             self.didFinishInit = true
@@ -271,7 +277,7 @@ final class IdentityManager {
                 case .metadata, .userScore, .mediaMetadata:
                     break // NO ACTION
                 default:
-                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(kind)")
+                        print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -359,5 +365,39 @@ final class IdentityManager {
         settings.content.feeds?.removeAll(where: { $0.hex == hex })
         
         updateSettings(settings)
+    }
+    
+    func deleteAccount() async -> [JSON] {
+        return await withCheckedContinuation { continuation in
+            let profile = Profile(
+                name: "Deleted Account",
+                display_name: "Deleted Account",
+                about: "Deleted Account",
+                picture: nil,
+                banner: nil,
+                website: nil,
+                lud06: nil,
+                lud16: nil,
+                nip05: nil
+            )
+            
+            guard let event = NostrObject.metadata(profile) else { return }
+            RelaysPostbox.instance.request(event, specificRelay: nil, successHandler: { res in
+                continuation.resume(returning: res)
+            }, errorHandler: {
+                print("IdentityManager: DeleteAccount failed to send event to Relays")
+                continuation.resume(returning: [])
+            })
+        }
+    }
+    
+    private func handleDeletedAccount() {
+        let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .destructive) { _ in
+            let _ = ICloudKeychainManager.instance.clearSavedKeys()
+            KingfisherManager.shared.cache.clearMemoryCache()
+            RootViewController.instance.reset()
+            UserDefaults.standard.nwc = nil
+        })
     }
 }

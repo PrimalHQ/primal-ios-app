@@ -318,7 +318,8 @@ private extension EditProfileViewController {
                         website: data.website ?? profile.website,
                         tags: metadata_ev.tags,
                         created_at: Double(metadata_ev.created_at),
-                        sig: metadata_ev.sig
+                        sig: metadata_ev.sig,
+                        deleted: profile.deleted ?? false
                     )
                     
                     profileVC.profile = .init(data: newProfile)

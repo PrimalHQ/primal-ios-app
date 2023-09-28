@@ -142,6 +142,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let tags: [[String]]
     let created_at: Double
     let sig: String
+    let deleted: Bool?
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
@@ -155,6 +156,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         let tempNpub = bech32_pubkey(tempPubkey) ?? ""
         let tempName = userMeta.objectValue?["name"]?.stringValue ?? tempPubkey
         let tempTags = nostrUser?.tags ?? [[]]
+        let tempDeleted = userMeta.objectValue?["deleted"]?.boolValue ?? false
         
         self.id = tempId
         self.pubkey = tempPubkey
@@ -172,13 +174,14 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.tags = tempTags
         self.created_at = nostrUser?.created_at ?? -1
         self.sig = nostrUser?.sig ?? ""
+        self.deleted = tempDeleted
     }
     
     init(pubkey: String) {
-        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "")
+        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "", deleted: false)
     }
     
-    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String) {
+    init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String, deleted: Bool) {
         self.id = id
         self.pubkey = pubkey
         self.npub = npub
@@ -195,6 +198,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.tags = tags
         self.created_at = created_at
         self.sig = sig
+        self.deleted = deleted
     }
     
     var lnurl: String? {
@@ -303,7 +307,8 @@ extension PrimalUser {
             website: userUUID,
             tags: [[]],
             created_at: Date.now.timeIntervalSince1970,
-            sig: userUUID
+            sig: userUUID,
+            deleted: false
         )
     }()
 }

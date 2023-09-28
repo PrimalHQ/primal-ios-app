@@ -126,7 +126,8 @@ extension SettingsAppearanceViewController: UITableViewDataSource {
                 website: "",
                 tags: [],
                 created_at: 0,
-                sig: ""
+                sig: "",
+                deleted: false
             ))
         )
         post.text = "Welcome to #Nostr! A magical place where you can speak freely and truly own your account, content, and followers. ✨"
