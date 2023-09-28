@@ -399,5 +399,8 @@ final class IdentityManager {
             RootViewController.instance.reset()
             UserDefaults.standard.nwc = nil
         })
+        DispatchQueue.main.async {
+            RootViewController.instance.present(alert, animated: true)
+        }
     }
 }
