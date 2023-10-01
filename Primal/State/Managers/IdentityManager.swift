@@ -394,7 +394,7 @@ final class IdentityManager {
     private func handleDeletedAccount() {
         let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .destructive) { _ in
-            let _ = ICloudKeychainManager.instance.clearSavedKeys()
+            _ = ICloudKeychainManager.instance.clearSavedKeys()
             KingfisherManager.shared.cache.clearMemoryCache()
             RootViewController.instance.reset()
             UserDefaults.standard.nwc = nil

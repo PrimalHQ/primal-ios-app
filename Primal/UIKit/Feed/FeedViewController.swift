@@ -138,8 +138,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
-        view.backgroundColor = .background
-        table.backgroundColor = .background
+        view.backgroundColor = .background2
+        table.backgroundColor = .background2
         
         navigationBorder.backgroundColor = .background3
     }
@@ -177,28 +177,30 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func updateBars() {
-        let shouldShowBars = self.shouldShowBars
+        let shouldShowBars = true // self.shouldShowBars
         
         safeAreaSpacer.isHidden = !shouldShowBars
         navigationBorder.isHidden = !shouldShowBars
         mainTabBarController?.setTabBarHidden(!shouldShowBars, animated: false)
         navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-        table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
+//        table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
 
         isAnimatingBars = true
-        isShowingBars = shouldShowBars
+        isShowingBars = self.shouldShowBars
         isAnimatingBars = false
     }
     
     func animateBars() {
-        let shouldShowBars = scrollDirectionCounter >= 0
+        var shouldShowBars = scrollDirectionCounter >= 0
         guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
+        
+        shouldShowBars = true // HARD CODING!
         
         isAnimatingBars = true
         table.bounces = shouldShowBars
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-            self.isShowingBars = shouldShowBars
+            self.isShowingBars = self.shouldShowBars
             self.isAnimatingBars = false
         }
         
@@ -206,7 +208,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
         
-        let shouldMoveOffset = safeAreaSpacer.superview != nil
+        let shouldMoveOffset = false // safeAreaSpacer.superview != nil
         
         if !shouldShowBars {
             // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE

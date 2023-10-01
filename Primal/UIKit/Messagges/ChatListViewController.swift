@@ -20,6 +20,8 @@ final class ChatListViewController: UIViewController, Themeable {
     private let markAllRead = UIButton()
     private let selectionIndicator = UIView()
     
+    private let loadingSpinner = LoadingSpinnerView()
+    
     private let newChatButton = UIButton()
     
     var chats: [Chat] = [] {
@@ -40,13 +42,16 @@ final class ChatListViewController: UIViewController, Themeable {
         setup()
         
         $selectedType.sink { [weak self] relation in
-            self?.manager.getRecentChats(relation) { chats in
-                self?.chats = chats
-            }
+            self?.loadingSpinner.isHidden = false
+            self?.loadingSpinner.play()
+            self?.chats = []
             
             guard let self else { return }
             
+            // We need to do this async because this event fires on willChange, so the value of selectedType is still not updated
             DispatchQueue.main.async {
+                self.getChats()
+                
                 self.updateButtonFonts()
                 self.selectionIndicator.removeFromSuperview()
                 self.view.addSubview(self.selectionIndicator)
@@ -60,9 +65,19 @@ final class ChatListViewController: UIViewController, Themeable {
         .store(in: &cancellables)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        
+        getChats()
+    }
+    
     func updateTheme() {
+        view.backgroundColor = .background
+        
         updateButtonFonts()
-        table.backgroundColor = .background
+        table.backgroundColor = .background2
         
         selectionIndicator.backgroundColor = .accent
         
@@ -84,7 +99,12 @@ private extension ChatListViewController {
         updateTheme()
         
         let hstack = UIStackView([SpacerView(width: 12), followsButton, SpacerView(width: 32), otherButton, UIView(), markAllRead, SpacerView(width: 12)])
-        let vStack = UIStackView(axis: .vertical, [hstack.constrainToSize(height: 46), SpacerView(height: 4), table])
+        let vStack = UIStackView(axis: .vertical, [
+            hstack.constrainToSize(height: 46),
+            SpacerView(height: 4),
+            ThemeableView().constrainToSize(height: 1).setTheme { $0.backgroundColor = .background3 },
+            table
+        ])
         
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, safeArea: true)
@@ -93,10 +113,17 @@ private extension ChatListViewController {
         selectionIndicator.pin(to: followsButton, edges: [.horizontal, .bottom]).constrainToSize(height: 4)
         selectionIndicator.layer.cornerRadius = 2
         
+        let refreshControl = UIRefreshControl()
+        refreshControl.addAction(.init(handler: { [weak self] _ in
+            self?.getChats()
+        }), for: .valueChanged)
+        
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
+        table.refreshControl = refreshControl
         table.register(ChatTableCell.self, forCellReuseIdentifier: "cell")
+        table.contentInset = .init(top: 0, left: 0, bottom: 60, right: 0)
         
         followsButton.setTitle("FOLLOWS", for: .normal)
         otherButton.setTitle("OTHER", for: .normal)
@@ -109,16 +136,45 @@ private extension ChatListViewController {
         newChatButton.setImage(UIImage(named: "newChat"), for: .normal)
         newChatButton.layer.cornerRadius = 28
         
+        view.addSubview(loadingSpinner)
+        loadingSpinner.centerToSuperview().constrainToSize(70)
+        loadingSpinner.isHidden = true
+        
         newChatButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(ChatSearchController(), sender: nil)
+            self?.show(ChatSearchController(manager: self!.manager), sender: nil)
         }), for: .touchUpInside)
         
         otherButton.addAction(.init(handler: { [weak self] _ in
             self?.selectedType = .other
         }), for: .touchUpInside)
+        
         followsButton.addAction(.init(handler: { [weak self] _ in
             self?.selectedType = .follows
         }), for: .touchUpInside)
+        
+        markAllRead.addAction(.init(handler: { [weak self] _ in
+            self?.manager.markAllChatsAsRead()
+        }), for: .touchUpInside)
+        
+        manager.updateChatCount()
+        manager.$newMessagesCount.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] oldCount, count in
+            guard let main: MainTabBarController = RootViewController.instance.findInChildren() else { return }
+            main.hasNewMessages = count > 0
+            
+            guard oldCount != count, let self, self.view.window != nil, self.navigationController?.topViewController == self.parent else { return }
+            
+            self.getChats()
+        }
+        .store(in: &cancellables)
+    }
+    
+    func getChats() {
+        manager.getRecentChats(selectedType) { [weak self] chats in
+            self?.chats = chats.filter { !MuteManager.instance.isMuted($0.user.data.pubkey) }
+            self?.loadingSpinner.isHidden = true
+            self?.loadingSpinner.stop()
+            self?.table.refreshControl?.endRefreshing()
+        }
     }
 }
 
@@ -139,6 +195,6 @@ extension ChatListViewController: UITableViewDataSource {
 
 extension ChatListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        show(ChatViewController(user: chats[indexPath.row].user), sender: nil)
+        show(ChatViewController(user: chats[indexPath.row].user, chatManager: manager), sender: nil)
     }
 }

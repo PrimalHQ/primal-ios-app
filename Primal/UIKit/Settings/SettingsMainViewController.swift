@@ -8,8 +8,6 @@
 import UIKit
 
 class SettingsMainViewController: UIViewController, Themeable {
-    let deleteButton = UIButton()
-    
     let versionLabel = UILabel()
     
     init() {
@@ -30,8 +28,6 @@ class SettingsMainViewController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
         
-        deleteButton.backgroundColor = .background3
-        
         versionLabel.textColor = .foreground
         
         navigationItem.leftBarButtonItem = customBackButton
@@ -42,16 +38,15 @@ private extension SettingsMainViewController {
     func setupView() {
         title = "Settings"
         
-        let keys = SettingsOptionButton(title: "Keys")
-        let wallet = SettingsOptionButton(title: "Wallet")
+        let keys = SettingsOptionButton(title: "Account")
         let appearance = SettingsOptionButton(title: "Appearance")
         let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
         let network = SettingsOptionButton(title: "Network")
         let feeds = SettingsOptionButton(title: "Feeds")
+        let wallet = SettingsOptionButton(title: "Wallet")
         let zaps = SettingsOptionButton(title: "Zaps")
         
-        let deleteLabel = SettingsTitleView(title: "DELETE")
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         wallet.isEnabled = LoginManager.instance.method() == .nsec
@@ -60,7 +55,7 @@ private extension SettingsMainViewController {
         zaps.isEnabled = LoginManager.instance.method() == .nsec
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
@@ -71,18 +66,6 @@ private extension SettingsMainViewController {
         bottomStack.spacing = 12
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        
-        deleteLabel.text = "DELETE ACCOUNT"
-        deleteLabel.font = .appFont(withSize: 14, weight: .medium)
-        
-        deleteButton.setTitle("Delete account", for: .normal)
-        deleteButton.setTitleColor(.accent, for: .normal)
-        deleteButton.setTitleColor(.accent.withAlphaComponent(0.5), for: .highlighted)
-        deleteButton.titleLabel?.font  = .appFont(withSize: 20, weight: .regular)
-        deleteButton.contentHorizontalAlignment = .left
-        deleteButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
-        deleteButton.layer.cornerRadius = 8
-        deleteButton.constrainToSize(height: 48)
         
         versionLabel.font = .appFont(withSize: 20, weight: .bold)
         if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {

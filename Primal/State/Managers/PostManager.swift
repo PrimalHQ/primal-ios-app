@@ -5,6 +5,7 @@
 //  Created by Nikola Lukovic on 1.6.23..
 //
 
+import Combine
 import Foundation
 
 final class PostManager {
@@ -15,8 +16,25 @@ final class PostManager {
     @Published var userReposts: Set<String> = []
     @Published var userReplied: Set<String> = []
     
+    var cancellables: Set<AnyCancellable> = []
+    
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
+    
+    func sendMessageEvent(message: String, userPubkey: String, _ callback: @escaping (Bool) -> Void) {
+        if LoginManager.instance.method() != .nsec { return }
+        
+        guard let ev = NostrObject.message(message, recipientPubkey: userPubkey) else {
+            print("Error creating message event")
+            return
+        }
+        
+        RelaysPostbox.instance.request(ev, specificRelay: nil) { result in
+            callback(true)
+        } errorHandler: {
+            callback(false)
+        }
+    }
     
     func sendRepostEvent(nostrContent: NostrContent) {
         if LoginManager.instance.method() != .nsec { return }

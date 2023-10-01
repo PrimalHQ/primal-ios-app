@@ -7,10 +7,18 @@
 
 import Foundation
 
+enum MessageStatus: String {
+    case sent
+    case sending
+    case failed
+}
+
 struct ProcessedMessage {
+    var id: String
     var user: ParsedUser
     var date: Date
     var message: String
+    var status: MessageStatus
 }
 
 struct Chat {
@@ -41,9 +49,11 @@ extension PostRequestResult {
                 user: parsed,
                 newMessagesCount: info.cnt,
                 latest: .init(
+                    id: latest.id,
                     user: latest.pubkey == pubkey ? parsed : createParsedUser(messageUser),
                     date: latest.date,
-                    message: decryptDirectMessage(latest.message, privkey: privkey, pubkey: latest.pubkey == pubkey ? pubkey : latest.recipientPubkey) ?? ""
+                    message: decryptDirectMessage(latest.message, privkey: privkey, pubkey: latest.pubkey == pubkey ? pubkey : latest.recipientPubkey) ?? "",
+                    status: .sent
                 )
             )
         }
@@ -60,11 +70,13 @@ extension PostRequestResult {
             guard let user = users[$0.pubkey] else { return nil }
             
             return .init(
+                id: $0.id,
                 user: createParsedUser(user),
                 date: $0.date,
-                message: decryptDirectMessage($0.message, privkey: privkey, pubkey: $0.pubkey == loginInfo.pubkey ? $0.recipientPubkey : $0.pubkey) ?? ""
+                message: decryptDirectMessage($0.message, privkey: privkey, pubkey: $0.pubkey == loginInfo.pubkey ? $0.recipientPubkey : $0.pubkey) ?? "",
+                status: .sent
             )
         }
-        .sorted { $0.date > $1.date }
+        .sorted { $0.date < $1.date }
     }
 }

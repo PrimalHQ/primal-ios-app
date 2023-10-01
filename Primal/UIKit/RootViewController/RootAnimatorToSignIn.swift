@@ -41,7 +41,7 @@ struct RootAnimatorToSignIn {
                     introVC.removeFromParent()
                 }
                 
-                let views = [onboarding.screenshotParent, onboarding.signupButton, onboarding.signinButton]
+                let views = [onboarding.screenshotParent, onboarding.signupButton, onboarding.signinButton, onboarding.termsBothLines]
                 views.forEach {
                     $0.alpha = 0
                     $0.transform = .init(translationX: 0, y: 100)
@@ -70,6 +70,11 @@ struct RootAnimatorToSignIn {
                     onboarding.signinButton.alpha = 1
                 } completion: { _ in
                     promise(.success(()))
+                }
+                
+                UIView.animate(withDuration: 17 / speed, delay: 8 / speed) {
+                    onboarding.termsBothLines.alpha = 1
+                    onboarding.termsBothLines.transform = .identity
                 }
                 
                 CATransaction.commit()

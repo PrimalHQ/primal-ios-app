@@ -32,6 +32,7 @@ final class MainTabBarController: UIViewController, Themeable {
     }
 
     let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
+    let messagesIndicator = UIImageView(image: Theme.current.tabBarDotImage)
     
     let buttonStackParent = UIView()
     lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
@@ -51,6 +52,12 @@ final class MainTabBarController: UIViewController, Themeable {
             notificationIndicator.isHidden = !hasNewNotifications
         }
     }
+    
+    var hasNewMessages = false {
+        didSet {
+            messagesIndicator.isHidden = !hasNewMessages
+        }
+    }
 
     var currentPageIndex = 0 {
         didSet {
@@ -63,6 +70,11 @@ final class MainTabBarController: UIViewController, Themeable {
             return currentPageIndex
         }
         return currentPageIndex + 1
+    }
+    
+    var showTabBarBorder: Bool {
+        get { !navigationBorder.isHidden }
+        set { navigationBorder.isHidden = !newValue }
     }
 
     init() {
@@ -115,6 +127,7 @@ final class MainTabBarController: UIViewController, Themeable {
         buttonStackParent.backgroundColor = .background
 
         notificationIndicator.image = Theme.current.tabBarDotImage
+        messagesIndicator.image = Theme.current.tabBarDotImage
         
         closeMenuButton.tintColor = .foreground
 
@@ -129,16 +142,12 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
-            notificationIndicator.alpha = hidden ? 0 : 1
-            notificationIndicator.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
             return
         }
         
         UIView.animate(withDuration: 0.3) {
             self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
-            self.notificationIndicator.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
-            self.notificationIndicator.alpha = hidden ? 0 : 1
         }
     }
     
@@ -183,11 +192,16 @@ private extension MainTabBarController {
         buttonStack.pinToSuperview().constrainToSize(height: 56)
         buttonStack.distribution = .fillEqually
         
-        view.addSubview(notificationIndicator)
+        buttonStack.addSubview(notificationIndicator)
+        buttonStack.addSubview(messagesIndicator)
         if let imageView = buttons.last?.imageView {
             notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
         }
+        if let imageView = buttons.dropLast().last?.imageView {
+            messagesIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
+        }
         notificationIndicator.isHidden = true
+        messagesIndicator.isHidden = true
 
         pageVC.didMove(toParent: self) // Notify child VC
         pageVC.setViewControllers([home], direction: .forward, animated: false)

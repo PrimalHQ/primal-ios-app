@@ -78,7 +78,7 @@ final class ZapManager {
             return
         }
         
-        let relays = Array(RelaysPostbox.instance.relays.value.prefix(10))
+        let relays = Array(RelaysPostbox.instance.pool.relays.prefix(10))
         
         let amount_msat = amount * 1000
         guard let zapreq = NostrObject.zap(comment, target: target, relays: relays) else { return }

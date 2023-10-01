@@ -23,6 +23,7 @@ extension UIColor {
     static var foreground6: UIColor { Theme.current.foreground6 }
     
     static var accent: UIColor { Theme.current.accent }
+    static var accent2: UIColor { Theme.current.accent2 }
     
     static var extraColorMenu: UIColor { Theme.current.extraColorMenu }
     

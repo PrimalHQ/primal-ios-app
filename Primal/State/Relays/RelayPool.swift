@@ -17,9 +17,9 @@ final class RelayPool {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    var atLeastOneConnected: CurrentValueSubject<Bool, Error> = CurrentValueSubject(false)
-    var numOfConnected: CurrentValueSubject<Int, Error> = CurrentValueSubject(0)
-    var relays: CurrentValueSubject<[String], Error> = CurrentValueSubject([])
+    @Published var atLeastOneConnected = false
+    @Published var numOfConnected = 0
+    @Published var relays: [String] = []
     
     deinit {
         self.disconnect()
@@ -30,7 +30,7 @@ final class RelayPool {
             connection.disconnect()
         }
         connections = []
-        self.relays.send([])
+        self.relays = []
     }
     
     func connect(relays: [String]) {
@@ -48,8 +48,8 @@ final class RelayPool {
             .sink(receiveCompletion: { _ in }, receiveValue: { state in
                 switch state {
                 case .connected:
-                    self.atLeastOneConnected.send(true)
-                    self.numOfConnected.send(self.numOfConnected.value + 1)
+                    self.atLeastOneConnected = true
+                    self.numOfConnected += 1
                     
                     for unsentEvent in self.unsentEvents.reversed() {
                         if unsentEvent.identity == rc.identity {
@@ -60,9 +60,9 @@ final class RelayPool {
                         }
                     }
                 case .disconnected:
-                    let num = self.numOfConnected.value + 1
-                    self.numOfConnected.send(num < 0 ? 0 : num)
-                    self.atLeastOneConnected.send(num > 0)
+                    let num = self.numOfConnected + 1
+                    self.numOfConnected = num < 0 ? 0 : num
+                    self.atLeastOneConnected = num > 0
                 case .connecting:
                     // do nothing
                     break
@@ -73,8 +73,7 @@ final class RelayPool {
         
         connections.insert(rc)
         
-        self.relays.value.append(relay)
-        self.relays.send(self.relays.value)
+        relays.append(relay)
     }
     
     func request(_ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {

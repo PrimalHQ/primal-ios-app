@@ -16,7 +16,7 @@ protocol ProfileInfoCellDelegate: AnyObject {
 class ProfileInfoCell: UITableViewCell {
     let zapButton = GradientBorderIconButton(icon: UIImage(named: "profileZap"))
     let messageButton = GradientBorderIconButton(icon: UIImage(named: "profileMessage"))
-    let followButton = GradientButton(title: "follow")
+    let followButton = GradientButton(title: "follow").constrainToSize(width: 100, height: 36)
     let unfollowButton = GradientBorderTextButton(text: "unfollow")
     let editProfile = GradientBorderTextButton(text: "edit profile")
     

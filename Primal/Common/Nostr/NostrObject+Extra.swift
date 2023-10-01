@@ -128,6 +128,14 @@ extension NostrObject {
     static func message(_ content: String, recipientPubkey: String) -> NostrObject? {
         createNostrMessageEvent(content: content, recipientPubkey: recipientPubkey)
     }
+    
+    static func chatRead(_ pubkey: String) -> NostrObject? {
+        createNostrChatReadEvent(pubkey)
+    }
+    
+    static func markAllChatRead() -> NostrObject? {
+        createNostrMarkAllChatsReadEvent()
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()
@@ -294,8 +302,37 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
 }
 
 fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {
-    return createNostrObject(content: content, kind: 4, tags: [["p", recipientPubkey]])
+    guard
+        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
+        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
+        let privkey = keypair.hexVariant.privkey
+    else {
+        return nil
+    }
+    
+    return createNostrObject(
+        content: encryptDirectMessage(content, privkey: privkey, pubkey: recipientPubkey) ?? "",
+        kind: 4,
+        tags: [["p", recipientPubkey]]
+    )
 }
+
+fileprivate func createNostrChatReadEvent(_ pubkey: String) -> NostrObject? {
+    createNostrObject(
+        content: "{ \"description\": \"reset messages from '\(pubkey)'\"}",
+        kind: 30078,
+        tags: [["d", APP_NAME]]
+    )
+}
+
+fileprivate func createNostrMarkAllChatsReadEvent() -> NostrObject? {
+    createNostrObject(
+        content: "{'description': 'mark all messages as read'}",
+        kind: 30078,
+        tags: [["d", APP_NAME]]
+    )
+}
+
 
 fileprivate func createZapTags(_ target: ZapTarget, _ relays: [String]) -> [[String]] {
     var tags: [[String]] = []

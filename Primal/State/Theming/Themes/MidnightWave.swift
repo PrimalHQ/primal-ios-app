@@ -27,6 +27,7 @@ final class MidnightWave: AppTheme {
     var foreground6: UIColor = .init(rgb: 0x444444)
     
     let accent: UIColor = .init(rgb: 0x2394EF)
+    let accent2: UIColor = .init(rgb: 0x0C7DD8)
     
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)
     

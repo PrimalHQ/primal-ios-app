@@ -24,6 +24,16 @@ final class ChatSearchController: UIViewController, Themeable {
         }
     }
     
+    let manager: ChatManager
+    init(manager: ChatManager) {
+        self.manager = manager
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,14 +45,14 @@ final class ChatSearchController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         navigationController?.navigationBar.transform = .identity
-        
-        searchInput.becomeFirstResponder()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        
+        searchInput.becomeFirstResponder()
     }
     
     func updateTheme() {
@@ -149,7 +159,7 @@ extension ChatSearchController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chat = ChatViewController(user: users[indexPath.row])
+        let chat = ChatViewController(user: users[indexPath.row], chatManager: manager)
         searchInput.resignFirstResponder()
         show(chat, sender: nil)
         

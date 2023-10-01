@@ -72,7 +72,9 @@ final class ThreadViewController: PostFeedViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
+
+        mainTabBarController?.showTabBarBorder = false
+
         didLoadView = true
         
         view.bringSubviewToFront(loadingSpinner)
@@ -81,8 +83,17 @@ final class ThreadViewController: PostFeedViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         navigationController?.setNavigationBarHidden(false, animated: animated)
-    }    
+        
+        mainTabBarController?.showTabBarBorder = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        mainTabBarController?.showTabBarBorder = true
+    }
     
     @discardableResult
     override func open(post: ParsedContent) -> FeedViewController {
@@ -143,8 +154,8 @@ final class ThreadViewController: PostFeedViewController {
         table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
         table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
-        inputParent.backgroundColor = inputManager.isEditing ? .background2 : .background
-        inputBackground.backgroundColor = inputManager.isEditing ? .background : .background3
+        inputParent.backgroundColor = .background
+        inputBackground.backgroundColor = .background3
         
         guard !posts.isEmpty else { return }
         
@@ -155,7 +166,7 @@ final class ThreadViewController: PostFeedViewController {
     override func updateBars() {
         guard posts.count > 10 else { return }
         
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = true // shouldShowBars
         
         super.updateBars()
         
@@ -167,7 +178,7 @@ final class ThreadViewController: PostFeedViewController {
     
     override func animateBars() {
         guard posts.count > 10 else { return }
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = true // shouldShowBars
         
         super.animateBars()
         
@@ -302,9 +313,6 @@ private extension ThreadViewController {
             let isImageHidden = !isEditing ||   images.isEmpty || !users.isEmpty
             
             UIView.animate(withDuration: 0.2) {
-                self.inputParent.backgroundColor = isEditing ? .background2 : .background
-                self.inputBackground.backgroundColor = isEditing ? .background : .background3
-                
                 self.replyingToLabel.isHidden = !isEditing
                 self.replyingToLabel.alpha = isEditing ? 1 : 0
                 
@@ -375,12 +383,15 @@ private extension ThreadViewController {
         stack.addArrangedSubview(inputParent)
         stack.addArrangedSubview(bottomBarSpacer)
         
-        inputBackground.layer.cornerRadius = 6
+        inputBackground.layer.cornerRadius = 20
         
         let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, imagesCollectionView, buttonStack])
         inputStack.axis = .vertical
         
+        let inputBorder = ThemeableView().constrainToSize(height: 1).setTheme { $0.backgroundColor = .background3 }
+        
         inputParent.addSubview(inputStack)
+        inputParent.addSubview(inputBorder)
         inputBackground.addSubview(placeholderLabel)
         
         let textParent = UIView()
@@ -404,17 +415,19 @@ private extension ThreadViewController {
         
         placeholderLabel
             .pinToSuperview(edges: .leading, padding: 21)
-            .pinToSuperview(edges: .top, padding: 13)
+            .centerToSuperview(axis: .vertical)
         
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .top, padding: 5)
-            .pinToSuperview(edges: .bottom)
+            .pinToSuperview(edges: .top, padding: 2.5)
+            .pinToSuperview(edges: .bottom, padding: -2.5)
         
         inputStack
             .pinToSuperview(edges: .horizontal, padding: 20)
             .pinToSuperview(edges: .top, padding: 16)
             .pinToSuperview(edges: .bottom)
+        
+        inputBorder.pinToSuperview(edges: [.top, .horizontal])
         
         let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
         bottomC.priority = .defaultLow
