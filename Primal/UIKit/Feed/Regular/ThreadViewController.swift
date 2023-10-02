@@ -285,7 +285,7 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
+        Publishers.CombineLatest($didLoadData, $didLoadView).receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] in
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
             self.didMoveToMain = true
@@ -302,7 +302,7 @@ private extension ThreadViewController {
         })
         .store(in: &cancellables)
         
-        inputManager.$isEditing.sink { [weak self] isEditing in
+        inputManager.$isEditing.receive(on: DispatchQueue.main).sink { [weak self] isEditing in
             guard let self = self else { return }
             let images = self.inputManager.images
             let users = self.inputManager.users

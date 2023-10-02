@@ -291,8 +291,10 @@ private extension EditProfileViewController {
         
         let profile = self.profile
         let data: Profile = accountData
+        
         guard let metadata_ev = NostrObject.metadata(data) else {
-            fatalError("Unable to create metadata, this shouldn't be possible")
+            self.showErrorMessage("Unable to create a new nostr metadata object")
+            return
         }
         
         RelaysPostbox.instance.connect(bootstrap_relays)
