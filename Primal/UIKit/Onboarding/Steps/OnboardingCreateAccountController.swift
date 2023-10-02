@@ -106,10 +106,10 @@ private extension OnboardingCreateAccountController {
         let atLabel = UILabel()
         atLabel.text = "@"
         let formStack = UIStackView(axis: .vertical, [
-            FormHeaderView(title: "DISPLAY NAME", required: true),
-            InputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
-            FormHeaderView(title: "HANDLE", required: true),
+            FormHeaderView(title: "USERNAME", required: true),
             InputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
+            FormHeaderView(title: "DISPLAY NAME", required: false),
+            InputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "WEBSITE", required: false),
             InputParent(input: websiteInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "SHORT BIO", required: false),
@@ -226,10 +226,10 @@ private extension OnboardingCreateAccountController {
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             
-            guard let name = self.displayNameInput.text, !name.isEmpty else {
-                self.displayNameInput.becomeFirstResponder()
-                return
-            }
+//            guard let name = self.displayNameInput.text, !name.isEmpty else {
+//                self.displayNameInput.becomeFirstResponder()
+//                return
+//            }
             
             guard let username = self.usernameInput.text, !username.isEmpty else {
                 self.usernameInput.becomeFirstResponder()
@@ -254,6 +254,13 @@ private extension OnboardingCreateAccountController {
 extension OnboardingCreateAccountController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard textField == usernameInput else { return true }
+        
+        let blockedChars = NSCharacterSet.alphanumerics.inverted
+        return string.rangeOfCharacter(from: blockedChars) == nil
     }
 }
 

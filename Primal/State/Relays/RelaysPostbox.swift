@@ -10,31 +10,28 @@ import Combine
 import GenericJSON
 
 final class RelaysPostbox {
-    private let pool = RelayPool()
+    let pool = RelayPool()
     
     static let instance = RelaysPostbox()
-    
-    var relays: CurrentValueSubject<[String], Error> {
-        get {
-            return self.pool.relays
-        }
-    }
     
     func disconnect() {
         self.pool.disconnect()
     }
     
+    var loadedRalays: [String] = []
+    
     func connect(_ relays: [String]) {
+        loadedRalays = relays
         self.pool.connect(relays: relays)
     }
     
     func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {
-        var receivedAlready = false
+        var didSucceed: Bool?
         
         func resultHandler(result: [JSON], relay: String) {
             DispatchQueue.main.async {
-                if !receivedAlready {
-                    receivedAlready = true
+                if didSucceed != true {
+                    didSucceed = true
                     successHandler(result)
                 }                
             }
@@ -47,8 +44,8 @@ final class RelaysPostbox {
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + errorDelay) {
-            if !receivedAlready {
-                receivedAlready = true
+            if didSucceed == nil {
+                didSucceed = false
                 errorHandler()
             }
         }

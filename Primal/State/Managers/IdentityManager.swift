@@ -228,9 +228,16 @@ final class IdentityManager {
                 
                 switch kind {
                 case .contacts:
-                    guard let relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+                    guard var relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                         print("Error decoding contacts to json")
                         return
+                    }
+                    
+                    relays = relays.filter { // We need to make sure the user doesn't have garbage in their list of relays
+                        guard let url = URL(string: $0.key) else { return false }
+                        if url.scheme != "wss" { return false }
+                        if url.absoluteString.containsEmoji { return false }
+                        return true
                     }
                     
                     self.userRelays = relays
@@ -394,7 +401,7 @@ final class IdentityManager {
     private func handleDeletedAccount() {
         let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .destructive) { _ in
-            let _ = ICloudKeychainManager.instance.clearSavedKeys()
+            _ = ICloudKeychainManager.instance.clearSavedKeys()
             KingfisherManager.shared.cache.clearMemoryCache()
             RootViewController.instance.reset()
             UserDefaults.standard.nwc = nil

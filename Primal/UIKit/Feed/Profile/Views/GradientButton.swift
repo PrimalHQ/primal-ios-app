@@ -13,6 +13,12 @@ final class GradientButton: MyButton {
         set { label.text = newValue }
     }
     
+    override var isEnabled: Bool {
+        didSet {
+            alpha = isEnabled ? 1 : 0.5
+        }
+    }
+    
     private let label = UILabel()
     init(title: String) {
         super.init(frame: .zero)
@@ -29,9 +35,8 @@ final class GradientButton: MyButton {
         gradient.pinToSuperview()
         
         addSubview(label)
-        label.pinToSuperview(edges: .horizontal, padding: 30).centerToSuperview(axis: .vertical)
+        label.centerToSuperview()
         
-        constrainToSize(height: 36)
         layer.masksToBounds = true
         layer.cornerRadius = 8
     }

@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import SafariServices
 
 final class OnboardingStartViewController: UIViewController {
     let screenshotParent = UIView()
+    let termsBothLines = UIStackView(axis: .vertical, [])
     
     let signupButton = BigOnboardingButton(
         title: "Create account",
@@ -88,11 +90,33 @@ private extension OnboardingStartViewController {
             
         fade.pinToSuperview(edges: [.horizontal, .bottom])
         
-        let buttonStack = UIStackView(arrangedSubviews: [signupButton, signinButton, UIView()])
+        let firstLine = UILabel()
+        let secondLine = UILabel()
+        let terms = UILabel()
+        
+        let secondRow = UIStackView([secondLine, terms])
+        
+        termsBothLines.addArrangedSubview(firstLine)
+        termsBothLines.addArrangedSubview(secondRow)
+        termsBothLines.alignment = .center
+        
+        [firstLine, secondLine, terms].forEach {
+            $0.font = .appFont(withSize: 14, weight: .regular)
+            $0.textColor = UIColor(rgb: 0x444444)
+        }
+        
+        firstLine.text = "By proceeding you confirm that you"
+        secondLine.text = "accept our "
+        terms.text = "terms of service"
+        terms.textColor = SunriseWave.instance.accent2
+        terms.isUserInteractionEnabled = true
+        terms.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(termsTapped)))
+        
+        let buttonStack = UIStackView(arrangedSubviews: [signupButton, signinButton, termsBothLines, UIView()])
         let stack = UIStackView(arrangedSubviews: [screenshotParent, buttonStack])
         
         stack.axis = .vertical
-        stack.spacing = 40
+        stack.spacing = 35
         
         buttonStack.axis = .vertical
         buttonStack.spacing = 20
@@ -103,5 +127,9 @@ private extension OnboardingStartViewController {
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
         
         return stack
+    }
+    
+    @objc func termsTapped() {
+        present(SFSafariViewController(url: URL(string: "https://primal.net/terms")!), animated: true)
     }
 }

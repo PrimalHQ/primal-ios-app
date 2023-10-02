@@ -109,7 +109,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func updateBars() {
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = true //shouldShowBars
         
         super.updateBars()
         
@@ -117,7 +117,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func animateBars() {
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = true //shouldShowBars
         
         super.animateBars()
         

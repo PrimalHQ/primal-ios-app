@@ -229,6 +229,8 @@
 		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
+		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
+		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */; };
 		B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */; };
 		B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */; };
@@ -521,6 +523,8 @@
 		9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedView.swift; sourceTree = "<group>"; };
 		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
+		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
+		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackManager.swift; sourceTree = "<group>"; };
 		B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutedUserCell.swift; sourceTree = "<group>"; };
 		B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
@@ -1330,6 +1334,8 @@
 			children = (
 				B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */,
 				B94A0E2C2AAB577400DEBFE1 /* ChatMessageCell.swift */,
+				B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */,
+				B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1641,6 +1647,7 @@
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
+				B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */,
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
@@ -1702,6 +1709,7 @@
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */,
+				B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
@@ -1915,7 +1923,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.29.3;
+				MARKETING_VERSION = 0.31.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1958,7 +1966,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.29.3;
+				MARKETING_VERSION = 0.31.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

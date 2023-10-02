@@ -10,13 +10,13 @@ import Kingfisher
 import FLAnimatedImage
 
 final class ChatTableCell: UITableViewCell, Themeable {
-    let background = UIView()
     let profileImageView = FLAnimatedImageView(image: UIImage(named: "Profile")).constrainToSize(52)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let separator = UIView().constrainToSize(width: 1)
     let newIndicator = UIView().constrainToSize(12)
     let messageLabel = UILabel()
+    let borderView = UIView().constrainToSize(height: 1)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,8 +29,8 @@ final class ChatTableCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        contentView.backgroundColor = .background
-        background.backgroundColor = .background2
+        contentView.backgroundColor = .background2
+        
         newIndicator.backgroundColor = .gradientColor(bounds: .init(width: 12, height: 12), startPoint: .zero, endPoint: .init(x: 1, y: 1))
         
         nameLabel.textColor = .foreground
@@ -38,9 +38,11 @@ final class ChatTableCell: UITableViewCell, Themeable {
         separator.backgroundColor = .foreground5
         messageLabel.textColor = .foreground3
         
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .bold)
-        timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        messageLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize + 1, weight: .bold)
+        timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize + 1, weight: .regular)
+        messageLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
+        
+        borderView.backgroundColor = .background3
     }
     
     func setup(chat: Chat) {
@@ -70,17 +72,16 @@ private extension ChatTableCell {
         let vStack = UIStackView(axis: .vertical, [nameStack, messageLabel])
         let hStack = UIStackView([profileImageView, vStack])
         
-        contentView.addSubview(background)
-        background.addSubview(hStack)
-        hStack.pinToSuperview(padding: 12)
-        background.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 2)
+        contentView.addSubview(hStack)
+        hStack.pinToSuperview(edges: .vertical, padding: 12).pinToSuperview(edges: .horizontal, padding: 24)
+        
+        contentView.addSubview(borderView)
+        borderView.pinToSuperview(edges: [.horizontal, .bottom])
         
         vStack.spacing = 4
         hStack.alignment = .center
         hStack.spacing = 12
         hStack.alignment = .top
-        
-        background.layer.cornerRadius = 8
     
         profileImageView.layer.cornerRadius = 26
         profileImageView.layer.masksToBounds = true

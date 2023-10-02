@@ -29,6 +29,7 @@ protocol AppTheme {
     var foreground6: UIColor { get }
     
     var accent: UIColor { get }
+    var accent2: UIColor { get }
     
     var extraColorMenu: UIColor { get }
     

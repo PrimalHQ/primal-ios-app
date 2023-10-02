@@ -27,3 +27,8 @@ extension Publisher where Self.Failure == Never {
     }
 }
 
+extension Publisher {
+    func withPrevious() -> AnyPublisher<(Output, Output), Failure> {
+        Publishers.Zip(self, self.dropFirst()).eraseToAnyPublisher()
+    }
+}
