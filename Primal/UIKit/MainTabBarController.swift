@@ -14,20 +14,37 @@ extension UIViewController {
     }
 }
 
-enum MainTab {
-    case home, read, explore, messages, notifications
+enum MainTab: String {
+    case home, explore, messages, notifications
+    
+    var tabImage: UIImage? {
+        UIImage(named: "tabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
+    }
+    
+    var selectedTabImage: UIImage? {
+        UIImage(named: "selectedTabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
+    }
+    
+    static func forIndex(_ index: Int) -> MainTab {
+        switch index {
+        case 0:     return .home
+        case 1:     return .explore
+        case 2:     return .messages
+        case 3:     return  .notifications
+        default:    return .home
+        }
+    }
 }
 
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
-    lazy var read = ReadNavigationController()
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
 
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
-    lazy var buttons = (1...5).map { _ in
+    lazy var buttons = (1...4).map { _ in
         UIButton()
     }
 
@@ -65,13 +82,6 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
-    var buttonIndex: Int {
-        if currentPageIndex < 1 {
-            return currentPageIndex
-        }
-        return currentPageIndex + 1
-    }
-    
     var showTabBarBorder: Bool {
         get { !navigationBorder.isHidden }
         set { navigationBorder.isHidden = !newValue }
@@ -105,7 +115,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
-        closeMenuButton.setImage(UIImage(named: "tabIcon\(buttonIndex + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
+        closeMenuButton.setImage(MainTab.forIndex(currentPageIndex).selectedTabImage?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
             self.closeMenuButton.alpha = 1
@@ -133,7 +143,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
         updateButtons()
 
-        [home, read, explore, messages, notifications].forEach {
+        [home, explore, messages, notifications].forEach {
             $0.updateThemeIfThemeable()
         }
         
@@ -156,8 +166,6 @@ final class MainTabBarController: UIViewController, Themeable {
             switch tab {
             case .home:
                 return home
-            case .read:
-                return read
             case .explore:
                 return explore
             case .messages:
@@ -256,11 +264,7 @@ private extension MainTabBarController {
                 .store(in: &cancellables)
         }
 
-        for (index, button) in buttons.enumerated() {
-            button.setImage(UIImage(named: "tabIcon\(index + 1)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
-        }
-
-        buttons.remove(at: 1).removeFromSuperview() // REMOVE READ FOR NOW
+        updateButtons()
 
         [home, explore, messages, notifications].forEach { nav in
             buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
@@ -272,6 +276,10 @@ private extension MainTabBarController {
     func updateButtons() {
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
+            
+            let tab = MainTab.forIndex(index)
+            
+            button.setImage(index == currentPageIndex ? tab.selectedTabImage : tab.tabImage, for: .normal)
         }
     }
 

@@ -9,12 +9,12 @@ import UIKit
 
 final class RepostedIndicatorView: MyButton {
     let nameLabel = UILabel()
+    let repostedLabel = UILabel()
     
     init() {
         super.init(frame: .zero)
         
-        let repostedLabel = UILabel()
-        let repostedImageView = UIImageView(image: UIImage(named: "feedRepost")?.scalePreservingAspectRatio(size: 15).withRenderingMode(.alwaysTemplate))
+        let repostedImageView = UIImageView(image: UIImage(named: "feedRepost")?.scalePreservingAspectRatio(size: 14).withRenderingMode(.alwaysTemplate))
         let stack = UIStackView(arrangedSubviews: [
             repostedImageView, nameLabel, repostedLabel, UIView()
         ])
@@ -36,8 +36,18 @@ final class RepostedIndicatorView: MyButton {
         stack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -7)
     }
     
-    func update(user: PrimalUser) {
-        nameLabel.text = user.firstIdentifier
+    func update(users: [ParsedUser]) {
+        nameLabel.text = users.first?.data.firstIdentifier
+        
+        let set = Set(users.map { $0.data.id })
+        
+        if set.count < 2 {
+            repostedLabel.text = "reposted"
+        } else if set.count == 2 {
+            repostedLabel.text = "and 1 other reposted"
+        } else {
+            repostedLabel.text = "and \(set.count - 1) others reposted"
+        }
     }
     
     required init?(coder: NSCoder) {

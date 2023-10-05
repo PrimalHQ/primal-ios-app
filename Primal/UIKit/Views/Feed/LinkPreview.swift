@@ -49,7 +49,7 @@ private extension LinkPreview {
             imageView.isHidden = false
             
             let aspectMultiplier: CGFloat = {
-                guard let variant = metadata.variants.first else { return 1 }
+                guard let variant = metadata.variants.first else { return 16 / 10 }
                 
                 return CGFloat(variant.width) / CGFloat(variant.height)
             }()
@@ -91,7 +91,8 @@ private extension LinkPreview {
         backgroundView.backgroundColor = .background3
         
         imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .background3
         
         imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         

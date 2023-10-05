@@ -122,11 +122,3 @@ final class ChatManager {
         .store(in: &cancellables)   
     }
 }
-
-/*
- ["REQ","msg_reset_ 363917480",
- 
- {"cache":["reset_directmsg_count",{"event_from_user":{"content":"{ \"description\": \"reset messages from '88cc134b1a65f54ef48acc1df3665063d3ea45f04eab8af4646e561c5ae99079'\"}","kind":30078,"tags":[["d","Primal-Web App"]],"created_at":1695729580,"pubkey":"dd9b989dfe5e0840a92538f3e9f84f674e5f17ab05932efbacb4d8e6c905f302","id":"282a7832a7d2116066c14a33906fb693b15fd955162260954b5644b9619ae3cc","sig":"f26167e2d49d5adbfb96e250e48a8f924237c0b4581676238d9a5a73f36db53c0fd7a32354eefce7449d2cdc2e0f348730e1f3af24b6c6e48993b9d8db798e0f"},"sender":"88cc134b1a65f54ef48acc1df3665063d3ea45f04eab8af4646e561c5ae99079"}]}]
-
-
- */

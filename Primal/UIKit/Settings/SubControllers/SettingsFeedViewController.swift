@@ -35,6 +35,7 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         table.keyboardDismissMode = .onDrag
         table.isEditing = true
         table.separatorStyle = .none
+        table.contentInset = .init(top: 0, left: 0, bottom: 56, right: 0)
         table.register(SettingsFeedCell.self, forCellReuseIdentifier: "cell")
         table.register(SettingsFeedHeaderView.self, forHeaderFooterViewReuseIdentifier: "header")
         table.register(SettingsFeedRestoreView.self, forHeaderFooterViewReuseIdentifier: "footer")
@@ -47,6 +48,8 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         .store(in: &cancellables)
         
         IdentityManager.instance.requestUserSettings()
+        
+        updateTheme()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -66,7 +69,7 @@ final class SettingsFeedViewController: UIViewController, Themeable {
     }
     
     func shouldEditIndexPath(_ indexPath: IndexPath) -> Bool {
-        feeds[indexPath.row].name != "Latest"
+        feeds[indexPath.row].hex != IdentityManager.instance.userHexPubkey
     }
 }
 
@@ -142,7 +145,10 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
         
         Connection.instance.requestCache(name: "get_default_app_settings", request: .object(["client": .string("Primal iOS")])) { result in
             
-            var defaultFeeds: [PrimalSettingsFeed] = [.init(name: "Latest", hex: userPubkey)]
+            var defaultFeeds: [PrimalSettingsFeed] = [
+                .init(name: "Latest", hex: userPubkey, includeReplies: false),
+                .init(name: "Latest with replies", hex: userPubkey, includeReplies: true),
+            ]
             
             for object in result {
                 guard
@@ -179,6 +185,8 @@ extension SettingsFeedViewController: UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        table.contentInset = .zero
+        
         guard let indexes = table.indexPathsForVisibleRows else { return }
         
         for index in indexes {
@@ -191,6 +199,10 @@ extension SettingsFeedViewController: UITextFieldDelegate {
                 return
             }
         }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        table.contentInset = .init(top: 0, left: 0, bottom: 56, right: 0)
     }
 }
 

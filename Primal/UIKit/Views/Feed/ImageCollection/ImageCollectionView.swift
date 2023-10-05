@@ -126,6 +126,8 @@ final class ImageCell: UICollectionViewCell {
         imageView.pinToSuperview()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
+        
+        contentView.backgroundColor = .background3
     }
 
     required init?(coder: NSCoder) {

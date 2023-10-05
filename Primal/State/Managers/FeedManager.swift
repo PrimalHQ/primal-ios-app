@@ -15,33 +15,21 @@ final class FeedManager {
     private var pendingResult: PostRequestResult?
     private var isRequestingNewPage = false
     
-    init() {
-        initPostsEmitterSubscription()
-        initUserConnectionSubscription()
-    }
-    
     let postsEmitter: PassthroughSubject<PostRequestResult, Never> = .init()
-    
-    @Published var currentFeed: String = ""
-    
+        
     let newParsedPosts: PassthroughSubject<[ParsedContent], Never> = .init()
     @Published var parsedPosts: [ParsedContent] = []
     @Published var searchPaginationEvent: PrimalSearchPagination?
     
-    var searchTerm: String?
+    @Published var currentFeed: PrimalSettingsFeed?
     var profilePubkey: String?
     var didReachEnd = false
     
     var muteObserver: AnyObject?
     
-    var feedDirective: String? {
-        if let searchTerm {
-            return "search;\(searchTerm)"
-        }
-        if let feed = IdentityManager.instance.userSettings?.content.feeds?.first(where: { $0.name == currentFeed }) {
-            return feed.hex
-        }
-        return nil
+    init() {
+        initPostsEmitterSubscription()
+        initUserConnectionSubscription()
     }
     
     init(profilePubkey: String) {
@@ -51,7 +39,7 @@ final class FeedManager {
     }
     
     init(search: String) {
-        searchTerm = search
+        currentFeed = .init(name: "Search: \(search)", hex: "search;\(search)")
         initPostsEmitterSubscription()
         refresh()
     }
@@ -67,7 +55,7 @@ final class FeedManager {
         }
     }
     
-    func setCurrentFeed(_ feed: String) {
+    func setCurrentFeed(_ feed: PrimalSettingsFeed) {
         currentFeed = feed
         refresh()
     }
@@ -90,7 +78,7 @@ final class FeedManager {
     
     func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
         guard
-            let directive = feedDirective,
+            let directive = currentFeed?.hex,
             let first = parsedPosts.first
         else {
             return Just([]).eraseToAnyPublisher()
@@ -120,7 +108,7 @@ final class FeedManager {
         muteObserver = NotificationCenter.default.addObserver(forName: .userMuted, object: nil, queue: .main) { [weak self] notification in
             guard let self, let pubkey = notification.object as? String else { return }
             
-            self.parsedPosts = self.parsedPosts.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user.data.pubkey != pubkey }
+            self.parsedPosts = self.parsedPosts.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user?.data.pubkey != pubkey }
         }
         
         postsEmitter.sink { [weak self] result in
@@ -136,8 +124,60 @@ final class FeedManager {
                 didReachEnd = true
             }
             
+            var parsed = self.parsedPosts
+            
+            let allReposts = sorted.filter { $0.reposted != nil }
+            
+            // First group all recieved reposts
+            var groupedReposts: [ParsedContent] = []
+            for repost in allReposts {
+                guard
+                    let index = groupedReposts.firstIndex(where: { $0.post.id == repost.post.id }),
+                    let oldRepost = groupedReposts[index].reposted
+                else {
+                    groupedReposts.append(repost)
+                    continue
+                }
+                
+                groupedReposts[index].reposted = .init(users: oldRepost.users + (repost.reposted?.users ?? []), date: oldRepost.date, id: oldRepost.id)
+            }
+            
+            // Filter reposts that are not already in posts
+            var groupedRepostsNotAlreadyInPosts: [ParsedContent] = []
+            for groupedRepost in groupedReposts {
+                guard
+                    let index = parsed.firstIndex(where: { $0.post.id == groupedRepost.post.id && $0.reposted != nil }),
+                    let oldRepost = parsed[index].reposted
+                else {
+                    groupedRepostsNotAlreadyInPosts.append(groupedRepost)
+                    continue
+                }
+                
+                parsed[index].reposted = .init(users: oldRepost.users + (groupedRepost.reposted?.users ?? []), date: oldRepost.date, id: oldRepost.id)
+            }
+            
+            // I tried matching by ID, I tried matching by date, I tried matching by user, but none of those situations work 100% of the time
+            // Sometimes ID is the same for multiple repost events, sometimes user is the same for multiple report events, sometimes date is the same for multiple
+            // Only thing that works is keeping a set of all existing reposts
+            var addedIds = Set<String>()
+            
+            // To perserve the sorted order we must map the old sorted array, but skip reposts that are already added
+            sorted = sorted.compactMap { post -> ParsedContent? in
+                if post.reposted == nil { return post }
+                
+                return groupedRepostsNotAlreadyInPosts.first(where: {
+                    if $0.post.id == post.post.id && !addedIds.contains($0.post.id) {
+                        addedIds.insert($0.post.id)
+                        return true
+                    }
+                    return false
+                })
+            }
+            
+            parsed += sorted
+            
             self.newParsedPosts.send(sorted)
-            self.parsedPosts.append(contentsOf: sorted)
+            self.parsedPosts = parsed
             self.isRequestingNewPage = false
         }
         .store(in: &cancellables)
@@ -146,12 +186,12 @@ final class FeedManager {
         Publishers.CombineLatest3(IdentityManager.instance.$didFinishInit, Connection.instance.$isConnected.removeDuplicates(), IdentityManager.instance.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
             guard didInit, isConnected, self?.parsedPosts.isEmpty == true, let settings = currentUserSettings else { return }
             
-            guard let feedName = settings.content.feeds?.first?.name else {
+            guard let feed = settings.content.feeds?.first else {
                 print("no feed detected")
                 return
             }
             
-            self?.currentFeed = feedName
+            self?.currentFeed = feed
             self?.refresh()
         }
         .store(in: &cancellables)
@@ -173,8 +213,8 @@ final class FeedManager {
         if let profilePubkey {
             return generateProfileFeedRequest(profilePubkey)
         }
-        if let feedDirective {
-            return generateFeedPageRequest(feedDirective, limit: limit)
+        if let currentFeed {
+            return generateFeedPageRequest(currentFeed, limit: limit)
         }
         print("No feed error")
         return .object([:])
@@ -203,24 +243,34 @@ final class FeedManager {
         }
     }
     
-    private func generateFeedPageRequest(_ criteria: String, limit: Int32 = 20) -> JSON {
-        let until = searchPaginationEvent?.since ?? parsedPosts.last?.post.created_at ?? Date().timeIntervalSince1970
+    private func generateFeedPageRequest(_ feed: PrimalSettingsFeed, limit: Int32 = 20) -> JSON {
+        let until: Double = {
+            if let since = searchPaginationEvent?.since { return since }
+            
+            guard let last = parsedPosts.last else { return Date().timeIntervalSince1970 }
+            
+            return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
+        }()
         
         return .object([
             "cache": .array([
                 .string("feed_directive"),
                 .object([
-                    "directive": .string(criteria),
+                    "directive": .string(feed.hex),
                     "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                     "limit": .number(Double(limit)),
-                    "until": .number(until.rounded())
+                    "until": .number(until.rounded()),
+                    "include_replies": .bool(feed.includeReplies ?? false)
                 ])
             ])
         ])
     }
     
     private func generateProfileFeedRequest(_ profileId: String, limit: Double = 20) -> JSON {
-        let until = parsedPosts.last?.post.created_at ?? Date().timeIntervalSince1970
+        let until: Double = {
+            guard let last = parsedPosts.last else { return Date().timeIntervalSince1970 }
+            return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
+        }()
         
         return .object([
             "cache": .array([
@@ -296,11 +346,12 @@ final class FeedManager {
                 let pubKey = payload["pubkey"]?.stringValue,
                 let contentString = payload["content"]?.stringValue,
                 let dateNum = payload["created_at"]?.doubleValue,
+                let id = payload["id"]?.stringValue,
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8))
             else { return }
             
             let content = NostrContent(json: contentJSON)
-            pendingResult?.reposts.append(.init(pubkey: pubKey, post: content, date: .init(timeIntervalSince1970: dateNum)))
+            pendingResult?.reposts.append(.init(id: id, pubkey: pubKey, post: content, date: .init(timeIntervalSince1970: dateNum)))
             pendingResult?.order.append(content.id)
         case .mentions:
             guard

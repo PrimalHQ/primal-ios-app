@@ -42,6 +42,8 @@ final class VideoCell: UICollectionViewCell {
             
             button.buttonState = player.isMuted ? .muted : .unmuted
         }), for: .touchUpInside)
+        
+        contentView.backgroundColor = .background3
     }
     
     required init?(coder: NSCoder) {

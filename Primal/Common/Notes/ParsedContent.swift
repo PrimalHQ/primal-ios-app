@@ -64,11 +64,16 @@ final class ParsedContent {
     var reposted: ParsedRepost?
     
     var mentionedUsers: [PrimalUser] = []
+    
+    var replyingTo: ParsedContent?
 }
 
 struct ParsedRepost {
-    var user: ParsedUser
+    var users: [ParsedUser]
     var date: Date
+    var id: String
+    
+    var user: ParsedUser? { users.first }
 }
 
 extension ParsedUser {
@@ -143,6 +148,9 @@ extension ParsedContent {
     }
     
     func webURL() -> String {
-        "https://primal.net/e/\(post.id)"
+        guard let note = bech32_note_id(post.id) else {
+            return "https://primal.net/e/\(post.id)"
+        }
+        return "https://primal.net/e/\(note)"
     }
 }

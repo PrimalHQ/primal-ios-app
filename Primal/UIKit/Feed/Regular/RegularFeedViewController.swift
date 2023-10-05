@@ -11,7 +11,7 @@ final class RegularFeedViewController: PostFeedViewController {
     
     let addFeedButton = UIButton()
     
-    var feedHex: String { "search;\(feed.searchTerm ?? "")" }
+    var feedHex: String { feed.currentFeed?.hex ?? "" }
     var didAddToFeed: Bool {
         let hex = feedHex
         return IdentityManager.instance.userSettings?.content.feeds?.contains(where: { $0.hex == hex }) ?? false
@@ -20,11 +20,7 @@ final class RegularFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let search = feed.searchTerm {
-            title = "Search: \(search)"
-        } else {
-            title = "Search"
-        }
+        title = feed.currentFeed?.name
         
         addFeedButton.setImage(UIImage(named: "addFeed"), for: .normal)
         addFeedButton.addTarget(self, action: #selector(addFeedButtonPressed), for: .touchUpInside)
@@ -76,16 +72,13 @@ final class RegularFeedViewController: PostFeedViewController {
     }
     
     @objc func addFeedButtonPressed() {
-        guard let search = feed.searchTerm else { return }
+        guard let feed = feed.currentFeed else { return }
 
         if didAddToFeed {
             view.showToast("Feed is already in your home feeds")
         } else {
-            if search.hasPrefix("#") {
-                IdentityManager.instance.addFeedToList(feed: .init(name: search, hex: feedHex))
-            } else {
-                IdentityManager.instance.addFeedToList(feed: .init(name: "Search: \(search)", hex: feedHex))
-            }
+            IdentityManager.instance.addFeedToList(feed: feed)
+            
             hapticGenerator.impactOccurred()
             
             view.showUndoToast("Added to your home feeds") { [weak self] in

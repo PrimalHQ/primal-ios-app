@@ -21,6 +21,8 @@ final class PostManager {
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     
+    var lastPostedEvent: NostrObject?
+    
     func sendMessageEvent(message: String, userPubkey: String, _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
@@ -39,26 +41,36 @@ final class PostManager {
     func sendRepostEvent(nostrContent: NostrContent) {
         if LoginManager.instance.method() != .nsec { return }
 
-        let ev = NostrObject.repost(nostrContent)
-        
-        if let repostEvent = ev {
-            self.userReposts.insert(repostEvent.id)
-            RelaysPostbox.instance.request(repostEvent, specificRelay: nil, successHandler: { _ in
-                // do nothing
-            }, errorHandler: {
-                self.userReposts.remove(repostEvent.id)
-            })
-        } else {
+        guard var ev = NostrObject.repost(nostrContent) else {
             print("Error creating repost event")
+            return
         }
+        
+        if let lastPostedEvent, lastPostedEvent.content == ev.content {
+            ev = lastPostedEvent
+        }
+        lastPostedEvent = ev
+        
+        self.userReposts.insert(ev.id)
+        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+            // do nothing
+        }, errorHandler: {
+            self.userReposts.remove(ev.id)
+        })
     }
     
     func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
-        guard let ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
+        guard var ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
+            callback(false)
             return
         }
+        
+        if let lastPostedEvent, lastPostedEvent.content == ev.content {
+            ev = lastPostedEvent
+        }
+        lastPostedEvent = ev
         
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
             callback(true)
@@ -73,10 +85,15 @@ final class PostManager {
     func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
-        guard let ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
+        guard var ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
             callback(false)
             return
         }
+        
+        if let lastPostedEvent, lastPostedEvent.content == ev.content {
+            ev = lastPostedEvent
+        }
+        lastPostedEvent = ev
         
         self.userReplied.insert(post.id)
         

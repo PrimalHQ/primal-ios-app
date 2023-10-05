@@ -92,7 +92,9 @@ private extension SocketRequest {
                 return
             }
             
-            pendingResult.reposts.append(.init(pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
+            let id = payload["id"]?.stringValue ?? ""
+            
+            pendingResult.reposts.append(.init(id: id, pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
         case .mentions:
             guard let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)) else {
                 print("Error decoding mentions string to json")

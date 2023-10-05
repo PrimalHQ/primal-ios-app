@@ -385,7 +385,7 @@ private extension ThreadViewController {
         
         inputBackground.layer.cornerRadius = 20
         
-        let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, imagesCollectionView, buttonStack])
+        let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, buttonStack])
         inputStack.axis = .vertical
         
         let inputBorder = ThemeableView().constrainToSize(height: 1).setTheme { $0.backgroundColor = .background3 }

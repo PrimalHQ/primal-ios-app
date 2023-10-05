@@ -40,7 +40,7 @@ extension PostRequestResult {
                 
                 guard let nostrUser = users[repost.pubkey] else { return post }
                 
-                post.reposted = .init(user: createParsedUser(nostrUser), date: repost.date)
+                post.reposted = .init(users: [createParsedUser(nostrUser)], date: repost.date, id: repost.id)
                 
                 return post
             }
@@ -116,35 +116,73 @@ extension PostRequestResult {
             break // Leave the loop as we only want the first link preview
         }
         
+        // MARK: - Finding parent note
+        for tagArray in post.tags {
+            guard
+                tagArray.count >= 4, tagArray[0] == "e", tagArray[3] == "root" || tagArray[3] == "reply",
+                let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
+            else { continue }
+            
+            p.replyingTo = parentNote
+        }
+        
+        if p.replyingTo == nil {
+            for tagArray in post.tags {
+                guard
+                    tagArray.count >= 2, tagArray[0] == "e",
+                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
+                else { continue }
+                
+                p.replyingTo = parentNote
+            }
+        }
+        
+        // MARK: - Finding and extracting mentioned notes
         let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         let flatTags = post.tags.flatMap { $0 }
         
-        for mention in mentions {
-            // It's slow to generate noteRef and searchString for every mention for every post, can be generated once and passed with the mentions
-            if flatTags.contains(mention.post.id) {
-                var stringFound = false
-                if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
-                    profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                        if !stringFound, let matchRange = match?.range {
-                            itemsToRemove.append((text as NSString).substring(with: matchRange))
-                            stringFound = true
+        var mentionFound = false
+        if removeExtractedPost, let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+            profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                if !mentionFound, let matchRange = match?.range {
+                    
+                    let mentionText = (text as NSString).substring(with: matchRange)
+                    
+                    if let mentionId = eventIdFromNEvent(mentionText), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                        p.embededPost = mention
+                        itemsToRemove.append(mentionText)
+                        mentionFound = true
+                    }
+                    
+                }
+            }
+        }
+        
+        if removeExtractedPost, !mentionFound {
+            for mention in mentions {
+                if flatTags.contains(mention.post.id) {
+                    var stringFound = false
+                    if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+                        profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                            if !stringFound, let matchRange = match?.range {
+                                itemsToRemove.append((text as NSString).substring(with: matchRange))
+                                stringFound = true
+                            }
                         }
+                    }
+                    
+                    if stringFound {
+                        p.embededPost = mention
+                        break
                     }
                 }
                 
-                if stringFound {
+                if let noteRef = bech32_note_id(mention.post.id), text.contains(noteRef) {
+                    let searchString = "nostr:\(noteRef)"
+                    itemsToRemove.append(searchString)
                     p.embededPost = mention
                     break
                 }
-            }
-            
-            if let noteRef = bech32_note_id(mention.post.id), text.contains(noteRef) {
-                let searchString = "nostr:\(noteRef)"
-                if removeExtractedPost {
-                    itemsToRemove.append(searchString)
-                }
-                p.embededPost = mention
-                break
             }
         }
         
@@ -249,4 +287,45 @@ extension PrimalUser {
     }
     
     var secondIdentifier: String? { [nip05, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
+}
+
+func eventIdFromNEvent(_ nevent: String) -> String? {
+    let res = parse_mentions(content: nevent, tags: [])
+
+    let block = res[0]
+
+    guard case .mention(let mention) = block else {
+        return nil
+    }
+
+    return mention.ref.id
+}
+
+func parse_mentions(content: String, tags: [[String]]) -> [Block] {
+    var out: [Block] = []
+
+    var bs = blocks()
+    bs.num_blocks = 0;
+
+    blocks_init(&bs)
+
+    let bytes = content.utf8CString
+    let _ = bytes.withUnsafeBufferPointer { p in
+        damus_parse_content(&bs, p.baseAddress)
+    }
+
+    var i = 0
+    while (i < bs.num_blocks) {
+        let block = bs.blocks[i]
+
+        if let converted = convert_block(block, tags: tags) {
+            out.append(converted)
+        }
+
+        i += 1
+    }
+
+    blocks_free(&bs)
+
+    return out
 }

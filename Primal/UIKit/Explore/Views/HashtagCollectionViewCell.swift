@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HashtagCollectionViewCell: UICollectionViewCell {
+final class HashtagCollectionViewCell: UICollectionViewCell, Themeable {
     let label = UILabel()
     
     override init(frame: CGRect) {
@@ -17,14 +17,19 @@ final class HashtagCollectionViewCell: UICollectionViewCell {
         label.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 20)
 
         label.font = .appFont(withSize: 18, weight: .medium)
-        label.textColor = .foreground
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        backgroundColor = .background3
         layer.cornerRadius = 16
+        
+        updateTheme()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        label.textColor = .foreground
+        backgroundColor = .background3
     }
 }
