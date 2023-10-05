@@ -686,7 +686,7 @@ import Foundation
 final class Profile: Codable {
     var value: [String: AnyCodable]
     
-    init (name: String?, display_name: String?, about: String?, picture: String?, banner: String?, website: String?, lud06: String?, lud16: String?, nip05: String?) {
+    init (name: String?, display_name: String?, about: String?, picture: String?, banner: String?, website: String?, lud06: String?, lud16: String?, nip05: String?, deleted: Bool? = nil) {
         self.value = [:]
         self.name = name
         self.display_name = display_name
@@ -697,6 +697,7 @@ final class Profile: Codable {
         self.lud06 = lud06
         self.lud16 = lud16
         self.nip05 = nip05
+        self.deleted = deleted
     }
     
     private func str(_ str: String) -> String? {

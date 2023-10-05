@@ -57,6 +57,7 @@ final class IdentityManager {
                     if self.user?.deleted ?? false {
                         self.handleDeletedAccount()
                     }
+                    //nsec1hhadjdm0mawge0xwf4nqvx698mg78hk0asfljz94jnxt79sacjlq8wv7qw
                 case .userScore:
                     if let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue {
                         guard let content: [String: UInt32] = try? JSONDecoder().decode([String: UInt32].self, from: contentString.data(using: .utf8)!) else {
@@ -178,15 +179,20 @@ final class IdentityManager {
                 case .settings:
                     fallthrough
                 case .defaultSettings:
-                    var primalSettings = PrimalSettings(json: response)
-                    // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
-                    if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
-                    }
-                    guard var settings = primalSettings else { return }
+                    guard var settings = PrimalSettings(json: response) else { return }
                     
-                    // There were breaking changes to how settings work over the time
+                    // Ensure Latest feed *always* exists
+                    let latestFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies != true }) ?? false
+                    if !latestFeedExists {
+                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
+                    }
+                    
+                    let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
+                    if !latestWithRepliesFeedExists {
+                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
+                    }
+                    
+                    // There were breaking changes to how settingsx work over the time
                     // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
                     if settings.content.isBorked() {
                         self.requestDefaultSettings { defaultSettings in
@@ -385,7 +391,8 @@ final class IdentityManager {
                 website: nil,
                 lud06: nil,
                 lud16: nil,
-                nip05: nil
+                nip05: nil,
+                deleted: true
             )
             
             guard let event = NostrObject.metadata(profile) else { return }
@@ -403,8 +410,9 @@ final class IdentityManager {
         alert.addAction(.init(title: "OK", style: .destructive) { _ in
             _ = ICloudKeychainManager.instance.clearSavedKeys()
             KingfisherManager.shared.cache.clearMemoryCache()
-            RootViewController.instance.reset()
             UserDefaults.standard.nwc = nil
+            
+            RootViewController.instance.reset()
         })
         DispatchQueue.main.async {
             RootViewController.instance.present(alert, animated: true)

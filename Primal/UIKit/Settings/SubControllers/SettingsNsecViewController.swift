@@ -160,7 +160,11 @@ private extension SettingsNsecViewController {
         pubIcon.setUserImage(.init(data: IdentityManager.instance.user ?? .init(pubkey: "")))
         
         deleteButton.addAction(.init(handler: { [weak self] _ in
-            let alert = UIAlertController(title: "Are you sure you want to delete your account?", message: nil, preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "Are you sure you want to delete your account?",
+                message: "HEY THIS IS SERIOUS!!\n\nIf you delete your account you will not be able to sign in using that account via Primal or any other Nostr client. Are you sure you want to do this?",
+                preferredStyle: .alert
+            )
             alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
                 Task { @MainActor in
                     await _ = IdentityManager.instance.deleteAccount()

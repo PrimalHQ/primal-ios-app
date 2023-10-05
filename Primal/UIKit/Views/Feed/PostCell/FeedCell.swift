@@ -78,7 +78,7 @@ private extension DefaultFeedCell {
     func setup() {
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameStack, textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), buttonStackStandIn
+            nameStack, replyingToView, textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), buttonStackStandIn
         ])
         
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, contentStack])
@@ -101,6 +101,9 @@ private extension DefaultFeedCell {
 // MARK: - FullWidthFeedCell
 
 final class FullWidthFeedCell: FeedCell {
+    lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
+    lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         parentSetup()
@@ -110,22 +113,27 @@ final class FullWidthFeedCell: FeedCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
+        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+        
+        nameSuperStack.alignment = parsedContent.replyingTo != nil ? .top : .center
+    }
 }
 
 private extension FullWidthFeedCell {
     func setup() {
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
+            nameSuperStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
         
         contentStack.spacing = 6
-        
-        nameStack.insertArrangedSubview(profileImageView, at: 0)
-        nameStack.setCustomSpacing(8, after: profileImageView)
+        nameReplyStack.spacing = 4
+        nameSuperStack.spacing = 8
         
         buttonStackStandIn.constrainToSize(height: 24)
         contentView.addSubview(bottomButtonStack)

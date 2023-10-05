@@ -33,6 +33,7 @@ class PostRequestResult {
 }
 
 struct NostrRepost {
+    let id: String
     let pubkey: String
     let post: NostrContent
     let date: Date

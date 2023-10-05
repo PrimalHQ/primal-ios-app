@@ -62,10 +62,9 @@ extension ThreadCell {
         profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
         
         contentSpacer.addSubview(parentIndicator)
+        
         parentIndicator
             .centerToSuperview(axis: .horizontal)
-            .pinToSuperview(edges: .top)
-            .pinToSuperview(edges: .bottom, padding: -24)
             .constrainToSize(width: 2)
         
         parentIndicator.backgroundColor = UIColor(rgb: 0x444444)
@@ -88,6 +87,10 @@ final class DefaultThreadCell: ThreadCell {
     
     func setup() {
         nameStack.addArrangedSubview(threeDotsButton)
+        
+        parentIndicator
+            .pinToSuperview(edges: .top)
+            .pinToSuperview(edges: .bottom, padding: -24)
         
         let imageSpacerStack = UIStackView(axis: .vertical, [profileImageView, contentSpacer, UIView()])
         imageSpacerStack.spacing = 2
@@ -140,6 +143,10 @@ final class DefaultMainThreadCell: ThreadCell {
     }
     
     func setup() {
+        parentIndicator
+            .pinToSuperview(edges: .top)
+            .pinToSuperview(edges: .bottom, padding: -24)
+        
         threeDotsButton.constrainToSize(width: 22)
         
         nameStack.removeArrangedSubview(nipLabel)
@@ -199,6 +206,10 @@ final class FullWidthThreadCell: ThreadCell {
     }
     
     func setup() {
+        parentIndicator
+            .pinToSuperview(edges: .top, padding: -2)
+            .pinToSuperview(edges: .bottom, padding: -20)
+        
         contentSpacer.constrainToSize(width: 24)
         
         profileImageView.constrainToSize(24)

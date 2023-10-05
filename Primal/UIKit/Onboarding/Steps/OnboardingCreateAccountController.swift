@@ -105,6 +105,8 @@ private extension OnboardingCreateAccountController {
         let formParent = UIView()
         let atLabel = UILabel()
         atLabel.text = "@"
+        atLabel.font = .appFont(withSize: 18, weight: .medium)
+        atLabel.setContentHuggingPriority(.required, for: .horizontal)
         let formStack = UIStackView(axis: .vertical, [
             FormHeaderView(title: "USERNAME", required: true),
             InputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),

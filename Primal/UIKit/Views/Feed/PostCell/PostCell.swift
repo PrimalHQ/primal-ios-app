@@ -43,6 +43,7 @@ class PostCell: UITableViewCell {
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
+    let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
     let mainImages = ImageCollectionView()
     let linkPresentation = LinkPreview()
@@ -94,6 +95,13 @@ class PostCell: UITableViewCell {
             linkPresentation.isHidden = true
         }
         
+        if let parent = content.replyingTo {
+            replyingToView.userNameLabel.text = parent.user.data.firstIdentifier
+            replyingToView.isHidden = false
+        } else {
+            replyingToView.isHidden = true
+        }
+        
         if let embeded = content.embededPost {
             postPreview.update(embeded)
             postPreview.isHidden = false
@@ -101,8 +109,8 @@ class PostCell: UITableViewCell {
             postPreview.isHidden = true
         }
         
-        if let reposted = content.reposted?.user.data {
-            repostIndicator.update(user: reposted)
+        if let reposted = content.reposted?.users {
+            repostIndicator.update(users: reposted)
             repostIndicator.isHidden = false
         } else {
             repostIndicator.isHidden = true
@@ -133,7 +141,7 @@ class PostCell: UITableViewCell {
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
         
-        let muteTitle = isMuted ? "Unmute" : "Mute"
+        let muteTitle = isMuted ? "Unmute User" : "Mute User"
         threeDotsButton.menu = .init(children: [
             UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
                 guard let self else { return }
@@ -237,6 +245,7 @@ private extension PostCell {
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
+        threeDotsButton.showsMenuAsPrimaryAction = true
         
         bottomBorder.backgroundColor = .background3
         
@@ -251,8 +260,6 @@ private extension PostCell {
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
-        
-        threeDotsButton.showsMenuAsPrimaryAction = true
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
         let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))

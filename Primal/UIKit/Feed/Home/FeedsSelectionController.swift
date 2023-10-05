@@ -24,13 +24,14 @@ final class FeedsSelectionController: UIViewController {
 
 private extension FeedsSelectionController {
     @objc func feedButtonPressed(_ button: UIButton) {
-        guard let title = button.title(for: .normal), !title.isEmpty else { return }
         dismiss(animated: true)
+        
+        guard let feed = IdentityManager.instance.userSettings?.content.feeds?[safe: button.tag] else { return }
         
         KingfisherManager.shared.cache.clearMemoryCache()
         
         Connection.dispatchQueue.async {
-            self.feed.setCurrentFeed(title)
+            self.feed.setCurrentFeed(feed)
         }
     }
     
@@ -54,12 +55,13 @@ private extension FeedsSelectionController {
         
         var buttons: [UIButton] = []
         let settings = IdentityManager.instance.userSettings?.content.feeds ?? []
-        for feed in settings {
+        for (index, feed) in settings.enumerated() {
             let button = UIButton()
             button.setTitle(feed.name, for: .normal)
             button.setTitleColor(.foreground, for: .normal)
             button.titleLabel?.font = .appFont(withSize: 20, weight: .regular)
             button.addTarget(self, action: #selector(feedButtonPressed), for: .touchUpInside)
+            button.tag = index
             
             buttons.append(button)
         }

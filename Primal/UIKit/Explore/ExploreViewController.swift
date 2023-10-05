@@ -85,7 +85,10 @@ extension ExploreViewController: UICollectionViewDataSource, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        (cell as? HashtagCollectionViewCell)?.label.text = hashtags[indexPath.item].title
+        if let cell = cell as? HashtagCollectionViewCell {
+            cell.label.text = hashtags[indexPath.item].title
+            cell.updateTheme()
+        }
         return cell
     }
     

@@ -39,9 +39,10 @@ extension PostRequestResult {
         return chatsMetadata.compactMap { pubkey, info -> Chat? in
             guard
                 let user = users[pubkey],
-                let latest = encryptedMessages.first(where: { $0.id == info.latest_event_id }),
-                let messageUser = users[latest.pubkey]
+                let latest = encryptedMessages.first(where: { $0.id == info.latest_event_id })
             else { return nil }
+            
+            let messageUser = users[latest.pubkey] ?? .init(pubkey: latest.pubkey)
             
             let parsed = createParsedUser(user)
 

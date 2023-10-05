@@ -249,16 +249,16 @@ private extension HomeFeedViewController {
         
         feed.$currentFeed
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] name in
-                self?.title = name
+            .sink { [weak self] feed in
+                self?.title = feed?.name
             }
             .store(in: &cancellables)
     }
     
     func processFuturePosts(_ sorted: [ParsedContent]) {
         let sorted = sorted.filter { post in
-            !posts.contains(where: { $0.post.id == post.post.id && $0.reposted?.user.data.id == post.reposted?.user.data.id}) &&
-            !newPostObjects.contains(where: { $0.post.id == post.post.id && $0.reposted?.user.data.id == post.reposted?.user.data.id})
+            !posts.contains(where: { $0.post.id == post.post.id }) &&
+            !newPostObjects.contains(where: { $0.post.id == post.post.id })
         }
         
         if sorted.isEmpty { return }

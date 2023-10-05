@@ -24,6 +24,7 @@ struct PrimalNoteStatus: Codable, Hashable {
 struct PrimalSettingsFeed: Codable, Hashable {
     var name: String
     let hex: String
+    var includeReplies: Bool?
 }
 
 struct PrimalSettingsContent: Codable, Hashable {

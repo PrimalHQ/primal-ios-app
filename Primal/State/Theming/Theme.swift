@@ -117,13 +117,13 @@ enum FontSizeSelection: Int {
         case .fullWidth:
             switch self {
             case .small:
-                return 22
-            case .standard:
-                return 24
-            case .large:
-                return 26
-            case .huge:
                 return 28
+            case .standard:
+                return 30
+            case .large:
+                return 32
+            case .huge:
+                return 34
             }
         case .standard:
             switch self {
