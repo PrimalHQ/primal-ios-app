@@ -136,6 +136,10 @@ extension NostrObject {
     static func markAllChatRead() -> NostrObject? {
         createNostrMarkAllChatsReadEvent()
     }
+    
+    static func wallet(_ content: String) -> NostrObject? {
+        createNostrObject(content: content, kind: 10_000_300)
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()

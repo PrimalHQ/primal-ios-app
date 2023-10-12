@@ -22,18 +22,22 @@ extension UIViewController {
         }
     }
     
-    var customBackButton: UIBarButtonItem {
+    var customBackButton: UIBarButtonItem { backButtonWithColor(.accent2) }
+    
+    var customRedBackButton: UIBarButtonItem { backButtonWithImage(SunriseWave.instance.backButtonImage) }
+    
+    func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
         let button = UIButton()
         button.setImage(Theme.current.backButtonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = .accent2
+        button.tintColor = color
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)
         return UIBarButtonItem(customView: button)
     }
     
-    var customRedBackButton: UIBarButtonItem {
+    func backButtonWithImage(_ image: UIImage?) -> UIBarButtonItem {
         let button = UIButton()
-        button.setImage(SunriseWave.instance.backButtonImage, for: .normal)
+        button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)
         return UIBarButtonItem(customView: button)

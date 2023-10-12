@@ -81,6 +81,11 @@ final class Connection {
         isConnected =  false
     }
     
+    func requestWallet(_ content: String, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        guard let walletEvent = NostrObject.wallet(content) else { return }
+        requestCache(name: "wallet", request: ["operation_event": walletEvent.toJSON()], handler)
+    }
+    
     func requestCache(name: String, request: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
         if let request {
             requestCache(.array([.string(name), request]), handler)
@@ -167,20 +172,15 @@ final class Connection {
             return
         }
         
-        if type == "EVENT" {
-            if responseBuffer.keys.contains(subId) {
-                responseBuffer[subId]?.append(json)
-            } else {
-                continousSubHandlers[subId]?(json)
-            }
-        } else if type == "EOSE" {
+        if type == "EOSE" {
             if let handler = subHandlers[subId], let b = responseBuffer[subId] {
                 handler(b)
             }
             responseBuffer[subId] = nil
             subHandlers[subId] = nil
         } else {
-            print(json)
+            responseBuffer[subId]?.append(json)
+            continousSubHandlers[subId]?(json)
         }
     }
     

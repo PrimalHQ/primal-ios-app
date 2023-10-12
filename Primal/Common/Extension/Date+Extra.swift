@@ -77,4 +77,19 @@ extension Date {
         
         return "now"
     }
+    
+    func daysAgoDisplay() -> String {
+        if Calendar.current.isDateInToday(self) {
+            return "today".localizedLowercase
+        }
+        
+        if Calendar.current.isDateInYesterday(self) {
+            return "yesterday".localizedLowercase
+        }
+
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEE, MMM dd, YYYY")
+
+        return formatter.string(from: self)
+    }
 }
