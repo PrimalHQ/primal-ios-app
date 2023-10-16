@@ -15,7 +15,7 @@ extension UIViewController {
 }
 
 enum MainTab: String {
-    case home, explore, messages, notifications
+    case home, explore, wallet, messages, notifications
     
     var tabImage: UIImage? {
         UIImage(named: "tabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
@@ -24,27 +24,18 @@ enum MainTab: String {
     var selectedTabImage: UIImage? {
         UIImage(named: "selectedTabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
     }
-    
-    static func forIndex(_ index: Int) -> MainTab {
-        switch index {
-        case 0:     return .home
-        case 1:     return .explore
-        case 2:     return .messages
-        case 3:     return  .notifications
-        default:    return .home
-        }
-    }
 }
 
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
 
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
-    lazy var buttons = (1...4).map { _ in
+    lazy var buttons = (1...5).map { _ in
         UIButton()
     }
 
@@ -63,6 +54,8 @@ final class MainTabBarController: UIViewController, Themeable {
     private var profileObserver: NSObjectProtocol?
 
     var cancellables: Set<AnyCancellable> = []
+    
+    private let tabs: [MainTab] = [.home, .explore, .wallet, .messages, .notifications]
 
     var hasNewNotifications = false {
         didSet {
@@ -115,7 +108,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showCloseMenuButton() {
         closeMenuButton.alpha = 0
         closeMenuButton.isHidden = false
-        closeMenuButton.setImage(MainTab.forIndex(currentPageIndex).selectedTabImage?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
+        closeMenuButton.setImage(tabs[currentPageIndex].selectedTabImage?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
             self.closeMenuButton.alpha = 1
@@ -143,7 +136,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
         updateButtons()
 
-        [home, explore, messages, notifications].forEach {
+        [home, explore, wallet, messages, notifications].forEach {
             $0.updateThemeIfThemeable()
         }
         
@@ -168,6 +161,8 @@ final class MainTabBarController: UIViewController, Themeable {
                 return home
             case .explore:
                 return explore
+            case .wallet:
+                return wallet
             case .messages:
                 return messages
             case .notifications:
@@ -179,6 +174,16 @@ final class MainTabBarController: UIViewController, Themeable {
         currentPageIndex = indexForNav(nav)
         if let vc {
             nav.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func mainTabForIndex(_ index: Int) -> MainTab {
+        switch index {
+        case 0:     return .home
+        case 1:     return .explore
+        case 2:     return .messages
+        case 3:     return .notifications
+        default:    return .home
         }
     }
 }
@@ -225,6 +230,7 @@ private extension MainTabBarController {
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
             Connection.instance.reconnect()
         }
+        
         noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
             if let note = notification.object as? String {
                 if let self {
@@ -241,6 +247,7 @@ private extension MainTabBarController {
                 }
             }
         }
+        
         profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
             guard
                 let self,
@@ -263,23 +270,21 @@ private extension MainTabBarController {
                 }
                 .store(in: &cancellables)
         }
-
+        
         updateButtons()
 
-        [home, explore, messages, notifications].forEach { nav in
+        [home, explore, wallet, messages, notifications].forEach { nav in
             buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
                 self?.menuButtonPressedForNav(nav)
             }), for: .touchUpInside)
         }
     }
-
+    
     func updateButtons() {
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
             
-            let tab = MainTab.forIndex(index)
-            
-            button.setImage(index == currentPageIndex ? tab.selectedTabImage : tab.tabImage, for: .normal)
+            button.setImage(index == currentPageIndex ? tabs[index].selectedTabImage : tabs[index].tabImage, for: .normal)
         }
     }
 
@@ -287,8 +292,9 @@ private extension MainTabBarController {
         switch nav {
         case home:          return 0
         case explore:       return 1
-        case messages:      return 2
-        case notifications: return 3
+        case wallet:        return 2
+        case messages:      return tabs.firstIndex(of: .messages) ?? 2
+        case notifications: return tabs.firstIndex(of: .notifications) ?? 3
         default:            return 0
         }
     }

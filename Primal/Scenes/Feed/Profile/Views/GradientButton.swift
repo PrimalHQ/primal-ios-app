@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class GradientButton: MyButton {
+final class GradientButton: MyButton, Themeable {
     var title: String {
         get { label.text ?? "" }
         set { label.text = newValue }
@@ -19,15 +19,15 @@ final class GradientButton: MyButton {
         }
     }
     
+    private let gradient = GradientView(colors: UIColor.gradient)
     private let label = UILabel()
-    init(title: String) {
+    init(title: String, font: UIFont = .appFont(withSize: 14, weight: .medium)) {
         super.init(frame: .zero)
         
         label.text = title
-        label.font = .appFont(withSize: 14, weight: .medium)
+        label.font = font
         label.textColor = .white
         
-        let gradient = GradientView(colors: UIColor.gradient)
         gradient.gradientLayer.startPoint = .init(x: 0, y: 0)
         gradient.gradientLayer.endPoint = .init(x: 1, y: 1)
         
@@ -49,5 +49,9 @@ final class GradientButton: MyButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        gradient.colors = UIColor.gradient
     }
 }

@@ -32,10 +32,11 @@ extension Publisher {
         Publishers.Zip(self, self.dropFirst()).eraseToAnyPublisher()
     }
     
-    func waitForConnection() -> AnyPublisher<Bool, Failure> {
-        flatMap { _ in Connection.instance.$isConnected }
+    func waitForConnection() -> AnyPublisher<Output, Failure> {
+        Connection.instance.$isConnected
             .filter { $0 }
             .first()
+            .flatMap { _ in self }
             .eraseToAnyPublisher()
     }
 }

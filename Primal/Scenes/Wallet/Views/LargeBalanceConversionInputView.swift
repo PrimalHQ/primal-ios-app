@@ -129,6 +129,7 @@ private extension LargeBalanceConversionInputView {
         let secondaryRow = UIStackView([smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }])
         secondaryRow.spacing = 8
         secondaryRow.alignment = .center
+        secondaryRow.isHidden = true
         
         addArrangedSubview(primaryRow)
         addArrangedSubview(secondaryRow)
@@ -137,7 +138,7 @@ private extension LargeBalanceConversionInputView {
         spacing = 2
         alignment = .center
         
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+//        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
         Publishers.CombineLatest($isBitcoinPrimary, $balance).receive(on: DispatchQueue.main).sink { [weak self] _, _ in
             self?.updateLabels()

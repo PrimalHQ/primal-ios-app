@@ -38,11 +38,11 @@ final class LargeWalletView: MyButton, Themeable {
     
     private let amountLabel = ThemeableLabel().setTheme { $0.textColor = .foreground2 }
     
-    override var isPressed: Bool {
-        didSet {
-            alpha = isPressed ? 0.5 : 1
-        }
-    }
+//    override var isPressed: Bool {
+//        didSet {
+//            alpha = isPressed ? 0.5 : 1
+//        }
+//    }
     
     init() {
         super.init(frame: .zero)

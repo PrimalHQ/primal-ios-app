@@ -9,12 +9,18 @@ import Combine
 import GenericJSON
 import Foundation
 
+struct AdditionalDepositInfo {
+    var satoshi: Int
+    var description: String
+}
+
 struct PrimalWalletRequest {
     enum RequestType {
         case isUser
         case balance
-        case transactions(since: Int? = nil)
+        case transactions(until: Int? = nil, since: Int? = nil)
         case send(target: String, amount: String, note: String)
+        case deposit(AdditionalDepositInfo? = nil)
         
         var requestContent: String {
             switch self {
@@ -22,7 +28,18 @@ struct PrimalWalletRequest {
                 return "[\"is_user\",{\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}]"
             case .balance:
                 return "[\"balance\",{\"subwallet\":1}]"
-            case .transactions(let since):
+            case .deposit(let info):
+                if let info {
+                    if info.satoshi > 0 {
+                        return "[\"deposit\",{\"subwallet\":1,\"amount_btc\":\"\(info.satoshi.satsToBitcoinString())\",\"description\":\"\(info.description)\"}]"
+                    }
+                    return "[\"deposit\",{\"subwallet\":1,\"description\":\"\(info.description)\"}]"
+                }
+                return "[\"deposit\",{\"subwallet\":1}]"
+            case .transactions(let until, let since):
+                if let until {
+                    return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"until\":\(until)}]"
+                }
                 if let since {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
                 }
@@ -61,7 +78,11 @@ private extension PrimalWalletRequest {
             let kind = WalletResponseType(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
             let contentString = payload["content"]?.stringValue
         else {
-            print("UNKNOWN KIND")
+            if Int(payload["kind"]?.doubleValue ?? 0) == 10_000_113 {
+                // Do nothing
+            } else {
+                print("UNKNOWN KIND")
+            }
             return
         }
         
@@ -76,16 +97,25 @@ private extension PrimalWalletRequest {
 
             pendingResult.balance = balance
         case .WALLET_DEPOSIT_INVOICE:
-            print("UNHANDLED KIND: \(kind)")
+            guard let data = try? JSONDecoder().decode(InvoiceInfo.self, from: Data(contentString.utf8)) else {
+                print("1Error decoding: \(kind) to json")
+                return
+            }
+            pendingResult.invoiceInfo = data
         case .WALLET_DEPOSIT_LNURL:
             print("UNHANDLED KIND: \(kind)")
+            guard let data = try? JSONDecoder().decode(DepositInfo.self, from: Data(contentString.utf8)) else {
+                print("1Error decoding: \(kind) to json")
+                return
+            }
+            pendingResult.depositInfo = data
         case .WALLET_TRANSACTIONS:
-            let array = try! JSONDecoder().decode([WalletTransaction].self, from: Data(contentString.utf8))
-//            guard let array = try? JSONDecoder().decode([WalletTransaction].self, from: Data(contentString.utf8))
-//            else {
-//                print("Error decoding: \(kind) to json")
-//                return
-//            }
+//            let array = try! JSONDecoder().decode([WalletTransaction].self, from: Data(contentString.utf8))
+            guard let array = try? JSONDecoder().decode([WalletTransaction].self, from: Data(contentString.utf8))
+            else {
+                print("1Error decoding: \(kind) to json")
+                return
+            }
             
             pendingResult.transactions = array
         case .WALLET_EXCHANGE_RATE:

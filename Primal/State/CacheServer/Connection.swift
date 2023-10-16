@@ -122,16 +122,15 @@ final class Connection {
                 "cache" : .array(
                     [.string(name), request]
                 )
-            ]), handler)
+            ]), subId: "\(name)-\(UUID().uuidString)", handler)
         } else {
             return requestContinous(.object([
                 "cache" : .array([.string(name)])
-            ]), handler)
+            ]), subId: "\(name)-\(UUID().uuidString)", handler)
         }
     }
     
-    func requestContinous(_ request: JSON, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
-        let subId = UUID().uuidString
+    func requestContinous(_ request: JSON, subId: String = UUID().uuidString, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
             guard let jsonData = try? self.jsonEncoder.encode(json) else {

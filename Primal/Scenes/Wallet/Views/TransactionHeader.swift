@@ -29,7 +29,7 @@ final class TransactionHeader: UITableViewHeaderFooterView, Themeable {
     private func setup() {
         let stack = UIStackView([leftLine, title, rightLine])
         contentView.addSubview(stack)
-        stack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 20)
+        stack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
         stack.alignment = .center
         stack.spacing = 12
         
@@ -41,7 +41,6 @@ final class TransactionHeader: UITableViewHeaderFooterView, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .background
         contentView.backgroundColor = .background
         
         leftLine.backgroundColor = .background3

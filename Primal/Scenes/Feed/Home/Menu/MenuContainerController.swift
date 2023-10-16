@@ -27,8 +27,6 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
     
-    private let walletIndicator = WalletMenuIndicator()
-    
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
     }
@@ -68,7 +66,6 @@ final class MenuContainerController: UIViewController, Themeable {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
             self.mainStack.transform = .identity
-            self.walletIndicator.transform = .identity
             self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: self.view.frame.width - 68, y: 0)
             
             self.coverView.alpha = 1
@@ -83,7 +80,6 @@ final class MenuContainerController: UIViewController, Themeable {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
             self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
-            self.walletIndicator.transform = CGAffineTransform(translationX: -300, y: 0)
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
@@ -164,12 +160,6 @@ private extension MenuContainerController {
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
         
-        view.addSubview(walletIndicator)
-        walletIndicator
-            .pinToSuperview(edges: .leading, padding: 12)
-            .pinToSuperview(edges: .trailing, padding: 80)
-            .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
-        
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
         buttonsStack.spacing = 30
@@ -229,10 +219,6 @@ private extension MenuContainerController {
         swipe.direction = .left
         coverView.addGestureRecognizer(swipe)
         
-        walletIndicator.walletView.addAction(.init(handler: { [weak self] _ in
-            self?.show(WalletHomeViewController(), sender: nil)
-            self?.resetNavigationTabBar()
-        }), for: .touchUpInside)
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
@@ -251,21 +237,6 @@ private extension MenuContainerController {
             
             self.followersLabel.text = stats.followers.localized()
             self.followingLabel.text = stats.follows.localized()
-        }
-        .store(in: &cancellables)
-        
-        WalletManager.instance.$userHasWallet.receive(on: DispatchQueue.main).sink { [weak self] hasWallet in
-            guard let self else { return }
-            
-            self.themeButton.isHidden = hasWallet
-            self.walletIndicator.isHidden = !hasWallet
-        }
-        .store(in: &cancellables)
-        
-        WalletManager.instance.$balance.receive(on: DispatchQueue.main).sink { [weak self] balance in
-            guard let self else { return }
-            
-            self.walletIndicator.walletView.amount = balance
         }
         .store(in: &cancellables)
     }
@@ -363,7 +334,6 @@ private extension MenuContainerController {
             
             coverView.alpha = percent
             mainStack.transform = .init(translationX: (1 - percent) * -300, y: 0)
-            walletIndicator.transform = .init(translationX: (1 - percent) * -300, y: 0)
             [child.view, navigationController?.navigationBar, coverView].forEach {
                 $0?.transform = CGAffineTransform(translationX: max(0, translation.x), y: 0)
             }

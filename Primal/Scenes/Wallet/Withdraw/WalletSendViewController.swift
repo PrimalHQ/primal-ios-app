@@ -31,7 +31,7 @@ final class WalletSendViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = customBackButton
+        navigationItem.leftBarButtonItem = backButtonWithColor(.foreground)
         
         view.backgroundColor = .background
     }
@@ -53,8 +53,6 @@ private extension WalletSendViewController {
         let sendToLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground }
         
-        let amountDescLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
-        
         let messageDescLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         
@@ -63,8 +61,7 @@ private extension WalletSendViewController {
         let stack = UIStackView(axis: .vertical, [
             profilePictureView, SpacerView(height: 16),
             sendToLabel, SpacerView(height: 8), nipLabel, SpacerView(height: 32),
-            amountDescLabel, SpacerView(height: 32),
-            input, SpacerView(height: 64),
+            BitcoinInputParentView(input), SpacerView(height: 64),
             messageDescLabel, SpacerView(height: 10),
             messageParent, SpacerView(height: 44),
             sendButton
@@ -101,7 +98,6 @@ private extension WalletSendViewController {
         profilePictureView.layer.cornerRadius = 60
         profilePictureView.setUserImage(user)
         
-        amountDescLabel.font = .appFont(withSize: 16, weight: .regular)
         messageDescLabel.font = .appFont(withSize: 16, weight: .regular)
         
         sendToLabel.text = "sending to:"
@@ -111,11 +107,6 @@ private extension WalletSendViewController {
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.send()
         }), for: .touchUpInside)
-        
-        input.$isBitcoinPrimary.sink { isBitcoin in
-            amountDescLabel.text = isBitcoin ? "amount: (sats)" : "amount: (USD)"
-        }
-        .store(in: &cancellables)
         
         updateTheme()
     }
@@ -138,5 +129,32 @@ private extension WalletSendViewController {
                 self.present(WalletTransferSummaryController(.failure(error)), animated: true)
             }
         }
+    }
+}
+
+final class BitcoinInputParentView: UIStackView {
+    private let amountDescLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(_ input: LargeBalanceConversionInputView, spacing: CGFloat = 12) {
+        super.init(frame: .zero)
+        axis = .vertical
+        alignment = .center
+        self.spacing = spacing
+        
+        addArrangedSubview(amountDescLabel)
+        addArrangedSubview(input)
+        
+        amountDescLabel.font = .appFont(withSize: 16, weight: .regular)
+        
+        input.$isBitcoinPrimary.sink { [weak self] isBitcoin in
+            self?.amountDescLabel.text = isBitcoin ? "amount: (sats)" : "amount: (USD)"
+        }
+        .store(in: &cancellables)
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

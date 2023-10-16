@@ -10,6 +10,8 @@ import UIKit
 
 protocol WalletInfoCellDelegate: AnyObject {
     func sendButtonPressed()
+    func receiveButtonPressed()
+    func scanButtonPressed()
 }
 
 final class WalletInfoCell: UITableViewCell, Themeable{
@@ -26,16 +28,17 @@ final class WalletInfoCell: UITableViewCell, Themeable{
         
         updateTheme()
         
-        let balanceParent = UIView().constrainToSize(height: 150)
+        let balanceParent = UIView()
         balanceParent.addSubview(balanceConversionView)
-        balanceConversionView.centerToSuperview()
+        balanceConversionView.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom).pinToSuperview(edges: .top, padding: -10)
         
         let send = LargeWalletButton(.send)
         let receive = LargeWalletButton(.receive)
-        let hstack = UIStackView([send, LargeWalletButton(.scan), receive])
+        let scan = LargeWalletButton(.scan)
+        let hstack = UIStackView([send, scan, receive])
         hstack.spacing = 8
         
-        let stack = UIStackView(axis: .vertical, [balanceParent, hstack, SpacerView(height: 50)])
+        let stack = UIStackView(axis: .vertical, [balanceParent, SpacerView(height: 40), hstack, SpacerView(height: 18)])
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
         
@@ -46,6 +49,14 @@ final class WalletInfoCell: UITableViewCell, Themeable{
         
         send.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.sendButtonPressed()
+        }), for: .touchUpInside)
+        
+        receive.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.receiveButtonPressed()
+        }), for: .touchUpInside)
+        
+        scan.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.scanButtonPressed()
         }), for: .touchUpInside)
     }
     

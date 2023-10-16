@@ -13,6 +13,9 @@ class WalletRequestResult {
     
     var message: String?
     
+    var depositInfo: DepositInfo?
+    var invoiceInfo: InvoiceInfo?
+    
     var transactions: [WalletTransaction] = []
 }
 
@@ -36,6 +39,16 @@ enum KYCLevel: Int {
 struct WalletBalance: Codable {
     var amount: String
     var currency: String
+}
+
+struct DepositInfo: Codable {
+    var lnurl: String
+    var lud16: String
+}
+
+struct InvoiceInfo: Codable {
+    var lnInvoice: String
+    var description: String?
 }
 
 struct WalletTransaction: Codable {    

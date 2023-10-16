@@ -8,15 +8,15 @@
 import Combine
 import UIKit
 
-final class LargeBalanceConversionView: UIStackView, Themeable {
+class LargeBalanceConversionView: UIStackView, Themeable {
     @Published var isBitcoinPrimary = true
     @Published var balance: Int = 0
     
-    private let largeAmountLabel = UILabel()
-    private let smallAmountLabel = UILabel()
+    let largeAmountLabel = UILabel()
+    let smallAmountLabel = UILabel()
     
-    private let largeCurrencyLabel = UILabel()
-    private let large$Label = UILabel()
+    let largeCurrencyLabel = UILabel()
+    let large$Label = UILabel()
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -28,6 +28,8 @@ final class LargeBalanceConversionView: UIStackView, Themeable {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    var labelOffset: CGFloat { 8 }
     
     func updateTheme() {
         large$Label.textColor = .foreground4
@@ -55,10 +57,10 @@ private extension LargeBalanceConversionView {
         let currencyParent = UIView()
         
         dollarParent.addSubview(large$Label)
-        large$Label.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: .horizontal)
+        large$Label.pinToSuperview(edges: .top, padding: labelOffset).pinToSuperview(edges: .horizontal)
         
         currencyParent.addSubview(largeCurrencyLabel)
-        largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: 8).pinToSuperview(edges: .horizontal)
+        largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: labelOffset).pinToSuperview(edges: .horizontal)
         
         let primaryRow = UIStackView([dollarParent, largeAmountLabel, currencyParent])
         primaryRow.spacing = 6
@@ -66,6 +68,7 @@ private extension LargeBalanceConversionView {
         let secondaryRow = UIStackView([smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }])
         secondaryRow.spacing = 8
         secondaryRow.alignment = .center
+        secondaryRow.isHidden = true
         
         addArrangedSubview(primaryRow)
         addArrangedSubview(secondaryRow)
@@ -74,7 +77,7 @@ private extension LargeBalanceConversionView {
         spacing = 2
         alignment = .center
         
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+//        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
         Publishers.CombineLatest($isBitcoinPrimary, $balance).receive(on: DispatchQueue.main).sink { [weak self] _, _ in
             self?.updateLabels()

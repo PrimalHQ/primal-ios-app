@@ -46,7 +46,7 @@ final class WalletPickUserController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = customBackButton
+        navigationItem.leftBarButtonItem = backButtonWithColor(.foreground)
         view.backgroundColor = .background
         
         searchBackground.backgroundColor = .background3
