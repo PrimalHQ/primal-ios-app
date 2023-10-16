@@ -103,12 +103,17 @@ private extension WalletInAppPurchaseController {
     }
 }
 
-final class InAppPurchaseButton: MyButton {
+final class InAppPurchaseButton: MyButton, Themeable {
     private let currencyLabel = UILabel()
     private let amountLabel = UILabel()
+    private let gradient = GradientBorderView(gradientColors: UIColor.gradient, backgroundColor: .background)
     
     init(value: NSDecimalNumber, currency: String) {
         super.init(frame: .zero)
+        
+        addSubview(gradient)
+        gradient.pinToSuperview()
+        gradient.cornerRadius = 16
         
         let hStack = UIStackView([currencyLabel, amountLabel])
         hStack.alignment = .top
@@ -118,9 +123,23 @@ final class InAppPurchaseButton: MyButton {
         
         currencyLabel.text = currency
         amountLabel.text = NumberFormatter().string(from: value)
+        
+        currencyLabel.font = .appFont(withSize: 24, weight: .bold)
+        
+        // TODO: NIKOLA
+        // If you need to do some pixel-pushing just use transform property
+//         currencyLabel.transform = .init(translationX: 0, y: 10)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        currencyLabel.textColor = .white
+        amountLabel.textColor = .foreground3
+        
+        gradient.colors = UIColor.gradient
+        gradient.backgroundColor = .background
     }
 }
