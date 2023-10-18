@@ -17,6 +17,8 @@ class WalletRequestResult {
     var invoiceInfo: InvoiceInfo?
     
     var transactions: [WalletTransaction] = []
+    
+    var quote: Decimal?
 }
 
 enum WalletResponseType: Int {
@@ -28,6 +30,8 @@ enum WalletResponseType: Int {
     case WALLET_EXCHANGE_RATE = 10_000_305
     case WALLET_IS_USER = 10_000_306
     case WALLET_USER_INFO = 10_000_307
+    case WALLET_IN_APP_PURCHASE = 10_000_308
+    case WALLET_QUOTE = 10_000_309
 }
 
 enum KYCLevel: Int {

@@ -55,11 +55,18 @@ final class InAppPurchaseManager: NSObject {
     }
     
     func fetchAvailableProducts(completion: @escaping (([SKProduct])->Void)){
-        fetchProductCompletion = completion
+//        fetchProductCompletion = completion
 
-        productsRequest = SKProductsRequest(productIdentifiers: productIds)
-        productsRequest.delegate = self
-        productsRequest.start()
+        // mock success
+        let product = SKProduct()
+        product.setValue("5USDSATS", forKey: "productIdentifier")
+        product.setValue(5, forKey: "price")
+        product.setValue(Locale(identifier: "en-US"), forKey: "priceLocale")
+        completion([product])
+                
+//        productsRequest = SKProductsRequest(productIdentifiers: productIds)
+//        productsRequest.delegate = self
+//        productsRequest.start()
     }
 }
 
