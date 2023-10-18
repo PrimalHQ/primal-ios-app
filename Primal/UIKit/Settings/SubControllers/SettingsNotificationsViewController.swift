@@ -44,7 +44,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         
         view.addSubview(table)
         table.pinToSuperview(edges: [.leading, .top], safeArea: true).pinToSuperview(edges: .trailing, padding: 6)
-        table.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        table.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -80).isActive = true
         
         table.backgroundColor = .background
         table.delegate = self
