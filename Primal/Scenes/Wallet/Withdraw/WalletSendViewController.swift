@@ -13,7 +13,7 @@ final class WalletSendViewController: UIViewController, Themeable {
     let user: ParsedUser
     
     let input = LargeBalanceConversionInputView()
-    let messageInput = UITextView()
+    let messageInput = PlaceholderTextView()
     
     let scrollView = UIScrollView()
     
@@ -31,17 +31,21 @@ final class WalletSendViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = backButtonWithColor(.foreground)
+        navigationItem.leftBarButtonItem = customBackButton
         
         view.backgroundColor = .background
     }
-}
-
-extension WalletSendViewController: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            self.scrollView.scrollRectToVisible(textView.convert(textView.frame, to: self.scrollView), animated: true)
-        }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+       
+        input.becomeFirstResponder()
     }
 }
 
@@ -49,21 +53,23 @@ private extension WalletSendViewController {
     func setup() {
         title = "Payment Details"
         
+        let sizingView = UIView()
+        view.addSubview(sizingView)
+        sizingView.pinToSuperview(edges: .top, safeArea: true)
+        sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        
         let profilePictureView = FLAnimatedImageView().constrainToSize(120)
-        let sendToLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground }
         
-        let messageDescLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         
-        let sendButton = LargeGradientIconButton(title: "Send", icon: UIImage(named: "feedZapFilled")?.withTintColor(.white))
+        let sendButton = LargeGradientIconButton(title: "Send", icon: UIImage(named: "feedZapFilled")?.withTintColor(.white)).constrainToSize(height: 56)
         
         let stack = UIStackView(axis: .vertical, [
-            profilePictureView, SpacerView(height: 16),
-            sendToLabel, SpacerView(height: 8), nipLabel, SpacerView(height: 32),
-            BitcoinInputParentView(input), SpacerView(height: 64),
-            messageDescLabel, SpacerView(height: 10),
-            messageParent, SpacerView(height: 44),
+            profilePictureView, SpacerView(height: 12),
+            nipLabel, SpacerView(height: 32),
+            input, SpacerView(height: 32),
+            messageParent, SpacerView(height: 44), UIView(),
             sendButton
         ])
         
@@ -75,9 +81,16 @@ private extension WalletSendViewController {
         
         messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .vertical, padding: 8)
         messageInput.font = .appFont(withSize: 16, weight: .regular)
-        messageInput.textColor = .foreground
         messageInput.backgroundColor = .clear
-        messageInput.delegate = self
+        messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
+        messageInput.mainTextColor = .foreground
+        messageInput.placeholderTextColor = .foreground.withAlphaComponent(0.6)
+        messageInput.didBeginEditing = { [weak self] textView in
+            guard let self else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.scrollView.scrollRectToVisible(textView.convert(textView.frame, to: self.scrollView), animated: true)
+            }
+        }
         
         scrollView.keyboardDismissMode = .interactiveWithAccessory
         view.addSubview(scrollView)
@@ -91,6 +104,8 @@ private extension WalletSendViewController {
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 20)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
         
+        stack.heightAnchor.constraint(greaterThanOrEqualTo: sizingView.heightAnchor, constant: -96).isActive = true
+        
         stack.alignment = .center
         
         profilePictureView.contentMode = .scaleAspectFill
@@ -98,36 +113,57 @@ private extension WalletSendViewController {
         profilePictureView.layer.cornerRadius = 60
         profilePictureView.setUserImage(user)
         
-        messageDescLabel.font = .appFont(withSize: 16, weight: .regular)
-        
-        sendToLabel.text = "sending to:"
-        messageDescLabel.text = "message for \(user.data.firstIdentifier):"
         nipLabel.text = user.data.lud16
         
         sendButton.addAction(.init(handler: { [weak self] _ in
-            self?.send()
+            self?.send(sender: sendButton)
         }), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapView))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
         
         updateTheme()
     }
     
-    func send() {
+    @objc func didTapView() {
+        input.resignFirstResponder()
+        messageInput.resignFirstResponder()
+    }
+    
+    func send(sender: MyButton) {
         Task { @MainActor in
+            
+            let amount = input.balance
+            
+            if amount < 1 {
+                input.becomeFirstResponder()
+                return
+            }
+            
+            sender.isEnabled = false
+            
+            let spinnerVC = WalletSpinnerViewController(sats: amount, address: user.data.lud16)
+            self.navigationController?.pushViewController(spinnerVC, animated: true)
+            
             do {
-                let amount = input.balance
                 try await WalletManager.instance.send(
                     user: user.data,
-                    amount: amount.satsToBitcoinString(),
+                    sats: amount,
                     note: messageInput.text ?? ""
                 )
                 
-                self.present(WalletTransferSummaryController(.success(amount: amount, address: user.data.lud16)), animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: self.user.data.lud16)), animated: true) {
+                    self.navigationController?.popToViewController(self, animated: false)
                     self.navigationController?.viewControllers.remove(object: self)
                 }
             } catch {
-                self.present(WalletTransferSummaryController(.failure(error)), animated: true)
+                spinnerVC.present(WalletTransferSummaryController(.failure(error)), animated: true) {
+                    self.navigationController?.popToViewController(self, animated: false)
+                }
             }
+            
+            sender.isEnabled = true
         }
     }
 }
@@ -147,11 +183,12 @@ final class BitcoinInputParentView: UIStackView {
         addArrangedSubview(input)
         
         amountDescLabel.font = .appFont(withSize: 16, weight: .regular)
+        amountDescLabel.text = "amount"
         
-        input.$isBitcoinPrimary.sink { [weak self] isBitcoin in
-            self?.amountDescLabel.text = isBitcoin ? "amount: (sats)" : "amount: (USD)"
-        }
-        .store(in: &cancellables)
+//        input.$isBitcoinPrimary.sink { [weak self] isBitcoin in
+//            self?.amountDescLabel.text = isBitcoin ? "amount: (sats)" : "amount: (USD)"
+//        }
+//        .store(in: &cancellables)
     }
     
     required init(coder: NSCoder) {

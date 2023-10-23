@@ -46,7 +46,7 @@ final class PopupZapSelectionViewController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(userToZap: PrimalUser, _ callback: @escaping (Int) -> Void) {
+    init(userToZap: PrimalUser, _ callback: @escaping (Int, String) -> Void) {
         self.userToZap = userToZap
         super.init(nibName: nil, bundle: nil)
         
@@ -62,7 +62,7 @@ final class PopupZapSelectionViewController: UIViewController {
         zapButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             self.dismiss(animated: true) { 
-                callback(self.zapOptions[safe: self.selectedOptionIndex] ?? 0)
+                callback(self.zapOptions[safe: self.selectedOptionIndex] ?? 0, self.inputField.text ?? "")
             }
         }), for: .touchUpInside)
     }
@@ -101,7 +101,7 @@ private extension PopupZapSelectionViewController {
     }
     
     func setup() {
-        view.backgroundColor = .background2
+        view.backgroundColor = .background4
         if let pc = presentationController as? UISheetPresentationController {
             if #available(iOS 16.0, *) {
                 pc.detents = [.custom(resolver: { _ in 580 })]
@@ -160,6 +160,7 @@ private extension PopupZapSelectionViewController {
         ])
         inputField.font = .appFont(withSize: 16, weight: .regular)
         inputField.textColor = .foreground
+        inputField.delegate = self
         
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
@@ -167,3 +168,9 @@ private extension PopupZapSelectionViewController {
     }
 }
 
+extension PopupZapSelectionViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
+    }
+}

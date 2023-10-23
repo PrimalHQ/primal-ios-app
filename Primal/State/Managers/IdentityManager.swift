@@ -405,6 +405,22 @@ final class IdentityManager {
         }
     }
     
+    func updateProfile(_ data: Profile, callback: @escaping (Bool) -> Void) {
+        guard let metadata_ev = NostrObject.metadata(data) else {
+            callback(false)
+            return
+        }
+        
+        RelaysPostbox.instance.connect(bootstrap_relays)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
+                callback(true)
+            }, errorHandler: {
+                callback(false)
+            })
+        }
+    }
+    
     private func handleDeletedAccount() {
         let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .destructive) { _ in

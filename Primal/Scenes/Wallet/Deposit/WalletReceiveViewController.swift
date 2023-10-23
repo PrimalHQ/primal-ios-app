@@ -41,10 +41,12 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         requestInfo()
+        
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = backButtonWithColor(.foreground)
+        navigationItem.leftBarButtonItem = customBackButton
         
         [ludLabel, descLabel].forEach { $0.textColor = .foreground }
         
@@ -144,34 +146,39 @@ private extension WalletReceiveViewController {
         descLabel.numberOfLines = 3
         
         let actionStack = UIStackView([
-            actionButton(text: "COPY", action: { [weak self] in
+            WalletActionButton(text: "COPY", action: { [weak self] in
                 guard let lnurl = self?.depositInfo?.lnurl else { return }
                 UIPasteboard.general.string = lnurl
-                self?.view.showToast("Copied!")
+                self?.view.showToast("Copied!", extraPadding: false)
             }),
-            actionButton(text: "ADD DETAILS", action: { [weak self] in
+            WalletActionButton(text: "ADD DETAILS", action: { [weak self] in
                 self?.show(WalletReceiveDetailsController(details: self?.additionalInfo ?? .init(satoshi: 0, description: ""), delegate: self), sender: nil)
             })
         ]).constrainToSize(height: 60)
         actionStack.spacing = 18
         actionStack.distribution = .fillEqually
         
+        let ludDescLabel = descLabel("Receiving to:")
+        
         [
-            parentParent,
-            amountParent,               SpacerView(height: 10),
-            descLabel("Receiving to:"), SpacerView(height: 4),
-            ludLabel,                   SpacerView(height: 28),
-            descDescLabel, descLabel,   SpacerView(height: 28),
-            actionStack,
+            SpacerView(height: 30),
+            parentParent,               SpacerView(height: 18), SpacerView(height: 8, priority: .required),
+            amountParent,               SpacerView(height: 26),
+            ludDescLabel,               SpacerView(height: 4, priority: .required),
+            ludLabel,                   SpacerView(height: 20), SpacerView(height: 8, priority: .required),
+            descDescLabel, descLabel,   SpacerView(height: 20), SpacerView(height: 8, priority: .required),
+            actionStack,                SpacerView(height: 30, priority: .required),
             UIView()
         ].forEach { mainStack.addArrangedSubview($0) }
         
-        mainStack.setCustomSpacing(26, after: parentParent)
-        mainStack.setCustomSpacing(16, after: amountParent)
         mainStack.setCustomSpacing(4, after: descDescLabel)
         
+        [descDescLabel, descLabel, ludDescLabel, ludLabel].forEach {
+            $0.setContentCompressionResistancePriority(.required, for: .vertical)
+        }
+        
         view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 30).pinToSuperview(edges: .top, padding: 30, safeArea: true).pinToSuperview(edges: .bottom, padding: 86, safeArea: true)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 30).pinToSuperview(edges: .vertical, safeArea: true)
         
         view.addSubview(loadingIndicator)
         loadingIndicator.centerToSuperview().constrainToSize(70)
@@ -180,27 +187,35 @@ private extension WalletReceiveViewController {
         loadingIndicator.play()
     }
     
-    func actionButton(text: String, action: @escaping () -> Void) -> UIButton {
-        let button = ThemeableButton().setTheme {
-            $0.setTitleColor(.foreground, for: .normal)
-            $0.backgroundColor = .background3
-        }
-        
-        button.layer.cornerRadius = 12
-        button.titleLabel?.font = .appFont(withSize: 16, weight: .semibold)
-        button.setTitle(text, for: .normal)
-        button.addAction(.init(handler: { _ in
-            action()
-        }), for: .touchUpInside)
-        
-        return button
-    }
-    
     func descLabel(_ text: String) -> UILabel {
         let descLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         descLabel.font = .appFont(withSize: 18, weight: .regular)
         descLabel.textAlignment = .center
         descLabel.text = text
         return descLabel
+    }
+}
+
+final class WalletActionButton: UIButton, Themeable {
+    init(text: String, action: @escaping () -> Void) {
+        super.init(frame: .zero)
+        
+        updateTheme()
+        layer.cornerRadius = 12
+        titleLabel?.font = .appFont(withSize: 16, weight: .semibold)
+        setTitle(text, for: .normal)
+        addAction(.init(handler: { _ in
+            action()
+        }), for: .touchUpInside)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    func updateTheme() {
+        setTitleColor(.foreground, for: .normal)
+        backgroundColor = .background3
     }
 }

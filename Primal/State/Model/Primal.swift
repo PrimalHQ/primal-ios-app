@@ -312,6 +312,20 @@ extension PrimalUser {
             deleted: false
         )
     }()
+    
+    var profileData: Profile {
+        Profile(
+            name: name,
+            display_name: displayName,
+            about: about,
+            picture: picture,
+            banner: banner,
+            website: website,
+            lud06: lud06,
+            lud16: lud16,
+            nip05: nip05
+        )
+    }
 }
 
 extension PrimalFeedPost {

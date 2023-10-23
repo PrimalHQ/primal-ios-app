@@ -11,6 +11,7 @@ import UIKit
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case info
+        case activateWallet
         case buySats
         case transaction((WalletTransaction, ParsedUser))
     }
@@ -69,6 +70,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
         
         WalletManager.instance.refreshBalance()
         WalletManager.instance.loadNewTransactions()
+        
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -85,6 +89,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
                     WalletManager.instance.balance = sats
                 }
             }
+        
+        WalletManager.instance.refreshBalance()
+        WalletManager.instance.loadNewTransactions()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -95,17 +102,15 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-//        let button = UIButton()
-//        button.setImage(UIImage(named: "settingsIcon")?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        button.tintColor = .foreground3
-//        button.addAction(.init(handler: { [weak self] _ in
-//            self?.show(SettingsWalletViewController(), sender: nil)
-//        }), for: .touchUpInside)
-//        navigationItem.rightBarButtonItem = .init(customView: button)
-        
         view.backgroundColor = .background
         table.backgroundColor = .background
         table.reloadData()
+        
+        let button = UIButton()
+        button.setImage(UIImage(named: "buySats"), for: .normal)
+        button.tintColor = .foreground3
+        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 }
 
@@ -116,6 +121,13 @@ extension WalletHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableData[indexPath.section].cells[indexPath.row] {
+        case .activateWallet:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "activateWallet", for: indexPath)
+            if let cell = cell as? ActivateWalletCell {
+                cell.updateTheme()
+                cell.delegate = self
+            }
+            return cell
         case .buySats:
             let cell = tableView.dequeueReusableCell(withIdentifier: "buySats", for: indexPath)
             if let cell = cell as? BuySatsCell {
@@ -132,11 +144,18 @@ extension WalletHomeViewController: UITableViewDataSource {
                 updateIsBitcoin = cell.balanceConversionView.$isBitcoinPrimary.sink(receiveValue: { [weak self] isBitcoinPrimary in
                     self?.isBitcoinPrimary = isBitcoinPrimary
                 })
+                
+                cell.contentView.alpha = WalletManager.instance.userHasWallet ? 1 : 0.5
+                cell.contentView.isUserInteractionEnabled = WalletManager.instance.userHasWallet
             }
             return cell
         case .transaction(let transaction):
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-            (cell as? TransactionCell)?.setup(with: transaction, showBTC: isBitcoinPrimary)
+            
+            if let cell = cell as? TransactionCell {
+                cell.setup(with: transaction, showBTC: isBitcoinPrimary)
+                cell.delegate = self
+            }
             
             if indexPath.section >= tableData.count - 1 {
                 WalletManager.instance.loadMoreTransactions()
@@ -144,6 +163,18 @@ extension WalletHomeViewController: UITableViewDataSource {
             
             return cell
         }
+    }
+}
+
+extension WalletHomeViewController: TransactionCellDelegate {
+    func transactionCellDidTapAvatar(_ cell: TransactionCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            case let .transaction((_, user)) = tableData[indexPath.section].cells[indexPath.row],
+            user.data.pubkey != IdentityManager.instance.userHexPubkey
+        else { return }
+        
+        show(ProfileViewController(profile: user), sender: nil)
     }
 }
 
@@ -158,11 +189,28 @@ extension WalletHomeViewController: UITableViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         isShowingNavBar = scrollView.contentOffset.y > 190
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch tableData[indexPath.section].cells[indexPath.row] {
+        case .info:
+            break
+        case .buySats:
+            buySatsPressed()
+        case .transaction((_, _)):
+            break
+        case .activateWallet:
+            activateWalletPressed()
+        }
+    }
 }
 
-extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate {
+extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate, ActivateWalletCellDelegate {
+    func activateWalletPressed() {
+        show(WalletActivateViewController(), sender: nil)
+    }
+    
     func buySatsPressed() {
-        show(WalletInAppPurchaseController(), sender: nil)
+        present(WalletInAppPurchaseController(), animated: true)
     }
     
     func receiveButtonPressed() {
@@ -197,6 +245,7 @@ private extension WalletHomeViewController {
         table.register(WalletInfoCell.self, forCellReuseIdentifier: "info")
         table.register(TransactionHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
+        table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
@@ -207,23 +256,28 @@ private extension WalletHomeViewController {
         
         updateTheme()
         
-        WalletManager.instance.$parsedTransactions.receive(on: DispatchQueue.main).sink { [weak self] transactions in
-            let grouping = Dictionary(grouping: transactions) {
-                Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
+        Publishers.CombineLatest(WalletManager.instance.$userHasWallet, WalletManager.instance.$parsedTransactions)
+            .receive(on: DispatchQueue.main).sink { [weak self] hasWallet, transactions in
+                let grouping = Dictionary(grouping: transactions) {
+                    Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
+                }
+                
+                self?.table.refreshControl?.endRefreshing()
+                var firstSection = Section(cells: [.info])
+                if hasWallet {
+                    if WalletManager.instance.balance < 1000 {
+                        firstSection.cells += [.buySats]
+                    }
+                } else {
+                    firstSection.cells += [.activateWallet]
+                }
+                
+                self?.tableData = [firstSection] + grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
+                    let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
+                    return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
+                }
             }
-            
-            self?.table.refreshControl?.endRefreshing()
-            var firstSection = Section(cells: [.info])
-            if WalletManager.instance.balance < 500000 {
-                firstSection.cells += [.buySats]
-            }
-            
-            self?.tableData = [firstSection] + grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
-                let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
-                return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
-            }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
         
         navBar.receive.addAction(.init(handler: { [weak self] _ in
             self?.receiveButtonPressed()
@@ -234,6 +288,7 @@ private extension WalletHomeViewController {
         navBar.scan.addAction(.init(handler: { [weak self] _ in
             self?.scanButtonPressed()
         }), for: .touchUpInside)
+        
         navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
             self?.isBitcoinPrimary = isBitcoinPrimary
         }

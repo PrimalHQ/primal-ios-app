@@ -30,22 +30,21 @@ final class WalletInfoCell: UITableViewCell, Themeable{
         
         let balanceParent = UIView()
         balanceParent.addSubview(balanceConversionView)
-        balanceConversionView.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom).pinToSuperview(edges: .top, padding: -10)
+        balanceConversionView.pinToSuperview(edges: .bottom).pinToSuperview(edges: .top, padding: -10)
+        balanceConversionView.largeAmountLabel.centerToView(balanceParent, axis: .horizontal)
         
         let send = LargeWalletButton(.send)
         let receive = LargeWalletButton(.receive)
         let scan = LargeWalletButton(.scan)
+               
         let hstack = UIStackView([send, scan, receive])
-        hstack.spacing = 8
+        hstack.spacing = 24
+        let centerHStack = UIStackView(axis: .vertical, [hstack])
+        centerHStack.alignment = .center
         
-        let stack = UIStackView(axis: .vertical, [balanceParent, SpacerView(height: 40), hstack, SpacerView(height: 18)])
+        let stack = UIStackView(axis: .vertical, [balanceParent, SpacerView(height: 40), centerHStack, SpacerView(height: 18)])
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
-        
-        WalletManager.instance.$balance.receive(on: DispatchQueue.main).sink { [weak self] balance in
-            self?.balanceConversionView.balance = balance
-        }
-        .store(in: &cancellables)
         
         send.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.sendButtonPressed()

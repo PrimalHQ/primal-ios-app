@@ -17,7 +17,22 @@ final class WalletQRCodeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera], mediaType: AVMediaType.video, position: .back)
+        let image = UIImageView(image: UIImage(named: "qrCodeMask"))
+        view.addSubview(image)
+        image.pinToSuperview()
+        image.contentMode = .scaleAspectFill
+        
+        let cancelButton = UIButton()
+        cancelButton.setImage(UIImage(named: "cancelScan"), for: .normal)
+        cancelButton.addAction(.init(handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }), for: .touchUpInside)
+        view.addSubview(cancelButton)
+        cancelButton.pinToSuperview(edges: .bottom, padding: 30, safeArea: true).centerToSuperview(axis: .horizontal)
+        
+        view.backgroundColor = .background
+        
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInDualWideCamera], mediaType: AVMediaType.video, position: .back)
 
         guard let captureDevice = deviceDiscoverySession.devices.first else {
             print("Failed to get the camera device")
@@ -25,19 +40,13 @@ final class WalletQRCodeViewController: UIViewController {
         }
 
         do {
-            // Get an instance of the AVCaptureDeviceInput class using the previous device object.
             let input = try AVCaptureDeviceInput(device: captureDevice)
-
-            // Set the input device on the capture session.
             captureSession.addInput(input)
-
         } catch {
-            // If any error occurs, simply print it out and don't continue any more.
             print(error)
             return
         }
         
-        // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
         let captureMetadataOutput = AVCaptureMetadataOutput()
         captureSession.addOutput(captureMetadataOutput)
 
@@ -47,14 +56,7 @@ final class WalletQRCodeViewController: UIViewController {
         let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer.frame = view.layer.bounds
-        view.layer.addSublayer(videoPreviewLayer)
-        
-        let image = UIImageView(image: UIImage(named: "qrCodeMask"))
-        view.addSubview(image)
-        image.pinToSuperview()
-        image.contentMode = .scaleAspectFill
-        
-        view.backgroundColor = .background
+        view.layer.insertSublayer(videoPreviewLayer, at: 0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,5 +77,5 @@ final class WalletQRCodeViewController: UIViewController {
 }
 
 extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
-
+    
 }

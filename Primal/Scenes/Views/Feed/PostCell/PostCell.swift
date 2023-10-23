@@ -269,12 +269,12 @@ private extension PostCell {
     }
     
     @objc func zapTapped() {
-//        delegate?.postCellDidTapZap(self)
+        delegate?.postCellDidTapZap(self)
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
         guard case .began = recognizer.state else { return }
-//        delegate?.postCellDidLongTapZap(self)
+        delegate?.postCellDidLongTapZap(self)
     }
     
     @objc func linkPreviewTapped() {

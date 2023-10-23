@@ -47,30 +47,28 @@ class LargeWalletButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        titleLabel.textColor = .foreground
+        titleLabel.textColor = .foreground4
         iconView.tintColor = .foreground
-        
-        backgroundColor = .background3
     }
 }
 
 private extension LargeWalletButton {
     func setup() {
-        let vStack = UIStackView(axis: .vertical, [iconView, titleLabel])
+        let iconParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
+        iconParent.addSubview(iconView)
+        iconView.centerToSuperview()
+        iconParent.constrainToSize(80)
+        iconParent.layer.cornerRadius = 40
+        
+        let vStack = UIStackView(axis: .vertical, [iconParent, titleLabel])
         vStack.alignment = .center
         vStack.spacing = 14
         
         addSubview(vStack)
-        vStack.centerToSuperview(axis: .horizontal)
-        vStack.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: 7).isActive = true
+        vStack.pinToSuperview()
         
-        titleLabel.font = .appFont(withSize: 16, weight: .semibold)
-        layer.cornerRadius = 12
+        titleLabel.font = .appFont(withSize: 14, weight: .semibold)
         
         updateTheme()
-        
-        let heightConstraint = heightAnchor.constraint(equalTo: widthAnchor, multiplier: 1)
-        heightConstraint.priority = .defaultLow
-        heightConstraint.isActive = true
     }
 }

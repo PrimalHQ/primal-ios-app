@@ -33,20 +33,17 @@ final class WalletPickUserController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.transform = .identity
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        
         searchInput.becomeFirstResponder()
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = backButtonWithColor(.foreground)
+        navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
         
         searchBackground.backgroundColor = .background3

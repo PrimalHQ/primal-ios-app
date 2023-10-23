@@ -46,6 +46,16 @@ final class LargeBalanceConversionInputView: UIStackView, Themeable {
         
         accessoryView.updateTheme()
     }
+    
+    @discardableResult override func becomeFirstResponder() -> Bool {
+        return amountInput.becomeFirstResponder()
+    }
+    
+    @discardableResult override func resignFirstResponder() -> Bool {
+        return amountInput.resignFirstResponder()
+    }
+    
+    override var isFirstResponder: Bool { amountInput.isFirstResponder }
 }
 
 extension LargeBalanceConversionInputView: UITextFieldDelegate {
@@ -123,7 +133,7 @@ private extension LargeBalanceConversionInputView {
         currencyParent.addSubview(largeCurrencyLabel)
         largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: 8).pinToSuperview(edges: .horizontal)
         
-        let primaryRow = UIStackView([dollarParent, amountInput, currencyParent])
+        let primaryRow = UIStackView([UIView(), dollarParent, amountInput, currencyParent, UIView()])
         primaryRow.spacing = 6
         
         let secondaryRow = UIStackView([smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }])
@@ -133,6 +143,9 @@ private extension LargeBalanceConversionInputView {
         
         addArrangedSubview(primaryRow)
         addArrangedSubview(secondaryRow)
+        
+        primaryRow.pinToSuperview(edges: .horizontal, padding: -6)
+        amountInput.centerToView(self, axis: .horizontal)
         
         axis = .vertical
         spacing = 2

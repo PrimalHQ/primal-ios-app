@@ -10,6 +10,7 @@ import UIKit
 protocol ProfileInfoCellDelegate: AnyObject {
     func npubPressed()
     func followPressed(in cell: ProfileInfoCell)
+    func zapPressed()
     func editProfilePressed()
 }
 
@@ -132,6 +133,9 @@ private extension ProfileInfoCell {
         unfollowButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
         editProfile.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.editProfilePressed()
+        }), for: .touchUpInside)
+        zapButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.zapPressed()
         }), for: .touchUpInside)
     }
     

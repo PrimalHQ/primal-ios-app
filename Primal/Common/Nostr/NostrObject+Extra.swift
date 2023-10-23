@@ -140,6 +140,20 @@ extension NostrObject {
     static func wallet(_ content: String) -> NostrObject? {
         createNostrObject(content: content, kind: 10_000_300)
     }
+    
+    static func zapWallet(_ note: String, sats: Int, post: ParsedContent) -> NostrObject? {
+        var tags: [[String]] = [
+            ["p", post.user.data.pubkey],
+            ["e", post.post.id],
+            ["amount", "\(sats)000"]
+        ]
+        
+        if let relays = IdentityManager.instance.userRelays?.keys, !relays.isEmpty {
+            tags.append(["relays"] + Array(relays))
+        }
+        
+        return createNostrObject(content: note, kind: 9734, tags: tags)
+    }
 }
 
 fileprivate let jsonEncoder = JSONEncoder()

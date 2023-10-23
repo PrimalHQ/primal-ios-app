@@ -22,7 +22,7 @@ extension UIViewController {
         }
     }
     
-    var customBackButton: UIBarButtonItem { backButtonWithColor(.accent2) }
+    var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
     
     var customRedBackButton: UIBarButtonItem { backButtonWithImage(SunriseWave.instance.backButtonImage) }
     

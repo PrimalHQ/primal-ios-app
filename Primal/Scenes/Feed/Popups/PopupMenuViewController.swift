@@ -9,6 +9,17 @@ import UIKit
 
 final class PopupMenuViewController: UIViewController {
     private var actions: [UIAction] = []
+    private let message: String?
+    
+    init(message: String? = nil, actions: [UIAction] = []) {
+        self.actions = actions
+        self.message = message
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func addAction(_ action: UIAction) {
         actions.append(action)
@@ -23,13 +34,19 @@ final class PopupMenuViewController: UIViewController {
 
 private extension PopupMenuViewController {
     func setup() {
-        view.backgroundColor = .background2
+        view.backgroundColor = .background4
+        let messageLabel = UILabel()
         if let pc = presentationController as? UISheetPresentationController {
-            if #available(iOS 16.0, *) {
-                pc.detents = [.custom(resolver: { _ in 285 })]
-            } else {
-                pc.detents = [.medium()]
-            }
+            pc.detents = [
+                .custom(resolver: { [weak self] _ in
+                    guard let self else { return 285 }
+                    let buttonsCount = CGFloat(self.actions.count)
+                    let buttonHeight = buttonsCount * 24
+                    let buttonSpace = buttonsCount > 1.1 ? (buttonsCount - 1) * 32 : 0
+                    
+                    return 80 + buttonHeight + buttonSpace + 84 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
+                })
+            ]
         }
         
         let pullBarParent = UIView()
@@ -64,6 +81,16 @@ private extension PopupMenuViewController {
         
         let buttonStack = UIStackView(arrangedSubviews: buttons)
         let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 42), buttonStack, SpacerView(height: 42)])
+        
+        if let message {
+            messageLabel.text = message
+            messageLabel.font = .appFont(withSize: 18, weight: .medium)
+            messageLabel.textColor = .foreground
+            messageLabel.textAlignment = .center
+            messageLabel.numberOfLines = 0
+            stack.insertArrangedSubview(messageLabel, at: 1)
+            stack.insertArrangedSubview(SpacerView(height: 8), at: 1)
+        }
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)

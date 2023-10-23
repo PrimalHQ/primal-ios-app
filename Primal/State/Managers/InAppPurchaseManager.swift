@@ -55,18 +55,11 @@ final class InAppPurchaseManager: NSObject {
     }
     
     func fetchAvailableProducts(completion: @escaping (([SKProduct])->Void)){
-//        fetchProductCompletion = completion
-
-        // mock success
-        let product = SKProduct()
-        product.setValue("5USDSATS", forKey: "productIdentifier")
-        product.setValue(5, forKey: "price")
-        product.setValue(Locale(identifier: "en-US"), forKey: "priceLocale")
-        completion([product])
+        fetchProductCompletion = completion
                 
-//        productsRequest = SKProductsRequest(productIdentifiers: productIds)
-//        productsRequest.delegate = self
-//        productsRequest.start()
+        productsRequest = SKProductsRequest(productIdentifiers: productIds)
+        productsRequest.delegate = self
+        productsRequest.start()
     }
 }
 
@@ -75,10 +68,10 @@ extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionO
         for invalidIdentifier in response.invalidProductIdentifiers {
             print("Invalid identifier: \(invalidIdentifier)")
         }
-
-        guard response.products.count > 0 else { return }
         
-        fetchProductCompletion?(response.products)
+        DispatchQueue.main.async {
+            self.fetchProductCompletion?(response.products)
+        }
     }
     
     func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
@@ -86,13 +79,18 @@ extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionO
             switch transaction.transactionState {
             case .purchased:
                 SKPaymentQueue.default().finishTransaction(transaction)
-                purchaseProductCompletion?(IAPHandlerAlertType.purchased, productToPurchase, transaction)
+                
+                DispatchQueue.main.async {
+                    self.purchaseProductCompletion?(IAPHandlerAlertType.purchased, self.productToPurchase, transaction)
+                }
             case .failed:
                 SKPaymentQueue.default().finishTransaction(transaction)
-                purchaseProductCompletion?(IAPHandlerAlertType.failed, productToPurchase, transaction)
-            case .restored:
-                SKPaymentQueue.default().finishTransaction(transaction)
-            default: break
+                
+                DispatchQueue.main.async {
+                    self.purchaseProductCompletion?(IAPHandlerAlertType.failed, self.productToPurchase, transaction)
+                }
+            default:
+                break
             }
         }
     }

@@ -11,6 +11,7 @@ final class WalletTransferSummaryController: UIViewController {
     enum State {
         case success(amount: Int, address: String)
         case failure(Error)
+        case walletActivated(newAddress: String)
     }
     
     init(_ state: State) {
@@ -64,7 +65,7 @@ private extension WalletTransferSummaryController {
         navTitle.font = .appFont(withSize: 20, weight: .semibold)
         title.font = .appFont(withSize: 24, weight: .semibold)
         subtitle.font = .appFont(withSize: 18, weight: .regular)
-        subtitle.numberOfLines = 2
+        subtitle.numberOfLines = 4
         subtitle.textAlignment = .center
         
         close.layer.cornerRadius = 8
@@ -75,6 +76,27 @@ private extension WalletTransferSummaryController {
         }), for: .touchUpInside)
         
         switch state {
+        case .walletActivated(let newAddress):
+            icon.image = UIImage(named: "successWallet")
+            
+            navTitle.text = "Success"
+            title.text = "Your wallet has been activated.\nYour wallet lightning address is:"
+            title.numberOfLines = 0
+            title.textAlignment = .center
+                        
+            subtitle.text = newAddress
+            
+            close.setTitleColor(.white, for: .normal)
+            [title, subtitle, navTitle].forEach {
+                $0.textColor = .white
+            }
+            
+            title.font = .appFont(withSize: 20, weight: .regular)
+            subtitle.font = .appFont(withSize: 20, weight: .semibold)
+            
+            close.backgroundColor = UIColor(rgb: 0x0E8A40)
+            
+            view.backgroundColor = .receiveMoney
         case .success(amount: let amount, address: let address):
             icon.image = UIImage(named: "successWallet")
             

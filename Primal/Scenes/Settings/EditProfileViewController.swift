@@ -293,44 +293,39 @@ private extension EditProfileViewController {
         let profile = self.profile
         let data: Profile = accountData
         
-        guard let metadata_ev = NostrObject.metadata(data) else {
-            self.showErrorMessage("Unable to create a new nostr metadata object")
-            return
-        }
-        
-        RelaysPostbox.instance.connect(bootstrap_relays)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            
-            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-                if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
-                    
-                    let newProfile = PrimalUser(
-                        id: profile.id,
-                        pubkey: profile.pubkey,
-                        npub: profile.npub,
-                        name: data.name ?? profile.name,
-                        about: data.about ?? profile.about,
-                        picture: data.picture ?? profile.picture,
-                        nip05: data.nip05 ?? profile.nip05,
-                        banner: data.banner ?? profile.banner,
-                        displayName: data.display_name ?? profile.displayName,
-                        location: profile.location,
-                        lud06: data.lud06 ?? profile.lud06,
-                        lud16: data.lud16 ?? profile.lud16,
-                        website: data.website ?? profile.website,
-                        tags: metadata_ev.tags,
-                        created_at: Double(metadata_ev.created_at),
-                        sig: metadata_ev.sig,
-                        deleted: profile.deleted ?? false
-                    )
-                    
-                    profileVC.profile = .init(data: newProfile)
-                }
-            }, errorHandler: { [weak self] in
+        IdentityManager.instance.updateProfile(data) { [weak self] in
+            guard $0 else {
                 self?.nextButton.isEnabled = true
-                self?.nextButton.setTitle("Save Profile", for: .normal)
-            })
+                self?.nextButton.setTitle("Save Profile", for: .normal)                
+                return
+            }
+            
+            if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
+                
+                let newProfile = PrimalUser(
+                    id: profile.id,
+                    pubkey: profile.pubkey,
+                    npub: profile.npub,
+                    name: data.name ?? profile.name,
+                    about: data.about ?? profile.about,
+                    picture: data.picture ?? profile.picture,
+                    nip05: data.nip05 ?? profile.nip05,
+                    banner: data.banner ?? profile.banner,
+                    displayName: data.display_name ?? profile.displayName,
+                    location: profile.location,
+                    lud06: data.lud06 ?? profile.lud06,
+                    lud16: data.lud16 ?? profile.lud16,
+                    website: data.website ?? profile.website,
+                    tags: profile.tags,
+                    created_at: profile.created_at,
+                    sig: profile.sig,
+                    deleted: profile.deleted ?? false
+                )
+                
+                profileVC.profile = .init(data: newProfile)
+            }
+            
+            self?.navigationController?.popViewController(animated: true)
         }
     }
 }

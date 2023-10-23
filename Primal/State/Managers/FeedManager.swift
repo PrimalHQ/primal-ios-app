@@ -24,6 +24,7 @@ final class FeedManager {
     @Published var currentFeed: PrimalSettingsFeed?
     var profilePubkey: String?
     var didReachEnd = false
+    var search: String?
     
     var muteObserver: AnyObject?
     
@@ -39,6 +40,7 @@ final class FeedManager {
     }
     
     init(search: String) {
+        self.search = search
         currentFeed = .init(name: "Search: \(search)", hex: "search;\(search)")
         initPostsEmitterSubscription()
         refresh()
@@ -252,16 +254,21 @@ final class FeedManager {
             return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
         }()
         
+        var payload: [String: JSON] = [
+            "directive": .string(feed.hex),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "limit": .number(Double(limit)),
+            "until": .number(until.rounded())
+        ]
+        
+        if feed.includeReplies == true {
+            payload["include_replies"] = .bool(feed.includeReplies ?? false)
+        }
+        
         return .object([
             "cache": .array([
                 .string("feed_directive"),
-                .object([
-                    "directive": .string(feed.hex),
-                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                    "limit": .number(Double(limit)),
-                    "until": .number(until.rounded()),
-                    "include_replies": .bool(feed.includeReplies ?? false)
-                ])
+                .object(payload)
             ])
         ])
     }

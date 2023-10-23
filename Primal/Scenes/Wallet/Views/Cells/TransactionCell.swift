@@ -13,6 +13,10 @@ extension UIColor {
     static var sendMoney = UIColor(rgb: 0xCC331E)
 }
 
+protocol TransactionCellDelegate: AnyObject {
+    func transactionCellDidTapAvatar(_ cell: TransactionCell)
+}
+
 final class TransactionCell: UITableViewCell, Themeable {
     
     private let profileImage = FLAnimatedImageView().constrainToSize(36)
@@ -27,6 +31,8 @@ final class TransactionCell: UITableViewCell, Themeable {
     
     private let arrowIcon = UIImageView(image: UIImage(named: "income"))
     
+    weak var delegate: TransactionCellDelegate?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -37,23 +43,29 @@ final class TransactionCell: UITableViewCell, Themeable {
     }
  
     func setup(with transaction: (WalletTransaction, ParsedUser), showBTC: Bool) {
-        profileImage.setUserImage(transaction.1)
-        nameLabel.text = (transaction.1).data.firstIdentifier
-        timeLabel.text = Date(timeIntervalSince1970: TimeInterval(transaction.0.created_at)).timeAgoDisplay()
-        
         let isDeposit = transaction.0.type == "DEPOSIT"
+        
+        if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
+            profileImage.setUserImage(transaction.1)
+            nameLabel.text = (transaction.1).data.firstIdentifier
+        } else {
+            profileImage.image = UIImage(named: "nonZapPayment")
+            nameLabel.text = isDeposit ? "Received" : "Sent"
+        }
+        
+        timeLabel.text = Date(timeIntervalSince1970: TimeInterval(transaction.0.created_at)).timeAgoDisplay()
         
         arrowIcon.transform = isDeposit ? .identity : .init(rotationAngle: .pi)
         arrowIcon.tintColor = isDeposit ? .receiveMoney : .sendMoney
         
-        if transaction.0.note?.isEmpty == false {
+        let isEmpty = !(transaction.0.note?.isEmpty == false)
+        switch (isEmpty, transaction.0.is_zap) {
+        case (false, _):
             messageLabel.text = transaction.0.note
-        } else {
-            if transaction.0.is_zap {
-                messageLabel.text = isDeposit ? "Zap received" : "Zap sent"
-            } else {
-                messageLabel.text = isDeposit ? "Payment received" : "Payment sent"
-            }
+        case (true, true):
+            messageLabel.text = isDeposit ? "Zap received" : "Zap sent"
+        case (true, false):
+            messageLabel.text = isDeposit ? "Payment received" : "Payment sent"
         }
         
         let btcAmount = (Double(transaction.0.amount_btc) ?? 0)
@@ -68,6 +80,9 @@ final class TransactionCell: UITableViewCell, Themeable {
             amountLabel.text = usdString
             currencyLabel.text = "USD"
         }
+        
+        profileImage.isUserInteractionEnabled = true
+        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         
         updateTheme()
     }
@@ -121,5 +136,9 @@ private extension TransactionCell {
         messageLabel.font = .appFont(withSize: 14, weight: .regular)
         amountLabel.font = .appFont(withSize: 16, weight: .bold)
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
+    }
+    
+    @objc func profileTapped() {
+        delegate?.transactionCellDidTapAvatar(self)
     }
 }

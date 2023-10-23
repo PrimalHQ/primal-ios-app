@@ -6,9 +6,20 @@
 //
 
 import Combine
+import Foundation
 
 enum WalletError: Error {
     case serverError(String)
+    case inAppPurchaseServerError
+    
+    var message: String {
+        switch self {
+        case .serverError(let message):
+            return message
+        case .inAppPurchaseServerError:
+            return "We were not able to send sats to your wallet. Please contact us at support@primal.net and we will assist you."
+        }
+    }
 }
 
 final class WalletManager {
@@ -69,9 +80,13 @@ final class WalletManager {
                     }
                 }
                 
+                if set.isEmpty {
+                    return Just(PostRequestResult()).eraseToAnyPublisher()
+                }
+                
                 return SocketRequest(name: "user_infos", payload: .object([
                     "pubkeys": .array(set.map { .string($0) })
-                ])).publisher()
+                ])).publisher().eraseToAnyPublisher()
             }
             .sink { [weak self] result in
                 guard let self else { return }
@@ -134,11 +149,12 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
-    func send(user: PrimalUser, amount: String, note: String) async throws {
+    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
+        let lud = user.lud16
+        guard !lud.isEmpty else { throw NSError(domain: "no.lud", code: 1) }
+        
         return try await withCheckedThrowingContinuation({ continuation in
-            let lud = user.lud16
-            guard !lud.isEmpty else { return }
-            PrimalWalletRequest(type: .send(target: lud, amount: amount, note: note)).publisher()
+            PrimalWalletRequest(type: .send(target: lud, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
                 .sink { [weak self] res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
@@ -148,7 +164,10 @@ final class WalletManager {
                 }
                 .store(in: &cancellables)
         })
-
+    }
+    
+    func zap(post: ParsedContent, sats: Int, note: String) async throws {
+        try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
     }
 }
 

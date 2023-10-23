@@ -43,6 +43,7 @@ private extension LargeBalanceConversionView {
     func setup() {
         setupLayout()
         updateTheme()
+        updateLabels()
         
         large$Label.text = "$"
         large$Label.font = .appFont(withSize: 28, weight: .medium)

@@ -306,11 +306,39 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidLongTapZap(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row else { return }
         
-        let post = posts[index].post
-        let postUser = posts[index].user.data
+        let parsed = posts[index]
+        let post = parsed.post
+        let postUser = parsed.user.data
         
         guard let lnurl = postUser.lnurl else {
             showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
+            return
+        }
+        
+        if WalletManager.instance.userHasWallet {
+            let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, note in
+                let newZapAmount = post.satszapped + zapAmount
+                
+                self?.animateZap(cell, amount: newZapAmount)
+                
+                Task { @MainActor in
+                    do {
+                        try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: note)
+                    } catch {
+                        self?.showErrorMessage(error.localizedDescription)
+                    }
+                }
+            }
+            present(popup, animated: true)
+            
+            return
+        } else {
+            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
+                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
+                    self?.mainTabBarController?.switchToTab(.wallet)
+                })
+            ])
+            present(popup, animated: true)
             return
         }
         
@@ -320,7 +348,7 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount in
+        let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, _ in
             let newZapAmount = post.satszapped + zapAmount
             
             self?.animateZap(cell, amount: newZapAmount)
@@ -334,12 +362,43 @@ extension FeedViewController: PostCellDelegate {
     
     func postCellDidTapZap(_ cell: PostCell) {
         guard let index = table.indexPath(for: cell)?.row else { return }
-
-        let post = posts[index].post
-        let postUser = posts[index].user.data
+        
+        let parsed = posts[index]
+        let post = parsed.post
+        let postUser = parsed.user.data
              
         guard let lnurl = postUser.lnurl else {
             showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
+            return
+        }
+        
+        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
+        let newZapAmount = post.satszapped + zapAmount
+        
+        if WalletManager.instance.userHasWallet {
+            if WalletManager.instance.balance < zapAmount {
+                present(WalletInAppPurchaseController(), animated: true)
+                return
+            }
+            
+            Task { @MainActor [weak self] in
+                do {
+                    try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: "")
+                } catch let e as WalletError {
+                    self?.showErrorMessage(e.message)
+                } catch {
+                    self?.showErrorMessage(error.localizedDescription)
+                }
+            }
+            animateZap(cell, amount: newZapAmount)
+            return
+        } else {
+            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
+                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
+                    self?.mainTabBarController?.switchToTab(.wallet)
+                })
+            ])
+            present(popup, animated: true)
             return
         }
         
@@ -348,9 +407,6 @@ extension FeedViewController: PostCellDelegate {
             show(walletSettings, sender: nil)
             return
         }
-        
-        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
-        let newZapAmount = post.satszapped + zapAmount
         
         animateZap(cell, amount: newZapAmount)
         

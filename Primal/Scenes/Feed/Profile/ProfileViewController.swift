@@ -278,6 +278,10 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func zapPressed() {
+        show(WalletSendViewController(user: profile), sender: nil)
+    }
+    
     func editProfilePressed() {
         show(EditProfileViewController(profile: profile.data), sender: nil)
     }

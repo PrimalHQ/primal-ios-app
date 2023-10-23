@@ -51,5 +51,8 @@ enum NostrKind: Int {
 }
 
 extension NostrKind {
-    static func fromGenericJSON(_ json: JSON) -> NostrKind? { NostrKind(rawValue: Int(json.arrayValue![2].objectValue!["kind"]!.doubleValue!)) }
+    static func fromGenericJSON(_ json: JSON) -> NostrKind? {
+        guard let kind = json.arrayValue?[2].objectValue?["kind"]?.doubleValue else { return nil }
+        return NostrKind(rawValue: Int(kind))
+    }
 }
