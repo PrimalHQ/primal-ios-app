@@ -22,7 +22,13 @@ enum RelayConnectionError : Error {
 }
 
 final class RelayConnection {
-    private var socket: NWWebSocket?
+    private var socket: NWWebSocket? {
+        didSet {
+            if oldValue !== socket {
+                oldValue?.delegate = nil
+            }
+        }
+    }
     private var socketURL: URL
 
     private var dispatchQueue: DispatchQueue
@@ -31,6 +37,8 @@ final class RelayConnection {
     private var responseBuffer: [String: [JSON]] = [:]
     
     private let jsonDecoder: JSONDecoder = JSONDecoder()
+    
+    private var timeOut: Int = 1
     
     var state: CurrentValueSubject = CurrentValueSubject<RelayConnectionState, RelayConnectionError>(.disconnected)
     var identity: String
@@ -46,6 +54,7 @@ final class RelayConnection {
         socket = nil
     }
 
+    var isWaitingForConnection = false
     func connect() {
         state.send(.connecting)
     
@@ -53,11 +62,22 @@ final class RelayConnection {
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
+        
+        guard !isWaitingForConnection else { return }
+        timeOut *= 2
+        isWaitingForConnection = true
+        print("TIME OUT: \(timeOut)")
+        dispatchQueue.asyncAfter(deadline: .now() + .seconds(max(timeOut, 5))) { [weak self] in
+            guard let self else { return }
+            if case .connected = self.state.value { return }
+            self.isWaitingForConnection = false
+            self.connect()
+        }
     }
     
     func disconnect() {
-        socket?.delegate = nil
         socket?.disconnect()
+        socket?.delegate = nil
         state.send(.disconnected)
     }
     
@@ -125,12 +145,13 @@ extension RelayConnection : Equatable {
 extension RelayConnection : WebSocketConnectionDelegate {
     func webSocketDidConnect(connection: WebSocketConnection) {
         state.send(.connected)
+        timeOut = 1
     }
     
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
         state.send(.disconnected)
         
-        self.dispatchQueue.asyncAfter(deadline: .now() + 3) {
+        self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeOut)) {
             self.connect()
         }
     }
@@ -145,6 +166,11 @@ extension RelayConnection : WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(self.socketURL) - \(error)")
+        state.send(.disconnected)
+        
+        self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeOut)) {
+            self.connect()
+        }
     }
     
     func webSocketDidReceivePong(connection: WebSocketConnection) {

@@ -17,7 +17,21 @@ final class WalletActivateViewController: UIViewController {
     
     private let confirmButton = LargeRoundedButton(title: "Next")
     
-    private var isWaitingForCode = false
+    private var isWaitingForCode = false {
+        didSet {
+            UIView.transition(with: view, duration: 0.3) {
+                self.nameInput.superview?.isHidden = self.isWaitingForCode
+                self.emailInput.superview?.isHidden = self.isWaitingForCode
+                self.codeInput.superview?.isHidden = !self.isWaitingForCode
+                self.nameInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
+                self.emailInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
+                self.codeInput.superview?.alpha = self.isWaitingForCode ? 1 : 0
+                self.descLabel.text = self.isWaitingForCode ? "We emailed your activation code.\nPlease enter it below:" : "To activate your wallet, all we need is your name and email address:"
+                self.confirmButton.title = self.isWaitingForCode ? "Finish" : "Next"
+                self.confirmButton.isEnabled = !self.isWaitingForCode
+            }
+        }
+    }
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -100,26 +114,14 @@ private extension WalletActivateViewController {
             nameInput.resignFirstResponder()
             emailInput.resignFirstResponder()
             
-            UIView.transition(with: view, duration: 0.3) {
-                self.nameInput.superview?.isHidden = true
-                self.emailInput.superview?.isHidden = true
-                self.codeInput.superview?.isHidden = false
-                self.nameInput.superview?.alpha = 0
-                self.emailInput.superview?.alpha = 0
-                self.codeInput.superview?.alpha = 1
-                self.descLabel.text = "We emailed your activation code.\nPlease enter it below:"
-                self.confirmButton.title = "Finish"
-                self.confirmButton.isEnabled = false
-            }
-            
             isWaitingForCode = true
             
             PrimalWalletRequest(type: .activationCode(name: name, email: email)).publisher()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] res in
                     if let error = res.message {
-                        print(error)
-                        self?.showErrorMessage(error.localizedDescription)
+                        self?.isWaitingForCode = false
+                        self?.present(WalletTransferSummaryController(.failure(navTitle: "Error", title: "Activation failed", message: error)), animated: true)
                     }
                 }
                 .store(in: &cancellables)

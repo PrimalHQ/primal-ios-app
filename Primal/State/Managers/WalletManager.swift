@@ -41,7 +41,12 @@ final class WalletManager {
         IdentityManager.instance.$user
             .compactMap { $0?.npub }
             .removeDuplicates()
-            .flatMap { _ in PrimalWalletRequest(type: .isUser).publisher().waitForConnection() }
+            .flatMap { [weak self] _ -> AnyPublisher<WalletRequestResult, Never> in
+                self?.userHasWallet = false
+                self?.balance = 0
+                self?.transactions = []
+                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection()
+            }
             .sink(receiveValue: { [weak self] val in
                 self?.userHasWallet = val.kycLevel == .email || val.kycLevel == .idDocument
             })
@@ -61,10 +66,13 @@ final class WalletManager {
         
         $balance
             .removeDuplicates()
+            .delay(for: .seconds(3), scheduler: RunLoop.main)
             .flatMap { _ in PrimalWalletRequest(type: .transactions()).publisher().waitForConnection() }
             .sink(receiveValue: { [weak self] val in
-                self?.transactions = val.transactions
-                self?.isLoading = false
+                guard let self else { return }
+                
+                self.isLoading = false
+                self.transactions = val.transactions
             })
             .store(in: &cancellables)
         
@@ -72,6 +80,7 @@ final class WalletManager {
             .flatMap { [weak self] transactions in
                 let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
                 
+                print("WALLET: NEW TRANSACTIONS -> LOAD USER DATA")
                 var set = Set<String>()
                 
                 for pubkey in flatPubkeys {
@@ -89,14 +98,17 @@ final class WalletManager {
                 ])).publisher().eraseToAnyPublisher()
             }
             .sink { [weak self] result in
-                guard let self else { return }
-                for (key, value) in result.users {
-                    self.userData[key] = result.createParsedUser(value)
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    for (key, value) in result.users {
+                        self.userData[key] = result.createParsedUser(value)
+                    }
+                    print("WALLET: NEW PARSED \(self.transactions.first?.id ?? "")")
+                    self.parsedTransactions = self.transactions.map { (
+                        $0,
+                        self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
+                    ) }
                 }
-                self.parsedTransactions = self.transactions.map { (
-                    $0,
-                    self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
-                ) }
             }
             .store(in: &cancellables)
     }
@@ -154,7 +166,7 @@ final class WalletManager {
         guard !lud.isEmpty else { throw NSError(domain: "no.lud", code: 1) }
         
         return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .send(target: lud, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
+            PrimalWalletRequest(type: .send(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
                 .sink { [weak self] res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))

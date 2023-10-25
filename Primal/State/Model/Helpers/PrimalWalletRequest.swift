@@ -26,7 +26,7 @@ struct PrimalWalletRequest {
         case isUser
         case balance
         case transactions(until: Int? = nil, since: Int? = nil)
-        case send(target: String, amount: String, note: String, zap: NostrObject?)
+        case send(target: String, pubkey: String, amount: String, note: String, zap: NostrObject?)
         case deposit(AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
@@ -57,23 +57,24 @@ struct PrimalWalletRequest {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
                 }
                 return "[\"transactions\",{\"subwallet\":1,\"limit\":50}]"
-            case let .send(target, amount, note, zap):
+            case let .send(target, pubkey, amount, note, zap):
                 guard
                     let zapJSON = zap?.toJSON(),
                     let zapData = try? JSONEncoder().encode(zapJSON),
                     let zapString = String(data: zapData, encoding: .utf8)
                 else {
                     return """
-                    ["withdraw",{"subwallet":1, "target_lud16":"\(target)","amount_btc":"\(amount)","note_for_recipient":"\(note)","note_for_self":""}]
+                    ["withdraw",{"subwallet":1, "target_lud16":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
                     """.trimmingCharacters(in: .whitespacesAndNewlines)
                 }
                 return """
-                ["withdraw",{"subwallet":1, "target_lud16":"\(target)","amount_btc":"\(amount)","note_for_recipient":"\(note)","note_for_self":"", "zap_request": \(zapString)}]
+                ["withdraw",{"subwallet":1, "target_lud16":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)","note_for_self":"\(note)", "zap_request": \(zapString)}]
                 """.trimmingCharacters(in: .whitespacesAndNewlines)
             case .inAppPurchase(let transactionId, let quote):
                 return "[\"in_app_purchase\", {\"transaction_id\":\"\(transactionId)\", \"quote_id\": \"\(quote)\"}]"
             case .quote(let productId, let region):
-                return "[\"in_app_purchase_quote\", {\"product_id\": \"\(productId)\", \"region\": \"\(region)\"}]"
+                let additionalParameter = Bundle.main.appStoreReceiptURL?.absoluteString ?? ""
+                return "[\"in_app_purchase_quote\", {\"product_id\": \"\(productId)\", \"region\": \"\(region)\", \"bundle_app_store_receipt_url\": \"\(additionalParameter)\"}]"
             case let .activationCode(name, email):
                 return "[\"get_activation_code\", {\"name\": \"\(name)\", \"email\": \"\(email)\"}]"
             case let .activate(code):

@@ -10,7 +10,7 @@ import UIKit
 final class WalletTransferSummaryController: UIViewController {
     enum State {
         case success(amount: Int, address: String)
-        case failure(Error)
+        case failure(navTitle: String, title: String, message: String)
         case walletActivated(newAddress: String)
     }
     
@@ -116,17 +116,12 @@ private extension WalletTransferSummaryController {
             close.backgroundColor = UIColor(rgb: 0x0E8A40)
             
             view.backgroundColor = .receiveMoney
-        case .failure(let error):
+        case .failure(let navTitleText, let titleText, let messageText):
             icon.image = UIImage(named: "failureWallet")
             
-            navTitle.text = "Payment Failed"
-            title.text = "Unable to send"
-            
-            if case WalletError.serverError(let message) = error {
-                subtitle.text = message
-            } else {
-                subtitle.text = error.localizedDescription
-            }
+            navTitle.text = navTitleText
+            title.text = titleText
+            subtitle.text = messageText
             
             close.setTitleColor(.white, for: .normal)
             [title, subtitle, navTitle].forEach {

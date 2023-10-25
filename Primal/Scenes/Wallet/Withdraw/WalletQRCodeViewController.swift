@@ -12,7 +12,9 @@ final class WalletQRCodeViewController: UIViewController {
     
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
-    var qrCodeFrameView: UIView?
+    var qrCodeFrameView = UIView()
+    
+    var didOpenQRCode = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,6 +59,12 @@ final class WalletQRCodeViewController: UIViewController {
         videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer.frame = view.layer.bounds
         view.layer.insertSublayer(videoPreviewLayer, at: 0)
+        self.videoPreviewLayer = videoPreviewLayer
+
+        qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
+        qrCodeFrameView.layer.borderWidth = 2
+        view.addSubview(qrCodeFrameView)
+        view.bringSubviewToFront(qrCodeFrameView)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,5 +85,22 @@ final class WalletQRCodeViewController: UIViewController {
 }
 
 extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
-    
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject else {
+            qrCodeFrameView.frame = CGRect.zero
+            return
+        }
+        
+        guard
+            metadataObj.type == AVMetadataObject.ObjectType.qr
+        else { return }
+                
+        if let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj) {
+            qrCodeFrameView.frame = barCodeObject.bounds
+        }
+
+        if let text = metadataObj.stringValue {
+            print(text)
+        }
+    }
 }

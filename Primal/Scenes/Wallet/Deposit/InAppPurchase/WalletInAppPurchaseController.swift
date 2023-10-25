@@ -192,7 +192,7 @@ private extension WalletInAppPurchaseController {
                             smallLoading.stop()
                             
                             if let message = result.message {
-                                self?.present(WalletTransferSummaryController(.failure(WalletError.inAppPurchaseServerError)), animated: true)
+                                self?.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: "We were not able to send sats to your wallet. Please contact us at support@primal.net and we will assist you.")), animated: true)
                             } else {
                                 self?.dismiss(animated: true)
                             }

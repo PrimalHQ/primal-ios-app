@@ -274,6 +274,7 @@
 		B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */; };
 		B94F2BED2AE6C7BA0041181B /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */; };
 		B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */; };
+		B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
@@ -596,6 +597,7 @@
 		B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeRoundedButton.swift; sourceTree = "<group>"; };
 		B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerViewController.swift; sourceTree = "<group>"; };
+		B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleUseRelayConnection.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
@@ -1088,6 +1090,7 @@
 				9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */,
 				9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */,
 				9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */,
+				B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1687,6 +1690,7 @@
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
+				B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */,
 				B94F2BC42AD581B30041181B /* WalletInfoCell.swift in Sources */,
 				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
 				9393D8362A430C8200F0C55A /* RelaysPostbox.swift in Sources */,
@@ -2084,7 +2088,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.1;
+				MARKETING_VERSION = 0.33.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2129,7 +2133,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.1;
+				MARKETING_VERSION = 0.33.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

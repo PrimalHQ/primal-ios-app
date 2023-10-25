@@ -158,7 +158,8 @@ private extension WalletSendViewController {
                     self.navigationController?.viewControllers.remove(object: self)
                 }
             } catch {
-                spinnerVC.present(WalletTransferSummaryController(.failure(error)), animated: true) {
+                let message = (error as? WalletError)?.message ?? error.localizedDescription
+                spinnerVC.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: message)), animated: true) {
                     self.navigationController?.popToViewController(self, animated: false)
                 }
             }
