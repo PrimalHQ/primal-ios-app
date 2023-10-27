@@ -86,8 +86,6 @@ final class NewPostsButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        if oldSize.width > 1 {
-            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
-        }
+        backgroundColor = .accent2
     }
 }

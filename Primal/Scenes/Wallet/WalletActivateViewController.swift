@@ -26,7 +26,7 @@ final class WalletActivateViewController: UIViewController {
                 self.nameInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
                 self.emailInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
                 self.codeInput.superview?.alpha = self.isWaitingForCode ? 1 : 0
-                self.descLabel.text = self.isWaitingForCode ? "We emailed your activation code.\nPlease enter it below:" : "To activate your wallet, all we need is your name and email address:"
+                self.descLabel.text = self.isWaitingForCode ? "We emailed your activation code.\nPlease enter it below:" : "Activating your wallet is easy!\nAll we need is your name\nand email address:"
                 self.confirmButton.title = self.isWaitingForCode ? "Finish" : "Next"
                 self.confirmButton.isEnabled = !self.isWaitingForCode
             }
@@ -54,6 +54,15 @@ private extension WalletActivateViewController {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
         
+        let icon = UIImageView(image: UIImage(named: "walletFilledLarge"))
+        icon.tintColor = .foreground
+        icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        icon.contentMode = .scaleAspectFit
+        
+        let iconParent = UIView()
+        iconParent.addSubview(icon)
+        icon.pinToSuperview(edges: .vertical).centerToSuperview()
+        
         let contentStack = UIStackView(axis: .vertical, [descLabel, inputParent(nameInput), inputParent(emailInput), inputParent(codeInput)])
         contentStack.spacing = 25
         contentStack.setCustomSpacing(36, after: descLabel)
@@ -61,20 +70,22 @@ private extension WalletActivateViewController {
         codeInput.superview?.isHidden = true
         codeInput.superview?.alpha = 0
         
-        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 0), contentStack, confirmButton])
+        let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
+        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, contentStack, SpacerView(height: 32), confirmButton])
         mainStack.distribution = .equalSpacing
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36)
         mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24).isActive = true
         
-        descLabel.text = "To activate your wallet, all we need is your name and email address:"
-        descLabel.font = .appFont(withSize: 16, weight: .medium)
+        descLabel.text = "Activating your wallet is easy!\nAll we need is your name\nand email address:"
+        descLabel.font = .appFont(withSize: 18, weight: .semibold)
         descLabel.textColor = .foreground
         descLabel.textAlignment = .center
         descLabel.numberOfLines = 0
+        descLabel.setContentCompressionResistancePriority(.required, for: .vertical )
         
         [nameInput, emailInput, codeInput].forEach {
-            $0.font = .appFont(withSize: 16, weight: .regular)
+            $0.font = .appFont(withSize: 18, weight: .regular)
             $0.textColor = .foreground
             $0.returnKeyType = .done
             $0.delegate = self
@@ -140,7 +151,6 @@ private extension WalletActivateViewController {
                 guard let self else { return }
                 
                 self.codeInput.isUserInteractionEnabled = true
-                self.confirmButton.isEnabled = true
                 
                 guard let newAddress = res.newAddress else {
                     self.codeInput.text = ""
@@ -148,6 +158,7 @@ private extension WalletActivateViewController {
                     return
                 }
                 
+                self.confirmButton.isEnabled = true
                 WalletManager.instance.userHasWallet = true
                 
                 self.present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {

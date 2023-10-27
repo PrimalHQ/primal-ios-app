@@ -27,24 +27,26 @@ final class WalletManager {
     
     var cancellables = Set<AnyCancellable>()
     
-    @Published var userHasWallet = false
+    @Published var userHasWallet: Bool?
     @Published var balance: Int = 0
     @Published var transactions: [WalletTransaction] = []
+    @Published var isLoadingWallet = true
     
     var userData: [String: ParsedUser] = [:]
     
     @Published var parsedTransactions: [(WalletTransaction, ParsedUser)] = []
     
-    var isLoading = false
+    private var isLoading = false
     
     private init() {
         IdentityManager.instance.$user
             .compactMap { $0?.npub }
             .removeDuplicates()
             .flatMap { [weak self] _ -> AnyPublisher<WalletRequestResult, Never> in
-                self?.userHasWallet = false
+                self?.userHasWallet = nil
                 self?.balance = 0
                 self?.transactions = []
+                self?.isLoadingWallet = true
                 return PrimalWalletRequest(type: .isUser).publisher().waitForConnection()
             }
             .sink(receiveValue: { [weak self] val in
@@ -52,9 +54,8 @@ final class WalletManager {
             })
             .store(in: &cancellables)
         
-        
         $userHasWallet
-            .filter { $0 }
+            .filter { $0 == true }
             .flatMap { _ in PrimalWalletRequest(type: .balance).publisher().waitForConnection() }
             .sink(receiveValue: { [weak self] val in
                 let string = val.balance?.amount ?? "0"
@@ -67,12 +68,18 @@ final class WalletManager {
         $balance
             .removeDuplicates()
             .delay(for: .seconds(3), scheduler: RunLoop.main)
-            .flatMap { _ in PrimalWalletRequest(type: .transactions()).publisher().waitForConnection() }
+            .flatMap { [weak self] _ in PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection() }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
                 
                 self.isLoading = false
-                self.transactions = val.transactions
+                self.isLoadingWallet = true
+                
+                let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
+                
+                if !newTransactions.isEmpty {
+                    self.transactions = newTransactions + self.transactions
+                }
             })
             .store(in: &cancellables)
         
@@ -80,7 +87,6 @@ final class WalletManager {
             .flatMap { [weak self] transactions in
                 let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
                 
-                print("WALLET: NEW TRANSACTIONS -> LOAD USER DATA")
                 var set = Set<String>()
                 
                 for pubkey in flatPubkeys {
@@ -103,7 +109,6 @@ final class WalletManager {
                     for (key, value) in result.users {
                         self.userData[key] = result.createParsedUser(value)
                     }
-                    print("WALLET: NEW PARSED \(self.transactions.first?.id ?? "")")
                     self.parsedTransactions = self.transactions.map { (
                         $0,
                         self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
@@ -159,6 +164,34 @@ final class WalletManager {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func sendLNInvoice(_ lninvoice: String) async throws {
+        return try await withCheckedThrowingContinuation({ continuation in
+            PrimalWalletRequest(type: .sendLNInvoice(lnInvoice: lninvoice)).publisher()
+                .sink { [weak self] res in
+                    if let errorMessage = res.message {
+                        continuation.resume(throwing: WalletError.serverError(errorMessage))
+                    } else {
+                        continuation.resume()
+                    }
+                }
+                .store(in: &cancellables)
+        })
+    }
+    
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+        return try await withCheckedThrowingContinuation({ continuation in
+            PrimalWalletRequest(type: .sendLNURL(lnurl: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note)).publisher()
+                .sink { [weak self] res in
+                    if let errorMessage = res.message {
+                        continuation.resume(throwing: WalletError.serverError(errorMessage))
+                    } else {
+                        continuation.resume()
+                    }
+                }
+                .store(in: &cancellables)
+        })
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {

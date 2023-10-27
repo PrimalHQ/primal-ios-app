@@ -11,8 +11,8 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
     private let emojiLabel = UILabel()
     private let label = UILabel()
     
-    let gradient = GradientView(colors: UIColor.gradient)
-    let gradientCover = UIView()
+    let borderView = UIView()
+    let backgroundView = UIView()
     
     var title: String {
         didSet {
@@ -34,7 +34,7 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
     
     var zapSelected = true {
         didSet {
-            gradient.isHidden = !zapSelected
+            borderView.isHidden = !zapSelected
         }
     }
     
@@ -50,14 +50,11 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
         label.font = .appFont(withSize: 20, weight: .semibold)
         label.textColor = .white
         
-        addSubview(gradient)
-        gradient.pinToSuperview()
-        gradient.addSubview(gradientCover)
-        gradientCover.pinToSuperview(padding: 1)
-        gradientCover.layer.cornerRadius = 7
-        
-        gradient.gradientLayer.startPoint = .init(x: 0, y: 0)
-        gradient.gradientLayer.endPoint = .init(x: 1, y: 1)
+        addSubview(borderView)
+        borderView.pinToSuperview()
+        borderView.addSubview(backgroundView)
+        backgroundView.pinToSuperview(padding: 1)
+        backgroundView.layer.cornerRadius = 7
         
         layer.cornerRadius = 8
         layer.masksToBounds = true
@@ -77,7 +74,8 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        gradientCover.backgroundColor = .background2
+        borderView.backgroundColor = .accent
+        backgroundView.backgroundColor = .background2
         backgroundColor = .background3
         label.textColor = .foreground
     }

@@ -7,18 +7,27 @@
 
 import UIKit
 
+extension CIImage {
+    var image: UIImage { .init(ciImage: self) }
+}
+
 extension UIImage {
     static func createQRCode(_ string: String) -> UIImage? {
-        let data = string.data(using: String.Encoding.ascii)
-
-        guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
-        
-        filter.setValue(data, forKey: "inputMessage")
-        let transform = CGAffineTransform(scaleX: 3, y: 3)
-
-        guard let output = filter.outputImage?.transformed(by: transform) else { return nil }
-        
-        return UIImage(ciImage: output)
+        guard
+            let data = string.data(using: .isoLatin1),
+            let outputImage = CIFilter(name: "CIQRCodeGenerator",
+                              parameters: ["inputMessage": data, "inputCorrectionLevel": "M"])?.outputImage
+        else { return nil }
+        let size = outputImage.extent.integral
+        let output = CGSize(width: 400, height: 400)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = UIScreen.main.scale
+        return UIGraphicsImageRenderer(size: output, format: format).image { _ in
+            outputImage
+                .transformed(by: .init(scaleX: output.width/size.width, y: output.height/size.height))
+                .image
+                .draw(in: .init(origin: .zero, size: output))
+        }
     }
     
     func scalePreservingAspectRatio(size: CGFloat) -> UIImage {

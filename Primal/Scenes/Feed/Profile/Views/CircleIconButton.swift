@@ -1,5 +1,5 @@
 //
-//  GradientBorderIconButton.swift
+//  CircleIconButton.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 9.6.23..
@@ -7,25 +7,21 @@
 
 import UIKit
 
-final class GradientBorderIconButton: MyButton, Themeable {
-    private let gradient = GradientBorderView(
-        gradientColors: UIColor.gradient.withAlphaComponent(0.85),
-        backgroundColor: .background,
-        cornerRadius: 8
-    )
-    
+final class CircleIconButton: MyButton, Themeable {
     private let iconView = UIImageView()
+    
+    override var isPressed: Bool { didSet { iconView.alpha = isPressed ? 0.5 : 1 } }
     
     init(icon: UIImage?) {
         super.init(frame: .zero)
      
         iconView.image = icon
-        gradient.backgroundView.addSubview(iconView)
+        addSubview(iconView)
         iconView.centerToSuperview()
         
-        addSubview(gradient)
-        gradient.pinToSuperview()
         constrainToSize(36)
+        layer.cornerRadius = 18
+        updateTheme()
     }
     
     required init?(coder: NSCoder) {
@@ -33,6 +29,7 @@ final class GradientBorderIconButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        gradient.backgroundColor = .background
+        backgroundColor = .background3
+        iconView.tintColor = .foreground
     }
 }

@@ -23,6 +23,13 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     
     private var cancellables: Set<AnyCancellable> = []
     
+    private var lnInvoice: String? {
+        didSet {
+            updateInfo()
+        }
+    }
+    var invoice: String { lnInvoice ?? depositInfo?.lnurl ?? "" }
+    
     var depositInfo: DepositInfo? {
         didSet {
             updateInfo()
@@ -66,7 +73,7 @@ private extension WalletReceiveViewController {
             if let data = res.depositInfo {
                 self?.depositInfo = data
             } else if let data = res.invoiceInfo {
-                self?.depositInfo?.lnurl = data.lnInvoice
+                self?.lnInvoice = data.lnInvoice
             } else {
                 self?.navigationController?.viewControllers.remove(object: self!)
                 return
@@ -88,7 +95,7 @@ private extension WalletReceiveViewController {
         loadingIndicator.stop()
         
         ludLabel.text = depositInfo.lud16
-        qrCodeImageView.image = .createQRCode(depositInfo.lnurl)
+        qrCodeImageView.image = .createQRCode(invoice)
         
         guard let additionalInfo else {
             amountParent.isHidden = true
@@ -116,6 +123,8 @@ private extension WalletReceiveViewController {
         qrCodeParent.addSubview(qrCodeImageView)
         qrCodeImageView.pinToSuperview(padding: 20)
         qrCodeParent.heightAnchor.constraint(equalTo: qrCodeParent.widthAnchor).isActive = true
+        qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
         let parentParent = UIView()
         parentParent.addSubview(qrCodeParent)
@@ -147,8 +156,8 @@ private extension WalletReceiveViewController {
         
         let actionStack = UIStackView([
             WalletActionButton(text: "COPY", action: { [weak self] in
-                guard let lnurl = self?.depositInfo?.lnurl else { return }
-                UIPasteboard.general.string = lnurl
+                guard let invoice = self?.invoice else { return }
+                UIPasteboard.general.string = invoice
                 self?.view.showToast("Copied!", extraPadding: false)
             }),
             WalletActionButton(text: "ADD DETAILS", action: { [weak self] in

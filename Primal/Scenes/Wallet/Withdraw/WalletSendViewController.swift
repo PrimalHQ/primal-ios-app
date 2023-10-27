@@ -10,7 +10,54 @@ import FLAnimatedImage
 import UIKit
 
 final class WalletSendViewController: UIViewController, Themeable {
-    let user: ParsedUser
+    enum Destination {
+        case user(ParsedUser)
+        case address(String, ParsedLNInvoice?, ParsedUser?)
+        
+        var user: ParsedUser? {
+            switch self {
+            case let .user(user):
+                return user
+            case .address(_, _, let user):
+                return user
+            }
+        }
+        
+        var address: String {
+            switch self {
+            case let .user(user):
+                return user.data.lud16
+            case .address(let address, _, let user):
+                return user?.data.lud16 ?? address
+            }
+        }
+        
+        var startingAmount: Int {
+            switch self {
+            case .user:                     return 0
+            case .address(_, let parsed, _):  return (parsed?.lninvoice.amount_msat ?? 0) / 1000
+            }
+        }
+        
+        var message: String {
+            switch self {
+            case .user:                     return ""
+            case .address(_, let parsed, _):
+                guard let desc = parsed?.lninvoice.description.removingPercentEncoding else { return "" }
+                
+                return desc.split(separator: " ").dropFirst(3).joined(separator: " ")
+            }
+        }
+        
+        var isEditable: Bool {
+            switch self {
+            case .user:                     return true
+            case .address(_, let parsed, _):  return parsed == nil
+            }
+        }
+    }
+    
+    let destination: Destination
     
     let input = LargeBalanceConversionInputView()
     let messageInput = PlaceholderTextView()
@@ -19,11 +66,17 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     var cancellables = Set<AnyCancellable>()
     
-    init(user: ParsedUser) {
-        self.user = user
+    init(_ destination: Destination) {
+        self.destination = destination
         super.init(nibName: nil, bundle: nil)
         
         setup()
+        
+        input.balance = destination.startingAmount
+        messageInput.text = destination.message
+        
+        input.isUserInteractionEnabled = destination.isEditable
+        messageInput.isUserInteractionEnabled = destination.isEditable
     }
 
     required init?(coder: NSCoder) {
@@ -40,6 +93,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -51,7 +105,7 @@ final class WalletSendViewController: UIViewController, Themeable {
 
 private extension WalletSendViewController {
     func setup() {
-        title = "Payment Details"
+        title = "Sending To"
         
         let sizingView = UIView()
         view.addSubview(sizingView)
@@ -82,7 +136,6 @@ private extension WalletSendViewController {
         messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .vertical, padding: 8)
         messageInput.font = .appFont(withSize: 16, weight: .regular)
         messageInput.backgroundColor = .clear
-        messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
         messageInput.mainTextColor = .foreground
         messageInput.placeholderTextColor = .foreground.withAlphaComponent(0.6)
         messageInput.didBeginEditing = { [weak self] textView in
@@ -111,9 +164,16 @@ private extension WalletSendViewController {
         profilePictureView.contentMode = .scaleAspectFill
         profilePictureView.layer.masksToBounds = true
         profilePictureView.layer.cornerRadius = 60
-        profilePictureView.setUserImage(user)
         
-        nipLabel.text = user.data.lud16
+        if let user = destination.user {
+            profilePictureView.setUserImage(user)
+            messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
+        } else {
+            profilePictureView.image = UIImage(named: "Profile")
+        }
+        
+        nipLabel.text = destination.address
+        nipLabel.numberOfLines = 0
         
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.send(sender: sendButton)
@@ -143,17 +203,31 @@ private extension WalletSendViewController {
             
             sender.isEnabled = false
             
-            let spinnerVC = WalletSpinnerViewController(sats: amount, address: user.data.lud16)
-            self.navigationController?.pushViewController(spinnerVC, animated: true)
+            let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.address)
+            navigationController?.pushViewController(spinnerVC, animated: true)
             
             do {
-                try await WalletManager.instance.send(
-                    user: user.data,
-                    sats: amount,
-                    note: messageInput.text ?? ""
-                )
+                switch self.destination {
+                case .user(let user):
+                    try await WalletManager.instance.send(
+                        user: user.data,
+                        sats: amount,
+                        note: messageInput.text ?? ""
+                    )
+                case let .address(address, _, user):
+                    if address.hasPrefix("lnurl") {
+                        try await WalletManager.instance.sendLNURL(
+                            lnurl: address,
+                            pubkey: user?.data.pubkey,
+                            sats: amount,
+                            note: messageInput.text ?? ""
+                        )
+                    } else {
+                        try await WalletManager.instance.sendLNInvoice(address)
+                    }
+                }
                 
-                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: self.user.data.lud16)), animated: true) {
+                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) {
                     self.navigationController?.popToViewController(self, animated: false)
                     self.navigationController?.viewControllers.remove(object: self)
                 }

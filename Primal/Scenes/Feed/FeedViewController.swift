@@ -315,7 +315,9 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        if WalletManager.instance.userHasWallet {
+        guard let hasWallet = WalletManager.instance.userHasWallet else { return }
+        
+        if hasWallet {
             let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, note in
                 let newZapAmount = post.satszapped + zapAmount
                 
@@ -332,15 +334,15 @@ extension FeedViewController: PostCellDelegate {
             present(popup, animated: true)
             
             return
-        } else {
-            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
-                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
-                    self?.mainTabBarController?.switchToTab(.wallet)
-                })
-            ])
-            present(popup, animated: true)
-            return
         }
+        
+        let popup1 = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
+            .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
+                self?.mainTabBarController?.switchToTab(.wallet)
+            })
+        ])
+        present(popup1, animated: true)
+        return
         
         guard UserDefaults.standard.nwc != nil else {
             let walletSettings = SettingsWalletViewController()
@@ -375,7 +377,9 @@ extension FeedViewController: PostCellDelegate {
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
         let newZapAmount = post.satszapped + zapAmount
         
-        if WalletManager.instance.userHasWallet {
+        guard let hasWallet = WalletManager.instance.userHasWallet else { return }
+        
+        if hasWallet {
             if WalletManager.instance.balance < zapAmount {
                 present(WalletInAppPurchaseController(), animated: true)
                 return

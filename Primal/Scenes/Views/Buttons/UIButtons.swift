@@ -50,36 +50,14 @@ final class GradientBackgroundUIButton: UIButton {
     }
 }
 
-final class GradientUIButton: UIButton {
-    var colors: [UIColor] {
-        didSet {
-            updateColors()
-        }
-    }
-    
-    init(title: String, colors: [UIColor] = UIColor.gradient) {
-        self.colors = colors
+final class SolidColorUIButton: UIButton {
+    init(title: String, color: UIColor = .accent) {
         super.init(frame: .init(origin: .zero, size: .init(width: 80, height: 20)))
         
+        setTitleColor(color, for: .normal)
         setTitle(title, for: .normal)
         titleLabel?.font = .appFont(withSize: 16, weight: .regular)
         setContentCompressionResistancePriority(.required, for: .horizontal)
-    }
-    
-    var size = CGSize.zero
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        if size != bounds.size {
-            size = bounds.size
-            updateColors()
-        }
-    }
-    
-    func updateColors() {
-        let gradientColor = UIColor.gradientColor(colors, bounds: size)
-        setTitleColor(gradientColor, for: .normal)
-        setTitleColor(gradientColor?.withAlphaComponent(0.5), for: .highlighted)
     }
     
     required init?(coder: NSCoder) {

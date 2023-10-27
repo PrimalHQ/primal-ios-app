@@ -278,8 +278,12 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func messagePressed() {
+        show(ChatViewController(user: profile, chatManager: ChatManager()), sender: nil)
+    }
+    
     func zapPressed() {
-        show(WalletSendViewController(user: profile), sender: nil)
+        show(WalletSendViewController(.user(profile)), sender: nil)
     }
     
     func editProfilePressed() {

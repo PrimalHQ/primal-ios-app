@@ -37,7 +37,7 @@ final class PopupZapSelectionViewController: UIViewController {
         return view
     }
     
-    let zapButton = LargeGradientIconButton(title: "Zap", icon: UIImage(named: "largeZaps"))
+    let zapButton = LargeRoundedButton(title: "Zap")
     
     private let zapLabel = UILabel()
     private let usdLabel = UILabel()

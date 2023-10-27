@@ -127,9 +127,8 @@ private extension WalletPickUserController {
 
 extension WalletPickUserController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-        show(feed, sender: nil)
-        return true
+        textField.resignFirstResponder()
+        return false
     }
 }
 
@@ -146,7 +145,7 @@ extension WalletPickUserController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chat = WalletSendViewController(user: users[indexPath.row])
+        let chat = WalletSendViewController(.user(users[indexPath.row]))
         searchInput.resignFirstResponder()
         show(chat, sender: nil)
         

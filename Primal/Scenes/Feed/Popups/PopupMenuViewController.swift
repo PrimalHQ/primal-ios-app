@@ -40,11 +40,16 @@ private extension PopupMenuViewController {
             pc.detents = [
                 .custom(resolver: { [weak self] _ in
                     guard let self else { return 285 }
-                    let buttonsCount = CGFloat(self.actions.count)
-                    let buttonHeight = buttonsCount * 24
-                    let buttonSpace = buttonsCount > 1.1 ? (buttonsCount - 1) * 32 : 0
                     
-                    return 80 + buttonHeight + buttonSpace + 84 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
+                    if self.actions.count > 1 {
+                        let buttonsCount = CGFloat(self.actions.count)
+                        let buttonHeight = buttonsCount * 58
+                        let buttonSpace = buttonsCount > 1.1 ? (buttonsCount - 1) * 28 : 0
+                        
+                        return buttonHeight + buttonSpace + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
+                    }
+                    
+                    return 98 + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
                 })
             ]
         }
@@ -57,30 +62,17 @@ private extension PopupMenuViewController {
         var buttons: [UIControl] = []
         
         for action in actions {
-            let button = PopupMenuIconButton(icon: action.image, text: action.title)
+            let button: UIControl = (actions.count > 1) ? PopupMenuIconButton(icon: action.image, text: action.title) : LargeRoundedButton(title: action.title)
             button.addAction(.init(handler: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
                     action.performWithSender(nil, target: nil)
                 })
             }), for: .touchUpInside)
-            
             buttons.append(button)
         }
         
-        let cancel = UIButton()
-        cancel.setTitle("Cancel", for: .normal)
-        cancel.setTitleColor(.foreground, for: .normal)
-        cancel.titleLabel?.font = .appFont(withSize: 18, weight: .medium)
-        cancel.layer.borderColor = UIColor.foreground6.cgColor
-        cancel.layer.borderWidth = 1
-        cancel.layer.cornerRadius = 12
-        cancel.constrainToSize(height: 52)
-        cancel.addAction(.init(handler: { [weak self] _ in self?.dismiss(animated: true) }), for: .touchUpInside)
-
-        buttons.append(cancel)
-        
         let buttonStack = UIStackView(arrangedSubviews: buttons)
-        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 42), buttonStack, SpacerView(height: 42)])
+        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 52), buttonStack])
         
         if let message {
             messageLabel.text = message
@@ -93,12 +85,12 @@ private extension PopupMenuViewController {
         }
         
         view.addSubview(stack)
-        stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)
+        stack.pinToSuperview(edges: .top, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         
         buttonStack.axis = .vertical
-        buttonStack.spacing = 32
+        buttonStack.spacing = 28
         
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
@@ -128,11 +120,17 @@ final class PopupMenuIconButton: MyButton {
         iconView.contentMode = .center
         iconView.tintColor = .foreground
         
+        let backgroundView = UIView()
+        addSubview(backgroundView)
+        backgroundView.pinToSuperview(edges: .vertical).constrainToSize(width: 240, height: 56).centerToSuperview(axis: .horizontal)
+        backgroundView.layer.cornerRadius = 28
+        backgroundView.backgroundColor = .background3
+        
         let stack = UIStackView(arrangedSubviews: [iconView, label])
         stack.alignment = .center
         stack.spacing = 8
         addSubview(stack)
-        stack.pinToSuperview()
+        stack.centerToSuperview()
     }
     
     required init?(coder: NSCoder) {

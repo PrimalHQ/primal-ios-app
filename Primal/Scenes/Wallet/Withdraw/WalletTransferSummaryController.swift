@@ -104,9 +104,9 @@ private extension WalletTransferSummaryController {
             title.text = "Success, payment sent!"
             let formatter = NumberFormatter()
             let satsString = formatter.string(from: amount as NSNumber) ?? String(amount)
-            let dollarsString = formatter.string(from: (Double(amount) * .SAT_TO_USD) as NSNumber) ?? String(Double(amount) * .SAT_TO_USD)
+//            let dollarsString = formatter.string(from: (Double(amount) * .SAT_TO_USD) as NSNumber) ?? String(Double(amount) * .SAT_TO_USD)
             
-            subtitle.text = "\(satsString) sats ($\(dollarsString)) sent to \(address)."
+            subtitle.text = "\(satsString) sats sent to \(address)."
             
             close.setTitleColor(.white, for: .normal)
             [title, subtitle, navTitle].forEach {

@@ -30,7 +30,11 @@ final class RelayPool {
             connection.disconnect()
         }
         connections = []
-        self.relays = []
+        relays = []
+        
+        cancellables = []
+        atLeastOneConnected = false
+        numOfConnected = 0
     }
     
     func connect(relays: [String]) {
@@ -82,7 +86,15 @@ final class RelayPool {
                 if connection.state.value == .connected {
                     connection.request(ev, handler)
                 } else {
-                    self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                    connection.connect()
+                    
+                    Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(3)) {
+                        if connection.state.value == .connected {
+                            connection.request(ev, handler)
+                        } else {
+                            self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                        }
+                    }
                 }
             }
         }

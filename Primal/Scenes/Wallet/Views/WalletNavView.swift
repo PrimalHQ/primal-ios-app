@@ -35,7 +35,7 @@ final class WalletNavView: UIView, Themeable{
         receive.setImage(LargeWalletButton.Variant.receive.icon?.scalePreservingAspectRatio(size: 22).withRenderingMode(.alwaysTemplate), for: .normal)
         
         [send, scan, receive].forEach {
-            $0.layer.cornerRadius = 6
+            $0.layer.cornerRadius = 24
         }
         
         let hStack = UIStackView([balanceConversionView, UIView(), send, scan, receive])

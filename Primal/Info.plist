@@ -44,6 +44,14 @@
 	</dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Nacelle-Regular.otf</string>
+		<string>Nacelle-Black.otf</string>
+		<string>Nacelle-Bold.otf</string>
+		<string>Nacelle-Heavy.otf</string>
+		<string>Nacelle-Light.otf</string>
+		<string>Nacelle-SemiBold.otf</string>
+		<string>Nacelle-Thin.otf</string>
+		<string>Nacelle-UltraLight.otf</string>
 		<string>RobotoFlex-All.ttf</string>
 		<string>RobotoFlex.ttf</string>
 		<string>RobotoFlex-Regular.ttf</string>

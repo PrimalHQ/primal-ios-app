@@ -1,5 +1,5 @@
 //
-//  GradientBorderTextButton.swift
+//  RoundedSmallButton.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 9.6.23..
@@ -7,26 +7,20 @@
 
 import UIKit
 
-final class GradientBorderTextButton: MyButton, Themeable {
-    private let gradient = GradientBorderView(
-        gradientColors: UIColor.gradient.withAlphaComponent(0.85),
-        backgroundColor: .background,
-        cornerRadius: 8
-    )
-    
+final class RoundedSmallButton: MyButton, Themeable {
     private let label = UILabel()
     
     init(text: String) {
         super.init(frame: .zero)
-     
-        gradient.backgroundView.addSubview(label)
+        
+        addSubview(label)
         label.centerToSuperview(axis: .vertical).pinToSuperview(edges: .horizontal, padding: 16)
-        label.font = .appFont(withSize: 14, weight: .medium)
+        label.font = .appFont(withSize: 16, weight: .semibold)
         label.text = text
         
-        addSubview(gradient)
-        gradient.pinToSuperview()
         constrainToSize(height: 36)
+        layer.cornerRadius = 18
+        updateTheme()
     }
     
     required init?(coder: NSCoder) {
@@ -35,12 +29,12 @@ final class GradientBorderTextButton: MyButton, Themeable {
     
     override var isPressed: Bool {
         didSet {
-            alpha = isPressed ? 0.5 : 1
+            label.alpha = isPressed ? 0.5 : 1
         }
     }
     
     func updateTheme() {
-        gradient.backgroundColor = .background
+        backgroundColor = .background3
         label.textColor = .foreground
     }
 }

@@ -16,6 +16,7 @@ protocol WalletInfoCellDelegate: AnyObject {
 
 final class WalletInfoCell: UITableViewCell, Themeable{
     let balanceConversionView = LargeBalanceConversionView()
+    let extraSizeView = UIView()
         
     weak var delegate: WalletInfoCellDelegate?
     

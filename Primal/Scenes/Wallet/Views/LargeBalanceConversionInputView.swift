@@ -48,6 +48,7 @@ final class LargeBalanceConversionInputView: UIStackView, Themeable {
     }
     
     @discardableResult override func becomeFirstResponder() -> Bool {
+        guard isUserInteractionEnabled else { return false }
         return amountInput.becomeFirstResponder()
     }
     

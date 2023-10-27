@@ -359,7 +359,7 @@ final class MenuItemButton: UIButton, Themeable {
     init(title: String) {
         super.init(frame: .zero)
         setTitle(title, for: .normal)
-        titleLabel?.font = .appFont(withSize: 20, weight: .black)
+        titleLabel?.font = .appFont(withSize: 20, weight: .semibold)
         updateTheme()
     }
     

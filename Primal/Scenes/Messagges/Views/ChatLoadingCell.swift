@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ChatLoadingCell: UITableViewCell {
+class ChatLoadingCell: UITableViewCell, Themeable {
     let loadingView = LoadingSpinnerView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -16,11 +16,16 @@ class ChatLoadingCell: UITableViewCell {
         selectionStyle = .none
         
         contentView.addSubview(loadingView)
-        loadingView.pinToSuperview(edges: .vertical).centerToSuperview().constrainToSize(70)
+        loadingView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal).constrainToSize(70)
         loadingView.play()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        loadingView.updateTheme()
+        loadingView.play()
     }
 }

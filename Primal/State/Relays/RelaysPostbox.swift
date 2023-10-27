@@ -25,6 +25,11 @@ final class RelaysPostbox {
         self.pool.connect(relays: relays)
     }
     
+    func reconnect() {
+        pool.disconnect()
+        pool.connect(relays: loadedRalays)
+    }
+    
     func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {
         var didSucceed: Bool?
         

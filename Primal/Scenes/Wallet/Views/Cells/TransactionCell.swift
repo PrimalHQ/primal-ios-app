@@ -19,10 +19,10 @@ protocol TransactionCellDelegate: AnyObject {
 
 final class TransactionCell: UITableViewCell, Themeable {
     
-    private let profileImage = FLAnimatedImageView().constrainToSize(36)
+    private let profileImage = FLAnimatedImageView().constrainToSize(44)
     
     private let nameLabel = UILabel()
-    private let separator = UIView().constrainToSize(width: 1, height: 16)
+    private let separator = UIView().constrainToSize(width: 1, height: 18)
     private let timeLabel = UILabel()
     private let messageLabel = UILabel()
     
@@ -47,9 +47,11 @@ final class TransactionCell: UITableViewCell, Themeable {
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
             profileImage.setUserImage(transaction.1)
+            profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else {
             profileImage.image = UIImage(named: "nonZapPayment")
+            profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
         
@@ -81,9 +83,6 @@ final class TransactionCell: UITableViewCell, Themeable {
             currencyLabel.text = "USD"
         }
         
-        profileImage.isUserInteractionEnabled = true
-        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
-        
         updateTheme()
     }
     
@@ -104,7 +103,7 @@ private extension TransactionCell {
     func setup() {
         selectionStyle = .none
         
-        profileImage.layer.cornerRadius = 18
+        profileImage.layer.cornerRadius = 22
         profileImage.layer.masksToBounds = true
         profileImage.contentMode = .scaleAspectFill
                 
@@ -114,28 +113,34 @@ private extension TransactionCell {
         let firstVStack = UIStackView(axis: .vertical, [nameStack, messageLabel])
         let secondVStack = UIStackView(axis: .vertical, [amountLabel, currencyLabel])
         secondVStack.alignment = .trailing
+        secondVStack.transform = .init(translationX: 0, y: -1)
         
         messageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         let thirdStack = UIView()
         thirdStack.addSubview(arrowIcon)
-        arrowIcon.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 5)
+        arrowIcon.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 4)
         
         let mainStack = UIStackView([profileImage, SpacerView(width: 8), firstVStack, secondVStack, SpacerView(width: 5), thirdStack])
         mainStack.alignment = .center
+        mainStack.spacing = 2
         thirdStack.pin(to: secondVStack, edges: .vertical)
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 12)
         
-        nameLabel.font = .appFont(withSize: 16, weight: .bold)
-        timeLabel.font = .appFont(withSize: 14, weight: .regular)
-        messageLabel.font = .appFont(withSize: 14, weight: .regular)
-        amountLabel.font = .appFont(withSize: 16, weight: .bold)
+        nameLabel.font = .appFont(withSize: 18, weight: .bold)
+        timeLabel.font = .appFont(withSize: 16, weight: .regular)
+        messageLabel.font = .appFont(withSize: 16, weight: .regular)
+        amountLabel.font = .appFont(withSize: 18, weight: .bold)
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
+        
+        profileImage.isUserInteractionEnabled = true
+        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
     }
     
     @objc func profileTapped() {

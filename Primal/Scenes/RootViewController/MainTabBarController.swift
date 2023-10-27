@@ -39,8 +39,8 @@ final class MainTabBarController: UIViewController, Themeable {
         UIButton()
     }
 
-    let notificationIndicator = UIImageView(image: Theme.current.tabBarDotImage)
-    let messagesIndicator = UIImageView(image: Theme.current.tabBarDotImage)
+    let notificationIndicator = NotificationsIndicator()
+    let messagesIndicator = NotificationsIndicator()
     
     let buttonStackParent = UIView()
     lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
@@ -129,9 +129,6 @@ final class MainTabBarController: UIViewController, Themeable {
         safeAreaSpacer.backgroundColor = .background
         buttonStackParent.backgroundColor = .background
 
-        notificationIndicator.image = Theme.current.tabBarDotImage
-        messagesIndicator.image = Theme.current.tabBarDotImage
-        
         closeMenuButton.tintColor = .foreground
 
         updateButtons()
@@ -229,6 +226,7 @@ private extension MainTabBarController {
 
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
             Connection.instance.reconnect()
+            RelaysPostbox.instance.reconnect()
         }
         
         noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
@@ -331,5 +329,32 @@ private extension MainTabBarController {
                 $0.setContentOffset(.zero, animated: true)
             }
         }
+    }
+}
+
+final class NotificationsIndicator: UIView, Themeable {
+    private let innerCircleView = UIView()
+    
+    init() {
+        super.init(frame: .zero)
+     
+        constrainToSize(11)
+        
+        addSubview(innerCircleView)
+        innerCircleView.constrainToSize(8).centerToSuperview()
+        
+        layer.cornerRadius = 5.5
+        innerCircleView.layer.cornerRadius = 4
+        
+        updateTheme()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        backgroundColor = .background
+        innerCircleView.backgroundColor = .accent
     }
 }

@@ -27,11 +27,14 @@ struct PrimalWalletRequest {
         case balance
         case transactions(until: Int? = nil, since: Int? = nil)
         case send(target: String, pubkey: String, amount: String, note: String, zap: NostrObject?)
+        case sendLNURL(lnurl: String, pubkey: String?, amount: String, note: String)
+        case sendLNInvoice(lnInvoice: String)
         case deposit(AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
         case activationCode(name: String, email: String)
         case activate(code: String)
+        case parseLNURL(String)
         
         var requestContent: String {
             switch self {
@@ -57,6 +60,12 @@ struct PrimalWalletRequest {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
                 }
                 return "[\"transactions\",{\"subwallet\":1,\"limit\":50}]"
+            case let .sendLNInvoice(lnInvoice):
+                return "[\"withdraw\", {\"lnInvoice\": \"\(lnInvoice)\"}]"
+            case let .sendLNURL(lnurl, pubkey, amount, note):
+                return """
+                ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "target_pubkey":"\(pubkey ?? "")", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
+                """.trimmingCharacters(in: .whitespacesAndNewlines)
             case let .send(target, pubkey, amount, note, zap):
                 guard
                     let zapJSON = zap?.toJSON(),
@@ -79,6 +88,11 @@ struct PrimalWalletRequest {
                 return "[\"get_activation_code\", {\"name\": \"\(name)\", \"email\": \"\(email)\"}]"
             case let .activate(code):
                 return "[\"activate\", {\"activation_code\": \"\(code)\"}]"
+            case .parseLNURL(let lnurl):
+                if lnurl.hasPrefix("lnurl") {
+                    return "[\"parse_lnurl\", {\"target_lnurl\": \"\(lnurl)\"}]"
+                }
+                return "[\"parse_lninvoice\", {\"lninvoice\": \"\(lnurl)\"}]"
             }
       }
   }
@@ -173,7 +187,19 @@ private extension WalletRequestResult {
                 return
             }
             
-            self.newAddress = activation.lud16
+            newAddress = activation.lud16
+        case .WALLET_PARSED_LNURL:
+            guard let parsed = try? JSONDecoder().decode(ParsedLNURL.self, from: Data(contentString.utf8)) else {
+                print("Unable to handle WALLET_PARSED_LNURL")
+                return
+            }
+            parsedLNURL = parsed
+        case .WALLET_PARSED_LNINVOICE:
+            guard let parsed = try? JSONDecoder().decode(ParsedLNInvoice.self, from: Data(contentString.utf8)) else {
+                print("Unable to handle WALLET_PARSED_LNINVOICE")
+                return
+            }
+            parsedLNInvoice = parsed
         case .WALLET_IN_APP_PURCHASE, .WALLET_ACTIVATION_CODE:
             return // NO ACTION
         }

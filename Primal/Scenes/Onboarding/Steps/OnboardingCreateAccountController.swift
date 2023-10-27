@@ -22,8 +22,8 @@ struct AccountCreationData: SignupProfileProtocol {
 final class OnboardingCreateAccountController: UIViewController {
     let bannerImageView = UIImageView()
     let avatarView = UIImageView(image: UIImage(named: "Profile"))
-    let addPhotoButton = GradientUIButton(title: "add photo", colors: SunsetWave.instance.gradient)
-    let addBannerButton = GradientUIButton(title: "add banner", colors: SunsetWave.instance.gradient)
+    let addPhotoButton = SolidColorUIButton(title: "add photo", color: SunsetWave.instance.accent)
+    let addBannerButton = SolidColorUIButton(title: "add banner", color: SunsetWave.instance.accent)
     let displayNameInput = UITextField()
     let usernameInput = UITextField()
     let websiteInput = UITextField()

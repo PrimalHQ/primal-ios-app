@@ -155,7 +155,8 @@ private extension WalletInAppPurchaseController {
                         satsLoading.stop()
                         
                         self?.quote = quote
-                        self?.satsLabel.text = Int(quote.amount_btc * .BTC_TO_SAT).localized()
+                        let amount = Double(quote.amount_btc) ?? 0
+                        self?.satsLabel.text = Int(amount * .BTC_TO_SAT).localized()
                     }.store(in: &self.cancellables)
                 return
             }

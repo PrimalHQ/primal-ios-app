@@ -6,15 +6,29 @@
 //
 
 import AVKit
+import Combine
 import UIKit
 
 final class WalletQRCodeViewController: UIViewController {
-    
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView = UIView()
     
     var didOpenQRCode = false
+    
+    var textSearch: String?
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    let callback: (String, ParsedLNInvoice?, ParsedUser?) -> Void
+    init(callback: @escaping (String, ParsedLNInvoice?, ParsedUser?) -> Void) {
+        self.callback = callback
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,8 +113,43 @@ extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 
-        if let text = metadataObj.stringValue {
+        if let text = metadataObj.stringValue, textSearch == nil {
             print(text)
+            
+            textSearch = text
+            
+            PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
+                .sink { [weak self] result in
+                    guard let self else { return }
+                    if let message = result.message {
+//                        self?.showErrorMessage(message)
+                        self.textSearch = nil
+                        return
+                    }
+                    
+                    guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
+                        self.dismiss(animated: true) {
+                            self.callback(text, result.parsedLNInvoice, nil)
+                        }
+                        return
+                    }
+                
+                    SocketRequest(name: "user_infos", payload: .object(["pubkeys": [.string(pubkey)]])).publisher()
+                        .receive(on: DispatchQueue.main)
+                        .sink { [weak self] userRes in
+                            var user: ParsedUser?
+                            
+                            if let simpUser = userRes.users[pubkey] {
+                                user = userRes.createParsedUser(simpUser)
+                            }
+                            
+                            self?.dismiss(animated: true) {
+                                self?.callback(text, result.parsedLNInvoice, user)
+                            }
+                        }
+                        .store(in: &self.cancellables)
+                }
+                .store(in: &cancellables)
         }
     }
 }

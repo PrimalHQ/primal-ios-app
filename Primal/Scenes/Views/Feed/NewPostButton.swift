@@ -22,10 +22,6 @@ class NewPostButton: UIButton, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .gradientColor(
-            bounds: .init(width: 56, height: 56),
-            startPoint: .zero,
-            endPoint: .init(x: 1, y: 1)
-        )
+        backgroundColor = .accent2
     }
 }

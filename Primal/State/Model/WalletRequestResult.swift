@@ -20,6 +20,9 @@ class WalletRequestResult {
     
     var newAddress: String?
     var quote: WalletQuote?
+    
+    var parsedLNURL: ParsedLNURL?
+    var parsedLNInvoice: ParsedLNInvoice?
 }
 
 enum WalletResponseType: Int {
@@ -35,13 +38,15 @@ enum WalletResponseType: Int {
     case WALLET_IN_APP_PURCHASE = 10_000_309
     case WALLET_ACTIVATION_CODE = 10_000_310
     case WALLET_ACTIVATION = 10_000_311
+    case WALLET_PARSED_LNURL = 10_000_312
+    case WALLET_PARSED_LNINVOICE = 10_000_313
 }
 
 struct WalletQuote: Codable {
     let quote_id: String
     let apple_user_currency: String
-    let apple_user_currency_amount: Double
-    let amount_btc: Double
+    let apple_user_currency_amount: String
+    let amount_btc: String
 }
 
 struct WalletActivation: Codable {
@@ -57,6 +62,24 @@ enum KYCLevel: Int {
 struct WalletBalance: Codable {
     var amount: String
     var currency: String
+}
+
+struct ParsedLNURL: Codable {
+    var min_sendable: String?
+    var max_sendable: String?
+    var description: String?
+    var target_pubkey: String?
+    var target_lud16: String?
+}
+
+struct ParsedLNInvoice: Codable {
+    var lninvoice: Data
+    var pubkey: String
+    
+    struct Data: Codable {
+        var amount_msat: Int
+        var description: String
+    }
 }
 
 struct DepositInfo: Codable {

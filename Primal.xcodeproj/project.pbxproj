@@ -148,10 +148,10 @@
 		9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */; };
 		9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */; };
 		9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */; };
-		9E8834BE2A328767005DB548 /* GradientBorderIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */; };
-		9E8834C02A328966005DB548 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BF2A328966005DB548 /* GradientButton.swift */; };
+		9E8834BE2A328767005DB548 /* CircleIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BD2A328767005DB548 /* CircleIconButton.swift */; };
+		9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834BF2A328966005DB548 /* BrightSmallButton.swift */; };
 		9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C12A33BE24005DB548 /* ToastMessageView.swift */; };
-		9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C32A33C25F005DB548 /* GradientBorderTextButton.swift */; };
+		9E8834C42A33C25F005DB548 /* RoundedSmallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C32A33C25F005DB548 /* RoundedSmallButton.swift */; };
 		9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C52A377A93005DB548 /* SocketRequest.swift */; };
 		9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C72A378DA5005DB548 /* Publisher+Extra.swift */; };
 		9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8834C92A379672005DB548 /* NSRange+Extra.swift */; };
@@ -275,6 +275,14 @@
 		B94F2BED2AE6C7BA0041181B /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */; };
 		B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */; };
 		B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */; };
+		B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */; };
+		B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF32AE95D790041181B /* Nacelle-Bold.otf */; };
+		B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF42AE95D790041181B /* Nacelle-SemiBold.otf */; };
+		B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF52AE95D790041181B /* Nacelle-Heavy.otf */; };
+		B94F2BFE2AE95D790041181B /* Nacelle-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF62AE95D790041181B /* Nacelle-UltraLight.otf */; };
+		B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF72AE95D790041181B /* Nacelle-Black.otf */; };
+		B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF82AE95D790041181B /* Nacelle-Light.otf */; };
+		B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
@@ -472,10 +480,10 @@
 		9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLinkDisplayView.swift; sourceTree = "<group>"; };
 		9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStatDisplayView.swift; sourceTree = "<group>"; };
 		9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoCell.swift; sourceTree = "<group>"; };
-		9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderIconButton.swift; sourceTree = "<group>"; };
-		9E8834BF2A328966005DB548 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
+		9E8834BD2A328767005DB548 /* CircleIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleIconButton.swift; sourceTree = "<group>"; };
+		9E8834BF2A328966005DB548 /* BrightSmallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrightSmallButton.swift; sourceTree = "<group>"; };
 		9E8834C12A33BE24005DB548 /* ToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastMessageView.swift; sourceTree = "<group>"; };
-		9E8834C32A33C25F005DB548 /* GradientBorderTextButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderTextButton.swift; sourceTree = "<group>"; };
+		9E8834C32A33C25F005DB548 /* RoundedSmallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedSmallButton.swift; sourceTree = "<group>"; };
 		9E8834C52A377A93005DB548 /* SocketRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketRequest.swift; sourceTree = "<group>"; };
 		9E8834C72A378DA5005DB548 /* Publisher+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extra.swift"; sourceTree = "<group>"; };
 		9E8834C92A379672005DB548 /* NSRange+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSRange+Extra.swift"; sourceTree = "<group>"; };
@@ -598,6 +606,14 @@
 		B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
 		B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerViewController.swift; sourceTree = "<group>"; };
 		B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleUseRelayConnection.swift; sourceTree = "<group>"; };
+		B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Regular.otf"; sourceTree = "<group>"; };
+		B94F2BF32AE95D790041181B /* Nacelle-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Bold.otf"; sourceTree = "<group>"; };
+		B94F2BF42AE95D790041181B /* Nacelle-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-SemiBold.otf"; sourceTree = "<group>"; };
+		B94F2BF52AE95D790041181B /* Nacelle-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Heavy.otf"; sourceTree = "<group>"; };
+		B94F2BF62AE95D790041181B /* Nacelle-UltraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-UltraLight.otf"; sourceTree = "<group>"; };
+		B94F2BF72AE95D790041181B /* Nacelle-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Black.otf"; sourceTree = "<group>"; };
+		B94F2BF82AE95D790041181B /* Nacelle-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Light.otf"; sourceTree = "<group>"; };
+		B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Thin.otf"; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
@@ -828,6 +844,14 @@
 		9393313829A3E5C2003954C2 /* Font */ = {
 			isa = PBXGroup;
 			children = (
+				B94F2BF72AE95D790041181B /* Nacelle-Black.otf */,
+				B94F2BF32AE95D790041181B /* Nacelle-Bold.otf */,
+				B94F2BF52AE95D790041181B /* Nacelle-Heavy.otf */,
+				B94F2BF82AE95D790041181B /* Nacelle-Light.otf */,
+				B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */,
+				B94F2BF42AE95D790041181B /* Nacelle-SemiBold.otf */,
+				B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */,
+				B94F2BF62AE95D790041181B /* Nacelle-UltraLight.otf */,
 				9393313929A3E5D3003954C2 /* RobotoFlex-Regular.ttf */,
 				9393313A29A3E5D3003954C2 /* RobotoFlex.ttf */,
 				9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */,
@@ -1186,9 +1210,9 @@
 				9E8834B72A323CA1005DB548 /* ProfileLinkDisplayView.swift */,
 				9E8834B92A323CF2005DB548 /* ProfileStatDisplayView.swift */,
 				9E8834BB2A3242C0005DB548 /* ProfileInfoCell.swift */,
-				9E8834BD2A328767005DB548 /* GradientBorderIconButton.swift */,
-				9E8834BF2A328966005DB548 /* GradientButton.swift */,
-				9E8834C32A33C25F005DB548 /* GradientBorderTextButton.swift */,
+				9E8834BD2A328767005DB548 /* CircleIconButton.swift */,
+				9E8834BF2A328966005DB548 /* BrightSmallButton.swift */,
+				9E8834C32A33C25F005DB548 /* RoundedSmallButton.swift */,
 				B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */,
 			);
 			path = Views;
@@ -1631,13 +1655,21 @@
 				9ECCC8902A3CACBC00BE8F62 /* zap-medium.json in Resources */,
 				9E40D6EE2A0D22D4008AE854 /* loadingSpinner.json in Resources */,
 				9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */,
+				B94F2BFE2AE95D790041181B /* Nacelle-UltraLight.otf in Resources */,
+				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
+				B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */,
+				B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */,
 				9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */,
 				9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */,
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
+				B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */,
+				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
+				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
+				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
 			);
@@ -1737,7 +1769,7 @@
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
-				9E8834C02A328966005DB548 /* GradientButton.swift in Sources */,
+				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
@@ -1787,7 +1819,7 @@
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
-				9E8834BE2A328767005DB548 /* GradientBorderIconButton.swift in Sources */,
+				9E8834BE2A328767005DB548 /* CircleIconButton.swift in Sources */,
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
@@ -1831,7 +1863,7 @@
 				9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
-				9E8834C42A33C25F005DB548 /* GradientBorderTextButton.swift in Sources */,
+				9E8834C42A33C25F005DB548 /* RoundedSmallButton.swift in Sources */,
 				B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */,
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				936DD9F72A3B559900A65F79 /* SettingsWalletViewController.swift in Sources */,
@@ -2088,7 +2120,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.3;
+				MARKETING_VERSION = 0.33.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2133,7 +2165,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.3;
+				MARKETING_VERSION = 0.33.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

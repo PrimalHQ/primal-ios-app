@@ -1,5 +1,5 @@
 //
-//  GradientButton.swift
+//  BrightSmallButton.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 9.6.23..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class GradientButton: MyButton, Themeable {
+final class BrightSmallButton: MyButton, Themeable {
     var title: String {
         get { label.text ?? "" }
         set { label.text = newValue }
@@ -15,30 +15,26 @@ final class GradientButton: MyButton, Themeable {
     
     override var isEnabled: Bool {
         didSet {
-            alpha = isEnabled ? 1 : 0.5
+            label.alpha = isEnabled ? 1 : 0.5
         }
     }
     
-    private let gradient = GradientView(colors: UIColor.gradient)
     private let label = UILabel()
-    init(title: String, font: UIFont = .appFont(withSize: 14, weight: .medium)) {
+    init(title: String, font: UIFont = .appFont(withSize: 16, weight: .semibold)) {
         super.init(frame: .zero)
         
         label.text = title
         label.font = font
-        label.textColor = .white
-        
-        gradient.gradientLayer.startPoint = .init(x: 0, y: 0)
-        gradient.gradientLayer.endPoint = .init(x: 1, y: 1)
-        
-        addSubview(gradient)
-        gradient.pinToSuperview()
         
         addSubview(label)
-        label.centerToSuperview()
+        label.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 26)
+        
+        constrainToSize(height: 36)
         
         layer.masksToBounds = true
-        layer.cornerRadius = 8
+        layer.cornerRadius = 18
+        
+        updateTheme()
     }
     
     override var isPressed: Bool {
@@ -52,6 +48,7 @@ final class GradientButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        gradient.colors = UIColor.gradient
+        backgroundColor = .foreground
+        label.textColor = .background
     }
 }

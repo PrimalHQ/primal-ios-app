@@ -12,14 +12,15 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func followPressed(in cell: ProfileInfoCell)
     func zapPressed()
     func editProfilePressed()
+    func messagePressed()
 }
 
 class ProfileInfoCell: UITableViewCell {
-    let zapButton = GradientBorderIconButton(icon: UIImage(named: "profileZap"))
-    let messageButton = GradientBorderIconButton(icon: UIImage(named: "profileMessage"))
-    let followButton = GradientButton(title: "follow").constrainToSize(width: 100, height: 36)
-    let unfollowButton = GradientBorderTextButton(text: "unfollow")
-    let editProfile = GradientBorderTextButton(text: "edit profile")
+    let zapButton = CircleIconButton(icon: UIImage(named: "profileZap"))
+    let messageButton = CircleIconButton(icon: UIImage(named: "profileMessage"))
+    let followButton = BrightSmallButton(title: "follow")
+    let unfollowButton = RoundedSmallButton(text: "unfollow")
+    let editProfile = RoundedSmallButton(text: "edit profile")
     
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
@@ -136,6 +137,9 @@ private extension ProfileInfoCell {
         }), for: .touchUpInside)
         zapButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.zapPressed()
+        }), for: .touchUpInside)
+        messageButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.messagePressed()
         }), for: .touchUpInside)
     }
     

@@ -151,8 +151,8 @@ extension RelayConnection : WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
         state.send(.disconnected)
         
-        self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeOut)) {
-            self.connect()
+        if !isWaitingForConnection {
+            connect()
         }
     }
     
@@ -168,8 +168,8 @@ extension RelayConnection : WebSocketConnectionDelegate {
         print("WSERROR: \(self.socketURL) - \(error)")
         state.send(.disconnected)
         
-        self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeOut)) {
-            self.connect()
+        if !isWaitingForConnection {
+            connect()
         }
     }
     

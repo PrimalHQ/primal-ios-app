@@ -11,8 +11,8 @@ import UIKit
 final class EditProfileViewController: UIViewController, Themeable {
     let bannerImageView = UIImageView()
     let avatarView = UIImageView(image: UIImage(named: "Profile"))
-    let addPhotoButton = GradientUIButton(title: "change photo")
-    let addBannerButton = GradientUIButton(title: "change banner")
+    let addPhotoButton = SolidColorUIButton(title: "change photo")
+    let addBannerButton = SolidColorUIButton(title: "change banner")
     let displayNameInput = UITextField()
     let usernameInput = UITextField()
     let websiteInput = UITextField()
@@ -20,7 +20,7 @@ final class EditProfileViewController: UIViewController, Themeable {
     let bitcoinInput = UITextField()
     let nip05Input = UITextField()
     let scrollView = UIScrollView()
-    let nextButton = GradientBackgroundUIButton(title: "Save Profile").constrainToSize(height: 58)
+    let nextButton = LargeRoundedButton(title: "Save Profile")
     
     var avatarURL = "" { didSet { updateIsUploading() } }
     var bannerURL = "" { didSet { updateIsUploading() } }
@@ -268,7 +268,7 @@ private extension EditProfileViewController {
         }), for: .touchUpInside)
         
         $isUploading.sink { [unowned self] isUploading in
-            self.nextButton.setTitle(isUploading ? "Uploading..." : "Save Profile", for: .normal)
+            self.nextButton.title = isUploading ? "Uploading..." : "Save Profile"
         }
         .store(in: &cancellables)
     }
@@ -280,7 +280,7 @@ private extension EditProfileViewController {
     
     func updateAccount() {
         nextButton.isEnabled = false
-        nextButton.setTitle("Updating", for: .normal)
+        nextButton.title = "Updating"
         
         if isUploading {
             $isUploading.filter { !$0 }.first().receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] _ in
@@ -296,7 +296,7 @@ private extension EditProfileViewController {
         IdentityManager.instance.updateProfile(data) { [weak self] in
             guard $0 else {
                 self?.nextButton.isEnabled = true
-                self?.nextButton.setTitle("Save Profile", for: .normal)                
+                self?.nextButton.title = "Save Profile"                
                 return
             }
             
