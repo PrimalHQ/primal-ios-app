@@ -159,6 +159,8 @@ private extension WalletActivateViewController {
                 }
                 
                 self.confirmButton.isEnabled = true
+                
+                WalletManager.instance.isLoadingWallet = false
                 WalletManager.instance.userHasWallet = true
                 
                 self.present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {

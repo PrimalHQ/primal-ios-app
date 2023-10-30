@@ -118,6 +118,7 @@ final class HomeFeedViewController: PostFeedViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {

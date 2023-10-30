@@ -200,7 +200,10 @@ private extension EditProfileViewController {
             $0.returnKeyType = .done
         }
         
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             ImagePickerManager(self) { [weak self] image, isPNG in

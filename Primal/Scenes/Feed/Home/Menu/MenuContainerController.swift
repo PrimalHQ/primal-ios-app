@@ -73,17 +73,19 @@ final class MenuContainerController: UIViewController, Themeable {
         }
     }
     
-    func animateClose() {
+    func animateClose(completion: (() -> Void)? = nil) {
         close()
         
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
             self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
-        }
+        }, completion: { _ in
+            completion?()
+        })
     }
     
     func open() {
@@ -133,7 +135,9 @@ private extension MenuContainerController {
     func setup() {
         updateTheme()
         
-        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, UIImageView(image: UIImage(named: "barcode"))])
+        let barcodeButton = UIButton()
+        barcodeButton.setImage(UIImage(named: "barcode"), for: .normal)
+        let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
         let signOut = MenuItemButton(title: "SIGN OUT")
@@ -168,6 +172,8 @@ private extension MenuContainerController {
         titleStack.spacing = 4
         titleStack.setCustomSpacing(12, after: checkbox1)
         
+        checkbox1.transform = .init(scaleX: 1.15, y: 1.15)
+        
         followersDescLabel.text = "Followers"
         followingDescLabel.text = "Following"
         followStack.spacing = 4
@@ -196,7 +202,7 @@ private extension MenuContainerController {
         profileImage.layer.cornerRadius = 26
         profileImage.layer.masksToBounds = true
         
-        nameLabel.font = .appFont(withSize: 16, weight: .black)
+        nameLabel.font = .appFont(withSize: 16, weight: .bold)
         
         let menuButtonParent = UIView()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
@@ -219,6 +225,9 @@ private extension MenuContainerController {
         swipe.direction = .left
         coverView.addGestureRecognizer(swipe)
         
+        barcodeButton.addAction(.init(handler: { [weak self] _ in
+            self?.qrCodePressed()
+        }), for: .touchUpInside)
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
@@ -267,6 +276,12 @@ private extension MenuContainerController {
     }
     
     // MARK: - Objc methods
+    
+    func qrCodePressed() {
+        guard WalletManager.instance.userHasWallet == true else { return }
+        show(WalletReceiveViewController(), sender: nil)
+        resetNavigationTabBar()
+    }
     
     @objc func profilePressed() {
         guard let profile = IdentityManager.instance.user else { return }

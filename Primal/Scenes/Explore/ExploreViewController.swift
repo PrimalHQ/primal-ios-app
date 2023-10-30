@@ -30,6 +30,7 @@ final class ExploreViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
             .receive(on: DispatchQueue.main)

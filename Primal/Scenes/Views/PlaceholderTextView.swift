@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PlaceholderTextView: UITextView {
+final class PlaceholderTextView: SelfSizingTextView {
     
     var placeholderTextColor: UIColor = .foreground.withAlphaComponent(0.6) {
         didSet {
@@ -40,10 +40,9 @@ final class PlaceholderTextView: UITextView {
     
     override var text: String! {
         set {
+            let newValue = (newValue?.isEmpty != false ? placeholderText : newValue) ?? ""
             super.text = newValue
-            if newValue != placeholderText {
-                textColor = mainTextColor
-            }
+            textColor = newValue == placeholderText ? placeholderTextColor : mainTextColor
         }
         get {
             let real = realText
@@ -51,7 +50,10 @@ final class PlaceholderTextView: UITextView {
         }
     }
     
-    private var realText: String { super.text ?? "" }
+    private var realText: String {
+        get { super.text ?? "" }
+        set { super.text = newValue }
+    }
     
     init() {
         super.init(frame: .zero, textContainer: nil)
@@ -66,7 +68,7 @@ final class PlaceholderTextView: UITextView {
 extension PlaceholderTextView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if realText == placeholderText {
-            text = ""
+            realText = ""
         }
         textColor = mainTextColor
         didBeginEditing(textView)
@@ -77,5 +79,9 @@ extension PlaceholderTextView: UITextViewDelegate {
             textView.text = placeholderText
             textView.textColor = placeholderTextColor
         }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        invalidateIntrinsicContentSize()
     }
 }

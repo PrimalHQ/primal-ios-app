@@ -66,7 +66,6 @@ final class RelayConnection {
         guard !isWaitingForConnection else { return }
         timeOut *= 2
         isWaitingForConnection = true
-        print("TIME OUT: \(timeOut)")
         dispatchQueue.asyncAfter(deadline: .now() + .seconds(max(timeOut, 5))) { [weak self] in
             guard let self else { return }
             if case .connected = self.state.value { return }

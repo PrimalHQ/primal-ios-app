@@ -98,6 +98,7 @@ final class NotificationsViewController: FeedViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         refresh()
         

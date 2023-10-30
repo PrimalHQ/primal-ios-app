@@ -16,7 +16,7 @@ protocol ChatMessageCellDelegate: AnyObject {
 class ChatMessageCell: UITableViewCell, Themeable {
     let label = NantesLabel()
     let labelBackground = UIView()
-    let gradient = GradientView(colors: UIColor.gradient)
+    let coloredBackgroundView = UIView()
     let failedImageView = UIImageView(image: UIImage(named: "messageFailed"))
     lazy var messageRow = UIStackView([failedImageView, labelBackground])
     lazy var stack = UIStackView(axis: .vertical, [messageRow, SpacerView(height: 4)])
@@ -28,8 +28,8 @@ class ChatMessageCell: UITableViewCell, Themeable {
         
         selectionStyle = .none
         
-        labelBackground.addSubview(gradient)
-        gradient.pinToSuperview()
+        labelBackground.addSubview(coloredBackgroundView)
+        coloredBackgroundView.pinToSuperview()
         
         labelBackground.addSubview(label)
         label.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 12)
@@ -57,7 +57,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
     func setupWith(message: ProcessedMessage, roundSide: Bool) {
         let isMine = message.user.data.pubkey == IdentityManager.instance.userHexPubkey
         
-        gradient.isHidden = !isMine
+        coloredBackgroundView.isHidden = !isMine
         stack.alignment = isMine ? .trailing : .leading
         
         if roundSide {
@@ -102,7 +102,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        gradient.colors = [.accent2, .accent2]
+        coloredBackgroundView.backgroundColor = .accent2
         
         labelBackground.backgroundColor = .background3
         label.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)

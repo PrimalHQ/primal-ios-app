@@ -23,7 +23,7 @@ class NewPostViewController: UIViewController {
     let atButton = UIButton()
     lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
     
-    lazy var postButton = GradientInGradientButton(title: postButtonText)
+    lazy var postButton = SmallPostButton(title: postButtonText)
     
     lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
     
@@ -94,9 +94,10 @@ private extension NewPostViewController {
         
         let cancel = CancelButton()
         let topStack = UIStackView(arrangedSubviews: [cancel, UIView(), postButton])
-        postButton.constrainToSize(width: 88, height: 32)
+        postButton.constrainToSize(width: 88)
         cancel.constrainToSize(width: 88, height: 32)
         
+        topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         
@@ -185,7 +186,7 @@ private extension NewPostViewController {
         
         Publishers.CombineLatest3(manager.$users, manager.$images, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
             guard let self else { return }
-            self.postButton.isEnabled = !isEmpty && !self.manager.isUploadingImages && self.postButton.titleLabel.text == self.postButtonText
+            self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !self.manager.isUploadingImages && self.postButton.titleLabel.text == self.postButtonText
         }
         .store(in: &cancellables)
                 

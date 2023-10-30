@@ -59,7 +59,7 @@ final class PostingTextViewManager: TextViewManager {
     }
     
     override var postingText: String {
-        var currentText = super.postingText as NSString
+        var currentText = (textView.text ?? "") as NSString
         
         var tokens = self.tokens
         

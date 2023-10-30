@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class SelfSizingTextView: UITextView {
+class SelfSizingTextView: UITextView {
     private var preferredMaxLayoutWidth: CGFloat? {
         didSet {
             guard preferredMaxLayoutWidth != oldValue else { return }

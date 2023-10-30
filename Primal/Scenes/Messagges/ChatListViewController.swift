@@ -41,7 +41,7 @@ final class ChatListViewController: UIViewController, Themeable {
         
         setup()
         
-        $selectedType.sink { [weak self] relation in
+        $selectedType.dropFirst().sink { [weak self] relation in
             self?.loadingSpinner.isHidden = false
             self?.loadingSpinner.play()
             self?.chats = []
@@ -57,8 +57,11 @@ final class ChatListViewController: UIViewController, Themeable {
                 self.view.addSubview(self.selectionIndicator)
                 
                 self.selectionIndicator.pin(to: relation == .follows ? self.followsButton : self.otherButton, edges: [.horizontal, .bottom]).constrainToSize(height: 4)
-                UIView.animate(withDuration: 0.2) {
-                    self.view.layoutIfNeeded()
+                
+                if self.view.window != nil {
+                    UIView.animate(withDuration: 0.2) {
+                        self.view.layoutIfNeeded()
+                    }
                 }
             }
         }
@@ -69,6 +72,7 @@ final class ChatListViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         getChats()
     }
@@ -85,7 +89,7 @@ final class ChatListViewController: UIViewController, Themeable {
         otherButton.setTitleColor(.foreground, for: .normal)
         markAllRead.setTitleColor(.accent, for: .normal)
         
-        newChatButton.backgroundColor = .gradientColor(bounds: .init(width: 56, height: 56), startPoint: .zero, endPoint: .init(x: 1, y: 1))
+        newChatButton.backgroundColor = .accent
     }
     
     func updateButtonFonts() {

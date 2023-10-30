@@ -31,7 +31,7 @@ final class ChatTableCell: UITableViewCell, Themeable {
     func updateTheme() {
         contentView.backgroundColor = .background2
         
-        newIndicator.backgroundColor = .gradientColor(bounds: .init(width: 12, height: 12), startPoint: .zero, endPoint: .init(x: 1, y: 1))
+        newIndicator.backgroundColor = .accent
         
         nameLabel.textColor = .foreground
         timeLabel.textColor = .foreground5

@@ -23,7 +23,7 @@ final class NewPostsButton: MyButton, Themeable {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .gradientColor(bounds: .init(width: 192, height: 40), startPoint: .zero, endPoint: .init(x: 1, y: 1))
+        backgroundColor = .accent
         layer.cornerRadius = 20
         
         avatars.forEach {
@@ -35,7 +35,6 @@ final class NewPostsButton: MyButton, Themeable {
             $0.backgroundColor = .init(rgb: 0xAAAAAA)
             $0.contentMode = .scaleAspectFill
         }
-        
         
         avatarStack.alignment = .center
         avatarStack.spacing = -8
@@ -50,15 +49,6 @@ final class NewPostsButton: MyButton, Themeable {
         
         label.font = .appFont(withSize: 14, weight: .regular)
         label.textColor = .white
-    }
-    
-    var oldSize: CGSize = .zero
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if oldSize != bounds.size {
-            oldSize = bounds.size
-            backgroundColor = .gradientColor(bounds: oldSize, startPoint: .zero, endPoint: .init(x: 1, y: 1))
-        }
     }
     
     func setCount(_ count: Int, avatarURLs: [URL]) {

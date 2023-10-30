@@ -106,7 +106,7 @@
 		9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */; };
 		9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */; };
 		9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */; };
-		9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */; };
+		9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* SmallPostButton.swift */; };
 		9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9402A1E6586008DFFBE /* CancelButton.swift */; };
 		9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */; };
 		9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */; };
@@ -439,7 +439,7 @@
 		9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTitleView.swift; sourceTree = "<group>"; };
 		9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
 		9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
-		9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientInGradientButton.swift; sourceTree = "<group>"; };
+		9E5BD93E2A1E6567008DFFBE /* SmallPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPostButton.swift; sourceTree = "<group>"; };
 		9E5BD9402A1E6586008DFFBE /* CancelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelButton.swift; sourceTree = "<group>"; };
 		9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSizingTextView.swift; sourceTree = "<group>"; };
 		9E5BD9442A1E71F2008DFFBE /* PostingTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingTextViewManager.swift; sourceTree = "<group>"; };
@@ -1100,7 +1100,7 @@
 			isa = PBXGroup;
 			children = (
 				9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */,
-				9E5BD93E2A1E6567008DFFBE /* GradientInGradientButton.swift */,
+				9E5BD93E2A1E6567008DFFBE /* SmallPostButton.swift */,
 				9E5BD9402A1E6586008DFFBE /* CancelButton.swift */,
 				9E83DF6D2A573E2300F2C379 /* UIButtons.swift */,
 			);
@@ -1796,7 +1796,7 @@
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				B914CD6F2AA24BD300CD0BD1 /* UnmuteUserCell.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */,
-				9E5BD93F2A1E6567008DFFBE /* GradientInGradientButton.swift in Sources */,
+				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				93EAED182ABB25B300B4A1CD /* Collection+Extra.swift in Sources */,
@@ -2120,7 +2120,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.9;
+				MARKETING_VERSION = 0.34.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2165,7 +2165,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.33.9;
+				MARKETING_VERSION = 0.34.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

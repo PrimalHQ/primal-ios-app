@@ -12,7 +12,9 @@ import GenericJSON
 final class ProfileViewController: PostFeedViewController {
     var profile: ParsedUser {
         didSet {
-            table.reloadSections([0], with: .none)
+            if view.window != nil {
+                table.reloadSections([0], with: .none)
+            }
             navigationBar.updateInfo(profile.data, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         }
     }
@@ -49,6 +51,8 @@ final class ProfileViewController: PostFeedViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
         
         mainTabBarController?.setTabBarHidden(false, animated: true)
+        
+        table.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {

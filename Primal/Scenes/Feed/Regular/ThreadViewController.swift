@@ -49,7 +49,7 @@ final class ThreadViewController: PostFeedViewController {
     
     private let postButtonText = "Reply"
     
-    private lazy var postButton = GradientInGradientButton(title: postButtonText)
+    private lazy var postButton = SmallPostButton(title: postButtonText)
     private let buttonStack = UIStackView()
     private let replyingToLabel = UILabel()
     
@@ -383,7 +383,8 @@ private extension ThreadViewController {
         stack.addArrangedSubview(inputParent)
         stack.addArrangedSubview(bottomBarSpacer)
         
-        inputBackground.layer.cornerRadius = 20
+        inputBackground.layer.cornerRadius = 22
+        inputBackground.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         
         let inputStack = UIStackView(arrangedSubviews: [replyingToLabel, inputBackground, buttonStack])
         inputStack.axis = .vertical
@@ -442,7 +443,7 @@ private extension ThreadViewController {
         textInputView.font = .appFont(withSize: 16, weight: .regular)
         textInputView.textColor = .foreground2
         textInputView.delegate = inputManager
-        textInputView.returnKeyType = .send
+        textInputView.returnKeyType = .default
         
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)

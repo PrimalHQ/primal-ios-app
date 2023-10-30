@@ -148,7 +148,6 @@ private extension WalletRequestResult {
             }
             invoiceInfo = data
         case .WALLET_DEPOSIT_LNURL:
-            print("UNHANDLED KIND: \(kind)")
             guard let data = try? JSONDecoder().decode(DepositInfo.self, from: Data(contentString.utf8)) else {
                 print("Error decoding: \(kind) to json")
                 return

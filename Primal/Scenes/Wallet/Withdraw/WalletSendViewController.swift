@@ -117,23 +117,24 @@ private extension WalletSendViewController {
         
         let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         
-        let sendButton = LargeGradientIconButton(title: "Send", icon: UIImage(named: "feedZapFilled")?.withTintColor(.white)).constrainToSize(height: 56)
+        let sendButton = LargeRoundedButton(title: "Send")
         
         let stack = UIStackView(axis: .vertical, [
             profilePictureView, SpacerView(height: 12),
-            nipLabel, SpacerView(height: 32),
-            input, SpacerView(height: 32),
-            messageParent, SpacerView(height: 44), UIView(),
+            nipLabel, SpacerView(height: 12), SpacerView(height: 20, priority: .defaultLow),
+            input, SpacerView(height: 12), SpacerView(height: 20, priority: .defaultLow),
+            messageParent, SpacerView(height: 12), SpacerView(height: 32, priority: .init(400)), UIView(),
             sendButton
         ])
         
         sendButton.pinToSuperview(edges: .horizontal)
         
-        messageParent.pinToSuperview(edges: .horizontal).constrainToSize(height: 120)
+        messageParent.pinToSuperview(edges: .horizontal)
+        messageParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         messageParent.addSubview(messageInput)
-        messageParent.layer.cornerRadius = 8
+        messageParent.layer.cornerRadius = 24
         
-        messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .vertical, padding: 8)
+        messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .vertical, padding: 4)
         messageInput.font = .appFont(withSize: 16, weight: .regular)
         messageInput.backgroundColor = .clear
         messageInput.mainTextColor = .foreground
@@ -149,15 +150,16 @@ private extension WalletSendViewController {
         view.addSubview(scrollView)
         scrollView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         scrollView.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        let bot = scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        let bot = scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bot.priority = .defaultHigh
         bot.isActive = true
         
         scrollView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 20)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
-        
-        stack.heightAnchor.constraint(greaterThanOrEqualTo: sizingView.heightAnchor, constant: -96).isActive = true
+        let height = stack.heightAnchor.constraint(equalTo: sizingView.heightAnchor, constant: -50)
+        height.priority = .init(500)
+        height.isActive = true
         
         stack.alignment = .center
         
