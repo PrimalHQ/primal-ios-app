@@ -55,7 +55,7 @@ private extension SettingsMainViewController {
         zaps.isEnabled = LoginManager.instance.method() == .nsec
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
@@ -92,6 +92,10 @@ private extension SettingsMainViewController {
         
         zaps.addAction(.init(handler: { [weak self] _ in
             self?.show(SettingsZapsViewController(), sender: nil)
+        }), for: .touchUpInside)
+        
+        network.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsNetworkViewController(), sender: nil)
         }), for: .touchUpInside)
     }
     

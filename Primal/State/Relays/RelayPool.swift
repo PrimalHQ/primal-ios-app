@@ -12,7 +12,7 @@ import GenericJSON
 final class RelayPool {
     static let dispatchQueue = DispatchQueue(label: "com.primal.relaypool", qos: .background)
     
-    private var connections: Set<RelayConnection> = []
+    @Published private(set) var connections: Set<RelayConnection> = []
     private var unsentEvents: [UnsentEvent] = []
     
     private var cancellables: Set<AnyCancellable> = []

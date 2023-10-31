@@ -9,6 +9,10 @@ import Combine
 import Foundation
 import GenericJSON
 
+enum ProfileTab {
+    case notes, replies, zaps
+}
+
 final class FeedManager {
     private var cancellables: Set<AnyCancellable> = []
     

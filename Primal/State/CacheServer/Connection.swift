@@ -28,9 +28,9 @@ class ContinousConnection {
 }
 
 final class Connection {
-    static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
+    static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
+    let socketURL = URL(string: "wss://cache1.primal.net/v1")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -56,28 +56,32 @@ final class Connection {
         if isConnected {
             disconnect()
         }
-        let options = NWProtocolWebSocket.Options()
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-        let ua = "\(APP_NAME)/\(appVersion) (main)"
-        options.autoReplyPing = true // from default settings of NWWebsocket
-        options.setAdditionalHeaders([("User-Agent", ua)])
         
         if socket == nil {
+            let options = NWProtocolWebSocket.Options()
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+            let ua = "\(APP_NAME)/\(appVersion) (main)"
+            options.autoReplyPing = true // from default settings of NWWebsocket
+            options.setAdditionalHeaders([("User-Agent", ua)])
             socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         }
+        
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
     }
+    
     func reconnect() {
-        socket?.delegate = nil
-        socket?.disconnect()
+        disconnect()
+        // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
+        Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
         connect()
     }
     
     func disconnect() {
         socket?.delegate = nil
         socket?.disconnect()
+        socket = nil
         isConnected =  false
     }
     
@@ -188,7 +192,7 @@ final class Connection {
         
         connect()
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(4)) { [weak self] in
             self?.autoReconnect()
         }
     }

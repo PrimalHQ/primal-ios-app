@@ -283,6 +283,7 @@
 		B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF72AE95D790041181B /* Nacelle-Black.otf */; };
 		B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF82AE95D790041181B /* Nacelle-Light.otf */; };
 		B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */; };
+		B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
@@ -614,6 +615,7 @@
 		B94F2BF72AE95D790041181B /* Nacelle-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Black.otf"; sourceTree = "<group>"; };
 		B94F2BF82AE95D790041181B /* Nacelle-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Light.otf"; sourceTree = "<group>"; };
 		B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Thin.otf"; sourceTree = "<group>"; };
+		B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNetworkViewController.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
@@ -1074,6 +1076,7 @@
 				9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */,
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */,
+				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 			);
 			path = SubControllers;
 			sourceTree = "<group>";
@@ -1884,6 +1887,7 @@
 				9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */,
 				B94F2BD22ADC2EB60041181B /* WalletReceiveViewController.swift in Sources */,
 				9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */,
+				B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */,
 				B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */,
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
@@ -2120,7 +2124,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.34.1;
+				MARKETING_VERSION = 0.34.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2165,7 +2169,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.34.1;
+				MARKETING_VERSION = 0.34.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
