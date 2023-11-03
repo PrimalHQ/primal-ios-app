@@ -41,11 +41,12 @@ enum NostrKind: Int {
     case notification = 10_000_110
     case timestamp = 10_000_111
     case notificationStats = 10_000_112
-    case searchPaginationSettingsEvent = 10_000_113
+    case paginationEvent = 10_000_113
     case noteActions = 10_000_115
     case popular_hashtags = 10_000_116
     case messagesMetadata = 10_000_118
     case mediaMetadata = 10_000_119
+    case defaultRelays = 10_000_124
     case followingUser = 10_000_125
     case webPreview = 10_000_128
 }

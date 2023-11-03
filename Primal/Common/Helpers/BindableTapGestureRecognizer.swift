@@ -1,5 +1,5 @@
 //
-//  BindableGestureRecognizer.swift
+//  BindableTapGestureRecognizer.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 23.10.23..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class BindableGestureRecognizer: UITapGestureRecognizer {
+final class BindableTapGestureRecognizer: UITapGestureRecognizer {
     private let action: () -> Void
 
     init(action: @escaping () -> Void) {

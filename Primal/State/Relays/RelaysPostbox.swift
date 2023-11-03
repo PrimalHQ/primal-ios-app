@@ -15,13 +15,14 @@ final class RelaysPostbox {
     static let instance = RelaysPostbox()
     
     func disconnect() {
+        loadedRalays = []
         self.pool.disconnect()
     }
     
     var loadedRalays: [String] = []
     
     func connect(_ relays: [String]) {
-        loadedRalays = relays
+        loadedRalays += relays
         self.pool.connect(relays: relays)
     }
     

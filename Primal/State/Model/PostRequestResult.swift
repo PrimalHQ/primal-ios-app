@@ -21,6 +21,11 @@ class PostRequestResult {
     var stats: [String: NostrContentStats] = [:]
     var userScore: [String: Int] = [:]
     
+    var message: String?
+    var pagination: PrimalPagination?
+    
+    var messageArray: [String]?
+    
     var timestamps: [Date] = []
     
     var popularHashtags: [PopularHashtag] = []

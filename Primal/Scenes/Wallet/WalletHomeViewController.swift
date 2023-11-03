@@ -318,13 +318,14 @@ private extension WalletHomeViewController {
         
         updateTheme()
         
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest4(
             WalletManager.instance.$userHasWallet,
+            WalletManager.instance.$isLoadingWallet,
             WalletManager.instance.$parsedTransactions,
             WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] hasWallet, transactions, isPoor in
+        .sink { [weak self] hasWallet, isLoading, transactions, isPoor in
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
             }
@@ -334,7 +335,7 @@ private extension WalletHomeViewController {
             
             if hasWallet == false {
                 firstSection.cells += [.activateWallet]
-            } else if WalletManager.instance.isLoadingWallet && transactions.isEmpty {
+            } else if isLoading && transactions.isEmpty {
                 firstSection.cells += [.loading]
             } else if isPoor {
                 firstSection.cells += [.buySats]

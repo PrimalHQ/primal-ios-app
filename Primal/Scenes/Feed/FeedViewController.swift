@@ -71,11 +71,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         hapticGenerator.prepare()
         heavy.prepare()
         
-        let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url
-        if posts.contains(where: { post in  post.imageResources.contains(where: { $0.url == playingRN }) }) {
-            DispatchQueue.main.async {
-                VideoPlaybackManager.instance.currentlyPlaying?.play()
-            }
+        guard
+            let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url,
+            let index = posts.firstIndex(where: { post in  post.imageResources.contains(where: { $0.url == playingRN }) }),
+            table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
+        else { return }
+            
+        DispatchQueue.main.async {
+            VideoPlaybackManager.instance.currentlyPlaying?.play()
         }
     }
     
@@ -126,6 +129,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard
+            let postCell = cell as? PostCell,
+            let videoCell = postCell.mainImages.visibleCells.first as? VideoCell
+        else { return }
+        videoCell.player?.play()
     }
     
     func updateTheme() {
@@ -247,6 +258,7 @@ private extension FeedViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .init(top: 0, left: 0, bottom: 90, right: 0)
         
         safeAreaSpacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         

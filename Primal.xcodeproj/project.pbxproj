@@ -272,7 +272,7 @@
 		B94F2BE62AE6BC720041181B /* ActivateWalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BE52AE6BC720041181B /* ActivateWalletCell.swift */; };
 		B94F2BE92AE6BD470041181B /* WalletActivateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BE82AE6BD470041181B /* WalletActivateViewController.swift */; };
 		B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */; };
-		B94F2BED2AE6C7BA0041181B /* BindableGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */; };
+		B94F2BED2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */; };
 		B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */; };
 		B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */; };
 		B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */; };
@@ -284,6 +284,8 @@
 		B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF82AE95D790041181B /* Nacelle-Light.otf */; };
 		B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */; };
 		B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */; };
+		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
+		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */; };
@@ -604,7 +606,7 @@
 		B94F2BE52AE6BC720041181B /* ActivateWalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivateWalletCell.swift; sourceTree = "<group>"; };
 		B94F2BE82AE6BD470041181B /* WalletActivateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletActivateViewController.swift; sourceTree = "<group>"; };
 		B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeRoundedButton.swift; sourceTree = "<group>"; };
-		B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableGestureRecognizer.swift; sourceTree = "<group>"; };
+		B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerViewController.swift; sourceTree = "<group>"; };
 		B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleUseRelayConnection.swift; sourceTree = "<group>"; };
 		B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Regular.otf"; sourceTree = "<group>"; };
@@ -616,6 +618,8 @@
 		B94F2BF82AE95D790041181B /* Nacelle-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Light.otf"; sourceTree = "<group>"; };
 		B94F2BF92AE95D790041181B /* Nacelle-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Thin.otf"; sourceTree = "<group>"; };
 		B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNetworkViewController.swift; sourceTree = "<group>"; };
+		B94F2C052AF5184D0041181B /* RoundedInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedInputField.swift; sourceTree = "<group>"; };
+		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0718E8D2408EC53A239D /* ConnectSpecialWalletButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectSpecialWalletButton.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
@@ -1180,7 +1184,7 @@
 			children = (
 				9E83DF7A2A5800D400F2C379 /* ImageViewerRemote.swift */,
 				9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */,
-				B94F2BEC2AE6C7BA0041181B /* BindableGestureRecognizer.swift */,
+				B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -1301,6 +1305,8 @@
 				9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */,
 				9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */,
 				B94F2BE32AE2EFDD0041181B /* PlaceholderTextView.swift */,
+				B94F2C052AF5184D0041181B /* RoundedInputField.swift */,
+				B94F2C072AF5501A0041181B /* TabSelectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1707,7 +1713,7 @@
 				9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
-				B94F2BED2AE6C7BA0041181B /* BindableGestureRecognizer.swift in Sources */,
+				B94F2BED2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift in Sources */,
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
 				9393D8302A422C3D00F0C55A /* RelayConnection.swift in Sources */,
@@ -1754,6 +1760,7 @@
 				9ECFD3202A0138BF000D1B2F /* FeedNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
 				9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */,
+				B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				B94F2BBC2AD428400041181B /* LargeBalanceConversionView.swift in Sources */,
 				B94F2BC72AD720250041181B /* WalletSendViewController.swift in Sources */,
@@ -1881,6 +1888,7 @@
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
 				B94F2BC92AD7206C0041181B /* WalletPickUserController.swift in Sources */,
+				B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */,
 				93F27DA82A27FA8E004ADA55 /* LikeManager.swift in Sources */,
 				9E83DF7B2A5800D400F2C379 /* ImageViewerRemote.swift in Sources */,
 				9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */,
@@ -2124,7 +2132,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.34.2;
+				MARKETING_VERSION = 0.34.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2169,7 +2177,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.34.2;
+				MARKETING_VERSION = 0.34.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

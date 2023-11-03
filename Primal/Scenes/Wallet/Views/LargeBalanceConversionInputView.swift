@@ -134,19 +134,21 @@ private extension LargeBalanceConversionInputView {
         currencyParent.addSubview(largeCurrencyLabel)
         largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: 8).pinToSuperview(edges: .horizontal)
         
-        let primaryRow = UIStackView([UIView(), dollarParent, amountInput, currencyParent, UIView()])
-        primaryRow.spacing = 6
+        let primaryRow = UIView()
+        [dollarParent, amountInput, currencyParent].forEach { primaryRow.addSubview($0) }
+        dollarParent.pinToSuperview(edges: [.vertical, .leading])
+        currencyParent.pinToSuperview(edges: [.vertical, .trailing])
+        amountInput.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical)
+        NSLayoutConstraint.activate([
+            amountInput.leadingAnchor.constraint(equalTo: dollarParent.trailingAnchor, constant: 6),
+            currencyParent.leadingAnchor.constraint(equalTo: amountInput.trailingAnchor, constant: 6)
+        ])
         
         let secondaryRow = UIStackView([smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }])
         secondaryRow.spacing = 8
         secondaryRow.alignment = .center
-        secondaryRow.isHidden = true
         
-        addArrangedSubview(primaryRow)
-        addArrangedSubview(secondaryRow)
-        
-        primaryRow.pinToSuperview(edges: .horizontal, padding: -6)
-        amountInput.centerToView(self, axis: .horizontal)
+        addArrangedSubview(primaryRow)        
         
         axis = .vertical
         spacing = 2
@@ -192,7 +194,7 @@ final class BalanceInputAccessoryView: UIView, Themeable {
     let doneButton = UIButton()
     
     init() {
-        super.init(frame: .init(x: 0, y: 0, width: 50, height: 44))
+        super.init(frame: .init(origin: .zero, size: .init(width: 100, height: 44)))
         
         let actionStack = UIStackView([UIView()])
         

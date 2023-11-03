@@ -87,9 +87,9 @@ final class HomeFeedViewController: PostFeedViewController {
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).pinToSuperview(edges: .horizontal)
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
         
-        newPostsView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
+        newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
         newPostsView.alpha = 0
         newPostsViewParent.isHidden = true
         
@@ -144,7 +144,8 @@ final class HomeFeedViewController: PostFeedViewController {
         feedButton.tintColor = .foreground3
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         guard indexPath.section == postSection, indexPath.row < newAddedPosts else { return }
             
         newAddedPosts = indexPath.row

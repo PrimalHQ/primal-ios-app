@@ -321,8 +321,6 @@ private extension ThreadViewController {
                     
                 self.imagesCollectionView.isHidden = isImageHidden
                 self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
-                
-                self.textInputView.layoutIfNeeded()
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -364,10 +362,8 @@ private extension ThreadViewController {
             .sink { [weak self] users, images in
                 guard let self else { return }
                 let isHidden = images.isEmpty || !users.isEmpty
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.imagesCollectionView.isHidden = isHidden
-                    self.imagesCollectionView.alpha = isHidden ? 0 : 1
-                })
+                self.imagesCollectionView.isHidden = isHidden
+                self.imagesCollectionView.alpha = isHidden ? 0 : 1
             }
             .store(in: &cancellables)
     }
@@ -491,10 +487,10 @@ private extension ThreadViewController {
         swipe.direction = .down
         inputParent.addGestureRecognizer(swipe)
         
-        textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
-        textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 39).isActive = true
+        textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 39)
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
-        inputContentMaxHeightConstraint?.priority = .defaultLow
+        inputContentMaxHeightConstraint?.priority = .init(500)
         
         view.addSubview(usersTableView)
         usersTableView.pin(to: inputParent, edges: .horizontal)

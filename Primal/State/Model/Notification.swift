@@ -41,7 +41,10 @@ struct PrimalNotification {
             let typeD = object["type"]?.doubleValue,
             let type = NotificationType(rawValue: Int(typeD)),
             let data = NostrNotification.fromJSON(object, kind: type)
-        else { return nil }
+        else {
+            print("UNABLE TO PARSE JSON INTO PrimalNotification")
+            return nil
+        }
 
         return .init(date: .init(timeIntervalSince1970: TimeInterval(created_at)), type: type, data: data)
     }

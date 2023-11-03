@@ -80,7 +80,7 @@ extension ImageCollectionView: UICollectionViewDataSource {
             if let cell = cell as? VideoCell {
                 cell.player = player
             }
-            player.play()
+//            player.play()
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
             let task = URLSession.shared.dataTask(with: url) { data, _, _ in
                 guard let data = data else {

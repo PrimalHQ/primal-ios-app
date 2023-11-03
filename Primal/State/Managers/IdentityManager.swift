@@ -37,6 +37,7 @@ final class IdentityManager {
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
     @Published var userRelays: [String: RelayInfo]?
+    var fullRelayList: [String] = []
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
     
     @Published var didFinishInit: Bool = false
@@ -238,6 +239,8 @@ final class IdentityManager {
                         print("Error decoding contacts to json")
                         return
                     }
+                    
+                    self.fullRelayList = Array(relays.keys)
                     
                     relays = relays.filter { // We need to make sure the user doesn't have garbage in their list of relays
                         guard let url = URL(string: $0.key) else { return false }

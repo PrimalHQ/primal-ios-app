@@ -242,9 +242,9 @@ extension PostRequestResult {
             }
         }
         
-        p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }
-        p.mentions = markedMentions.compactMap { nsText.position(of: $0.0, reference: $0.ref) }
-        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0, reference: $0) }
+        p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
+        p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
+        p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
         p.text = text
         p.buildContentString()
         
@@ -253,13 +253,14 @@ extension PostRequestResult {
 }
 
 extension NSString {
-    func position(of substring: String, reference: String) -> ParsedElement? {
-        let position = range(of: substring)
-        
-        if position.location != NSNotFound {
-            return .init(position: position.location, length: position.length, text: substring, reference: reference)
+    func positions(of substring: String, reference: String) -> [ParsedElement] {
+        var position = range(of: substring)
+        var parsed = [ParsedElement]()
+        while position.location != NSNotFound {
+            parsed.append(.init(position: position.location, length: position.length, text: substring, reference: reference))
+            position = range(of: substring, range: .init(location: position.endLocation, length: length - position.endLocation))
         }
-        return nil
+        return parsed
     }
 }
 

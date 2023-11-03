@@ -43,6 +43,11 @@ final class RelayPool {
         }
     }
     
+    func disconnect(relay: String) {
+        guard let connection = connections.first(where: { $0.identity == relay }) else { return }
+        connections.remove(connection)
+    }
+    
     func connect(_ relay: String) {
         guard let url = URL(string: relay) else { return }
         let rc = RelayConnection(socketURL: url, dispatchQueue: Self.dispatchQueue)

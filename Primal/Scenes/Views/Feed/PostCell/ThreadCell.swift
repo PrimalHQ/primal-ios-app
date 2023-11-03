@@ -105,7 +105,6 @@ final class DefaultThreadCell: ThreadCell {
         
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .top, padding: 12)
     
         topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
         topConstraint?.isActive = true

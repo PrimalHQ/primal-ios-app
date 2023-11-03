@@ -36,16 +36,17 @@ final class WalletManager {
     
     @Published var parsedTransactions: [(WalletTransaction, ParsedUser)] = []
     
-    private var isLoading = false
+    private var isLoadingTransactions = false
     
     private init() {
         IdentityManager.instance.$user
             .compactMap { $0?.npub }
             .removeDuplicates()
-            .flatMap { [weak self] _ -> AnyPublisher<WalletRequestResult, Never> in
+            .flatMap { [weak self] npub -> AnyPublisher<WalletRequestResult, Never> in
                 self?.userHasWallet = nil
                 self?.balance = 0
                 self?.transactions = []
+                print("NPUB: \(npub)")
                 self?.isLoadingWallet = true
                 return PrimalWalletRequest(type: .isUser).publisher().waitForConnection()
             }
@@ -66,14 +67,12 @@ final class WalletManager {
             .store(in: &cancellables)
         
         $balance
-            .removeDuplicates()
             .delay(for: .seconds(3), scheduler: RunLoop.main)
             .flatMap { [weak self] _ in PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection() }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
                 
-                self.isLoading = false
-                self.isLoadingWallet = true
+                self.isLoadingWallet = false
                 
                 let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
                 
@@ -119,12 +118,12 @@ final class WalletManager {
     }
     
     func refreshTransactions() {
-        isLoading = true
+        isLoadingTransactions = true
         
         PrimalWalletRequest(type: .transactions()).publisher().waitForConnection()
             .sink(receiveValue: { [weak self] val in
                 self?.transactions = val.transactions
-                self?.isLoading = false
+                self?.isLoadingTransactions = false
             })
             .store(in: &cancellables)
     }
@@ -152,15 +151,15 @@ final class WalletManager {
     }
     
     func loadMoreTransactions() {
-        guard !isLoading else { return }
+        guard !isLoadingTransactions else { return }
         
-        isLoading = true
+        isLoadingTransactions = true
      
         PrimalWalletRequest(type: .transactions(until: transactions.last?.created_at)).publisher()
             .sink { [weak self] res in
                 if !res.transactions.isEmpty {
                     self?.transactions += res.transactions
-                    self?.isLoading = false
+                    self?.isLoadingTransactions = false
                 }
             }
             .store(in: &cancellables)

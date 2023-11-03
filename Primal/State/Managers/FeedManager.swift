@@ -23,7 +23,7 @@ final class FeedManager {
         
     let newParsedPosts: PassthroughSubject<[ParsedContent], Never> = .init()
     @Published var parsedPosts: [ParsedContent] = []
-    @Published var searchPaginationEvent: PrimalSearchPagination?
+    var paginationInfo: PrimalPagination?
     
     @Published var currentFeed: PrimalSettingsFeed?
     var profilePubkey: String?
@@ -68,7 +68,7 @@ final class FeedManager {
     
     func refresh() {
         parsedPosts.removeAll()
-        searchPaginationEvent = nil
+        paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
         requestNewPage()
@@ -76,6 +76,7 @@ final class FeedManager {
     
     func requestNewPage() {
         guard !isRequestingNewPage, !didReachEnd else { return }
+        guard paginationInfo?.order_by == nil || paginationInfo?.order_by == "created_at" else { return }
         isRequestingNewPage = true
         Connection.dispatchQueue.async {
             self.sendNewPageRequest()
@@ -85,26 +86,28 @@ final class FeedManager {
     func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
         guard
             let directive = currentFeed?.hex,
-            let first = parsedPosts.first
+            let paginationInfo,
+            paginationInfo.order_by == "created_at"
         else {
             return Just([]).eraseToAnyPublisher()
         }
         
-        let since = first.reposted?.date.timeIntervalSince1970 ?? first.post.created_at
-        
-        return Connection.instance.$isConnected
-            .filter { $0 }
-            .first()
-            .flatMap { _ in
-                SocketRequest(name: "feed_directive", payload: .object([
-                    "directive": .string(directive),
-                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                    "limit": .number(Double(40)),
-                    "since": .number(since.rounded())
-                ]))
-                .publisher()
+        return SocketRequest(name: "feed_directive", payload: .object([
+                "directive": .string(directive),
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+                "limit": .number(Double(40)),
+                "since": .number(paginationInfo.until.rounded())
+            ]))
+            .publisher()
+            .waitForConnection()
+            .receive(on: DispatchQueue.main)
+            .map { [weak self] in
+                guard let self else { return $0.process() }
+                if let pagination = $0.pagination {
+                    self.paginationInfo?.since = pagination.since
+                }
+                return $0.process()
             }
-            .map { $0.process() }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
@@ -203,24 +206,34 @@ final class FeedManager {
         .store(in: &cancellables)
     }
     
-    private func sendNewPageRequest(limit: Int32 = 20) {
-        let json = generateRequestByFeedType(limit: limit)
+    private func sendNewPageRequest() {
+        let json = generateRequestByFeedType()
         
         pendingResult = .init()
-        Connection.instance.request(json) { res in
+        Connection.instance.request(json) { [weak self] res in
+            guard let self else { return }
             for response in res {
                 self.handlePostEvent(response)
             }
+            
+            if let pagination = self.pendingResult?.pagination {
+                if self.paginationInfo == nil {
+                    self.paginationInfo = pagination
+                } else {
+                    self.paginationInfo?.since = pagination.since
+                }
+            }
+            
             self.emitPosts()
         }
     }
     
-    private func generateRequestByFeedType(limit: Int32 = 20) -> JSON {
+    private func generateRequestByFeedType() -> JSON {
         if let profilePubkey {
             return generateProfileFeedRequest(profilePubkey)
         }
         if let currentFeed {
-            return generateFeedPageRequest(currentFeed, limit: limit)
+            return generateFeedPageRequest(currentFeed)
         }
         print("No feed error")
         return .object([:])
@@ -249,10 +262,8 @@ final class FeedManager {
         }
     }
     
-    private func generateFeedPageRequest(_ feed: PrimalSettingsFeed, limit: Int32 = 20) -> JSON {
-        let until: Double = {
-            if let since = searchPaginationEvent?.since { return since }
-            
+    private func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> JSON {
+        let until: Double = paginationInfo?.since ?? {
             guard let last = parsedPosts.last else { return Date().timeIntervalSince1970 }
             
             return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
@@ -261,7 +272,7 @@ final class FeedManager {
         var payload: [String: JSON] = [
             "directive": .string(feed.hex),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": .number(Double(limit)),
+            "limit": 50,
             "until": .number(until.rounded())
         ]
         
@@ -278,7 +289,7 @@ final class FeedManager {
     }
     
     private func generateProfileFeedRequest(_ profileId: String, limit: Double = 20) -> JSON {
-        let until: Double = {
+        let until: Double = paginationInfo?.since ?? {
             guard let last = parsedPosts.last else { return Date().timeIntervalSince1970 }
             return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
         }()
@@ -327,13 +338,13 @@ final class FeedManager {
             }
             
             pendingResult?.stats[nostrContentStats.event_id] = nostrContentStats
-        case .searchPaginationSettingsEvent:
-            guard let searchPaginationEvent: PrimalSearchPagination = try? JSONDecoder().decode(PrimalSearchPagination.self, from: Data((response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").utf8)) else {
+        case .paginationEvent:
+            guard let pagination: PrimalPagination = try? JSONDecoder().decode(PrimalPagination.self, from: Data((response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").utf8)) else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
             
-            self.searchPaginationEvent = searchPaginationEvent
+            pendingResult?.pagination = pagination
         case .noteActions:
             guard let noteStatus: PrimalNoteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
                 print("Error decoding PrimalNoteStatus to json")

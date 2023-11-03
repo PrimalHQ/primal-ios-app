@@ -189,7 +189,7 @@ private extension WalletActivateViewController {
         view.constrainToSize(height: 48)
         view.layer.cornerRadius = 24
         
-        view.addGestureRecognizer(BindableGestureRecognizer(action: {
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: {
             input.becomeFirstResponder()
         }))
         

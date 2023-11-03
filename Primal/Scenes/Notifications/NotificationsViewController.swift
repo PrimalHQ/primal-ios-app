@@ -16,6 +16,33 @@ struct GroupedNotification {
 }
 
 final class NotificationsViewController: FeedViewController {
+    enum Tab: Int {
+        case all = 0
+        case zaps = 1
+        case replies = 2
+        case mentions = 3
+        
+        var apiName: String {
+            switch self {
+                
+            case .all:      return "all"
+            case .zaps:     return "zaps"
+            case .replies:  return "replies"
+            case .mentions: return "mentions"
+            }
+        }
+    }
+    
+    var tab: Tab = .all {
+        didSet {
+            notifications = []
+            table.reloadData()
+            loadingSpinner.isHidden = false
+            loadingSpinner.play()
+            refresh()
+        }
+    }
+    
     var notifications: [GroupedNotification] = [] {
         didSet {
             // We must assign posts to an array of posts that match so we can pass control to the FeedViewController
@@ -23,6 +50,8 @@ final class NotificationsViewController: FeedViewController {
         }
     }
     var separatorIndex: Int = -1
+    
+    var tabSelectionView = TabSelectionView(tabs: ["ALL", "ZAPS", "REPLIES", "MENTIONS"])
     
     var isLoading = false
     
@@ -82,6 +111,13 @@ final class NotificationsViewController: FeedViewController {
         
         updateTheme()
         
+        stack.insertArrangedSubview(tabSelectionView, at: 1)
+        
+        tabSelectionView.$selectedTab
+            .compactMap({ Tab(rawValue: $0) })
+            .assign(to: \.tab, onWeak: self)
+            .store(in: &cancellables)
+        
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
         }), for: .valueChanged)
@@ -113,9 +149,11 @@ final class NotificationsViewController: FeedViewController {
     }
     
     func refresh() {
+        let tab = self.tab
         let payload = JSON.object([
             "pubkey": idJsonID,
-            "limit": .number(max(Double(newNotifications + 20), 50))
+            "limit": .number(max(Double(newNotifications + 20), 50)),
+            "type_group": .string(tab.apiName)
         ])
         
         Publishers.CombineLatest(
@@ -141,7 +179,7 @@ final class NotificationsViewController: FeedViewController {
             self?.loadingSpinner.stop()
             self?.refreshControl.endRefreshing()
             
-            if self?.notifications.isEmpty == false {
+            if self?.notifications.isEmpty == false && tab == .all {
                 IdentityManager.instance.updateLastSeen()
             }
         }
@@ -166,23 +204,8 @@ final class NotificationsViewController: FeedViewController {
             cell.border.backgroundColor = indexPath.row == separatorIndex ? .foreground : .foreground6
         }
         
-        if indexPath.row > posts.count - 10, !isLoading {
-            let payload = JSON.object([
-                "pubkey": idJsonID,
-                "limit": .number(20),
-                "until": .number(((notifications.last?.mainNotification.date ?? Date()).timeIntervalSince1970).rounded())
-            ])
-            
-            isLoading = true
-            SocketRequest(name: "get_notifications", payload: payload).publisher()
-                .map { $0.getParsedNotifications() }
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] notifications in
-                    guard let self, self.isLoading else { return }
-                    self.notifications += notifications
-                    self.isLoading = false
-                }
-                .store(in: &cancellables)
+        if indexPath.row > posts.count - 10 {
+            loadMore()
         }
         
         return cell
@@ -198,6 +221,29 @@ final class NotificationsViewController: FeedViewController {
             return self
         }
         return super.open(post: post)
+    }
+    
+    func loadMore() {
+        guard !isLoading else { return }
+        
+        let until = notifications.last?.mainNotification.date ?? Date()
+        let payload = JSON.object([
+            "pubkey": idJsonID,
+            "limit": .number(50),
+            "until": .number(until.timeIntervalSince1970.rounded()),
+            "type_group": .string(tab.apiName)
+        ])
+        
+        isLoading = true
+        SocketRequest(name: "get_notifications", payload: payload).publisher()
+            .map { $0.getParsedNotifications() }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] notifications in
+                guard let self, self.isLoading else { return }
+                self.isLoading = false
+                self.notifications += notifications
+            }
+            .store(in: &cancellables)
     }
 }
 
