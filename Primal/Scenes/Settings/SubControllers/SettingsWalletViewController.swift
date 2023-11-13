@@ -44,6 +44,12 @@ final class SettingsWalletViewController : UIViewController, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
     deinit {
         if let walletObserver {
             NotificationCenter.default.removeObserver(walletObserver)

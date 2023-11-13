@@ -328,26 +328,26 @@ extension FeedViewController: PostCellDelegate {
         }
         
         guard let hasWallet = WalletManager.instance.userHasWallet else { return }
-        
+
         if hasWallet {
             let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, note in
                 let newZapAmount = post.satszapped + zapAmount
-                
+
                 self?.animateZap(cell, amount: newZapAmount)
-                
+
                 Task { @MainActor in
                     do {
                         try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: note)
                     } catch {
-                        self?.showErrorMessage(error.localizedDescription)
+                        self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
                     }
                 }
             }
             present(popup, animated: true)
-            
+
             return
         }
-        
+
         let popup1 = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
             .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
                 self?.mainTabBarController?.switchToTab(.wallet)
@@ -388,22 +388,22 @@ extension FeedViewController: PostCellDelegate {
         
         let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100;
         let newZapAmount = post.satszapped + zapAmount
-        
+
         guard let hasWallet = WalletManager.instance.userHasWallet else { return }
-        
+
         if hasWallet {
             if WalletManager.instance.balance < zapAmount {
                 present(WalletInAppPurchaseController(), animated: true)
                 return
             }
-            
+
             Task { @MainActor [weak self] in
                 do {
                     try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: "")
                 } catch let e as WalletError {
                     self?.showErrorMessage(e.message)
                 } catch {
-                    self?.showErrorMessage(error.localizedDescription)
+                    self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
                 }
             }
             animateZap(cell, amount: newZapAmount)
@@ -575,18 +575,11 @@ extension FeedViewController: PostCellDelegate {
         playerVC.player = player.avPlayer
         playerVC.delegate = self
         present(playerVC, animated: true) {
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            player.play()  // Necessary to cancel delayed pause
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             player.avPlayer.isMuted = false
-            player.play()
+            player.avPlayer.play()
         }
-    }
-    
-    func postCellDidTapImages(_ cell: PostCell, image: URL, images: [URL]) {
-    }
-    
-    func postCellDidLoadImage(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        table.reloadRows(at: [indexPath], with: .none)
     }
     
     // MARK: - Menu actions

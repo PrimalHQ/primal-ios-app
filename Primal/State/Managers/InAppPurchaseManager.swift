@@ -27,7 +27,7 @@ final class InAppPurchaseManager: NSObject {
     private override init() { }
     
     //MARK: - Private
-    fileprivate let productIds: Set<String> = ["5USDSATS"]
+    fileprivate let productIds: Set<String> = ["MINSATS"]
     fileprivate var productID = ""
     fileprivate var productsRequest = SKProductsRequest()
     fileprivate var fetchProductCompletion: (([SKProduct])->Void)?

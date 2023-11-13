@@ -13,6 +13,35 @@ enum ProfileTab {
     case notes, replies, zaps
 }
 
+extension UserDefaults {
+    var homeFeedResultString: String? {
+        get { string(forKey: "homeFeedLocalKey") }
+        set { setValue(newValue, forKey: "homeFeedLocalKey") }
+    }
+    
+    var homeFeedSaveDate: Date? {
+        get { value(forKey: "homeFeedLocalDate") as? Date }
+        set { setValue(newValue, forKey: "homeFeedLocalDate")}
+    }
+    
+    var isLatestFeedFirst: Bool {
+        get { bool(forKey: "isLatestFeedFirstKey") }
+        set { setValue(newValue, forKey: "isLatestFeedFirstKey") }
+    }
+    
+    var oldHomeFeedResult: PostRequestResult? {
+        get {
+            guard isLatestFeedFirst, let date = homeFeedSaveDate, date.timeIntervalSinceNow > -48 * 60 * 60 else { return nil }
+            return homeFeedResultString?.decode()
+        }
+        set {
+            guard newValue != nil else { return }
+            homeFeedSaveDate = .now
+            homeFeedResultString = newValue?.encodeToString()
+        }
+    }
+}
+
 final class FeedManager {
     private var cancellables: Set<AnyCancellable> = []
     
@@ -30,17 +59,30 @@ final class FeedManager {
     var didReachEnd = false
     var search: String?
     
+    var loadLocalFeed = false
+    var withRepliesOverride: Bool? {
+        didSet {
+            refresh()
+        }
+    }
+    
     var muteObserver: AnyObject?
     
-    init() {
+    init(loadLocalFeed: Bool) {
+        self.loadLocalFeed = loadLocalFeed
+        
         initPostsEmitterSubscription()
         initUserConnectionSubscription()
+        
+        if loadLocalFeed {
+            loadLocally()
+        }
     }
     
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
         initPostsEmitterSubscription()
-        initUserConnectionSubscription()
+        refresh()
     }
     
     init(search: String) {
@@ -66,6 +108,19 @@ final class FeedManager {
         refresh()
     }
     
+    func loadLocally() {
+        guard
+            let data = UserDefaults.standard.oldHomeFeedResult,
+            !data.posts.isEmpty
+        else {
+            refresh()
+            return
+        }
+        paginationInfo = data.pagination
+        loadLocalFeed = false
+        postsEmitter.send(data)
+    }
+    
     func refresh() {
         parsedPosts.removeAll()
         paginationInfo = nil
@@ -84,6 +139,8 @@ final class FeedManager {
     }
     
     func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
+        let feed = currentFeed
+        
         guard
             let directive = currentFeed?.hex,
             let paginationInfo,
@@ -104,8 +161,13 @@ final class FeedManager {
             .map { [weak self] in
                 guard let self else { return $0.process() }
                 if let pagination = $0.pagination {
-                    self.paginationInfo?.since = pagination.since
+                    self.paginationInfo?.until = pagination.until
                 }
+                
+                if $0.posts.count > 5 && feed?.name == "Latest" {
+                    UserDefaults.standard.oldHomeFeedResult = $0
+                }
+                
                 return $0.process()
             }
             .receive(on: DispatchQueue.main)
@@ -191,17 +253,27 @@ final class FeedManager {
         }
         .store(in: &cancellables)
     }
+    
     private func initUserConnectionSubscription() {
-        Publishers.CombineLatest3(IdentityManager.instance.$didFinishInit, Connection.instance.$isConnected.removeDuplicates(), IdentityManager.instance.$userSettings).sink { [weak self] didInit, isConnected, currentUserSettings in
-            guard didInit, isConnected, self?.parsedPosts.isEmpty == true, let settings = currentUserSettings else { return }
+        Publishers.CombineLatest3(
+            IdentityManager.instance.$didFinishInit,
+            Connection.instance.$isConnected,
+            IdentityManager.instance.$userSettings.compactMap { $0?.content.feeds?.first }
+        )
+        .filter { $0.0 && $0.1 }
+        .first()
+        .sink { [weak self] _, _, feed in
+            guard let self else { return }
             
-            guard let feed = settings.content.feeds?.first else {
-                print("no feed detected")
-                return
-            }
+            self.currentFeed = feed
             
-            self?.currentFeed = feed
-            self?.refresh()
+            let isLatestFirst = feed.name == "Latest"
+            
+            UserDefaults.standard.isLatestFeedFirst = isLatestFirst
+            
+            guard !isLatestFirst || self.parsedPosts.isEmpty else { return }
+           
+            self.refresh()
         }
         .store(in: &cancellables)
     }
@@ -222,6 +294,10 @@ final class FeedManager {
                 } else {
                     self.paginationInfo?.since = pagination.since
                 }
+            }
+            
+            if self.currentFeed?.name == "Latest" {
+                UserDefaults.standard.oldHomeFeedResult = self.pendingResult
             }
             
             self.emitPosts()
@@ -263,18 +339,15 @@ final class FeedManager {
     }
     
     private func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> JSON {
-        let until: Double = paginationInfo?.since ?? {
-            guard let last = parsedPosts.last else { return Date().timeIntervalSince1970 }
-            
-            return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
-        }()
-        
         var payload: [String: JSON] = [
             "directive": .string(feed.hex),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": 50,
-            "until": .number(until.rounded())
+            "limit": 50
         ]
+        
+        if let until: Double = paginationInfo?.since {
+            payload["until"] = .number(until.rounded())
+        }
         
         if feed.includeReplies == true {
             payload["include_replies"] = .bool(feed.includeReplies ?? false)
@@ -294,16 +367,22 @@ final class FeedManager {
             return last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
         }()
         
+        var payload: [String: JSON] = [
+            "pubkey": .string(profileId),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "notes": .string("authored"),
+            "limit": .number(limit),
+            "until": .number(until.rounded())
+        ]
+        
+        if withRepliesOverride == true {
+            payload["include_replies"] = true
+        }
+        
         return .object([
             "cache": .array([
                 .string("feed"),
-                .object([
-                    "pubkey": .string(profileId),
-                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                    "notes": .string("authored"),
-                    "limit": .number(limit),
-                    "until": .number(until.rounded())
-                ])
+                .object(payload)
             ])
         ])
     }

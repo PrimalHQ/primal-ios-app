@@ -324,6 +324,7 @@ private extension WalletHomeViewController {
             WalletManager.instance.$parsedTransactions,
             WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
         )
+        .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] hasWallet, isLoading, transactions, isPoor in
             let grouping = Dictionary(grouping: transactions) {

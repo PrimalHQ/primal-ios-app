@@ -38,10 +38,16 @@ extension SettingsNetworkViewController: UITextFieldDelegate {
             url.scheme == "wss"
         else { return false }
         
-        FollowManager.instance.addRelay(url: text)
-        RelaysPostbox.instance.connect([text])
+        let alert = UIAlertController(title: "Are you sure?", message: "Do you want to add this relay?\n\(text)", preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .default) { _ in
+            FollowManager.instance.addRelay(url: text)
+            RelaysPostbox.instance.connect([text])
+            
+            textField.text = ""
+        })
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
         
-        textField.text = ""
         textField.resignFirstResponder()
         return false
     }
@@ -106,7 +112,12 @@ private extension SettingsNetworkViewController {
         }))
         
         restoreButton.addAction(.init(handler: { [weak self] _ in
-            FollowManager.instance.resetDefaultRelays()
+            let alert = UIAlertController(title: "Are you sure?", message: "Do you want to restore default relays?", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .destructive) { _ in
+                FollowManager.instance.resetDefaultRelays()
+            })
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            self?.present(alert, animated: true)
         }), for: .touchUpInside)
     }
     
@@ -118,8 +129,13 @@ private extension SettingsNetworkViewController {
     }
     
     func relayConnectionView(_ connection: RelayConnection) -> UIView {
-        let view = SettingsNetworkStatusListView(title: connection.identity, onDelete: {
-            FollowManager.instance.removeRelay(url: connection.identity)
+        let view = SettingsNetworkStatusListView(title: connection.identity, onDelete: { [weak self] in
+            let alert = UIAlertController(title: "Are you sure?", message: "Do you want to delete this relay?\n\(connection.identity)", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .destructive) { _ in
+                FollowManager.instance.removeRelay(url: connection.identity)
+            })
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            self?.present(alert, animated: true)
         })
         connection.state.receive(on: DispatchQueue.main).sink(receiveCompletion: { _ in
             view.status = false

@@ -22,7 +22,8 @@ extension PostRequestResult {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        likes: userScore[user.pubkey]
+        likes: userScore[user.pubkey],
+        followers: userFollowers[user.pubkey]
     )}
     
     func process() -> [ParsedContent] {
@@ -287,7 +288,9 @@ extension PrimalUser {
         return npub
     }
     
-    var secondIdentifier: String? { [nip05, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
+    var parsedNip: String { nip05.hasPrefix("_@") ? nip05.replacingOccurrences(of: "_@", with: "") : nip05 }
+    
+    var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
 }
 
 func eventIdFromNEvent(_ nevent: String) -> String? {

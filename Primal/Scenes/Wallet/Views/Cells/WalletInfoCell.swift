@@ -31,7 +31,7 @@ final class WalletInfoCell: UITableViewCell, Themeable{
         
         let balanceParent = UIView()
         balanceParent.addSubview(balanceConversionView)
-        balanceConversionView.pinToSuperview(edges: .bottom).pinToSuperview(edges: .top, padding: -10)
+        balanceConversionView.pinToSuperview(edges: .bottom).pinToSuperview(edges: .top)
         balanceConversionView.largeAmountLabel.centerToView(balanceParent, axis: .horizontal)
         
         let send = LargeWalletButton(.send)

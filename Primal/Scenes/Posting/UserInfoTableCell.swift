@@ -27,7 +27,7 @@ final class UserInfoTableCell: UITableViewCell {
     
     func update(user: ParsedUser) {
         nameLabel.text = user.data.atIdentifierWithoutAt
-        secondaryLabel.text = user.data.nip05
+        secondaryLabel.text = user.data.parsedNip
         secondaryLabel.isHidden = user.data.nip05.isEmpty
         
         profileIcon.kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [

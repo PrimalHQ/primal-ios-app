@@ -74,11 +74,7 @@ class PostCell: UITableViewCell {
         
         nameLabel.text = user.firstIdentifier
         
-        if user.nip05.hasPrefix("_@") {
-            nipLabel.text = String(user.nip05.split(separator: "@").last ?? "")
-        } else {
-            nipLabel.text = user.nip05
-        }
+        nipLabel.text = user.parsedNip
         nipLabel.isHidden = user.nip05.isEmpty
         checkbox.isHidden = user.nip05.isEmpty
         checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
@@ -311,6 +307,8 @@ private extension PostCell {
 
 extension FLAnimatedImageView {
     func setUserImage(_ user: ParsedUser) {
+        tag = tag + 1
+        
         guard user.data.picture.hasSuffix("gif"), let url = user.profileImage.url(for: .small) else {
             let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
             
@@ -323,16 +321,15 @@ extension FLAnimatedImageView {
         }
         
         image = UIImage(named: "Profile")
-        
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data else {
-                return
-            }
+        let oldTag = self.tag
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let data else { return }
             
             let anim = FLAnimatedImage(gifData: data)
             
             DispatchQueue.main.async {
-                self.animatedImage = anim
+                guard self?.tag == oldTag else { return }
+                self?.animatedImage = anim
             }
         }.resume()
     }

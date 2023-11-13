@@ -146,7 +146,8 @@ private extension WalletInAppPurchaseController {
                 fiatLoading.isHidden = true
                 fiatLoading.stop()
                 
-                PrimalWalletRequest(type: .quote(productId: product.productIdentifier, countryCode: self.countryCode)).publisher()
+                Publishers.Merge(Just(true), Timer.publish(every: 35, on: .main, in: .default).autoconnect().map { _ in true })
+                    .flatMap { _ in PrimalWalletRequest(type: .quote(productId: product.productIdentifier, countryCode: self.countryCode)).publisher() }
                     .receive(on: DispatchQueue.main).sink { [weak self] result in
                         guard let quote = result.quote else { return }
                         
@@ -185,6 +186,7 @@ private extension WalletInAppPurchaseController {
 
                     PrimalWalletRequest(type: .inAppPurchase(transactionId: transactionId, quote: quote.quote_id))
                         .publisher()
+                        .waitForConnection()
                         .receive(on: DispatchQueue.main)
                         .sink { result in
                             self?.view.isUserInteractionEnabled = false

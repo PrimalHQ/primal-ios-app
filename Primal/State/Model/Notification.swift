@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-enum NotificationType: Int, CaseIterable {
+enum NotificationType: Int, CaseIterable, Codable {
     case NEW_USER_FOLLOWED_YOU = 1
     
     case YOUR_POST_WAS_ZAPPED = 3
@@ -29,7 +29,7 @@ enum NotificationType: Int, CaseIterable {
     case POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO = 204
 }
 
-struct PrimalNotification {
+struct PrimalNotification: Codable {
     var date: Date
     var type: NotificationType
     var data: NostrNotification
@@ -50,7 +50,7 @@ struct PrimalNotification {
     }
 }
 
-enum NostrNotification {
+enum NostrNotification: Codable {
     case userFollowed(userId: String)
     case userUnfollowed(userId: String)
     

@@ -19,7 +19,7 @@ extension UINavigationController {
 
 final class FeedNavigationController: MainNavigationController {
     init() {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: FeedManager())))
+        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController(feed: FeedManager(loadLocalFeed: true))))
     }
     
     required init?(coder aDecoder: NSCoder) {

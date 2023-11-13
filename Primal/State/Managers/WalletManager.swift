@@ -42,37 +42,46 @@ final class WalletManager {
         IdentityManager.instance.$user
             .compactMap { $0?.npub }
             .removeDuplicates()
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMap { [weak self] npub -> AnyPublisher<WalletRequestResult, Never> in
                 self?.userHasWallet = nil
                 self?.balance = 0
                 self?.transactions = []
-                print("NPUB: \(npub)")
                 self?.isLoadingWallet = true
                 return PrimalWalletRequest(type: .isUser).publisher().waitForConnection()
             }
             .sink(receiveValue: { [weak self] val in
+                self?.isLoadingWallet = false
                 self?.userHasWallet = val.kycLevel == .email || val.kycLevel == .idDocument
             })
             .store(in: &cancellables)
         
         $userHasWallet
             .filter { $0 == true }
-            .flatMap { _ in PrimalWalletRequest(type: .balance).publisher().waitForConnection() }
-            .sink(receiveValue: { [weak self] val in
-                let string = val.balance?.amount ?? "0"
+            .flatMap { [weak self] _ in
+                self?.isLoadingWallet = true
+                return Publishers.Zip(
+                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(),
+                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection()
+                )
+            }
+            .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
+                let string = balanceRes.balance?.amount ?? "0"
                 let double = (Double(string) ?? 0) * .BTC_TO_SAT
                 
+                self?.isLoadingWallet = false
+                self?.transactions = transactionsRes.transactions
                 self?.balance = Int(double)
             })
             .store(in: &cancellables)
         
         $balance
-            .delay(for: .seconds(3), scheduler: RunLoop.main)
-            .flatMap { [weak self] _ in PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection() }
+            .debounce(for: .seconds(3), scheduler: RunLoop.main)
+            .flatMap { [weak self] _ in
+                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection()
+            }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
-                
-                self.isLoadingWallet = false
                 
                 let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
                 
@@ -165,10 +174,10 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
-    func sendLNInvoice(_ lninvoice: String) async throws {
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
         return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLNInvoice(lnInvoice: lninvoice)).publisher()
-                .sink { [weak self] res in
+            PrimalWalletRequest(type: .sendLNInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride)).publisher()
+                .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
                     } else {
@@ -182,7 +191,7 @@ final class WalletManager {
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         return try await withCheckedThrowingContinuation({ continuation in
             PrimalWalletRequest(type: .sendLNURL(lnurl: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note)).publisher()
-                .sink { [weak self] res in
+                .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
                     } else {
@@ -199,7 +208,7 @@ final class WalletManager {
         
         return try await withCheckedThrowingContinuation({ continuation in
             PrimalWalletRequest(type: .send(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
-                .sink { [weak self] res in
+                .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
                     } else {

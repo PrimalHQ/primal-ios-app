@@ -74,11 +74,11 @@ struct ParsedLNURL: Codable {
 
 struct ParsedLNInvoice: Codable {
     var lninvoice: Data
-    var pubkey: String
+    var pubkey: String?
     
     struct Data: Codable {
         var amount_msat: Int
-        var description: String
+        var description: String?
     }
 }
 

@@ -190,7 +190,7 @@ final class IdentityManager {
                     
                     let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
                     if !latestWithRepliesFeedExists {
-                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
+                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
                     }
                     
                     // There were breaking changes to how settingsx work over the time
@@ -350,6 +350,11 @@ final class IdentityManager {
     func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
         if LoginManager.instance.method() != .nsec { return }
 
+        let count = feeds.filter({ $0.name.hasPrefix("Latest") }).count
+        if count > 2 {
+            print(count)
+        }
+        
         guard var settings = userSettings else { return }
         settings.content.feeds = feeds
         updateSettings(settings)
@@ -427,11 +432,7 @@ final class IdentityManager {
     private func handleDeletedAccount() {
         let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .destructive) { _ in
-            _ = ICloudKeychainManager.instance.clearSavedKeys()
-            KingfisherManager.shared.cache.clearMemoryCache()
-            UserDefaults.standard.nwc = nil
-            
-            RootViewController.instance.reset()
+            LoginManager.instance.logout()
         })
         DispatchQueue.main.async {
             RootViewController.instance.present(alert, animated: true)

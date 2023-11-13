@@ -5,10 +5,11 @@
 //  Created by Pavle D Stevanović on 14.7.23..
 //
 
+import FLAnimatedImage
 import UIKit
 
 final class NewPostsButton: MyButton, Themeable {
-    private let avatars: [UIImageView] = (0..<3).map { _ in UIImageView(image: UIImage(named: "Profile")) }
+    private let avatars: [FLAnimatedImageView] = (0..<3).map { _ in FLAnimatedImageView(image: UIImage(named: "Profile")) }
     private let label = UILabel()
     
     lazy var avatarStack = UIStackView(avatars)
@@ -51,7 +52,7 @@ final class NewPostsButton: MyButton, Themeable {
         label.textColor = .white
     }
     
-    func setCount(_ count: Int, avatarURLs: [URL]) {
+    func setCount(_ count: Int, users: [ParsedUser]) {
         if count == 1 {
             label.text = "1 new note"
         } else {
@@ -64,10 +65,12 @@ final class NewPostsButton: MyButton, Themeable {
         
         guard count > 0 else { return }
         
-        zip((1...count), zip(avatarURLs.unique(), avatars)).forEach { (_, arg1) in
-            let (url, avatar) = arg1
+        let uniqueUsers = users.uniqueByFilter { $0.data.id }
+        
+        zip((1...count), zip(uniqueUsers, avatars)).forEach { (_, arg1) in
+            let (user, avatar) = arg1
             avatar.isHidden = false
-            avatar.kf.setImage(with: url, placeholder: UIImage(named: "Profile"))
+            avatar.setUserImage(user)
         }
     }
     

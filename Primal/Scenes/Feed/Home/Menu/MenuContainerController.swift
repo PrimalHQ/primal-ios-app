@@ -263,11 +263,11 @@ private extension MenuContainerController {
         ])
         
         if user.displayName.isEmpty {
-            nameLabel.text = user.nip05.isEmpty ? user.name : user.nip05
+            nameLabel.text = user.nip05.isEmpty ? user.name : user.parsedNip
             domainLabel.isHidden = true
         } else {
             nameLabel.text = user.displayName
-            domainLabel.text = user.nip05.isEmpty ? user.name : user.nip05
+            domainLabel.text = user.nip05.isEmpty ? user.name : user.parsedNip
             domainLabel.isHidden = false
         }
         
@@ -278,9 +278,7 @@ private extension MenuContainerController {
     // MARK: - Objc methods
     
     func qrCodePressed() {
-        guard WalletManager.instance.userHasWallet == true else { return }
-        show(WalletReceiveViewController(), sender: nil)
-        resetNavigationTabBar()
+        
     }
     
     @objc func profilePressed() {
@@ -310,10 +308,7 @@ private extension MenuContainerController {
     @objc func signoutPressed() {
         let alert = UIAlertController(title: "Are you sure you want to sign out?", message: "If you didn't save your private key, it will be irretrievably lost", preferredStyle: .alert)
         alert.addAction(.init(title: "Sign out", style: .destructive) { _ in
-            let _ = ICloudKeychainManager.instance.clearSavedKeys()
-            KingfisherManager.shared.cache.clearMemoryCache()
-            RootViewController.instance.reset()
-            UserDefaults.standard.nwc = nil
+            LoginManager.instance.logout()
         })
         
         alert.addAction(.init(title: "Cancel", style: .cancel))

@@ -28,7 +28,7 @@ struct PrimalWalletRequest {
         case transactions(until: Int? = nil, since: Int? = nil)
         case send(target: String, pubkey: String, amount: String, note: String, zap: NostrObject?)
         case sendLNURL(lnurl: String, pubkey: String?, amount: String, note: String)
-        case sendLNInvoice(lnInvoice: String)
+        case sendLNInvoice(lnInvoice: String, amountOverride: String?, noteOverride: String?)
         case deposit(AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
@@ -60,11 +60,19 @@ struct PrimalWalletRequest {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
                 }
                 return "[\"transactions\",{\"subwallet\":1,\"limit\":50}]"
-            case let .sendLNInvoice(lnInvoice):
-                return "[\"withdraw\", {\"lnInvoice\": \"\(lnInvoice)\"}]"
+            case let .sendLNInvoice(lnInvoice, amountOverride, noteOverride):
+                if let amountOverride {
+                    return "[\"withdraw\", {\"subwallet\":1, \"lnInvoice\": \"\(lnInvoice)\", \"amount_btc\":\"\(amountOverride)\", \"note_for_self\":\"\(noteOverride ?? "")\"}]"
+                }
+                return "[\"withdraw\", {\"subwallet\":1, \"lnInvoice\": \"\(lnInvoice)\"}]"
             case let .sendLNURL(lnurl, pubkey, amount, note):
+                if let pubkey {
+                    return """
+                    ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
+                    """.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
                 return """
-                ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "target_pubkey":"\(pubkey ?? "")", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
+                ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
                 """.trimmingCharacters(in: .whitespacesAndNewlines)
             case let .send(target, pubkey, amount, note, zap):
                 guard

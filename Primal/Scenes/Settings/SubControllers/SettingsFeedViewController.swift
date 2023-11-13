@@ -147,7 +147,7 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
             
             var defaultFeeds: [PrimalSettingsFeed] = [
                 .init(name: "Latest", hex: userPubkey, includeReplies: false),
-                .init(name: "Latest with replies", hex: userPubkey, includeReplies: true),
+                .init(name: "Latest with Replies", hex: userPubkey, includeReplies: true),
             ]
             
             for object in result {

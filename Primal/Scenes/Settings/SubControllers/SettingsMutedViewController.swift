@@ -97,7 +97,7 @@ extension SettingsMutedViewController: UITableViewDataSource {
         ])
         
         cell.nameLabel.text = nostrData.name
-        cell.usernameLabel.text = nostrData.nip05
+        cell.usernameLabel.text = nostrData.parsedNip
         
         return cell
     }

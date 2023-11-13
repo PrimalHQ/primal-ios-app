@@ -27,8 +27,8 @@ final class WalletSendViewController: UIViewController, Themeable {
             switch self {
             case let .user(user):
                 return user.data.lud16
-            case .address(let address, _, let user):
-                return user?.data.lud16 ?? address
+            case .address(_, let invoice, let user):
+                return user?.data.lud16 ?? invoice?.lninvoice.description ?? ""
             }
         }
         
@@ -43,7 +43,7 @@ final class WalletSendViewController: UIViewController, Themeable {
             switch self {
             case .user:                     return ""
             case .address(_, let parsed, _):
-                guard let desc = parsed?.lninvoice.description.removingPercentEncoding else { return "" }
+                guard let desc = parsed?.lninvoice.description?.removingPercentEncoding else { return "" }
                 
                 return desc.split(separator: " ").dropFirst(3).joined(separator: " ")
             }
@@ -52,7 +52,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         var isEditable: Bool {
             switch self {
             case .user:                     return true
-            case .address(_, let parsed, _):  return parsed == nil
+            case .address(_, let parsed, _):  return parsed == nil || parsed?.lninvoice.amount_msat == 0
             }
         }
     }
@@ -176,6 +176,7 @@ private extension WalletSendViewController {
         
         nipLabel.text = destination.address
         nipLabel.numberOfLines = 0
+        nipLabel.textAlignment = .center
         
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.send(sender: sendButton)
@@ -216,7 +217,7 @@ private extension WalletSendViewController {
                         sats: amount,
                         note: messageInput.text ?? ""
                     )
-                case let .address(address, _, user):
+                case let .address(address, invoice, user):
                     if address.hasPrefix("lnurl") {
                         try await WalletManager.instance.sendLNURL(
                             lnurl: address,
@@ -225,7 +226,11 @@ private extension WalletSendViewController {
                             note: messageInput.text ?? ""
                         )
                     } else {
-                        try await WalletManager.instance.sendLNInvoice(address)
+                        if invoice?.lninvoice.amount_msat ?? 0 == 0 {
+                            try await WalletManager.instance.sendLNInvoice(address, satsOverride: amount, messageOverride: messageInput.text)
+                        } else {
+                            try await WalletManager.instance.sendLNInvoice(address, satsOverride: nil, messageOverride: nil)
+                        }
                     }
                 }
                 

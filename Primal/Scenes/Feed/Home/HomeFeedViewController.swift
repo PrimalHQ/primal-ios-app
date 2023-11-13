@@ -40,7 +40,7 @@ final class HomeFeedViewController: PostFeedViewController {
     
     func updatePosts(_ oldValue: Int) {
         if newPosts != 0 {
-            newPostsView.setCount(newPosts, avatarURLs: (newPostObjects + posts.prefix(newAddedPosts)).compactMap { $0.user.profileImage.url(for: .small) })
+            newPostsView.setCount(newPosts, users: (newPostObjects + posts.prefix(newAddedPosts)).compactMap { $0.user })
         }
         
         if newPosts == 0 {
@@ -70,7 +70,7 @@ final class HomeFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Latest with Replies"
+        title = "Latest"
         
         loadingSpinner.transform = .init(translationX: 0, y: -70)
         
@@ -192,7 +192,11 @@ final class HomeFeedViewController: PostFeedViewController {
 
 private extension HomeFeedViewController {
     func setupPublishers() {
-        Timer.publish(every: 30, on: .main, in: .default).autoconnect().flatMap { [weak self] _ -> AnyPublisher<[ParsedContent], Never> in
+        Publishers.Merge(
+            Timer.publish(every: 30, on: .main, in: .default).autoconnect(),
+            Timer.publish(every: 3, on: .main, in: .default).autoconnect().first()
+        )
+        .flatMap { [weak self] _ -> AnyPublisher<[ParsedContent], Never> in
             self?.feed.futurePostsPublisher() ?? Just([]).eraseToAnyPublisher()
         }
         .sink { [weak self] sorted in
@@ -259,6 +263,7 @@ private extension HomeFeedViewController {
     
     func processFuturePosts(_ sorted: [ParsedContent]) {
         let sorted = sorted.filter { post in
+            !post.post.id.isEmpty &&
             !posts.contains(where: { $0.post.id == post.post.id }) &&
             !newPostObjects.contains(where: { $0.post.id == post.post.id })
         }

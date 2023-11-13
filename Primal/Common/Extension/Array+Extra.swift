@@ -19,3 +19,10 @@ extension Sequence where Iterator.Element: Hashable {
         return self.filter { seen.updateValue(true, forKey: $0) == nil }
     }
 }
+
+extension Sequence {
+    func uniqueByFilter<T: Hashable>(_ filter: (Element) -> T) -> [Element] {
+        var seen: [T: Bool] = [:]
+        return self.filter { seen.updateValue(true, forKey: filter($0)) == nil }
+    }
+}

@@ -35,7 +35,7 @@ final class PostPreviewView: UIView {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
-        secondaryIdentifierLabel.text = user.nip05
+        secondaryIdentifierLabel.text = user.parsedNip
         verifiedBadge.isHidden = user.nip05.isEmpty
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
@@ -46,7 +46,6 @@ final class PostPreviewView: UIView {
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ])
-        
         
         imageAspectConstraint?.isActive = false
         if let first = content.imageResources.first?.variants.first {
@@ -130,6 +129,7 @@ private extension PostPreviewView {
         mainImages.layer.masksToBounds = true
         mainImages.layer.cornerRadius = 8
         mainImages.isHidden = true
+        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         
         let nameTimeStack = UIStackView(arrangedSubviews: [
             profileImageView, nameLabel, verifiedBadge, secondaryIdentifierLabel,

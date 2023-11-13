@@ -117,6 +117,12 @@ private extension SocketRequest {
             guard let info = try? JSONDecoder().decode([String: Int].self, from: Data(contentString.utf8)) else { return }
             
             pendingResult.userScore = info
+        case .userFollowers:
+            guard let info: [String: Int] = contentString.decode() else {
+                print("Error decoding user followers")
+                return
+            }
+            pendingResult.userFollowers = info
         case .userStats:
             guard let nostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: Data(contentString.utf8)) else {
                 print("Error decoding nostr stats string to json")
@@ -192,6 +198,18 @@ extension String {
             return try JSONDecoder().decode(T.self, from: Data(utf8))
         } catch {
             print("Error decoding \(T.self) from \(self) error \(error)")
+        }
+        return nil
+    }
+}
+
+extension Encodable {
+    func encodeToString() -> String? {
+        do {
+            let data = try JSONEncoder().encode(self)
+            return String(data: data, encoding: .utf8)
+        } catch {
+            print("Error encoding \(self) error \(error)")
         }
         return nil
     }

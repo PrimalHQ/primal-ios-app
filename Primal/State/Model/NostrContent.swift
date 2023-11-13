@@ -68,6 +68,7 @@ struct NostrUserProfileInfo: Codable {
     let follows_count: Int32?
     let followers_count: Int32?
     let note_count: Int32?
+    let reply_count: Int32?
     let time_joined: Int32?
     
     var follows: Int32 { follows_count ?? 0 }

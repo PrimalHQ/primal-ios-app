@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FLAnimatedImage
 import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
@@ -26,7 +27,7 @@ class ProfileNavigationView: UIView, Themeable {
     var overlayView = UIView()
 
     let profilePictureParent = UIView()
-    let profilePicture = UIImageView()
+    let profilePicture = FLAnimatedImageView()
     
     weak var profilePicOverlayBig: UIView?
     weak var profilePicOverlaySmall: UIView?
@@ -49,7 +50,9 @@ class ProfileNavigationView: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateInfo(_ user: PrimalUser, isMuted: Bool) {
+    func updateInfo(_ parsed: ParsedUser, isMuted: Bool) {
+        let user = parsed.data
+        
         if let bannerUrl = URL(string: user.banner) {
             KingfisherManager.shared.retrieveImage(with: bannerUrl, options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: window?.screen.bounds.width ?? 400, height: maxSize))),
@@ -63,11 +66,7 @@ class ProfileNavigationView: UIView, Themeable {
             }
         }
         
-        profilePicture.kf.setImage(with: URL(string: user.picture), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 80, height: 80))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        profilePicture.setUserImage(parsed)
         
         primaryLabel.text = user.firstIdentifier
         checkboxIcon.isHidden = user.nip05.isEmpty

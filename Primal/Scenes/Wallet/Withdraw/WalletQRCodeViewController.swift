@@ -96,6 +96,45 @@ final class WalletQRCodeViewController: UIViewController {
             self.captureSession.stopRunning()
         }
     }
+    
+    func search(_ text: String) {
+        guard textSearch == nil else { return }
+        
+        textSearch = text
+        
+        PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let self else { return }
+                if let message = result.message {
+//                        self?.showErrorMessage(message)
+                    self.textSearch = nil
+                    return
+                }
+                
+                guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
+                    self.dismiss(animated: true) {
+                        self.callback(text, result.parsedLNInvoice, nil)
+                    }
+                    return
+                }
+            
+                SocketRequest(name: "user_infos", payload: .object(["pubkeys": [.string(pubkey)]])).publisher()
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] userRes in
+                        var user: ParsedUser?
+                        
+                        if let simpUser = userRes.users[pubkey] {
+                            user = userRes.createParsedUser(simpUser)
+                        }
+                        
+                        self?.dismiss(animated: true) {
+                            self?.callback(text, result.parsedLNInvoice, user)
+                        }
+                    }
+                    .store(in: &self.cancellables)
+            }
+            .store(in: &cancellables)
+    }
 }
 
 extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
@@ -113,43 +152,8 @@ extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 
-        if let text = metadataObj.stringValue, textSearch == nil {
-            print(text)
-            
-            textSearch = text
-            
-            PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
-                .sink { [weak self] result in
-                    guard let self else { return }
-                    if let message = result.message {
-//                        self?.showErrorMessage(message)
-                        self.textSearch = nil
-                        return
-                    }
-                    
-                    guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
-                        self.dismiss(animated: true) {
-                            self.callback(text, result.parsedLNInvoice, nil)
-                        }
-                        return
-                    }
-                
-                    SocketRequest(name: "user_infos", payload: .object(["pubkeys": [.string(pubkey)]])).publisher()
-                        .receive(on: DispatchQueue.main)
-                        .sink { [weak self] userRes in
-                            var user: ParsedUser?
-                            
-                            if let simpUser = userRes.users[pubkey] {
-                                user = userRes.createParsedUser(simpUser)
-                            }
-                            
-                            self?.dismiss(animated: true) {
-                                self?.callback(text, result.parsedLNInvoice, user)
-                            }
-                        }
-                        .store(in: &self.cancellables)
-                }
-                .store(in: &cancellables)
+        if let text = metadataObj.stringValue {
+            search(text)
         }
     }
 }

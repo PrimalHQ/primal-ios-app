@@ -54,6 +54,7 @@ final class NotificationsViewController: FeedViewController {
     var tabSelectionView = TabSelectionView(tabs: ["ALL", "ZAPS", "REPLIES", "MENTIONS"])
     
     var isLoading = false
+    var didReachEnd = false
     
     var newNotifications: Int = 0 {
         didSet {
@@ -149,6 +150,9 @@ final class NotificationsViewController: FeedViewController {
     }
     
     func refresh() {
+        didReachEnd = false
+        isLoading = true
+        
         let tab = self.tab
         let payload = JSON.object([
             "pubkey": idJsonID,
@@ -224,7 +228,7 @@ final class NotificationsViewController: FeedViewController {
     }
     
     func loadMore() {
-        guard !isLoading else { return }
+        guard !isLoading, !didReachEnd else { return }
         
         let until = notifications.last?.mainNotification.date ?? Date()
         let payload = JSON.object([
@@ -240,8 +244,15 @@ final class NotificationsViewController: FeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] notifications in
                 guard let self, self.isLoading else { return }
+                
+                let notifications = notifications.filter { newNotif in !self.notifications.contains(where: { $0.mainNotification.date == newNotif.mainNotification.date }) }
+                
+                if notifications.isEmpty {
+                    self.didReachEnd = true
+                } else {
+                    self.notifications += notifications
+                }
                 self.isLoading = false
-                self.notifications += notifications
             }
             .store(in: &cancellables)
     }

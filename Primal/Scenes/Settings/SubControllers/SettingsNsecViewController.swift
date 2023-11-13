@@ -168,10 +168,7 @@ private extension SettingsNsecViewController {
             alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
                 Task { @MainActor in
                     await _ = IdentityManager.instance.deleteAccount()
-                    _ = ICloudKeychainManager.instance.clearSavedKeys()
-                    KingfisherManager.shared.cache.clearMemoryCache()
-                    UserDefaults.standard.nwc = nil
-                    RootViewController.instance.reset()
+                    LoginManager.instance.logout()
                 }
             }))
             alert.addAction(.init(title: "Cancel", style: .cancel))

@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 8.6.23..
 //
 
+import Combine
 import UIKit
 
 protocol ProfileInfoCellDelegate: AnyObject {
@@ -13,6 +14,8 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func zapPressed()
     func editProfilePressed()
     func messagePressed()
+    
+    func didSelectTab(_ tab: Int)
 }
 
 class ProfileInfoCell: UITableViewCell {
@@ -34,16 +37,19 @@ class ProfileInfoCell: UITableViewCell {
     
     let following = ProfileStatDisplayView("Following")
     let followers = ProfileStatDisplayView("Followers")
-    let posts = ProfileStatDisplayView("Notes")
+    
+    let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "following", "followers"])
     
     weak var delegate: ProfileInfoCellDelegate?
+    
+    var cancellables: Set<AnyCancellable> = []
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
     
-    func update(user: PrimalUser, stats: NostrUserProfileInfo?, followsUser: Bool, delegate: ProfileInfoCellDelegate?) {
+    func update(user: PrimalUser, stats: NostrUserProfileInfo?, followsUser: Bool, selectedTab: Int, delegate: ProfileInfoCellDelegate?) {
         self.delegate = delegate
         
         primaryLabel.text = user.firstIdentifier
@@ -54,15 +60,22 @@ class ProfileInfoCell: UITableViewCell {
         checkboxIcon.tintColor = .accent
         
         secondaryLabel.isHidden = user.nip05.isEmpty
-        secondaryLabel.text = user.nip05
+        secondaryLabel.text = user.parsedNip
         
         npubView.npub = user.npub
         descLabel.text = user.about
         linkView.link = user.website
         
-        following.text = (stats?.follows_count ?? 0).localized()
-        followers.text = (stats?.followers_count ?? 0).localized()
-        posts.text = (stats?.note_count ?? 0).localized()
+        zip(infoStack.buttons, [
+            (stats?.note_count ?? 0).localized(),
+            (stats?.reply_count ?? 0).localized(),
+            (stats?.follows_count ?? 0).localized(),
+            (stats?.followers_count ?? 0).localized()
+        ]).forEach { button, text in
+            button.text = text
+        }
+        
+        infoStack.set(selectedTab)
         
         editProfile.isHidden = user.pubkey != IdentityManager.instance.userHexPubkey
         zapButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
@@ -105,9 +118,6 @@ private extension ProfileInfoCell {
         descLabel.font = .appFont(withSize: 14, weight: .regular)
         descLabel.numberOfLines = 0
         
-        let infoStack = UIStackView(arrangedSubviews: [following, followers, posts])
-        infoStack.spacing = 60
-        
         let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, npubView, descLabel, linkView, infoStack])
         mainStack.axis = .vertical
         mainStack.alignment = .leading
@@ -117,6 +127,8 @@ private extension ProfileInfoCell {
         mainStack.setCustomSpacing(16, after: npubView)
         mainStack.setCustomSpacing(8, after: descLabel)
         mainStack.setCustomSpacing(16, after: infoStack)
+        
+        infoStack.pinToSuperview(edges: .horizontal)
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
@@ -141,6 +153,11 @@ private extension ProfileInfoCell {
         messageButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.messagePressed()
         }), for: .touchUpInside)
+        
+        infoStack.$selectedTab.removeDuplicates().dropFirst().sink { [weak self] tab in
+            self?.delegate?.didSelectTab(tab)
+        }
+        .store(in: &cancellables)
     }
     
     @objc func npubPressed() {

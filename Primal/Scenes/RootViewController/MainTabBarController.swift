@@ -35,9 +35,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
-    lazy var buttons = (1...5).map { _ in
-        UIButton()
-    }
+    lazy var buttons = tabs.map { _ in UIButton() }
 
     let notificationIndicator = NotificationsIndicator()
     let messagesIndicator = NotificationsIndicator()
@@ -262,9 +260,11 @@ private extension MainTabBarController {
                 .sinkAsync { _ in
                     let parsedUser = await ProfileManager.instance.requestProfileInfo(hex)
 
-                    self.menuButtonPressedForNav(self.home)
-                    let vc = ProfileViewController(profile: parsedUser)
-                    self.home.pushViewController(vc, animated: true)
+                    DispatchQueue.main.async {
+                        self.menuButtonPressedForNav(self.home)
+                        let vc = ProfileViewController(profile: parsedUser)
+                        self.home.pushViewController(vc, animated: true)
+                    }
                 }
                 .store(in: &cancellables)
         }
