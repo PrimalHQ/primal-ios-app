@@ -64,14 +64,14 @@ final class SettingsToggleView: UIView, Themeable {
     let label = UILabel()
     let toggle = UISwitch(frame: .zero)
     
-    weak var delegate: SettingsToggleCellDelegate?
-    
     init(title: String, image: UIImage? = nil) {
         super.init(frame: .zero)
         
         let stack = UIStackView(arrangedSubviews: [icon, label, toggle])
         addSubview(stack)
         stack.pinToSuperview()
+        
+        toggle.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         stack.spacing = 16
         stack.alignment = .center
@@ -81,11 +81,7 @@ final class SettingsToggleView: UIView, Themeable {
         icon.image = image
 
         label.text = title
-        
-        toggle.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            
-        }), for: .valueChanged)
+        label.numberOfLines = 0
         
         updateTheme()
     }
@@ -98,6 +94,8 @@ final class SettingsToggleView: UIView, Themeable {
         label.font = .appFont(withSize: 16, weight: .regular)
         label.textColor = .foreground3
         
-        toggle.onTintColor = .accent
+        if toggle.onTintColor != .accent {
+            toggle.onTintColor = .accent
+        }
     }
 }

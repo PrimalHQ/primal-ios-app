@@ -72,6 +72,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         heavy.prepare()
         
         guard
+            ContentDisplaySettings.autoPlayVideos,
             let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url,
             let index = posts.firstIndex(where: { post in  post.imageResources.contains(where: { $0.url == playingRN }) }),
             table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
@@ -134,9 +135,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard
             let postCell = cell as? PostCell,
-            let videoCell = postCell.mainImages.visibleCells.first as? VideoCell
+            let videoCell = postCell.mainImages.visibleCells.first as? VideoCell ?? postCell.postPreview.mainImages.visibleCells.first as? VideoCell
         else { return }
+        
         videoCell.player?.play()
+        if !ContentDisplaySettings.autoPlayVideos {
+            videoCell.player?.delayedPause()
+        }
     }
     
     func updateTheme() {

@@ -28,9 +28,8 @@ final class RootViewController: UIViewController {
 
     private init() {
         super.init(nibName: nil, bundle: nil)
-        if !Theme.hasDefaultTheme {
-            Theme.current = UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance
-        }
+        ThemingManager.instance.setStartingTheme(isFirstTime: true)
+        
         quickReset()
         addIntro()
         
@@ -64,6 +63,12 @@ final class RootViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
         KingfisherManager.shared.cache.clearMemoryCache()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        guard traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
+        
+        ThemingManager.instance.traitDidChange()
     }
     
     func set(_ viewController: UIViewController) {
@@ -107,7 +112,7 @@ final class RootViewController: UIViewController {
     
     func quickReset() {        
         if let _ = LoginManager.instance.method() {
-            overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+            overrideUserInterfaceStyle = ContentDisplaySettings.autoDarkMode ? .unspecified : Theme.current.userInterfaceStyle
             set(MainTabBarController())
             Connection.instance.connect()
         } else {

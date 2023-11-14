@@ -31,6 +31,7 @@ final class WalletManager {
     @Published var balance: Int = 0
     @Published var transactions: [WalletTransaction] = []
     @Published var isLoadingWallet = true
+    @Published var didJustCreateWallet = false
     
     var userData: [String: ParsedUser] = [:]
     
@@ -203,11 +204,26 @@ final class WalletManager {
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        let lud = user.lud16
-        guard !lud.isEmpty else { throw NSError(domain: "no.lud", code: 1) }
+        let lud06 = user.lud06
+        guard !lud06.isEmpty else {
+            let lud = user.lud16
+            guard !lud.isEmpty else { throw NSError(domain: "no.lud", code: 1) }
+            
+            return try await withCheckedThrowingContinuation({ continuation in
+                PrimalWalletRequest(type: .sendLud16(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
+                    .sink { res in
+                        if let errorMessage = res.message {
+                            continuation.resume(throwing: WalletError.serverError(errorMessage))
+                        } else {
+                            continuation.resume()
+                        }
+                    }
+                    .store(in: &cancellables)
+            })
+        }
         
         return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .send(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
+            PrimalWalletRequest(type: .sendLud06(target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
                 .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))

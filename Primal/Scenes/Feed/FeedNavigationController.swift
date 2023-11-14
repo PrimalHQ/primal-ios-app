@@ -45,7 +45,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         appearance.backgroundColor = UIColor.background
         appearance.shadowColor = .clear
         appearance.titleTextAttributes = [
-            .font: UIFont.appFont(withSize: 20, weight: .semibold),
+            .font: UIFont.appFont(withSize: 20, weight: .bold),
             .foregroundColor: UIColor.foreground
         ]
         navigationBar.scrollEdgeAppearance = appearance

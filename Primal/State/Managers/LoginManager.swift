@@ -32,6 +32,8 @@ final class LoginManager {
         UserDefaults.standard.nwc = nil
         ICloudKeychainManager.instance.clearSavedKeys()
         UserDefaults.standard.homeFeedResultString = nil
+        UserDefaults.standard.homeFeedSaveDate = nil
+        UserDefaults.standard.synchronize()
         
         RootViewController.instance.reset()
     }

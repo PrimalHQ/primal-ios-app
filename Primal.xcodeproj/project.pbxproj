@@ -233,6 +233,7 @@
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
+		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
 		B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */; };
 		B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */; };
 		B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */; };
@@ -569,6 +570,7 @@
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
+		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
 		B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackManager.swift; sourceTree = "<group>"; };
 		B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutedUserCell.swift; sourceTree = "<group>"; };
 		B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
@@ -1085,6 +1087,7 @@
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
+				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
 			);
 			path = SubControllers;
 			sourceTree = "<group>";
@@ -1819,6 +1822,7 @@
 				B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */,
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadPhotoRequest.swift in Sources */,
+				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
@@ -2134,13 +2138,13 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.92.0;
+				MARKETING_VERSION = 0.92.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2179,13 +2183,13 @@
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.92.0;
+				MARKETING_VERSION = 0.92.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

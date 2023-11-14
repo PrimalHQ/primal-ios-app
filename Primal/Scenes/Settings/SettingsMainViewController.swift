@@ -39,10 +39,11 @@ private extension SettingsMainViewController {
         title = "Settings"
         
         let keys = SettingsOptionButton(title: "Account")
+        let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
+        let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
-        let network = SettingsOptionButton(title: "Network")
         let feeds = SettingsOptionButton(title: "Feeds")
         let wallet = SettingsOptionButton(title: "Wallet")
         let zaps = SettingsOptionButton(title: "Zaps")
@@ -55,7 +56,7 @@ private extension SettingsMainViewController {
         zaps.isEnabled = LoginManager.instance.method() == .nsec
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, contentDisplay, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
@@ -79,35 +80,39 @@ private extension SettingsMainViewController {
         feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
         
         appearance.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsAppearanceViewController(), sender: nil)
+            self?.navigationController?.pushViewController(SettingsAppearanceViewController(), animated: true)
+        }), for: .touchUpInside)
+        
+        contentDisplay.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsContentDisplayController(), animated: true)
         }), for: .touchUpInside)
         
         muted.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsMutedViewController(), sender: nil)
+            self?.navigationController?.pushViewController(SettingsMutedViewController(), animated: true)
         }), for: .touchUpInside)
         
         notifications.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsNotificationsViewController(), sender: nil)
+            self?.navigationController?.pushViewController(SettingsNotificationsViewController(), animated: true)
         }), for: .touchUpInside)
         
         zaps.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsZapsViewController(), sender: nil)
+            self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
         }), for: .touchUpInside)
         
         network.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsNetworkViewController(), sender: nil)
+            self?.navigationController?.pushViewController(SettingsNetworkViewController(), animated: true)
         }), for: .touchUpInside)
     }
     
     @objc func feedsPressed() {
-        show(SettingsFeedViewController(), sender: nil)
+        navigationController?.pushViewController(SettingsFeedViewController(), animated: true)
     }
     
     @objc func keysPressed() {
-        show(SettingsNsecViewController(), sender: nil)
+        navigationController?.pushViewController(SettingsNsecViewController(), animated: true)
     }
     
     @objc func walletPressed() {
-        show(SettingsWalletViewController(), sender: nil)
+        navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
     }
 }

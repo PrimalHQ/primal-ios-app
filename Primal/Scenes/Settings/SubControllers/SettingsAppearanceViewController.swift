@@ -11,6 +11,7 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
     var previewTable = UITableView()
     let mainParent = UIView()
     lazy var stack = UIStackView(axis: .vertical, [mainParent])
+    let themeExplanation = SettingsToggleView(title: "Use full width layout")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,22 +19,38 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
         setupView()
     }
     
-    
-    var cellID: String { "cell"}
+    var cellID: String = "cell"
     func updateTheme() {
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
         
-        previewTable.removeFromSuperview()
-        previewTable = UITableView()
-        stack.addArrangedSubview(previewTable)
-        
-        previewTable.dataSource = self
-        previewTable.isUserInteractionEnabled = false
-        previewTable.backgroundColor = .clear
-        previewTable.separatorStyle = .none
+        cellID = "cell" + UUID().uuidString.prefix(10)
         previewTable.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: cellID)
         previewTable.reloadData()
+        
+        if Theme.current.kind != Theme.defaultTheme?.kind {
+            themeExplanation.alpha = 1
+            themeExplanation.isHidden = false
+            switch Theme.current.kind {
+            case .sunriseWave, .sunsetWave:
+                themeExplanation.label.text = "App will switch between sunrise/sunset based on your system dark mode settings"
+            case .midnightWave, .iceWave:
+                themeExplanation.label.text = "App will switch between midnight/ice based on your system dark mode settings"
+            }
+            
+            DispatchQueue.main.async {
+                self.themeExplanation.alpha = 1
+                self.themeExplanation.isHidden = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
+                    self.themeExplanation.alpha = 1
+                    self.themeExplanation.isHidden = false
+                }
+            }
+        } else {
+            themeExplanation.alpha = 0
+            themeExplanation.isHidden = true
+        }
     }
 }
 
@@ -64,9 +81,22 @@ private extension SettingsAppearanceViewController {
             FeedDesign.current = newValue ? .fullWidth : .standard
         }), for: .valueChanged)
         
+        themeExplanation.toggle.setOn(ContentDisplaySettings.autoDarkMode, animated: false)
+        themeExplanation.toggle.addAction(.init(handler: { [weak themeExplanation] _ in
+            guard let newValue = themeExplanation?.toggle.isOn else { return }
+            ContentDisplaySettings.autoDarkMode = newValue
+            ThemingManager.instance.setStartingTheme()
+        }), for: .valueChanged)
+        
+        previewTable.dataSource = self
+        previewTable.isUserInteractionEnabled = false
+        previewTable.backgroundColor = .clear
+        previewTable.separatorStyle = .none
+        
         let mainStack = UIStackView(axis: .vertical, [
             SettingsTitleViewVibrant(title: "THEME"),       SpacerView(height: 12),
             themeStack,                                     SpacerView(height: 20),
+            themeExplanation,
             BorderView(),                                   SpacerView(height: 16),
             SettingsTitleViewVibrant(title: "FONT"),        SpacerView(height: 22),
             slider,                                         SpacerView(height: 20),
@@ -75,9 +105,12 @@ private extension SettingsAppearanceViewController {
             toggle,                                         SpacerView(height: 16),
             BorderView(),                                   SpacerView(height: 16),
             SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12),
+            previewTable
         ])
         mainParent.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical)
+        
+        mainStack.setCustomSpacing(12, after: themeExplanation)
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)

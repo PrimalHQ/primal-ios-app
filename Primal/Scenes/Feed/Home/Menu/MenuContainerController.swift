@@ -293,6 +293,7 @@ private extension MenuContainerController {
     }
     
     @objc func themeButtonPressed() {
+        ContentDisplaySettings.autoDarkMode = false
         switch Theme.current.kind {
         case .sunriseWave:
             Theme.defaultTheme = SunsetWave.instance

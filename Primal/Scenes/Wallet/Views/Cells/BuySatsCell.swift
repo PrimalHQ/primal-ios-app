@@ -28,7 +28,6 @@ final class BuySatsCell: UITableViewCell, Themeable {
         
         descLabel.textAlignment = .center
         descLabel.numberOfLines = 0
-        descLabel.text = "Your wallet is active. Now you need sats."
         descLabel.font = .appFont(withSize: 16, weight: .medium)
         
         actionButton.setTitle("Buy Sats Now", for: .normal)
@@ -48,6 +47,12 @@ final class BuySatsCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
+        if WalletManager.instance.didJustCreateWallet {
+            descLabel.text = "Your wallet is active. Now you need sats."
+        } else {
+            descLabel.text = "You are running low on sats."
+        }
+        
         contentView.backgroundColor = .background
         
         descLabel.textColor = .foreground5

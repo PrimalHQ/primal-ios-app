@@ -199,7 +199,7 @@ final class FeedManager {
             
             let allReposts = sorted.filter { $0.reposted != nil }
             
-            // First group all recieved reposts
+            // First group all received reposts
             var groupedReposts: [ParsedContent] = []
             for repost in allReposts {
                 guard

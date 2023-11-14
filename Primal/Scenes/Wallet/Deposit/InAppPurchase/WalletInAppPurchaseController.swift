@@ -83,8 +83,9 @@ private extension WalletInAppPurchaseController {
             PullBarView(), SpacerView(height: 40),
             label("PAY"), SpacerView(height: 8),
             containerView(fiatStack), SpacerView(height: 49),
-            label("TO RECIEVE"), SpacerView(height: 8),
+            label("TO RECEIVE"), SpacerView(height: 8),
             containerView(satsStack),
+            
             UIView(),
             action
         ].forEach { stack.addArrangedSubview($0) }

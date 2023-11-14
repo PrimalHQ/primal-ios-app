@@ -309,7 +309,11 @@ extension FLAnimatedImageView {
     func setUserImage(_ user: ParsedUser) {
         tag = tag + 1
         
-        guard user.data.picture.hasSuffix("gif"), let url = user.profileImage.url(for: .small) else {
+        guard
+            ContentDisplaySettings.animatedAvatars,
+            user.data.picture.hasSuffix("gif"),
+            let url = user.profileImage.url(for: .small)
+        else {
             let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
             
             kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [

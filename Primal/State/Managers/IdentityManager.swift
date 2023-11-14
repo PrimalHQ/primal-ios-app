@@ -68,10 +68,11 @@ final class IdentityManager {
                         
                         guard let score = content.values.first else { return }
                         
-                        print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
+                case .userFollowers, .mediaMetadata:
+                    break
                 default:
-                        print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
+                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -290,10 +291,10 @@ final class IdentityManager {
                             }
                         }
                     }
-                case .metadata, .userScore, .mediaMetadata:
+                case .metadata, .userScore, .mediaMetadata, .userFollowers:
                     break // NO ACTION
                 default:
-                        print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
+                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }

@@ -26,7 +26,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         var address: String {
             switch self {
             case let .user(user):
-                return user.data.lud16
+                return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
             case .address(_, let invoice, let user):
                 return user?.data.lud16 ?? invoice?.lninvoice.description ?? ""
             }
@@ -175,7 +175,7 @@ private extension WalletSendViewController {
         }
         
         nipLabel.text = destination.address
-        nipLabel.numberOfLines = 0
+        nipLabel.numberOfLines = 2
         nipLabel.textAlignment = .center
         
         sendButton.addAction(.init(handler: { [weak self] _ in

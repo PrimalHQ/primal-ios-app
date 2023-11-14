@@ -84,7 +84,8 @@ final class ThemeIndicator: UIView, Themeable {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if theme == Theme.current.kind {
+        let currentDefault = Theme.defaultTheme ?? Theme.current
+        if theme == currentDefault.kind {
             let size: CGSize = bounds.size.width < 1 ? .init(width: 70, height: 70) : bounds.size
             layer.borderColor = UIColor.gradientColor(
                 theme.theme.gradient,
@@ -96,7 +97,8 @@ final class ThemeIndicator: UIView, Themeable {
     }
     
     func updateTheme() {
-        if theme == Theme.current.kind {
+        let currentDefault = Theme.defaultTheme ?? Theme.current
+        if theme == currentDefault.kind {
             checkboxBackground.isHidden = false
             layoutSubviews()
         } else {
