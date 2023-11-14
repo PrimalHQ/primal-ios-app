@@ -193,6 +193,7 @@ final class FeedManager {
             
             if sorted.isEmpty {
                 didReachEnd = true
+                return
             }
             
             var parsed = self.parsedPosts
@@ -243,6 +244,11 @@ final class FeedManager {
                     }
                     return false
                 })
+            }
+            
+            if sorted.isEmpty {
+                didReachEnd = true
+                return
             }
             
             parsed += sorted

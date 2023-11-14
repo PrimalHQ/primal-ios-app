@@ -30,7 +30,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     var postSection: Int { 0 }
     var posts: [ParsedContent] = [] {
         didSet {
-            guard oldValue.count != 0, oldValue.count < posts.count else {
+            guard oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
                 table.reloadData()
                 return
             }
@@ -193,13 +193,15 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func updateBars() {
-        let shouldShowBars = true // self.shouldShowBars
+        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? self.shouldShowBars : true
         
         safeAreaSpacer.isHidden = !shouldShowBars
         navigationBorder.isHidden = !shouldShowBars
         mainTabBarController?.setTabBarHidden(!shouldShowBars, animated: false)
         navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-//        table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
+        if ContentDisplaySettings.fullScreenFeed {
+            table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
+        }
 
         isAnimatingBars = true
         isShowingBars = self.shouldShowBars
@@ -210,7 +212,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         var shouldShowBars = scrollDirectionCounter >= 0
         guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
         
-        shouldShowBars = true // HARD CODING!
+        if !ContentDisplaySettings.fullScreenFeed {
+            shouldShowBars = true  // Disable override
+        }
         
         isAnimatingBars = true
         table.bounces = shouldShowBars
@@ -224,7 +228,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
         
-        let shouldMoveOffset = false // safeAreaSpacer.superview != nil
+        let shouldMoveOffset = ContentDisplaySettings.fullScreenFeed && safeAreaSpacer.superview != nil
         
         if !shouldShowBars {
             // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE

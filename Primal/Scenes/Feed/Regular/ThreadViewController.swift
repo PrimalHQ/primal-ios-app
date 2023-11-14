@@ -166,7 +166,7 @@ final class ThreadViewController: PostFeedViewController {
     override func updateBars() {
         guard posts.count > 10 else { return }
         
-        let shouldShowBars = true // shouldShowBars
+        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
         
         super.updateBars()
         
@@ -178,7 +178,7 @@ final class ThreadViewController: PostFeedViewController {
     
     override func animateBars() {
         guard posts.count > 10 else { return }
-        let shouldShowBars = true // shouldShowBars
+        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
         
         super.animateBars()
         

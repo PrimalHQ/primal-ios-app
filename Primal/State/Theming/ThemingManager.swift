@@ -56,10 +56,6 @@ final class ThemingManager {
         }
         
         UIView.transition(with: RootViewController.instance.view, duration: 0.3, options: .transitionCrossDissolve) {
-//            
-//        }
-//        
-//        UIView.animate(withDuration: 0.3, delay: 0, options: [.transitionCrossDissolve]) {
             for themeable: Themeable in RootViewController.instance.findAllChildren() {
                 themeable.updateTheme()
             }

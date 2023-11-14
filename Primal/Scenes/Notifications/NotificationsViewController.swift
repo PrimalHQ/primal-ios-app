@@ -56,6 +56,9 @@ final class NotificationsViewController: FeedViewController {
     var isLoading = false
     var didReachEnd = false
     
+    let newSpacer = UIView()
+    var newSpacerHeightConstraint: NSLayoutConstraint?
+    
     var newNotifications: Int = 0 {
         didSet {
             let main: MainTabBarController? = RootViewController.instance.findInChildren()
@@ -114,6 +117,13 @@ final class NotificationsViewController: FeedViewController {
         
         stack.insertArrangedSubview(tabSelectionView, at: 1)
         
+        stack.insertArrangedSubview(newSpacer, at: 0)
+        DispatchQueue.main.async {
+            let const = self.newSpacer.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
+            const.priority = .defaultHigh
+            const.isActive = true
+        }
+        
         tabSelectionView.$selectedTab
             .compactMap({ Tab(rawValue: $0) })
             .assign(to: \.tab, onWeak: self)
@@ -144,6 +154,9 @@ final class NotificationsViewController: FeedViewController {
     
     override func updateTheme() {
         super.updateTheme()
+        
+        view.backgroundColor = .background
+        tabSelectionView.backgroundColor = .background
         
         table.register(NotificationsCell.self, forCellReuseIdentifier: postCellID)
         table.reloadData()
@@ -213,6 +226,23 @@ final class NotificationsViewController: FeedViewController {
         }
         
         return cell
+    }
+    
+    override func animateBars() {
+        var shouldShowBars = self.shouldShowBars
+        
+        super.animateBars()
+        
+        newSpacerHeightConstraint?.isActive = false
+        
+        if !shouldShowBars {
+            newSpacerHeightConstraint = newSpacer.heightAnchor.constraint(equalToConstant: 30)
+            newSpacerHeightConstraint?.isActive = true
+        }
+        
+        UIView.animate(withDuration: 0.3) {
+            self.stack.layoutIfNeeded()
+        }
     }
     
     override func open(post: ParsedContent) -> FeedViewController {
