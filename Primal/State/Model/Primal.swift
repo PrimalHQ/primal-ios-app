@@ -91,10 +91,10 @@ struct PrimalSettingsNotifications: Codable, Hashable {
     var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO: Bool
 }
 
-struct PrimalSearchPagination: Codable, Hashable {
-    let since: Double
-    let until: Double
-    let order_by: String
+struct PrimalPagination: Codable, Hashable {
+    var since: Double
+    var until: Double
+    var order_by: String
 }
 
 struct PrimalSettings: Codable, Identifiable, Hashable {
@@ -312,6 +312,20 @@ extension PrimalUser {
             deleted: false
         )
     }()
+    
+    var profileData: Profile {
+        Profile(
+            name: name,
+            display_name: displayName,
+            about: about,
+            picture: picture,
+            banner: banner,
+            website: website,
+            lud06: lud06,
+            lud16: lud16,
+            nip05: nip05
+        )
+    }
 }
 
 extension PrimalFeedPost {

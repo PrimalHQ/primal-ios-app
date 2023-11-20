@@ -33,12 +33,7 @@ enum Theme: String {
         }
         set {
             UserDefaults.standard.set(newValue?.kind.rawValue, forKey: .currentAppThemeDefaultsKey)
-            current = newValue ?? (
-                UIScreen.main.traitCollection.userInterfaceStyle == .light ?
-                    SunriseWave.instance :
-                    SunsetWave.instance
-                )
-            ThemingManager.instance.themeDidChange()
+            ThemingManager.instance.setStartingTheme(isFirstTime: false)
         }
     }
     

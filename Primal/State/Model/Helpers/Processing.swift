@@ -22,7 +22,8 @@ extension PostRequestResult {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        likes: userScore[user.pubkey]
+        likes: userScore[user.pubkey],
+        followers: userFollowers[user.pubkey]
     )}
     
     func process() -> [ParsedContent] {
@@ -242,9 +243,9 @@ extension PostRequestResult {
             }
         }
         
-        p.hashtags = hashtags.compactMap { nsText.position(of: $0, reference: $0) }
-        p.mentions = markedMentions.compactMap { nsText.position(of: $0.0, reference: $0.ref) }
-        p.httpUrls = otherURLs.compactMap { nsText.position(of: $0, reference: $0) }
+        p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
+        p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
+        p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
         p.text = text
         p.buildContentString()
         
@@ -253,13 +254,14 @@ extension PostRequestResult {
 }
 
 extension NSString {
-    func position(of substring: String, reference: String) -> ParsedElement? {
-        let position = range(of: substring)
-        
-        if position.location != NSNotFound {
-            return .init(position: position.location, length: position.length, text: substring, reference: reference)
+    func positions(of substring: String, reference: String) -> [ParsedElement] {
+        var position = range(of: substring)
+        var parsed = [ParsedElement]()
+        while position.location != NSNotFound {
+            parsed.append(.init(position: position.location, length: position.length, text: substring, reference: reference))
+            position = range(of: substring, range: .init(location: position.endLocation, length: length - position.endLocation))
         }
-        return nil
+        return parsed
     }
 }
 
@@ -286,7 +288,9 @@ extension PrimalUser {
         return npub
     }
     
-    var secondIdentifier: String? { [nip05, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
+    var parsedNip: String { nip05.hasPrefix("_@") ? nip05.replacingOccurrences(of: "_@", with: "") : nip05 }
+    
+    var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
 }
 
 func eventIdFromNEvent(_ nevent: String) -> String? {

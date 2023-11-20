@@ -28,9 +28,9 @@ class ContinousConnection {
 }
 
 final class Connection {
-    static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
+    static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    private let socketURL = URL(string: "wss://cache1.primal.net/v1")!
+    let socketURL = URL(string: "wss://cache1.primal.net/v1")!
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -56,29 +56,38 @@ final class Connection {
         if isConnected {
             disconnect()
         }
-        let options = NWProtocolWebSocket.Options()
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-        let ua = "\(APP_NAME)/\(appVersion) (main)"
-        options.autoReplyPing = true // from default settings of NWWebsocket
-        options.setAdditionalHeaders([("User-Agent", ua)])
         
         if socket == nil {
+            let options = NWProtocolWebSocket.Options()
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+            let ua = "\(APP_NAME)/\(appVersion) (main)"
+            options.autoReplyPing = true // from default settings of NWWebsocket
+            options.setAdditionalHeaders([("User-Agent", ua)])
             socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         }
+        
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
     }
+    
     func reconnect() {
-        socket?.delegate = nil
-        socket?.disconnect()
+        disconnect()
+        // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
+        Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
         connect()
     }
     
     func disconnect() {
         socket?.delegate = nil
         socket?.disconnect()
+        socket = nil
         isConnected =  false
+    }
+    
+    func requestWallet(_ content: String, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        guard let walletEvent = NostrObject.wallet(content) else { return }
+        requestCache(name: "wallet", request: ["operation_event": walletEvent.toJSON()], handler)
     }
     
     func requestCache(name: String, request: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
@@ -103,7 +112,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-//            print("REQUEST:\n\(jsonStr)")
+            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
@@ -117,16 +126,15 @@ final class Connection {
                 "cache" : .array(
                     [.string(name), request]
                 )
-            ]), handler)
+            ]), subId: "\(name)-\(UUID().uuidString)", handler)
         } else {
             return requestContinous(.object([
                 "cache" : .array([.string(name)])
-            ]), handler)
+            ]), subId: "\(name)-\(UUID().uuidString)", handler)
         }
     }
     
-    func requestContinous(_ request: JSON, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
-        let subId = UUID().uuidString
+    func requestContinous(_ request: JSON, subId: String = UUID().uuidString, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
             guard let jsonData = try? self.jsonEncoder.encode(json) else {
@@ -167,20 +175,15 @@ final class Connection {
             return
         }
         
-        if type == "EVENT" {
-            if responseBuffer.keys.contains(subId) {
-                responseBuffer[subId]?.append(json)
-            } else {
-                continousSubHandlers[subId]?(json)
-            }
-        } else if type == "EOSE" {
+        if type == "EOSE" {
             if let handler = subHandlers[subId], let b = responseBuffer[subId] {
                 handler(b)
             }
             responseBuffer[subId] = nil
             subHandlers[subId] = nil
         } else {
-            print(json)
+            responseBuffer[subId]?.append(json)
+            continousSubHandlers[subId]?(json)
         }
     }
     
@@ -189,7 +192,7 @@ final class Connection {
         
         connect()
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(4)) { [weak self] in
             self?.autoReconnect()
         }
     }

@@ -30,8 +30,10 @@ class VideoPlayer {
     
     @Published var isMuted = true {
         didSet {
-            if !isMuted {
-                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            if isMuted {
+                try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+            } else {
+                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             }
             avPlayer.isMuted = isMuted
         }
@@ -53,6 +55,13 @@ class VideoPlayer {
     
     func play() {
         shouldPause = false
+        
+        if isMuted {
+            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        } else {
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        }
+        
         VideoPlaybackManager.instance.currentlyPlaying = self
     }
     

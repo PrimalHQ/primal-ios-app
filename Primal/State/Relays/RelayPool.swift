@@ -12,7 +12,7 @@ import GenericJSON
 final class RelayPool {
     static let dispatchQueue = DispatchQueue(label: "com.primal.relaypool", qos: .background)
     
-    private var connections: Set<RelayConnection> = []
+    @Published private(set) var connections: Set<RelayConnection> = []
     private var unsentEvents: [UnsentEvent] = []
     
     private var cancellables: Set<AnyCancellable> = []
@@ -30,13 +30,22 @@ final class RelayPool {
             connection.disconnect()
         }
         connections = []
-        self.relays = []
+        relays = []
+        
+        cancellables = []
+        atLeastOneConnected = false
+        numOfConnected = 0
     }
     
     func connect(relays: [String]) {
         for relay in relays {
             self.connect(relay)
         }
+    }
+    
+    func disconnect(relay: String) {
+        guard let connection = connections.first(where: { $0.identity == relay }) else { return }
+        connections.remove(connection)
     }
     
     func connect(_ relay: String) {
@@ -82,7 +91,15 @@ final class RelayPool {
                 if connection.state.value == .connected {
                     connection.request(ev, handler)
                 } else {
-                    self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                    connection.connect()
+                    
+                    Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(3)) {
+                        if connection.state.value == .connected {
+                            connection.request(ev, handler)
+                        } else {
+                            self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                        }
+                    }
                 }
             }
         }

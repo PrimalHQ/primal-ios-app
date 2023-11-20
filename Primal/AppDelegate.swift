@@ -12,6 +12,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         URLCache.shared.diskCapacity = 1_000_000_000
         
+        UserDefaults.standard.register(defaults: [
+            .autoPlayVideosKey:     true,
+            .animatedAvatarsKey:    true,
+            .fullScreenFeedKey:     false,
+            .autoDarkModeKey:       true,
+        ])
+        
         return true
     }
 

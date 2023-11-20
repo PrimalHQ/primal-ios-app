@@ -7,7 +7,29 @@
 
 import UIKit
 
+extension CIImage {
+    var image: UIImage { .init(ciImage: self) }
+}
+
 extension UIImage {
+    static func createQRCode(_ string: String) -> UIImage? {
+        guard
+            let data = string.data(using: .isoLatin1),
+            let outputImage = CIFilter(name: "CIQRCodeGenerator",
+                              parameters: ["inputMessage": data, "inputCorrectionLevel": "M"])?.outputImage
+        else { return nil }
+        let size = outputImage.extent.integral
+        let output = CGSize(width: 400, height: 400)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = UIScreen.main.scale
+        return UIGraphicsImageRenderer(size: output, format: format).image { _ in
+            outputImage
+                .transformed(by: .init(scaleX: output.width/size.width, y: output.height/size.height))
+                .image
+                .draw(in: .init(origin: .zero, size: output))
+        }
+    }
+    
     func scalePreservingAspectRatio(size: CGFloat) -> UIImage {
         scalePreservingAspectRatio(targetSize: .init(width: size, height: size))
     }
@@ -35,6 +57,38 @@ extension UIImage {
         }
         
         return scaledImage
+    }
+    
+    func withGradient(from colors: [UIColor], startPoint: CGPoint = .zero, endPoint: CGPoint = .init(x: 1, y: 1)) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return self }
+        
+        context.translateBy(x: 0, y: self.size.height)
+        context.scaleBy(x: 1, y: -1)
+
+        context.setBlendMode(.normal)
+        let rect = CGRect.init(x: 0, y: 0, width: size.width, height: size.height)
+
+        // Create gradient
+        let colors = (colors.map { $0.cgColor }) as CFArray
+        let space = CGColorSpaceCreateDeviceRGB()
+        
+        guard let gradient = CGGradient(colorsSpace: space, colors: colors, locations: nil), let cgImage else { return self }
+
+        // Apply gradient
+        context.clip(to: rect, mask: cgImage)
+        context.drawLinearGradient(
+            gradient,
+            start: CGPoint(x: size.width - startPoint.x * size.width, y: startPoint.y * size.height),
+            end: CGPoint(x: size.width - endPoint.x * size.width, y: endPoint.y * size.height),
+            options: .drawsAfterEndLocation
+        )
+        
+        let gradientImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return gradientImage ?? self
     }
 }
 

@@ -37,6 +37,7 @@ final class IdentityManager {
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
     @Published var userRelays: [String: RelayInfo]?
+    var fullRelayList: [String] = []
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
     
     @Published var didFinishInit: Bool = false
@@ -67,10 +68,11 @@ final class IdentityManager {
                         
                         guard let score = content.values.first else { return }
                         
-                        print("IdentityManager: requestUserInfos: User score: \(score)")
                     }
+                case .userFollowers, .mediaMetadata:
+                    break
                 default:
-                        print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
+                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -189,7 +191,7 @@ final class IdentityManager {
                     
                     let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
                     if !latestWithRepliesFeedExists {
-                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
+                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
                     }
                     
                     // There were breaking changes to how settingsx work over the time
@@ -239,6 +241,8 @@ final class IdentityManager {
                         return
                     }
                     
+                    self.fullRelayList = Array(relays.keys)
+                    
                     relays = relays.filter { // We need to make sure the user doesn't have garbage in their list of relays
                         guard let url = URL(string: $0.key) else { return false }
                         if url.scheme != "wss" { return false }
@@ -287,10 +291,10 @@ final class IdentityManager {
                             }
                         }
                     }
-                case .metadata, .userScore, .mediaMetadata:
+                case .metadata, .userScore, .mediaMetadata, .userFollowers:
                     break // NO ACTION
                 default:
-                        print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
+                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
                 }
             }
         }
@@ -347,6 +351,11 @@ final class IdentityManager {
     func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
         if LoginManager.instance.method() != .nsec { return }
 
+        let count = feeds.filter({ $0.name.hasPrefix("Latest") }).count
+        if count > 2 {
+            print(count)
+        }
+        
         guard var settings = userSettings else { return }
         settings.content.feeds = feeds
         updateSettings(settings)
@@ -405,14 +414,26 @@ final class IdentityManager {
         }
     }
     
+    func updateProfile(_ data: Profile, callback: @escaping (Bool) -> Void) {
+        guard let metadata_ev = NostrObject.metadata(data) else {
+            callback(false)
+            return
+        }
+        
+        RelaysPostbox.instance.connect(bootstrap_relays)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
+                callback(true)
+            }, errorHandler: {
+                callback(false)
+            })
+        }
+    }
+    
     private func handleDeletedAccount() {
         let alert = UIAlertController(title: "This account has been deleted", message: "You cannot sign into this account because it has been deleted", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .destructive) { _ in
-            _ = ICloudKeychainManager.instance.clearSavedKeys()
-            KingfisherManager.shared.cache.clearMemoryCache()
-            UserDefaults.standard.nwc = nil
-            
-            RootViewController.instance.reset()
+            LoginManager.instance.logout()
         })
         DispatchQueue.main.async {
             RootViewController.instance.present(alert, animated: true)

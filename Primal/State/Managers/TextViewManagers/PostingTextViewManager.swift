@@ -59,7 +59,7 @@ final class PostingTextViewManager: TextViewManager {
     }
     
     override var postingText: String {
-        var currentText = super.postingText as NSString
+        var currentText = (textView.text ?? "") as NSString
         
         var tokens = self.tokens
         
@@ -260,12 +260,14 @@ private extension PostingTextViewManager {
             .sink(receiveValue: { [weak self] result in
                 guard self?.userSearchText != nil else {
                     self?.users = []
+                    self?.usersTableView.reloadData()
                     return
                 }
                 
                 self?.users = result.users.values.map { result.createParsedUser($0) } .sorted(by: {
                     $0.likes ?? 0 > $1.likes ?? 0
                 })
+                self?.usersTableView.reloadData()
             })
             .store(in: &cancellables)
     }
@@ -297,13 +299,15 @@ extension PostingTextViewManager: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        let user = users[indexPath.row]
-        (cell as? UserInfoTableCell)?.update(user: user)
+        if let user = users[safe: indexPath.row] {
+            (cell as? UserInfoTableCell)?.update(user: user)
+        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        replaceEditingTokenWithUser(users[indexPath.row].data)
+        guard let data = users[safe: indexPath.row]?.data else { return }
+        replaceEditingTokenWithUser(data)
     }
 }
 

@@ -15,14 +15,20 @@ final class RelaysPostbox {
     static let instance = RelaysPostbox()
     
     func disconnect() {
+        loadedRalays = []
         self.pool.disconnect()
     }
     
     var loadedRalays: [String] = []
     
     func connect(_ relays: [String]) {
-        loadedRalays = relays
+        loadedRalays += relays
         self.pool.connect(relays: relays)
+    }
+    
+    func reconnect() {
+        pool.disconnect()
+        pool.connect(relays: loadedRalays)
     }
     
     func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {

@@ -11,15 +11,15 @@ extension UIFont {
     static func appFont(withSize size: CGFloat, weight: UIFont.Weight) -> UIFont {
         {
             switch weight {
-            case .thin:             return UIFont(name: "RobotoFlex-Regular_Thin", size: size)
-            case .ultraLight:       return UIFont(name: "RobotoFlex-Regular_ExtraLight", size: size)
-            case .light:            return UIFont(name: "RobotoFlex-Regular_Light", size: size)
-            case .regular:          return UIFont(name: "RobotoFlex-Regular", size: size)
-            case .medium:           return UIFont(name: "RobotoFlex-Regular_Medium", size: size)
-            case .semibold:         return UIFont(name: "RobotoFlex-Regular_SemiBold", size: size)
-            case .bold:             return UIFont(name: "RobotoFlex-Regular_Bold", size: size)
-            case .heavy:            return UIFont(name: "RobotoFlex-Regular_ExtraBold", size: size)
-            case .black:            return UIFont(name: "RobotoFlex-Regular_Black", size: size)
+            case .thin:             return UIFont(name: "Nacelle-Thin", size: size)
+            case .ultraLight:       return UIFont(name: "Nacelle-UltraLight", size: size)
+            case .light:            return UIFont(name: "Nacelle-Light", size: size)
+            case .regular:          return UIFont(name: "Nacelle-Regular", size: size)
+            case .medium:           return UIFont(name: "Nacelle-SemiBold", size: size)
+            case .semibold:         return UIFont(name: "Nacelle-SemiBold", size: size)
+            case .bold:             return UIFont(name: "Nacelle-Bold", size: size)
+            case .heavy:            return UIFont(name: "Nacelle-Heavy", size: size)
+            case .black:            return UIFont(name: "Nacelle-Black", size: size)
             default:                return nil
             }
         }() ?? UIFont.systemFont(ofSize: size, weight: weight)

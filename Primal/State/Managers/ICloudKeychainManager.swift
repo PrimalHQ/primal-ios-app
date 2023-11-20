@@ -135,6 +135,7 @@ final class ICloudKeychainManager {
         return true
     }
     
+    @discardableResult
     func clearSavedKeys() -> Bool {
         do {
             try keychain.removeAll()

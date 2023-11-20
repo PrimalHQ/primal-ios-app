@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-class PostRequestResult {
+class PostRequestResult: Codable {
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
@@ -20,6 +20,12 @@ class PostRequestResult {
     var users: [String: PrimalUser] = [:]
     var stats: [String: NostrContentStats] = [:]
     var userScore: [String: Int] = [:]
+    var userFollowers: [String: Int] = [:]
+    
+    var message: String?
+    var pagination: PrimalPagination?
+    
+    var messageArray: [String]?
     
     var timestamps: [Date] = []
     
@@ -32,19 +38,19 @@ class PostRequestResult {
     var isFollowingUser: Bool?
 }
 
-struct NostrRepost {
+struct NostrRepost: Codable {
     let id: String
     let pubkey: String
     let post: NostrContent
     let date: Date
 }
 
-struct PopularHashtag {
+struct PopularHashtag: Codable {
     var title: String
     var apperances: Double
 }
 
-struct EncryptedMessage {
+struct EncryptedMessage: Codable {
     var id: String
     var pubkey: String
     var recipientPubkey: String

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Kingfisher
 
 enum LoginMethod {
     case nsec
@@ -26,8 +27,15 @@ final class LoginManager {
         }
     }
     
-    func logout() -> Bool {
-        return ICloudKeychainManager.instance.clearSavedKeys()
+    func logout() {
+        KingfisherManager.shared.cache.clearMemoryCache()
+        UserDefaults.standard.nwc = nil
+        ICloudKeychainManager.instance.clearSavedKeys()
+        UserDefaults.standard.homeFeedResultString = nil
+        UserDefaults.standard.homeFeedSaveDate = nil
+        UserDefaults.standard.synchronize()
+        
+        RootViewController.instance.reset()
     }
     
     func method() -> LoginMethod? { loginMethod() }
