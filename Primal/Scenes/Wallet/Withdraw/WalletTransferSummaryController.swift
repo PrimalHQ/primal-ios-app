@@ -80,7 +80,7 @@ private extension WalletTransferSummaryController {
             icon.image = UIImage(named: "successWallet")
             
             navTitle.text = "Success"
-            title.text = "Your wallet has been activated.\nYour wallet lightning address is:"
+            title.text = "Your wallet has been activated.\nYour new Nostr lightning address is:"
             title.numberOfLines = 0
             title.textAlignment = .center
                         

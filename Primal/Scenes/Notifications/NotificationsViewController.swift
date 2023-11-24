@@ -78,8 +78,8 @@ final class NotificationsViewController: FeedViewController {
     override init() {
         super.init()
         
-        Connection.instance.$isConnected.filter { $0 }.sink { [weak self] _ in
-            self?.continousConnection = Connection.instance.requestCacheContinous(name: "notification_counts", request: .object([
+        Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
+            self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in
                 guard let resDict = response.arrayValue?.last?.objectValue else { return }

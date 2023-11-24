@@ -17,8 +17,8 @@ struct SocketRequest {
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
         Future { promise in
-            Connection.instance.requestCache(name: name, request: payload) { result in
-                result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { handlePostEvent($0) }
+            Connection.regular.requestCache(name: name, request: payload) { result in
+                result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                 result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
                 
                 promise(.success(pendingResult))
@@ -27,8 +27,8 @@ struct SocketRequest {
     }
 }
 
-private extension SocketRequest {
-    private func handlePostEvent(_ payload: [String: JSON]) {
+extension PostRequestResult {
+    func handlePostEvent(_ payload: [String: JSON]) {
         guard
             let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
             let contentString = payload["content"]?.stringValue
@@ -41,17 +41,17 @@ private extension SocketRequest {
         case .metadata:
             let nostrUser = NostrContent(json: .object(payload))
             if let user = PrimalUser(nostrUser: nostrUser) {
-                pendingResult.users[nostrUser.pubkey] = user
+                users[nostrUser.pubkey] = user
             }
         case .text:
-            pendingResult.posts.append(NostrContent(jsonData: payload))
+            posts.append(NostrContent(jsonData: payload))
         case .noteStats:
             guard let nostrContentStats: NostrContentStats = try? JSONDecoder().decode(NostrContentStats.self, from: Data(contentString.utf8)) else {
                 print("Error decoding NostrContentStats to json")
                 return
             }
 
-            pendingResult.stats[nostrContentStats.event_id] = nostrContentStats
+            stats[nostrContentStats.event_id] = nostrContentStats
         case .notification:
             guard
                 let json = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
@@ -61,13 +61,13 @@ private extension SocketRequest {
                 return
             }
             
-            pendingResult.notifications.append(notification)
+            notifications.append(notification)
         case .paginationEvent:
             guard let pagination = try? JSONDecoder().decode(PrimalPagination.self, from: Data(contentString.utf8)) else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
-            pendingResult.pagination = pagination
+            self.pagination = pagination
         case .noteActions:
             guard let noteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: Data(contentString.utf8)) else {
                 print("Error decoding PrimalNoteStatus to json")
@@ -98,31 +98,31 @@ private extension SocketRequest {
             
             let id = payload["id"]?.stringValue ?? ""
             
-            pendingResult.reposts.append(.init(id: id, pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
+            reposts.append(.init(id: id, pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
         case .mentions:
             guard let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)) else {
                 print("Error decoding mentions string to json")
                 return
             }
             
-            pendingResult.mentions.append(NostrContent(json: contentJSON))
+            mentions.append(NostrContent(json: contentJSON))
         case .mediaMetadata:
             guard let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8)) else {
                 print("Error decoding metadata string to json")
                 return
             }
             
-            pendingResult.mediaMetadata.append(metadata)
+            mediaMetadata.append(metadata)
         case .userScore:
             guard let info = try? JSONDecoder().decode([String: Int].self, from: Data(contentString.utf8)) else { return }
             
-            pendingResult.userScore = info
+            userScore = info
         case .userFollowers:
             guard let info: [String: Int] = contentString.decode() else {
                 print("Error decoding user followers")
                 return
             }
-            pendingResult.userFollowers = info
+            userFollowers = info
         case .userStats:
             guard let nostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: Data(contentString.utf8)) else {
                 print("Error decoding nostr stats string to json")
@@ -145,28 +145,28 @@ private extension SocketRequest {
                     let name = object.keys.first,
                     let count = object[name]?.doubleValue
                 else { continue }
-                pendingResult.popularHashtags.append(.init(title: name, apperances: count))
+                popularHashtags.append(.init(title: name, apperances: count))
             }
         case .timestamp:
             guard let timeStamp = Int(contentString) else {
                 print("Error decoding timestamp")
                 return
             }
-            pendingResult.timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
+            timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
         case .webPreview:
             guard let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8)) else {
                 print("Error decoding webpreview")
                 return
             }
             
-            pendingResult.webPreviews.append(webPreview)
+            webPreviews.append(webPreview)
         case .followingUser:
             guard let isFollowing = Bool(contentString) else {
                 print("Error decoding isFollowing response")
                 return
             }
             
-            pendingResult.isFollowingUser = isFollowing
+            isFollowingUser = isFollowing
         case .encryptedDirectMessage:
             guard
                 let pubkey = payload["pubkey"]?.stringValue,
@@ -177,15 +177,15 @@ private extension SocketRequest {
                 print("Error decoding encrypted message")
                 return
             }
-            pendingResult.encryptedMessages.append(.init(id: id, pubkey: pubkey, recipientPubkey: recipientPubkey, date: .init(timeIntervalSince1970: date), message: contentString))
+            encryptedMessages.append(.init(id: id, pubkey: pubkey, recipientPubkey: recipientPubkey, date: .init(timeIntervalSince1970: date), message: contentString))
         case .messagesMetadata:
             guard let chats = try? JSONDecoder().decode([String: ChatMetadata].self, from: Data(contentString.utf8)) else {
                 print("Error decoding messagesMetadata")
                 return
             }
-            pendingResult.chatsMetadata = chats
+            chatsMetadata = chats
         case .defaultRelays:
-            pendingResult.messageArray = contentString.decode()
+            messageArray = contentString.decode()
         default:
             print("Unhandled response \(payload)")
         }

@@ -30,6 +30,50 @@ extension UIImage {
         }
     }
     
+    func maskWhiteColor(color: UIColor) -> UIImage? {
+        let maskingColors: [CGFloat] = [1, 255, 1, 255, 1, 255]
+//        let maskingColors: [CGFloat] = [0, 254, 0, 254, 0, 254]
+        let bounds = CGRect(origin: .zero, size: size)
+
+        let maskImage = cgImage!
+        var returnImage: UIImage?
+
+        // make sure image has no alpha channel
+        let rFormat = UIGraphicsImageRendererFormat()
+        rFormat.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: size, format: rFormat)
+        let noAlphaImage = renderer.image {
+            (context) in
+            self.draw(at: .zero)
+        }
+
+        let noAlphaCGRef = noAlphaImage.cgImage
+
+        if let imgRefCopy = noAlphaCGRef?.copy(maskingColorComponents: maskingColors) {
+
+            let rFormat = UIGraphicsImageRendererFormat()
+            rFormat.opaque = false
+            let renderer = UIGraphicsImageRenderer(size: size, format: rFormat)
+            returnImage = renderer.image {
+                (context) in
+                context.cgContext.clip(to: bounds, mask: maskImage)
+                context.cgContext.setFillColor(color.cgColor)
+                context.cgContext.fill(bounds)
+                context.cgContext.draw(imgRefCopy, in: bounds)
+            }
+
+        }
+        return returnImage
+    }
+    
+    func withAlpha(alpha: CGFloat) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: CGPointZero, blendMode: .normal, alpha: alpha)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+    
     func scalePreservingAspectRatio(size: CGFloat) -> UIImage {
         scalePreservingAspectRatio(targetSize: .init(width: size, height: size))
     }

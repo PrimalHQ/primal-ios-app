@@ -75,8 +75,10 @@ private extension WalletReceiveViewController {
             } else if let data = res.invoiceInfo {
                 self?.lnInvoice = data.lnInvoice
             } else {
-                self?.navigationController?.viewControllers.remove(object: self!)
-                return
+                if let message = res.message {
+                    self?.showErrorMessage(message)
+                }
+                self?.additionalInfo = nil
             }
         }
         .store(in: &cancellables)

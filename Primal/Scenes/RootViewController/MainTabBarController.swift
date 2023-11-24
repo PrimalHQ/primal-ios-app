@@ -40,11 +40,22 @@ final class MainTabBarController: UIViewController, Themeable {
     let notificationIndicator = NotificationsIndicator()
     let messagesIndicator = NotificationsIndicator()
     
-    let buttonStackParent = UIView()
-    lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
-    let safeAreaSpacer = UIView()
+    private let buttonStackParent = UIView()
+    private lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
+    private let safeAreaSpacer = UIView()
     let closeMenuButton = UIButton()
-    let navigationBorder = UIView().constrainToSize(height: 1)
+    private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
+        $0.backgroundColor = .background
+        $0.layer.borderColor = UIColor.background3.cgColor
+    }
+    private let navigationBorder = UIView().constrainToSize(height: 1)
+    private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
+        let isWalletSelected = (self?.currentPageIndex ?? 0) == 2
+        
+        $0.backgroundColor = isWalletSelected ? .foreground6 : .background3
+        $0.tintColor = isWalletSelected ? UIColor.foreground : UIColor.foreground3
+        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
+    }
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
@@ -75,7 +86,10 @@ final class MainTabBarController: UIViewController, Themeable {
     
     var showTabBarBorder: Bool {
         get { !navigationBorder.isHidden }
-        set { navigationBorder.isHidden = !newValue }
+        set {
+            navigationBorder.isHidden = !newValue
+            circleBorderView.isHidden = !newValue
+        }
     }
 
     init() {
@@ -109,6 +123,7 @@ final class MainTabBarController: UIViewController, Themeable {
         closeMenuButton.setImage(tabs[currentPageIndex].selectedTabImage?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
+            self.circleWalletButton.alpha = 0
             self.closeMenuButton.alpha = 1
         }
     }
@@ -116,6 +131,7 @@ final class MainTabBarController: UIViewController, Themeable {
     func showButtons() {
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 1
+            self.circleWalletButton.alpha = 1
             self.closeMenuButton.alpha = 0
         } completion: { _ in
             self.closeMenuButton.isHidden = true
@@ -140,12 +156,12 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
-            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
+            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height + 10) : .identity
             return
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
+            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
         }
     }
     
@@ -217,20 +233,20 @@ private extension MainTabBarController {
         vStack.axis = .vertical
 
         view.addSubview(closeMenuButton)
-        closeMenuButton.constrainToSize(width: 70, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
+        closeMenuButton.constrainToSize(width: 70, height: 56).pin(to: buttonStack, edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
 
         closeMenuButton.setImage(UIImage(named: "tabIcon1")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
         closeMenuButton.isHidden = true
 
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
-            Connection.instance.reconnect()
+            Connection.reconnect()
             RelaysPostbox.instance.reconnect()
         }
         
         noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
             if let note = notification.object as? String {
                 if let self {
-                    Connection.instance.$isConnected
+                    Connection.regular.$isConnected
                         .filter({ $0 })
                         .first()
                         .receive(on: DispatchQueue.main)
@@ -253,7 +269,7 @@ private extension MainTabBarController {
                 return
             }
 
-            Connection.instance.$isConnected
+            Connection.regular.$isConnected
                 .filter({ $0 })
                 .first()
                 .receive(on: DispatchQueue.main)
@@ -270,7 +286,8 @@ private extension MainTabBarController {
         }
         
         updateButtons()
-
+        addCircleWalletButton()
+        
         [home, explore, wallet, messages, notifications].forEach { nav in
             buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
                 self?.menuButtonPressedForNav(nav)
@@ -278,7 +295,29 @@ private extension MainTabBarController {
         }
     }
     
+    func addCircleWalletButton() {
+        vStack.insertSubview(circleBorderView, at: 0)
+        circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
+        circleBorderView.layer.borderWidth = 1
+        circleBorderView.layer.cornerRadius = 32
+        
+        let frontCover = ThemeableView().constrainToSize(62).setTheme { $0.backgroundColor = .background }
+        frontCover.layer.cornerRadius = 31
+        vStack.addSubview(frontCover)
+        frontCover.pinToSuperview(edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
+        
+        circleWalletButton.layer.cornerRadius = 26
+        vStack.addSubview(circleWalletButton)
+        circleWalletButton.pinToSuperview(edges: .top, padding: -1).centerToSuperview(axis: .horizontal)
+        
+        circleWalletButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.menuButtonPressedForNav(wallet)
+        }), for: .touchUpInside)
+    }
+    
     func updateButtons() {
+        circleWalletButton.updateTheme()
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
             

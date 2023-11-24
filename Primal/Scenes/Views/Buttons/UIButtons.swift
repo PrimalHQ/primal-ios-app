@@ -55,8 +55,9 @@ final class SolidColorUIButton: UIButton {
         super.init(frame: .init(origin: .zero, size: .init(width: 80, height: 20)))
         
         setTitleColor(color, for: .normal)
+        setTitleColor(color.withAlphaComponent(0.5), for: .highlighted)
         setTitle(title, for: .normal)
-        titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+        titleLabel?.font = .appFont(withSize: 16, weight: .semibold)
         setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     

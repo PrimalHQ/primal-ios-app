@@ -18,7 +18,7 @@ class FeedCell: PostCell {
         super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
         
         textStack.isHidden = parsedContent.text.isEmpty
-        mainImages.isHidden = parsedContent.imageResources.isEmpty
+        mainImages.isHidden = parsedContent.mediaResources.isEmpty
         
         layoutSubviews()
         

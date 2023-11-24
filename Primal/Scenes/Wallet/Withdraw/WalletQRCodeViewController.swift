@@ -14,8 +14,6 @@ final class WalletQRCodeViewController: UIViewController {
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView = UIView()
     
-    var didOpenQRCode = false
-    
     var textSearch: String?
     
     var cancellables: Set<AnyCancellable> = []

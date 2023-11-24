@@ -56,7 +56,8 @@ final class ParsedContent {
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
     
-    var imageResources: [MediaMetadata.Resource] = []
+    var mediaResources: [MediaMetadata.Resource] = []
+    var videoThumbnails: [String: String] = [:]
     var linkPreview: LinkMetadata?
     
     var text: String = ""
@@ -154,5 +155,9 @@ extension ParsedContent {
             return "https://primal.net/e/\(post.id)"
         }
         return "https://primal.net/e/\(note)"
+    }
+    
+    var isEmpty: Bool {
+        post.isEmpty || user.data.id.isEmpty
     }
 }

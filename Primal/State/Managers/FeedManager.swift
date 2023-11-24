@@ -156,7 +156,7 @@ final class FeedManager {
                 "since": .number(paginationInfo.until.rounded())
             ]))
             .publisher()
-            .waitForConnection()
+            .waitForConnection(Connection.regular)
             .receive(on: DispatchQueue.main)
             .map { [weak self] in
                 guard let self else { return $0.process() }
@@ -192,6 +192,7 @@ final class FeedManager {
             }
             
             if sorted.isEmpty {
+                self.parsedPosts = self.parsedPosts
                 didReachEnd = true
                 return
             }
@@ -263,7 +264,7 @@ final class FeedManager {
     private func initUserConnectionSubscription() {
         Publishers.CombineLatest3(
             IdentityManager.instance.$didFinishInit,
-            Connection.instance.$isConnected,
+            Connection.regular.$isConnected,
             IdentityManager.instance.$userSettings.compactMap { $0?.content.feeds?.first }
         )
         .filter { $0.0 && $0.1 }
@@ -288,7 +289,7 @@ final class FeedManager {
         let json = generateRequestByFeedType()
         
         pendingResult = .init()
-        Connection.instance.request(json) { [weak self] res in
+        Connection.regular.request(json) { [weak self] res in
             guard let self else { return }
             for response in res {
                 self.handlePostEvent(response)
@@ -336,7 +337,7 @@ final class FeedManager {
             ])
         ])
         
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 self.handlePostEvent(response)
             }

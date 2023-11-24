@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import GenericJSON
 
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
@@ -23,12 +24,22 @@ enum RequestError: Error {
 protocol Request {
     associatedtype ResponseData: Codable
     var url: URL { get }
+    var body: Any? { get }
 }
 
 extension Request {
     func publisher() -> AnyPublisher<ResponseData, Error> {
         Future { promise in
-            URLSession.shared.dataTask(with: url) { data, response, error in
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            
+            if let body, let requestBody = try? JSONSerialization.data(withJSONObject: body) {
+                request.httpBody = requestBody
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+
+            URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error {
                     promise(.failure(error))
                     return

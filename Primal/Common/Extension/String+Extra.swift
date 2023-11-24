@@ -166,4 +166,20 @@ extension String : Identifiable {
         result.insert(String(self[currentIndex...]))
         return Array(result)
     }
+    
+    func removingDoubleEmptyLines() -> String {
+        let lines = split(separator: "\n", omittingEmptySubsequences: false)
+        let lastLine = lines.last
+        
+        let trimmedLines = lines.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let removeDoubleEmptyLine = zip(zip(trimmedLines, trimmedLines.dropFirst()), lines).filter { (arg0, _) in
+            let (line, nextLine) = arg0
+            return !(line.isEmpty && nextLine.isEmpty)
+        }
+        var text = removeDoubleEmptyLine.map({ $0.1 }).joined(separator: "\n")
+        if let lastLine {
+            text += "\n\(lastLine)"
+        }
+        return text
+    }
 }

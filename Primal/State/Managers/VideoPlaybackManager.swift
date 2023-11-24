@@ -39,6 +39,8 @@ class VideoPlayer {
         }
     }
     
+    @Published var isPlaying = false
+    
     var shouldPause = false
     
     init(url: String, isMuted: Bool = true) {
@@ -47,14 +49,17 @@ class VideoPlayer {
         
         let queuePlayer = AVQueuePlayer()
         
-        let item = AVPlayerItem(url: URL(string: url) ?? URL(string: "https://google.com")!)
-        looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+        if let url = URL(string: url) {
+            let item = AVPlayerItem(url: url)
+            looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+        }
         avPlayer = queuePlayer
         avPlayer.isMuted = isMuted
     }
     
     func play() {
         shouldPause = false
+        isPlaying = true
         
         if isMuted {
             try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
@@ -66,6 +71,7 @@ class VideoPlayer {
     }
     
     func pause() {
+        isPlaying = false
         shouldPause = false
         avPlayer.pause()
     }

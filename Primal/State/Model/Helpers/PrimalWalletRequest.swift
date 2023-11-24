@@ -125,7 +125,7 @@ struct PrimalWalletRequest {
   
     func publisher() -> AnyPublisher<WalletRequestResult, Never> {
         Future { promise in
-            Connection.instance.requestWallet(type.requestContent) { result in
+            Connection.wallet.requestWallet(type.requestContent) { result in
                 result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
                 result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.handleMessage($0) }
         

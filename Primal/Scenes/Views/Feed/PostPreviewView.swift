@@ -48,13 +48,13 @@ final class PostPreviewView: UIView {
         ])
         
         imageAspectConstraint?.isActive = false
-        if let first = content.imageResources.first?.variants.first {
+        if let first = content.mediaResources.first?.variants.first {
             let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let url = content.imageResources.first?.url
+            let url = content.mediaResources.first?.url
             
             let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
             
@@ -64,8 +64,9 @@ final class PostPreviewView: UIView {
             imageAspectConstraint = aspect
         }
         
-        mainImages.resources = content.imageResources
-        mainImages.isHidden = content.imageResources.isEmpty
+        mainImages.resources = content.mediaResources
+        mainImages.thumbnails = content.videoThumbnails
+        mainImages.isHidden = content.mediaResources.isEmpty
         
         if let data = content.linkPreview {
             linkPreview.data = data

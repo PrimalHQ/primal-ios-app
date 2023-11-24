@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 29.4.23..
 //
 
+import FLAnimatedImage
 import UIKit
 
 protocol FollowProfileCellDelegate: AnyObject {
@@ -12,10 +13,10 @@ protocol FollowProfileCellDelegate: AnyObject {
 }
 
 final class FollowProfileCell: UITableViewCell {
-    let profileImage = VerifiedImageView()
+    let profileImage = FLAnimatedImageView()
     let nameLabel = UILabel()
-    let usernameLabel = UILabel()
-    let followButton = FollowButton(colors: SunsetWave.instance.gradient)
+    let secondaryLabel = UILabel()
+    let followButton = FollowButton(backgroundColor: .init(rgb: 0xE5E5E5))
     
     weak var delegate: FollowProfileCellDelegate?
     
@@ -31,16 +32,16 @@ final class FollowProfileCell: UITableViewCell {
 
 private extension FollowProfileCell {
     func setup() {
-        contentView.backgroundColor = .black
+        contentView.backgroundColor = .white
         selectionStyle = .none
         
-        let vStack = UIStackView(arrangedSubviews: [nameLabel, usernameLabel])
+        let vStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
         let hStack = UIStackView(arrangedSubviews: [profileImage, vStack, followButton])
         
         addSubview(hStack)
         hStack
-            .pinToSuperview(edges: .horizontal, padding: 28)
-            .pinToSuperview(edges: .vertical, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .vertical, padding: 8)
         
         hStack.spacing = 8
         hStack.alignment = .center
@@ -48,17 +49,18 @@ private extension FollowProfileCell {
         vStack.axis = .vertical
         vStack.spacing = 4
         
-        profileImage.constrainToSize(48).imageView.layer.cornerRadius = 24
+        profileImage.constrainToSize(44).layer.cornerRadius = 22
+        profileImage.contentMode = .scaleAspectFit
+        profileImage.clipsToBounds = true
         
-        nameLabel.textColor = .white
+        nameLabel.textColor = .black
         nameLabel.font = .appFont(withSize: 14, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         
-        usernameLabel.textColor = .white
-        usernameLabel.font = .appFont(withSize: 12, weight: .regular)
-        usernameLabel.adjustsFontSizeToFitWidth = true
+        secondaryLabel.textColor = .init(rgb: 0x666666)
+        secondaryLabel.font = .appFont(withSize: 12, weight: .regular)
         
-        followButton.constrainToSize(width: 88, height: 36)
+        followButton.constrainToSize(width: 80, height: 32)
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
     }
     

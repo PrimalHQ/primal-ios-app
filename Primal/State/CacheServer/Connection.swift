@@ -13,13 +13,15 @@ import GenericJSON
 
 class ContinousConnection {
     let id: String
+    private weak var connection: Connection?
     
-    init(id: String) {
+    init(id: String, connection: Connection) {
         self.id = id
+        self.connection = connection
     }
     
     func end() {
-        Connection.instance.endContinous(id)
+        connection?.endContinous(id)
     }
     
     deinit {
@@ -28,9 +30,35 @@ class ContinousConnection {
 }
 
 final class Connection {
+    // MARK: - Static
+    
     static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    let socketURL = URL(string: "wss://cache1.primal.net/v1")!
+    static var regular = Connection(socketURL: URL(string: "wss://cache1.primal.net/v1")!)
+    static var wallet = Connection(socketURL: URL(string: "wss://wallet.primal.net/v1")!)
+    
+    static func connect() {
+        regular.connect()
+        wallet.connect()
+    }
+    
+    static func disconnect() {
+        regular.disconnect()
+        wallet.disconnect()
+    }
+    
+    static func reconnect() {
+        disconnect()
+        
+        // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
+        Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
+        
+        connect()
+    }
+    
+    // MARK: - Class
+    
+    let socketURL: URL
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -40,19 +68,20 @@ final class Connection {
     
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
-    private init() {
+    private var timeToReconnect = 4
+    
+    private init(socketURL: URL) {
+        self.socketURL = socketURL
         self.connect()
     }
     
     deinit {
         socket?.disconnect()
     }
-    
-    static let instance = Connection()
-    
+
     @Published var isConnected: Bool = false
     
-    func connect() {
+    private func connect() {
         if isConnected {
             disconnect()
         }
@@ -71,14 +100,7 @@ final class Connection {
         socket?.ping(interval: 10.0)
     }
     
-    func reconnect() {
-        disconnect()
-        // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
-        Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
-        connect()
-    }
-    
-    func disconnect() {
+    private func disconnect() {
         socket?.delegate = nil
         socket?.disconnect()
         socket = nil
@@ -148,7 +170,7 @@ final class Connection {
             self.continousSubHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
         }
-        return .init(id: subId)
+        return .init(id: subId, connection: self)
     }
     
     func endContinous(_ id: String) {
@@ -188,19 +210,24 @@ final class Connection {
     }
     
     func autoReconnect() {
-        if isConnected { return }
+        if isConnected {
+            timeToReconnect = 4
+            return
+        }
         
         connect()
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(4)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
             self?.autoReconnect()
         }
+        timeToReconnect *= 2
     }
 }
 
 extension Connection: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection: WebSocketConnection) {
         isConnected = true
+        timeToReconnect = 4
     }
     
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {

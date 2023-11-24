@@ -39,7 +39,7 @@ final class MuteManager {
             ])
         ])
 
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
 

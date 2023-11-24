@@ -351,9 +351,18 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$images, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] _, isEmpty in
+        Publishers.CombineLatest(inputManager.$images, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] images, isEmpty in
             guard let self else { return }
-            self.postButton.isEnabled = !isEmpty && !self.inputManager.isUploadingImages
+            let isUploading: Bool = {
+                for image in images {
+                    if case .uploading = image.state {
+                        return true
+                    }
+                }
+                return false
+            }()
+            let hasImages = !images.isEmpty
+            self.postButton.isEnabled = !isUploading && (!isEmpty || hasImages)
         }
         .store(in: &cancellables)
         

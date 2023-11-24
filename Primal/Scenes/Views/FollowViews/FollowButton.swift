@@ -14,66 +14,48 @@ final class FollowButton: MyButton {
         }
     }
     
-    let colors: [UIColor]
-    
     let titleLabel = UILabel()
-    private let b1 = UIImageView(image: UIImage(named: "followButtonBackgroundBack"))
-    private lazy var b2 = GradientBorderView(
-        gradientColors: colors.withAlphaComponent(0.85),
-        backgroundColor: .black,
-        cornerRadius: 8
-    )
     
     override var isPressed: Bool {
         didSet {
-            titleLabel.textColor = isPressed ? .darkGray : .white
+            alpha = isPressed ? 0.5 : 1
         }
     }
     
     var isFollowing: Bool = false {
         didSet {
-            b1.isHidden = isFollowing
-            titleLabel.textColor = isFollowing ? UIColor(rgb: 0xCCCCCC) : .white
+            titleLabel.textColor = isFollowing ? UIColor(rgb: 0x111111) : .white
             titleLabel.text = isFollowing ? titles.1 : titles.0
-            b2.colors = isFollowing ? [UIColor(rgb: 0x444444), UIColor(rgb: 0x444444)] : colors.withAlphaComponent(0.85)
-            b2.backgroundColor = isFollowing ? UIColor(rgb: 0x181818) : .black
+            
+            backgroundColor = isFollowing ? isFollowingBackgroundColor : .black
         }
     }
     
-    init(_ followTitle: String = "Follow", _ unfollowTitle: String = "Unfollow", colors: [UIColor] = UIColor.gradient) {
+    let isFollowingBackgroundColor: UIColor
+    
+    init(_ followTitle: String = "follow", _ unfollowTitle: String = "unfollow", backgroundColor: UIColor = .white) {
         self.titles = (followTitle, unfollowTitle)
-        self.colors = colors
+        isFollowingBackgroundColor = backgroundColor
         super.init(frame: .zero)
         setup()
     }
-    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func setup() {
-        addSubview(b1)
-        addSubview(b2)
-        b2.pinToSuperview()
-        b1.centerToSuperview()
-        b1.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 2.45).isActive = true
-        b1.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.5).isActive = true
-        
         addSubview(titleLabel)
-        titleLabel
-            .pinToSuperview(edges: .horizontal, padding: 12)
-            .centerToSuperview(axis: .vertical)
+        titleLabel.centerToSuperview()
         
-        titleLabel.text = isFollowing ? titles.1 : titles.0
-        titleLabel.font = .appFont(withSize: 16, weight: .medium)
-        titleLabel.textColor = .white
+        titleLabel.font = .appFont(withSize: 14, weight: .semibold)
         titleLabel.textAlignment = .center
         titleLabel.adjustsFontSizeToFitWidth = true
-//
-//        backgroundColor = UIColor(rgb: 0x181818)
-//        layer.borderColor = UIColor(rgb: 0x222222).cgColor
-//        layer.borderWidth = 1
-//        layer.cornerRadius = 12
+        
+        titleLabel.text = isFollowing ? titles.1 : titles.0
+        titleLabel.textColor = isFollowing ? UIColor(rgb: 0x111111) : .white
+        backgroundColor = isFollowing ? isFollowingBackgroundColor : .black
+        
+        layer.cornerRadius = 16
     }
 }

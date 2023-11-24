@@ -187,7 +187,7 @@ private extension WalletInAppPurchaseController {
 
                     PrimalWalletRequest(type: .inAppPurchase(transactionId: transactionId, quote: quote.quote_id))
                         .publisher()
-                        .waitForConnection()
+                        .waitForConnection(Connection.wallet)
                         .receive(on: DispatchQueue.main)
                         .sink { result in
                             self?.view.isUserInteractionEnabled = false

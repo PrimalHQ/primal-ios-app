@@ -25,15 +25,14 @@ final class RootViewController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     var didAnimate = false
+    var didFinishInit = false
 
     private init() {
         super.init(nibName: nil, bundle: nil)
-        ThemingManager.instance.setStartingTheme(isFirstTime: true)
-        
-        quickReset()
+        quickReset(isFirstTime: true)
         addIntro()
         
-        Connection.instance.$isConnected.sink { connected in
+        Connection.regular.$isConnected.sink { connected in
             if connected {
                 IdentityManager.instance.requestUserInfos()
                 IdentityManager.instance.requestUserProfile()
@@ -43,6 +42,8 @@ final class RootViewController: UIViewController {
                 MuteManager.instance.requestMuteList()
             }
         }.store(in: &cancellables)
+        
+        didFinishInit = true
     }
     
     required init?(coder: NSCoder) {
@@ -66,7 +67,7 @@ final class RootViewController: UIViewController {
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        guard traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
+        guard didFinishInit, traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) else { return }
         
         ThemingManager.instance.traitDidChange()
     }
@@ -110,15 +111,18 @@ final class RootViewController: UIViewController {
         CATransaction.commit()
     }
     
-    func quickReset() {        
+    func quickReset(isFirstTime: Bool = false) {
         if let _ = LoginManager.instance.method() {
+            ThemingManager.instance.setStartingTheme(isFirstTime: isFirstTime)
             overrideUserInterfaceStyle = ContentDisplaySettings.autoDarkMode ? .unspecified : Theme.current.userInterfaceStyle
             set(MainTabBarController())
-            Connection.instance.connect()
+            setNeedsStatusBarAppearanceUpdate()
+            Connection.connect()
         } else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())
-            Connection.instance.disconnect()
+            setNeedsStatusBarAppearanceUpdate()
+            Connection.disconnect()
             return
         }
     }

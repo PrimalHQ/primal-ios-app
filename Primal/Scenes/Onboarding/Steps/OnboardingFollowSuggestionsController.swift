@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import Kingfisher
 
-final class OnboardingFollowSuggestionsController: UIViewController {
+final class OnboardingFollowSuggestionsController: UIViewController, OnboardingViewController {
     enum State {
         case initial
         case followRequesting
@@ -20,8 +20,10 @@ final class OnboardingFollowSuggestionsController: UIViewController {
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
+    let titleLabel: UILabel = .init()
+    let backButton: UIButton = .init()
     lazy var table = UITableView()
-    lazy var continueButton = GradientBackgroundUIButton(title: "Finish", colors: SunsetWave.instance.gradient)
+    lazy var continueButton = OnboardingMainButton("Finish")
     
     var suggestionGroups: [Group] = [] {
         didSet {
@@ -54,36 +56,35 @@ final class OnboardingFollowSuggestionsController: UIViewController {
 
 private extension OnboardingFollowSuggestionsController {
     func setup() {
-        navigationItem.title = "People to follow"
-        view.backgroundColor = .black
-        navigationItem.leftBarButtonItem = customRedBackButton
+        addBackground(4, clipToLeft: false)
+        addNavigationBar("People to Follow")
+        backButton.isHidden = true
         
-        let buttonParent = UIView()
-        buttonParent.addSubview(continueButton)
+        view.addSubview(continueButton)
         continueButton
             .pinToSuperview(edges: .horizontal, padding: 36)
-            .pinToSuperview(edges: .top, padding: 20)
-            .pinToSuperview(edges: .bottom, padding: 30, safeArea: true)
-            .constrainToSize(height: 58)
+            .pinToSuperview(edges: .bottom, padding: 12, safeArea: true)
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
         
-        let stack = UIStackView(arrangedSubviews: [table, buttonParent])
-        view.addSubview(stack)
-        stack.pinToSuperview(safeArea: true)
+        view.addSubview(table)
+        table.pinToSuperview(edges: .horizontal, padding: 36)
+        NSLayoutConstraint.activate([
+            table.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 32),
+            table.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -20)
+        ])
         
-        stack.axis = .vertical
-        
-        let fade = UIImageView(image: UIImage(named: "bottomFade"))
-        view.addSubview(fade)
-        fade.pin(to: table, edges: [.horizontal, .bottom])
-        
-        table.backgroundColor = .black
+        table.backgroundColor = .clear
         table.register(FollowProfileCell.self, forCellReuseIdentifier: "cell")
         table.register(FollowSectionHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         table.dataSource = self
         table.delegate = self
         table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .zero
         table.sectionHeaderHeight = 70
+        table.separatorStyle = .none
+        table.clipsToBounds = true
+        table.layer.cornerRadius = 12
+        table.bounces = false
         
         let username = UserDefaults.standard.string(forKey: "username") ?? ""
         
@@ -92,7 +93,6 @@ private extension OnboardingFollowSuggestionsController {
             .sink(receiveCompletion: { completion  in
                 print(completion)
             }, receiveValue: { [weak self] response in
-                dump(response)
                 self?.metadata = response.metadata
                 self?.suggestionGroups = response.suggestions
                 self?.selectedToFollow = Set(response.suggestions.flatMap { $0.members } .map { $0.pubkey })
@@ -100,7 +100,7 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        Connection.instance.$isConnected.filter { $0 }.first().sink { connected in            
+        Connection.regular.$isConnected.filter { $0 }.first().sink { connected in            
             IdentityManager.instance.requestUserInfos()
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()
@@ -108,7 +108,7 @@ private extension OnboardingFollowSuggestionsController {
 
             MuteManager.instance.requestMuteList()
         }.store(in: &cancellables)
-        Connection.instance.connect()
+        Connection.connect()
     }
 
     func updateView() {
@@ -116,17 +116,19 @@ private extension OnboardingFollowSuggestionsController {
         case .initial:
             continueButton.isEnabled = true
             continueButton.setTitle("Finish", for: .normal)
-            break
         case .followRequesting:
             continueButton.isEnabled = false
             continueButton.setTitle("Applying", for: .normal)
-            break
         case .followFailed:
             continueButton.isEnabled = true
             continueButton.setTitle("Follow failed, try again", for: .normal)
         case .followDone:
             RootViewController.instance.reset()
-            break
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                // Need to refresh to let the server update new follows
+                guard let home: HomeFeedViewController = RootViewController.instance.findInChildren() else { return }
+                home.feed.refresh()
+            }
         }
     }
 
@@ -189,7 +191,7 @@ extension OnboardingFollowSuggestionsController: FollowSectionHeaderDelegate, Fo
         } else {
             selectedToFollow.subtract(group)
         }
-        table.reloadRows(at: table.indexPathsForVisibleRows ?? [], with: .none)
+        table.reloadData()
     }
 }
 
@@ -208,14 +210,14 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
             let suggestion = suggestionGroups[indexPath.section].members[indexPath.row]
             if let data = metadata[suggestion.pubkey], let nostrData = NostrMetadata.from(data.content) {
                 
-                cell.profileImage.imageView.kf.setImage(with: URL(string: nostrData.picture ?? ""), options: [
+                cell.profileImage.kf.setImage(with: URL(string: nostrData.picture ?? ""), placeholder: UIImage(named: "Profile"), options: [
                     .processor(DownsamplingImageProcessor(size: CGSize(width: 48, height: 48))),
                     .scaleFactor(UIScreen.main.scale),
                     .cacheOriginalImage
                 ])
                 
                 cell.nameLabel.text = nostrData.name
-                cell.usernameLabel.text = nostrData.nip05
+                cell.secondaryLabel.text = nostrData.about
                 cell.followButton.isFollowing = selectedToFollow.contains(suggestion.pubkey)
                 cell.delegate = self
             }

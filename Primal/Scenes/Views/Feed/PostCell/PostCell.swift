@@ -14,7 +14,7 @@ import Nantes
 
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
-    func postCellDidTapImages(resource: MediaMetadata.Resource)
+    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource)
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -113,13 +113,13 @@ class PostCell: UITableViewCell {
         }
         
         imageAspectConstraint?.isActive = false
-        if let first = content.imageResources.first?.variants.first {
+        if let first = content.mediaResources.first?.variants.first {
             let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
         } else {
-            let url = content.imageResources.first?.url
+            let url = content.mediaResources.first?.url
             
             let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
             
@@ -130,7 +130,8 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = content.attributedText
-        mainImages.resources = content.imageResources
+        mainImages.resources = content.mediaResources
+        mainImages.thumbnails = content.videoThumbnails
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
         zapButton.set(content.post.satszapped + ZapManager.instance.userZapped[content.post.id, default: 0], filled: didZap)
@@ -165,7 +166,7 @@ class PostCell: UITableViewCell {
 
 extension PostCell: ImageCollectionViewDelegate {
     func didTapMedia(resource: MediaMetadata.Resource) {
-        delegate?.postCellDidTapImages(resource: resource)
+        delegate?.postCellDidTapImages(self, resource: resource)
     }
 }
 

@@ -8,27 +8,26 @@
 import UIKit
 
 final class PrimalProgressView: UIView {
-    
-    var progress: Int {
+    var currentPage: Int {
         didSet {
             updateColors()
         }
     }
     
-    var total: Int {
+    var numberOfPages: Int {
         didSet {
             updateCount()
         }
     }
     
-    var primaryColor: UIColor = UIColor(rgb: 0xAAAAAA) { didSet { updateColors() } }
-    var secondaryColor: UIColor = UIColor(rgb: 0x444444) { didSet { updateColors() } }
+    var primaryColor: UIColor = .white { didSet { updateColors() } }
+    var secondaryColor: UIColor = .white.withAlphaComponent(0.4) { didSet { updateColors() } }
     
     private let stack = UIStackView()
     
-    init(progress: Int, total: Int) {
-        self.progress = progress
-        self.total = total
+    init(progress: Int = 0, total: Int = 4) {
+        self.currentPage = progress
+        self.numberOfPages = total
         super.init(frame: .zero)
         setup()
     }
@@ -41,40 +40,35 @@ final class PrimalProgressView: UIView {
 private extension PrimalProgressView {
     func setup() {
         addSubview(stack)
-        stack.pinToSuperview()
+        stack.pinToSuperview(edges: .top).centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 12)
         
-        stack.spacing = 2
-        layer.cornerRadius = 2
-        layer.masksToBounds = true
+        stack.spacing = 12
         
         updateCount()
     }
     
     func updateColors() {
         for (index, view) in stack.arrangedSubviews.enumerated() {
-            view.backgroundColor = index < progress ? primaryColor : secondaryColor
+            view.backgroundColor = index <= currentPage ? primaryColor : secondaryColor
         }
     }
     
     func updateCount() {
-        if stack.arrangedSubviews.count > total {
-            for (index, view) in stack.arrangedSubviews.enumerated() where index >= total {
+        if stack.arrangedSubviews.count > numberOfPages {
+            for (index, view) in stack.arrangedSubviews.enumerated() where index >= numberOfPages {
                 view.removeFromSuperview()
             }
         }
         
-        while stack.arrangedSubviews.count < total {
+        while stack.arrangedSubviews.count < numberOfPages {
             stack.addArrangedSubview(stackingView())
         }
         updateColors()
     }
     
     func stackingView() -> UIView {
-        let view = UIView()
-        
-        view.backgroundColor = secondaryColor
-        view.constrainToSize(width: 32, height: 4)
-        
+        let view = UIView().constrainToSize(8)
+        view.layer.cornerRadius = 4
         return view
     }
 }

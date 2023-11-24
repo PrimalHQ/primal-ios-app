@@ -356,7 +356,7 @@ private extension ProfileViewController {
                 ])
             ])
 
-            Connection.instance.requestCache(request) { [weak self] res in
+            Connection.regular.requestCache(request) { [weak self] res in
                 DispatchQueue.main.async {
                     for response in res {
                         let kind = NostrKind.fromGenericJSON(response)

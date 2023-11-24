@@ -278,7 +278,8 @@ private extension MenuContainerController {
     // MARK: - Objc methods
     
     func qrCodePressed() {
-        
+        show(ProfileQRController(), sender: nil)
+        resetNavigationTabBar()
     }
     
     @objc func profilePressed() {

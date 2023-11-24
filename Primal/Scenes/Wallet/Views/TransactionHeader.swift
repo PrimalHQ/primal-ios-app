@@ -12,8 +12,6 @@ final class TransactionHeader: UITableViewHeaderFooterView, Themeable {
     let rightLine = UIView()
     let title = UILabel()
     
-    let expander = UIView()
-    
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         setup()
@@ -29,9 +27,6 @@ final class TransactionHeader: UITableViewHeaderFooterView, Themeable {
     }
     
     private func setup() {
-        contentView.addSubview(expander)
-        expander.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: -30).pinToSuperview(edges: .bottom)
-        
         let stack = UIStackView([leftLine, title, rightLine])
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
@@ -43,11 +38,10 @@ final class TransactionHeader: UITableViewHeaderFooterView, Themeable {
         leftLine.widthAnchor.constraint(equalTo: rightLine.widthAnchor).isActive = true
         
         title.font = .appFont(withSize: 14, weight: .regular)
-        
     }
     
     func updateTheme() {
-        expander.backgroundColor = .background
+        contentView.backgroundColor = .background
         
         leftLine.backgroundColor = .background3
         rightLine.backgroundColor = .background3

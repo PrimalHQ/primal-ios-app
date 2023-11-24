@@ -8,13 +8,17 @@
 import AVKit
 import Combine
 import UIKit
+import Kingfisher
 
 final class VideoCell: UICollectionViewCell {
+    let thumbnailImage = UIImageView()
     let playerView = PlayerView()
+    let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
     
     let muteButton = MuteButton()
     
     var muteUpdater: AnyCancellable?
+    var playUpdater: AnyCancellable?
     
     var player: VideoPlayer? {
         didSet {
@@ -23,17 +27,30 @@ final class VideoCell: UICollectionViewCell {
             muteUpdater = player?.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
                 self?.muteButton.buttonState = isMuted ? .muted : .unmuted
             })
+            
+            playUpdater = player?.$isPlaying.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isPlaying in
+                self?.playIcon.isHidden = isPlaying
+            })
         }
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        contentView.addSubview(thumbnailImage)
+        thumbnailImage.pinToSuperview()
+        thumbnailImage.contentMode = .scaleAspectFill
+        thumbnailImage.setContentCompressionResistancePriority(.init(1), for: .vertical)
+        thumbnailImage.clipsToBounds = true
+        
         contentView.addSubview(playerView)
         playerView.pinToSuperview()
         playerView.playerLayer.contentsGravity = .resizeAspect
         
         contentView.addSubview(muteButton)
         muteButton.pinToSuperview(edges: [.trailing, .bottom], padding: 4).constrainToSize(44)
+        
+        contentView.addSubview(playIcon)
+        playIcon.centerToSuperview()
         
         muteButton.addAction(.init(handler: { [weak self] _ in
             guard let player = self?.player, let button = self?.muteButton else { return }

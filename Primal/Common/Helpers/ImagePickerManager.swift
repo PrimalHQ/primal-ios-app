@@ -86,7 +86,7 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
         }
         
         var isPNG = false
-        if let assetPath = info[.mediaURL] as? NSURL, assetPath.absoluteString?.hasSuffix("PNG") == true {
+        if let assetPath = info[.imageURL] as? NSURL, assetPath.absoluteString?.uppercased().hasSuffix("PNG") == true {
             isPNG = true
         }
 
