@@ -57,7 +57,6 @@ private extension SettingsContentDisplayController {
         let autoplay = SettingsSwitchView("Auto play videos")
         let animatedAvatars = SettingsSwitchView("Show animated avatars")
         let fullScreenFeed = SettingsSwitchView("Full screen feed display")
-        let autoDarkMode = SettingsSwitchView("Auto adjust light-dark mode")
         
         let stack = UIStackView(axis: .vertical, [
             autoplay, SpacerView(height: 10),
@@ -66,8 +65,6 @@ private extension SettingsContentDisplayController {
             descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32),
             fullScreenFeed, SpacerView(height: 10),
             descLabel("Maximize screen real estate by hiding app header & footer as you scroll down the feed."), SpacerView(height: 32),
-            autoDarkMode, SpacerView(height: 10),
-            descLabel("Automatically set Dark or Light mode based on your device Display & Brightness settings."),
         ])
         
         let scroll = UIScrollView()
@@ -86,7 +83,6 @@ private extension SettingsContentDisplayController {
         autoplay.switchView.isOn = ContentDisplaySettings.autoPlayVideos
         animatedAvatars.switchView.isOn = ContentDisplaySettings.animatedAvatars
         fullScreenFeed.switchView.isOn = ContentDisplaySettings.fullScreenFeed
-        autoDarkMode.switchView.isOn = ContentDisplaySettings.autoDarkMode
         
         autoplay.switchView.addAction(.init(handler: { [weak autoplay] _ in
             guard let value = autoplay?.switchView.isOn else { return }
@@ -103,13 +99,6 @@ private extension SettingsContentDisplayController {
             guard let value = fullScreenFeed?.switchView.isOn else { return }
             ContentDisplaySettings.fullScreenFeed = value
         }), for: .valueChanged)
-        
-        autoDarkMode.switchView.addAction(.init(handler: { [weak autoDarkMode] _ in
-            guard let value = autoDarkMode?.switchView.isOn else { return }
-            ContentDisplaySettings.autoDarkMode = value
-            ThemingManager.instance.setStartingTheme()
-        }), for: .valueChanged)
-        
     }
     
     func descLabel(_ text: String) -> UILabel {

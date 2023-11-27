@@ -86,6 +86,7 @@ enum MediaSize: String {
 struct MediaMetadata: Codable {
     let event_id: String
     let resources: [Resource]
+    let thumbnails: [String: String]?
     
     struct Resource: Codable {
         let url: String

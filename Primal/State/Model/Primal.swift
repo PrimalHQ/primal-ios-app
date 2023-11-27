@@ -132,7 +132,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let npub: String
     let name: String
     let about: String
-    let picture: String
+    var picture: String
     let nip05: String
     let banner: String
     let displayName: String
@@ -347,4 +347,8 @@ extension PrimalFeedPost {
             reposts: 42
         )
     }()
+    
+    var isEmpty: Bool {
+        id == "empty" || (id.isEmpty && pubkey.isEmpty)
+    }
 }

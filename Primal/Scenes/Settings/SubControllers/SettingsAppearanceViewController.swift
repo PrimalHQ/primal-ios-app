@@ -11,7 +11,7 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
     var previewTable = UITableView()
     let mainParent = UIView()
     lazy var stack = UIStackView(axis: .vertical, [mainParent])
-    let themeExplanation = SettingsToggleView(title: "Use full width layout")
+    let themeExplanation = SettingsToggleView(title: "Automatically set Dark or Light mode based on your device settings.")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,30 +27,8 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
         cellID = "cell" + UUID().uuidString.prefix(10)
         previewTable.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: cellID)
         previewTable.reloadData()
-        
-        if Theme.current.kind != Theme.defaultTheme?.kind {
-            themeExplanation.alpha = 1
-            themeExplanation.isHidden = false
-            switch Theme.current.kind {
-            case .sunriseWave, .sunsetWave:
-                themeExplanation.label.text = "App will switch between sunrise/sunset based on your system dark mode settings"
-            case .midnightWave, .iceWave:
-                themeExplanation.label.text = "App will switch between midnight/ice based on your system dark mode settings"
-            }
-            
-            DispatchQueue.main.async {
-                self.themeExplanation.alpha = 1
-                self.themeExplanation.isHidden = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
-                    self.themeExplanation.alpha = 1
-                    self.themeExplanation.isHidden = false
-                }
-            }
-        } else {
-            themeExplanation.alpha = 0
-            themeExplanation.isHidden = true
-        }
+
+        themeExplanation.toggle.setOn(ContentDisplaySettings.autoDarkMode, animated: false)
     }
 }
 
@@ -93,27 +71,37 @@ private extension SettingsAppearanceViewController {
         previewTable.backgroundColor = .clear
         previewTable.separatorStyle = .none
         
+        let previewParent = UIView()
+        previewParent.addSubview(previewTable)
+        previewTable.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: -24)
+        
         let mainStack = UIStackView(axis: .vertical, [
-            SettingsTitleViewVibrant(title: "THEME"),       SpacerView(height: 12),
-            themeStack,                                     SpacerView(height: 20),
-            themeExplanation,
-            BorderView(),                                   SpacerView(height: 16),
-            SettingsTitleViewVibrant(title: "FONT"),        SpacerView(height: 22),
-            slider,                                         SpacerView(height: 20),
-            BorderView(),                                   SpacerView(height: 16),
-            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12),
-            toggle,                                         SpacerView(height: 16),
-            BorderView(),                                   SpacerView(height: 16),
-            SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12),
-            previewTable
+            SpacerView(height: 12, priority: .defaultLow),
+            SettingsTitleViewVibrant(title: "THEME"),       SpacerView(height: 12, priority: .defaultLow),
+            themeStack,                                     SpacerView(height: 20, priority: .defaultLow),
+            themeExplanation,                               SpacerView(height: 20, priority: .defaultHigh),
+            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "FONT"),        SpacerView(height: 22, priority: .defaultLow),
+            slider,                                         SpacerView(height: 20, priority: .defaultHigh),
+            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12, priority: .defaultLow),
+            toggle,                                         SpacerView(height: 16, priority: .defaultHigh),
+            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12, priority: .defaultLow),
+            previewParent
         ])
         mainParent.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical)
         
-        mainStack.setCustomSpacing(12, after: themeExplanation)
+        previewTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 190).isActive = true
         
-        view.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
+        let scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        scrollView.addSubview(stack)
+        stack.pinToSuperview()
+        stack.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        stack.heightAnchor.constraint(equalToConstant: 650).isActive = true
         
         updateTheme()
     }

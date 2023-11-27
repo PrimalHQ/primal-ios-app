@@ -41,33 +41,33 @@ struct RootAnimatorToSignIn {
                     introVC.removeFromParent()
                 }
                 
-                let views = [onboarding.screenshotParent, onboarding.signupButton, onboarding.signinButton, onboarding.termsBothLines]
+                let views = [onboarding.screenshot, onboarding.signupButton, onboarding.signinButton, onboarding.termsBothLines]
                 views.forEach {
                     $0.alpha = 0
                     $0.transform = .init(translationX: 0, y: 100)
                 }
-                onboarding.screenshotParent.transform = .init(scaleX: 0.66, y: 0.66)
+                onboarding.screenshot.transform = .init(scaleX: 0.66, y: 0.66)
                 
                 CATransaction.begin()
                 CATransaction.setAnimationTimingFunction(.signinEaseOut)
                 
                 UIView.animate(withDuration: 17 / speed) {
-                    onboarding.screenshotParent.alpha = 1
-                    onboarding.screenshotParent.transform = .identity
+                    onboarding.screenshot.alpha = 1
+                    onboarding.screenshot.transform = .identity
                     
-                    onboarding.signupButton.transform = .identity
+                    onboarding.signinButton.transform = .identity
                 }
                 
                 UIView.animate(withDuration: 15 / speed, delay: 2 / speed) {
-                    onboarding.signupButton.alpha = 1
+                    onboarding.signinButton.alpha = 1
                 }
                 
                 UIView.animate(withDuration: 17 / speed, delay: 4 / speed) {
-                    onboarding.signinButton.transform = .identity
+                    onboarding.signupButton.transform = .identity
                 }
             
                 UIView.animate(withDuration: 15 / speed, delay: 6 / speed) {
-                    onboarding.signinButton.alpha = 1
+                    onboarding.signupButton.alpha = 1
                 } completion: { _ in
                     promise(.success(()))
                 }

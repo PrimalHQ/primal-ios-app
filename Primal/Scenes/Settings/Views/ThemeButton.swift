@@ -33,6 +33,7 @@ final class ThemeButton: MyButton, Themeable {
         updateTheme()
         
         addAction(.init(handler: { _ in
+            ContentDisplaySettings.autoDarkMode = false
             Theme.defaultTheme = theme.theme
         }), for: .touchUpInside)
     }

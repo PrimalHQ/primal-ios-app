@@ -117,7 +117,7 @@ final class ChatViewController: UIViewController, Themeable {
         postButton.backgroundColor = .accent2
         
         inputParent.backgroundColor = .background
-        inputBackground.backgroundColor = false ? .background : .background3
+        inputBackground.backgroundColor = .background3
         
         table.reloadData()
     }
@@ -318,6 +318,7 @@ private extension ChatViewController {
         textInputView.text = ""
         postButton.isEnabled = false
         postButton.alpha = 0.5
+        postButton.isHidden = true
         
         let date = Date()
         messages.append(.init(id: "", user: .init(data: .init(pubkey: IdentityManager.instance.userHexPubkey)), date: date, message: text, status: .sending))
@@ -338,6 +339,7 @@ private extension ChatViewController {
             guard let self = self else { return }
             let images = self.inputManager.images
             
+            self.postButton.isHidden = !isEditing
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             

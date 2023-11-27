@@ -40,11 +40,21 @@ final class MainTabBarController: UIViewController, Themeable {
     let notificationIndicator = NotificationsIndicator()
     let messagesIndicator = NotificationsIndicator()
     
-    let buttonStackParent = UIView()
-    lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
-    let safeAreaSpacer = UIView()
-    let closeMenuButton = UIButton()
-    let navigationBorder = UIView().constrainToSize(height: 1)
+    private let buttonStackParent = UIView()
+    private lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
+    private let safeAreaSpacer = UIView()
+    private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
+        $0.backgroundColor = .background
+        $0.layer.borderColor = UIColor.background3.cgColor
+    }
+    private let navigationBorder = UIView().constrainToSize(height: 1)
+    private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
+        let isWalletSelected = (self?.currentPageIndex ?? 0) == 2
+        
+        $0.backgroundColor = isWalletSelected ? .foreground6 : .background3
+        $0.tintColor = isWalletSelected ? UIColor.foreground : UIColor.foreground3
+        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
+    }
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
     private var foregroundObserver: NSObjectProtocol?
@@ -53,7 +63,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
     var cancellables: Set<AnyCancellable> = []
     
-    private let tabs: [MainTab] = [.home, .explore, .wallet, .messages, .notifications]
+    private let tabs: [MainTab] = [.home, .explore, .wallet, .notifications, .messages]
 
     var hasNewNotifications = false {
         didSet {
@@ -75,7 +85,10 @@ final class MainTabBarController: UIViewController, Themeable {
     
     var showTabBarBorder: Bool {
         get { !navigationBorder.isHidden }
-        set { navigationBorder.isHidden = !newValue }
+        set {
+            navigationBorder.alpha = newValue ? 1 : 0
+            circleBorderView.alpha = newValue ? 1 : 0
+        }
     }
 
     init() {
@@ -103,22 +116,19 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
 
-    func showCloseMenuButton() {
-        closeMenuButton.alpha = 0
-        closeMenuButton.isHidden = false
-        closeMenuButton.setImage(tabs[currentPageIndex].selectedTabImage?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
+    func hideForMenu() {
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 0
-            self.closeMenuButton.alpha = 1
+            self.circleWalletButton.alpha = 0
+            self.showTabBarBorder = false
         }
     }
 
     func showButtons() {
         UIView.animate(withDuration: 0.3) {
             self.buttonStack.alpha = 1
-            self.closeMenuButton.alpha = 0
-        } completion: { _ in
-            self.closeMenuButton.isHidden = true
+            self.circleWalletButton.alpha = 1
+            self.showTabBarBorder = true
         }
     }
 
@@ -126,8 +136,6 @@ final class MainTabBarController: UIViewController, Themeable {
         view.backgroundColor = .background
         safeAreaSpacer.backgroundColor = .background
         buttonStackParent.backgroundColor = .background
-
-        closeMenuButton.tintColor = .foreground
 
         updateButtons()
 
@@ -140,45 +148,41 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         if !animated {
-            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height) : .identity
+            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height + 10) : .identity
             return
         }
         
         UIView.animate(withDuration: 0.3) {
-            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height) : .identity
+            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
+        }
+    }
+    
+    func navForTab(_ tab: MainTab) -> UINavigationController {
+        switch tab {
+        case .home:
+            return home
+        case .explore:
+            return explore
+        case .wallet:
+            return wallet
+        case .messages:
+            return messages
+        case .notifications:
+            return notifications
         }
     }
     
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
-        let nav: UINavigationController = {
-            switch tab {
-            case .home:
-                return home
-            case .explore:
-                return explore
-            case .wallet:
-                return wallet
-            case .messages:
-                return messages
-            case .notifications:
-                return notifications
-            }
-        }()
-        
-        pageVC.setViewControllers([nav], direction: .forward, animated: true)
-        currentPageIndex = indexForNav(nav)
+        let nav: UINavigationController = navForTab(tab)
+        let index = tabs.firstIndex(of: tab) ?? 0
+            
+        pageVC.setViewControllers([nav],
+            direction: currentPageIndex < index ? .forward : .reverse,
+            animated: true
+        )
+        currentPageIndex = index
         if let vc {
             nav.pushViewController(vc, animated: true)
-        }
-    }
-    
-    func mainTabForIndex(_ index: Int) -> MainTab {
-        switch index {
-        case 0:     return .home
-        case 1:     return .explore
-        case 2:     return .messages
-        case 3:     return .notifications
-        default:    return .home
         }
     }
 }
@@ -202,10 +206,10 @@ private extension MainTabBarController {
         
         buttonStack.addSubview(notificationIndicator)
         buttonStack.addSubview(messagesIndicator)
-        if let imageView = buttons.last?.imageView {
+        if let imageView = buttons.dropLast().last?.imageView {
             notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
         }
-        if let imageView = buttons.dropLast().last?.imageView {
+        if let imageView = buttons.last?.imageView {
             messagesIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
         }
         notificationIndicator.isHidden = true
@@ -216,32 +220,23 @@ private extension MainTabBarController {
 
         vStack.axis = .vertical
 
-        view.addSubview(closeMenuButton)
-        closeMenuButton.constrainToSize(width: 70, height: 56).pin(to: buttonStack, edges: [.trailing, .top])
-
-        closeMenuButton.setImage(UIImage(named: "tabIcon1")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate), for: .normal)
-        closeMenuButton.isHidden = true
-
         foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
-            Connection.instance.reconnect()
+            Connection.reconnect()
+            PrimalEndpointsManager.instance.checkIfNecessary()
             RelaysPostbox.instance.reconnect()
         }
         
         noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
-            if let note = notification.object as? String {
-                if let self {
-                    Connection.instance.$isConnected
-                        .filter({ $0 })
-                        .first()
-                        .receive(on: DispatchQueue.main)
-                        .sink { _ in
-                            self.menuButtonPressedForNav(self.home)
-                            let vc = ThreadViewController(threadId: note)
-                            self.home.pushViewController(vc, animated: true)
-                        }
-                        .store(in: &cancellables)
+            guard let note = notification.object as? String, let self else { return }
+                
+            Connection.regular.$isConnected
+                .filter({ $0 })
+                .first()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.switchToTab(.home, open: ThreadViewController(threadId: note))
                 }
-            }
+                .store(in: &cancellables)
         }
         
         profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
@@ -253,32 +248,53 @@ private extension MainTabBarController {
                 return
             }
 
-            Connection.instance.$isConnected
+            Connection.regular.$isConnected
                 .filter({ $0 })
                 .first()
                 .receive(on: DispatchQueue.main)
-                .sinkAsync { _ in
+                .sinkAsync { [weak self] _ in
                     let parsedUser = await ProfileManager.instance.requestProfileInfo(hex)
 
                     DispatchQueue.main.async {
-                        self.menuButtonPressedForNav(self.home)
-                        let vc = ProfileViewController(profile: parsedUser)
-                        self.home.pushViewController(vc, animated: true)
+                        self?.switchToTab(.home, open: ProfileViewController(profile: parsedUser))
                     }
                 }
                 .store(in: &cancellables)
         }
         
         updateButtons()
-
-        [home, explore, wallet, messages, notifications].forEach { nav in
-            buttons[indexForNav(nav)].addAction(.init(handler: { [weak self] _ in
-                self?.menuButtonPressedForNav(nav)
+        addCircleWalletButton()
+        
+        zip(buttons, tabs).forEach { button, tab in
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.menuButtonPressedForTab(tab)
             }), for: .touchUpInside)
         }
     }
     
+    func addCircleWalletButton() {
+        vStack.insertSubview(circleBorderView, at: 0)
+        circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
+        circleBorderView.layer.borderWidth = 1
+        circleBorderView.layer.cornerRadius = 32
+        
+        let frontCover = ThemeableView().constrainToSize(62).setTheme { $0.backgroundColor = .background }
+        frontCover.layer.cornerRadius = 31
+        vStack.addSubview(frontCover)
+        frontCover.pinToSuperview(edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
+        
+        circleWalletButton.layer.cornerRadius = 26
+        vStack.addSubview(circleWalletButton)
+        circleWalletButton.pinToSuperview(edges: .top, padding: -1).centerToSuperview(axis: .horizontal)
+        
+        circleWalletButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.menuButtonPressedForTab(.wallet)
+        }), for: .touchUpInside)
+    }
+    
     func updateButtons() {
+        circleWalletButton.updateTheme()
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
             
@@ -286,24 +302,10 @@ private extension MainTabBarController {
         }
     }
 
-    func indexForNav(_ nav: UINavigationController) -> Int {
-        switch nav {
-        case home:          return 0
-        case explore:       return 1
-        case wallet:        return 2
-        case messages:      return tabs.firstIndex(of: .messages) ?? 2
-        case notifications: return tabs.firstIndex(of: .notifications) ?? 3
-        default:            return 0
-        }
-    }
-
-    func menuButtonPressedForNav(_ nav: UINavigationController) {
+    func menuButtonPressedForTab(_ tab: MainTab) {
+        let nav = navForTab(tab)
         guard pageVC.viewControllers?.contains(nav) == true else {
-            pageVC.setViewControllers([nav],
-                    direction: currentPageIndex < indexForNav(nav) ? .forward : .reverse,
-                    animated: true
-            )
-            currentPageIndex = indexForNav(nav)
+            switchToTab(tab)
             return
         }
 

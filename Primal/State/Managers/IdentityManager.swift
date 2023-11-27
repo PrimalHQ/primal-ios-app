@@ -47,7 +47,7 @@ final class IdentityManager {
             "pubkeys": .array([.string(userHexPubkey)])
         ])
         
-        Connection.instance.requestCache(name: "user_infos", request: request) { res in
+        Connection.regular.requestCache(name: "user_infos", request: request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -87,7 +87,7 @@ final class IdentityManager {
             ])
         ])
         
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -121,7 +121,7 @@ final class IdentityManager {
             ])
         ])
         
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -173,7 +173,7 @@ final class IdentityManager {
             ])
         }
         
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -230,7 +230,7 @@ final class IdentityManager {
             ])
         ])
         
-        Connection.instance.request(request) { res in
+        Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -307,7 +307,7 @@ final class IdentityManager {
         
         guard let ev = NostrObject.updateSettings(settings.content) else { return }
         
-        Connection.instance.requestCache(name: "set_app_settings", request: .object([
+        Connection.regular.requestCache(name: "set_app_settings", request: .object([
             "settings_event":  .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),
@@ -327,7 +327,7 @@ final class IdentityManager {
 
         guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
-        Connection.instance.requestCache(name: "set_notifications_seen", request: .object([
+        Connection.regular.requestCache(name: "set_notifications_seen", request: .object([
             "event_from_user":  .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),

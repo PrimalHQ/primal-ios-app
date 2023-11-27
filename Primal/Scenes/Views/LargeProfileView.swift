@@ -6,13 +6,18 @@
 //
 
 import UIKit
+import Nantes
 
 final class LargeProfileView: UIView {
     let coverImageView = UIImageView()
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
-    let descriptionLabel = LinkableLabel()
+    let descriptionLabel = NantesLabel()
+    let websiteLabel = NantesLabel()
+    let changeBannerButton = SolidColorUIButton(title: "change banner", color: .init(rgb: 0xCA079F))
+    
+    var didTapUrl: (URL) -> Void = { _ in }
     
     var profile: SignupProfileProtocol? {
         didSet {
@@ -38,17 +43,18 @@ private extension LargeProfileView {
         usernameLabel.text = "@" + profile.username
         descriptionLabel.text = profile.bio
         nameLabel.text = profile.displayname
+        websiteLabel.text = profile.website
     }
     
     func setup() {
-        backgroundColor = .black
+        backgroundColor = .white
         layer.cornerRadius = 12
         layer.borderColor = UIColor.white.cgColor
-        layer.borderWidth = 1
+        layer.borderWidth = 3
         layer.masksToBounds = true
         
         let profileImageViewParent = UIView()
-        profileImageViewParent.backgroundColor = .black
+        profileImageViewParent.backgroundColor = .white
         profileImageViewParent.layer.cornerRadius = (72 + 6) / 2
         profileImageViewParent.addSubview(profileImageView)
         profileImageView.pinToSuperview(padding: 3)
@@ -60,7 +66,7 @@ private extension LargeProfileView {
         coverImageView.backgroundColor = .darkGray
         
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, usernameLabel])
-        let mainStack = UIStackView(arrangedSubviews: [profileImageViewParent, nameStack, descriptionLabel])
+        let mainStack = UIStackView(arrangedSubviews: [profileImageViewParent, nameStack, descriptionLabel, websiteLabel])
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 16)
@@ -68,13 +74,18 @@ private extension LargeProfileView {
             .constrainToSize(72)
             .centerYAnchor.constraint(equalTo: coverImageView.bottomAnchor).isActive = true
         
+        addSubview(changeBannerButton)
+        changeBannerButton
+            .pinToSuperview(edges: .trailing, padding: 14)
+            .topAnchor.constraint(equalTo: coverImageView.bottomAnchor).isActive = true
+        
         profileImageView.layer.cornerRadius = 72 / 2
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
         profileImageView.backgroundColor = .darkGray
         
         nameLabel.font = .appFont(withSize: 20, weight: .bold)
-        nameLabel.textColor = .white
+        nameLabel.textColor = .black
         nameLabel.adjustsFontSizeToFitWidth = true
         
         usernameLabel.font = .appFont(withSize: 14, weight: .regular)
@@ -82,9 +93,16 @@ private extension LargeProfileView {
         
         descriptionLabel.font = .appFont(withSize: 14, weight: .regular)
         descriptionLabel.numberOfLines = 4
-        descriptionLabel.adjustsFontSizeToFitWidth = true
         descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.textColor = .white
+        descriptionLabel.textColor = .black
+        descriptionLabel.linkAttributes = [.foregroundColor: UIColor(rgb: 0xCA079F)]
+        descriptionLabel.delegate = self
+        
+        websiteLabel.font = .appFont(withSize: 14, weight: .regular)
+        websiteLabel.adjustsFontSizeToFitWidth = true
+        websiteLabel.textColor = UIColor(rgb: 0xCA079F)
+        websiteLabel.linkAttributes = [.foregroundColor: UIColor(rgb: 0xCA079F)]
+        websiteLabel.delegate = self
         
         nameStack.spacing = 6
         nameStack.alignment = .center
@@ -92,5 +110,11 @@ private extension LargeProfileView {
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.spacing = 10
+    }
+}
+
+extension LargeProfileView: NantesLabelDelegate {
+    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
+        didTapUrl(link)
     }
 }

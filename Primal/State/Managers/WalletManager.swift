@@ -49,7 +49,7 @@ final class WalletManager {
                 self?.balance = 0
                 self?.transactions = []
                 self?.isLoadingWallet = true
-                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection()
+                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection(Connection.wallet)
             }
             .sink(receiveValue: { [weak self] val in
                 self?.isLoadingWallet = false
@@ -62,8 +62,8 @@ final class WalletManager {
             .flatMap { [weak self] _ in
                 self?.isLoadingWallet = true
                 return Publishers.Zip(
-                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(),
-                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection()
+                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet),
+                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
                 )
             }
             .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
@@ -77,9 +77,9 @@ final class WalletManager {
             .store(in: &cancellables)
         
         $balance
-            .debounce(for: .seconds(3), scheduler: RunLoop.main)
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
             .flatMap { [weak self] _ in
-                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection()
+                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection(Connection.wallet)
             }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
@@ -130,7 +130,7 @@ final class WalletManager {
     func refreshTransactions() {
         isLoadingTransactions = true
         
-        PrimalWalletRequest(type: .transactions()).publisher().waitForConnection()
+        PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
             .sink(receiveValue: { [weak self] val in
                 self?.transactions = val.transactions
                 self?.isLoadingTransactions = false
@@ -139,7 +139,7 @@ final class WalletManager {
     }
     
     func refreshBalance() {
-        PrimalWalletRequest(type: .balance).publisher().waitForConnection()
+        PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet)
             .sink(receiveValue: { [weak self] val in
                 let string = val.balance?.amount ?? "0"
                 let double = (Double(string) ?? 0) * .BTC_TO_SAT

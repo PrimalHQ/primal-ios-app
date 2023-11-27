@@ -13,7 +13,7 @@ protocol FollowSectionHeaderDelegate: AnyObject {
 
 final class FollowSectionHeader: UITableViewHeaderFooterView {
     let title = UILabel()
-    let followAll = FollowButton("Follow All", "Unfollow All", colors: SunsetWave.instance.gradient)
+    let followAll = FollowButton("follow all", "unfollow all")
     
     weak var delegate: FollowSectionHeaderDelegate?
     
@@ -27,17 +27,14 @@ final class FollowSectionHeader: UITableViewHeaderFooterView {
     }
     
     func setup() {
-        backgroundColor = .black
-        contentView.backgroundColor = UIColor(rgb: 0x181818)
-        contentView.layer.cornerRadius = 8
-        contentView.layer.borderColor = UIColor(rgb: 0x222222).cgColor
-        contentView.layer.borderWidth = 1
+        contentView.backgroundColor = .init(rgb: 0xDDC5DF)//.withAlphaComponent(0.9)
+        backgroundConfiguration = .clear()
         
         let stack = UIStackView(arrangedSubviews: [title, followAll])
         contentView.addSubview(stack)
         stack
-            .pinToSuperview(edges: .leading, padding: 24)
-            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .leading, padding: 16)
+            .pinToSuperview(edges: .top, padding: 14)
         
         [
             stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
@@ -47,14 +44,14 @@ final class FollowSectionHeader: UITableViewHeaderFooterView {
             $0.isActive = true
         }
         
-        title.font = .appFont(withSize: 14, weight: .medium)
-        title.textColor = UIColor(rgb: 0xAAAAAA)
+        title.font = .appFont(withSize: 14, weight: .semibold)
+        title.textColor = UIColor(rgb: 0x111111)
         title.numberOfLines = 2
         
-        followAll.constrainToSize(width: 106, height: 36)
+        followAll.constrainToSize(width: 108, height: 32)
         followAll.addTarget(self, action: #selector(followAllTapped), for: .touchUpInside)
         
-        stack.spacing = 50
+        stack.spacing = 8
         stack.alignment = .center
     }
     

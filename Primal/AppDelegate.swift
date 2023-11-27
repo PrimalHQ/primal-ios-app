@@ -19,6 +19,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .autoDarkModeKey:       true,
         ])
         
+        UITableView.appearance().sectionHeaderTopPadding = 0
+        
+        PrimalEndpointsManager.instance.checkIfNecessary()
+        
         return true
     }
 

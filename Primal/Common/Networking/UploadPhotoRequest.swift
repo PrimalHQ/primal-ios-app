@@ -13,7 +13,7 @@ import GenericJSON
 
 class UploadPhotoRequest {
     static let dispatchQueue = DispatchQueue(label: "com.primal.imageUpload")
-    let url = URL(string: "wss://uploads.primal.net/v1")!
+    let url = PrimalEndpointsManager.uploadURL
     
     lazy var socket = NWWebSocket(url: url, connectAutomatically: true, connectionQueue: Self.dispatchQueue)
     var image: UIImage

@@ -26,7 +26,7 @@ class ThreadCell: PostCell {
         super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
-        mainImages.isHidden = parsedContent.imageResources.isEmpty
+        mainImages.isHidden = parsedContent.mediaResources.isEmpty
         
         switch position {
         case .parent:

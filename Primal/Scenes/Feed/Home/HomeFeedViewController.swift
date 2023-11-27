@@ -101,7 +101,7 @@ final class HomeFeedViewController: PostFeedViewController {
                 newPostObjects = []
             }
             self.newAddedPosts = 0
-            
+            self.shouldShowBars = true
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
@@ -139,7 +139,12 @@ final class HomeFeedViewController: PostFeedViewController {
         present(NewPostViewController(), animated: true)
     }
     
-    override func updateTheme() {
+    override func updateTheme() {        
+        newPostObjects.forEach {
+            $0.buildContentString()
+            $0.embededPost?.buildContentString()
+        }
+        
         super.updateTheme()
         
         feedButton.backgroundColor = .background

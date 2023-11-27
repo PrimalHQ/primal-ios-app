@@ -28,7 +28,7 @@ final class ChatManager {
     var cancellables: Set<AnyCancellable> = []
     
     func getRecentChats(_ relation: Relation, callback: @escaping ([Chat]) -> Void) {
-        Connection.instance.$isConnected.filter { $0 }
+        Connection.regular.$isConnected.filter { $0 }
             .first()
             .flatMap({ _ in
                 SocketRequest(name: "get_directmsg_contacts", payload: .object([
@@ -45,7 +45,7 @@ final class ChatManager {
     }
     
     func getChatMessagesHistory(pubkey: String, until: Double, _ callback: @escaping ([ProcessedMessage]) -> Void) {
-        Connection.instance.$isConnected.filter { $0 }
+        Connection.regular.$isConnected.filter { $0 }
             .first()
             .flatMap { _ in
                 SocketRequest(name: "get_directmsgs", payload: .object([
@@ -64,7 +64,7 @@ final class ChatManager {
     }
     
     func getChatMessages(pubkey: String, since: Double = 0, _ callback: @escaping ([ProcessedMessage]) -> Void) {
-        Connection.instance.$isConnected.filter { $0 }
+        Connection.regular.$isConnected.filter { $0 }
             .first()
             .flatMap { _ in
                 SocketRequest(name: "get_directmsgs", payload: .object([
@@ -83,8 +83,8 @@ final class ChatManager {
     }
     
     func updateChatCount() {
-        Connection.instance.$isConnected.filter { $0 }.sink { [weak self] _ in
-            self?.continousConnection = Connection.instance.requestCacheContinous(name: "directmsg_count", request: .object([
+        Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
+            self?.continousConnection = Connection.regular.requestCacheContinous(name: "directmsg_count", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in
                 guard let resDict = response.arrayValue?.last?.objectValue else { return }

@@ -31,6 +31,7 @@ final class BuySatsCell: UITableViewCell, Themeable {
         descLabel.font = .appFont(withSize: 16, weight: .medium)
         
         actionButton.setTitle("Buy Sats Now", for: .normal)
+        actionButton.setTitleColor(.white, for: .normal)
         actionButton.titleLabel?.font = .appFont(withSize: 16, weight: .semibold)
         actionButton.constrainToSize(height: 58)
         actionButton.layer.cornerRadius = 24
@@ -58,6 +59,5 @@ final class BuySatsCell: UITableViewCell, Themeable {
         descLabel.textColor = .foreground5
         
         actionButton.backgroundColor = .accent
-        actionButton.setTitleColor(.foreground, for: .normal)
     }
 }

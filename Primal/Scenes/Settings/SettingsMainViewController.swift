@@ -38,7 +38,7 @@ private extension SettingsMainViewController {
     func setupView() {
         title = "Settings"
         
-        let keys = SettingsOptionButton(title: "Account")
+        let keys = SettingsOptionButton(title: "Keys")
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
         let contentDisplay = SettingsOptionButton(title: "Content Display")

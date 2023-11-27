@@ -41,6 +41,34 @@ extension FixedWidthInteger {
         return "1t+"
     }
     
+    func shortenedLocalized() -> String {
+        if self < 1000 {
+            return "\(self)"
+        }
+        
+        let multipliers: [(String, Int)] = [
+            ("", 1),
+            ("k", 1_000),
+            ("m", 1_000_000),
+            ("b", 1_000_000_000)
+        ]
+        
+        let iSelf = Int(self)
+        
+        for ((oldShorten, oldMultiplier), (shorten, multiplier)) in zip(multipliers, multipliers.dropFirst()) {
+            let total = iSelf / multiplier
+            if total < 10 {
+                let oldTotal = iSelf / oldMultiplier
+                return "\(oldTotal.localized())\(oldShorten)"
+            }
+            if total < 1000 {
+                return "\(total)\(shorten)"
+            }
+        }
+        
+        return "1t+"
+    }
+    
     func localized() -> String {
         let nf = NumberFormatter()
         nf.numberStyle = .decimal

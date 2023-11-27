@@ -10,11 +10,13 @@ import LinkPresentation
 import Kingfisher
 
 extension PostRequestResult {
-    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser) {
+    func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
         let nostrUser = users[content.pubkey] ?? .init(pubkey: content.pubkey)
         let nostrPostStats = stats[content.id] ?? .empty(content.id)
         
         let primalFeedPost = PrimalFeedPost(nostrPost: content, nostrPostStats: nostrPostStats)
+        
+        if primalFeedPost.isEmpty { return nil }
         
         return (primalFeedPost, createParsedUser(nostrUser))
     }
@@ -28,15 +30,13 @@ extension PostRequestResult {
     
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
-            .map({ createPrimalPost(content: $0) })
+            .compactMap({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
         
         let reposts: [ParsedContent] = reposts
-            .map {
-                let (post, user) = createPrimalPost(content: $0.post)
-                return (post, user, $0)
-            }
-            .compactMap { (primalPost: PrimalFeedPost, user: ParsedUser, repost: NostrRepost) in
+            .compactMap { repost in
+                guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
+                
                 let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
                 
                 guard let nostrUser = users[repost.pubkey] else { return post }
@@ -94,8 +94,7 @@ extension PostRequestResult {
         }
         
         for preview in webPreviews.first(where: { $0.event_id == post.id })?.resources ?? [] {
-            guard let urlIndex = otherURLs.firstIndex(where: { $0.contains(preview.url) }) else { continue }
-            let urlString = otherURLs[urlIndex]
+            let urlString = preview.url
             guard let url = URL(string: urlString.hasPrefix("http") ? urlString : "https://\(urlString)") else { continue }
             
             guard
@@ -104,9 +103,6 @@ extension PostRequestResult {
                 preview.md_description?.isEmpty == false ||
                 preview.md_image?.isEmpty == false
             else { continue }
-            
-            otherURLs.remove(at: urlIndex)
-            itemsToRemove.append(urlString)
             
             p.linkPreview = LinkMetadata(
                 url: url,
@@ -188,12 +184,43 @@ extension PostRequestResult {
         }
         
         for media in mediaMetadata where media.event_id == post.id {
-            p.imageResources = media.resources.filter { text.contains($0.url) }
+            p.mediaResources = media.resources.filter { text.contains($0.url) }
+            p.videoThumbnails = media.thumbnails ?? p.videoThumbnails
         }
+        
+        if p.mediaResources.isEmpty {
+            p.mediaResources = imageURLs.map { .init(url: $0, variants: []) }
+        }
+        
+        for string in videoURLS.reversed() {
+            if !p.mediaResources.contains(where: { $0.url == string }) {
+                p.mediaResources.insert(.init(url: string, variants: []), at: 0)
+            }
+        }
+        
+        // Don't show link preview if post contains media gallery
+        if !p.mediaResources.isEmpty { p.linkPreview = nil }
+        
+        // MARK: - Editing text
         
         for item in itemsToRemove {
             text = text.replacingOccurrences(of: item, with: "")
         }
+        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Only remove url from text if
+        if p.mediaResources.isEmpty, // there are no images or video (no media preview)
+            otherURLs.count == 1,    // there is only one url in text
+            p.linkPreview != nil,    // link preview exists
+            let onlyURL = otherURLs.first,
+            text.hasSuffix(onlyURL) // the URL is on the end of the post
+        {
+            otherURLs = []
+            text = text.replacingOccurrences(of: onlyURL, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        // Remove empty lines
+        text = text.removingDoubleEmptyLines()
         
         for item in itemsToReplace {
             guard
@@ -232,16 +259,6 @@ extension PostRequestResult {
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         
         let nsText = text as NSString
-        
-        if p.imageResources.isEmpty {
-            p.imageResources = imageURLs.map { .init(url: $0, variants: []) }
-        }
-        
-        for string in videoURLS.reversed() {
-            if !p.imageResources.contains(where: { $0.url == string }) {
-                p.imageResources.insert(.init(url: string, variants: []), at: 0)
-            }
-        }
         
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }

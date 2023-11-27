@@ -45,7 +45,7 @@ final class WalletInfoCell: UITableViewCell, Themeable{
         
         let stack = UIStackView(axis: .vertical, [balanceParent, SpacerView(height: 40), centerHStack, SpacerView(height: 18)])
         contentView.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
+        stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 15)
         
         send.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.sendButtonPressed()
@@ -71,5 +71,7 @@ final class WalletInfoCell: UITableViewCell, Themeable{
     
     func updateTheme() {
         contentView.backgroundColor = .background
+        let themeables: [Themeable] = contentView.findAllSubviews()
+        themeables.forEach { $0.updateTheme() }
     }
 }

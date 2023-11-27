@@ -116,9 +116,8 @@
 		9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249F2A02838D00CAC54C /* ThreadViewController.swift */; };
 		9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6924A32A02925F00CAC54C /* MainTabBarController.swift */; };
 		9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38C829F937B100144073 /* LinkableLabel.swift */; };
-		9E6B38CB29F9487F00144073 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CA29F9487F00144073 /* Networking.swift */; };
+		9E6B38CB29F9487F00144073 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CA29F9487F00144073 /* Request.swift */; };
 		9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CD29F954D500144073 /* RootViewController.swift */; };
-		9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */; };
 		9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A22A01530B008404DB /* Date+Extra.swift */; };
 		9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A42A015BC9008404DB /* FeedButtons.swift */; };
 		9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9E83DF5E2A53308200F2C379 /* FLAnimatedImage */; };
@@ -169,10 +168,8 @@
 		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
 		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
 		9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */; };
-		9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */; };
 		9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */; };
 		9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */; };
-		9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F7029F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift */; };
 		9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */; };
 		9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */; };
 		9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F7429F6AB6400A9CDF3 /* PrimalProgressView.swift */; };
@@ -228,6 +225,17 @@
 		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
+		B9009B4C2B068653002B0613 /* OnboardingProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */; };
+		B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B4D2B068D8B002B0613 /* UserRequest.swift */; };
+		B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B4F2B07B14B002B0613 /* SignInInputField.swift */; };
+		B9009B532B07DDC0002B0613 /* OnboardingUsernameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */; };
+		B9009B552B07ED2F002B0613 /* OnboardingAboutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */; };
+		B9009B572B0FBF41002B0613 /* FullScreenVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */; };
+		B9009B5A2B0FD28A002B0613 /* ProfileQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B592B0FD28A002B0613 /* ProfileQRController.swift */; };
+		B9009B5C2B0FD390002B0613 /* ProfileShowQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B5B2B0FD390002B0613 /* ProfileShowQRController.swift */; };
+		B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */; };
+		B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */; };
+		B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */; };
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
@@ -277,7 +285,6 @@
 		B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */; };
 		B94F2BED2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */; };
 		B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */; };
-		B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */; };
 		B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */; };
 		B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF32AE95D790041181B /* Nacelle-Bold.otf */; };
 		B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94F2BF42AE95D790041181B /* Nacelle-SemiBold.otf */; };
@@ -455,9 +462,8 @@
 		9E69249F2A02838D00CAC54C /* ThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewController.swift; sourceTree = "<group>"; };
 		9E6924A32A02925F00CAC54C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		9E6B38C829F937B100144073 /* LinkableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkableLabel.swift; sourceTree = "<group>"; };
-		9E6B38CA29F9487F00144073 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		9E6B38CA29F9487F00144073 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		9E6B38CD29F954D500144073 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserRequest.swift; sourceTree = "<group>"; };
 		9E79D3A22A01530B008404DB /* Date+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extra.swift"; sourceTree = "<group>"; };
 		9E79D3A42A015BC9008404DB /* FeedButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedButtons.swift; sourceTree = "<group>"; };
 		9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapSelectionViewController.swift; sourceTree = "<group>"; };
@@ -507,10 +513,8 @@
 		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroVideoController.swift; sourceTree = "<group>"; };
-		9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingImportTwitterController.swift; sourceTree = "<group>"; };
 		9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSigninController.swift; sourceTree = "<group>"; };
 		9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingStartViewController.swift; sourceTree = "<group>"; };
-		9E9F2F7029F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSignUpStartController.swift; sourceTree = "<group>"; };
 		9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingParentViewController.swift; sourceTree = "<group>"; };
 		9E9F2F7329F6AB6400A9CDF3 /* Buttons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
 		9E9F2F7429F6AB6400A9CDF3 /* PrimalProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalProgressView.swift; sourceTree = "<group>"; };
@@ -565,6 +569,17 @@
 		9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedView.swift; sourceTree = "<group>"; };
 		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
+		B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileImageView.swift; sourceTree = "<group>"; };
+		B9009B4D2B068D8B002B0613 /* UserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRequest.swift; sourceTree = "<group>"; };
+		B9009B4F2B07B14B002B0613 /* SignInInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInInputField.swift; sourceTree = "<group>"; };
+		B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingUsernameController.swift; sourceTree = "<group>"; };
+		B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAboutController.swift; sourceTree = "<group>"; };
+		B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenVideoPlayerController.swift; sourceTree = "<group>"; };
+		B9009B592B0FD28A002B0613 /* ProfileQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileQRController.swift; sourceTree = "<group>"; };
+		B9009B5B2B0FD390002B0613 /* ProfileShowQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileShowQRController.swift; sourceTree = "<group>"; };
+		B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScanQRController.swift; sourceTree = "<group>"; };
+		B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsRequest.swift; sourceTree = "<group>"; };
+		B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsManager.swift; sourceTree = "<group>"; };
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
@@ -614,7 +629,6 @@
 		B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeRoundedButton.swift; sourceTree = "<group>"; };
 		B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerViewController.swift; sourceTree = "<group>"; };
-		B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleUseRelayConnection.swift; sourceTree = "<group>"; };
 		B94F2BF22AE95D790041181B /* Nacelle-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Regular.otf"; sourceTree = "<group>"; };
 		B94F2BF32AE95D790041181B /* Nacelle-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-Bold.otf"; sourceTree = "<group>"; };
 		B94F2BF42AE95D790041181B /* Nacelle-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nacelle-SemiBold.otf"; sourceTree = "<group>"; };
@@ -992,6 +1006,7 @@
 				B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */,
 				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
 				B94F2BD72ADDAF000041181B /* InAppPurchaseManager.swift */,
+				B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1124,11 +1139,8 @@
 		9E6B38CC29F9488400144073 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				9E6B38CA29F9487F00144073 /* Networking.swift */,
-				9E6B38CF29F9604700144073 /* TwitterUserRequest.swift */,
-				9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */,
+				B9009B5F2B11082D002B0613 /* Requests */,
 				9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */,
-				B94F2BF02AE8775A0041181B /* SingleUseRelayConnection.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1157,6 +1169,7 @@
 				9E83DF632A54CB1F00F2C379 /* Views */,
 				9ED4160C2A48744600892235 /* PopupMenuViewController.swift */,
 				9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */,
+				B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */,
 			);
 			path = Popups;
 			sourceTree = "<group>";
@@ -1182,6 +1195,8 @@
 			isa = PBXGroup;
 			children = (
 				9E83DF722A573E7A00F2C379 /* FormHeaderView.swift */,
+				B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */,
+				B9009B4F2B07B14B002B0613 /* SignInInputField.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1264,6 +1279,7 @@
 				9E9C42152A1401F500F9D7ED /* Explore */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
+				B9009B582B0FCF3B002B0613 /* QRCodes */,
 				B94F2BB72AD410FA0041181B /* Wallet */,
 				B94A0E222AA8C7C500DEBFE1 /* Messagges */,
 				9E55F2882A1FA6CD00D5D523 /* Settings */,
@@ -1276,6 +1292,7 @@
 			children = (
 				9E9F2F6C29F6AB6400A9CDF3 /* Steps */,
 				9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */,
+				9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -1283,12 +1300,9 @@
 		9E9F2F6C29F6AB6400A9CDF3 /* Steps */ = {
 			isa = PBXGroup;
 			children = (
+				B9009B512B07DD8E002B0613 /* Create */,
 				9E83DF712A573E6900F2C379 /* Views */,
-				9E83DF682A573D4400F2C379 /* OnboardingCreateAccountController.swift */,
-				9E9F2F6D29F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift */,
 				9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */,
-				9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */,
-				9E9F2F7029F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift */,
 				9E8DE4D929F7E73E0028D3C3 /* OnboardingProfileController.swift */,
 				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
 			);
@@ -1408,6 +1422,37 @@
 				9EF4BFC32A8BE9C5003396AA /* IceWave.swift */,
 			);
 			path = Themes;
+			sourceTree = "<group>";
+		};
+		B9009B512B07DD8E002B0613 /* Create */ = {
+			isa = PBXGroup;
+			children = (
+				9E83DF682A573D4400F2C379 /* OnboardingCreateAccountController.swift */,
+				B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */,
+				B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */,
+			);
+			path = Create;
+			sourceTree = "<group>";
+		};
+		B9009B582B0FCF3B002B0613 /* QRCodes */ = {
+			isa = PBXGroup;
+			children = (
+				B9009B592B0FD28A002B0613 /* ProfileQRController.swift */,
+				B9009B5B2B0FD390002B0613 /* ProfileShowQRController.swift */,
+				B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */,
+			);
+			path = QRCodes;
+			sourceTree = "<group>";
+		};
+		B9009B5F2B11082D002B0613 /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				9E6B38CA29F9487F00144073 /* Request.swift */,
+				9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */,
+				B9009B4D2B068D8B002B0613 /* UserRequest.swift */,
+				B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */,
+			);
+			path = Requests;
 			sourceTree = "<group>";
 		};
 		B914CD752AA62EDC00CD0BD1 /* ImageCollection */ = {
@@ -1719,6 +1764,7 @@
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
+				B9009B5A2B0FD28A002B0613 /* ProfileQRController.swift in Sources */,
 				9ECCC8942A3F1CE700BE8F62 /* GradientSettingsButton.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
@@ -1740,7 +1786,6 @@
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
-				B94F2BF12AE8775A0041181B /* SingleUseRelayConnection.swift in Sources */,
 				B94F2BC42AD581B30041181B /* WalletInfoCell.swift in Sources */,
 				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
 				9393D8362A430C8200F0C55A /* RelaysPostbox.swift in Sources */,
@@ -1751,6 +1796,7 @@
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
+				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
@@ -1781,7 +1827,6 @@
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				9363DE7B2A30E1C40060F4BD /* WalletConnectURL.swift in Sources */,
-				9E9F2F8129F6AB6400A9CDF3 /* OnboardingImportTwitterController.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
@@ -1789,6 +1834,7 @@
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
+				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
@@ -1826,12 +1872,14 @@
 				9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
+				B9009B572B0FBF41002B0613 /* FullScreenVideoPlayerController.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */,
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E8DE4DA29F7E73E0028D3C3 /* OnboardingProfileController.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
+				B9009B4C2B068653002B0613 /* OnboardingProfileImageView.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationsCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
@@ -1841,6 +1889,7 @@
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				9E8834BE2A328767005DB548 /* CircleIconButton.swift in Sources */,
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
+				B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
@@ -1859,6 +1908,7 @@
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
 				B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */,
 				9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */,
+				B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
@@ -1874,7 +1924,6 @@
 				9ED416142A4E03E500892235 /* AvatarView.swift in Sources */,
 				9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */,
 				9E69249C2A0262CE00CAC54C /* ImageCollectionView.swift in Sources */,
-				9E6B38D029F9604700144073 /* TwitterUserRequest.swift in Sources */,
 				933B85772A9F6EE300C48FF6 /* Utils.swift in Sources */,
 				9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
@@ -1883,6 +1932,7 @@
 				9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
 				9E8834A62A274A88005DB548 /* Processing.swift in Sources */,
+				B9009B532B07DDC0002B0613 /* OnboardingUsernameController.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* RoundedSmallButton.swift in Sources */,
 				B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */,
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
@@ -1901,6 +1951,7 @@
 				B94F2BC92AD7206C0041181B /* WalletPickUserController.swift in Sources */,
 				B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */,
 				93F27DA82A27FA8E004ADA55 /* LikeManager.swift in Sources */,
+				B9009B552B07ED2F002B0613 /* OnboardingAboutController.swift in Sources */,
 				9E83DF7B2A5800D400F2C379 /* ImageViewerRemote.swift in Sources */,
 				9E55F2902A1FB9C600D5D523 /* SettingsNsecViewController.swift in Sources */,
 				9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */,
@@ -1921,6 +1972,7 @@
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */,
+				B9009B5C2B0FD390002B0613 /* ProfileShowQRController.swift in Sources */,
 				B94F2BB62AD0758B0041181B /* WalletMenuIndicator.swift in Sources */,
 				B94F2BE92AE6BD470041181B /* WalletActivateViewController.swift in Sources */,
 				B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */,
@@ -1934,7 +1986,7 @@
 				9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */,
 				B94F2BE62AE6BC720041181B /* ActivateWalletCell.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
-				9E6B38CB29F9487F00144073 /* Networking.swift in Sources */,
+				9E6B38CB29F9487F00144073 /* Request.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
@@ -1951,13 +2003,13 @@
 				9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */,
 				B94F2BDA2ADDC1440041181B /* BuySatsCell.swift in Sources */,
 				B94F2BD82ADDAF000041181B /* InAppPurchaseManager.swift in Sources */,
-				9E9F2F8429F6AB6400A9CDF3 /* OnboardingSignUpStartController.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
 				B94A0E2D2AAB577400DEBFE1 /* ChatMessageCell.swift in Sources */,
 				9E83DF7F2A61E58E00F2C379 /* NewPostsButton.swift in Sources */,
 				9ED416022A42483D00892235 /* RegularFeedViewController.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
+				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
 				C1AF0BF3DF683CC21B345388 /* ProfileManager.swift in Sources */,
 				C1AF03C1AF31AED0521C65D7 /* ConnectSpecialWalletButton.swift in Sources */,
@@ -2144,7 +2196,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.93.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2189,7 +2241,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.93.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

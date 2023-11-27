@@ -44,6 +44,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     private var tableData: [Section] = [] {
         didSet {
             guard
+                oldValue.count == tableData.count,
                 let oldLast = oldValue.last?.cells.last?.transaction,
                 let newLast = tableData.last?.cells.last?.transaction,
                 oldLast.id == newLast.id,
@@ -51,30 +52,24 @@ final class WalletHomeViewController: UIViewController, Themeable {
                 let oldFirst = oldTransactionList.first,
                 let newTransactionList = tableData.dropFirst().first?.cells.compactMap({ $0.transaction }),
                 let newFirst = newTransactionList.first,
-                oldFirst.id != newFirst.id,
-                tableData.count >= oldValue.count,
-                tableData.count - oldValue.count + 1 < oldValue.count
+                oldFirst.id != newFirst.id
             else {
                 table.reloadData()
                 return
             }
             
-            table.beginUpdates()
-            defer { table.endUpdates() }
-            table.reloadSections(.init(integer: 0), with: .none)
-            
-            if tableData.count > oldValue.count {
-                table.insertSections(IndexSet(integersIn: 1...(tableData.count - oldValue.count)), with: .top)
-                table.reloadSections(IndexSet(integer: tableData.count - oldValue.count + 1), with: .none)
-                return
-            }
-            
             let newTransCount = newTransactionList.count - oldTransactionList.count
             
-            guard newTransCount > 0 else { table.reloadData(); return }
+            guard newTransCount > 0 else {
+                table.reloadData()
+                return
+            }
+            table.beginUpdates()
+            table.reloadSections(.init(integer: 0), with: .none)
             
             let indexPaths: [IndexPath] = (0..<newTransCount).map { .init(row: $0, section: 1) }
             table.insertRows(at: indexPaths, with: .top)
+            table.endUpdates()
         }
     }
     
@@ -121,9 +116,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
         
         guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
-        updateUpdate = Connection.instance.$isConnected.removeDuplicates().filter { $0 }
+        updateUpdate = Connection.regular.$isConnected.removeDuplicates().filter { $0 }
             .sink { [weak self] _ in
-                self?.update = Connection.instance.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
+                self?.update = Connection.regular.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
                     guard let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue else { return }
                     guard let amountBTC = content.split(separator: "\"").compactMap({ Double($0) }).first else { return }
                     let sats = Int(amountBTC * .BTC_TO_SAT)
@@ -148,6 +143,14 @@ final class WalletHomeViewController: UIViewController, Themeable {
         table.backgroundColor = .background
         table.reloadData()
         
+        updateBuySatsButton()
+    }
+    
+    func updateBuySatsButton() {
+        guard WalletManager.instance.userHasWallet == true else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
         let button = UIButton()
         button.setImage(UIImage(named: "buySats"), for: .normal)
         button.tintColor = .foreground3
@@ -235,11 +238,11 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         isShowingNavBar = scrollView.contentOffset.y > 190
-        if scrollView.contentOffset.y > 50 || scrollView.contentOffset.y < 0 {
+        if scrollView.contentOffset.y > 35 || scrollView.contentOffset.y < 0 {
             topEmptySpaceCover.isHidden = true
         } else {
             topEmptySpaceCover.isHidden = false
-            topEmptySpaceHeightConstraint?.constant = max(50 - scrollView.contentOffset.y, 0)
+            topEmptySpaceHeightConstraint?.constant = max(35 - scrollView.contentOffset.y, 0)
         }
     }
     
@@ -294,7 +297,7 @@ private extension WalletHomeViewController {
         
         view.addSubview(topEmptySpaceCover)
         topEmptySpaceCover.pin(to: table, edges: [.horizontal, .top])
-        topEmptySpaceHeightConstraint = topEmptySpaceCover.heightAnchor.constraint(equalToConstant: 50)
+        topEmptySpaceHeightConstraint = topEmptySpaceCover.heightAnchor.constraint(equalToConstant: 35)
         topEmptySpaceHeightConstraint?.isActive = true
         
         table.separatorStyle = .none
@@ -302,9 +305,9 @@ private extension WalletHomeViewController {
         table.delegate = self
         table.contentInsetAdjustmentBehavior = .never
         table.showsVerticalScrollIndicator = false
+        table.register(TransactionHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         table.register(TransactionCell.self, forCellReuseIdentifier: "cell")
         table.register(WalletInfoCell.self, forCellReuseIdentifier: "info")
-        table.register(TransactionHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
         table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
@@ -317,6 +320,13 @@ private extension WalletHomeViewController {
         table.refreshControl = refresh
         
         updateTheme()
+        
+        WalletManager.instance.$userHasWallet.sink { [weak self] _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                self?.updateBuySatsButton()
+            }
+        }
+        .store(in: &cancellables)
         
         Publishers.CombineLatest4(
             WalletManager.instance.$userHasWallet,

@@ -70,9 +70,9 @@ private extension SettingsNetworkViewController {
             }
             .store(in: &cancellables)
         
-        let connection = SettingsNetworkStatusView(title: Connection.instance.socketURL.absoluteString)
-        Connection.instance.$isConnected.receive(on: DispatchQueue.main).sink { isConnected in
-            connection.status = isConnected
+        let regularConnection = SettingsNetworkStatusView(title: Connection.regular.socketURL.absoluteString)
+        Connection.regular.$isConnected.receive(on: DispatchQueue.main).sink { isConnected in
+            regularConnection.status = isConnected
         }
         .store(in: &cancellables)
         
@@ -91,7 +91,7 @@ private extension SettingsNetworkViewController {
             relayStack, SpacerView(height: 20),
             restoreParent, SpacerView(height: 52),
             titleLabel("CACHING SERVICE"),
-            connection
+            regularConnection
         ])
         
         let scroll = UIScrollView()

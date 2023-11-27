@@ -37,6 +37,8 @@ final class PlaceholderTextView: SelfSizingTextView {
     }
     
     var didBeginEditing: (UITextView) -> () = { _ in }
+    var didEndEditing: (UITextView) -> () = { _ in }
+    var didChange: (UITextView) -> () = { _ in }
     
     override var text: String! {
         set {
@@ -79,9 +81,11 @@ extension PlaceholderTextView: UITextViewDelegate {
             textView.text = placeholderText
             textView.textColor = placeholderTextColor
         }
+        didEndEditing(textView)
     }
     
     func textViewDidChange(_ textView: UITextView) {
+        didChange(self)
         invalidateIntrinsicContentSize()
     }
 }

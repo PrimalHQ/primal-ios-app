@@ -22,7 +22,7 @@ final class ProfileManager {
                 ])
             ])
 
-            Connection.instance.request(request) { res in
+            Connection.regular.request(request) { res in
                 var parsedUser: ParsedUser? = nil
                 for response in res {
                     guard let kind = NostrKind.fromGenericJSON(response) else { continue }

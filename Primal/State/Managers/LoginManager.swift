@@ -34,6 +34,8 @@ final class LoginManager {
         UserDefaults.standard.homeFeedResultString = nil
         UserDefaults.standard.homeFeedSaveDate = nil
         UserDefaults.standard.synchronize()
+        RelaysPostbox.instance.disconnect()
+        Connection.disconnect()
         
         RootViewController.instance.reset()
     }

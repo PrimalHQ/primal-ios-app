@@ -35,9 +35,6 @@ class ProfileInfoCell: UITableViewCell {
     let descLabel = UILabel()
     let linkView = ProfileLinkDisplayView()
     
-    let following = ProfileStatDisplayView("Following")
-    let followers = ProfileStatDisplayView("Followers")
-    
     let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "following", "followers"])
     
     weak var delegate: ProfileInfoCellDelegate?
@@ -53,6 +50,7 @@ class ProfileInfoCell: UITableViewCell {
         self.delegate = delegate
         
         primaryLabel.text = user.firstIdentifier
+        primaryLabel.isHidden = primaryLabel.text == user.npub
         
         followsYou.isHidden = !followsUser
         
@@ -67,10 +65,10 @@ class ProfileInfoCell: UITableViewCell {
         linkView.link = user.website
         
         zip(infoStack.buttons, [
-            (stats?.note_count ?? 0).localized(),
-            (stats?.reply_count ?? 0).localized(),
-            (stats?.follows_count ?? 0).localized(),
-            (stats?.followers_count ?? 0).localized()
+            (stats?.note_count ?? 0).shortenedLocalized(),
+            (stats?.reply_count ?? 0).shortenedLocalized(),
+            (stats?.follows_count ?? 0).shortenedLocalized(),
+            (stats?.followers_count ?? 0).shortenedLocalized()
         ]).forEach { button, text in
             button.text = text
         }

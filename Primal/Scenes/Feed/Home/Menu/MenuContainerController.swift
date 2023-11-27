@@ -51,14 +51,6 @@ final class MenuContainerController: UIViewController, Themeable {
         close()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        guard let menuButton = mainTabBarController?.closeMenuButton else { return }
-        menuButton.removeTarget(self, action: #selector(closeMenuTapped), for: .touchUpInside)
-        menuButton.addTarget(self, action: #selector(closeMenuTapped), for: .touchUpInside)
-    }
-    
     func animateOpen() {
         open()
                 
@@ -93,7 +85,7 @@ final class MenuContainerController: UIViewController, Themeable {
         
         childLeftConstraint?.isActive = true
         coverView.isHidden = false
-        mainTabBarController?.showCloseMenuButton()
+        mainTabBarController?.hideForMenu()
     }
     
     func resetNavigationTabBar() {
@@ -278,7 +270,8 @@ private extension MenuContainerController {
     // MARK: - Objc methods
     
     func qrCodePressed() {
-        
+        show(ProfileQRController(), sender: nil)
+        resetNavigationTabBar()
     }
     
     @objc func profilePressed() {

@@ -105,7 +105,7 @@ extension SettingsMutedViewController: UITableViewDataSource {
 
 extension SettingsMutedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let user = loadedUsers[mutedUserNPUBs[indexPath.row]] else { return }
+        guard !mutedUserNPUBs.isEmpty, let npub = mutedUserNPUBs[safe: indexPath.row], let user = loadedUsers[npub] else { return }
         let profile = ProfileViewController(profile: .init(data: user))
         show(profile, sender: nil)
     }

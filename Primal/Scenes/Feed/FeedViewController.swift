@@ -74,7 +74,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         guard
             ContentDisplaySettings.autoPlayVideos,
             let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url,
-            let index = posts.firstIndex(where: { post in  post.imageResources.contains(where: { $0.url == playingRN }) }),
+            let index = posts.firstIndex(where: { post in  post.mediaResources.contains(where: { $0.url == playingRN }) }),
             table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
         else { return }
             
@@ -121,7 +121,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
         
         if let postToPreload = posts[safe: indexPath.row + 10] {
-            if let url = postToPreload.imageResources.first?.url(for: .large), url.absoluteString.isImageURL {
+            if let url = postToPreload.mediaResources.first?.url(for: .large), url.absoluteString.isImageURL {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             }
             if let url = postToPreload.user.profileImage.url(for: .small) {
@@ -133,14 +133,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard
-            let postCell = cell as? PostCell,
-            let videoCell = postCell.mainImages.visibleCells.first as? VideoCell ?? postCell.postPreview.mainImages.visibleCells.first as? VideoCell
-        else { return }
+        guard ContentDisplaySettings.autoPlayVideos, let postCell = cell as? PostCell else { return }
         
-        videoCell.player?.play()
-        if !ContentDisplaySettings.autoPlayVideos {
-            videoCell.player?.delayedPause()
+        DispatchQueue.main.async {
+            guard let videoCell = postCell.mainImages.visibleCells.first as? VideoCell ?? postCell.postPreview.mainImages.visibleCells.first as? VideoCell else { return }
+            videoCell.player?.play()
         }
     }
     
@@ -167,13 +164,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     @Published private(set) var isShowingBars = true
     var shouldShowBars: Bool {
         get { scrollDirectionCounter >= 0 }
-        set { scrollDirectionCounter = newValue ? 100 : -100 }
+        set { scrollDirectionCounter = newValue ? 30 : -30 }
     }
     @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < 100 {
-            scrollDirectionCounter = 100
+            scrollDirectionCounter = 50
         } else {
             if (lastContentOffset > scrollView.contentOffset.y) {
                 scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
@@ -204,7 +201,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
 
         isAnimatingBars = true
-        isShowingBars = self.shouldShowBars
+        isShowingBars = shouldShowBars
         isAnimatingBars = false
     }
     
@@ -220,7 +217,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         table.bounces = shouldShowBars
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-            self.isShowingBars = self.shouldShowBars
+            self.isShowingBars = shouldShowBars
             self.isAnimatingBars = false
         }
         
@@ -277,10 +274,14 @@ private extension FeedViewController {
         loadingSpinner.centerToSuperview().constrainToSize(70)
         
         updateTheme()
+        
+        let shouldShowPublisher = $scrollDirectionCounter
+            .map { $0 > 0 }
+            .removeDuplicates()
     
         Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
             .sink { [weak self] isShowing, directionCounter, isAnimating in
-                if abs(directionCounter) < 10 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
+                if abs(directionCounter) < 5 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
                 let shouldShow = directionCounter > 0
                 guard isShowing != shouldShow, !isAnimating else { return }
                 self?.animateBars()
@@ -336,48 +337,31 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        guard let hasWallet = WalletManager.instance.userHasWallet else { return }
+        guard let hasWallet = WalletManager.instance.userHasWallet else { return } // Unknown
 
-        if hasWallet {
-            let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, note in
-                let newZapAmount = post.satszapped + zapAmount
-
-                self?.animateZap(cell, amount: newZapAmount)
-
-                Task { @MainActor in
-                    do {
-                        try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: note)
-                    } catch {
-                        self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
-                    }
-                }
-            }
-            present(popup, animated: true)
-
-            return
-        }
-
-        let popup1 = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
-            .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
-                self?.mainTabBarController?.switchToTab(.wallet)
-            })
-        ])
-        present(popup1, animated: true)
-        return
-        
-        guard UserDefaults.standard.nwc != nil else {
-            let walletSettings = SettingsWalletViewController()
-            show(walletSettings, sender: nil)
+        guard hasWallet else {
+            let popup1 = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
+                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
+                    self?.mainTabBarController?.switchToTab(.wallet)
+                })
+            ])
+            present(popup1, animated: true)
             return
         }
         
-        let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, _ in
+        let popup = PopupZapSelectionViewController(userToZap: postUser) { [weak self] zapAmount, note in
             let newZapAmount = post.satszapped + zapAmount
-            
+
             self?.animateZap(cell, amount: newZapAmount)
-    
-            ZapManager.instance.zap(lnurl: lnurl, target: .note(NoteZapTarget(eventId: post.id, authorPubkey: post.pubkey)), type: .pub, amount: zapAmount) {
-                // do nothing
+
+            Task { @MainActor in
+                do {
+                    try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: note)
+                } catch let e as WalletError {
+                    self?.showErrorMessage(e.message)
+                } catch {
+                    self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
+                }
             }
         }
         present(popup, animated: true)
@@ -400,24 +384,7 @@ extension FeedViewController: PostCellDelegate {
 
         guard let hasWallet = WalletManager.instance.userHasWallet else { return }
 
-        if hasWallet {
-            if WalletManager.instance.balance < zapAmount {
-                present(WalletInAppPurchaseController(), animated: true)
-                return
-            }
-
-            Task { @MainActor [weak self] in
-                do {
-                    try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: "")
-                } catch let e as WalletError {
-                    self?.showErrorMessage(e.message)
-                } catch {
-                    self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
-                }
-            }
-            animateZap(cell, amount: newZapAmount)
-            return
-        } else {
+        guard hasWallet else {
             let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
                 .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
                     self?.mainTabBarController?.switchToTab(.wallet)
@@ -427,17 +394,21 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        guard UserDefaults.standard.nwc != nil else {
-            let walletSettings = SettingsWalletViewController()
-            show(walletSettings, sender: nil)
+        if WalletManager.instance.balance < zapAmount {
+            present(WalletInAppPurchaseController(), animated: true)
             return
         }
-        
-        animateZap(cell, amount: newZapAmount)
-        
-        ZapManager.instance.zap(lnurl: lnurl, target: .note(NoteZapTarget(eventId: post.id, authorPubkey: post.pubkey)), type: .pub, amount: zapAmount) {
-            // do nothing
+
+        Task { @MainActor [weak self] in
+            do {
+                try await WalletManager.instance.zap(post: parsed, sats: zapAmount, note: "")
+            } catch let e as WalletError {
+                self?.showErrorMessage(e.message)
+            } catch {
+                self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
+            }
         }
+        animateZap(cell, amount: newZapAmount)
     }
     
     func postCellDidTapProfile(_ cell: PostCell) {
@@ -515,21 +486,9 @@ extension FeedViewController: PostCellDelegate {
         let post = posts[indexPath.row]
         let urlString = url.absoluteString
         
-        guard !urlString.isValidURL || !urlString.hasPrefix("http") else {
-            if urlString.isVideoURL {
-                let player = AVPlayerViewController()
-                player.player = AVPlayer(url: url)
-                present(player, animated: true) {
-                    player.player?.play()
-                }
-                return
-            }
-            
-            if urlString.isValidURL {
-                let safari = SFSafariViewController(url: url)
-                present(safari, animated: true)
-            }
-            
+        if urlString.isValidURL && urlString.hasPrefix("http") {
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
             return
         }
         
@@ -560,35 +519,39 @@ extension FeedViewController: PostCellDelegate {
         return
     }
     
-    func postCellDidTapImages(resource: MediaMetadata.Resource) {
-        guard resource.url.isVideoURL else {
-            weak var viewController: UIViewController?
-            let binding = UIHostingController(rootView: ImageViewerRemote(
-                imageURL: .init(get: { resource.url }, set: { _ in }),
-                viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
-            ))
-            viewController = binding
-            binding.view.backgroundColor = .clear
-            binding.modalPresentationStyle = .overFullScreen
-            present(binding, animated: true)
+    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource) {
+        if resource.url.isVideoURL {
+            handleVideoUrlTapped(resource.url, in: cell)
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlaying?.url != resource.url {
-            VideoPlaybackManager.instance.currentlyPlaying = .init(url: resource.url)
+        weak var viewController: UIViewController?
+        let binding = UIHostingController(rootView: ImageViewerRemote(
+            imageURL: .init(get: { resource.url }, set: { _ in }),
+            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
+        ))
+        viewController = binding
+        binding.view.backgroundColor = .clear
+        binding.modalPresentationStyle = .overFullScreen
+        present(binding, animated: true)
+    }
+    
+    func handleVideoUrlTapped(_ url: String, in cell: PostCell) {
+        guard url.isVideoURL else { return }
+        
+        if let videoCell = cell.mainImages.visibleCells.first as? VideoCell, videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
+            videoCell.player?.play()
+            videoCell.player?.isMuted = false
+            return
+        }
+        
+        if VideoPlaybackManager.instance.currentlyPlaying?.url != url {
+            VideoPlaybackManager.instance.currentlyPlaying = .init(url: url)
         }
         
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
         
-        let playerVC = AVPlayerViewController()
-        playerVC.player = player.avPlayer
-        playerVC.delegate = self
-        present(playerVC, animated: true) {
-            player.play()  // Necessary to cancel delayed pause
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            player.avPlayer.isMuted = false
-            player.avPlayer.play()
-        }
+        present(FullScreenVideoPlayerController(player), animated: true) 
     }
     
     // MARK: - Menu actions
@@ -631,9 +594,3 @@ extension FeedViewController: UITableViewDelegate {
     }
 }
 
-extension FeedViewController: AVPlayerViewControllerDelegate {
-    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        guard let current = VideoPlaybackManager.instance.currentlyPlaying else { return }
-        current.avPlayer.isMuted = current.isMuted
-    }
-}

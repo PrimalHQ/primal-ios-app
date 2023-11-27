@@ -1,8 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Group 251.pdf",
-      "idiom" : "universal"
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "ef89199cf6923de472fa513f6f979f07.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

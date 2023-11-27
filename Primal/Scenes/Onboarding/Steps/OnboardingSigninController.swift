@@ -5,30 +5,34 @@
 //  Created by Pavle D Stevanović on 22.4.23..
 //
 
+import Combine
 import UIKit
 import SwiftUI
 
-final class OnboardingSigninController: UIViewController {
-    
+final class OnboardingSigninController: UIViewController, OnboardingViewController {
     enum State {
         case ready
         case invalidKey
-        case validKey
+        case validKey(String)
     }
     
-    lazy var progressView = PrimalProgressView(progress: 1, total: 2)
-    lazy var textView = UITextView()
-    lazy var textViewParent = UIView()
-    lazy var infoLabel = UILabel()
-    lazy var placeholderLabel = UILabel()
+    lazy var infoView = OnboardingProfileInfoView()
+    lazy var instruction = UILabel()
+    lazy var input = SignInInputField()
+    lazy var titleLabel = UILabel()
+    lazy var backButton: UIButton = .init()
     
-    lazy var confirmButton = GradientBackgroundUIButton(title: "Paste your key", colors: SunsetWave.instance.gradient).constrainToSize(height: 58)
+    lazy var confirmButton = OnboardingMainButton("Paste Your Key")
+    
+    var cancellables = Set<AnyCancellable>()
     
     private var foregroundObserver: NSObjectProtocol?
     
+    private var centerInputConstraint: NSLayoutConstraint?
+    
     private var state = State.ready {
         didSet {
-            updateView()
+            self.updateView()
         }
     }
     
@@ -63,95 +67,96 @@ private extension OnboardingSigninController {
     func updateView() {
         switch state {
         case .ready:
-            confirmButton.setTitle("Paste your key", for: .normal)
-            progressView.progress = 1
+            infoView.isHidden = true
+            infoView.alpha = 0
+            instruction.isHidden = false
+            instruction.text = "Enter your Nostr key to sign in:"
+            confirmButton.setTitle("Paste Your Key", for: .normal)
             
-            textViewParent.layer.borderWidth = 0
-            textView.isEditable = true
-            infoLabel.isHidden = true
+            input.isCorrect = nil
         case .invalidKey:
-            confirmButton.setTitle("Paste new key", for: .normal)
-            progressView.progress = 1
+            infoView.isHidden = true
+            infoView.alpha = 0
+            instruction.isHidden = false
+            instruction.text = "Please enter a valid Nostr key,\nstarting with “nsec” or “npub”:"
+            confirmButton.setTitle("Paste New Key", for: .normal)
             
-            textViewParent.layer.borderColor = UIColor(rgb: 0xE20505).withAlphaComponent(0.5).cgColor
-            textViewParent.layer.borderWidth = 1
-            infoLabel.isHidden = false
-            infoLabel.text = "Please enter a valid Nostr key"
-            infoLabel.textColor = .init(rgb: 0xE20505)
-            
-            textView.isEditable = true
+            input.isCorrect = false
         case .validKey:
+            instruction.isHidden = true
             confirmButton.setTitle("Sign In", for: .normal)
-            progressView.progress = 2
             
-            textViewParent.layer.borderColor = UIColor(rgb: 0x66E205).withAlphaComponent(0.5).cgColor
-            textViewParent.layer.borderWidth = 1
-            infoLabel.isHidden = false
-            infoLabel.text = "Valid key confirmed"
-            infoLabel.textColor = .init(rgb: 0x66E205)
+            input.isCorrect = true
         }
     }
     
     func setup() {
-        let progressParent = UIView()
-        let instruction = UILabel()
-        let textStack = UIStackView(arrangedSubviews: [instruction, textViewParent, infoLabel])
-        let mainStack = UIStackView(arrangedSubviews: [progressParent, textStack, confirmButton])
+        addBackground(1)
         
-        let button = UIButton()
-        button.setImage(UIImage(named: "back"), for: .normal)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        navigationItem.title = "Sign in"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        let textStack = UIStackView(arrangedSubviews: [
+            infoView,    SpacerView(height: 12, priority: .required), SpacerView(height: 16, priority: .defaultLow),
+            instruction, SpacerView(height: 12, priority: .defaultHigh),
+            input,       SpacerView(height: 12, priority: .required)
+        ])
         
-        view.backgroundColor = .black
-        
-        progressParent.addSubview(progressView)
-        progressView.pinToSuperview(edges: .vertical).centerToSuperview()
-        
-        instruction.font = .appFont(withSize: 20, weight: .regular)
-        instruction.textColor = .init(rgb: 0xAAAAAA)
-        instruction.textAlignment = .center
-        instruction.adjustsFontSizeToFitWidth = true
-        instruction.text = "Paste your Nostr key to sign in:"
-        
-        textViewParent.addSubview(placeholderLabel)
-        textViewParent.addSubview(textView)
-        textView.pinToSuperview(padding: 10).constrainToSize(height: 88)
-        textView.backgroundColor = .clear
-        textView.delegate = self
-        textViewParent.backgroundColor = .init(rgb: 0x181818)
-        textViewParent.layer.cornerRadius = 12
-        textViewParent.layer.borderColor = UIColor(rgb: 0x222222).cgColor
-        textViewParent.layer.borderWidth = 1
-        
-        placeholderLabel.centerToView(textView)
-        placeholderLabel.text = "nsec / npub"
-        placeholderLabel.textColor = .init(rgb: 0x666666)
-        placeholderLabel.font = .appFont(withSize: 18, weight: .medium)
-        
-        textView.font = .appFont(withSize: 18, weight: .medium)
-        textView.textColor = .init(rgb: 0xCCCCCC)
-        
-        infoLabel.font = .appFont(withSize: 14, weight: .regular)
-        infoLabel.textAlignment = .center
-        
+        let mainStack = UIStackView(arrangedSubviews: [UIView(), textStack, confirmButton])
         view.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .horizontal, padding: 36)
             .bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -20).isActive = true
         
+        centerInputConstraint = NSLayoutConstraint(
+            item: input,
+            attribute: .centerY,
+            relatedBy: .equal,
+            toItem: view,
+            attribute: .centerY,
+            multiplier: 1,
+            constant: 2
+        )
+        centerInputConstraint?.isActive = true
+        
+        addNavigationBar("Sign In")
+        let topC = mainStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 50)
+        topC.priority = .init(500)
+        topC.isActive = true
+        
+        infoView.isHidden = true
+        
+        instruction.font = .appFont(withSize: 16, weight: .semibold)
+        instruction.textColor = .white
+        instruction.textAlignment = .center
+        instruction.numberOfLines = 0
+        instruction.text = "Enter your Nostr key to sign in:"
         
         mainStack.axis = .vertical
         textStack.axis = .vertical
         
         mainStack.distribution = .equalSpacing
         
-        textStack.spacing = 10
-        textStack.setCustomSpacing(24, after: instruction)
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.input.resignFirstResponder()
+        }))
         
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
+        
+        input.didChange = { [weak self] _ in
+            self?.validateAndProcessKey(pasteIfMissing: false)
+        }
+        
+        input.didBeginEditing = { [weak self] _ in
+            UIView.animate(withDuration: 0.3) {
+                self?.centerInputConstraint?.isActive = false
+                self?.view.layoutIfNeeded()
+            }
+        }
+        
+        input.didEndEditing = { [weak self] _ in
+            UIView.animate(withDuration: 0.3) {
+                self?.centerInputConstraint?.isActive = true
+                self?.view.layoutIfNeeded()
+            }
+        }
     }
     
     func pasteIfPossible() {
@@ -160,18 +165,18 @@ private extension OnboardingSigninController {
             let pasted = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines)
         else { return }
         
-        textView.text = pasted
-        placeholderLabel.isHidden = !pasted.isEmpty
+        input.text = pasted
     }
     
-    func validateAndProcessKey(paste: Bool = false) {
+    func validateAndProcessKey(pasteIfMissing: Bool = true, paste: Bool = false) {
         if paste {
             pasteIfPossible()
         }
         
-        guard let text = textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
-            if !paste {
-                validateAndProcessKey(paste: true)
+        let text = input.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else {
+            if pasteIfMissing && !paste {
+                validateAndProcessKey(pasteIfMissing: true, paste: true)
                 return
             }
             state = .ready
@@ -179,29 +184,68 @@ private extension OnboardingSigninController {
         }
         
         guard NKeypair.isValidNsecOrNpub(text) else {
-            if !paste {
-                validateAndProcessKey(paste: true)
+            if pasteIfMissing && !paste {
+                validateAndProcessKey(pasteIfMissing: true, paste: true)
                 return
             }
             state = .invalidKey
             return
         }
         
-        state = .validKey
+        let shouldLoadAgain: Bool = {
+            switch state {
+            case let .validKey(oldNsec):
+                return oldNsec != text
+            default:
+                return true
+            }
+        }()
+        
+        state = .validKey(text)
+        
+        guard shouldLoadAgain else { return }
+        
+        input.resignFirstResponder()
+        
+        infoView.isHidden = true
+        infoView.alpha = 0
+        infoView.transform = .init(scaleX: 0.8, y: 0.8)
+        
+        let pubkeyHex = text.hasPrefix("npub") ? HexKeypair.npubToHexPubkey(text) : {
+            guard let hexPrivkey = HexKeypair.nsecToHexPrivkey(text) else { return nil }
+            return HexKeypair.privkeyToPubkey(hexPrivkey)
+        }()
+        
+        guard let pubkeyHex else { return }
+        
+        UserRequest(pubkey: pubkeyHex).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { error in
+                print(error)
+            } receiveValue: { [weak self] jsonArray in
+                let result = PostRequestResult()
+                jsonArray.compactMap { $0.objectValue } .forEach { result.handlePostEvent($0) }
+                
+                guard let self, let user = result.users.first?.value else { return }
+                
+                let parsed = result.createParsedUser(user)
+                
+                self.infoView.image.setUserImage(parsed)
+                self.infoView.name.text = user.firstIdentifier
+                self.infoView.address.text = user.lud16
+                
+                UIView.transition(with: self.view, duration: 0.3) {
+                    self.infoView.isHidden = false
+                    self.infoView.alpha = 1
+                    self.infoView.transform = .identity
+                }
+            }
+            .store(in: &cancellables)
+
     }
     
-    func signIn() {
-        guard let text = textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
-            state = .ready
-            return
-        }
-        
-        guard NKeypair.isValidNsecOrNpub(text) else {
-            state = .invalidKey
-            return
-        }
-        
-        guard LoginManager.instance.login(text) else {
+    func signIn(_ nsec: String) {
+        guard LoginManager.instance.login(nsec) else {
             state = .invalidKey
             return
         }
@@ -215,14 +259,8 @@ private extension OnboardingSigninController {
         switch state {
         case .ready, .invalidKey:
             validateAndProcessKey()
-        case .validKey:
-            signIn()
+        case .validKey(let nsec):
+            signIn(nsec)
         }
-    }
-}
-
-extension OnboardingSigninController: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        placeholderLabel.isHidden = !textView.text.isEmpty
     }
 }
