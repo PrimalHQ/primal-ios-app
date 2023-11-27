@@ -28,6 +28,7 @@ final class OnboardingFollowSuggestionsController: UIViewController, OnboardingV
     var suggestionGroups: [Group] = [] {
         didSet {
             table.reloadData()
+            continueButton.isHidden = false
         }
     }
     
@@ -65,6 +66,10 @@ private extension OnboardingFollowSuggestionsController {
             .pinToSuperview(edges: .horizontal, padding: 36)
             .pinToSuperview(edges: .bottom, padding: 12, safeArea: true)
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
+        continueButton.isHidden = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            self.continueButton.isHidden = false
+        }
         
         view.addSubview(table)
         table.pinToSuperview(edges: .horizontal, padding: 36)
@@ -94,8 +99,8 @@ private extension OnboardingFollowSuggestionsController {
                 print(completion)
             }, receiveValue: { [weak self] response in
                 self?.metadata = response.metadata
-                self?.suggestionGroups = response.suggestions
                 self?.selectedToFollow = Set(response.suggestions.flatMap { $0.members } .map { $0.pubkey })
+                self?.suggestionGroups = response.suggestions
                 UserDefaults.standard.removeObject(forKey: "username")
             })
             .store(in: &cancellables)

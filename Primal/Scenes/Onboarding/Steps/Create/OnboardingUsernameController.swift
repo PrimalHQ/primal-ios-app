@@ -7,13 +7,14 @@
 
 import Combine
 import UIKit
+import Kingfisher
 
 class OnboardingImageUploader {
-    var avatarURL = "" { didSet { updateIsUploading() } }
-    var bannerURL = "https://m.primal.net/HQTd.jpg" { didSet { updateIsUploading() } }
+    var avatarURL = ""
+    var bannerURL = "https://m.primal.net/HQTd.jpg"
     
-    var isUploadingAvatar = false { didSet { updateIsUploading() } }
-    var isUploadingBanner = false { didSet { updateIsUploading() } }
+    @Published var isUploadingAvatar = false
+    @Published var isUploadingBanner = false
     
     @Published var image: UIImage?
     @Published var bannerImage: UIImage?
@@ -21,15 +22,11 @@ class OnboardingImageUploader {
     
     var cancellables: Set<AnyCancellable> = []
     
-    func updateIsUploading() {
-        if  (isUploadingAvatar && avatarURL.isEmpty) ||
-            (isUploadingBanner && bannerURL.isEmpty)
-        {
-            isUploading = true
-            return
-        }
-    
-        isUploading = false
+    init() {
+        Publishers.CombineLatest($isUploadingAvatar, $isUploadingBanner)
+            .map { $0 || $1 }
+            .assign(to: \.isUploading, onWeak: self)
+            .store(in: &cancellables)
     }
     
     func addPhoto(controller: UIViewController) {
@@ -124,6 +121,10 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
         IdentityManager.instance.newUserKeypair = keypair
         
         setup()
+        
+        if let url = URL(string: uploader.bannerURL) {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
     }
     
     var lastRemoveTime: Date?

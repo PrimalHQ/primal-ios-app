@@ -34,8 +34,8 @@ final class Connection {
     
     static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    static var regular = Connection(socketURL: URL(string: "wss://cache1.primal.net/v1")!)
-    static var wallet = Connection(socketURL: URL(string: "wss://wallet.primal.net/v1")!)
+    static var regular = Connection(socketURL: PrimalEndpointsManager.regularURL)
+    static var wallet = Connection(socketURL: PrimalEndpointsManager.walletURL)
     
     static func connect() {
         regular.connect()
@@ -70,7 +70,7 @@ final class Connection {
     
     private var timeToReconnect = 4
     
-    private init(socketURL: URL) {
+    init(socketURL: URL) {
         self.socketURL = socketURL
         self.connect()
     }
@@ -215,6 +215,7 @@ final class Connection {
             return
         }
         
+        PrimalEndpointsManager.instance.checkIfNecessary()
         connect()
         
         Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
@@ -233,6 +234,8 @@ extension Connection: WebSocketConnectionDelegate {
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
         isConnected = false
         
+        PrimalEndpointsManager.instance.checkIfNecessary()
+        
         autoReconnect()
     }
     
@@ -246,6 +249,8 @@ extension Connection: WebSocketConnectionDelegate {
     
     func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
         print("WSERROR: \(error)")
+        
+        PrimalEndpointsManager.instance.checkIfNecessary()
         
         isConnected = false
         

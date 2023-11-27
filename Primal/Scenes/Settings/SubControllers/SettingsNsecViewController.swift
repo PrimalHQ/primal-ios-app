@@ -61,7 +61,7 @@ private extension SettingsNsecViewController {
     }
     
     func setupView() {
-        title = "Account"
+        title = "Keys"
         
         let pubTitle = SettingsTitleViewVibrant(title: "YOUR PUBLIC KEY")
         let pubLabelParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }

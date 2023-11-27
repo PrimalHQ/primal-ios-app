@@ -50,6 +50,7 @@ class ProfileNavigationView: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var oldImageUrl: String?
     func updateInfo(_ parsed: ParsedUser, isMuted: Bool) {
         let user = parsed.data
         
@@ -66,7 +67,12 @@ class ProfileNavigationView: UIView, Themeable {
             }
         }
         
-        profilePicture.setUserImage(parsed)
+        if let oldImageUrl, oldImageUrl == parsed.data.picture {
+            // NOTHING to prevent double loading of gifs
+        } else {
+            oldImageUrl = parsed.data.picture
+            profilePicture.setUserImage(parsed)
+        }
         
         primaryLabel.text = user.firstIdentifier
         checkboxIcon.isHidden = user.nip05.isEmpty

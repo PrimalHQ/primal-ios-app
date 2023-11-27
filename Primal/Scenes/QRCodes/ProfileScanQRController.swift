@@ -64,10 +64,15 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController 
     }
     
     func search(_ text: String) {
-        guard !didOpenQRCode, text.hasPrefix("npub"), let pubkey = HexKeypair.npubToHexPubkey(text) else { return }
+        guard !didOpenQRCode else { return }
+        
+        let text: String = String(text.split(separator: ":").last ?? "") // Eliminate junk text ("nostr:", etc.)
+        
+        guard text.hasPrefix("npub"), let pubkey = HexKeypair.npubToHexPubkey(text) else { return }
         
         didOpenQRCode = true
         
+        (onboardingParent as? ProfileQRController)?.isOpeningProfileScreen = true
         navigationController?.pushViewController(ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), animated: true)
     }
 }

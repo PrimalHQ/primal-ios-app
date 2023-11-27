@@ -238,7 +238,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         isShowingNavBar = scrollView.contentOffset.y > 190
-        if scrollView.contentOffset.y > 50 || scrollView.contentOffset.y < 0 {
+        if scrollView.contentOffset.y > 35 || scrollView.contentOffset.y < 0 {
             topEmptySpaceCover.isHidden = true
         } else {
             topEmptySpaceCover.isHidden = false

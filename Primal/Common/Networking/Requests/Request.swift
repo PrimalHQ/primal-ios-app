@@ -32,9 +32,9 @@ extension Request {
         Future { promise in
             
             var request = URLRequest(url: url)
-            request.httpMethod = "POST"
             
             if let body, let requestBody = try? JSONSerialization.data(withJSONObject: body) {
+                request.httpMethod = "POST"
                 request.httpBody = requestBody
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }

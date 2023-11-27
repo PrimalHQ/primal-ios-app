@@ -21,6 +21,8 @@ final class ProfileQRController: OnboardingParentViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var isOpeningProfileScreen = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,7 +41,9 @@ final class ProfileQRController: OnboardingParentViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        if !isOpeningProfileScreen {
+            navigationController?.setNavigationBarHidden(false, animated: animated)
+        }
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     

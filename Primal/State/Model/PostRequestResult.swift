@@ -21,6 +21,7 @@ class PostRequestResult: Codable {
     var stats: [String: NostrContentStats] = [:]
     var userScore: [String: Int] = [:]
     var userFollowers: [String: Int] = [:]
+    var userStats: NostrUserProfileInfo?
     
     var message: String?
     var pagination: PrimalPagination?

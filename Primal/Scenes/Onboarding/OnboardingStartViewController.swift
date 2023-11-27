@@ -7,6 +7,7 @@
 
 import UIKit
 import SafariServices
+import Kingfisher
 
 final class OnboardingMainButton: UIButton {
     override var isEnabled: Bool {

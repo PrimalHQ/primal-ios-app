@@ -21,6 +21,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
+        PrimalEndpointsManager.instance.checkIfNecessary()
+        
         return true
     }
 

@@ -134,6 +134,10 @@ private extension OnboardingSigninController {
         
         mainStack.distribution = .equalSpacing
         
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.input.resignFirstResponder()
+        }))
+        
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
         
         input.didChange = { [weak self] _ in

@@ -124,12 +124,11 @@ extension PostRequestResult {
             }
             userFollowers = info
         case .userStats:
-            guard let nostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: Data(contentString.utf8)) else {
+            guard let nostrUserProfileInfo: NostrUserProfileInfo = contentString.decode() else {
                 print("Error decoding nostr stats string to json")
                 return
             }
-            
-//            print(nostrUserProfileInfo)
+            userStats = nostrUserProfileInfo
         case .popular_hashtags:
             guard
                 let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),

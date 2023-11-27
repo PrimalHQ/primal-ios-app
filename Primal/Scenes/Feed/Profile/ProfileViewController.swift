@@ -26,11 +26,7 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
-    var userStats: NostrUserProfileInfo? {
-        didSet {
-            table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
-        }
-    }
+    var userStats: NostrUserProfileInfo?
     
     var followsUser = false {
         didSet {
@@ -348,36 +344,14 @@ private extension ProfileViewController {
         }
         .store(in: &cancellables)
         
-        Connection.dispatchQueue.async {
-            let request: JSON = .array([
-                .string("user_profile"),
-                .object([
-                    "pubkey": .string(profile.data.pubkey)
-                ])
-            ])
-
-            Connection.regular.requestCache(request) { [weak self] res in
-                DispatchQueue.main.async {
-                    for response in res {
-                        let kind = NostrKind.fromGenericJSON(response)
-
-                        switch kind {
-                        case .metadata:
-                            break
-                        case .userStats:
-                            guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                                print("Error decoding nostr stats string to json")
-                                return
-                            }
-
-                            self?.userStats = nostrUserProfileInfo
-                        default:
-                            print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(response)")
-                        }
-                    }
-                }
+        SocketRequest(name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let user = result.users.first?.value else { return }
+                self?.userStats = result.userStats
+                self?.profile = result.createParsedUser(user)
             }
-        }
+            .store(in: &cancellables)
     }
     
     @objc func profilePicTapped() {
