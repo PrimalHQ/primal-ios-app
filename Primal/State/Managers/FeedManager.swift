@@ -318,8 +318,7 @@ final class FeedManager {
         if let currentFeed {
             return generateFeedPageRequest(currentFeed)
         }
-        print("No feed error")
-        return .object([:])
+        return generateFeedPageRequest(.init(name: "Latest", hex: IdentityManager.instance.userHexPubkey))
     }
     
     func requestThread(postId: String, limit: Int32 = 100) {

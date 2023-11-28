@@ -76,6 +76,12 @@ private extension SettingsNetworkViewController {
         }
         .store(in: &cancellables)
         
+//        let walletConnection = SettingsNetworkStatusView(title: Connection.wallet.socketURL.absoluteString)
+//        Connection.wallet.$isConnected.receive(on: DispatchQueue.main).sink { isConnected in
+//            walletConnection.status = isConnected
+//        }
+//        .store(in: &cancellables)
+        
         let restoreParent = UIView()
         let restoreButton = ThemeableButton().setTheme { $0.setTitleColor(.accent, for: .normal) }
         restoreButton.setTitle("restore default relays", for: .normal)
@@ -91,7 +97,8 @@ private extension SettingsNetworkViewController {
             relayStack, SpacerView(height: 20),
             restoreParent, SpacerView(height: 52),
             titleLabel("CACHING SERVICE"),
-            regularConnection
+            regularConnection,
+//            walletConnection
         ])
         
         let scroll = UIScrollView()

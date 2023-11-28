@@ -43,6 +43,7 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
+    @Published var tabToBe: Tab = .notes
     var tab: Tab = .notes {
         didSet {
             switch tab {
@@ -190,7 +191,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func updateBars() {
-        let shouldShowBars = true //shouldShowBars
+        let shouldShowBars = shouldShowBars
         
         super.updateBars()
         
@@ -198,7 +199,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func animateBars() {
-        let shouldShowBars = true //shouldShowBars
+        let shouldShowBars = shouldShowBars
         
         super.animateBars()
         
@@ -296,6 +297,8 @@ private extension ProfileViewController {
                 self.refreshControl.endRefreshing()
             }
             .store(in: &cancellables)
+        
+        $tabToBe.dropFirst().debounce(for: 0.3, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
         
         loadingSpinner.transform = .init(translationX: 0, y: 200)
         
@@ -411,9 +414,8 @@ extension ProfileViewController: MutedUserCellDelegate {
 extension ProfileViewController: ProfileInfoCellDelegate {
     func didSelectTab(_ tab: Int) {
         guard let new = Tab(rawValue: tab) else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-            self.tab = new
-        }
+        
+        self.tabToBe = new
     }
     
     func messagePressed() {

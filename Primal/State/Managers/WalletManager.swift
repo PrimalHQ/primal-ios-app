@@ -67,10 +67,12 @@ final class WalletManager {
                 )
             }
             .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
-                let string = balanceRes.balance?.amount ?? "0"
+                self?.isLoadingWallet = false
+                
+                guard let string = balanceRes.balance?.amount else { return }
+                
                 let double = (Double(string) ?? 0) * .BTC_TO_SAT
                 
-                self?.isLoadingWallet = false
                 self?.transactions = transactionsRes.transactions
                 self?.balance = Int(double)
             })
@@ -141,9 +143,9 @@ final class WalletManager {
     func refreshBalance() {
         PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet)
             .sink(receiveValue: { [weak self] val in
-                let string = val.balance?.amount ?? "0"
-                let double = (Double(string) ?? 0) * .BTC_TO_SAT
+                guard  let string = val.balance?.amount else { return }
                 
+                let double = (Double(string) ?? 0) * .BTC_TO_SAT
                 self?.balance = Int(double)
             })
             .store(in: &cancellables)

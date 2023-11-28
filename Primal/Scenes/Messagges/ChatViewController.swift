@@ -114,7 +114,7 @@ final class ChatViewController: UIViewController, Themeable {
         
         view.backgroundColor = .background
         
-        postButton.backgroundColor = .accent2
+        postButton.backgroundColor = .accent
         
         inputParent.backgroundColor = .background
         inputBackground.backgroundColor = .background3

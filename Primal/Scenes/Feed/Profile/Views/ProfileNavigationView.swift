@@ -92,8 +92,11 @@ class ProfileNavigationView: UIView, Themeable {
             titleStack.transform = .identity
             profilePicOverlayBig?.isHidden = true
             profilePicOverlaySmall?.isHidden = true
+            profilePicture.isHidden = true
             return
         }
+        
+        profilePicture.isHidden = false
         
         if deltaFromMax < deltaTitleStartAppearing {
             let smallProgress = (deltaTitleStartAppearing - deltaFromMax) / titleTranslation

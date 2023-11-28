@@ -116,9 +116,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
         
         guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
-        updateUpdate = Connection.regular.$isConnected.removeDuplicates().filter { $0 }
+        updateUpdate = Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
             .sink { [weak self] _ in
-                self?.update = Connection.regular.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
+                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
                     guard let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue else { return }
                     guard let amountBTC = content.split(separator: "\"").compactMap({ Double($0) }).first else { return }
                     let sats = Int(amountBTC * .BTC_TO_SAT)

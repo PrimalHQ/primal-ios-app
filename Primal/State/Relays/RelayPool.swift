@@ -54,7 +54,9 @@ final class RelayPool {
         
         rc.state
             .receive(on: Self.dispatchQueue)
-            .sink(receiveCompletion: { _ in }, receiveValue: { state in
+            .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] state in
+                guard let self else { return }
+                
                 switch state {
                 case .connected:
                     self.atLeastOneConnected = true
