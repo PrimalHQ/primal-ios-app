@@ -76,7 +76,6 @@ private extension SettingsMainViewController {
         }
         
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)
-        wallet.addTarget(self, action: #selector(walletPressed), for: .touchUpInside)
         feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
         
         appearance.addAction(.init(handler: { [weak self] _ in
@@ -110,9 +109,5 @@ private extension SettingsMainViewController {
     
     @objc func keysPressed() {
         navigationController?.pushViewController(SettingsNsecViewController(), animated: true)
-    }
-    
-    @objc func walletPressed() {
-        navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
     }
 }

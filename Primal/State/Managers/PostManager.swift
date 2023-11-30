@@ -75,7 +75,7 @@ final class PostManager {
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
             callback(true)
             
-            Connection.regular.requestCache(name: "import_events", request: .object(["events": .array([ev.toJSON()])])) { _ in }
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             print("Posting failed for id: \(ev.id)")
             callback(false)
@@ -100,7 +100,7 @@ final class PostManager {
         RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
             callback(true)
             
-            Connection.regular.requestCache(name: "import_events", request: .object(["events": .array([ev.toJSON()])])) { _ in }
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             self.userReplied.remove(post.id)
             callback(false)

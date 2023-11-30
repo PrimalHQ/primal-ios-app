@@ -100,8 +100,8 @@ private extension OnboardingAboutController {
         ])
         
         let formStack = UIStackView(axis: .vertical, [
-            InputParent(input: websiteInput).constrainToSize(height: 48), SpacerView(height: 12),
-            InputParent(input: aboutInput).constrainToSize(height: 128), SpacerView(height: 12),
+            OnboardingInputParent(input: websiteInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: aboutInput).constrainToSize(height: 128), SpacerView(height: 12),
             descLabel
         ])
         formStack.spacing = 3

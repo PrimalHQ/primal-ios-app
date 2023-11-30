@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class CopyButton: MyButton {
+final class CopyButton: MyButton, Themeable {
     private let icon = UIImageView()
     private let label = UILabel()
     
@@ -23,14 +23,6 @@ final class CopyButton: MyButton {
         label.font = .appFont(withSize: 18, weight: .medium)
         label.textColor = .white
         
-        let gradient = GradientView(colors: UIColor.gradient)
-        
-        addSubview(gradient)
-        gradient.pinToSuperview()
-        
-        gradient.gradientLayer.startPoint = .init(x: 0, y: 0)
-        gradient.gradientLayer.endPoint = .init(x: 1, y: 1)
-        
         layer.cornerRadius = 8
         layer.masksToBounds = true
         
@@ -41,6 +33,7 @@ final class CopyButton: MyButton {
         stack.alignment = .center
         
         constrainToSize(height: 48)
+        updateTheme()
     }
     
     func animateCopied() {
@@ -59,5 +52,9 @@ final class CopyButton: MyButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {        
+        backgroundColor = .accent
     }
 }

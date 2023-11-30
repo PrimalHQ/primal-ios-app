@@ -27,7 +27,6 @@ final class PopupZapSelectionViewController: UIViewController {
         }
     }
     
-    
     private lazy var buttons = emojis.enumerated().map {
         let view = ZapAmountSelectionButton(emoji: $0.element, title: "-")
         view.tag = $0.offset

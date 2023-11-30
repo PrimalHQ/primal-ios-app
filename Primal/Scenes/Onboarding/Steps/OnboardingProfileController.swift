@@ -9,17 +9,6 @@ import Combine
 import UIKit
 import SafariServices
 
-protocol SignupProfileProtocol {
-    var avatar: String { get }
-    var banner: String { get }
-    var bio: String { get }
-    var username: String { get }
-    var displayname: String { get }
-    var website: String { get }
-    var lightningWallet: String { get }
-    var nip05: String { get }
-}
-
 final class OnboardingProfileController: UIViewController, OnboardingViewController {
     enum State {
         case ready
@@ -36,7 +25,7 @@ final class OnboardingProfileController: UIViewController, OnboardingViewControl
     }
     
     let oldData: AccountCreationData
-    var profile: SignupProfileProtocol {
+    var profile: AccountCreationData {
         var old = oldData
         old.avatar = uploader?.avatarURL ?? old.avatar
         old.banner = uploader?.bannerURL ?? old.banner

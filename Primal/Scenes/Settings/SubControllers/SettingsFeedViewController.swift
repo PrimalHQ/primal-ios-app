@@ -143,7 +143,7 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
     @objc func restoreButtonPressed() {
         guard let userPubkey = IdentityManager.instance.user?.pubkey else { return }
         
-        Connection.regular.requestCache(name: "get_default_app_settings", request: .object(["client": .string("Primal iOS")])) { result in
+        Connection.regular.requestCache(name: "get_default_app_settings", payload: .object(["client": .string("Primal iOS")])) { result in
             
             var defaultFeeds: [PrimalSettingsFeed] = [
                 .init(name: "Latest", hex: userPubkey, includeReplies: false),

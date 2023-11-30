@@ -10,13 +10,60 @@ import Combine
 import Foundation
 
 final class FollowManager {
-    private init() {}
-    
     static let instance: FollowManager = FollowManager()
+    
+    @Published var pubkeysToFollow: Set<String> = []
+    @Published var pubkeysToUnfollow: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []
     
-    func isFollowing(_ pubkey: String) -> Bool { IdentityManager.instance.userContacts.contacts.contains(pubkey) }
+    private init() {
+        Publishers.CombineLatest3($pubkeysToFollow, $pubkeysToUnfollow, Connection.regular.$isConnected)
+            .debounce(for: .seconds(2), scheduler: RunLoop.main)
+            .sink { [weak self] pubkeysF, pubkeysUF, isConnected in
+                if pubkeysF.isEmpty && pubkeysUF.isEmpty { return }
+                guard isConnected else { return }
+                
+                IdentityManager.instance.requestUserContacts() {
+                    guard let self else { return }
+                    
+                    let contacts = IdentityManager.instance.userContacts.contacts.union(pubkeysF).subtracting(pubkeysUF)
+                    
+                    DispatchQueue.main.async {
+                        if self.pubkeysToFollow != pubkeysF || self.pubkeysToUnfollow != pubkeysUF { return } // Don't update yet, another update is coming
+                        
+                        self.pubkeysToFollow = []
+                        self.pubkeysToUnfollow = []
+                        
+                        if IdentityManager.instance.userContacts.contacts == contacts { return } // Don't update if same
+                        
+                        self.sendBatchEvent(contacts, errorHandler:  {
+                            self.pubkeysToFollow = self.pubkeysToFollow.union(pubkeysF)
+                            self.pubkeysToUnfollow = self.pubkeysToUnfollow.union(pubkeysUF)
+                        })
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func isFollowing(_ pubkey: String) -> Bool {
+        !pubkeysToUnfollow.contains(pubkey) && (pubkeysToFollow.contains(pubkey) || IdentityManager.instance.userContacts.contacts.contains(pubkey))
+    }
+    
+    func sendFollowEvent(_ pubkey: String) {
+        if LoginManager.instance.method() != .nsec { return }
+
+        pubkeysToUnfollow.remove(pubkey)
+        pubkeysToFollow.insert(pubkey)
+    }
+    
+    func sendUnfollowEvent(_ pubkey: String) {
+        if LoginManager.instance.method() != .nsec { return }
+        
+        pubkeysToFollow.remove(pubkey)
+        pubkeysToUnfollow.insert(pubkey)
+    }
     
     func sendBatchFollowEvent(_ pubkeys: Set<String>, successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         if LoginManager.instance.method() != .nsec { return }
@@ -25,35 +72,8 @@ final class FollowManager {
         for pubkey in pubkeys {
             contacts.insert(pubkey)
         }
-        IdentityManager.instance.userContacts.contacts = contacts
         
-        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
-        
-        guard let ev = NostrObject.contacts(contacts, relays: relays) else {
-            return
-        }
-        
-        RelaysPostbox.instance.request(ev, specificRelay: nil, errorDelay: 5, successHandler: { _ in
-            successHandler?()
-        }, errorHandler: {
-            errorHandler?()
-        })
-    }
-    
-    func sendFollowEvent(_ pubkey: String) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        IdentityManager.instance.requestUserContacts() {
-            self.follow(pubkey)
-        }
-    }
-    
-    func sendUnfollowEvent(_ pubkey: String) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        IdentityManager.instance.requestUserContacts() {
-            self.unfollow(pubkey)
-        }
+        sendBatchEvent(pubkeys, successHandler: successHandler, errorHandler: errorHandler)
     }
     
     func addRelay(url: String) {
@@ -98,6 +118,19 @@ final class FollowManager {
             .store(in: &self.cancellables)
     }
     
+    private func sendBatchEvent(_ pubkeys: Set<String>, successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
+        IdentityManager.instance.userContacts.contacts = pubkeys
+        
+        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
+        
+        guard let ev = NostrObject.contacts(pubkeys, relays: relays) else {
+            errorHandler?()
+            return
+        }
+        
+        RelaysPostbox.instance.request(ev, specificRelay: nil, errorDelay: 5, successHandler: { _ in successHandler?() }, errorHandler: errorHandler)
+    }
+    
     private func updateFollowsAndRelays() {
         let contacts = IdentityManager.instance.userContacts.contacts
         let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
@@ -113,20 +146,7 @@ final class FollowManager {
     }
     
     private func follow(_ pubkey: String) {
-        var contacts = IdentityManager.instance.userContacts.contacts
-        contacts.insert(pubkey)
-        IdentityManager.instance.userContacts.contacts = contacts
-        
-        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
-        
-        guard let ev = NostrObject.contacts(contacts, relays: relays) else { return }
-        
-        // RelaysPostBox_bkp.the.send(ev)
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            
-        }, errorHandler: {
-            
-        })
+        sendBatchFollowEvent([pubkey])
     }
     
     private func unfollow(_ pubkey: String) {

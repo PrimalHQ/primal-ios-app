@@ -9,6 +9,17 @@ import Combine
 import UIKit
 import Kingfisher
 
+struct AccountCreationData {
+    var avatar: String = ""
+    var banner: String = ""
+    var bio: String = ""
+    var username: String = ""
+    var displayname: String = ""
+    var lightningWallet: String = ""
+    var nip05: String = ""
+    var website: String = ""
+}
+
 class OnboardingImageUploader {
     var avatarURL = ""
     var bannerURL = "https://m.primal.net/HQTd.jpg"
@@ -171,8 +182,8 @@ private extension OnboardingUsernameController {
         atLabel.font = .appFont(withSize: 18, weight: .medium)
         atLabel.setContentHuggingPriority(.required, for: .horizontal)
         let formStack = UIStackView(axis: .vertical, [
-            InputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
-            InputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
             descParent
         ])
         formStack.spacing = 3

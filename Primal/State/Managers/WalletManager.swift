@@ -26,12 +26,12 @@ final class WalletManager {
     static let instance = WalletManager()
     
     var cancellables = Set<AnyCancellable>()
-    
     @Published var userHasWallet: Bool?
     @Published var balance: Int = 0
     @Published var transactions: [WalletTransaction] = []
     @Published var isLoadingWallet = true
     @Published var didJustCreateWallet = false
+    @Published private var userZapped: [String: Int] = [:]
     
     var userData: [String: ParsedUser] = [:]
     
@@ -40,93 +40,26 @@ final class WalletManager {
     private var isLoadingTransactions = false
     
     private init() {
-        IdentityManager.instance.$user
-            .compactMap { $0?.npub }
-            .removeDuplicates()
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMap { [weak self] npub -> AnyPublisher<WalletRequestResult, Never> in
-                self?.userHasWallet = nil
-                self?.balance = 0
-                self?.transactions = []
-                self?.isLoadingWallet = true
-                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection(Connection.wallet)
-            }
-            .sink(receiveValue: { [weak self] val in
-                self?.isLoadingWallet = false
-                self?.userHasWallet = val.kycLevel == .email || val.kycLevel == .idDocument
-            })
-            .store(in: &cancellables)
-        
-        $userHasWallet
-            .filter { $0 == true }
-            .flatMap { [weak self] _ in
-                self?.isLoadingWallet = true
-                return Publishers.Zip(
-                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet),
-                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
-                )
-            }
-            .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
-                self?.isLoadingWallet = false
-                
-                guard let string = balanceRes.balance?.amount else { return }
-                
-                let double = (Double(string) ?? 0) * .BTC_TO_SAT
-                
-                self?.transactions = transactionsRes.transactions
-                self?.balance = Int(double)
-            })
-            .store(in: &cancellables)
-        
-        $balance
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMap { [weak self] _ in
-                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection(Connection.wallet)
-            }
-            .sink(receiveValue: { [weak self] val in
-                guard let self else { return }
-                
-                let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
-                
-                if !newTransactions.isEmpty {
-                    self.transactions = newTransactions + self.transactions
-                }
-            })
-            .store(in: &cancellables)
-        
-        $transactions
-            .flatMap { [weak self] transactions in
-                let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
-                
-                var set = Set<String>()
-                
-                for pubkey in flatPubkeys {
-                    if self?.userData[pubkey] == nil {
-                        set.insert(pubkey)
-                    }
-                }
-                
-                if set.isEmpty {
-                    return Just(PostRequestResult()).eraseToAnyPublisher()
-                }
-                
-                return SocketRequest(name: "user_infos", payload: .object([
-                    "pubkeys": .array(set.map { .string($0) })
-                ])).publisher().eraseToAnyPublisher()
-            }
-            .sink { [weak self] result in
-                DispatchQueue.main.async {
-                    guard let self else { return }
-                    for (key, value) in result.users {
-                        self.userData[key] = result.createParsedUser(value)
-                    }
-                    self.parsedTransactions = self.transactions.map { (
-                        $0,
-                        self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
-                    ) }
-                }
-            }
-            .store(in: &cancellables)
+        setupPublishers()
+    }
+    
+    func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
+    
+    func extraZapAmount(_ eventId: String) -> Int {
+        let val = userZapped[eventId, default: 0]
+        return val == 1 ? 0 : val
+    }
+    
+    func setZapUnknown(_ eventId: String) {
+        userZapped[eventId] = 1
+    }
+    
+    func addZap(_ eventId: String, amount: Int) {
+        userZapped[eventId, default: 0] += amount
+    }
+    
+    func removeZap(_ eventId: String, amount: Int) {
+        userZapped[eventId] = max(0, userZapped[eventId, default: 0] - amount)
     }
     
     func refreshTransactions() {
@@ -238,9 +171,108 @@ final class WalletManager {
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
-        try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
+        do {
+            addZap(post.post.id, amount: sats)
+            try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
+        } catch {
+            removeZap(post.post.id, amount: sats)
+            throw error
+        }
     }
 }
 
 private extension WalletManager {
+    func setupPublishers() {
+        IdentityManager.instance.$user
+            .compactMap { $0?.npub }
+            .removeDuplicates()
+            .map { [weak self] in
+                self?.userHasWallet = nil
+                self?.balance = 0
+                self?.transactions = []
+                self?.userZapped = [:]
+                self?.isLoadingWallet = true
+                return $0
+            }
+            .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
+            .flatMap { npub -> AnyPublisher<WalletRequestResult, Never> in
+                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection(Connection.wallet)
+            }
+            .sink(receiveValue: { [weak self] val in
+                self?.isLoadingWallet = false
+                self?.userHasWallet = val.kycLevel == .email || val.kycLevel == .idDocument
+            })
+            .store(in: &cancellables)
+        
+        $userHasWallet
+            .filter { $0 == true }
+            .flatMap { [weak self] _ in
+                self?.isLoadingWallet = true
+                return Publishers.Zip(
+                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet),
+                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
+                )
+            }
+            .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
+                self?.isLoadingWallet = false
+                
+                guard let string = balanceRes.balance?.amount else { return }
+                
+                let double = (Double(string) ?? 0) * .BTC_TO_SAT
+                
+                self?.transactions = transactionsRes.transactions
+                self?.balance = Int(double)
+            })
+            .store(in: &cancellables)
+        
+        $balance
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .flatMap { [weak self] _ in
+                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection(Connection.wallet)
+            }
+            .sink(receiveValue: { [weak self] val in
+                guard let self else { return }
+                
+                let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
+                
+                if !newTransactions.isEmpty {
+                    self.transactions = newTransactions + self.transactions
+                }
+            })
+            .store(in: &cancellables)
+        
+        $transactions
+            .flatMap { [weak self] transactions in
+                let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
+                
+                var set = Set<String>()
+                
+                for pubkey in flatPubkeys {
+                    if self?.userData[pubkey] == nil {
+                        set.insert(pubkey)
+                    }
+                }
+                
+                if set.isEmpty {
+                    return Just(PostRequestResult()).eraseToAnyPublisher()
+                }
+                
+                return SocketRequest(name: "user_infos", payload: .object([
+                    "pubkeys": .array(set.map { .string($0) })
+                ])).publisher().eraseToAnyPublisher()
+            }
+            .sink { [weak self] result in
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    for (key, value) in result.users {
+                        self.userData[key] = result.createParsedUser(value)
+                    }
+                    self.parsedTransactions = self.transactions.map { (
+                        $0,
+                        self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
+                    ) }
+                }
+            }
+            .store(in: &cancellables)
+    }
 }

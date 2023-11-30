@@ -38,14 +38,14 @@ final class UnmuteUserButton: MyButton, Themeable {
         constrainToSize(width: 72, height: 32)
         
         updateTheme()
+        
+        layer.borderWidth = 1
+        layer.cornerRadius = 6
     }
     
     func updateTheme() {
         backgroundColor = .background
         titleLabel.textColor = .foreground
-        
-        layer.borderWidth = 1
-        layer.cornerRadius = 6
-        layer.borderColor = UIColor.gradientColor(bounds: .init(width: 72, height: 32))?.cgColor
+        layer.borderColor = UIColor.accent.cgColor
     }
 }

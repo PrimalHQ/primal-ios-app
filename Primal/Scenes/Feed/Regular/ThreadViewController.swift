@@ -138,7 +138,7 @@ final class ThreadViewController: PostFeedViewController {
                     position: position,
                     didLike: LikeManager.instance.hasLiked(data.post.id),
                     didRepost: PostManager.instance.hasReposted(data.post.id),
-                    didZap: ZapManager.instance.hasZapped(data.post.id),
+                    didZap: WalletManager.instance.hasZapped(data.post.id),
                     isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
             )
             cell.delegate = self
@@ -170,8 +170,8 @@ final class ThreadViewController: PostFeedViewController {
         
         super.updateBars()
         
-        inputParent.isHidden = !shouldShowBars
         bottomBarSpacer.isHidden = !shouldShowBars
+        inputParent.isHidden = !shouldShowBars
         inputParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 300)
         inputParent.alpha = shouldShowBars ? 1 : 0
     }

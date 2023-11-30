@@ -47,7 +47,7 @@ final class IdentityManager {
             "pubkeys": .array([.string(userHexPubkey)])
         ])
         
-        Connection.regular.requestCache(name: "user_infos", request: request) { res in
+        Connection.regular.requestCache(name: "user_infos", payload: request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
@@ -254,12 +254,6 @@ final class IdentityManager {
                     
                     let relayKeys = Array(relays.keys)
                     
-                    if
-                        let nwcUrl = UserDefaults.standard.string(forKey: .nwcDefaultsKey),
-                        let nwc = WalletConnectURL(str: nwcUrl) {
-                        ZapManager.instance.connect(nwc.relay.url.absoluteString)
-                    }
-                    
                     RelaysPostbox.instance.connect(relayKeys)
                     
                     var tags: Set<String>?
@@ -286,9 +280,7 @@ final class IdentityManager {
                         let c = Contacts(created_at: Int(response.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)
                         if self.userContacts.created_at <= c.created_at {
                             self.userContacts = c
-                            if let c = callback {
-                                c()
-                            }
+                            callback?()
                         }
                     }
                 case .metadata, .userScore, .mediaMetadata, .userFollowers:
@@ -307,7 +299,7 @@ final class IdentityManager {
         
         guard let ev = NostrObject.updateSettings(settings.content) else { return }
         
-        Connection.regular.requestCache(name: "set_app_settings", request: .object([
+        Connection.regular.requestCache(name: "set_app_settings", payload: .object([
             "settings_event":  .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),
@@ -327,7 +319,7 @@ final class IdentityManager {
 
         guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
-        Connection.regular.requestCache(name: "set_notifications_seen", request: .object([
+        Connection.regular.requestCache(name: "set_notifications_seen", payload: .object([
             "event_from_user":  .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),

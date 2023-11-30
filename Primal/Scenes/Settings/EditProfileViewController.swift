@@ -100,7 +100,7 @@ final class EditProfileViewController: UIViewController, Themeable {
         
         bioInput.backgroundColor = .init(rgb: 0x181818)
         
-        let inputParents: [InputParent] = view.findAllSubviews()
+        let inputParents: [OnboardingInputParent] = view.findAllSubviews()
         inputParents.forEach { $0.backgroundColor = .background3 }
         
         for view in [displayNameInput, usernameInput, websiteInput, bioInput, bitcoinInput, nip05Input] as [TextRepresenting] {
@@ -144,17 +144,17 @@ private extension EditProfileViewController {
         atLabel.setContentHuggingPriority(.required, for: .horizontal)
         let formStack = UIStackView(axis: .vertical, [
             FormHeaderView(title: "USERNAME", required: true),
-            InputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "DISPLAY NAME", required: false),
-            InputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "WEBSITE", required: false),
-            InputParent(input: websiteInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: websiteInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "SHORT BIO", required: false),
-            InputParent(input: bioInput).constrainToSize(height: 130), SpacerView(height: 12),
+            OnboardingInputParent(input: bioInput).constrainToSize(height: 130), SpacerView(height: 12),
             FormHeaderView(title: "BITCOIN LIGHTNING ADDRESS", required: false),
-            InputParent(input: bitcoinInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: bitcoinInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "NOSTR VERIFICATION (NIP-05)", required: false),
-            InputParent(input: nip05Input).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: nip05Input).constrainToSize(height: 48), SpacerView(height: 12),
         ])
         formParent.addSubview(formStack)
         formStack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .vertical)

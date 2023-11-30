@@ -336,7 +336,8 @@ final class FeedManager {
             ])
         ])
         
-        Connection.regular.request(request) { res in
+        Connection.regular.request(request) { [weak self] res in
+            guard let self else { return }
             for response in res {
                 self.handlePostEvent(response)
             }
@@ -445,7 +446,7 @@ final class FeedManager {
                 PostManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
-                ZapManager.instance.userZapped[noteStatus.event_id] = 0
+                WalletManager.instance.setZapUnknown(noteStatus.event_id)
             }
         case .repost:
             guard

@@ -212,14 +212,10 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         addr = lud16 == "" ? lud06 : lud16
         
         if addr.contains("@") {
-            let addr = lnaddress_to_lnurl(addr);
-            return addr
-        }
-        if !addr.lowercased().hasPrefix("lnurl") {
-            return nil
+            return lnaddress_to_lnurl(addr)
         }
         
-        return addr;
+        return addr
     }
     
     static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {

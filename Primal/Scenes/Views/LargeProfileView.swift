@@ -19,7 +19,7 @@ final class LargeProfileView: UIView {
     
     var didTapUrl: (URL) -> Void = { _ in }
     
-    var profile: SignupProfileProtocol? {
+    var profile: AccountCreationData? {
         didSet {
             updateView()
         }

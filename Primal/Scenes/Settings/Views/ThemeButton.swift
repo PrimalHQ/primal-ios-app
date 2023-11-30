@@ -71,7 +71,7 @@ final class ThemeIndicator: UIView, Themeable {
         layer.cornerRadius = 8
         layer.borderWidth = 1
         
-        checkboxBackground.tintColor = theme.theme.gradient.last
+        checkboxBackground.tintColor = theme.theme.accent
         
         backgroundColor = theme.theme.background
         
@@ -82,26 +82,11 @@ final class ThemeIndicator: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        let currentDefault = Theme.defaultTheme ?? Theme.current
-        if theme == currentDefault.kind {
-            let size: CGSize = bounds.size.width < 1 ? .init(width: 70, height: 70) : bounds.size
-            layer.borderColor = UIColor.gradientColor(
-                theme.theme.gradient,
-                bounds: size,
-                startPoint: .init(x: 0, y: 1),
-                endPoint: .init(x: 1, y: 0)
-            )?.cgColor
-        }
-    }
-    
     func updateTheme() {
         let currentDefault = Theme.defaultTheme ?? Theme.current
         if theme == currentDefault.kind {
             checkboxBackground.isHidden = false
-            layoutSubviews()
+            layer.borderColor = UIColor.accent.cgColor
         } else {
             checkboxBackground.isHidden = true
             layer.borderColor = UIColor.foreground6.cgColor

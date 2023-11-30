@@ -109,19 +109,15 @@ final class Connection {
     
     func requestWallet(_ content: String, _ handler: @escaping (_ result: [JSON]) -> Void) {
         guard let walletEvent = NostrObject.wallet(content) else { return }
-        requestCache(name: "wallet", request: ["operation_event": walletEvent.toJSON()], handler)
+        requestCache(name: "wallet", payload: ["operation_event": walletEvent.toJSON()], handler)
     }
     
-    func requestCache(name: String, request: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        if let request {
-            requestCache(.array([.string(name), request]), handler)
+    func requestCache(name: String, payload: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
+        if let payload {
+            request(.object(["cache" : .array([.string(name), payload])]), handler)
         } else {
-            requestCache(.array([.string(name)]), handler)
+            request(.object(["cache" : .array([.string(name)])]), handler)
         }
-    }
-    
-    func requestCache(_ cacheRequest: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        request(.object(["cache" : cacheRequest]), handler)
     }
     
     func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {

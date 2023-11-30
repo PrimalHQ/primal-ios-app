@@ -31,14 +31,14 @@ final class RelaysPostbox {
         pool.connect(relays: loadedRalays)
     }
     
-    func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: @escaping (_ result: [JSON]) -> Void, errorHandler: @escaping () -> Void) {
+    func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: ((_ result: [JSON]) -> Void)?, errorHandler: (() -> Void)?) {
         var didSucceed: Bool?
         
         func resultHandler(result: [JSON], relay: String) {
             DispatchQueue.main.async {
                 if didSucceed != true {
                     didSucceed = true
-                    successHandler(result)
+                    successHandler?(result)
                 }                
             }
         }
@@ -52,7 +52,7 @@ final class RelaysPostbox {
         DispatchQueue.main.asyncAfter(deadline: .now() + errorDelay) {
             if didSucceed == nil {
                 didSucceed = false
-                errorHandler()
+                errorHandler?()
             }
         }
     }
