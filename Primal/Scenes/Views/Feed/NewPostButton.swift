@@ -22,6 +22,6 @@ class NewPostButton: UIButton, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .accent2
+        backgroundColor = .accent
     }
 }

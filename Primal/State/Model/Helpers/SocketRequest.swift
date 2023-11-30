@@ -17,7 +17,7 @@ struct SocketRequest {
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
         Future { promise in
-            Connection.regular.requestCache(name: name, request: payload) { result in
+            Connection.regular.requestCache(name: name, payload: payload) { result in
                 result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                 result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
                 
@@ -84,7 +84,7 @@ extension PostRequestResult {
                 PostManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
-                ZapManager.instance.userZapped[noteStatus.event_id] = 0
+                WalletManager.instance.setZapUnknown(noteStatus.event_id)
             }
         case .repost:
             guard

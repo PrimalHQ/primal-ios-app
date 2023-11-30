@@ -79,6 +79,6 @@ final class NewPostsButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .accent2
+        backgroundColor = .accent
     }
 }

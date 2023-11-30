@@ -58,9 +58,6 @@ class ThreadCell: PostCell {
 
 extension ThreadCell {
     func parentSetup() {
-        profileImageView.constrainToSize(FontSizeSelection.current.avatarSize)
-        profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
-        
         contentSpacer.addSubview(parentIndicator)
         
         parentIndicator
@@ -92,6 +89,9 @@ final class DefaultThreadCell: ThreadCell {
             .pinToSuperview(edges: .top)
             .pinToSuperview(edges: .bottom, padding: -24)
         
+        profileImageView.constrainToSize(FontSizeSelection.current.avatarSize)
+        profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
+            
         let imageSpacerStack = UIStackView(axis: .vertical, [profileImageView, contentSpacer, UIView()])
         imageSpacerStack.spacing = 2
         
@@ -147,6 +147,9 @@ final class DefaultMainThreadCell: ThreadCell {
             .pinToSuperview(edges: .bottom, padding: -24)
         
         threeDotsButton.constrainToSize(width: 22)
+        
+        profileImageView.constrainToSize(FontSizeSelection.current.avatarSize)
+        profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
         
         nameStack.removeArrangedSubview(nipLabel)
         let nameVStack = UIStackView(axis: .vertical, [nameStack, nipLabel])

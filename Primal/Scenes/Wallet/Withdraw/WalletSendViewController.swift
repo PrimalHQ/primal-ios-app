@@ -76,7 +76,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         messageInput.text = destination.message
         
         input.isUserInteractionEnabled = destination.isEditable
-        messageInput.isHidden = !destination.isEditable
+        messageInput.superview?.isHidden = !destination.isEditable
         messageInput.isUserInteractionEnabled = destination.isEditable
     }
 

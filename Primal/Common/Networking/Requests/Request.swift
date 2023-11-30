@@ -30,8 +30,7 @@ protocol Request {
 extension Request {
     func publisher() -> AnyPublisher<ResponseData, Error> {
         Future { promise in
-            
-            var request = URLRequest(url: url)
+            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
             
             if let body, let requestBody = try? JSONSerialization.data(withJSONObject: body) {
                 request.httpMethod = "POST"

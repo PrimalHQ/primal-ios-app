@@ -216,7 +216,7 @@ final class NotificationsViewController: FeedViewController {
                 delegate: self,
                 didLike: LikeManager.instance.hasLiked(data.post.id),
                 didRepost: PostManager.instance.hasReposted(data.post.id),
-                didZap: ZapManager.instance.hasZapped(data.post.id)
+                didZap: WalletManager.instance.hasZapped(data.post.id)
             )
             cell.border.backgroundColor = indexPath.row == separatorIndex ? .foreground : .foreground6
         }
@@ -229,7 +229,7 @@ final class NotificationsViewController: FeedViewController {
     }
     
     override func animateBars() {
-        var shouldShowBars = self.shouldShowBars
+        let shouldShowBars = self.shouldShowBars
         
         super.animateBars()
         

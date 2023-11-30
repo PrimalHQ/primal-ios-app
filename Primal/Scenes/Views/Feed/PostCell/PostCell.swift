@@ -134,7 +134,7 @@ class PostCell: UITableViewCell {
         mainImages.thumbnails = content.videoThumbnails
         
         likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
-        zapButton.set(content.post.satszapped + ZapManager.instance.userZapped[content.post.id, default: 0], filled: didZap)
+        zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: didZap)
         repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
         replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
         

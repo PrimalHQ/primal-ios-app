@@ -78,10 +78,6 @@ private extension FeedsSelectionController {
         
         scrollView.showsVerticalScrollIndicator = false
         
-//        let border = GradientView(colors: [.clear, .white, .clear])
-//        border.gradientLayer.startPoint = .init(x: 0, y: 0.5)
-//        border.gradientLayer.endPoint = .init(x: 1, y: 0.5)
-//
         let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(height: 42), scrollView, SpacerView(height: 42)])
         
         view.addSubview(stack)
@@ -104,9 +100,5 @@ private extension FeedsSelectionController {
         title.text = "My Nostr Feeds"
         title.font = .appFont(withSize: 32, weight: .semibold)
         title.textColor = .foreground
-        
-//        border
-//            .constrainToSize(height: 1)
-//            .widthAnchor.constraint(equalTo: titleStack.widthAnchor, multiplier: 1.2).isActive = true
     }
 }

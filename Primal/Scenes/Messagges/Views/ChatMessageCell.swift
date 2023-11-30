@@ -102,7 +102,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        coloredBackgroundView.backgroundColor = .accent2
+        coloredBackgroundView.backgroundColor = .accent
         
         labelBackground.backgroundColor = .background3
         label.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)

@@ -264,6 +264,8 @@ private extension HomeFeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] feed in
                 self?.title = feed?.name
+                self?.newPostObjects = []
+                self?.newAddedPosts = 0
             }
             .store(in: &cancellables)
     }
@@ -283,7 +285,9 @@ private extension HomeFeedViewController {
             updatePosts(old)
         } else {
             feed.parsedPosts.insert(contentsOf: sorted, at: 0)
-            newAddedPosts += sorted.count
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { // We need to wait for parsedPosts to propagate to posts
+                self.newAddedPosts += sorted.count
+            }
         }
     }
 }

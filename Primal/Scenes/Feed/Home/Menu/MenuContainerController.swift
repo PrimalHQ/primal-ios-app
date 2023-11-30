@@ -86,6 +86,7 @@ final class MenuContainerController: UIViewController, Themeable {
         childLeftConstraint?.isActive = true
         coverView.isHidden = false
         mainTabBarController?.hideForMenu()
+        child.viewWillDisappear(true)
     }
     
     func resetNavigationTabBar() {
@@ -329,6 +330,7 @@ private extension MenuContainerController {
         switch sender.state {
         case .began:
             coverView.isHidden = false
+            child.viewWillDisappear(true)
             fallthrough
         case .changed:
             mainStack.alpha = 1
