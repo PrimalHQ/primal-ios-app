@@ -298,13 +298,13 @@ final class FeedManager {
             if let pagination = self.pendingResult?.pagination {
                 if self.paginationInfo == nil {
                     self.paginationInfo = pagination
+                    
+                    if self.currentFeed?.name == "Latest" {
+                        UserDefaults.standard.oldHomeFeedResult = self.pendingResult
+                    }
                 } else {
                     self.paginationInfo?.since = pagination.since
                 }
-            }
-            
-            if self.currentFeed?.name == "Latest" {
-                UserDefaults.standard.oldHomeFeedResult = self.pendingResult
             }
             
             self.emitPosts()

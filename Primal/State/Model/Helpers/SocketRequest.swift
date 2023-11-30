@@ -50,26 +50,24 @@ extension PostRequestResult {
                 print("Error decoding NostrContentStats to json")
                 return
             }
-
             stats[nostrContentStats.event_id] = nostrContentStats
         case .notification:
             guard
-                let json = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
+                let json: JSON = contentString.decode(),
                 let notification = PrimalNotification.fromJSON(json)
             else {
                 print("Error decoding PrimalNotification to json")
                 return
             }
-            
             notifications.append(notification)
         case .paginationEvent:
-            guard let pagination = try? JSONDecoder().decode(PrimalPagination.self, from: Data(contentString.utf8)) else {
+            guard let pagination: PrimalPagination = contentString.decode() else {
                 print("Error decoding PrimalSearchPagination to json")
                 return
             }
             self.pagination = pagination
         case .noteActions:
-            guard let noteStatus = try? JSONDecoder().decode(PrimalNoteStatus.self, from: Data(contentString.utf8)) else {
+            guard let noteStatus: PrimalNoteStatus = contentString.decode() else {
                 print("Error decoding PrimalNoteStatus to json")
                 return
             }
@@ -90,7 +88,7 @@ extension PostRequestResult {
             guard
                 let pubKey = payload["pubkey"]?.stringValue,
                 let dateNum = payload["created_at"]?.doubleValue,
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.isEmpty ? "{}".utf8 : contentString.utf8))
+                let contentJSON: JSON = contentString.decode()
             else {
                 print("Error decoding reposts string to json")
                 return
@@ -100,21 +98,21 @@ extension PostRequestResult {
             
             reposts.append(.init(id: id, pubkey: pubKey, post: NostrContent(json: contentJSON), date: Date(timeIntervalSince1970: dateNum)))
         case .mentions:
-            guard let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)) else {
+            guard let contentJSON: JSON = contentString.decode() else {
                 print("Error decoding mentions string to json")
                 return
             }
             
             mentions.append(NostrContent(json: contentJSON))
         case .mediaMetadata:
-            guard let metadata = try? JSONDecoder().decode(MediaMetadata.self, from: Data(contentString.utf8)) else {
+            guard let metadata: MediaMetadata = contentString.decode() else {
                 print("Error decoding metadata string to json")
                 return
             }
             
             mediaMetadata.append(metadata)
         case .userScore:
-            guard let info = try? JSONDecoder().decode([String: Int].self, from: Data(contentString.utf8)) else { return }
+            guard let info: [String: Int] = contentString.decode() else { return }
             
             userScore = info
         case .userFollowers:
@@ -130,21 +128,14 @@ extension PostRequestResult {
             }
             userStats = nostrUserProfileInfo
         case .popular_hashtags:
-            guard
-                let contentJSON = try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)),
-                case .array(let contentArray) = contentJSON
-            else {
+            guard let contentArray: [[String: Double]] = contentString.decode() else {
                 print("Error decoding popular hashtags")
                 return
             }
             
-            for element in contentArray {
-                guard
-                    let object = element.objectValue,
-                    let name = object.keys.first,
-                    let count = object[name]?.doubleValue
-                else { continue }
-                popularHashtags.append(.init(title: name, apperances: count))
+            for object in contentArray {
+                guard let (name, count) = object.first else { continue }
+                popularHashtags.append(.init(title: name, appearances: count))
             }
         case .timestamp:
             guard let timeStamp = Int(contentString) else {
@@ -153,7 +144,7 @@ extension PostRequestResult {
             }
             timestamps.append(.init(timeIntervalSince1970: TimeInterval(timeStamp)))
         case .webPreview:
-            guard let webPreview = try? JSONDecoder().decode(WebPreviews.self, from: Data(contentString.utf8)) else {
+            guard let webPreview: WebPreviews = contentString.decode() else {
                 print("Error decoding webpreview")
                 return
             }
@@ -178,7 +169,7 @@ extension PostRequestResult {
             }
             encryptedMessages.append(.init(id: id, pubkey: pubkey, recipientPubkey: recipientPubkey, date: .init(timeIntervalSince1970: date), message: contentString))
         case .messagesMetadata:
-            guard let chats = try? JSONDecoder().decode([String: ChatMetadata].self, from: Data(contentString.utf8)) else {
+            guard let chats: [String: ChatMetadata] = contentString.decode() else {
                 print("Error decoding messagesMetadata")
                 return
             }
