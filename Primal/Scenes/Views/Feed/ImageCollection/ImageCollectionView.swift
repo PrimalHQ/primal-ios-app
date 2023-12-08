@@ -87,18 +87,14 @@ extension ImageCollectionView: UICollectionViewDataSource {
                 }
             }
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
-            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                guard let data = data else {
-                    return
-                }
-                
-                let anim = FLAnimatedImage(gifData: data)
-                
-                DispatchQueue.main.async {
-                    (cell as? ImageCell)?.imageView.animatedImage = anim
+            CachingManager.instance.fetchAnimatedImage(url) { result in
+                switch result {
+                case .success(let image):
+                    (cell as? ImageCell)?.imageView.animatedImage = image
+                case .failure(let error):
+                    print(error)
                 }
             }
-            task.resume()
         } else {
             (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
                 .processor(DownsamplingImageProcessor(size: frame.size)),

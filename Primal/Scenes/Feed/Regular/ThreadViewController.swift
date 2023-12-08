@@ -513,6 +513,12 @@ private extension ThreadViewController {
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
+        
+        let gest = BindableTapGestureRecognizer { [weak self] in
+            self?.textInputView.resignFirstResponder()
+        }
+        gest.delegate = self
+        view.addGestureRecognizer(gest)
     }
     
     func replyToString(name: String) -> NSAttributedString {
@@ -526,5 +532,11 @@ private extension ThreadViewController {
             .foregroundColor: UIColor.accent
         ]))
         return value
+    }
+}
+
+extension ThreadViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        textInputView.isFirstResponder
     }
 }

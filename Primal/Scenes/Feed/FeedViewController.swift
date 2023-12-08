@@ -12,9 +12,10 @@ import SwiftUI
 import SafariServices
 import Lottie
 import Kingfisher
+import StoreKit
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
-    let refreshControl = UIRefreshControl()
+    var refreshControl = UIRefreshControl()
     let table = UITableView()
     let safeAreaSpacer = UIView()
     let navigationBorder = UIView().constrainToSize(height: 1)
@@ -141,12 +142,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
     }
     
-    func updateTheme() {
-        posts.forEach {
-            $0.buildContentString()
-            $0.embededPost?.buildContentString()
-        }
-        
+    func updateTheme() {        
         updateCellID()
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
         table.reloadData()
@@ -164,7 +160,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     @Published private(set) var isShowingBars = true
     var shouldShowBars: Bool {
         get { scrollDirectionCounter >= 0 }
-        set { scrollDirectionCounter = newValue ? 30 : -30 }
+        set { scrollDirectionCounter = newValue ? 50 : -50 }
     }
     @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
     
@@ -201,12 +197,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
 
         isAnimatingBars = true
-        isShowingBars = shouldShowBars
+        isShowingBars = self.shouldShowBars
         isAnimatingBars = false
     }
     
     func animateBars() {
         var shouldShowBars = scrollDirectionCounter >= 0
+        let endBarState = shouldShowBars
         guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
         
         if !ContentDisplaySettings.fullScreenFeed {
@@ -217,7 +214,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         table.bounces = shouldShowBars
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-            self.isShowingBars = shouldShowBars
+            self.isShowingBars = endBarState
             self.isAnimatingBars = false
         }
         
@@ -274,26 +271,27 @@ private extension FeedViewController {
         loadingSpinner.centerToSuperview().constrainToSize(70)
         
         updateTheme()
-        
-        let shouldShowPublisher = $scrollDirectionCounter
-            .map { $0 > 0 }
-            .removeDuplicates()
     
-        Publishers.CombineLatest3($isShowingBars, $scrollDirectionCounter, $isAnimatingBars)
-            .sink { [weak self] isShowing, directionCounter, isAnimating in
-                if abs(directionCounter) < 5 { return } // Disregard small scrolling (sometimes the system scrolls quickly)
-                let shouldShow = directionCounter > 0
-                guard isShowing != shouldShow, !isAnimating else { return }
-                self?.animateBars()
+        let shouldShowPublisher = $scrollDirectionCounter
+            .filter({ abs($0) > 30 }) // Disregard small scrolling (sometimes the system scrolls quickly)
+            .map { $0 > 0 }
+        
+        Publishers.CombineLatest3($isShowingBars, shouldShowPublisher, $isAnimatingBars)
+            .dropFirst()
+            .sink { [weak self] isShowing, shouldShow, isAnimating in
+                guard isShowing != shouldShow, !isAnimating, self?.view.window != nil else { return }
+                DispatchQueue.main.async {
+                    self?.animateBars()
+                }
             }
             .store(in: &cancellables)
         
         barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
-            for i in 1...3 { // This is the only way it works, if we call it only once sometimes it gets stuck
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(i * 100)) {
-                    guard let self else { return }
-                    self.shouldShowBars = true
-                }
+            // This is the only way it works, otherwise it gets stuck
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                guard let self else { return }
+                self.isShowingBars = false
+                self.shouldShowBars = true
             }
         }
     }
@@ -345,6 +343,12 @@ private extension FeedViewController {
         Task { @MainActor [weak self] in
             do {
                 try await WalletManager.instance.zap(post: parsed, sats: amount, note: message)
+                
+                UserDefaults.standard.howManyZaps += 1
+                if UserDefaults.standard.howManyZaps >= 3 {
+                    guard let scene = self?.view.window?.windowScene else { return }
+                    SKStoreReviewController.requestReview(in: scene)
+                }
             } catch {
                 if let e = error as? WalletError {
                     self?.showErrorMessage(e.message)
@@ -426,7 +430,7 @@ extension FeedViewController: PostCellDelegate {
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
             guard let noteRef = bech32_note_id(post.id) else { return }
             let new = NewPostViewController()
-            new.textView.text = "nostr:\(noteRef)\n\n"
+            new.textView.text = "\n\nnostr:\(noteRef)"
             self.present(new, animated: true)
         }))
         
@@ -467,7 +471,7 @@ extension FeedViewController: PostCellDelegate {
         let post = posts[indexPath.row]
         let urlString = url.absoluteString
         
-        if urlString.isValidURL && urlString.hasPrefix("http") {
+        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
             let safari = SFSafariViewController(url: url)
             present(safari, animated: true)
             return

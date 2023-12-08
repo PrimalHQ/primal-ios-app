@@ -49,13 +49,20 @@ final class WalletHomeViewController: UIViewController, Themeable {
                 let newLast = tableData.last?.cells.last?.transaction,
                 oldLast.id == newLast.id,
                 let oldTransactionList = oldValue.dropFirst().first?.cells.compactMap({ $0.transaction }),
-                let oldFirst = oldTransactionList.first,
                 let newTransactionList = tableData.dropFirst().first?.cells.compactMap({ $0.transaction }),
-                let newFirst = newTransactionList.first,
-                oldFirst.id != newFirst.id
+                oldTransactionList.first?.id != newTransactionList.first?.id
             else {
                 table.reloadData()
                 return
+            }
+            
+            // Make sure other sections are not changed
+            for index in oldValue.indices {
+                if index < 2 { continue }
+                if oldValue[index].cells.count != tableData[index].cells.count {
+                    table.reloadData()
+                    return
+                }
             }
             
             let newTransCount = newTransactionList.count - oldTransactionList.count

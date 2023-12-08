@@ -28,22 +28,12 @@ final class HomeFeedViewController: PostFeedViewController {
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
     
-    var newAddedPosts = 0 {
-        didSet {
-            updatePosts(oldValue + newPostObjects.count)
-        }
-    }
-    
-    var newPostObjects: [ParsedContent] = []
-    
-    var newPosts: Int { newAddedPosts + newPostObjects.count }
-    
-    func updatePosts(_ oldValue: Int) {
-        if newPosts != 0 {
-            newPostsView.setCount(newPosts, users: (newPostObjects + posts.prefix(newAddedPosts)).compactMap { $0.user })
+    func updatePosts(old: Int, new: Int, users: [ParsedUser]) {
+        if new != 0 {
+            newPostsView.setCount(new, users: users)
         }
         
-        if newPosts == 0 {
+        if new == 0 {
             UIView.animate(withDuration: 0.3) {
                 self.newPostsView.alpha = 0
             } completion: { finished in
@@ -51,7 +41,7 @@ final class HomeFeedViewController: PostFeedViewController {
                     self.newPostsViewParent.isHidden = true
                 }
             }
-        } else if oldValue == 0 {
+        } else if old == 0 {
             newPostsViewParent.isHidden = false
             UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
                 self.newPostsView.alpha = 1
@@ -59,12 +49,16 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
-    private var foregroundObserver: NSObjectProtocol?
-    
-    deinit {
-        if let foregroundObserver {
-            NotificationCenter.default.removeObserver(foregroundObserver)
+    init() {
+        super.init(feed: FeedManager(loadLocalHomeFeed: true))
+        feed.addFuturePostsDirectly = { [weak self] in
+            guard let self else { return true }
+            return self.table.contentOffset.y > 70
         }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -95,20 +89,13 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
-            
-            if !newPostObjects.isEmpty {
-                self.feed.parsedPosts.insert(contentsOf: newPostObjects, at: 0)
-                newPostObjects = []
-            }
-            self.newAddedPosts = 0
+            self.feed.addAllFuturePosts()
             self.shouldShowBars = true
             self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
         }), for: .touchDown)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
-            self?.newPostObjects = []
-            self?.newAddedPosts = 0
         }), for: .valueChanged)
         
         updateTheme()
@@ -139,12 +126,7 @@ final class HomeFeedViewController: PostFeedViewController {
         present(NewPostViewController(), animated: true)
     }
     
-    override func updateTheme() {        
-        newPostObjects.forEach {
-            $0.buildContentString()
-            $0.embededPost?.buildContentString()
-        }
-        
+    override func updateTheme() {               
         super.updateTheme()
         
         feedButton.backgroundColor = .background
@@ -153,16 +135,16 @@ final class HomeFeedViewController: PostFeedViewController {
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
-        guard indexPath.section == postSection, indexPath.row < newAddedPosts else { return }
-            
-        newAddedPosts = indexPath.row
+        guard indexPath.section == postSection else { return }
+        
+        feed.didShowPost(indexPath.row)
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         
         if scrollView.contentOffset.y < 100 {
-            newAddedPosts = 0
+            feed.didShowPost(0)
         }
     }
     
@@ -199,28 +181,10 @@ final class HomeFeedViewController: PostFeedViewController {
 
 private extension HomeFeedViewController {
     func setupPublishers() {
-        Publishers.Merge(
-            Timer.publish(every: 30, on: .main, in: .default).autoconnect(),
-            Timer.publish(every: 3, on: .main, in: .default).autoconnect().first()
-        )
-        .flatMap { [weak self] _ -> AnyPublisher<[ParsedContent], Never> in
-            self?.feed.futurePostsPublisher() ?? Just([]).eraseToAnyPublisher()
-        }
-        .sink { [weak self] sorted in
-            self?.processFuturePosts(sorted)
+        feed.$newPosts.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] old, new in
+            self?.updatePosts(old: old.0, new: new.0, users: new.1)
         }
         .store(in: &cancellables)
-        
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                guard let self else { return }
-                
-                self.feed.futurePostsPublisher().sink { [weak self] sorted in
-                    self?.processFuturePosts(sorted)
-                }
-                .store(in: &self.cancellables)
-            }
-        }
         
         feed.newParsedPosts
             .receive(on: DispatchQueue.main)
@@ -242,8 +206,10 @@ private extension HomeFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
-                if posts.first?.post.id != self?.posts.first?.post.id, !posts.isEmpty {
-                    self?.posts = posts
+                if !posts.isEmpty {
+                    if posts.first?.post.id != self?.posts.first?.post.id || (self?.posts.count ?? 0) > posts.count {
+                        self?.posts = posts
+                    }
                 }
                 
                 if posts.isEmpty {
@@ -264,30 +230,7 @@ private extension HomeFeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] feed in
                 self?.title = feed?.name
-                self?.newPostObjects = []
-                self?.newAddedPosts = 0
             }
             .store(in: &cancellables)
-    }
-    
-    func processFuturePosts(_ sorted: [ParsedContent]) {
-        let sorted = sorted.filter { post in
-            !post.post.id.isEmpty &&
-            !posts.contains(where: { $0.post.id == post.post.id }) &&
-            !newPostObjects.contains(where: { $0.post.id == post.post.id })
-        }
-        
-        if sorted.isEmpty { return }
-        
-        if table.contentOffset.y < 50 {
-            let old = newPosts
-            newPostObjects = sorted + newPostObjects
-            updatePosts(old)
-        } else {
-            feed.parsedPosts.insert(contentsOf: sorted, at: 0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { // We need to wait for parsedPosts to propagate to posts
-                self.newAddedPosts += sorted.count
-            }
-        }
     }
 }

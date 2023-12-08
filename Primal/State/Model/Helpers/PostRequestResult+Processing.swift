@@ -49,12 +49,14 @@ extension PostRequestResult {
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
             .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true)}
   
-        let all = reposts + normalPosts
-        
         if order.isEmpty {
-            return all
+            return normalPosts
         }
-        return order.compactMap { id in all.first(where: { $0.post.id == id }) }
+        
+        let all = normalPosts + reposts
+        return order.compactMap { id in
+            all.first(where: { $0.post.id == id }) ?? reposts.first(where: { $0.reposted?.id == id})
+        }
     }
     
     func parse(
@@ -97,20 +99,18 @@ extension PostRequestResult {
             let urlString = preview.url
             guard let url = URL(string: urlString.hasPrefix("http") ? urlString : "https://\(urlString)") else { continue }
             
-            guard
-                preview.icon_url?.isEmpty == false ||
-                preview.md_title?.isEmpty == false ||
-                preview.md_description?.isEmpty == false ||
-                preview.md_image?.isEmpty == false
-            else { continue }
+            guard preview.md_title?.isEmpty == false || preview.md_description?.isEmpty == false else { continue }
+            
+            if p.linkPreview != nil {
+                p.linkPreview = nil
+                break // Leave the loop as we don't show the preview if there is more than one url preview
+            }
             
             p.linkPreview = LinkMetadata(
                 url: url,
                 imagesData: mediaMetadata.filter { $0.event_id == post.id }.flatMap { $0.resources },
                 data: preview
             )
-            
-            break // Leave the loop as we only want the first link preview
         }
         
         // MARK: - Finding parent note
@@ -145,7 +145,7 @@ extension PostRequestResult {
                     
                     let mentionText = (text as NSString).substring(with: matchRange)
                     
-                    if let mentionId = eventIdFromNEvent(mentionText), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                    if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
                         p.embededPost = mention
                         itemsToRemove.append(mentionText)
                         mentionFound = true
@@ -310,43 +310,39 @@ extension PrimalUser {
     var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
 }
 
-func eventIdFromNEvent(_ nevent: String) -> String? {
-    let res = parse_mentions(content: nevent, tags: [])
-
-    let block = res[0]
-
-    guard case .mention(let mention) = block else {
-        return nil
+private extension String {
+    func eventIdFromNEvent() -> String? {
+        guard case .mention(let mention) = parse_mentions().first else { return nil }
+            
+        return mention.ref.id
     }
-
-    return mention.ref.id
-}
-
-func parse_mentions(content: String, tags: [[String]]) -> [Block] {
-    var out: [Block] = []
-
-    var bs = blocks()
-    bs.num_blocks = 0;
-
-    blocks_init(&bs)
-
-    let bytes = content.utf8CString
-    let _ = bytes.withUnsafeBufferPointer { p in
-        damus_parse_content(&bs, p.baseAddress)
-    }
-
-    var i = 0
-    while (i < bs.num_blocks) {
-        let block = bs.blocks[i]
-
-        if let converted = convert_block(block, tags: tags) {
-            out.append(converted)
+    
+    func parse_mentions() -> [Block] {
+        var out: [Block] = []
+        
+        var bs = blocks()
+        bs.num_blocks = 0;
+        
+        blocks_init(&bs)
+        
+        let bytes = self.utf8CString
+        let _ = bytes.withUnsafeBufferPointer { p in
+            damus_parse_content(&bs, p.baseAddress)
         }
-
-        i += 1
+        
+        var i = 0
+        while (i < bs.num_blocks) {
+            let block = bs.blocks[i]
+            
+            if let converted = convert_block(block, tags: []) {
+                out.append(converted)
+            }
+            
+            i += 1
+        }
+        
+        blocks_free(&bs)
+        
+        return out
     }
-
-    blocks_free(&bs)
-
-    return out
 }

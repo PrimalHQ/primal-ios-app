@@ -740,16 +740,6 @@ enum ZapType: String {
     case non_zap
 }
 
-@discardableResult
-func nwc_pay(url: WalletConnectURL, invoice: String) -> NostrObject? {
-    let req = make_wallet_pay_invoice_request(invoice: invoice)
-    guard let ev = make_wallet_connect_request(req: req, to_pk: url.pubkey, keypair: url.keypair) else {
-        return nil
-    }
-    
-    return ev
-}
-
 func make_wallet_pay_invoice_request(invoice: String) -> WalletRequest<PayInvoiceRequest> {
     let data = PayInvoiceRequest(invoice: invoice)
     return WalletRequest(method: "pay_invoice", params: data)

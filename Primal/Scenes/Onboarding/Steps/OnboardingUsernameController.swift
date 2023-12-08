@@ -158,6 +158,7 @@ private extension OnboardingUsernameController {
         
         let avatarStack = UIStackView(axis: .vertical, [avatarView, SpacerView(height: 12), addPhotoButton])
         avatarStack.alignment = .center
+        addPhotoButton.setContentCompressionResistancePriority(.required, for: .vertical)
         
         descLabel.numberOfLines = 0
         descLabel.setContentCompressionResistancePriority(.init(1), for: .vertical)

@@ -39,12 +39,8 @@ extension Request {
             }
 
             URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error {
-                    promise(.failure(error))
-                    return
-                }
                 guard let data else {
-                    promise(.failure(RequestError.noData))
+                    promise(.failure(error ?? RequestError.noData))
                     return
                 }
                 

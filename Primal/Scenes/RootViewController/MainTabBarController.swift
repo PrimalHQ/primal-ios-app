@@ -57,9 +57,6 @@ final class MainTabBarController: UIViewController, Themeable {
     }
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
-    private var foregroundObserver: NSObjectProtocol?
-    private var noteObserver: NSObjectProtocol?
-    private var profileObserver: NSObjectProtocol?
 
     var cancellables: Set<AnyCancellable> = []
     
@@ -98,22 +95,6 @@ final class MainTabBarController: UIViewController, Themeable {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        if let foregroundObserver {
-            NotificationCenter.default.removeObserver(foregroundObserver)
-        }
-        if let noteObserver {
-            NotificationCenter.default.removeObserver(noteObserver)
-        }
-        if let profileObserver {
-            NotificationCenter.default.removeObserver(profileObserver)
-        }
-
-        for cancellable in cancellables {
-            cancellable.cancel()
-        }
     }
 
     func hideForMenu() {
@@ -174,13 +155,16 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
         let nav: UINavigationController = navForTab(tab)
-        let index = tabs.firstIndex(of: tab) ?? 0
-            
-        pageVC.setViewControllers([nav],
-            direction: currentPageIndex < index ? .forward : .reverse,
-            animated: true
-        )
-        currentPageIndex = index
+        
+        if false == pageVC.viewControllers?.contains(where: { $0 == nav }) {
+            let index = tabs.firstIndex(of: tab) ?? 6
+            pageVC.setViewControllers([nav],
+                                      direction: currentPageIndex < index ? .forward : .reverse,
+                                      animated: true
+            )
+            currentPageIndex = index
+        }
+        
         if let vc {
             nav.pushViewController(vc, animated: true)
         }
@@ -220,47 +204,42 @@ private extension MainTabBarController {
 
         vStack.axis = .vertical
 
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { notification in
-            Connection.reconnect()
-            PrimalEndpointsManager.instance.checkIfNecessary()
-            RelaysPostbox.instance.reconnect()
-        }
-        
-        noteObserver = NotificationCenter.default.addObserver(forName: .primalNoteLink, object: nil, queue: .main) { [weak self] notification in
-            guard let note = notification.object as? String, let self else { return }
-                
-            Connection.regular.$isConnected
-                .filter({ $0 })
-                .first()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    self?.switchToTab(.home, open: ThreadViewController(threadId: note))
-                }
-                .store(in: &cancellables)
-        }
-        
-        profileObserver = NotificationCenter.default.addObserver(forName: .primalProfileLink, object: nil, queue: .main) { [weak self] notification in
-            guard
-                let self,
-                let npub = notification.object as? String,
-                let hex = HexKeypair.npubToHexPubkey(npub)
-                else {
-                return
-            }
-
-            Connection.regular.$isConnected
-                .filter({ $0 })
-                .first()
-                .receive(on: DispatchQueue.main)
-                .sinkAsync { [weak self] _ in
-                    let parsedUser = await ProfileManager.instance.requestProfileInfo(hex)
-
-                    DispatchQueue.main.async {
-                        self?.switchToTab(.home, open: ProfileViewController(profile: parsedUser))
+        NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
+            .dropFirst()
+            .sink { _ in
+                PrimalEndpointsManager.instance.checkIfNecessary()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    Connection.reconnect()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                        RelaysPostbox.instance.reconnect()
                     }
                 }
-                .store(in: &cancellables)
-        }
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { _ in
+                Connection.disconnect()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .primalNoteLink)
+            .compactMap { $0.object as? String }
+            .waitForConnection(Connection.regular)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] note in
+                self?.switchToTab(.home, open: ThreadViewController(threadId: note))
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .primalProfileLink)
+            .compactMap { $0.object as? String }
+            .compactMap { HexKeypair.npubToHexPubkey($0) }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] pubkey in
+                self?.switchToTab(.home, open: ProfileViewController(profile: .init(data: .init(pubkey: pubkey))))
+            }
+            .store(in: &cancellables)
         
         updateButtons()
         addCircleWalletButton()

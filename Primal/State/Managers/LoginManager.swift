@@ -28,14 +28,13 @@ final class LoginManager {
     }
     
     func logout() {
-        KingfisherManager.shared.cache.clearMemoryCache()
         ICloudKeychainManager.instance.clearSavedKeys()
-        UserDefaults.standard.homeFeedResultString = nil
-        UserDefaults.standard.homeFeedSaveDate = nil
-        UserDefaults.standard.synchronize()
+        
+        KingfisherManager.shared.cache.clearMemoryCache()
         RelaysPostbox.instance.disconnect()
         Connection.disconnect()
         FollowManager.instance.pubkeysToFollow = []
+        FollowManager.instance.pubkeysToUnfollow = []
         
         RootViewController.instance.reset()
     }

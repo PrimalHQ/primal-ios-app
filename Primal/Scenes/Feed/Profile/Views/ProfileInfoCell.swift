@@ -61,8 +61,8 @@ class ProfileInfoCell: UITableViewCell {
         secondaryLabel.text = user.parsedNip
         
         npubView.npub = user.npub
-        descLabel.text = user.about
-        linkView.link = user.website
+        descLabel.text = user.about.trimmingCharacters(in: .whitespacesAndNewlines)
+        linkView.link = user.website.trimmingCharacters(in: .whitespaces)
         
         zip(infoStack.buttons, [
             (stats?.note_count ?? 0).shortenedLocalized(),

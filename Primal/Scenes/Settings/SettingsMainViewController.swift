@@ -50,16 +50,17 @@ private extension SettingsMainViewController {
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
-        wallet.isEnabled = LoginManager.instance.method() == .nsec
-        notifications.isEnabled = LoginManager.instance.method() == .nsec
-        feeds.isEnabled = LoginManager.instance.method() == .nsec
-        zaps.isEnabled = LoginManager.instance.method() == .nsec
-        
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
         let stack = UIStackView(arrangedSubviews: [keys, network, appearance, contentDisplay, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
-        view.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
+        let scroll = UIScrollView()
+        
+        view.addSubview(scroll)
+        scroll.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        
+        scroll.addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12)
+        stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -48).isActive = true
         stack.axis = .vertical
         stack.setCustomSpacing(12, after: versionTitleLabel)
         
@@ -73,6 +74,15 @@ private extension SettingsMainViewController {
             versionLabel.text = appVersion
         } else {
             versionLabel.text = "Unknown"
+        }
+        
+        guard LoginManager.instance.method() == .nsec else {
+            [keys, feeds, appearance, contentDisplay, muted, notifications, zaps, network].forEach {
+                $0.addAction(.init(handler: { [weak self] _ in
+                    self?.showErrorMessage(title: "Logged in with npub", "Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")
+                }), for: .touchUpInside)
+            }
+            return
         }
         
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)

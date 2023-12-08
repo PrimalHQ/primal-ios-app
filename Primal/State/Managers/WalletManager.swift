@@ -8,6 +8,13 @@
 import Combine
 import Foundation
 
+extension UserDefaults {
+    var howManyZaps: Int {
+        get { integer(forKey: "howManyZapsKey") }
+        set { setValue(newValue, forKey: "howManyZapsKey") }
+    }
+}
+
 enum WalletError: Error {
     case serverError(String)
     case inAppPurchaseServerError

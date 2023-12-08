@@ -42,6 +42,7 @@ class NewPostViewController: UIViewController {
         super.viewWillAppear(animated)
         
         textView.becomeFirstResponder()
+        textView.selectedRange = .init(location: 0, length: 0)
     }
 }
 

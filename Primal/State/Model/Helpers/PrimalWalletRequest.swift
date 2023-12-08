@@ -124,14 +124,17 @@ struct PrimalWalletRequest {
   private let pendingResult: WalletRequestResult = .init()
   
     func publisher() -> AnyPublisher<WalletRequestResult, Never> {
-        Future { promise in
-            Connection.wallet.requestWallet(type.requestContent) { result in
-                result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
-                result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.handleMessage($0) }
-        
-                promise(.success(pendingResult))
+        Deferred {
+            Future { promise in
+                Connection.wallet.requestWallet(type.requestContent) { result in
+                    result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
+                    result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.handleMessage($0) }
+                    
+                    promise(.success(pendingResult))
+                }
             }
-        }.eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 }
 

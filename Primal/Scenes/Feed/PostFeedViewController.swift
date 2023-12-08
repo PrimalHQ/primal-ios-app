@@ -40,4 +40,10 @@ class PostFeedViewController: FeedViewController {
         feed.parsedPosts = feed.parsedPosts.filter { $0.user.data.pubkey != pubkey }
         super.postCellDidTapMute(cell)
     }
+    
+    override func updateTheme() {
+        feed.updateTheme()
+        
+        super.updateTheme()
+    }
 }

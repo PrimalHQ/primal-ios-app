@@ -150,7 +150,12 @@ private extension WalletInAppPurchaseController {
                 Publishers.Merge(Just(true), Timer.publish(every: 35, on: .main, in: .default).autoconnect().map { _ in true })
                     .flatMap { _ in PrimalWalletRequest(type: .quote(productId: product.productIdentifier, countryCode: self.countryCode)).publisher() }
                     .receive(on: DispatchQueue.main).sink { [weak self] result in
-                        guard let quote = result.quote else { return }
+                        guard let quote = result.quote else {
+                            if let message = result.message {
+                                self?.present(WalletTransferSummaryController(.failure(navTitle: "Purchase Failed", title: "Unable to get the quote", message: message)), animated: true)
+                            }
+                            return
+                        }
                         
                         satsStack.isHidden = false
                         satsLoading.isHidden = true
