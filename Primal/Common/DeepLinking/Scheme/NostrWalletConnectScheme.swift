@@ -4,17 +4,17 @@
 
 import Foundation
 
-final class NostrWalletConnectSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
-    private var nwc: WalletConnectURL? = nil
-
+final class NostrSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {
-        nwc = WalletConnectURL(str: url.absoluteString)
-        return nwc != nil
+        return url.scheme == "nostr"
     }
 
     func openURL(_ url: URL) {
-        guard let nwc = nwc else { return }
-
-        notify(.nostrWalletConnect, nwc)
+        let destination = url.absoluteString.replacingOccurrences(of: "nostr:", with: "")
+        
+        if NKeypair.isValidNpub(destination) {
+            notify(.primalProfileLink, destination)
+            return
+        }
     }
 }

@@ -17,7 +17,7 @@ final class PostPreviewView: UIView {
     let verifiedBadge = VerifiedView()
     let mainLabel = NantesLabel()
     let seeMoreLabel = UILabel()
-    let mainImages = ImageCollectionView()
+    let mainImages = ImageGalleryView()
     let linkPreview = LinkPreview()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -151,7 +151,9 @@ private extension PostPreviewView {
             .pinToSuperview(edges: .horizontal, padding: 16)
             .pinToSuperview(edges: .vertical, padding: 12)
         
-        // USER INTERACTION DISABLED FOR SUBVIEWS
-        mainStack.isUserInteractionEnabled = false
+        // USER INTERACTION DISABLED FOR SUBVIEWS (except for images)
+        for subview in mainStack.arrangedSubviews {
+            subview.isUserInteractionEnabled = subview == mainImages
+        }
     }
 }

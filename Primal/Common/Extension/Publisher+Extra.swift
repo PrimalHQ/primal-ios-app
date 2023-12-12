@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 extension Publisher where Failure == Never {
     func assign<Root: AnyObject>(

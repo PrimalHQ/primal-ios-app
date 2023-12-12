@@ -14,6 +14,8 @@ class FeedCell: PostCell {
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
     
+    override var useShortText: Bool { true }
+    
     override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
         super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
         
@@ -22,7 +24,7 @@ class FeedCell: PostCell {
         
         layoutSubviews()
         
-        seeMoreLabel.isHidden = !mainLabel.isTruncated()
+        seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
         
         threeDotsSpacer.isHidden = parsedContent.reposted != nil
         threeDotsButton.transform = parsedContent.reposted == nil ? .identity : .init(translationX: 0, y: -6)
@@ -41,6 +43,7 @@ class FeedCell: PostCell {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent
+        seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         contentView.addSubview(mainStack)
     

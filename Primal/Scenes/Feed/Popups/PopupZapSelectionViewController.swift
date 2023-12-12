@@ -148,7 +148,7 @@ private extension PopupZapSelectionViewController {
         buttonStack.axis = .vertical
         buttonStack.spacing = 32
         
-        inputParent.backgroundColor = .background
+        inputParent.backgroundColor = .background2
         inputParent.layer.cornerRadius = 8
         inputParent.addSubview(inputField)
         inputParent.constrainToSize(height: 44)

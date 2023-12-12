@@ -43,6 +43,10 @@ extension UIViewController {
         return UIBarButtonItem(customView: button)
     }
     
+    func findParent<T>() -> T? {
+        return parent as? T ?? parent?.findParent()
+    }
+    
     func findInChildren<T>() -> T? {
         for child in children {
             if let t = child as? T ?? child.findInChildren() {

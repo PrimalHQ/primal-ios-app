@@ -11,27 +11,17 @@
 			<string>net.primal.iosapp.Primal</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>nostrwalletconnect</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>CFBundleURLName</key>
-			<string>net.primal.iosapp.Primal</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>nostr+walletconnect</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-			<key>CFBundleURLName</key>
-			<string>net.primal.iosapp.Primal</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
 				<string>primal</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>nostr</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nostr</string>
 			</array>
 		</dict>
 	</array>

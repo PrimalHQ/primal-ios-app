@@ -42,6 +42,7 @@ class NewPostViewController: UIViewController {
         super.viewWillAppear(animated)
         
         textView.becomeFirstResponder()
+        textView.selectedRange = .init(location: 0, length: 0)
     }
 }
 
@@ -64,14 +65,14 @@ private extension NewPostViewController {
         }
         
         postButton.isEnabled = false
-        postButton.titleLabel.text = " " + postButtonText + " "
+        postButton.setTitle(" " + postButtonText + " ", for: .normal)
         
         PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] success in
             if success {
-                self?.postButton.titleLabel.text = "Posted"
+                self?.postButton.setTitle("Posted", for: .normal)
                 self?.dismiss(animated: true)
             } else {
-                self?.postButton.titleLabel.text = self?.postButtonText
+                self?.postButton.setTitle(self?.postButtonText, for: .normal)
                 self?.postButton.isEnabled = true
             }
         }
@@ -186,7 +187,7 @@ private extension NewPostViewController {
         
         Publishers.CombineLatest3(manager.$users, manager.$images, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
             guard let self else { return }
-            self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !self.manager.isUploadingImages && self.postButton.titleLabel.text == self.postButtonText
+            self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !self.manager.isUploadingImages && self.postButton.title(for: .normal) == self.postButtonText
         }
         .store(in: &cancellables)
                 
@@ -196,7 +197,7 @@ private extension NewPostViewController {
             
             self.imagesCollectionView.isHidden = images.isEmpty || !users.isEmpty
             
-            self.postButton.titleLabel.text = self.manager.isUploadingImages ? "Uploading..." : self.postButtonText
+            self.postButton.setTitle(self.manager.isUploadingImages ? "Uploading..." : self.postButtonText, for: .normal)
         }
         .store(in: &cancellables)
     }

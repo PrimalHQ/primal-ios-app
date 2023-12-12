@@ -48,7 +48,7 @@ struct NostrRepost: Codable {
 
 struct PopularHashtag: Codable {
     var title: String
-    var apperances: Double
+    var appearances: Double
 }
 
 struct EncryptedMessage: Codable {

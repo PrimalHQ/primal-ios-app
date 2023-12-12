@@ -1,5 +1,5 @@
 //
-//  ImageCollectionView.swift
+//  ImageGalleryView.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 3.5.23..
@@ -15,12 +15,26 @@ protocol ImageCollectionViewDelegate: AnyObject {
     func didTapMedia(resource: MediaMetadata.Resource)
 }
 
-final class ImageCollectionView: UICollectionView {
+final class ImageGalleryView: UIView {
     weak var imageDelegate: ImageCollectionViewDelegate?
+    
+    let layout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        return layout
+    }()
+    
+    lazy var collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    
+    let progress = PrimalProgressView(bottomPadding: 0)
 
     var resources: [MediaMetadata.Resource] {
         didSet {
-            reloadData()
+            collection.reloadData()
+            
+            progress.isHidden = resources.count < 2
+            progress.currentPage = 0
+            progress.numberOfPages = resources.count
         }
     }
     
@@ -28,25 +42,42 @@ final class ImageCollectionView: UICollectionView {
 
     init(resources: [MediaMetadata.Resource] = []) {
         self.resources = resources
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        super.init(frame: .zero, collectionViewLayout: layout)
-        dataSource = self
-        delegate = self
-        bounces = false
-        register(ImageCell.self, forCellWithReuseIdentifier: "image")
-        register(VideoCell.self, forCellWithReuseIdentifier: "video")
-        register(YoutubeVideoCell.self, forCellWithReuseIdentifier: "youtube")
+        super.init(frame: .zero)
+        collection.dataSource = self
+        collection.delegate = self
+        collection.bounces = false
+        collection.register(ImageCell.self, forCellWithReuseIdentifier: "image")
+        collection.register(VideoCell.self, forCellWithReuseIdentifier: "video")
+        collection.register(YoutubeVideoCell.self, forCellWithReuseIdentifier: "youtube")
+        
+        collection.layer.cornerRadius = 8
+        collection.layer.masksToBounds = true
+        collection.backgroundColor = .background2
+        
+        let stack = UIStackView(axis: .vertical, [collection, progress])
+        stack.spacing = 8
+        addSubview(stack)
+        stack.pinToSuperview()
+        progress.primaryColor = .foreground
+        progress.secondaryColor = .foreground.withAlphaComponent(0.4)
     }
     
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideo ? "youtube" : "video") : "image" }
+    
+    func currentImageCell() -> ImageCell? {
+        collection.visibleCells.compactMap({ $0 as? ImageCell }).first
+    }
+    
+    func currentVideoCell() -> VideoCell? {
+        collection.visibleCells.compactMap({ $0 as? VideoCell }).first
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
-extension ImageCollectionView: UICollectionViewDelegateFlowLayout {
+extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         collectionView.frame.size
     }
@@ -54,9 +85,29 @@ extension ImageCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         imageDelegate?.didTapMedia(resource: resources[indexPath.item])
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let currentIndex = (scrollView.contentOffset.x / scrollView.frame.width) + 0.5
+        progress.currentPage = Int(currentIndex)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
+        
+        scrollToCurrent()
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        scrollToCurrent()
+    }
+    
+    func scrollToCurrent() {
+        let x = (collection.contentOffset.x / collection.frame.width).rounded() * (collection.frame.width + 10)
+        collection.setContentOffset(.init(x: x, y: 0), animated: true)
+    }
 }
 
-extension ImageCollectionView: UICollectionViewDataSource {
+extension ImageGalleryView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         resources.count
     }
@@ -87,18 +138,14 @@ extension ImageCollectionView: UICollectionViewDataSource {
                 }
             }
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
-            let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-                guard let data = data else {
-                    return
-                }
-                
-                let anim = FLAnimatedImage(gifData: data)
-                
-                DispatchQueue.main.async {
-                    (cell as? ImageCell)?.imageView.animatedImage = anim
+            CachingManager.instance.fetchAnimatedImage(url) { result in
+                switch result {
+                case .success(let image):
+                    (cell as? ImageCell)?.imageView.animatedImage = image
+                case .failure(let error):
+                    print(error)
                 }
             }
-            task.resume()
         } else {
             (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
                 .processor(DownsamplingImageProcessor(size: frame.size)),

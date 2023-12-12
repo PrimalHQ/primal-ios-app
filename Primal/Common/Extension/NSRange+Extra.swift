@@ -8,7 +8,10 @@
 import Foundation
 
 public extension NSRange {
-    var endLocation: Int { location + length }
+    var endLocation: Int {
+        get { location + length }
+        set { length = newValue - location }
+    }
     
     func overlaps(_ range: NSRange) -> Bool {
         (range.location == location && range.length > 0 && length > 0) ||

@@ -330,7 +330,7 @@ private extension MenuContainerController {
         switch sender.state {
         case .began:
             coverView.isHidden = false
-            child.viewWillDisappear(true)
+            child.beginAppearanceTransition(false, animated: true)
             fallthrough
         case .changed:
             mainStack.alpha = 1

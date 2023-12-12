@@ -34,8 +34,8 @@ final class Connection {
     
     static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
-    static var regular = Connection(socketURL: PrimalEndpointsManager.regularURL)
-    static var wallet = Connection(socketURL: PrimalEndpointsManager.walletURL)
+    static let regular = Connection(socketURL: PrimalEndpointsManager.regularURL)
+    static let wallet = Connection(socketURL: PrimalEndpointsManager.walletURL)
     
     static func connect() {
         regular.connect()
@@ -58,7 +58,13 @@ final class Connection {
     
     // MARK: - Class
     
-    let socketURL: URL
+    var socketURL: URL {
+        didSet {
+            disconnect()
+            connect()
+        }
+    }
+    
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
@@ -69,6 +75,7 @@ final class Connection {
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
     private var timeToReconnect = 4
+    private var attemptReconnection = true
     
     init(socketURL: URL) {
         self.socketURL = socketURL
@@ -95,12 +102,14 @@ final class Connection {
             socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         }
         
+        attemptReconnection = true
         socket?.delegate = self
         socket?.connect()
         socket?.ping(interval: 10.0)
     }
     
     private func disconnect() {
+        attemptReconnection = false
         socket?.delegate = nil
         socket?.disconnect()
         socket = nil
@@ -206,7 +215,7 @@ final class Connection {
     }
     
     func autoReconnect() {
-        if isConnected {
+        if attemptReconnection, isConnected {
             timeToReconnect = 4
             return
         }

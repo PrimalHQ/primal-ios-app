@@ -62,6 +62,7 @@ final class ParsedContent {
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
+    var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
     
     var embededPost: ParsedContent?
     var reposted: ParsedRepost?
@@ -148,6 +149,11 @@ extension ParsedContent {
         }
         
         attributedText = result
+        if result.length > 1200 {
+            attributedTextShort = result.attributedSubstring(from: .init(location: 0, length: 1000))
+        } else {
+            attributedTextShort = result
+        }
     }
     
     func webURL() -> String {

@@ -38,7 +38,7 @@ final class LargeProfileView: UIView {
 private extension LargeProfileView {
     func updateView() {
         guard let profile else { return }
-        profileImageView.kf.setImage(with: URL(string: profile.avatar))
+        profileImageView.kf.setImage(with: URL(string: profile.avatar), placeholder: UIImage(named: "onboardingDefaultAvatar")?.withAlpha(alpha: 0.5))
         coverImageView.kf.setImage(with: URL(string: profile.banner))
         usernameLabel.text = "@" + profile.username
         descriptionLabel.text = profile.bio
@@ -82,7 +82,6 @@ private extension LargeProfileView {
         profileImageView.layer.cornerRadius = 72 / 2
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
-        profileImageView.backgroundColor = .darkGray
         
         nameLabel.font = .appFont(withSize: 20, weight: .bold)
         nameLabel.textColor = .black

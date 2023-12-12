@@ -12,7 +12,7 @@ extension UIView {
         let view = ToastMessageView(text: text)
         addSubview(view)
         
-        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: extraPadding ? 102 : 12)
+        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: extraPadding ? 102 : 18)
         
         view.alpha = 0
         view.transform = .init(translationX: 0, y: 50)

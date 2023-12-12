@@ -9,6 +9,15 @@ import UIKit
 import SwiftUI
 import GenericJSON
 
+final class ProfileRefreshControl: UIRefreshControl {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        for subview in subviews {
+            subview.transform = .init(translationX: 0, y: 200)
+        }
+    }
+}
+
 final class ProfileViewController: PostFeedViewController {
     enum Tab: Int {
         case notes = 0
@@ -191,7 +200,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func updateBars() {
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
         
         super.updateBars()
         
@@ -199,7 +208,7 @@ final class ProfileViewController: PostFeedViewController {
     }
     
     override func animateBars() {
-        let shouldShowBars = shouldShowBars
+        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
         
         super.animateBars()
         
@@ -244,6 +253,7 @@ private extension ProfileViewController {
             "extended_response": true
         ]))
         .publisher()
+        .waitForConnection(.regular)
         .map { r in r.users.map { r.createParsedUser($0.value) } }
         .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
         .receive(on: DispatchQueue.main)
@@ -267,6 +277,7 @@ private extension ProfileViewController {
         isLoadingFollowers = true
         
         SocketRequest(name: "user_followers", payload: .object(["pubkey": .string(profile.data.pubkey)])).publisher()
+            .waitForConnection(.regular)
             .map { r in r.users.map { r.createParsedUser($0.value) } }
             .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
             .receive(on: DispatchQueue.main)
@@ -284,6 +295,9 @@ private extension ProfileViewController {
     func setup() {
         title = ""
         navigationItem.hidesBackButton = true
+        
+        refreshControl = ProfileRefreshControl()
+        table.refreshControl = refreshControl
         
         feed.$parsedPosts.dropFirst()
             .receive(on: DispatchQueue.main)
@@ -320,6 +334,8 @@ private extension ProfileViewController {
         
         requestUserProfile()
         
+        navigationBar.bannerParent.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bannerPicTapped)))
+        
         let profileOverlay1 = UIView()
         let profileOverlay2 = UIView()
         [profileOverlay1, profileOverlay2].forEach {
@@ -341,6 +357,7 @@ private extension ProfileViewController {
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
+        .waitForConnection(.regular)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] result in
             self?.followsUser = result.isFollowingUser ?? false
@@ -348,6 +365,7 @@ private extension ProfileViewController {
         .store(in: &cancellables)
         
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
+            .waitForConnection(.regular)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let user = result.users.first?.value else { return }
@@ -358,15 +376,12 @@ private extension ProfileViewController {
     }
     
     @objc func profilePicTapped() {
-        weak var viewController: UIViewController?
-        let binding = UIHostingController(rootView: ImageViewerRemote(
-            imageURL: .init(get: { [weak self] in self?.profile.data.picture ?? "" }, set: { _ in }),
-            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
-        ))
-        viewController = binding
-        binding.view.backgroundColor = .clear
-        binding.modalPresentationStyle = .overFullScreen
-        present(binding, animated: true)
+        guard !profile.data.picture.isEmpty else { return }
+        ImageGalleryController(current: profile.data.picture).present(from: self, imageView: navigationBar.profilePicture)
+    }
+    @objc func bannerPicTapped() {
+        guard !profile.data.banner.isEmpty else { return }
+        ImageGalleryController(current: profile.data.banner).present(from: self, imageView: navigationBar.bannerViewBig)
     }
 }
 

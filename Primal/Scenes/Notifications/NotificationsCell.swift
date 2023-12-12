@@ -32,6 +32,7 @@ final class NotificationsCell: PostCell {
         if let post = notification.post {
             update(post, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: false)
             postContentStack.isHidden = false
+            bottomButtonStack.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
         } else {
             postContentStack.isHidden = true
         }

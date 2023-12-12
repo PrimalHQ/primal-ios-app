@@ -158,7 +158,6 @@ private extension OnboardingProfileController {
                     else {
                         fatalError("Unable to save keypair to the keychain, this shouldn't be possible")
                     }
-                    RelaysPostbox.instance.disconnect()
                     
                     self.state = .created
                 }, errorHandler: {

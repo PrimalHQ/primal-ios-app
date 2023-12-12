@@ -54,6 +54,13 @@ final class RootViewController: UIViewController {
         currentChild as? OnboardingParentViewController != nil ? .lightContent : Theme.current.statusBarStyle
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if presentedViewController as? ImageGalleryController != nil {
+            return .allButUpsideDown
+        }
+        return .portrait
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         

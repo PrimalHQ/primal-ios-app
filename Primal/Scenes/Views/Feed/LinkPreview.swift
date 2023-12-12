@@ -44,12 +44,13 @@ final class LinkPreview: UIView {
 
 private extension LinkPreview {
     func set(data: LinkMetadata) {
-        if let imageString = data.data.md_image, let metadata = data.imagesData.first(where: { $0.url == imageString }) {
-            imageView.kf.setImage(with: metadata.url(for: .large))
+        if let imageString = data.data.md_image, !imageString.isEmpty {
+            let metadata = data.imagesData.first(where: { $0.url == imageString })
+            imageView.kf.setImage(with: metadata?.url(for: .large) ?? URL(string: imageString))
             imageView.isHidden = false
             
             let aspectMultiplier: CGFloat = {
-                guard let variant = metadata.variants.first else { return 16 / 10 }
+                guard let variant = metadata?.variants.first else { return 16 / 10 }
                 
                 return CGFloat(variant.width) / CGFloat(variant.height)
             }()

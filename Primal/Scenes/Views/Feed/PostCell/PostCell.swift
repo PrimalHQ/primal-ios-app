@@ -15,6 +15,7 @@ import Nantes
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
     func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource)
+    func postCellDidTapEmbeddedImages(_ cell: PostCell, resource: MediaMetadata.Resource)
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -45,7 +46,7 @@ class PostCell: UITableViewCell {
     let nipLabel = UILabel()
     let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
-    let mainImages = ImageCollectionView()
+    let mainImages = ImageGalleryView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
@@ -60,6 +61,8 @@ class PostCell: UITableViewCell {
     weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?
     
+    var useShortText: Bool { false }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -70,6 +73,7 @@ class PostCell: UITableViewCell {
     }
     
     func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
+        let didReply = PostManager.instance.hasReplied(content.post.id)
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -114,7 +118,8 @@ class PostCell: UITableViewCell {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(first.height) / CGFloat(first.width), constant: constant)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
@@ -129,14 +134,14 @@ class PostCell: UITableViewCell {
             imageAspectConstraint = aspect
         }
         
-        mainLabel.attributedText = content.attributedText
+        mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         
-        likeButton.set(content.post.likes + (LikeManager.instance.hasLiked(content.post.id) ? 1 : 0), filled: didLike)
+        replyButton.set(didReply ? max(1, content.post.replies) : content.post.replies, filled: didReply)
         zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: didZap)
-        repostButton.set(content.post.reposts + (PostManager.instance.hasReposted(content.post.id) ? 1 : 0), filled: didRepost)
-        replyButton.set(content.post.replies + (PostManager.instance.hasReplied(content.post.id) ? 1 : 0), filled: PostManager.instance.hasReplied(content.post.id))
+        likeButton.set(didLike ? max(1, content.post.likes) : content.post.likes, filled: didLike)
+        repostButton.set(didRepost ? max(1, content.post.reposts) : content.post.reposts, filled: didRepost)
         
         let muteTitle = isMuted ? "Unmute User" : "Mute User"
         threeDotsButton.menu = .init(children: [
@@ -225,9 +230,6 @@ private extension PostCell {
             self.delegate?.postCellDidTapPost(self)
         }
         
-        mainImages.layer.cornerRadius = 8
-        mainImages.layer.masksToBounds = true
-        mainImages.backgroundColor = .background2
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
@@ -252,11 +254,16 @@ private extension PostCell {
         
         repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
-        postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
+        
+        let previewTap = UITapGestureRecognizer(target: self, action: #selector(embedTapped))
+        let previewImageTap = UITapGestureRecognizer(target: self, action: #selector(embedImageTapped))
+        previewTap.require(toFail: previewImageTap)
+        postPreview.addGestureRecognizer(previewTap)
+        postPreview.mainImages.addGestureRecognizer(previewImageTap)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
         let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
@@ -280,6 +287,11 @@ private extension PostCell {
     
     @objc func embedTapped() {
         delegate?.postCellDidTapEmbededPost(self)
+    }
+    
+    @objc func embedImageTapped() {
+        guard let index = postPreview.mainImages.collection.indexPathsForVisibleItems.first?.row else { return }
+        delegate?.postCellDidTapEmbeddedImages(self, resource: postPreview.mainImages.resources[index])
     }
     
     @objc func profileTapped() {
@@ -326,16 +338,16 @@ extension FLAnimatedImageView {
         }
         
         image = UIImage(named: "Profile")
-        let oldTag = self.tag
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-            guard let data else { return }
-            
-            let anim = FLAnimatedImage(gifData: data)
-            
-            DispatchQueue.main.async {
+        let oldTag = tag
+
+        CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
+            switch result {
+            case .success(let image):
                 guard self?.tag == oldTag else { return }
-                self?.animatedImage = anim
+                self?.animatedImage = image
+            case .failure(let error):
+                print(error)
             }
-        }.resume()
+        }
     }
 }

@@ -36,7 +36,7 @@ final class PrimalEndpointsManager {
     }
     
     static var regularURL: URL {
-        URL(string: UserDefaults.standard.endpointsLastValue?.mobile_cache_server_v1.first ?? "wss://cache1.primal.net/v1") ?? URL(string: "wss://cache1.primal.net/v1")!
+        URL(string: UserDefaults.standard.endpointsLastValue?.mobile_cache_server_v1.first ?? "wss://cache.primal.net/v1") ?? URL(string: "wss://cache.primal.net/v1")!
     }
     static var walletURL: URL {
         URL(string: UserDefaults.standard.endpointsLastValue?.wallet_server_v1.first ?? "wss://wallet.primal.net/v1") ?? URL(string: "wss://wallet.primal.net/v1")!
@@ -46,19 +46,21 @@ final class PrimalEndpointsManager {
     }
 
     func checkIfNecessary() {
-        guard UserDefaults.standard.endpointsLastCheckDate.timeIntervalSinceNow < -60 else { return }
-        check()
+        DispatchQueue.main.async {
+            guard UserDefaults.standard.endpointsLastCheckDate.timeIntervalSinceNow < -60 else { return }
+            self.check()
+        }
     }
     
     private static func updateIfNecessary() {
         guard let result = UserDefaults.standard.endpointsLastValue else { return }
         
         if let urlString = result.mobile_cache_server_v1.first, let url = URL(string: urlString), Connection.regular.socketURL.absoluteString != url.absoluteString {
-            Connection.regular = Connection(socketURL: url)
+            Connection.regular.socketURL = url
         }
         
         if let urlString = result.wallet_server_v1.first, let url = URL(string: urlString), Connection.wallet.socketURL.absoluteString != url.absoluteString {
-            Connection.wallet = Connection(socketURL: url)
+            Connection.wallet.socketURL = url
         }
     }
     

@@ -46,8 +46,8 @@ final class PostingTextViewManager: TextViewManager {
         guard let currentlyEditingToken else { return }
         let replacementText = user.atIdentifier
         let newText = (textView.text as NSString).replacingCharacters(in: currentlyEditingToken.range, with: replacementText + " ")
-        
-        updateTokensForReplacingRange(currentlyEditingToken.range, replacementText: replacementText + " ")
+        let maxLength = (newText as NSString).length
+        updateTokensForReplacingRange(currentlyEditingToken.range, replacementText: replacementText + " ", maxRange: maxLength)
         tokens.append(UserToken(
             range: .init(location: currentlyEditingToken.range.location, length: (replacementText as NSString).length),
             text: replacementText,
@@ -66,6 +66,12 @@ final class PostingTextViewManager: TextViewManager {
         for i in tokens.indices {
             let token = tokens[i]
             let replacement = "nostr:\(token.user.npub)"
+            
+            if currentText.length < token.range.endLocation {
+                print("TEXT LENGTH: \(currentText.length)")
+                break
+            }
+            
             currentText = currentText.replacingCharacters(in: token.range, with: replacement) as NSString
             tokens = updateTokensForReplacingRange(tokens: tokens, range: token.range, replacementText: replacement)
         }
@@ -86,7 +92,10 @@ final class PostingTextViewManager: TextViewManager {
         _ = textView(textView, shouldChangeTextIn: textView.selectedRange, replacementText: "@")
     }
     
+    var declineAnyChange = false
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if declineAnyChange { return false }
+        
         let oldText = textView.text as NSString
         let newText = oldText.replacingCharacters(in: range, with: text) as NSString
         let replacementText = text as NSString
@@ -106,7 +115,7 @@ final class PostingTextViewManager: TextViewManager {
         let cursorPosition = range.location + replacementText.length
         
         if var currentlyEditingToken {
-            let doesOverlap = range.overlaps(currentlyEditingToken.range) && range.location > currentlyEditingToken.range.location
+            let doesOverlap = range.overlaps(currentlyEditingToken.range) && (range.location > currentlyEditingToken.range.location || range.length > 0)
             let isContinuing = range.location == currentlyEditingToken.range.endLocation
             
             if doesOverlap || isContinuing {
@@ -126,13 +135,20 @@ final class PostingTextViewManager: TextViewManager {
             }
         }
         
+        
+        let updateManually = {
+            self.declineAnyChange = true
+            self.updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
+            self.updateText(newText as String, cursorPosition: cursorPosition)
+            self.declineAnyChange = false
+            self.textViewDidChange(textView)
+        }
+        
         for (index, token) in tokens.enumerated() {
             if range.overlaps(token.range) {
                 guard range != token.range else {
                     tokens.remove(at: index)
-                    updateTokensForReplacingRange(range, replacementText: text)
-                    updateText(newText as String, cursorPosition: cursorPosition)
-                    textViewDidChange(textView)
+                    updateManually()
                     return false
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -147,46 +163,45 @@ final class PostingTextViewManager: TextViewManager {
         }
         
         switch text {
+        case "\n":
+            returnPressed.send(())
+            fallthrough
         case " ":
             if currentlyEditingToken != nil { // End searching if we were searching
                 currentlyEditingToken = nil
-                updateTokensForReplacingRange(range, replacementText: text)
-                updateText(newText as String, cursorPosition: cursorPosition)
-                textViewDidChange(textView)
+                updateManually()
                 return false
             }
         case "@":  // Start new user search
             currentlyEditingToken = .init(range: NSRange(location: range.location, length: 1), text: text)
-            updateTokensForReplacingRange(range, replacementText: text)
-            updateText(newText as String, cursorPosition: cursorPosition)
-            textViewDidChange(textView)
+            updateManually()
             return false
-        case "":
-            nextEditShouldBeManual = true
-        case "\n":
-            returnPressed.send(())
         default:
             break
         }
         
         if nextEditShouldBeManual && rangeMatchesTokens(range) {
-            nextEditShouldBeManual = text == ""
-            updateTokensForReplacingRange(range, replacementText: text)
-            updateText(newText as String, cursorPosition: cursorPosition)
-            textViewDidChange(textView)
+            nextEditShouldBeManual = range.length > 0
+            updateManually()
             return false
         }
         
-        updateTokensForReplacingRange(range, replacementText: text)
+        if range.length > 0 {
+            nextEditShouldBeManual = true
+            updateManually()
+            return false
+        }
         
+        updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
         return true
     }
 }
 
 private extension PostingTextViewManager {
-    func updateTokensForReplacingRange(_ range: NSRange, replacementText: String) {
+    func updateTokensForReplacingRange(_ range: NSRange, replacementText: String, maxRange: Int) {
+        let adjustLength = (replacementText as NSString).length - range.length
         for i in tokens.indices where tokens[i].range.location >= range.location {
-            tokens[i].range.location += (replacementText as NSString).length - range.length
+            tokens[i].range.location += adjustLength
         }
     }
     

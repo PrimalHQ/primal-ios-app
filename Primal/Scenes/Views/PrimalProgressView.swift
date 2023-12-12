@@ -24,10 +24,12 @@ final class PrimalProgressView: UIView {
     var secondaryColor: UIColor = .white.withAlphaComponent(0.4) { didSet { updateColors() } }
     
     private let stack = UIStackView()
+    private let bottomPadding: CGFloat
     
-    init(progress: Int = 0, total: Int = 4) {
+    init(progress: Int = 0, total: Int = 4, bottomPadding: CGFloat = 12) {
         self.currentPage = progress
         self.numberOfPages = total
+        self.bottomPadding = bottomPadding
         super.init(frame: .zero)
         setup()
     }
@@ -40,7 +42,7 @@ final class PrimalProgressView: UIView {
 private extension PrimalProgressView {
     func setup() {
         addSubview(stack)
-        stack.pinToSuperview(edges: .top).centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 12)
+        stack.pinToSuperview(edges: .top).centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: bottomPadding)
         
         stack.spacing = 12
         
