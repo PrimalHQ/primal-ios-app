@@ -340,7 +340,7 @@ private extension FeedManager {
                 } else {
                     self.paginationInfo = pagination
                     
-                    if (self.currentFeed?.name ?? "Latest") == "Latest" {
+                    if self.currentFeed?.name == "Latest" {
                         HomeFeedLocalLoadingManager.savedFeed = result
                     }
                 }

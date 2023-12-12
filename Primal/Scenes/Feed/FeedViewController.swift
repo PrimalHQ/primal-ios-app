@@ -137,7 +137,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         guard ContentDisplaySettings.autoPlayVideos, let postCell = cell as? PostCell else { return }
         
         DispatchQueue.main.async {
-            guard let videoCell = postCell.mainImages.visibleCells.first as? VideoCell ?? postCell.postPreview.mainImages.visibleCells.first as? VideoCell else { return }
+            guard let videoCell = postCell.mainImages.currentVideoCell() ?? postCell.postPreview.mainImages.currentVideoCell() else { return }
             videoCell.player?.play()
         }
     }
@@ -510,21 +510,43 @@ extension FeedViewController: PostCellDelegate {
             return
         }
         
-        weak var viewController: UIViewController?
-        let binding = UIHostingController(rootView: ImageViewerRemote(
-            imageURL: .init(get: { resource.url }, set: { _ in }),
-            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
-        ))
-        viewController = binding
-        binding.view.backgroundColor = .clear
-        binding.modalPresentationStyle = .overFullScreen
-        present(binding, animated: true)
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        
+        let allImages = posts[index].mediaResources.map { $0.url } .filter { $0.isImageURL }
+        
+        if let imageCell = cell.mainImages.currentImageCell() {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            return
+        }
+        
+        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
+    }
+    
+    func postCellDidTapEmbeddedImages(_ cell: PostCell, resource: MediaMetadata.Resource) {
+        guard
+            let index = table.indexPath(for: cell)?.row,
+            let post = posts[index].embededPost
+        else { return }
+        
+        if resource.url.isVideoURL {
+            handleVideoUrlTapped(resource.url, in: cell)
+            return
+        }
+        
+        let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        
+        if let imageCell = cell.postPreview.mainImages.currentImageCell() {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            return
+        }
+        
+        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
     func handleVideoUrlTapped(_ url: String, in cell: PostCell) {
         guard url.isVideoURL else { return }
         
-        if let videoCell = cell.mainImages.visibleCells.first as? VideoCell, videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
+        if let videoCell = cell.mainImages.currentVideoCell(), videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
             videoCell.player?.play()
             videoCell.player?.isMuted = false
             return

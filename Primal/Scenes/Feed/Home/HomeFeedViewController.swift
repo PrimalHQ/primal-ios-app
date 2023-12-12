@@ -53,7 +53,7 @@ final class HomeFeedViewController: PostFeedViewController {
         super.init(feed: FeedManager(loadLocalHomeFeed: true))
         feed.addFuturePostsDirectly = { [weak self] in
             guard let self else { return true }
-            return self.table.contentOffset.y > 70
+            return self.table.contentOffset.y > 300
         }
     }
     

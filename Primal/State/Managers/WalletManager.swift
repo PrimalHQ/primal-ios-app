@@ -18,9 +18,12 @@ extension UserDefaults {
 enum WalletError: Error {
     case serverError(String)
     case inAppPurchaseServerError
+    case noLud
     
     var message: String {
         switch self {
+        case .noLud:
+            return "Your account doesn't have lud6 or lud16 set up."
         case .serverError(let message):
             return message
         case .inAppPurchaseServerError:
@@ -147,9 +150,9 @@ final class WalletManager {
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
         let lud06 = user.lud06
-        guard !lud06.isEmpty else {
+        if lud06.isEmpty {
             let lud = user.lud16
-            guard !lud.isEmpty else { throw NSError(domain: "no.lud", code: 1) }
+            if lud.isEmpty { throw WalletError.noLud }
             
             return try await withCheckedThrowingContinuation({ continuation in
                 PrimalWalletRequest(type: .sendLud16(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()

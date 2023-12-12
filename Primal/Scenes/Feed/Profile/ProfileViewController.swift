@@ -334,6 +334,8 @@ private extension ProfileViewController {
         
         requestUserProfile()
         
+        navigationBar.bannerParent.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bannerPicTapped)))
+        
         let profileOverlay1 = UIView()
         let profileOverlay2 = UIView()
         [profileOverlay1, profileOverlay2].forEach {
@@ -374,15 +376,12 @@ private extension ProfileViewController {
     }
     
     @objc func profilePicTapped() {
-        weak var viewController: UIViewController?
-        let binding = UIHostingController(rootView: ImageViewerRemote(
-            imageURL: .init(get: { [weak self] in self?.profile.data.picture ?? "" }, set: { _ in }),
-            viewerShown: .init(get: { true }, set: { _ in viewController?.dismiss(animated: true) })
-        ))
-        viewController = binding
-        binding.view.backgroundColor = .clear
-        binding.modalPresentationStyle = .overFullScreen
-        present(binding, animated: true)
+        guard !profile.data.picture.isEmpty else { return }
+        ImageGalleryController(current: profile.data.picture).present(from: self, imageView: navigationBar.profilePicture)
+    }
+    @objc func bannerPicTapped() {
+        guard !profile.data.banner.isEmpty else { return }
+        ImageGalleryController(current: profile.data.banner).present(from: self, imageView: navigationBar.bannerViewBig)
     }
 }
 

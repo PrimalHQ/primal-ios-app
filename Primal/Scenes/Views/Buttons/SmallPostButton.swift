@@ -7,18 +7,21 @@
 
 import UIKit
 
-final class SmallPostButton: MyButton, Themeable {
-    let titleLabel = UILabel()
+final class SmallPostButton: UIButton, Themeable {
+//    let titleLabel = UILabel()
     
     init(title: String) {
         super.init(frame: .zero)
         
-        addSubview(titleLabel)
-        titleLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 8)
-        titleLabel.font = .appFont(withSize: 14, weight: .medium)
-        titleLabel.textAlignment = .center
-        titleLabel.adjustsFontSizeToFitWidth = true
-        titleLabel.text = title
+//        addSubview(titleLabel)
+//        titleLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 8)
+        
+//        titleLabel.textAlignment = .center
+//        titleLabel.adjustsFontSizeToFitWidth = true
+//        titleLabel.text = title
+        
+        setTitle(title, for: .normal)
+        titleLabel?.font = .appFont(withSize: 14, weight: .medium)
         
         constrainToSize(height: 28)
         layer.cornerRadius = 14
@@ -37,6 +40,6 @@ final class SmallPostButton: MyButton, Themeable {
     
     func updateTheme() {
         backgroundColor = isEnabled ? .accent : .background3
-        titleLabel.textColor = isEnabled ? .white : .foreground5
+        setTitleColor(isEnabled ? .white : .foreground5, for: .normal)
     }
 }

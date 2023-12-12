@@ -347,7 +347,7 @@ private extension ThreadViewController {
         inputManager.$images.receive(on: DispatchQueue.main).sink { [weak self] images in
             self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
-            self?.postButton.titleLabel.text = self?.inputManager.isUploadingImages == true ? "Uploading..." : self?.postButtonText
+            self?.postButton.setTitle(self?.inputManager.isUploadingImages == true ? "Uploading..." : self?.postButtonText, for: .normal)
         }
         .store(in: &cancellables)
         
@@ -468,7 +468,7 @@ private extension ThreadViewController {
             }
         }), for: .touchUpInside)
         
-        postButton.titleLabel.font = .appFont(withSize: 14, weight: .medium)
+        postButton.titleLabel?.font = .appFont(withSize: 14, weight: .medium)
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         

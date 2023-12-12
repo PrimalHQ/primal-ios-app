@@ -15,6 +15,7 @@ import Nantes
 protocol PostCellDelegate: AnyObject {
     func postCellDidTapURL(_ cell: PostCell, url: URL?)
     func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource)
+    func postCellDidTapEmbeddedImages(_ cell: PostCell, resource: MediaMetadata.Resource)
     func postCellDidTapProfile(_ cell: PostCell)
     func postCellDidTapPost(_ cell: PostCell)
     func postCellDidTapLike(_ cell: PostCell)
@@ -45,7 +46,7 @@ class PostCell: UITableViewCell {
     let nipLabel = UILabel()
     let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
-    let mainImages = ImageCollectionView()
+    let mainImages = ImageGalleryView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
@@ -117,7 +118,8 @@ class PostCell: UITableViewCell {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(first.height) / CGFloat(first.width), constant: constant)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
@@ -228,9 +230,6 @@ private extension PostCell {
             self.delegate?.postCellDidTapPost(self)
         }
         
-        mainImages.layer.cornerRadius = 8
-        mainImages.layer.masksToBounds = true
-        mainImages.backgroundColor = .background2
         mainImages.imageDelegate = self
         
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
@@ -255,11 +254,16 @@ private extension PostCell {
         
         repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
-        postPreview.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(embedTapped)))
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
         replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
+        
+        let previewTap = UITapGestureRecognizer(target: self, action: #selector(embedTapped))
+        let previewImageTap = UITapGestureRecognizer(target: self, action: #selector(embedImageTapped))
+        previewTap.require(toFail: previewImageTap)
+        postPreview.addGestureRecognizer(previewTap)
+        postPreview.mainImages.addGestureRecognizer(previewImageTap)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
         let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
@@ -283,6 +287,11 @@ private extension PostCell {
     
     @objc func embedTapped() {
         delegate?.postCellDidTapEmbededPost(self)
+    }
+    
+    @objc func embedImageTapped() {
+        guard let index = postPreview.mainImages.collection.indexPathsForVisibleItems.first?.row else { return }
+        delegate?.postCellDidTapEmbeddedImages(self, resource: postPreview.mainImages.resources[index])
     }
     
     @objc func profileTapped() {
