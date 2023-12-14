@@ -50,7 +50,6 @@ final class ParsedContent {
         self.user = user
     }
     
-    // array of dictionaries where key is position and value is length
     var hashtags: [ParsedElement] = []
     var mentions: [ParsedElement] = []
     var notes: [ParsedElement] = []

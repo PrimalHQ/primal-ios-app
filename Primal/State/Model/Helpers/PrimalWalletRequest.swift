@@ -33,7 +33,7 @@ struct PrimalWalletRequest {
         case deposit(AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
-        case activationCode(name: String, email: String)
+        case activationCode(name: String, email: String, country: String, state: String?)
         case activate(code: String)
         case parseLNURL(String)
         
@@ -106,8 +106,8 @@ struct PrimalWalletRequest {
             case .quote(let productId, let region):
                 let additionalParameter = Bundle.main.appStoreReceiptURL?.absoluteString ?? ""
                 return "[\"in_app_purchase_quote\", {\"product_id\": \"\(productId)\", \"region\": \"\(region)\", \"bundle_app_store_receipt_url\": \"\(additionalParameter)\"}]"
-            case let .activationCode(name, email):
-                return "[\"get_activation_code\", {\"name\": \"\(name)\", \"email\": \"\(email)\"}]"
+            case let .activationCode(name, email, country, state):
+                return #"["get_activation_code", {"name": "\#(name)", "email": "\#(email)", "country": "\#(country)", "state": "\#(state ?? "")"}]"#
             case let .activate(code):
                 return "[\"activate\", {\"activation_code\": \"\(code)\"}]"
             case .parseLNURL(let lnurl):

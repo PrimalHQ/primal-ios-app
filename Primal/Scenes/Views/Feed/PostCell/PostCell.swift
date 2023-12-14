@@ -117,6 +117,8 @@ class PostCell: UITableViewCell {
         }
         
         imageAspectConstraint?.isActive = false
+        imageAspectConstraint = nil
+    
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
             let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(first.height) / CGFloat(first.width), constant: constant)
@@ -126,12 +128,28 @@ class PostCell: UITableViewCell {
         } else {
             let url = content.mediaResources.first?.url
             
-            let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
+            if let url = content.mediaResources.first?.url { // We first check memory in case the image was already loaded
+                var options = KingfisherParsedOptionsInfo(nil)
+                options.cacheMemoryOnly = true
+                ImageCache.default.retrieveImage(forKey: url, options: options) { [weak self] res in
+                    guard let self, imageAspectConstraint == nil, case .success(let re) = res, let image = re.image else { return }
+                    
+                    let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
+                    let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(image.size.height) / CGFloat(image.size.width), constant: constant)
+                    aspect.priority = .defaultHigh
+                    aspect.isActive = true
+                    imageAspectConstraint = aspect
+                }
+            }
             
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
-            aspect.priority = .defaultHigh
-            aspect.isActive = true
-            imageAspectConstraint = aspect
+            if imageAspectConstraint == nil { // In case the image was not in memory we use placeholder sizes
+                let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
+                
+                let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
+                aspect.priority = .defaultHigh
+                aspect.isActive = true
+                imageAspectConstraint = aspect
+            }
         }
         
         mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
@@ -337,6 +355,7 @@ extension FLAnimatedImageView {
             return
         }
         
+        kf.cancelDownloadTask()
         image = UIImage(named: "Profile")
         let oldTag = tag
 

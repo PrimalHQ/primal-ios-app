@@ -222,7 +222,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         
         safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
         
-        let shouldMoveOffset = ContentDisplaySettings.fullScreenFeed && safeAreaSpacer.superview != nil
+        let shouldMoveOffset = ContentDisplaySettings.fullScreenFeed && (safeAreaSpacer.superview != nil) && (safeAreaSpacer.isHidden != oldValue)
         
         if !shouldShowBars {
             // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
@@ -497,7 +497,8 @@ extension FeedViewController: PostCellDelegate {
         if urlString.hasPrefix("note") {
             guard let ref = post.notes.first(where: { $0.text == info })?.reference else { return }
             
-            print(ref)
+            let thread = ThreadViewController(threadId: ref)
+            show(thread, sender: nil)
             return
         }
         

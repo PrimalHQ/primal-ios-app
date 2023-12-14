@@ -131,7 +131,7 @@ final class IdentityManager {
                     // Ensure Latest feed *always* exists
                     let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
                     if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
+                        primalSettings?.content.feeds?.insert(.latest, at: 0)
                     }
                     if let settings = primalSettings {
                         callback(settings)
@@ -186,12 +186,12 @@ final class IdentityManager {
                     // Ensure Latest feed *always* exists
                     let latestFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies != true }) ?? false
                     if !latestFeedExists {
-                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest", hex: IdentityManager.instance.userHexPubkey), at: 0)
+                        settings.content.feeds?.insert(.latest, at: 0)
                     }
                     
                     let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
                     if !latestWithRepliesFeedExists {
-                        settings.content.feeds?.insert(PrimalSettingsFeed(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true), at: 1)
+                        settings.content.feeds?.insert(.latestWithReplies, at: 1)
                     }
                     
                     // There were breaking changes to how settingsx work over the time

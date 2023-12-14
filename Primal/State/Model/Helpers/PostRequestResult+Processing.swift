@@ -136,26 +136,28 @@ extension PostRequestResult {
         
         // MARK: - Finding and extracting mentioned notes
         let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-        let flatTags = post.tags.flatMap { $0 }
         
-        var mentionFound = false
-        if removeExtractedPost, let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+        var referencedPosts: [(String, ParsedContent)] = []
+        
+        if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
             profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                if !mentionFound, let matchRange = match?.range {
+                guard let matchRange = match?.range else { return }
                     
-                    let mentionText = (text as NSString).substring(with: matchRange)
+                let mentionText = (text as NSString).substring(with: matchRange)
                     
-                    if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                        p.embededPost = mention
-                        itemsToRemove.append(mentionText)
-                        mentionFound = true
-                    }
-                    
+                if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                    referencedPosts.append((mentionText, mention))
                 }
             }
         }
         
-        if removeExtractedPost, !mentionFound {
+        if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
+            p.embededPost = mention
+            itemsToRemove.append(mentionText)
+        }
+        
+        if removeExtractedPost, referencedPosts.isEmpty {
+            let flatTags = post.tags.flatMap { $0 }
             for mention in mentions {
                 if flatTags.contains(mention.post.id) {
                     var stringFound = false
@@ -262,6 +264,7 @@ extension PostRequestResult {
         
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
+        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
         p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
         p.text = text
         p.buildContentString()

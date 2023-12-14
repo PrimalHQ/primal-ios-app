@@ -46,11 +46,17 @@ private extension LinkPreview {
     func set(data: LinkMetadata) {
         if let imageString = data.data.md_image, !imageString.isEmpty {
             let metadata = data.imagesData.first(where: { $0.url == imageString })
+            imageView.image = nil
             imageView.kf.setImage(with: metadata?.url(for: .large) ?? URL(string: imageString))
             imageView.isHidden = false
             
             let aspectMultiplier: CGFloat = {
-                guard let variant = metadata?.variants.first else { return 16 / 10 }
+                guard let variant = metadata?.variants.first else {
+                    if let image = imageView.image {
+                        return image.size.width / image.size.height
+                    }
+                    return 16 / 10
+                }
                 
                 return CGFloat(variant.width) / CGFloat(variant.height)
             }()
@@ -125,16 +131,19 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
             guard let url = self?.data?.url else { return nil }
             return SFSafariViewController(url: url)
         }, actionProvider: { [weak self] suggestedActions in
-            let share = UIAction(title: "Share URL", image: UIImage(systemName: "square.and.arrow.up")) { action in
-                // TODO:
+            let share = UIAction(title: "Share", image: UIImage(systemName: "MenuShare")) { action in
+                guard let url = self?.data?.url else { return }
+                let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                RootViewController.instance.present(activityViewController, animated: true, completion: nil)
             }
 
-            let copy = UIAction(title: "Copy URL", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+            let copy = UIAction(title: "Copy URL", image: UIImage(systemName: "MenuCopyLink")) { _ in
                 guard let url = self?.data?.url.absoluteString else { return }
                 UIPasteboard.general.string = url
+                RootViewController.instance.view.showToast("Copied!")
             }
             // Create and return a UIMenu with the share action
-            return UIMenu(children: [copy])
+            return UIMenu(children: [share, copy])
         })
     }
     

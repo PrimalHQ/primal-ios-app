@@ -9,10 +9,11 @@ import AVKit
 import Combine
 import UIKit
 
-final class WalletQRCodeViewController: UIViewController {
+final class WalletQRCodeViewController: UIViewController, QRCaptureController {
     var captureSession = AVCaptureSession()
-    var videoPreviewLayer: AVCaptureVideoPreviewLayer?
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer { previewView.previewLayer }
     var qrCodeFrameView = UIView()
+    let previewView = CapturePreviewView()
     
     var textSearch: String?
     
@@ -45,38 +46,21 @@ final class WalletQRCodeViewController: UIViewController {
         cancelButton.pinToSuperview(edges: .bottom, padding: 30, safeArea: true).centerToSuperview(axis: .horizontal)
         
         view.backgroundColor = .background
-        
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInDualWideCamera], mediaType: AVMediaType.video, position: .back)
 
-        guard let captureDevice = deviceDiscoverySession.devices.first else {
-            print("Failed to get the camera device")
-            return
-        }
-
-        do {
-            let input = try AVCaptureDeviceInput(device: captureDevice)
-            captureSession.addInput(input)
-        } catch {
-            print(error)
-            return
-        }
-        
-        let captureMetadataOutput = AVCaptureMetadataOutput()
-        captureSession.addOutput(captureMetadataOutput)
-
-        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
-
-        let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        videoPreviewLayer.session = captureSession
         videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer.frame = view.layer.bounds
-        view.layer.insertSublayer(videoPreviewLayer, at: 0)
-        self.videoPreviewLayer = videoPreviewLayer
+        view.addSubview(previewView)
+        previewView.pinToSuperview()
 
         qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
         qrCodeFrameView.layer.borderWidth = 2
         view.addSubview(qrCodeFrameView)
         view.bringSubviewToFront(qrCodeFrameView)
+        
+        Task { @MainActor in
+            await self.setUpCaptureSession()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -146,7 +130,7 @@ extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
             metadataObj.type == AVMetadataObject.ObjectType.qr
         else { return }
                 
-        if let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj) {
+        if let barCodeObject = videoPreviewLayer.transformedMetadataObject(for: metadataObj) {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 

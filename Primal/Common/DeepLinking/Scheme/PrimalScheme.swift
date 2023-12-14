@@ -19,14 +19,16 @@ final class PrimalSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
         if url.absoluteString.starts(with: profileDeeplinkPrefix) {
             let npub: String = url.absoluteString.replacingOccurrences(of: profileDeeplinkPrefix, with: "")
 
-            if NKeypair.isValidNpub(npub) {
-                notify(.primalProfileLink, npub)
-            }
+            notify(.primalProfileLink, npub)
         } else if url.absoluteString.starts(with: noteDeeplinkPrefix) {
             let note: String = url.absoluteString.replacingOccurrences(of: noteDeeplinkPrefix, with: "")
-            guard let decoded = try? bech32_decode(note) else { return }
+            
+            guard let decoded = try? bech32_decode(note) else {
+                notify(.primalNoteLink, note)
+                return
+            }
             let eventId = hex_encode(decoded.data)
-
+                
             notify(.primalNoteLink, eventId)
         }
     }

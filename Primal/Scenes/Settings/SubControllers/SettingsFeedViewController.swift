@@ -145,10 +145,7 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
         
         Connection.regular.requestCache(name: "get_default_app_settings", payload: .object(["client": .string("Primal iOS")])) { result in
             
-            var defaultFeeds: [PrimalSettingsFeed] = [
-                .init(name: "Latest", hex: userPubkey, includeReplies: false),
-                .init(name: "Latest with Replies", hex: userPubkey, includeReplies: true),
-            ]
+            var defaultFeeds: [PrimalSettingsFeed] = [.latest, .latestWithReplies]
             
             for object in result {
                 guard

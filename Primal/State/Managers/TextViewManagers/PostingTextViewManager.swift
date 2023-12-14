@@ -138,6 +138,11 @@ final class PostingTextViewManager: TextViewManager {
         
         let updateManually = {
             self.declineAnyChange = true
+            if text.hasSuffix(".") { // Fix for "random" word capitalisation bug
+                textView.autocapitalizationType = .sentences
+            } else {
+                textView.autocapitalizationType = .none
+            }
             self.updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
             self.updateText(newText as String, cursorPosition: cursorPosition)
             self.declineAnyChange = false

@@ -176,6 +176,9 @@ private extension FeedManager {
             
             let repostsGrouping = Dictionary(grouping: sorted.filter { $0.reposted != nil }, by: { $0.post.id })
             for (id, reposts) in repostsGrouping {
+                // Remove same post without repost from page if it exists
+                sorted = sorted.filter { $0.post.id != id || $0.reposted != nil }
+                
                 if let old = self.alreadyAddedReposts[id], let oldReposted = old.reposted {
                     old.reposted = .init(users: oldReposted.users + reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
                 } else if let first = reposts.first {
@@ -296,6 +299,9 @@ private extension FeedManager {
         
         let repostsGrouping = Dictionary(grouping: sorted.filter { $0.reposted != nil }, by: { $0.post.id })
         for (id, reposts) in repostsGrouping {
+            // Remove same post without repost from page if it exists
+            sorted = sorted.filter { $0.post.id != id || $0.reposted != nil }
+            
             if let old = alreadyAddedReposts[id], let oldReposted = old.reposted {
                 old.reposted = .init(users: oldReposted.users + reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
             } else if let first = reposts.first {
@@ -316,7 +322,6 @@ private extension FeedManager {
                 self.newAddedPosts += sorted.count
             }
         } else {
-            let old = newPosts
             newPostObjects = sorted + newPostObjects
         }
     }
@@ -355,7 +360,9 @@ private extension FeedManager {
         if let currentFeed {
             return generateFeedPageRequest(currentFeed)
         }
-        return generateFeedPageRequest(.init(name: "Latest", hex: IdentityManager.instance.userHexPubkey))
+        
+        currentFeed = .latest
+        return generateFeedPageRequest(.latest)
     }
     
     func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> (String, JSON) {
