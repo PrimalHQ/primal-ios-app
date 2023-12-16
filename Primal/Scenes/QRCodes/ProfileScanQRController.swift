@@ -10,13 +10,18 @@ import Combine
 import Kingfisher
 import UIKit
 
+protocol QRCaptureController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
+    var captureSession: AVCaptureSession { get }
+    
+}
+
 final class CapturePreviewView: UIView {
     override class var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
     
     var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
 }
 
-final class ProfileScanQRController: UIViewController, OnboardingViewController {
+final class ProfileScanQRController: UIViewController, OnboardingViewController, QRCaptureController {
     var titleLabel: UILabel = .init()
     var backButton: UIButton = .init()
     
@@ -37,29 +42,8 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController 
         
         setup()
         
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInDualWideCamera], mediaType: AVMediaType.video, position: .back)
-
-        guard let captureDevice = deviceDiscoverySession.devices.first else {
-            print("Failed to get the camera device")
-            return
-        }
-
-        do {
-            let input = try AVCaptureDeviceInput(device: captureDevice)
-            captureSession.addInput(input)
-        } catch {
-            print(error)
-            return
-        }
-        
-        let captureMetadataOutput = AVCaptureMetadataOutput()
-        captureSession.addOutput(captureMetadataOutput)
-
-        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
-        
-        DispatchQueue.global(qos: .background).async {
-            self.captureSession.startRunning()
+        Task { @MainActor in
+            await self.setUpCaptureSession()
         }
     }
     
@@ -135,5 +119,67 @@ private extension ProfileScanQRController {
             guard let self else { return }
             self.onboardingParent?.popViewController(animated: true)
         }), for: .touchUpInside)
+    }
+}
+
+extension QRCaptureController {
+    var isAuthorized: Bool {
+        get async {
+            let status = AVCaptureDevice.authorizationStatus(for: .video)
+            
+            var isAuthorized = status == .authorized
+            
+            if status == .notDetermined {
+                isAuthorized = await AVCaptureDevice.requestAccess(for: .video)
+            }
+            
+            return isAuthorized
+        }
+    }
+
+
+    func setUpCaptureSession() async {
+        guard await isAuthorized else {
+            let info = await UIAlertController(title: "Camera permission not granted", message: "Please go to System Settings and change the permissions.", preferredStyle: .alert)
+            await info.addAction(.init(title: "OK", style: .cancel))
+            await info.addAction(.init(title: "Go To Settings", style: .default) { _ in
+                Task { @MainActor in
+                    guard
+                        let url = URL(string:UIApplication.openSettingsURLString),
+                        UIApplication.shared.canOpenURL(url)
+                    else { return }
+
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            })
+            await self.present(info, animated: true)
+            return
+        }
+        
+        
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInDualWideCamera], mediaType: AVMediaType.video, position: .back)
+
+        guard let captureDevice = deviceDiscoverySession.devices.first else {
+            print("Failed to get the camera device")
+            return
+        }
+
+        do {
+            let input = try AVCaptureDeviceInput(device: captureDevice)
+            captureSession.addInput(input)
+        } catch {
+            print(error)
+            return
+        }
+        
+        let captureMetadataOutput = AVCaptureMetadataOutput()
+        captureSession.addOutput(captureMetadataOutput)
+
+        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
+        
+        DispatchQueue.global(qos: .background).async {
+            self.captureSession.startRunning()
+        }
     }
 }

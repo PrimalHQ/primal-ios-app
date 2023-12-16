@@ -50,6 +50,7 @@ final class TransactionCell: UITableViewCell, Themeable {
             profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else {
+            profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "nonZapPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"

@@ -25,6 +25,9 @@ struct PrimalSettingsFeed: Codable, Hashable {
     var name: String
     let hex: String
     var includeReplies: Bool?
+    
+    static var latest: PrimalSettingsFeed { .init(name: "Latest", hex: IdentityManager.instance.userHexPubkey) }
+    static var latestWithReplies: PrimalSettingsFeed { .init(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true) }
 }
 
 struct PrimalSettingsContent: Codable, Hashable {

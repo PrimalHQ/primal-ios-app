@@ -15,17 +15,31 @@ final class WalletActivateViewController: UIViewController {
     private let emailInput = UITextField()
     private let codeInput = UITextField()
     
+    private lazy var firstScreenStack = UIStackView(axis: .vertical, [
+        descLabel,                  SpacerView(height: 16, priority: .required), SpacerView(height: 20),
+        inputParent(nameInput),     SpacerView(height: 16, priority: .required), SpacerView(height: 8),
+        inputParent(emailInput),    SpacerView(height: 16, priority: .required), SpacerView(height: 8),
+        countryRow
+    ])
+    
+    private let countryInput = UITextField()
+    private let stateInput = UITextField()
+    private lazy var countryRow = UIStackView([inputParent(countryInput), inputParent(stateInput)])
+    
+    private let countryPicker = UIPickerView()
+    private let statePicker = UIPickerView()
+    
     private let confirmButton = LargeRoundedButton(title: "Next")
     
     private var isWaitingForCode = false {
         didSet {
             UIView.transition(with: view, duration: 0.3) {
-                self.nameInput.superview?.isHidden = self.isWaitingForCode
-                self.emailInput.superview?.isHidden = self.isWaitingForCode
+                self.firstScreenStack.isHidden = self.isWaitingForCode
+                self.firstScreenStack.alpha = self.isWaitingForCode ? 0 : 1
+                
                 self.codeInput.superview?.isHidden = !self.isWaitingForCode
-                self.nameInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
-                self.emailInput.superview?.alpha = self.isWaitingForCode ? 0 : 1
                 self.codeInput.superview?.alpha = self.isWaitingForCode ? 1 : 0
+                
                 self.descLabel.text = self.isWaitingForCode ? "We emailed your activation code.\nPlease enter it below:" : "Activating your wallet is easy!\nAll we need is your name\nand email address:"
                 self.confirmButton.title = self.isWaitingForCode ? "Finish" : "Next"
                 self.confirmButton.isEnabled = !self.isWaitingForCode
@@ -63,28 +77,27 @@ private extension WalletActivateViewController {
         iconParent.addSubview(icon)
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
-        let contentStack = UIStackView(axis: .vertical, [descLabel, inputParent(nameInput), inputParent(emailInput), inputParent(codeInput)])
-        contentStack.spacing = 25
-        contentStack.setCustomSpacing(36, after: descLabel)
-        
-        codeInput.superview?.isHidden = true
-        codeInput.superview?.alpha = 0
         
         let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
-        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, contentStack, SpacerView(height: 32), confirmButton])
+        let spacerStack = UIStackView(axis: .vertical, [SpacerView(height: 16, priority: .required), SpacerView(height: 16)])
+        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, firstScreenStack, inputParent(codeInput), spacerStack, confirmButton])
         mainStack.distribution = .equalSpacing
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36)
         mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24).isActive = true
         
-        descLabel.text = "Activating your wallet is easy!\nAll we need is your name\nand email address:"
+        stateInput.superview?.isHidden = true
+        codeInput.superview?.isHidden = true
+        codeInput.superview?.alpha = 0
+        
+        descLabel.text = "Activating your wallet is easy!\nWe just need a few details below:"
         descLabel.font = .appFont(withSize: 18, weight: .semibold)
         descLabel.textColor = .foreground
         descLabel.textAlignment = .center
         descLabel.numberOfLines = 0
-        descLabel.setContentCompressionResistancePriority(.required, for: .vertical )
+        descLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-        [nameInput, emailInput, codeInput].forEach {
+        [nameInput, emailInput, codeInput, countryInput, stateInput].forEach {
             $0.font = .appFont(withSize: 18, weight: .regular)
             $0.textColor = .foreground
             $0.returnKeyType = .done
@@ -94,13 +107,25 @@ private extension WalletActivateViewController {
         nameInput.placeholder = "your name"
         emailInput.placeholder = "your email address"
         codeInput.placeholder = "activation code"
+        countryInput.placeholder = "country of residence"
+        stateInput.placeholder = "state"
+        
+        countryRow.spacing = 12
+        countryRow.distribution = .fillEqually
         
         nameInput.keyboardType = .namePhonePad
         emailInput.keyboardType = .emailAddress
         codeInput.keyboardType = .numberPad
+        countryInput.inputView = countryPicker
+        stateInput.inputView = statePicker
         
         nameInput.autocapitalizationType = .words
         emailInput.autocapitalizationType = .none
+        
+        countryPicker.dataSource = self
+        statePicker.dataSource = self
+        countryPicker.delegate = self
+        statePicker.delegate = self
         
         codeInput.addAction(.init(handler: { [weak self] _ in
             self?.confirmButton.isEnabled = self?.codeInput.text?.count == 6
@@ -115,6 +140,7 @@ private extension WalletActivateViewController {
         guard isWaitingForCode else {
             guard let name = nameInput.text, !name.isEmpty else { nameInput.becomeFirstResponder(); return }
             guard let email = emailInput.text, !email.isEmpty else { emailInput.becomeFirstResponder(); return }
+            guard let country = countryInput.text, !country.isEmpty else { countryInput.becomeFirstResponder(); return }
 
             guard email.isEmail else {
                 emailInput.becomeFirstResponder()
@@ -122,17 +148,38 @@ private extension WalletActivateViewController {
                 return
             }
             
+            var state = stateInput.text
+            if country == Self.unitedStatesName {
+                if state?.isEmpty != false {
+                    stateInput.becomeFirstResponder()
+                    return
+                }
+            } else {
+                state = nil
+            }
+            
             nameInput.resignFirstResponder()
             emailInput.resignFirstResponder()
+            countryInput.resignFirstResponder()
+            stateInput.resignFirstResponder()
             
             isWaitingForCode = true
             
-            PrimalWalletRequest(type: .activationCode(name: name, email: email)).publisher()
+            let countryCode = Self.countryDic[country] ?? country
+            let stateCode = Self.statesDic[state ?? ""] ?? state
+            
+            PrimalWalletRequest(type: .activationCode(name: name, email: email, country: countryCode, state: stateCode)).publisher()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] res in
                     if let error = res.message {
                         self?.isWaitingForCode = false
-                        self?.present(WalletTransferSummaryController(.failure(navTitle: "Error", title: "Activation failed", message: error)), animated: true)
+                        
+                        let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
+                        alert.addAction(.init(title: "OK", style: .default) { _ in
+                            self?.navigationController?.popToRootViewController(animated: true)
+                            self?.mainTabBarController?.switchToTab(.home)
+                        })
+                        self?.present(alert, animated: true)
                     }
                 }
                 .store(in: &cancellables)
@@ -203,4 +250,72 @@ extension WalletActivateViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return false
     }
+}
+
+extension WalletActivateViewController: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int { return 1 }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView == countryPicker {
+            return Self.countries.count
+        }
+        return Self.states.count
+    }
+}
+
+extension WalletActivateViewController: UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView == countryPicker {
+            return Self.countries[row]
+        }
+        return Self.states[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView == countryPicker {
+            countryInput.text = Self.countries[row]
+            stateInput.superview?.isHidden = Self.countries[row] != Self.unitedStatesName
+            return
+        }
+        let stateCode = Self.states[row]
+        stateInput.text = stateCode
+    }
+}
+
+struct CountryData: Codable {
+    var countryLabel: String
+    var code: String
+    
+    static let allCountries: [CountryData] = {
+        guard
+            let bundlePath = Bundle.main.path(forResource: "countries", ofType: "json"),
+            let string = try? String(contentsOfFile: bundlePath)
+        else { return [] }
+        
+        return string.decode() ?? []
+    }()
+}
+
+struct StateData: Codable {
+    var stateLabel: String
+    var code: String
+    
+    static let allStates: [StateData] = {
+        guard
+            let bundlePath = Bundle.main.path(forResource: "us-states", ofType: "json"),
+            let string = try? String(contentsOfFile: bundlePath)
+        else { return [] }
+        
+        return string.decode() ?? []
+    }()
+}
+
+private extension WalletActivateViewController {
+    private static let unitedStatesName = "United States of America"
+    
+    static let statesDic: [String: String] = StateData.allStates.reduce(into: [:], { $0[$1.stateLabel] = $1.code })
+    static let states: [String] = [""] + statesDic.sorted(by: { $0.key < $1.key }).map { $0.key }
+    
+    static let countryDic: [String: String] = CountryData.allCountries.reduce(into: [:], { $0[$1.countryLabel] = $1.code })
+    static let countries: [String] = ["", unitedStatesName] + countryDic.filter({ $0.key != unitedStatesName}).sorted(by: { $0.key < $1.key }).map { $0.key }
 }

@@ -234,7 +234,7 @@ private extension MainTabBarController {
         
         NotificationCenter.default.publisher(for: .primalProfileLink)
             .compactMap { $0.object as? String }
-            .compactMap { HexKeypair.npubToHexPubkey($0) }
+            .map { HexKeypair.npubToHexPubkey($0) ?? $0 }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] pubkey in
                 self?.switchToTab(.home, open: ProfileViewController(profile: .init(data: .init(pubkey: pubkey))))
