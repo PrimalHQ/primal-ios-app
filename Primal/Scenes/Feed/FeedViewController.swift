@@ -160,13 +160,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     @Published private(set) var isShowingBars = true
     var shouldShowBars: Bool {
         get { scrollDirectionCounter >= 0 }
-        set { scrollDirectionCounter = newValue ? 50 : -50 }
+        set { scrollDirectionCounter = newValue ? 100 : -100 }
     }
     @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < 100 {
-            scrollDirectionCounter = 50
+            scrollDirectionCounter = 100
         } else {
             if (lastContentOffset > scrollView.contentOffset.y) {
                 scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
@@ -273,7 +273,7 @@ private extension FeedViewController {
         updateTheme()
     
         let shouldShowPublisher = $scrollDirectionCounter
-            .filter({ abs($0) > 30 }) // Disregard small scrolling (sometimes the system scrolls quickly)
+            .filter({ abs($0) > 20 }) // Disregard small scrolling (sometimes the system scrolls quickly)
             .map { $0 > 0 }
         
         Publishers.CombineLatest3($isShowingBars, shouldShowPublisher, $isAnimatingBars)

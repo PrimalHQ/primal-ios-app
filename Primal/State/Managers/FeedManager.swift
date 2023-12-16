@@ -33,6 +33,9 @@ final class FeedManager {
     var profilePubkey: String?
     var didReachEnd = false
     
+    var lastRefreshDate: Date = .distantPast
+    var blockFuturePosts: Bool { lastRefreshDate.timeIntervalSinceNow > -10 }
+    
     // this is a map, matches post id of the repost with the original already added post in the post list
     var alreadyAddedReposts: [String: ParsedContent] = [:]
 
@@ -96,6 +99,7 @@ final class FeedManager {
     }
     
     func refresh() {
+        lastRefreshDate = .now
         newPostObjects = []
         newAddedPosts = 0
         alreadyAddedReposts = [:]
@@ -239,7 +243,9 @@ private extension FeedManager {
             self?.futurePostsPublisher() ?? Just([]).eraseToAnyPublisher()
         }
         .sink { [weak self] sorted in
-            self?.processFuturePosts(sorted)
+            guard let self, !blockFuturePosts else { return }
+            
+            processFuturePosts(sorted)
         }
         .store(in: &cancellables)
         
@@ -249,7 +255,9 @@ private extension FeedManager {
                 self?.futurePostsPublisher().waitForConnection(.regular) ?? Just([]).eraseToAnyPublisher()
             }
             .sink { [weak self] sorted in
-                self?.processFuturePosts(sorted)
+                guard let self, !blockFuturePosts else { return }
+
+                processFuturePosts(sorted)
             }
             .store(in: &cancellables)
     }

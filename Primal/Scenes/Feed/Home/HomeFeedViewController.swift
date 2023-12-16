@@ -89,9 +89,11 @@ final class HomeFeedViewController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
-            self.feed.addAllFuturePosts()
-            self.shouldShowBars = true
-            self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
+            feed.addAllFuturePosts()
+            shouldShowBars = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
+                self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
+            }
         }), for: .touchDown)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in

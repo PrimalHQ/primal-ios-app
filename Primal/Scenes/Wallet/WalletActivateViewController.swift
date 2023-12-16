@@ -110,8 +110,8 @@ private extension WalletActivateViewController {
         countryInput.placeholder = "country of residence"
         stateInput.placeholder = "state"
         
-        stateInput.textAlignment = .center
         countryRow.spacing = 12
+        countryRow.distribution = .fillEqually
         
         nameInput.keyboardType = .namePhonePad
         emailInput.keyboardType = .emailAddress
@@ -149,7 +149,7 @@ private extension WalletActivateViewController {
             }
             
             var state = stateInput.text
-            if country == "United States" {
+            if country == Self.unitedStatesName {
                 if state?.isEmpty != false {
                     stateInput.becomeFirstResponder()
                     return
@@ -165,12 +165,21 @@ private extension WalletActivateViewController {
             
             isWaitingForCode = true
             
-            PrimalWalletRequest(type: .activationCode(name: name, email: email, country: country, state: state)).publisher()
+            let countryCode = Self.countryDic[country] ?? country
+            let stateCode = Self.statesDic[state ?? ""] ?? state
+            
+            PrimalWalletRequest(type: .activationCode(name: name, email: email, country: countryCode, state: stateCode)).publisher()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] res in
                     if let error = res.message {
                         self?.isWaitingForCode = false
-                        self?.present(WalletTransferSummaryController(.failure(navTitle: "Error", title: "Activation failed", message: error)), animated: true)
+                        
+                        let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
+                        alert.addAction(.init(title: "OK", style: .default) { _ in
+                            self?.navigationController?.popToRootViewController(animated: true)
+                            self?.mainTabBarController?.switchToTab(.home)
+                        })
+                        self?.present(alert, animated: true)
                     }
                 }
                 .store(in: &cancellables)
@@ -259,341 +268,54 @@ extension WalletActivateViewController: UIPickerViewDelegate {
         if pickerView == countryPicker {
             return Self.countries[row]
         }
-        return Self.states[row].1
+        return Self.states[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == countryPicker {
             countryInput.text = Self.countries[row]
-            stateInput.superview?.isHidden = Self.countries[row] != "United States"
+            stateInput.superview?.isHidden = Self.countries[row] != Self.unitedStatesName
             return
         }
-        stateInput.text = Self.states[row].0
-        
-        if Self.states[row].0 == "NY" || Self.states[row].0 == "HI" {
-            let alert = UIAlertController(
-                title: "Warning",
-                message: "Our apologies, we are not able to provide wallet features to users in the state of \(Self.states[row].1) at this time. We are working on adding \(Self.states[row].1) to the list of supported states. Please stay tuned to the announcements from Primal.",
-                preferredStyle: .alert
-            )
-            alert.addAction(.init(title: "OK", style: .default) { _ in
-                self.navigationController?.popToRootViewController(animated: true)
-                self.mainTabBarController?.switchToTab(.home)
-            })
-            present(alert, animated: true)
-        }
+        let stateCode = Self.states[row]
+        stateInput.text = stateCode
     }
 }
 
+struct CountryData: Codable {
+    var countryLabel: String
+    var code: String
+    
+    static let allCountries: [CountryData] = {
+        guard
+            let bundlePath = Bundle.main.path(forResource: "countries", ofType: "json"),
+            let string = try? String(contentsOfFile: bundlePath)
+        else { return [] }
+        
+        return string.decode() ?? []
+    }()
+}
+
+struct StateData: Codable {
+    var stateLabel: String
+    var code: String
+    
+    static let allStates: [StateData] = {
+        guard
+            let bundlePath = Bundle.main.path(forResource: "us-states", ofType: "json"),
+            let string = try? String(contentsOfFile: bundlePath)
+        else { return [] }
+        
+        return string.decode() ?? []
+    }()
+}
+
 private extension WalletActivateViewController {
-    static let states: [(String, String)] = [("", "")] + statesDic.sorted(by: { $0.key < $1.key })
+    private static let unitedStatesName = "United States of America"
     
-    static let statesDic: [String: String] = [
-        "AL": "Alabama",
-        "AK": "Alaska",
-        "AS": "American Samoa",
-        "AZ": "Arizona",
-        "AR": "Arkansas",
-        "CA": "California",
-        "CO": "Colorado",
-        "CT": "Connecticut",
-        "DE": "Delaware",
-        "DC": "District Of Columbia",
-        "FM": "Federated States Of Micronesia",
-        "FL": "Florida",
-        "GA": "Georgia",
-        "GU": "Guam",
-        "HI": "Hawaii",
-        "ID": "Idaho",
-        "IL": "Illinois",
-        "IN": "Indiana",
-        "IA": "Iowa",
-        "KS": "Kansas",
-        "KY": "Kentucky",
-        "LA": "Louisiana",
-        "ME": "Maine",
-        "MH": "Marshall Islands",
-        "MD": "Maryland",
-        "MA": "Massachusetts",
-        "MI": "Michigan",
-        "MN": "Minnesota",
-        "MS": "Mississippi",
-        "MO": "Missouri",
-        "MT": "Montana",
-        "NE": "Nebraska",
-        "NV": "Nevada",
-        "NH": "New Hampshire",
-        "NJ": "New Jersey",
-        "NM": "New Mexico",
-        "NY": "New York",
-        "NC": "North Carolina",
-        "ND": "North Dakota",
-        "MP": "Northern Mariana Islands",
-        "OH": "Ohio",
-        "OK": "Oklahoma",
-        "OR": "Oregon",
-        "PW": "Palau",
-        "PA": "Pennsylvania",
-        "PR": "Puerto Rico",
-        "RI": "Rhode Island",
-        "SC": "South Carolina",
-        "SD": "South Dakota",
-        "TN": "Tennessee",
-        "TX": "Texas",
-        "UT": "Utah",
-        "VT": "Vermont",
-        "VI": "Virgin Islands",
-        "VA": "Virginia",
-        "WA": "Washington",
-        "WV": "West Virginia",
-        "WI": "Wisconsin",
-        "WY": "Wyoming"
-    ]
+    static let statesDic: [String: String] = StateData.allStates.reduce(into: [:], { $0[$1.stateLabel] = $1.code })
+    static let states: [String] = [""] + statesDic.sorted(by: { $0.key < $1.key }).map { $0.key }
     
-    static let countries: [String] = [
-        "",
-        "United States",
-        "Afghanistan",
-        "Åland Islands",
-        "Albania",
-        "Algeria",
-        "American Samoa",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antarctica",
-        "Antigua and Barbuda",
-        "Argentina",
-        "Armenia",
-        "Aruba",
-        "Australia",
-        "Austria",
-        "Azerbaijan",
-        "Bahamas",
-        "Bahrain",
-        "Bangladesh",
-        "Barbados",
-        "Belarus",
-        "Belgium",
-        "Belize",
-        "Benin",
-        "Bermuda",
-        "Bhutan",
-        "Bolivia",
-        "Bosnia and Herzegovina",
-        "Botswana",
-        "Bouvet Island",
-        "Brazil",
-        "British Indian Ocean Territory",
-        "Brunei Darussalam",
-        "Bulgaria",
-        "Burkina Faso",
-        "Burundi",
-        "Cambodia",
-        "Cameroon",
-        "Canada",
-        "Cape Verde",
-        "Cayman Islands",
-        "Central African Republic",
-        "Chad",
-        "Chile",
-        "China",
-        "Christmas Island",
-        "Cocos (Keeling) Islands",
-        "Colombia",
-        "Comoros",
-        "Congo",
-        "Congo, The Democratic Republic of the",
-        "Cook Islands",
-        "Costa Rica",
-        "Cote D'Ivoire",
-        "Croatia",
-        "Cuba",
-        "Cyprus",
-        "Czech Republic",
-        "Denmark",
-        "Djibouti",
-        "Dominica",
-        "Dominican Republic",
-        "Ecuador",
-        "Egypt",
-        "El Salvador",
-        "Equatorial Guinea",
-        "Eritrea",
-        "Estonia",
-        "Ethiopia",
-        "Falkland Islands (Malvinas)",
-        "Faroe Islands",
-        "Fiji",
-        "Finland",
-        "France",
-        "French Guiana",
-        "French Polynesia",
-        "French Southern Territories",
-        "Gabon",
-        "Gambia",
-        "Georgia",
-        "Germany",
-        "Ghana",
-        "Gibraltar",
-        "Greece",
-        "Greenland",
-        "Grenada",
-        "Guadeloupe",
-        "Guam",
-        "Guatemala",
-        "Guernsey",
-        "Guinea",
-        "Guinea-Bissau",
-        "Guyana",
-        "Haiti",
-        "Holy See (Vatican City State)",
-        "Honduras",
-        "Hong Kong",
-        "Hungary",
-        "Iceland",
-        "India",
-        "Indonesia",
-        "Iran, Islamic Republic Of",
-        "Iraq",
-        "Ireland",
-        "Isle of Man",
-        "Israel",
-        "Italy",
-        "Jamaica",
-        "Japan",
-        "Jersey",
-        "Jordan",
-        "Kazakhstan",
-        "Kenya",
-        "Kiribati",
-        "Korea, Democratic People's Republic of",
-        "Korea, Republic of",
-        "Kuwait",
-        "Kyrgyzstan",
-        "Lao People's Democratic Republic",
-        "Latvia",
-        "Lebanon",
-        "Lesotho",
-        "Liberia",
-        "Libyan Arab Jamahiriya",
-        "Liechtenstein",
-        "Lithuania",
-        "Luxembourg",
-        "Macao",
-        "Macedonia, North",
-        "Madagascar",
-        "Malawi",
-        "Malaysia",
-        "Maldives",
-        "Mali",
-        "Malta",
-        "Marshall Islands",
-        "Martinique",
-        "Mauritania",
-        "Mauritius",
-        "Mayotte",
-        "Mexico",
-        "Micronesia, Federated States of",
-        "Moldova, Republic of",
-        "Monaco",
-        "Mongolia",
-        "Montenegro",
-        "Montserrat",
-        "Morocco",
-        "Mozambique",
-        "Myanmar",
-        "Namibia",
-        "Nauru",
-        "Nepal",
-        "Netherlands",
-        "Netherlands Antilles",
-        "New Caledonia",
-        "New Zealand",
-        "Nicaragua",
-        "Niger",
-        "Nigeria",
-        "Niue",
-        "Norfolk Island",
-        "Northern Mariana Islands",
-        "Norway",
-        "Oman",
-        "Pakistan",
-        "Palau",
-        "Palestinian Territory, Occupied",
-        "Panama",
-        "Papua New Guinea",
-        "Paraguay",
-        "Peru",
-        "Philippines",
-        "Pitcairn",
-        "Poland",
-        "Portugal",
-        "Puerto Rico",
-        "Qatar",
-        "Reunion",
-        "Romania",
-        "Russian Federation",
-        "Rwanda",
-        "Saint Helena",
-        "Saint Kitts and Nevis",
-        "Saint Lucia",
-        "Saint Pierre and Miquelon",
-        "Saint Vincent and the Grenadines",
-        "Samoa",
-        "San Marino",
-        "Sao Tome and Principe",
-        "Saudi Arabia",
-        "Senegal",
-        "Serbia",
-        "Seychelles",
-        "Sierra Leone",
-        "Singapore",
-        "Slovakia",
-        "Slovenia",
-        "Solomon Islands",
-        "Somalia",
-        "South Africa",
-        "South Georgia and the South Sandwich Islands",
-        "Spain",
-        "Sri Lanka",
-        "Sudan",
-        "Suriname",
-        "Svalbard and Jan Mayen",
-        "Swaziland",
-        "Sweden",
-        "Switzerland",
-        "Syrian Arab Republic",
-        "Taiwan, Province of China",
-        "Tajikistan",
-        "Tanzania, United Republic of",
-        "Thailand",
-        "Timor-Leste",
-        "Togo",
-        "Tokelau",
-        "Tonga",
-        "Trinidad and Tobago",
-        "Tunisia",
-        "Turkey",
-        "Turkmenistan",
-        "Turks and Caicos Islands",
-        "Tuvalu",
-        "Uganda",
-        "Ukraine",
-        "United Arab Emirates",
-        "United Kingdom",
-        "United States Minor Outlying Islands",
-        "Uruguay",
-        "Uzbekistan",
-        "Vanuatu",
-        "Venezuela",
-        "Viet Nam",
-        "Virgin Islands, British",
-        "Virgin Islands, U.S.",
-        "Wallis and Futuna",
-        "Western Sahara",
-        "Yemen",
-        "Zambia",
-        "Zimbabwe"
-    ]
+    static let countryDic: [String: String] = CountryData.allCountries.reduce(into: [:], { $0[$1.countryLabel] = $1.code })
+    static let countries: [String] = ["", unitedStatesName] + countryDic.filter({ $0.key != unitedStatesName}).sorted(by: { $0.key < $1.key }).map { $0.key }
 }
