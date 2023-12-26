@@ -36,6 +36,7 @@ struct PrimalWalletRequest {
         case activationCode(name: String, email: String, country: String, state: String?)
         case activate(code: String)
         case parseLNURL(String)
+        case exchangeRate
         
         var requestContent: String {
             switch self {
@@ -115,6 +116,8 @@ struct PrimalWalletRequest {
                     return "[\"parse_lnurl\", {\"target_lnurl\": \"\(lnurl)\"}]"
                 }
                 return "[\"parse_lninvoice\", {\"lninvoice\": \"\(lnurl)\"}]"
+            case .exchangeRate:
+                return #"["exchange_rate", {}]"#
             }
       }
   }
@@ -134,7 +137,7 @@ struct PrimalWalletRequest {
                 }
             }
         }
-        .eraseToAnyPublisher()
+        .waitForConnection(.wallet)
     }
 }
 
@@ -187,7 +190,12 @@ private extension WalletRequestResult {
             
             transactions = array
         case .WALLET_EXCHANGE_RATE:
-            print("UNHANDLED KIND: \(kind)")
+            guard let dic:[String:String] = contentString.decode(), let rateString = dic["rate"], let rate = Double(rateString) else {
+                print("Error decoding: \(kind)")
+                return
+            }
+            
+            bitcoinPrice = rate
         case .WALLET_IS_USER:
             guard
                 let number = Int(contentString),

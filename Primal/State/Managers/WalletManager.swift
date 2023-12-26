@@ -42,6 +42,7 @@ final class WalletManager {
     @Published var isLoadingWallet = true
     @Published var didJustCreateWallet = false
     @Published private var userZapped: [String: Int] = [:]
+    @Published var btcToUsd: Double = 44022
     
     var userData: [String: ParsedUser] = [:]
     
@@ -51,6 +52,10 @@ final class WalletManager {
     
     private init() {
         setupPublishers()
+        
+        DispatchQueue.main.async {
+            self.loadNewExchangeRate()
+        }
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
@@ -75,7 +80,7 @@ final class WalletManager {
     func refreshTransactions() {
         isLoadingTransactions = true
         
-        PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
+        PrimalWalletRequest(type: .transactions()).publisher()
             .sink(receiveValue: { [weak self] val in
                 self?.transactions = val.transactions
                 self?.isLoadingTransactions = false
@@ -84,7 +89,7 @@ final class WalletManager {
     }
     
     func refreshBalance() {
-        PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet)
+        PrimalWalletRequest(type: .balance).publisher()
             .sink(receiveValue: { [weak self] val in
                 guard  let string = val.balance?.amount else { return }
                 
@@ -103,6 +108,15 @@ final class WalletManager {
                }
            }
            .store(in: &cancellables)
+    }
+    
+    func loadNewExchangeRate() {
+        PrimalWalletRequest(type: .exchangeRate).publisher()
+            .sink { [weak self] res in
+                guard let price = res.bitcoinPrice else { return }
+                self?.btcToUsd = price
+            }
+            .store(in: &cancellables)
     }
     
     func loadMoreTransactions() {
@@ -206,7 +220,7 @@ private extension WalletManager {
             }
             .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
             .flatMap { npub -> AnyPublisher<WalletRequestResult, Never> in
-                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection(Connection.wallet)
+                return PrimalWalletRequest(type: .isUser).publisher()
             }
             .sink(receiveValue: { [weak self] val in
                 self?.isLoadingWallet = false
@@ -219,8 +233,8 @@ private extension WalletManager {
             .flatMap { [weak self] _ in
                 self?.isLoadingWallet = true
                 return Publishers.Zip(
-                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet),
-                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
+                    PrimalWalletRequest(type: .balance).publisher(),
+                    PrimalWalletRequest(type: .transactions()).publisher()
                 )
             }
             .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
@@ -238,7 +252,7 @@ private extension WalletManager {
         $balance
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
             .flatMap { [weak self] _ in
-                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection(Connection.wallet)
+                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher()
             }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }

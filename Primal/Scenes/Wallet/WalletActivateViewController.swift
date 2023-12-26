@@ -282,40 +282,43 @@ extension WalletActivateViewController: UIPickerViewDelegate {
     }
 }
 
-struct CountryData: Codable {
-    var countryLabel: String
+struct RegionInfo {
+    var label: String
     var code: String
     
-    static let allCountries: [CountryData] = {
+    static let regionData: [String: [[String]]] = {
         guard
-            let bundlePath = Bundle.main.path(forResource: "countries", ofType: "json"),
+            let bundlePath = Bundle.main.path(forResource: "regions", ofType: "json"),
             let string = try? String(contentsOfFile: bundlePath)
-        else { return [] }
-        
-        return string.decode() ?? []
+        else { return [:] }
+        return string.decode() ?? [:]
     }()
-}
-
-struct StateData: Codable {
-    var stateLabel: String
-    var code: String
     
-    static let allStates: [StateData] = {
-        guard
-            let bundlePath = Bundle.main.path(forResource: "us-states", ofType: "json"),
-            let string = try? String(contentsOfFile: bundlePath)
-        else { return [] }
+    static let allCountries: [RegionInfo] = {
+        guard let countries = regionData["countries"] else { return [] }
         
-        return string.decode() ?? []
+        return countries.compactMap { array in
+            guard let name = array.first, let code = array.last else { return nil }
+            return .init(label: name, code: code)
+        }
+    }()
+    
+    static let allStates: [RegionInfo] = {
+        guard let states = regionData["states"] else { return [] }
+        
+        return states.compactMap { array in
+            guard let name = array.first, let code = array.last else { return nil }
+            return .init(label: name, code: code)
+        }
     }()
 }
 
 private extension WalletActivateViewController {
     private static let unitedStatesName = "United States of America"
     
-    static let statesDic: [String: String] = StateData.allStates.reduce(into: [:], { $0[$1.stateLabel] = $1.code })
+    static let statesDic: [String: String] = RegionInfo.allStates.reduce(into: [:], { $0[$1.label] = $1.code })
     static let states: [String] = [""] + statesDic.sorted(by: { $0.key < $1.key }).map { $0.key }
     
-    static let countryDic: [String: String] = CountryData.allCountries.reduce(into: [:], { $0[$1.countryLabel] = $1.code })
+    static let countryDic: [String: String] = RegionInfo.allCountries.reduce(into: [:], { $0[$1.label] = $1.code })
     static let countries: [String] = ["", unitedStatesName] + countryDic.filter({ $0.key != unitedStatesName}).sorted(by: { $0.key < $1.key }).map { $0.key }
 }

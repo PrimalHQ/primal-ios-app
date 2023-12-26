@@ -71,7 +71,7 @@ class ProfileNavigationView: UIView, Themeable {
             // NOTHING to prevent double loading of gifs
         } else {
             oldImageUrl = parsed.data.picture
-            profilePicture.setUserImage(parsed)
+            profilePicture.setUserImage(parsed, feed: false)
         }
         
         primaryLabel.text = user.firstIdentifier

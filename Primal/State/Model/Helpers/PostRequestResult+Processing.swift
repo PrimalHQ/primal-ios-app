@@ -195,7 +195,7 @@ extension PostRequestResult {
         }
         
         for string in videoURLS.reversed() {
-            if !p.mediaResources.contains(where: { $0.url == string }) {
+            if !p.mediaResources.contains(where: { string.hasPrefix($0.url) }) {
                 p.mediaResources.insert(.init(url: string, variants: []), at: 0)
             }
         }

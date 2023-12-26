@@ -48,11 +48,7 @@ final class BuySatsCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        if WalletManager.instance.didJustCreateWallet {
-            descLabel.text = "Your wallet is active. Now you need sats."
-        } else {
-            descLabel.text = "You are running low on sats."
-        }
+        descLabel.text = "Your wallet is active. Now you need sats."
         
         contentView.backgroundColor = .background
         

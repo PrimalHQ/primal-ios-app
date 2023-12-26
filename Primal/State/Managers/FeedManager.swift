@@ -267,6 +267,7 @@ private extension FeedManager {
         
         guard
             let directive = currentFeed?.hex,
+            !directive.hasPrefix("search;"),
             let paginationInfo,
             paginationInfo.order_by == "created_at"
         else {
@@ -324,7 +325,7 @@ private extension FeedManager {
 
         if sorted.isEmpty { return }
         
-        if addFuturePostsDirectly() {
+        if newPostObjects.isEmpty && addFuturePostsDirectly() {
             parsedPosts.insert(contentsOf: sorted, at: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { // We need to wait for parsedPosts to propagate to posts
                 self.newAddedPosts += sorted.count

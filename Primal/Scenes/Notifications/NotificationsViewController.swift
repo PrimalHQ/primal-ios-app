@@ -288,6 +288,15 @@ final class NotificationsViewController: FeedViewController {
     }
 }
 
+extension NotificationsViewController: NotificationCellDelegate {
+    func avatarListTappedInCell(_ cell: NotificationsCell, index: Int) {
+        guard let user = notifications[safe: table.indexPath(for: cell)?.row]?.users[safe: index]  else { return }
+        
+        let profile = ProfileViewController(profile: user)
+        show(profile, sender: nil)
+    }
+}
+
 extension Array where Element == GroupedNotification {
     func grouped() -> [GroupedNotification] {
         var grouped: [GroupedNotification] = []

@@ -53,6 +53,7 @@ final class ImageGalleryView: UIView {
         collection.layer.cornerRadius = 8
         collection.layer.masksToBounds = true
         collection.backgroundColor = .background2
+        collection.showsHorizontalScrollIndicator = false
         
         let stack = UIStackView(axis: .vertical, [collection, progress])
         stack.spacing = 8
@@ -62,7 +63,7 @@ final class ImageGalleryView: UIView {
         progress.secondaryColor = .foreground.withAlphaComponent(0.4)
     }
     
-    func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideo ? "youtube" : "video") : "image" }
+    func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
     
     func currentImageCell() -> ImageCell? {
         collection.visibleCells.compactMap({ $0 as? ImageCell }).first
@@ -97,6 +98,16 @@ extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
         scrollToCurrent()
     }
     
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        let current = collection.contentOffset.x / (collection.frame.width + 10)
+        let adjusted = (current + velocity.x).clamp(0, CGFloat(resources.count))
+        let endPoint = adjusted.rounded() * (collection.frame.width + 10)
+        
+        if abs(current - endPoint) > 150 && abs(current - targetContentOffset.pointee.x) > 100 {
+            targetContentOffset.pointee.x = endPoint
+        }
+    }
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         scrollToCurrent()
     }
@@ -118,7 +129,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdForURL(r.url), for: indexPath)
         
         if r.url.isVideoURL {
-            if r.url.isYoutubeVideo {
+            if r.url.isYoutubeVideoURL {
                 (cell as? YoutubeVideoCell)?.loadURL(r.url)
                 return cell
             }

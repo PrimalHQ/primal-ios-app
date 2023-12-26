@@ -22,7 +22,7 @@ final class OnboardingAboutController: UIViewController, OnboardingViewControlle
     let nextButton = OnboardingMainButton("Next")
     let skipButton = SolidColorUIButton(title: "Skip", color: .white)
     
-    let progressView = PrimalProgressView(progress: 1, total: 4)
+    let progressView = PrimalProgressView(progress: 1, total: 4, markProgress: true)
     let descLabel = UILabel()
     
     var cancellables: Set<AnyCancellable> = []

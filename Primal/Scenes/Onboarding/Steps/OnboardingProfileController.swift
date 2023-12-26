@@ -34,7 +34,7 @@ final class OnboardingProfileController: UIViewController, OnboardingViewControl
     
     let profileView = LargeProfileView()
     let instructionLabel = UILabel()
-    let progressView = PrimalProgressView(progress: 2, total: 4)
+    let progressView = PrimalProgressView(progress: 2, total: 4, markProgress: true)
     let continueButton = OnboardingMainButton("Create Account Now")
     let keychainInfo = KeyKeychainInfoView()
     let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 70)

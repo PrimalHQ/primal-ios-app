@@ -18,6 +18,8 @@ class WalletRequestResult {
     
     var transactions: [WalletTransaction] = []
     
+    var bitcoinPrice: Double?
+    
     var newAddress: String?
     var quote: WalletQuote?
     
@@ -112,6 +114,10 @@ struct WalletTransaction: Codable {
     var subindex_2: String?
     var lud16_1: String?
     var lud16_2: String?
+    
+    var exchange_rate: String?
+    var total_fee_btc: String?
+    var invoice: String?
     
     var zap_request: String?
 }

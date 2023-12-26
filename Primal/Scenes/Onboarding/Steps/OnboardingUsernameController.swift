@@ -98,7 +98,7 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     let nextButton = OnboardingMainButton("Next")
     
-    let progressView = PrimalProgressView(progress: 0, total: 4)
+    let progressView = PrimalProgressView(progress: 0, total: 4, markProgress: true)
     let descLabel = UILabel()
     
     let uploader = OnboardingImageUploader()

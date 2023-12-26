@@ -205,20 +205,12 @@ struct PrimalUser : Codable, Identifiable, Hashable {
         self.deleted = deleted
     }
     
-    var lnurl: String? {
-        var addr: String = ""
-        
-        if lud16 == "" && lud06 == "" {
+    var address: String? {
+        if lud16.isEmpty && lud06.isEmpty {
             return nil
         }
         
-        addr = lud16 == "" ? lud06 : lud16
-        
-        if addr.contains("@") {
-            return lnaddress_to_lnurl(addr)
-        }
-        
-        return addr
+        return lud16.isEmpty ? lud06 : lud16
     }
     
     static func == (lhs: PrimalUser, rhs: PrimalUser) -> Bool {

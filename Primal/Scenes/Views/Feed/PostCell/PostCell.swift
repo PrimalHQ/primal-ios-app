@@ -33,6 +33,10 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapMute(_ cell: PostCell)
 }
 
+class PostCellNantesDelegate {
+    weak var cell: PostCell?
+}
+
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
     weak var delegate: PostCellDelegate?
@@ -61,11 +65,14 @@ class PostCell: UITableViewCell {
     weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?
     
+    let nantesDelegate = PostCellNantesDelegate()
+    
     var useShortText: Bool { false }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
+        nantesDelegate.cell = self
     }
     
     required init?(coder: NSCoder) {
@@ -143,7 +150,7 @@ class PostCell: UITableViewCell {
             }
             
             if imageAspectConstraint == nil { // In case the image was not in memory we use placeholder sizes
-                let multiplier: CGFloat = url?.isVideoButNotYoutube == true ? (9 / 16) : (url?.isYoutubeVideo == true ? 0.8 : 1)
+                let multiplier: CGFloat = url?.isVideoURL == true ? (url?.isYoutubeVideoURL == true ? 0.8 : (9 / 16)) : 1
                 
                 let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
                 aspect.priority = .defaultHigh
@@ -193,9 +200,10 @@ extension PostCell: ImageCollectionViewDelegate {
     }
 }
 
-extension PostCell: NantesLabelDelegate {
+extension PostCellNantesDelegate: NantesLabelDelegate {
     func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
-        delegate?.postCellDidTapURL(self, url: link)
+        guard let cell else { return }
+        cell.delegate?.postCellDidTapURL(cell, url: link)
     }
 }
 
@@ -205,11 +213,6 @@ private extension PostCell {
         contentView.backgroundColor = .background2
         contentView.addSubview(bottomBorder)
         bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
-        
-        likeButton.isEnabled = LoginManager.instance.method() == .nsec
-        zapButton.isEnabled = LoginManager.instance.method() == .nsec
-        repostButton.isEnabled = LoginManager.instance.method() == .nsec
-        replyButton.isEnabled = LoginManager.instance.method() == .nsec
         
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
@@ -243,8 +246,9 @@ private extension PostCell {
         
         mainLabel.numberOfLines = 0
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        mainLabel.delegate = self
-        mainLabel.labelTappedBlock = { [unowned self] in
+        mainLabel.delegate = nantesDelegate
+        mainLabel.labelTappedBlock = { [weak self] in
+            guard let self else { return }
             self.delegate?.postCellDidTapPost(self)
         }
         
@@ -273,9 +277,6 @@ private extension PostCell {
         repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))
         profileImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
-        likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
-        repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
-        replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
         
         let previewTap = UITapGestureRecognizer(target: self, action: #selector(embedTapped))
         let previewImageTap = UITapGestureRecognizer(target: self, action: #selector(embedImageTapped))
@@ -283,11 +284,19 @@ private extension PostCell {
         postPreview.addGestureRecognizer(previewTap)
         postPreview.mainImages.addGestureRecognizer(previewImageTap)
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
-        let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
-        tap.require(toFail: long)
-        zapButton.addGestureRecognizer(tap)
-        zapButton.addGestureRecognizer(long)
+        if LoginManager.instance.method() == .nsec {
+            likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
+            repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
+            replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
+            let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
+            tap.require(toFail: long)
+            zapButton.addGestureRecognizer(tap)
+            zapButton.addGestureRecognizer(long)
+        } else {
+            ([likeButton, repostButton, replyButton, zapButton] as [UIControl]).forEach { $0.addDisabledNSecWarning(RootViewController.instance) }
+        }
     }
     
     @objc func zapTapped() {
@@ -337,11 +346,11 @@ private extension PostCell {
 }
 
 extension FLAnimatedImageView {
-    func setUserImage(_ user: ParsedUser) {
+    func setUserImage(_ user: ParsedUser, feed: Bool = true) {
         tag = tag + 1
         
         guard
-            ContentDisplaySettings.animatedAvatars,
+            !feed || ContentDisplaySettings.animatedAvatars,
             user.data.picture.hasSuffix("gif"),
             let url = user.profileImage.url(for: .small)
         else {

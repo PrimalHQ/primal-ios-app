@@ -78,7 +78,7 @@ private extension LargeBalanceConversionView {
         spacing = 2
         alignment = .center
         
-//        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
         Publishers.CombineLatest($isBitcoinPrimary, $balance).receive(on: DispatchQueue.main).sink { [weak self] _, _ in
             self?.updateLabels()
