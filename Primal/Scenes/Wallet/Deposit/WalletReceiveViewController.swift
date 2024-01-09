@@ -165,7 +165,7 @@ private extension WalletReceiveViewController {
             WalletActionButton(text: "ADD DETAILS", action: { [weak self] in
                 self?.show(WalletReceiveDetailsController(details: self?.additionalInfo ?? .init(satoshi: 0, description: ""), delegate: self), sender: nil)
             })
-        ]).constrainToSize(height: 60)
+        ])
         actionStack.spacing = 18
         actionStack.distribution = .fillEqually
         
@@ -212,12 +212,14 @@ final class WalletActionButton: UIButton, Themeable {
         super.init(frame: .zero)
         
         updateTheme()
-        layer.cornerRadius = 12
+        layer.cornerRadius = 30
         titleLabel?.font = .appFont(withSize: 16, weight: .semibold)
         setTitle(text, for: .normal)
         addAction(.init(handler: { _ in
             action()
         }), for: .touchUpInside)
+        
+        constrainToSize(height: 60)
     }
     
     required init?(coder: NSCoder) {

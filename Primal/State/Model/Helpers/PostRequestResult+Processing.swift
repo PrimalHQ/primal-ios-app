@@ -10,6 +10,10 @@ import LinkPresentation
 import Kingfisher
 
 extension PostRequestResult {
+    func getSortedUsers() -> [ParsedUser] {
+        users.map { createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+    }
+    
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
         let nostrUser = users[content.pubkey] ?? .init(pubkey: content.pubkey)
         let nostrPostStats = stats[content.id] ?? .empty(content.id)
@@ -195,7 +199,7 @@ extension PostRequestResult {
         }
         
         for string in videoURLS.reversed() {
-            if !p.mediaResources.contains(where: { $0.url == string }) {
+            if !p.mediaResources.contains(where: { string.hasPrefix($0.url) }) {
                 p.mediaResources.insert(.init(url: string, variants: []), at: 0)
             }
         }

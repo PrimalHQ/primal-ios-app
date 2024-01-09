@@ -77,11 +77,7 @@ private extension SettingsMainViewController {
         }
         
         guard LoginManager.instance.method() == .nsec else {
-            [keys, feeds, appearance, contentDisplay, muted, notifications, zaps, network].forEach {
-                $0.addAction(.init(handler: { [weak self] _ in
-                    self?.showErrorMessage(title: "Logged in with npub", "Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")
-                }), for: .touchUpInside)
-            }
+            [keys, feeds, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
             return
         }
         

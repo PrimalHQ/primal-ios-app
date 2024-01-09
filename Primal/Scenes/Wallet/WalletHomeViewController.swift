@@ -14,6 +14,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         case loading
         case activateWallet
         case buySats
+        case error(String)
         case transaction((WalletTransaction, ParsedUser))
         
         var transaction: WalletTransaction? {
@@ -206,6 +207,10 @@ extension WalletHomeViewController: UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
             (cell as? ChatLoadingCell)?.updateTheme()
             return cell
+        case let .error(message):
+            let cell = tableView.dequeueReusableCell(withIdentifier: "error", for: indexPath)
+            (cell as? ErrorMessageCell)?.setText(message)
+            return cell
         case .transaction(let transaction):
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             
@@ -255,12 +260,12 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .info, .loading:
+        case .info, .loading, .error:
             break
         case .buySats:
             buySatsPressed()
-        case .transaction((_, _)):
-            break
+        case .transaction((let transaction, let user)):
+            show(TransactionViewController(transaction: transaction, user: user), sender: nil)
         case .activateWallet:
             activateWalletPressed()
         }
@@ -281,13 +286,11 @@ extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate,
     }
     
     func sendButtonPressed() {
-        show(WalletPickUserController(), sender: nil)
+        show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
     }
     
     func scanButtonPressed() {
-        present(WalletQRCodeViewController() { [weak self] text, amount, user in
-            self?.show(WalletSendViewController(.address(text, amount, user)), sender: nil)
-        }, animated: true)
+        show(WalletSendParentViewController(startingTab: .scan), sender: nil)
     }
 }
 
@@ -318,6 +321,7 @@ private extension WalletHomeViewController {
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
         table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
+        table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
         
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
@@ -335,15 +339,18 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
+        let isPoorPublisher = WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
+        let shouldShowBuySatsPublisher = Publishers.CombineLatest(isPoorPublisher, WalletManager.instance.$didJustCreateWallet).map { $0 && $1 }
+        
         Publishers.CombineLatest4(
             WalletManager.instance.$userHasWallet,
             WalletManager.instance.$isLoadingWallet,
             WalletManager.instance.$parsedTransactions,
-            WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
+            shouldShowBuySatsPublisher.removeDuplicates()
         )
         .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] hasWallet, isLoading, transactions, isPoor in
+        .sink { [weak self] hasWallet, isLoading, transactions, shouldShowBuySats in
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
             }
@@ -351,11 +358,16 @@ private extension WalletHomeViewController {
             self?.table.refreshControl?.endRefreshing()
             var firstSection = Section(cells: [.info])
             
+            guard LoginManager.instance.method() == .nsec else {
+                self?.tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
+                return
+            }
+            
             if hasWallet == false {
                 firstSection.cells += [.activateWallet]
             } else if isLoading && transactions.isEmpty {
                 firstSection.cells += [.loading]
-            } else if isPoor {
+            } else if shouldShowBuySats {
                 firstSection.cells += [.buySats]
             }
             

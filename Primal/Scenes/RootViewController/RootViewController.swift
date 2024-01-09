@@ -32,7 +32,7 @@ final class RootViewController: UIViewController {
         quickReset(isFirstTime: true)
         addIntro()
         
-        Connection.regular.$isConnected.sink { connected in
+        Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
                 IdentityManager.instance.requestUserInfos()
                 IdentityManager.instance.requestUserProfile()

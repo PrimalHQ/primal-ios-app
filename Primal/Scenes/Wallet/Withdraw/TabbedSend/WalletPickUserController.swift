@@ -30,18 +30,6 @@ final class WalletPickUserController: UIViewController, Themeable {
         setup()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        mainTabBarController?.setTabBarHidden(true, animated: animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        searchInput.becomeFirstResponder()
-    }
-    
     func updateTheme() {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
@@ -62,7 +50,6 @@ final class WalletPickUserController: UIViewController, Themeable {
 
 private extension WalletPickUserController {
     func setup() {
-        title = "Choose Recipient"
         updateTheme()
         setBindings()
         
@@ -87,35 +74,58 @@ private extension WalletPickUserController {
         userTable.separatorStyle = .none
         userTable.delegate = self
         userTable.dataSource = self
+        userTable.keyboardDismissMode = .onDrag
         
         searchBackground.layer.cornerRadius = 8
         
         searchInput.font = .appFont(withSize: 16, weight: .regular)
         searchInput.placeholder = "Search users"
         searchInput.delegate = self
+        searchInput.returnKeyType = .done
         searchInput.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] text -> AnyPublisher<PostRequestResult, Never> in
+            .flatMap { [weak self] text -> AnyPublisher<[ParsedUser], Never> in
                 self?.userTable.reloadData()
                 
                 switch text {
                 case "":
-                    return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(PostingTextViewManager.recommendedUsersNpubs.map { .string($0) })
-                    ])).publisher()
+                    let contacts = SmartContactsManager.instance.getContacts().prefix(10)
+                    let contactPubkeys = contacts.map { $0.pubkey }
+                    
+                    let searchContacts = Set((contactPubkeys + PostingTextViewManager.recommendedUsersNpubs))
+                    
+                    return Publishers.Merge(
+                        Just(contacts.map { .init(data: $0) }),
+                        
+                        SocketRequest(name: "user_infos", payload: .object([
+                            "pubkeys": .array(searchContacts.map { .string($0) })
+                        ]))
+                        .publisher()
+                        .map {
+                            let users = $0.getSortedUsers()
+                            
+                            let myContacts = contactPubkeys.compactMap({ pubkey in users.first(where: { $0.data.pubkey == pubkey }) })
+                            let other = users.filter { user in !myContacts.contains(where: { $0.data.npub == user.data.npub }) }
+                            
+                            return myContacts + other
+                        }
+                    ).eraseToAnyPublisher()
                 default:
-                   return SocketRequest(name: "user_search", payload: .object([
+                    return SocketRequest(name: "user_search", payload: .object([
                        "query": .string(text),
                        "limit": .number(15),
-                   ])).publisher()
+                    ]))
+                    .publisher()
+                    .map { $0.getSortedUsers() }
+                    .eraseToAnyPublisher()
                 }
             }
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] result in
-                self?.users = result.users.map { result.createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+            .sink(receiveValue: { [weak self] users in
+                self?.users = users
             })
             .store(in: &cancellables)
     }
@@ -145,12 +155,10 @@ extension WalletPickUserController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chat = WalletSendViewController(.user(users[indexPath.row]))
+        let chat = WalletSendAmountController(.user(users[indexPath.row]))
         searchInput.resignFirstResponder()
-        show(chat, sender: nil)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-            self.navigationController?.viewControllers.remove(object: self)
-        }
+        SmartContactsManager.instance.addContact(users[indexPath.row].data)
+        show(chat, sender: nil)
     }
 }

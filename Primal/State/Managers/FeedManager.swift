@@ -129,7 +129,6 @@ final class FeedManager {
             ])
         )
         .publisher()
-        .waitForConnection(.regular)
         .sink { [weak self] result in
             self?.postsEmitter.send(result)
         }
@@ -252,7 +251,7 @@ private extension FeedManager {
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()
             .flatMap { [weak self] _ in
-                self?.futurePostsPublisher().waitForConnection(.regular) ?? Just([]).eraseToAnyPublisher()
+                self?.futurePostsPublisher() ?? Just([]).eraseToAnyPublisher()
             }
             .sink { [weak self] sorted in
                 guard let self, !blockFuturePosts else { return }
@@ -267,6 +266,7 @@ private extension FeedManager {
         
         guard
             let directive = currentFeed?.hex,
+            !directive.hasPrefix("search;"),
             let paginationInfo,
             paginationInfo.order_by == "created_at"
         else {
@@ -280,7 +280,6 @@ private extension FeedManager {
                 "since": .number(paginationInfo.until.rounded())
             ]))
             .publisher()
-            .waitForConnection(Connection.regular)
             .receive(on: DispatchQueue.main)
             .map { [weak self] in
                 guard let self else { return $0.process() }
@@ -324,7 +323,7 @@ private extension FeedManager {
 
         if sorted.isEmpty { return }
         
-        if addFuturePostsDirectly() {
+        if newPostObjects.isEmpty && addFuturePostsDirectly() {
             parsedPosts.insert(contentsOf: sorted, at: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { // We need to wait for parsedPosts to propagate to posts
                 self.newAddedPosts += sorted.count
@@ -339,7 +338,6 @@ private extension FeedManager {
         let (name, payload) = generateRequestByFeedType()
         
         SocketRequest(name: name, payload: payload).publisher()
-            .waitForConnection(.regular)
             .sink { [weak self] result in
                 guard let self else { return }
                 

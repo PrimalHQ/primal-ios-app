@@ -40,7 +40,7 @@ extension Date {
             return "from future"
         }
         
-        return "just now"
+        return "now"
     }
     
     func timeAgoDisplayLong() -> String {

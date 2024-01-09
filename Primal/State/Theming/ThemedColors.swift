@@ -24,6 +24,7 @@ extension UIColor {
     
     static var accent: UIColor { Theme.current.accent }
     static var accent2: UIColor { Theme.current.accent2 }
+    static var accent3: UIColor { Theme.current.accent3 }
     
     static var extraColorMenu: UIColor { Theme.current.extraColorMenu }
     

@@ -26,6 +26,7 @@ struct SocketRequest {
                 }
             }
         }
+        .waitForConnection(.regular)
         .eraseToAnyPublisher()
     }
 }

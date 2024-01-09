@@ -27,7 +27,8 @@ final class IceWave: AppTheme {
     var foreground6: UIColor = .init(rgb: 0xC8C8C8)
     
     let accent: UIColor = .init(rgb: 0x2394EF)
-    let accent2: UIColor = .init(rgb: 0x0C7DD8)
+    let accent2: UIColor = .init(rgb: 0x2394EF)
+    let accent3: UIColor = .init(rgb: 0x0C7DD8)
     
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     

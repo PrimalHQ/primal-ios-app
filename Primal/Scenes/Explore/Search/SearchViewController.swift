@@ -64,7 +64,7 @@ private extension SearchViewController {
         let stack = UIStackView(arrangedSubviews: [navigationExtender, navigationBorder, userTable])
         view.addSubview(stack)
         stack.axis = .vertical
-        stack.pinToSuperview(safeArea: true)
+        stack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         
         userTable.register(UserInfoTableCell.self, forCellReuseIdentifier: "userCell")
         userTable.register(SearchTermTableCell.self, forCellReuseIdentifier: "search")
@@ -78,24 +78,42 @@ private extension SearchViewController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] text -> AnyPublisher<PostRequestResult, Never> in
+            .flatMap { [weak self] text -> AnyPublisher<[ParsedUser], Never> in
                 self?.userTable.reloadData()
                 
                 switch text {
                 case "":
+                    let contacts = SmartContactsManager.instance.getContacts().prefix(10)
+                    let contactPubkeys = contacts.map { $0.pubkey }
+                    
+                    let searchContacts = Set((contactPubkeys + PostingTextViewManager.recommendedUsersNpubs))
+                    
                     return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(PostingTextViewManager.recommendedUsersNpubs.map { .string($0) })
-                    ])).publisher()
+                        "pubkeys": .array(searchContacts.map { .string($0) })
+                    ]))
+                    .publisher()
+                    .map {
+                        let users = $0.getSortedUsers()
+                        
+                        let myContacts = contactPubkeys.compactMap({ pubkey in users.first(where: { $0.data.pubkey == pubkey }) })
+                        let other = users.filter { user in !myContacts.contains(where: { $0.data.npub == user.data.npub }) }
+                        
+                        return myContacts + other
+                    }
+                    .eraseToAnyPublisher()
                 default:
-                   return SocketRequest(name: "user_search", payload: .object([
+                    return SocketRequest(name: "user_search", payload: .object([
                        "query": .string(text),
                        "limit": .number(15),
-                   ])).publisher()
+                    ]))
+                    .publisher()
+                    .map { $0.getSortedUsers() }
+                    .eraseToAnyPublisher()
                 }
             }
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] result in
-                self?.users = result.users.map { result.createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+            .sink(receiveValue: { [weak self] users in
+                self?.users = users
             })
             .store(in: &cancellables)
     }
@@ -138,6 +156,8 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
             show(feed, sender: nil)
             return
         }
+        
+        SmartContactsManager.instance.addContact(users[indexPath.row - 1].data)
         
         let profile = ProfileViewController(profile: users[indexPath.row - 1])
         searchView.inputField.resignFirstResponder()

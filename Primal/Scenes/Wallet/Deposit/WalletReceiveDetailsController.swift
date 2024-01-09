@@ -12,9 +12,9 @@ protocol WalletReceiveDetailsControllerDelegate: AnyObject {
     func detailsChanged(_ details: AdditionalDepositInfo)
 }
 
-final class WalletReceiveDetailsController: UIViewController, Themeable {
-    
-    let input = LargeBalanceConversionInputView()
+final class WalletReceiveDetailsController: UIViewController, Themeable, KeyboardInputConnector {
+    let input = LargeBalanceConversionView(showSecondaryRow: true)
+    let hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     let textInput = PlaceholderTextView()
     
     private var cancellables: Set<AnyCancellable> = []
@@ -41,7 +41,6 @@ final class WalletReceiveDetailsController: UIViewController, Themeable {
         
         view.backgroundColor = .background
         
-        textInput.backgroundColor = .background3
         textInput.mainTextColor = .foreground
         textInput.placeholderTextColor = .foreground.withAlphaComponent(0.6)
     }
@@ -59,13 +58,17 @@ private extension WalletReceiveDetailsController {
         title = "Receive Details"
         
         let textParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
-        textParent.layer.cornerRadius = 8
+        textParent.layer.cornerRadius = 24
         textParent.addSubview(textInput)
-        textInput.pinToSuperview(padding: 10)
-        textParent.constrainToSize(height: 120)
+        textInput
+            .pinToSuperview(edges: .horizontal, padding: 10)
+            .pinToSuperview(edges: .top, padding: 5.5)
+            .pinToSuperview(edges: .bottom, padding: 4)
+        textParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         
         textInput.placeholderText = "add comment"
         textInput.font = .appFont(withSize: 16, weight: .regular)
+        textInput.backgroundColor = .clear
         textParent.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapInput)))
         
         let applyButton = WalletActionButton(text: "APPLY") { [weak self] in
@@ -79,23 +82,34 @@ private extension WalletReceiveDetailsController {
             self?.navigationController?.popViewController(animated: true)
         }
         
-        let actionStack = UIStackView([applyButton, cancelButton])
-        actionStack.spacing = 18
+        applyButton.backgroundColor = .accent
+        
+        let actionStack = UIStackView([cancelButton, applyButton])
+        actionStack.spacing = 16
         actionStack.distribution = .fillEqually
         
+        let keyboardView = NumberKeyboardView()
+        keyboardView.delegate = self
+        
+        let inputParent = UIView()
+        inputParent.addSubview(input)
+        input.pinToSuperview(edges: .vertical)
+        let botStack = UIStackView(axis: .vertical, [keyboardView, SpacerView(height: 44), actionStack])
+        
         let mainStack = UIStackView(axis: .vertical, [
-            BitcoinInputParentView(input, spacing: 0), SpacerView(height: 52),
-            textParent, SpacerView(height: 36),
-            actionStack,
-            UIView()
+            inputParent,
+            textParent,
+            botStack
         ])
         
-        actionStack.pinToSuperview(edges: .horizontal).constrainToSize(height: 60)
+        actionStack.pinToSuperview(edges: .horizontal)
         textParent.pinToSuperview(edges: .horizontal)
-        mainStack.alignment = .center
+        mainStack.distribution = .equalSpacing
         
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 30).pinToSuperview(edges: .top, padding: 30, safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        
+        input.largeAmountLabel.centerToView(view, axis: .horizontal)
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapView)))
     }
@@ -113,7 +127,6 @@ private extension WalletReceiveDetailsController {
     }
     
     @objc func didTapView() {
-        input.resignFirstResponder()
         textInput.resignFirstResponder()
     }
 }

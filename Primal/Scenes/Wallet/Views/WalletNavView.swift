@@ -60,8 +60,8 @@ final class WalletNavView: UIView, Themeable{
 }
 
 final class SmallBalanceConversionView: LargeBalanceConversionView {
-    override init() {
-        super.init()
+    override init(showWalletBalance: Bool = true, showSecondaryRow: Bool = false) {
+        super.init(showWalletBalance: showWalletBalance, showSecondaryRow: showSecondaryRow)
         
         large$Label.font = .appFont(withSize: 22, weight: .medium)
         largeAmountLabel.font = .appFont(withSize: 28, weight: .bold)
@@ -70,9 +70,13 @@ final class SmallBalanceConversionView: LargeBalanceConversionView {
         largeAmountLabel.adjustsFontSizeToFitWidth = true
         
         transform = .init(translationX: 0, y: 10)
+        
+        roundingStyle = .twoDecimals
     }
     
     override var labelOffset: CGFloat { 10 }
+    
+    override var rowSpacing: CGFloat { 4 }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

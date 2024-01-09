@@ -9,8 +9,14 @@ import Combine
 import UIKit
 
 class LargeBalanceConversionView: UIStackView, Themeable {
+    enum RoundingStyle {
+        case twoDecimals, removeZeros
+    }
+    
     @Published var isBitcoinPrimary = true
     @Published var balance: Int = 0
+    
+    var balanceUSD: Double { Double(balance) * .SAT_TO_USD }
     
     let largeAmountLabel = UILabel()
     let smallAmountLabel = UILabel()
@@ -18,11 +24,21 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     let largeCurrencyLabel = UILabel()
     let large$Label = UILabel()
     
+    let secondaryRow = UIStackView()
+    
     private var cancellables: Set<AnyCancellable> = []
     
-    init() {
+    var roundingStyle: RoundingStyle = .removeZeros
+    
+    init(showWalletBalance: Bool = true, showSecondaryRow: Bool = false) {
         super.init(frame: .zero)
         setup()
+        
+        secondaryRow.isHidden = !showSecondaryRow
+        
+        if showWalletBalance {
+            WalletManager.instance.$balance.assign(to: \.balance, onWeak: self).store(in: &cancellables)
+        }
     }
     
     required init(coder: NSCoder) {
@@ -30,6 +46,8 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     }
     
     var labelOffset: CGFloat { 8 }
+    
+    var rowSpacing: CGFloat { 6 }
     
     func updateTheme() {
         large$Label.textColor = .foreground4
@@ -50,7 +68,7 @@ private extension LargeBalanceConversionView {
         largeAmountLabel.font = .appFont(withSize: 48, weight: .bold)
         largeCurrencyLabel.font = .appFont(withSize: 16, weight: .medium)
         
-        smallAmountLabel.font = .appFont(withSize: 14, weight: .medium)
+        smallAmountLabel.font = .appFont(withSize: 16, weight: .regular)
     }
     
     func setupLayout() {
@@ -64,12 +82,11 @@ private extension LargeBalanceConversionView {
         largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: labelOffset).pinToSuperview(edges: .horizontal)
         
         let primaryRow = UIStackView([dollarParent, largeAmountLabel, currencyParent])
-        primaryRow.spacing = 6
+        primaryRow.spacing = rowSpacing
         
-        let secondaryRow = UIStackView([smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }])
-        secondaryRow.spacing = 8
+        [smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }].forEach { secondaryRow.addArrangedSubview($0) }
+        secondaryRow.spacing = rowSpacing
         secondaryRow.alignment = .center
-        secondaryRow.isHidden = true
         
         addArrangedSubview(primaryRow)
         addArrangedSubview(secondaryRow)
@@ -78,7 +95,7 @@ private extension LargeBalanceConversionView {
         spacing = 2
         alignment = .center
         
-//        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
         Publishers.CombineLatest($isBitcoinPrimary, $balance).receive(on: DispatchQueue.main).sink { [weak self] _, _ in
             self?.updateLabels()
@@ -90,15 +107,22 @@ private extension LargeBalanceConversionView {
         large$Label.superview?.isHidden = isBitcoinPrimary
         largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
         
-        let usdAmount = Double(WalletManager.instance.balance) * .SAT_TO_USD
-        let usdString = usdAmount.localized()
+        let usdAmount = balanceUSD
+        let usdString: String = {
+            switch roundingStyle {
+            case .twoDecimals:
+                return usdAmount.twoDecimalPoints()
+            case .removeZeros:
+                return usdAmount.localized()
+            }
+        }()
         
         if isBitcoinPrimary {
-            largeAmountLabel.text = WalletManager.instance.balance.localized()
+            largeAmountLabel.text = balance.localized()
             smallAmountLabel.text = "$\(usdString) USD"
         } else {
             largeAmountLabel.text = usdString
-            smallAmountLabel.text = "\(WalletManager.instance.balance.localized()) sats"
+            smallAmountLabel.text = "\(balance.localized()) sats"
         }
     }
     

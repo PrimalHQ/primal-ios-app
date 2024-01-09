@@ -15,6 +15,9 @@ import Kingfisher
 import StoreKit
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
+    
+    static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 100)
+    
     var refreshControl = UIRefreshControl()
     let table = UITableView()
     let safeAreaSpacer = UIView()
@@ -122,7 +125,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         }
         
         if let postToPreload = posts[safe: indexPath.row + 10] {
-            if let url = postToPreload.mediaResources.first?.url(for: .large), url.absoluteString.isImageURL {
+            if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             }
             if let url = postToPreload.user.profileImage.url(for: .small) {
@@ -300,19 +303,19 @@ private extension FeedViewController {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
         let postUser = posts[indexPath.row].user.data
-        if postUser.lnurl == nil {
+        if postUser.address == nil {
             showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
             return
         }
         
         guard let hasWallet = WalletManager.instance.userHasWallet else { return } // Unknown
         guard hasWallet else {
-            let popup1 = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
+            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
                 .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
                     self?.mainTabBarController?.switchToTab(.wallet)
                 })
             ])
-            present(popup1, animated: true)
+            present(popup, animated: true)
             return
         }
         
@@ -333,8 +336,13 @@ private extension FeedViewController {
         
         let newZapAmount = parsed.post.satszapped + amount
         
-        if WalletManager.instance.balance < newZapAmount {
-            present(WalletInAppPurchaseController(), animated: true)
+        if WalletManager.instance.balance < amount {
+            let popup = PopupMenuViewController(message: "Insufficient funds to perform this zap", actions: [
+                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
+                    self?.mainTabBarController?.switchToTab(.wallet)
+                })
+            ])
+            present(popup, animated: true)
             return
         }
 
@@ -362,10 +370,8 @@ private extension FeedViewController {
     }
     
     func animateZap(_ cell: PostCell, amount: Int) {
-        let animView = LottieAnimationView(animation: AnimationType.zapMedium.animation)
-        view.addSubview(animView)
-        animView
-            .constrainToSize(width: 375, height: 100)
+        view.addSubview(Self.bigZapAnimView)
+        Self.bigZapAnimView
             .pin(to: cell.zapButton.iconView, edges: .top, padding: -38.5)
             .pin(to: cell.zapButton.iconView, edges: .leading, padding: -114.5)
         
@@ -375,13 +381,14 @@ private extension FeedViewController {
         cell.zapButton.animateTo(amount, filled: true)
         
         heavy.impactOccurred()
-            
-        animView.play { _ in
+        
+        Self.bigZapAnimView.alpha = 1
+        Self.bigZapAnimView.play { _ in
             UIView.animate(withDuration: 0.2) {
                 cell.zapButton.iconView.alpha = 1
-                animView.alpha = 0
+                Self.bigZapAnimView.alpha = 0
             } completion: { _ in
-                animView.removeFromSuperview()
+                Self.bigZapAnimView.removeFromSuperview()
             }
         }
     }
@@ -545,7 +552,13 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func handleVideoUrlTapped(_ url: String, in cell: PostCell) {
-        guard url.isVideoURL else { return }
+        guard url.isVideoURL, !url.isYoutubeVideoURL else {
+            if let url = URL(string: url) {
+                let safari = SFSafariViewController(url: url)
+                present(safari, animated: true)
+            }
+            return
+        }
         
         if let videoCell = cell.mainImages.currentVideoCell(), videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
             videoCell.player?.play()

@@ -10,6 +10,39 @@ import FLAnimatedImage
 import Kingfisher
 import Combine
 
+protocol ImageMenuHandler: AnyObject {
+    var viewController: UIViewController { get }
+    var url: String { get }
+    var image: UIImage? { get }
+}
+
+extension ImageMenuHandler {
+    var imageMenuActions: [UIAction] {
+        [
+            UIAction(title: "Save Image", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
+                guard let self, let image = image else { return }
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                viewController.view?.showToast("Saved!", extraPadding: false)
+            }),
+            UIAction(title: "Share Image", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
+                guard let self, let image = image else { return }
+                let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+                viewController.present(activityViewController, animated: true, completion: nil)
+            }),
+            UIAction(title: "Copy Image", image: UIImage(named: "MenuImageCopy"), handler: { [weak self] _ in
+                guard let self, let image = image else { return }
+                UIPasteboard.general.image = image
+                viewController.view?.showToast("Copied!", extraPadding: false)
+            }),
+            UIAction(title: "Copy Image URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
+                guard let self else { return }
+                UIPasteboard.general.string = url
+                viewController.view?.showToast("Copied!", extraPadding: false)
+            }
+        ]
+    }
+}
+
 final class ImageFullScreenViewController: UIViewController {
     let background = UIView()
     let imageView = FLAnimatedImageView()
@@ -188,28 +221,10 @@ private extension ImageFullScreenViewController {
         
         threeDotsButton.tintColor = .white
         threeDotsButton.showsMenuAsPrimaryAction = true
-        threeDotsButton.menu = .init(children: [
-            UIAction(title: "Save Image", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
-                guard let self, let image = self.imageView.image else { return }
-                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                view.showToast("Saved!", extraPadding: false)
-            }),
-            UIAction(title: "Share Image", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
-                guard let self, let image = self.imageView.image else { return }
-                let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-                present(activityViewController, animated: true, completion: nil)
-            }),
-            UIAction(title: "Copy Image", image: UIImage(named: "MenuImageCopy"), handler: { [weak self] _ in
-                guard let self, let image = self.imageView.image else { return }
-                UIPasteboard.general.image = image
-                view.showToast("Copied!", extraPadding: false)
-            }),
-            UIAction(title: "Copy Image URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
-                guard let self else { return }
-                UIPasteboard.general.string = url
-                view.showToast("Copied!", extraPadding: false)
-            }
-        ])
+        threeDotsButton.menu = .init(children: imageMenuActions)
+        
+        imageView.addInteraction(UIContextMenuInteraction(delegate: self))
+        imageView.isUserInteractionEnabled = true
     }
     
     func setInsetForZoomedIn(viewSize: CGSize) {
@@ -314,6 +329,18 @@ private extension ImageFullScreenViewController {
         default:
             break
         }
+    }
+}
+
+extension ImageFullScreenViewController: ImageMenuHandler, UIContextMenuInteractionDelegate {
+    var viewController: UIViewController { self }
+    
+    var image: UIImage? { imageView.image }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        .init(actionProvider:  { [weak self] suggested in
+            .init(children: self?.imageMenuActions ?? [] + suggested)
+        })
     }
 }
 

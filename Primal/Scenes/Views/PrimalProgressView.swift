@@ -25,11 +25,13 @@ final class PrimalProgressView: UIView {
     
     private let stack = UIStackView()
     private let bottomPadding: CGFloat
+    private let markProgress: Bool
     
-    init(progress: Int = 0, total: Int = 4, bottomPadding: CGFloat = 12) {
+    init(progress: Int = 0, total: Int = 4, bottomPadding: CGFloat = 12, markProgress: Bool = false) {
         self.currentPage = progress
         self.numberOfPages = total
         self.bottomPadding = bottomPadding
+        self.markProgress = markProgress
         super.init(frame: .zero)
         setup()
     }
@@ -51,7 +53,11 @@ private extension PrimalProgressView {
     
     func updateColors() {
         for (index, view) in stack.arrangedSubviews.enumerated() {
-            view.backgroundColor = index <= currentPage ? primaryColor : secondaryColor
+            if markProgress {
+                view.backgroundColor = index <= currentPage ? primaryColor : secondaryColor
+            } else {
+                view.backgroundColor = index == currentPage ? primaryColor : secondaryColor
+            }
         }
     }
     

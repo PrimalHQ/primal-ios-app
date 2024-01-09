@@ -31,7 +31,6 @@ final class PostingTextViewManager: TextViewManager {
     let returnPressed = PassthroughSubject<Void, Never>()
     
     private var cancellables: Set<AnyCancellable> = []
-    private var nextEditShouldBeManual = false
     
     let usersTableView: UITableView
     var usersHeightConstraint: NSLayoutConstraint!
@@ -55,7 +54,6 @@ final class PostingTextViewManager: TextViewManager {
         ))
         self.currentlyEditingToken = nil
         updateText(newText, cursorPosition: currentlyEditingToken.range.location + (replacementText as NSString).length + 1)
-        nextEditShouldBeManual = true
     }
     
     override var postingText: String {
@@ -124,25 +122,17 @@ final class PostingTextViewManager: TextViewManager {
                 if currentlyEditingToken.range.length > 0 {
                     currentlyEditingToken.text = newText.substring(with: currentlyEditingToken.range)
                     self.currentlyEditingToken = currentlyEditingToken
-                    nextEditShouldBeManual = true
                 } else {
                     self.currentlyEditingToken = nil
-                    nextEditShouldBeManual = true
                 }
             } else {
                 self.currentlyEditingToken = nil
-                nextEditShouldBeManual = true
             }
         }
         
         
         let updateManually = {
             self.declineAnyChange = true
-            if text.hasSuffix(".") { // Fix for "random" word capitalisation bug
-                textView.autocapitalizationType = .sentences
-            } else {
-                textView.autocapitalizationType = .none
-            }
             self.updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
             self.updateText(newText as String, cursorPosition: cursorPosition)
             self.declineAnyChange = false
@@ -161,10 +151,6 @@ final class PostingTextViewManager: TextViewManager {
                 }
                 return false
             }
-            
-            if token.range.endLocation == range.location || range.endLocation == token.range.location {
-                nextEditShouldBeManual = true
-            }
         }
         
         switch text {
@@ -174,31 +160,15 @@ final class PostingTextViewManager: TextViewManager {
         case " ":
             if currentlyEditingToken != nil { // End searching if we were searching
                 currentlyEditingToken = nil
-                updateManually()
-                return false
             }
         case "@":  // Start new user search
             currentlyEditingToken = .init(range: NSRange(location: range.location, length: 1), text: text)
-            updateManually()
-            return false
         default:
             break
         }
         
-        if nextEditShouldBeManual && rangeMatchesTokens(range) {
-            nextEditShouldBeManual = range.length > 0
-            updateManually()
-            return false
-        }
-        
-        if range.length > 0 {
-            nextEditShouldBeManual = true
-            updateManually()
-            return false
-        }
-        
-        updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
-        return true
+        updateManually()
+        return false
     }
 }
 
@@ -298,7 +268,7 @@ private extension PostingTextViewManager {
         textView.backgroundColor = .background2
         textView.delegate = self
         textView.bounces = false
-//        textView.autocapitalizationType = .none
+        textView.autocapitalizationType = .none
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self

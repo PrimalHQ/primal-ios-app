@@ -42,6 +42,7 @@ final class WalletManager {
     @Published var isLoadingWallet = true
     @Published var didJustCreateWallet = false
     @Published private var userZapped: [String: Int] = [:]
+    @Published var btcToUsd: Double = 44022
     
     var userData: [String: ParsedUser] = [:]
     
@@ -51,6 +52,10 @@ final class WalletManager {
     
     private init() {
         setupPublishers()
+        
+        DispatchQueue.main.async {
+            self.loadNewExchangeRate()
+        }
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
@@ -75,7 +80,7 @@ final class WalletManager {
     func refreshTransactions() {
         isLoadingTransactions = true
         
-        PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
+        PrimalWalletRequest(type: .transactions()).publisher()
             .sink(receiveValue: { [weak self] val in
                 self?.transactions = val.transactions
                 self?.isLoadingTransactions = false
@@ -84,7 +89,7 @@ final class WalletManager {
     }
     
     func refreshBalance() {
-        PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet)
+        PrimalWalletRequest(type: .balance).publisher()
             .sink(receiveValue: { [weak self] val in
                 guard  let string = val.balance?.amount else { return }
                 
@@ -105,6 +110,15 @@ final class WalletManager {
            .store(in: &cancellables)
     }
     
+    func loadNewExchangeRate() {
+        PrimalWalletRequest(type: .exchangeRate).publisher()
+            .sink { [weak self] res in
+                guard let price = res.bitcoinPrice else { return }
+                self?.btcToUsd = price
+            }
+            .store(in: &cancellables)
+    }
+    
     func loadMoreTransactions() {
         guard !isLoadingTransactions else { return }
         
@@ -120,9 +134,9 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+    func requestAsync(_ request: PrimalWalletRequest.RequestType) async throws {
         return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLNInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride)).publisher()
+            PrimalWalletRequest(type: request).publisher()
                 .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
@@ -134,18 +148,16 @@ final class WalletManager {
         })
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLNURL(lnurl: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note)).publisher()
-                .sink { res in
-                    if let errorMessage = res.message {
-                        continuation.resume(throwing: WalletError.serverError(errorMessage))
-                    } else {
-                        continuation.resume()
-                    }
-                }
-                .store(in: &cancellables)
-        })
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+        try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+    }
+    
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject? = nil) async throws {
+        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+    }
+    
+    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
+        try await requestAsync(.send(.lud16, target: lud, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
@@ -154,30 +166,10 @@ final class WalletManager {
             let lud = user.lud16
             if lud.isEmpty { throw WalletError.noLud }
             
-            return try await withCheckedThrowingContinuation({ continuation in
-                PrimalWalletRequest(type: .sendLud16(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
-                    .sink { res in
-                        if let errorMessage = res.message {
-                            continuation.resume(throwing: WalletError.serverError(errorMessage))
-                        } else {
-                            continuation.resume()
-                        }
-                    }
-                    .store(in: &cancellables)
-            })
+            return try await sendLud16(lud, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
         }
         
-        return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLud06(target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
-                .sink { res in
-                    if let errorMessage = res.message {
-                        continuation.resume(throwing: WalletError.serverError(errorMessage))
-                    } else {
-                        continuation.resume()
-                    }
-                }
-                .store(in: &cancellables)
-        })
+        try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
@@ -206,7 +198,7 @@ private extension WalletManager {
             }
             .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
             .flatMap { npub -> AnyPublisher<WalletRequestResult, Never> in
-                return PrimalWalletRequest(type: .isUser).publisher().waitForConnection(Connection.wallet)
+                return PrimalWalletRequest(type: .isUser).publisher()
             }
             .sink(receiveValue: { [weak self] val in
                 self?.isLoadingWallet = false
@@ -219,8 +211,8 @@ private extension WalletManager {
             .flatMap { [weak self] _ in
                 self?.isLoadingWallet = true
                 return Publishers.Zip(
-                    PrimalWalletRequest(type: .balance).publisher().waitForConnection(Connection.wallet),
-                    PrimalWalletRequest(type: .transactions()).publisher().waitForConnection(Connection.wallet)
+                    PrimalWalletRequest(type: .balance).publisher(),
+                    PrimalWalletRequest(type: .transactions()).publisher()
                 )
             }
             .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
@@ -238,7 +230,7 @@ private extension WalletManager {
         $balance
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
             .flatMap { [weak self] _ in
-                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher().waitForConnection(Connection.wallet)
+                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher()
             }
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
@@ -252,6 +244,7 @@ private extension WalletManager {
             .store(in: &cancellables)
         
         $transactions
+            .receive(on: DispatchQueue.main)
             .flatMap { [weak self] transactions in
                 let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
                 
@@ -271,17 +264,16 @@ private extension WalletManager {
                     "pubkeys": .array(set.map { .string($0) })
                 ])).publisher().eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                DispatchQueue.main.async {
-                    guard let self else { return }
-                    for (key, value) in result.users {
-                        self.userData[key] = result.createParsedUser(value)
-                    }
-                    self.parsedTransactions = self.transactions.map { (
-                        $0,
-                        self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
-                    ) }
+                guard let self else { return }
+                for (key, value) in result.users {
+                    self.userData[key] = result.createParsedUser(value)
                 }
+                self.parsedTransactions = self.transactions.map { (
+                    $0,
+                    self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
+                ) }
             }
             .store(in: &cancellables)
     }

@@ -34,13 +34,20 @@ extension String {
     var emojiScalars: [UnicodeScalar] { filter { $0.isEmoji }.flatMap { $0.unicodeScalars } }
 }
 
+extension URL {
+    var isImageURL: Bool { lastPathComponent.isImageURLPathComponent }
+    
+    var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent || absoluteString.isYoutubeVideoURL }
+}
+
 extension String : Identifiable {
     public var id: String {
         return UUID().uuidString
     }
     
     var isValidURL: Bool {
-        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else { return false }
+        
         if let match = detector.firstMatch(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count)) {
             // it is a link, if the match covers the whole string
             return match.range.length == self.utf16.count
@@ -59,18 +66,22 @@ extension String : Identifiable {
     }
     
     var isImageURL: Bool {
+        URL(string: self)?.isImageURL ?? false
+    }
+    
+    var isImageURLPathComponent: Bool {
         hasSuffix(".jpg") || hasSuffix(".jpeg") || hasSuffix(".webp") || hasSuffix(".png") || hasSuffix(".gif") || hasSuffix("format=png")
     }
     
     var isVideoURL: Bool {
-        isVideoButNotYoutube || isYoutubeVideo
+        URL(string: self)?.isVideoURL ?? false
     }
     
-    var isVideoButNotYoutube: Bool {
+    var isVideoButNotYoutubePathComponent: Bool {
         hasSuffix(".mov") || hasSuffix(".mp4")
     }
     
-    var isYoutubeVideo: Bool {
+    var isYoutubeVideoURL: Bool {
         contains("youtube.com/watch?") || contains("youtu.be")
     }
     

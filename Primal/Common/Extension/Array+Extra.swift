@@ -13,6 +13,14 @@ extension Array where Element: Equatable {
     }
 }
 
+public extension Array {
+    subscript(safe i: Int?) -> Element? {
+        guard let i else { return nil }
+        if isEmpty || i < 0 || i >= count { return nil }
+        return self[i]
+    }
+}
+
 extension Sequence where Iterator.Element: Hashable {
     func unique() -> [Iterator.Element] {
         var seen: [Iterator.Element: Bool] = [:]

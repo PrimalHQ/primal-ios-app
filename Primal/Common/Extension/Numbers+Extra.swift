@@ -99,13 +99,8 @@ extension FixedWidthInteger {
     }
 }
 
-extension Int {
-    static let BTC_TO_USD: Int = 27439
-    static let BTC_TO_SAT: Int = 100_000_000
-}
-
 extension Double {
-    static let BTC_TO_USD: Double = 27439
+    static var BTC_TO_USD: Double { WalletManager.instance.btcToUsd }
     static let BTC_TO_SAT: Double = 100_000_000
     static let SAT_TO_USD: Double = BTC_TO_USD / BTC_TO_SAT
     
@@ -114,5 +109,9 @@ extension Double {
         nf.numberStyle = .decimal
         nf.maximumFractionDigits = 2
         return nf.string(from: self as NSNumber) ?? ""
+    }
+    
+    func twoDecimalPoints() -> String {
+        String(format: "%.2f", self)
     }
 }

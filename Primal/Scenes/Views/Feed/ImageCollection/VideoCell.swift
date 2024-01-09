@@ -15,6 +15,7 @@ final class VideoCell: UICollectionViewCell {
     let playerView = PlayerView()
     let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
     
+    let durationLabel = UILabel()
     let muteButton = MuteButton()
     
     var muteUpdater: AnyCancellable?
@@ -30,7 +31,23 @@ final class VideoCell: UICollectionViewCell {
             
             playUpdater = player?.$isPlaying.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isPlaying in
                 self?.playIcon.isHidden = isPlaying
+                self?.durationLabel.isHidden = isPlaying
             })
+        }
+    }
+    
+    var duration: Int? {
+        didSet {
+            guard let duration, duration > 0 else {
+                durationLabel.alpha = 0
+                return
+            }
+            durationLabel.alpha = 1
+            
+            let lengthMin = duration / 60
+            let secs = duration % 60
+            
+            durationLabel.text = String(format: "%02d:%02d", lengthMin, secs)
         }
     }
     
@@ -48,6 +65,15 @@ final class VideoCell: UICollectionViewCell {
         
         contentView.addSubview(muteButton)
         muteButton.pinToSuperview(edges: [.trailing, .bottom], padding: 4).constrainToSize(44)
+        
+        contentView.addSubview(durationLabel)
+        durationLabel.pinToSuperview(edges: .leading, padding: 4).centerToView(muteButton, axis: .vertical).constrainToSize(width: 60, height: 28)
+        durationLabel.layer.cornerRadius = 14
+        durationLabel.layer.masksToBounds = true
+        durationLabel.textAlignment = .center
+        durationLabel.backgroundColor = .black.withAlphaComponent(0.5)
+        durationLabel.font = .appFont(withSize: 16, weight: .regular)
+        durationLabel.textColor = .white
         
         contentView.addSubview(playIcon)
         playIcon.centerToSuperview()

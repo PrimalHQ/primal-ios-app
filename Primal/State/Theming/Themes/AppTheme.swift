@@ -30,6 +30,7 @@ protocol AppTheme {
     
     var accent: UIColor { get }
     var accent2: UIColor { get }
+    var accent3: UIColor { get }
     
     var extraColorMenu: UIColor { get }
     

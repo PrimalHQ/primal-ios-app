@@ -253,7 +253,6 @@ private extension ProfileViewController {
             "extended_response": true
         ]))
         .publisher()
-        .waitForConnection(.regular)
         .map { r in r.users.map { r.createParsedUser($0.value) } }
         .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
         .receive(on: DispatchQueue.main)
@@ -277,7 +276,6 @@ private extension ProfileViewController {
         isLoadingFollowers = true
         
         SocketRequest(name: "user_followers", payload: .object(["pubkey": .string(profile.data.pubkey)])).publisher()
-            .waitForConnection(.regular)
             .map { r in r.users.map { r.createParsedUser($0.value) } }
             .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
             .receive(on: DispatchQueue.main)
@@ -357,7 +355,6 @@ private extension ProfileViewController {
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
-        .waitForConnection(.regular)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] result in
             self?.followsUser = result.isFollowingUser ?? false
@@ -365,7 +362,6 @@ private extension ProfileViewController {
         .store(in: &cancellables)
         
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
-            .waitForConnection(.regular)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let user = result.users.first?.value else { return }
@@ -438,7 +434,7 @@ extension ProfileViewController: ProfileInfoCellDelegate {
     }
     
     func zapPressed() {
-        show(WalletSendViewController(.user(profile)), sender: nil)
+        show(WalletSendAmountController(.user(profile)), sender: nil)
     }
     
     func editProfilePressed() {

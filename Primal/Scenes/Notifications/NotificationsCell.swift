@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol NotificationCellDelegate: PostCellDelegate {
+    func avatarListTappedInCell(_ cell: NotificationsCell, index: Int)
+}
+
 final class NotificationsCell: PostCell {
     let iconView = UIImageView()
     let iconLabel = UILabel()
@@ -18,6 +22,11 @@ final class NotificationsCell: PostCell {
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), bottomButtonStack])
     
+    var notificationCellDelegate: NotificationCellDelegate? {
+        get { delegate as? NotificationCellDelegate }
+        set { delegate = newValue }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -28,7 +37,7 @@ final class NotificationsCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForNotification(_ notification: GroupedNotification, delegate: PostCellDelegate, didLike: Bool, didRepost: Bool, didZap: Bool) {
+    func updateForNotification(_ notification: GroupedNotification, delegate: NotificationCellDelegate, didLike: Bool, didRepost: Bool, didZap: Bool) {
         if let post = notification.post {
             update(post, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: false)
             postContentStack.isHidden = false
@@ -44,7 +53,7 @@ final class NotificationsCell: PostCell {
         
         titleLabel.attributedText = notification.titleText
         
-        self.delegate = delegate
+        notificationCellDelegate = delegate
     }
     
     override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
@@ -109,6 +118,13 @@ private extension NotificationsCell {
         contentView.addSubview(border)
         border.pinToSuperview(edges: [.horizontal, .bottom])
         border.backgroundColor = .foreground6
+        
+        for (index, imageView) in avatarStack.avatarViews.enumerated() {
+            imageView.isUserInteractionEnabled = true
+            imageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+                notificationCellDelegate?.avatarListTappedInCell(self, index: index)
+            }))
+        }
     }
 }
 
