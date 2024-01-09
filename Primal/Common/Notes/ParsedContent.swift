@@ -39,6 +39,11 @@ final class ParsedUser {
         self.likes = likes
         self.followers = followers
     }
+    
+    init(imageURL: String) {
+        self.data = .init(pubkey: "empty")
+        self.profileImage = .init(url: imageURL, variants: [])
+    }
 }
 
 final class ParsedContent {

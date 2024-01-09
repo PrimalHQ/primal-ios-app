@@ -10,9 +10,10 @@ import Combine
 import Foundation
 import UIKit
 import Kingfisher
+import FLAnimatedImage
 
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = UIImageView()
+    private let profileImage = FLAnimatedImageView()
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -20,7 +21,7 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
-    private let menuProfileImage = UIImageView()
+    private let menuProfileImage = FLAnimatedImageView()
     
     private let profileImageButton = UIButton()
     private let followingDescLabel = UILabel()
@@ -228,8 +229,7 @@ private extension MenuContainerController {
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
         
-        IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
-            guard let user else { return }
+        IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             self?.update(user)
         }
         .store(in: &cancellables)
@@ -243,18 +243,11 @@ private extension MenuContainerController {
         .store(in: &cancellables)
     }
     
-    func update(_ user: PrimalUser) {
-        profileImage.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 52, height: 52))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+    func update(_ user: ParsedUser) {
+        profileImage.setUserImage(user)
+        menuProfileImage.setUserImage(user)
         
-        menuProfileImage.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
-            .processor(DownsamplingImageProcessor(size: .init(width: 32, height: 32))),
-            .scaleFactor(UIScreen.main.scale)
-        ])
-        
+        let user = user.data
         if user.displayName.isEmpty {
             nameLabel.text = user.nip05.isEmpty ? user.name : user.parsedNip
             domainLabel.isHidden = true

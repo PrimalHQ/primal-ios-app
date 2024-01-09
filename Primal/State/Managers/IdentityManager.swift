@@ -34,6 +34,7 @@ final class IdentityManager {
     var newUserKeypair: NostrKeypair? = nil
     
     @Published var user: PrimalUser?
+    @Published var parsedUser: ParsedUser?
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettings?
     @Published var userRelays: [String: RelayInfo]?
@@ -41,75 +42,36 @@ final class IdentityManager {
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
     
     @Published var didFinishInit: Bool = false
+    
+    var cancellables: Set<AnyCancellable> = []
 
     func requestUserInfos() {
-        let request: JSON = .object([
-            "pubkeys": .array([.string(userHexPubkey)])
-        ])
-        
-        Connection.regular.requestCache(name: "user_infos", payload: request) { res in
-            for response in res {
-                let kind = NostrKind.fromGenericJSON(response)
-                
-                switch kind {
-                case .metadata:
-                    let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
-                    self.user = PrimalUser(nostrUser: nostrUser)
-                    if self.user?.deleted ?? false {
-                        self.handleDeletedAccount()
-                    }
-                    //nsec1hhadjdm0mawge0xwf4nqvx698mg78hk0asfljz94jnxt79sacjlq8wv7qw
-                case .userScore:
-                    if let contentString = response.arrayValue?[2].objectValue?["content"]?.stringValue {
-                        guard let content: [String: UInt32] = try? JSONDecoder().decode([String: UInt32].self, from: contentString.data(using: .utf8)!) else {
-                            print("IdentityManager: requestUserInfos: Unable to decode content json for kind: \(NostrKind.userScore.rawValue)")
-                            break
-                        }
-                        
-                        guard let score = content.values.first else { return }
-                        
-                    }
-                case .userFollowers, .mediaMetadata:
-                    break
-                default:
-                    print("IdentityManager: requestUserInfos: Got unexpected event kind in response: \(String(describing: kind))")
+        SocketRequest(name: "user_infos", payload: ["pubkeys": [.string(userHexPubkey)]]).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let user = result.users.first?.value else { return }
+                self?.user = user
+                if user.deleted ?? false {
+                    self?.handleDeletedAccount()
                 }
+                self?.userStats = result.userStats ?? self?.userStats
+                self?.parsedUser = result.createParsedUser(user)
             }
-        }
+            .store(in: &cancellables)
     }
     func requestUserProfile() {
-        let request: JSON = .object([
-            "cache": .array([
-                "user_profile",
-                .object([
-                    "pubkey": .string(userHexPubkey)
-                ])
-            ])
-        ])
-        
-        Connection.regular.request(request) { res in
-            for response in res {
-                let kind = NostrKind.fromGenericJSON(response)
-                
-                switch kind {
-                case .metadata:
-                    let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
-                    self.user = PrimalUser(nostrUser: nostrUser)
-                    if self.user?.deleted ?? false {
-                        self.handleDeletedAccount()
-                    }
-                case .userStats:
-                    guard let nostrUserProfileInfo: NostrUserProfileInfo = try? JSONDecoder().decode(NostrUserProfileInfo.self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding nostr stats string to json")
-                        return
-                    }
-                    
-                    self.userStats = nostrUserProfileInfo
-                default:
-                        print("IdentityManager: requestUserProfile: Got unexpected event kind in response: \(String(describing: kind))")
+        SocketRequest(name: "user_profile", payload: ["pubkey": .string(userHexPubkey)]).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let user = result.users.first?.value else { return }
+                self?.user = user
+                if user.deleted ?? false {
+                    self?.handleDeletedAccount()
                 }
+                self?.userStats = result.userStats ?? self?.userStats
+                self?.parsedUser = result.createParsedUser(user)
             }
-        }
+            .store(in: &cancellables)
     }
     func requestDefaultSettings(_ callback: @escaping (_: PrimalSettings) -> Void) {
         let request: JSON = .object([

@@ -21,7 +21,13 @@ struct AccountCreationData {
 }
 
 class OnboardingImageUploader {
-    var avatarURL = ""
+    var avatarURL = "" {
+        didSet {
+            if let url = URL(string: avatarURL) {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            }
+        }
+    }
     var bannerURL = "https://m.primal.net/HQTd.jpg"
     
     @Published var isUploadingAvatar = false
@@ -38,6 +44,10 @@ class OnboardingImageUploader {
             .map { $0 || $1 }
             .assign(to: \.isUploading, onWeak: self)
             .store(in: &cancellables)
+        
+        if let url = URL(string: bannerURL) {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
     }
     
     func addPhoto(controller: UIViewController) {
@@ -132,10 +142,6 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
         IdentityManager.instance.newUserKeypair = keypair
         
         setup()
-        
-        if let url = URL(string: uploader.bannerURL) {
-            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-        }
     }
     
     var lastRemoveTime: Date?

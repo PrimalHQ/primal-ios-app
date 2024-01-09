@@ -31,7 +31,7 @@ extension TransactionExpandInfoCell: TransactionPartialCell {
         label.textColor = .foreground4
         chevron.tintColor = .foreground4
         background.backgroundColor = .background4
-        backgroundColor = .background
+        backgroundColor = .background2
     }
 }
 

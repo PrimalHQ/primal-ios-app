@@ -12,7 +12,7 @@ import FLAnimatedImage
 import AVFoundation
 
 protocol ImageCollectionViewDelegate: AnyObject {
-    func didTapMedia(resource: MediaMetadata.Resource)
+    func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource)
 }
 
 final class ImageGalleryView: UIView {
@@ -84,7 +84,7 @@ extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageDelegate?.didTapMedia(resource: resources[indexPath.item])
+        imageDelegate?.didTapMediaInCollection(self, resource: resources[indexPath.item])
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -100,10 +100,11 @@ extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let current = collection.contentOffset.x / (collection.frame.width + 10)
-        let adjusted = (current + velocity.x).clamp(0, CGFloat(resources.count))
+        let adjustedVelocity = velocity.x.clamp(-0.5, 0.5)
+        let adjusted = (current + adjustedVelocity).clamp(0, CGFloat(resources.count))
         let endPoint = adjusted.rounded() * (collection.frame.width + 10)
         
-        if abs(current - endPoint) > 150 && abs(current - targetContentOffset.pointee.x) > 100 {
+        if abs(current - endPoint) > 150 || abs(current - targetContentOffset.pointee.x) > 100 {
             targetContentOffset.pointee.x = endPoint
         }
     }
@@ -144,6 +145,8 @@ extension ImageGalleryView: UICollectionViewDataSource {
             if let cell = cell as? VideoCell {
                 cell.player = player
                 cell.thumbnailImage.image = nil
+                cell.duration = r.variants.compactMap({ $0.dur }).first
+                
                 if let thumbnailString = thumbnails[r.url], let url = URL(string: thumbnailString) {
                     cell.thumbnailImage.kf.setImage(with: url)
                 }
@@ -158,12 +161,16 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 }
             }
         } else {
-            (cell as? ImageCell)?.imageView.kf.setImage(with: r.url(for: .large), options: [
-                .processor(DownsamplingImageProcessor(size: frame.size)),
-                .transition(.fade(0.1)),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
-            ])
+            if let cell = cell as? ImageCell {
+                cell.imageView.kf.setImage(with: r.url(for: .large), options: [
+                    .processor(DownsamplingImageProcessor(size: frame.size)),
+                    .transition(.fade(0.1)),
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage
+                ])
+                cell.url = r.url
+                cell.delegate = self
+            }
         }
         return cell
     }
@@ -180,20 +187,9 @@ extension ImageGalleryView: UICollectionViewDataSource {
     }
 }
 
-final class ImageCell: UICollectionViewCell {
-    let imageView = FLAnimatedImageView()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        contentView.addSubview(imageView)
-        imageView.pinToSuperview()
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.masksToBounds = true
-        
-        contentView.backgroundColor = .background3
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+extension ImageGalleryView: ImageCellDelegate {
+    func imagePreviewTappedFromCell(_ cell: ImageCell) {
+        guard let media = resources[safe: collection.indexPath(for: cell)?.item] else { return }
+        imageDelegate?.didTapMediaInCollection(self, resource: media)
     }
 }

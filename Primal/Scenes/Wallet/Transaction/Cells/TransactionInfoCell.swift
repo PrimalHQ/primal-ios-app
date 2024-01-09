@@ -44,7 +44,7 @@ extension TransactionInfoCell: TransactionPartialCell {
         copyIcon.tintColor = .foreground4
         background.backgroundColor = .background4
         border.backgroundColor = .background3
-        backgroundColor = .background
+        backgroundColor = .background2
     }
 }
 

@@ -286,13 +286,11 @@ extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate,
     }
     
     func sendButtonPressed() {
-        show(WalletPickUserController(), sender: nil)
+        show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
     }
     
     func scanButtonPressed() {
-        present(WalletQRCodeViewController() { [weak self] text, amount, user in
-            self?.show(WalletSendViewController(.address(text, amount, user)), sender: nil)
-        }, animated: true)
+        show(WalletSendParentViewController(startingTab: .scan), sender: nil)
     }
 }
 

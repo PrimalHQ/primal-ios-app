@@ -15,6 +15,9 @@ import Kingfisher
 import StoreKit
 
 class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
+    
+    static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 100)
+    
     var refreshControl = UIRefreshControl()
     let table = UITableView()
     let safeAreaSpacer = UIView()
@@ -367,10 +370,8 @@ private extension FeedViewController {
     }
     
     func animateZap(_ cell: PostCell, amount: Int) {
-        let animView = LottieAnimationView(animation: AnimationType.zapMedium.animation)
-        view.addSubview(animView)
-        animView
-            .constrainToSize(width: 375, height: 100)
+        view.addSubview(Self.bigZapAnimView)
+        Self.bigZapAnimView
             .pin(to: cell.zapButton.iconView, edges: .top, padding: -38.5)
             .pin(to: cell.zapButton.iconView, edges: .leading, padding: -114.5)
         
@@ -380,13 +381,14 @@ private extension FeedViewController {
         cell.zapButton.animateTo(amount, filled: true)
         
         heavy.impactOccurred()
-            
-        animView.play { _ in
+        
+        Self.bigZapAnimView.alpha = 1
+        Self.bigZapAnimView.play { _ in
             UIView.animate(withDuration: 0.2) {
                 cell.zapButton.iconView.alpha = 1
-                animView.alpha = 0
+                Self.bigZapAnimView.alpha = 0
             } completion: { _ in
-                animView.removeFromSuperview()
+                Self.bigZapAnimView.removeFromSuperview()
             }
         }
     }

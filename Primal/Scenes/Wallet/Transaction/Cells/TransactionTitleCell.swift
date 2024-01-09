@@ -25,7 +25,7 @@ extension TransactionTitleCell: TransactionPartialCell {
         
         label.text = text
         label.textColor = .foreground4
-        backgroundColor = .background
+        backgroundColor = .background2
     }
 }
 

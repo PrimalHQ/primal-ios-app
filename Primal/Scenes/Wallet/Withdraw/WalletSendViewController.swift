@@ -11,38 +11,38 @@ import UIKit
 
 final class WalletSendViewController: UIViewController, Themeable {
     enum Destination {
-        case user(ParsedUser)
-        case address(String, ParsedLNInvoice?, ParsedUser?)
+        case user(ParsedUser, startingAmount: Int = 0)
+        case address(String, ParsedLNInvoice?, ParsedUser?, startingAmount: Int? = nil)
         
         var user: ParsedUser? {
             switch self {
-            case let .user(user):
+            case let .user(user, _):
                 return user
-            case .address(_, _, let user):
+            case .address(_, _, let user, _):
                 return user
             }
         }
         
         var address: String {
             switch self {
-            case let .user(user):
+            case let .user(user, _):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
-            case .address(_, let invoice, let user):
-                return user?.data.lud16 ?? invoice?.lninvoice.description ?? ""
+            case .address(let address, let invoice, let user, _):
+                return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
             }
         }
         
         var startingAmount: Int {
             switch self {
-            case .user:                     return 0
-            case .address(_, let parsed, _):  return (parsed?.lninvoice.amount_msat ?? 0) / 1000
+            case .user(_, let amount):                              return amount
+            case .address(_, let parsed, _, let startingAmount):    return startingAmount ?? (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
         }
         
         var message: String {
             switch self {
             case .user:                     return ""
-            case .address(_, let parsed, _):
+            case .address(_, let parsed, _, _):
                 guard let desc = parsed?.lninvoice.description?.removingPercentEncoding else { return "" }
                 
                 return desc.split(separator: " ").dropFirst(3).joined(separator: " ")
@@ -52,7 +52,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         var isEditable: Bool {
             switch self {
             case .user:                     return true
-            case .address(_, let parsed, _):  return parsed == nil || parsed?.lninvoice.amount_msat == 0
+            case .address(_, let parsed, _, _):  return parsed == nil || parsed?.lninvoice.amount_msat == 0
             }
         }
     }
@@ -95,12 +95,6 @@ final class WalletSendViewController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-       
-        input.becomeFirstResponder()
     }
 }
 
@@ -212,14 +206,16 @@ private extension WalletSendViewController {
             
             do {
                 switch self.destination {
-                case .user(let user):
+                case .user(let user, _):
                     try await WalletManager.instance.send(
                         user: user.data,
                         sats: amount,
                         note: messageInput.text ?? ""
                     )
-                case let .address(address, invoice, user):
-                    if address.hasPrefix("lnurl") {
+                case let .address(address, invoice, user, _):
+                    if address.isEmail {
+                        try await WalletManager.instance.sendLud16(address, sats: amount, note: messageInput.text ?? "")
+                    } else if address.hasPrefix("lnurl") {
                         try await WalletManager.instance.sendLNURL(
                             lnurl: address,
                             pubkey: user?.data.pubkey,
@@ -235,9 +231,14 @@ private extension WalletSendViewController {
                     }
                 }
                 
-                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) {
-                    self.navigationController?.popToViewController(self, animated: false)
-                    self.navigationController?.viewControllers.remove(object: self)
+                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) { [weak self] in
+                    guard let self else { return }
+                    
+                    navigationController?.popToViewController(self, animated: false)
+                    if let amountVC = navigationController?.viewControllers.first(where: { $0 as? WalletSendAmountController != nil }) {
+                        navigationController?.viewControllers.remove(object: amountVC)
+                    }
+                    navigationController?.viewControllers.remove(object: self)
                 }
             } catch {
                 let message = (error as? WalletError)?.message ?? error.localizedDescription
@@ -248,33 +249,5 @@ private extension WalletSendViewController {
             
             sender.isEnabled = true
         }
-    }
-}
-
-final class BitcoinInputParentView: UIStackView {
-    private let amountDescLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    init(_ input: LargeBalanceConversionInputView, spacing: CGFloat = 12) {
-        super.init(frame: .zero)
-        axis = .vertical
-        alignment = .center
-        self.spacing = spacing
-        
-        addArrangedSubview(amountDescLabel)
-        addArrangedSubview(input)
-        
-        amountDescLabel.font = .appFont(withSize: 16, weight: .regular)
-        amountDescLabel.text = "amount"
-        
-//        input.$isBitcoinPrimary.sink { [weak self] isBitcoin in
-//            self?.amountDescLabel.text = isBitcoin ? "amount: (sats)" : "amount: (USD)"
-//        }
-//        .store(in: &cancellables)
-    }
-    
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

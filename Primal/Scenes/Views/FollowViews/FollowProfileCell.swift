@@ -50,7 +50,7 @@ private extension FollowProfileCell {
         vStack.spacing = 4
         
         profileImage.constrainToSize(44).layer.cornerRadius = 22
-        profileImage.contentMode = .scaleAspectFit
+        profileImage.contentMode = .scaleAspectFill
         profileImage.clipsToBounds = true
         
         nameLabel.textColor = .black

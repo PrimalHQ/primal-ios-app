@@ -195,8 +195,13 @@ class PostCell: UITableViewCell {
 }
 
 extension PostCell: ImageCollectionViewDelegate {
-    func didTapMedia(resource: MediaMetadata.Resource) {
-        delegate?.postCellDidTapImages(self, resource: resource)
+    func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource) {
+        if collection == mainImages {
+            delegate?.postCellDidTapImages(self, resource: resource)
+        }
+        if collection == postPreview.mainImages {
+            delegate?.postCellDidTapEmbeddedImages(self, resource: resource)
+        }
     }
 }
 
@@ -283,6 +288,7 @@ private extension PostCell {
         previewTap.require(toFail: previewImageTap)
         postPreview.addGestureRecognizer(previewTap)
         postPreview.mainImages.addGestureRecognizer(previewImageTap)
+        postPreview.mainImages.imageDelegate = self
         
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)

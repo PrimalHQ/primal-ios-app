@@ -142,7 +142,6 @@ private extension TransactionViewController {
                 ])
             )
             .publisher()
-            .waitForConnection(.regular)
             .map { $0.process() }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
@@ -180,9 +179,9 @@ private extension TransactionViewController {
         ]
             
         if isExpanded {
-            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).localized()))
+            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).twoDecimalPoints()))
             if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
-                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).localized()))
+                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).twoDecimalPoints()))
             }
             if let feeString = transaction.total_fee_btc, let feeBtc = Double(feeString) {
                 let fee = Int((feeBtc * .BTC_TO_SAT).rounded())

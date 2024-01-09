@@ -52,7 +52,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
         mainLabel.textColor = .foreground
         messageLabel.textColor = .foreground
         subtitleLabel.textColor = .foreground4
-        backgroundColor = .background
+        backgroundColor = .background2
         background.backgroundColor = .background4
         border.backgroundColor = .background3
     }

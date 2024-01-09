@@ -79,7 +79,7 @@ final class TransactionCell: UITableViewCell, Themeable {
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
             
-            let usdString = (usdAmount < 0 ? "-$" : "$") + abs(usdAmount).localized()
+            let usdString = (usdAmount < 0 ? "-$" : "$") + abs(usdAmount).twoDecimalPoints()
             
             amountLabel.text = usdString
             currencyLabel.text = "USD"

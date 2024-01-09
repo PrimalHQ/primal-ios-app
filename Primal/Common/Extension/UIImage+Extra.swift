@@ -30,6 +30,29 @@ extension UIImage {
         }
     }
     
+    func detectQRCode() -> String? {
+        guard let ciImage = CIImage.init(image: self) else { return nil }
+        
+        var options: [String: Any] = [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        
+        let qrDetector = CIDetector(ofType: CIDetectorTypeQRCode, context: CIContext(), options: options)
+        if ciImage.properties.keys.contains((kCGImagePropertyOrientation as String)){
+            options = [CIDetectorImageOrientation: ciImage.properties[(kCGImagePropertyOrientation as String)] ?? 1]
+        } else {
+            options = [CIDetectorImageOrientation: 1]
+        }
+        
+        let features = qrDetector?.features(in: ciImage, options: options) ?? []
+        
+        for case let feature as CIQRCodeFeature in features {
+            if let text = feature.messageString {
+                return text
+            }
+        }
+
+        return nil
+    }
+    
     func maskWhiteColor(color: UIColor) -> UIImage? {
         let maskingColors: [CGFloat] = [1, 255, 1, 255, 1, 255]
 //        let maskingColors: [CGFloat] = [0, 254, 0, 254, 0, 254]

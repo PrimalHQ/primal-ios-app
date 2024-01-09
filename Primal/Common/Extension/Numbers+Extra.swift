@@ -110,4 +110,8 @@ extension Double {
         nf.maximumFractionDigits = 2
         return nf.string(from: self as NSNumber) ?? ""
     }
+    
+    func twoDecimalPoints() -> String {
+        String(format: "%.2f", self)
+    }
 }

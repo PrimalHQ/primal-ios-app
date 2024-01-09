@@ -249,6 +249,9 @@
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
 		B91BB95D2B3B3854003F6B2A /* ErrorMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */; };
+		B91BB95F2B3CC2C7003F6B2A /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95E2B3CC2C7003F6B2A /* ImageCell.swift */; };
+		B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */; };
+		B91BB9642B3E10C3003F6B2A /* WalletKeyboardTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */; };
 		B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */; };
 		B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */; };
 		B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */; };
@@ -303,6 +306,9 @@
 		B9B1ABA52B3336B000837312 /* TransactionUserInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA42B3336B000837312 /* TransactionUserInfoCell.swift */; };
 		B9B1ABA72B3336D000837312 /* TransactionInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA62B3336D000837312 /* TransactionInfoCell.swift */; };
 		B9B1ABA92B3336EC00837312 /* TransactionExpandInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA82B3336EC00837312 /* TransactionExpandInfoCell.swift */; };
+		B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290502B457EE10069C87F /* WalletSendAmountController.swift */; };
+		B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */; };
+		B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290542B4C46890069C87F /* SmartContactsManager.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -598,6 +604,9 @@
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
 		B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageCell.swift; sourceTree = "<group>"; };
+		B91BB95E2B3CC2C7003F6B2A /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
+		B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendParentViewController.swift; sourceTree = "<group>"; };
+		B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletKeyboardTabController.swift; sourceTree = "<group>"; };
 		B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingMessages.swift; sourceTree = "<group>"; };
 		B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSearchController.swift; sourceTree = "<group>"; };
@@ -652,6 +661,9 @@
 		B9B1ABA42B3336B000837312 /* TransactionUserInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionUserInfoCell.swift; sourceTree = "<group>"; };
 		B9B1ABA62B3336D000837312 /* TransactionInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionInfoCell.swift; sourceTree = "<group>"; };
 		B9B1ABA82B3336EC00837312 /* TransactionExpandInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExpandInfoCell.swift; sourceTree = "<group>"; };
+		B9B290502B457EE10069C87F /* WalletSendAmountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendAmountController.swift; sourceTree = "<group>"; };
+		B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberKeyboardView.swift; sourceTree = "<group>"; };
+		B9B290542B4C46890069C87F /* SmartContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContactsManager.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -1012,6 +1024,7 @@
 				B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */,
 				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
 				B94F2BD72ADDAF000041181B /* InAppPurchaseManager.swift */,
+				B9B290542B4C46890069C87F /* SmartContactsManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1468,8 +1481,20 @@
 				9E69249B2A0262CE00CAC54C /* ImageGalleryView.swift */,
 				B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */,
 				B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */,
+				B91BB95E2B3CC2C7003F6B2A /* ImageCell.swift */,
 			);
 			path = ImageCollection;
+			sourceTree = "<group>";
+		};
+		B91BB9622B3E1022003F6B2A /* TabbedSend */ = {
+			isa = PBXGroup;
+			children = (
+				B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */,
+				B94F2BC82AD7206C0041181B /* WalletPickUserController.swift */,
+				B94F2BD52ADD5CE10041181B /* WalletQRCodeViewController.swift */,
+				B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */,
+			);
+			path = TabbedSend;
 			sourceTree = "<group>";
 		};
 		B94A0E222AA8C7C500DEBFE1 /* Messagges */ = {
@@ -1536,6 +1561,7 @@
 				B94F2BC12AD57AD20041181B /* TransactionHeader.swift */,
 				B94F2BCE2AD995250041181B /* WalletNavView.swift */,
 				B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */,
+				B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1543,10 +1569,10 @@
 		B94F2BC52AD6AF910041181B /* Withdraw */ = {
 			isa = PBXGroup;
 			children = (
+				B91BB9622B3E1022003F6B2A /* TabbedSend */,
+				B9B290502B457EE10069C87F /* WalletSendAmountController.swift */,
 				B94F2BC62AD720250041181B /* WalletSendViewController.swift */,
-				B94F2BC82AD7206C0041181B /* WalletPickUserController.swift */,
 				B94F2BCC2AD868770041181B /* WalletTransferSummaryController.swift */,
-				B94F2BD52ADD5CE10041181B /* WalletQRCodeViewController.swift */,
 				B94F2BEE2AE6E4340041181B /* WalletSpinnerViewController.swift */,
 			);
 			path = Withdraw;
@@ -1853,6 +1879,7 @@
 				9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */,
 				B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */,
 				9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */,
+				B91BB9642B3E10C3003F6B2A /* WalletKeyboardTabController.swift in Sources */,
 				B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
 				9EF4BFC22A8BE96F003396AA /* MidnightWave.swift in Sources */,
@@ -1866,6 +1893,7 @@
 				B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				B94F2BBC2AD428400041181B /* LargeBalanceConversionView.swift in Sources */,
+				B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */,
 				B94F2BC72AD720250041181B /* WalletSendViewController.swift in Sources */,
 				9309D22C2A5EA7A300FD2127 /* ICloudKeychainManager.swift in Sources */,
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
@@ -1880,6 +1908,7 @@
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
+				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
@@ -1938,6 +1967,7 @@
 				B94F2BE42AE2EFDD0041181B /* PlaceholderTextView.swift in Sources */,
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
+				B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				B9B1ABA72B3336D000837312 /* TransactionInfoCell.swift in Sources */,
 				9E8834BE2A328767005DB548 /* CircleIconButton.swift in Sources */,
@@ -1953,6 +1983,7 @@
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
+				B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
@@ -2025,6 +2056,7 @@
 				B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
+				B91BB95F2B3CC2C7003F6B2A /* ImageCell.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */,
 				B9009B5C2B0FD390002B0613 /* ProfileShowQRController.swift in Sources */,
@@ -2248,7 +2280,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.15;
+				MARKETING_VERSION = 1.1.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2293,7 +2325,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.15;
+				MARKETING_VERSION = 1.1.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

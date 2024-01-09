@@ -134,9 +134,9 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+    func requestAsync(_ request: PrimalWalletRequest.RequestType) async throws {
         return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLNInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride)).publisher()
+            PrimalWalletRequest(type: request).publisher()
                 .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
@@ -148,18 +148,16 @@ final class WalletManager {
         })
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLNURL(lnurl: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note)).publisher()
-                .sink { res in
-                    if let errorMessage = res.message {
-                        continuation.resume(throwing: WalletError.serverError(errorMessage))
-                    } else {
-                        continuation.resume()
-                    }
-                }
-                .store(in: &cancellables)
-        })
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+        try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+    }
+    
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject? = nil) async throws {
+        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+    }
+    
+    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
+        try await requestAsync(.send(.lud16, target: lud, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
@@ -168,30 +166,10 @@ final class WalletManager {
             let lud = user.lud16
             if lud.isEmpty { throw WalletError.noLud }
             
-            return try await withCheckedThrowingContinuation({ continuation in
-                PrimalWalletRequest(type: .sendLud16(target: lud, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
-                    .sink { res in
-                        if let errorMessage = res.message {
-                            continuation.resume(throwing: WalletError.serverError(errorMessage))
-                        } else {
-                            continuation.resume()
-                        }
-                    }
-                    .store(in: &cancellables)
-            })
+            return try await sendLud16(lud, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
         }
         
-        return try await withCheckedThrowingContinuation({ continuation in
-            PrimalWalletRequest(type: .sendLud06(target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap)).publisher()
-                .sink { res in
-                    if let errorMessage = res.message {
-                        continuation.resume(throwing: WalletError.serverError(errorMessage))
-                    } else {
-                        continuation.resume()
-                    }
-                }
-                .store(in: &cancellables)
-        })
+        try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
@@ -266,6 +244,7 @@ private extension WalletManager {
             .store(in: &cancellables)
         
         $transactions
+            .receive(on: DispatchQueue.main)
             .flatMap { [weak self] transactions in
                 let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
                 
@@ -285,17 +264,16 @@ private extension WalletManager {
                     "pubkeys": .array(set.map { .string($0) })
                 ])).publisher().eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                DispatchQueue.main.async {
-                    guard let self else { return }
-                    for (key, value) in result.users {
-                        self.userData[key] = result.createParsedUser(value)
-                    }
-                    self.parsedTransactions = self.transactions.map { (
-                        $0,
-                        self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
-                    ) }
+                guard let self else { return }
+                for (key, value) in result.users {
+                    self.userData[key] = result.createParsedUser(value)
                 }
+                self.parsedTransactions = self.transactions.map { (
+                    $0,
+                    self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
+                ) }
             }
             .store(in: &cancellables)
     }

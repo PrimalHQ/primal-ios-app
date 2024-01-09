@@ -34,12 +34,10 @@ final class LargeRoundedButton: MyButton, Themeable {
         setup()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        backgroundColor = isEnabled ? .accent : .background3
+        backgroundColor = isEnabled ? .accent2 : .background3
         label.textColor = isEnabled ? (isPressed ? .white.withAlphaComponent(0.6) : .white) : .foreground5
     }
 }
@@ -56,4 +54,21 @@ private extension LargeRoundedButton {
         constrainToSize(height: 58)
         layer.cornerRadius = 29
     }
+}
+
+
+final class SimpleRoundedButton: UIButton {
+    init(title: String) {
+        super.init(frame: .zero)
+        
+        setTitle(title, for: .normal)
+        setTitleColor(.foreground, for: .normal)
+        titleLabel?.font = .appFont(withSize: 18, weight: .medium)
+        backgroundColor = .background3
+        
+        layer.cornerRadius = 29
+        constrainToSize(height: 58)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

@@ -225,7 +225,6 @@ private extension MainTabBarController {
         
         NotificationCenter.default.publisher(for: .primalNoteLink)
             .compactMap { $0.object as? String }
-            .waitForConnection(Connection.regular)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] note in
                 self?.switchToTab(.home, open: ThreadViewController(threadId: note))

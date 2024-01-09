@@ -22,14 +22,16 @@ struct PrimalPaymentTransaction : Encodable {
 }
 
 struct PrimalWalletRequest {
+    enum SendRequestType {
+        case lnurl, lud16, lud06
+    }
+    
     enum RequestType {
         case isUser
         case balance
         case transactions(until: Int? = nil, since: Int? = nil)
-        case sendLud06(target: String, pubkey: String, amount: String, note: String, zap: NostrObject?)
-        case sendLud16(target: String, pubkey: String, amount: String, note: String, zap: NostrObject?)
-        case sendLNURL(lnurl: String, pubkey: String?, amount: String, note: String)
-        case sendLNInvoice(lnInvoice: String, amountOverride: String?, noteOverride: String?)
+        case send(SendRequestType, target: String, pubkey: String?, amount: String, note: String, zap: NostrObject?)
+        case payInvoice(lnInvoice: String, amountOverride: String?, noteOverride: String?)
         case deposit(AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
@@ -62,46 +64,35 @@ struct PrimalWalletRequest {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
                 }
                 return "[\"transactions\",{\"subwallet\":1,\"limit\":50}]"
-            case let .sendLNInvoice(lnInvoice, amountOverride, noteOverride):
+            case let .payInvoice(lnInvoice, amountOverride, noteOverride):
                 if let amountOverride {
                     return "[\"withdraw\", {\"subwallet\":1, \"lnInvoice\": \"\(lnInvoice)\", \"amount_btc\":\"\(amountOverride)\", \"note_for_self\":\"\(noteOverride ?? "")\"}]"
                 }
                 return "[\"withdraw\", {\"subwallet\":1, \"lnInvoice\": \"\(lnInvoice)\"}]"
-            case let .sendLNURL(lnurl, pubkey, amount, note):
+            case let .send(type, target, pubkey, amount, note, zap):
+                var dic: [String: JSON] = [
+                    "subwallet": 1,
+                    "amount_btc": .string(amount),
+                    "note_for_recipient": .string(note),
+                    "note_for_self": .string(note)
+                ]
+                
+                switch type {
+                case .lnurl, .lud06:
+                    dic["target_lnurl"] = .string(target)
+                case .lud16:
+                    dic["target_lud16"] = .string(target)
+                }
+                
                 if let pubkey {
-                    return """
-                    ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
-                    """.trimmingCharacters(in: .whitespacesAndNewlines)
+                    dic["target_pubkey"] = .string(pubkey)
                 }
-                return """
-                ["withdraw",{"subwallet":1, "target_lnurl":"\(lnurl)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
-                """.trimmingCharacters(in: .whitespacesAndNewlines)
-            case let .sendLud16(target, pubkey, amount, note, zap):
-                guard
-                    let zapJSON = zap?.toJSON(),
-                    let zapData = try? JSONEncoder().encode(zapJSON),
-                    let zapString = String(data: zapData, encoding: .utf8)
-                else {
-                    return """
-                    ["withdraw",{"subwallet":1, "target_lud16":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
-                    """.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if let zapJSON = zap?.toJSON() {
+                    dic["zap_request"] = zapJSON
                 }
-                return """
-                ["withdraw",{"subwallet":1, "target_lud16":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)","note_for_self":"\(note)", "zap_request": \(zapString)}]
-                """.trimmingCharacters(in: .whitespacesAndNewlines)
-            case let .sendLud06(target, pubkey, amount, note, zap):
-                guard
-                    let zapJSON = zap?.toJSON(),
-                    let zapData = try? JSONEncoder().encode(zapJSON),
-                    let zapString = String(data: zapData, encoding: .utf8)
-                else {
-                    return """
-                    ["withdraw",{"subwallet":1, "target_lnurl":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)", "note_for_self":"\(note)"}]
-                    """.trimmingCharacters(in: .whitespacesAndNewlines)
-                }
-                return """
-                ["withdraw",{"subwallet":1, "target_lnurl":"\(target)", "target_pubkey":"\(pubkey)", "amount_btc":"\(amount)", "note_for_recipient":"\(note)","note_for_self":"\(note)", "zap_request": \(zapString)}]
-                """.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                return #"["withdraw", \#(dic.encodeToString() ?? "{}")]"#
             case .inAppPurchase(let transactionId, let quote):
                 return "[\"in_app_purchase\", {\"transaction_id\":\"\(transactionId)\", \"quote_id\": \"\(quote)\"}]"
             case .quote(let productId, let region):

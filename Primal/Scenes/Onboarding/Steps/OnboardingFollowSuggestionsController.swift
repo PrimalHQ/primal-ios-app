@@ -91,9 +91,7 @@ private extension OnboardingFollowSuggestionsController {
         table.layer.cornerRadius = 12
         table.bounces = false
         
-        let username = UserDefaults.standard.string(forKey: "username") ?? ""
-        
-        FollowSuggestionsRequest(username: username).publisher()
+        FollowSuggestionsRequest(username: "").publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion  in
                 print(completion)
@@ -101,7 +99,6 @@ private extension OnboardingFollowSuggestionsController {
                 self?.metadata = response.metadata
                 self?.selectedToFollow = Set(response.suggestions.flatMap { $0.members } .map { $0.pubkey })
                 self?.suggestionGroups = response.suggestions
-                UserDefaults.standard.removeObject(forKey: "username")
             })
             .store(in: &cancellables)
         
@@ -214,13 +211,7 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
         if let cell = cell as? FollowProfileCell {
             let suggestion = suggestionGroups[indexPath.section].members[indexPath.row]
             if let data = metadata[suggestion.pubkey], let nostrData = NostrMetadata.from(data.content) {
-                
-                cell.profileImage.kf.setImage(with: URL(string: nostrData.picture ?? ""), placeholder: UIImage(named: "Profile"), options: [
-                    .processor(DownsamplingImageProcessor(size: CGSize(width: 48, height: 48))),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage
-                ])
-                
+                cell.profileImage.setUserImage(.init(imageURL: nostrData.picture ?? ""), feed: false)
                 cell.nameLabel.text = nostrData.name
                 cell.secondaryLabel.text = nostrData.about
                 cell.followButton.isFollowing = selectedToFollow.contains(suggestion.pubkey)

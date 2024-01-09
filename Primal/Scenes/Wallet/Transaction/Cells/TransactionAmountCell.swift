@@ -37,7 +37,7 @@ extension TransactionAmountCell: TransactionPartialCell {
         label.text = value.localized()
         visibleLabel.attributedText = text
         
-        backgroundColor = .background
+        backgroundColor = .background2
     }
 }
 
