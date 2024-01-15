@@ -51,7 +51,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, contentDisplay, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, contentDisplay, muted, notifications, feeds, wallet, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -88,6 +88,10 @@ private extension SettingsMainViewController {
             self?.navigationController?.pushViewController(SettingsAppearanceViewController(), animated: true)
         }), for: .touchUpInside)
         
+        network.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsNetworkViewController(), animated: true)
+        }), for: .touchUpInside)
+        
         contentDisplay.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsContentDisplayController(), animated: true)
         }), for: .touchUpInside)
@@ -100,12 +104,12 @@ private extension SettingsMainViewController {
             self?.navigationController?.pushViewController(SettingsNotificationsViewController(), animated: true)
         }), for: .touchUpInside)
         
-        zaps.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
+        wallet.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
         }), for: .touchUpInside)
         
-        network.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.pushViewController(SettingsNetworkViewController(), animated: true)
+        zaps.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
         }), for: .touchUpInside)
     }
     

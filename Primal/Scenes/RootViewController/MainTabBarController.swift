@@ -51,9 +51,14 @@ final class MainTabBarController: UIViewController, Themeable {
     private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
         let isWalletSelected = (self?.currentPageIndex ?? 0) == 2
         
-        $0.backgroundColor = isWalletSelected ? .foreground6 : .background3
-        $0.tintColor = isWalletSelected ? UIColor.foreground : UIColor.foreground3
+        $0.backgroundColor = isWalletSelected ? .foreground : .background3
+        $0.tintColor = isWalletSelected ? .background : .foreground3
         $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        guard let tab = tabs[safe: currentPageIndex] else { return super.preferredStatusBarStyle }
+        return navForTab(tab).preferredStatusBarStyle
     }
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
@@ -74,7 +79,7 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
 
-    var currentPageIndex = 0 {
+    var currentPageIndex = WalletSettings.startInWallet ? 2 : 0 {
         didSet {
             updateButtons()
         }
@@ -200,7 +205,7 @@ private extension MainTabBarController {
         messagesIndicator.isHidden = true
 
         pageVC.didMove(toParent: self) // Notify child VC
-        pageVC.setViewControllers([home], direction: .forward, animated: false)
+        pageVC.setViewControllers([WalletSettings.startInWallet ? wallet : home], direction: .forward, animated: false)
 
         vStack.axis = .vertical
 

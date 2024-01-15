@@ -46,6 +46,7 @@ final class SearchViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
+        userTable.reloadData()
         searchView.updateTheme()
         
         navigationItem.leftBarButtonItem = customBackButton
@@ -78,38 +79,10 @@ private extension SearchViewController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] text -> AnyPublisher<[ParsedUser], Never> in
+            .flatMap { [weak self] in
                 self?.userTable.reloadData()
                 
-                switch text {
-                case "":
-                    let contacts = SmartContactsManager.instance.getContacts().prefix(10)
-                    let contactPubkeys = contacts.map { $0.pubkey }
-                    
-                    let searchContacts = Set((contactPubkeys + PostingTextViewManager.recommendedUsersNpubs))
-                    
-                    return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(searchContacts.map { .string($0) })
-                    ]))
-                    .publisher()
-                    .map {
-                        let users = $0.getSortedUsers()
-                        
-                        let myContacts = contactPubkeys.compactMap({ pubkey in users.first(where: { $0.data.pubkey == pubkey }) })
-                        let other = users.filter { user in !myContacts.contains(where: { $0.data.npub == user.data.npub }) }
-                        
-                        return myContacts + other
-                    }
-                    .eraseToAnyPublisher()
-                default:
-                    return SocketRequest(name: "user_search", payload: .object([
-                       "query": .string(text),
-                       "limit": .number(15),
-                    ]))
-                    .publisher()
-                    .map { $0.getSortedUsers() }
-                    .eraseToAnyPublisher()
-                }
+                return SmartContactsManager.instance.userSearchPublisher($0)
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] users in
@@ -139,7 +112,10 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "search", for: indexPath)
-            (cell as? SearchTermTableCell)?.termLabel.text = userSearchText.isEmpty ? "Enter text to search" : userSearchText
+            if let cell = cell as? SearchTermTableCell {
+                cell.termLabel.text = userSearchText.isEmpty ? "Enter text to search" : userSearchText
+                cell.updateTheme()
+            }
             return cell
         }
         
@@ -156,8 +132,6 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
             show(feed, sender: nil)
             return
         }
-        
-        SmartContactsManager.instance.addContact(users[indexPath.row - 1].data)
         
         let profile = ProfileViewController(profile: users[indexPath.row - 1])
         searchView.inputField.resignFirstResponder()

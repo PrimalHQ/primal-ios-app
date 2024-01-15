@@ -36,6 +36,12 @@ extension UIView {
         return result
     }
     
+    func centerDistanceVectorToView(_ view: UIView) -> CGPoint {
+        let myCenter = superview?.convert(center, to: nil) ?? center
+        let otherCenter = view.superview?.convert(view.center, to: nil) ?? view.center
+        return CGPoint(x: otherCenter.x - myCenter.x, y: otherCenter.y - myCenter.y)
+    }
+    
     // MARK: - Constraints
     
     @discardableResult

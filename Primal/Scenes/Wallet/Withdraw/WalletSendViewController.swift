@@ -112,7 +112,14 @@ private extension WalletSendViewController {
         
         let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         
-        let sendButton = LargeRoundedButton(title: "Send")
+        let sendButton = UIButton()
+        sendButton.setTitle("Send", for: .normal)
+        sendButton.titleLabel?.font = .appFont(withSize: 18, weight: .medium)
+        sendButton.backgroundColor = .accent2
+        sendButton.setTitleColor(.white, for: .normal)
+        sendButton.setTitleColor(.white.withAlphaComponent(0.6), for: .highlighted)
+        sendButton.constrainToSize(height: 58)
+        sendButton.layer.cornerRadius = 29
         
         let stack = UIStackView(axis: .vertical, [
             profilePictureView, SpacerView(height: 12),
@@ -129,7 +136,7 @@ private extension WalletSendViewController {
         messageParent.addSubview(messageInput)
         messageParent.layer.cornerRadius = 24
         
-        messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .vertical, padding: 4)
+        messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .top, padding: 6).pinToSuperview(edges: .bottom, padding: 2)
         messageInput.font = .appFont(withSize: 16, weight: .regular)
         messageInput.backgroundColor = .clear
         messageInput.mainTextColor = .foreground
@@ -174,11 +181,11 @@ private extension WalletSendViewController {
         nipLabel.textAlignment = .center
         
         sendButton.addAction(.init(handler: { [weak self] _ in
+            self?.didTapView()
             self?.send(sender: sendButton)
         }), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-        tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
         updateTheme()
@@ -189,7 +196,7 @@ private extension WalletSendViewController {
         messageInput.resignFirstResponder()
     }
     
-    func send(sender: MyButton) {
+    func send(sender: UIButton) {
         Task { @MainActor in
             
             let amount = input.balance
@@ -198,8 +205,6 @@ private extension WalletSendViewController {
                 input.becomeFirstResponder()
                 return
             }
-            
-            sender.isEnabled = false
             
             let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.address)
             navigationController?.pushViewController(spinnerVC, animated: true)
@@ -246,8 +251,6 @@ private extension WalletSendViewController {
                     self.navigationController?.popToViewController(self, animated: false)
                 }
             }
-            
-            sender.isEnabled = true
         }
     }
 }

@@ -18,12 +18,14 @@ final class IdentityManager {
     
     static let instance = IdentityManager()
 
+    var userHexPubkeyCache: String?
     var userHexPubkey: String {
         get {
             guard
+                ICloudKeychainManager.instance.userPubkey.isEmpty,
                 let result = ICloudKeychainManager.instance.getLoginInfo()
             else {
-                return ""
+                return ICloudKeychainManager.instance.userPubkey
             }
             
             return result.hexVariant.pubkey
@@ -45,20 +47,6 @@ final class IdentityManager {
     
     var cancellables: Set<AnyCancellable> = []
 
-    func requestUserInfos() {
-        SocketRequest(name: "user_infos", payload: ["pubkeys": [.string(userHexPubkey)]]).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let user = result.users.first?.value else { return }
-                self?.user = user
-                if user.deleted ?? false {
-                    self?.handleDeletedAccount()
-                }
-                self?.userStats = result.userStats ?? self?.userStats
-                self?.parsedUser = result.createParsedUser(user)
-            }
-            .store(in: &cancellables)
-    }
     func requestUserProfile() {
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(userHexPubkey)]).publisher()
             .receive(on: DispatchQueue.main)

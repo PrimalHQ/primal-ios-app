@@ -32,6 +32,7 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         view.addSubview(image)
         image.pinToSuperview(safeArea: true)
         image.contentMode = .scaleAspectFill
+        image.alpha = 0.8
         
         view.backgroundColor = .background
 
@@ -58,19 +59,30 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
                 self?.sendParent?.search(code)
             }
         }), for: .touchUpInside)
-        
-        Task { @MainActor in
-            await self.setUpCaptureSession()
-        }
     }
     
     var isRunning = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
         guard !isRunning else { return }
         
-        isRunning = true
+        Task { @MainActor in
+            await self.setUpCaptureSession()
+            
+            isRunning = true
+            
+            self.startSession()
+        }
+    }
+    
+    func startSession() {
         DispatchQueue.global(qos: .background).async {
             self.captureSession.startRunning()
         }

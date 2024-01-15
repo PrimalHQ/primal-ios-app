@@ -15,6 +15,30 @@ extension UserDefaults {
     }
 }
 
+private extension String {
+    static let oldWalletAmountKey = "oldWalletAmountKey"
+    static let oldTransactionsKey = "oldTransactionsKey"
+}
+
+struct CodableParsedTransaction: Codable {
+    var transaction: WalletTransaction
+    var user: CodableParsedUser
+    
+    func toTuple() -> (WalletTransaction, ParsedUser) { (transaction, user.parsed) }
+}
+
+private extension UserDefaults {
+    var oldWalletAmount: [String: Int] {
+        get { string(forKey: .oldWalletAmountKey)?.decode() ?? [:] }
+        set { setValue(newValue.encodeToString(), forKey: .oldWalletAmountKey) }
+    }
+    
+    var oldTransactions: [String: [CodableParsedTransaction]] {
+        get { string(forKey: .oldTransactionsKey)?.decode() ?? [:] }
+        set { setValue(newValue.encodeToString(), forKey: .oldTransactionsKey) }
+    }
+}
+
 enum WalletError: Error {
     case serverError(String)
     case inAppPurchaseServerError
@@ -185,19 +209,23 @@ final class WalletManager {
 
 private extension WalletManager {
     func setupPublishers() {
-        IdentityManager.instance.$user
-            .compactMap { $0?.npub }
+        ICloudKeychainManager.instance.$userPubkey
+            .compactMap { $0.isEmpty ? nil : $0 }
             .removeDuplicates()
-            .map { [weak self] in
-                self?.userHasWallet = nil
-                self?.balance = 0
-                self?.transactions = []
+            .map { [weak self] pubkey in
+                let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
+                self?.balance = oldBalance
+                self?.userHasWallet = oldBalance > 0 ? true : nil
+                
+                let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
+                self?.transactions = oldTransactions.map { $0.0 }
+                self?.parsedTransactions = oldTransactions
                 self?.userZapped = [:]
-                self?.isLoadingWallet = true
-                return $0
+                self?.isLoadingWallet = oldTransactions.isEmpty
+                return pubkey
             }
             .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
-            .flatMap { npub -> AnyPublisher<WalletRequestResult, Never> in
+            .flatMap { _ -> AnyPublisher<WalletRequestResult, Never> in
                 return PrimalWalletRequest(type: .isUser).publisher()
             }
             .sink(receiveValue: { [weak self] val in
@@ -229,7 +257,8 @@ private extension WalletManager {
         
         $balance
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMap { [weak self] _ in
+            .flatMap { [weak self] in
+                UserDefaults.standard.oldWalletAmount[IdentityManager.instance.userHexPubkey] = $0
                 return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher()
             }
             .sink(receiveValue: { [weak self] val in
@@ -270,10 +299,17 @@ private extension WalletManager {
                 for (key, value) in result.users {
                     self.userData[key] = result.createParsedUser(value)
                 }
-                self.parsedTransactions = self.transactions.map { (
+                
+                let parsed = self.transactions.map { (
                     $0,
                     self.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
                 ) }
+                
+                self.parsedTransactions = parsed
+                
+                if !parsed.isEmpty {
+                    UserDefaults.standard.oldTransactions[IdentityManager.instance.userHexPubkey] = parsed.prefix(10).map { .init(transaction: $0.0, user: .init($0.1)) }
+                }
             }
             .store(in: &cancellables)
     }

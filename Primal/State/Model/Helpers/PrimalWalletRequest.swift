@@ -118,7 +118,9 @@ struct PrimalWalletRequest {
   private let pendingResult: WalletRequestResult = .init()
   
     func publisher() -> AnyPublisher<WalletRequestResult, Never> {
-        Deferred {
+        Connection.wallet.autoReconnect()
+        
+        return Deferred {
             Future { promise in
                 Connection.wallet.requestWallet(type.requestContent) { result in
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handleWalletEvent($0) }

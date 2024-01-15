@@ -34,7 +34,6 @@ final class RootViewController: UIViewController {
         
         Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
-                IdentityManager.instance.requestUserInfos()
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
                 IdentityManager.instance.requestUserContacts()
@@ -51,7 +50,15 @@ final class RootViewController: UIViewController {
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        currentChild as? OnboardingParentViewController != nil ? .lightContent : Theme.current.statusBarStyle
+        guard let style = currentChild?.preferredStatusBarStyle else {
+            return Theme.current.statusBarStyle
+        }
+        
+        if case .default = style {
+            return Theme.current.statusBarStyle
+        }
+        
+        return style
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -146,6 +153,21 @@ final class RootViewController: UIViewController {
     }
 }
 
+protocol AnimatableFirstViewController: UIViewController {
+    var table: UITableView { get }
+    var onLoad: (() -> ())? { get set }
+}
+
+extension HomeFeedViewController: AnimatableFirstViewController { }
+extension WalletHomeViewController: AnimatableFirstViewController {
+    var onLoad: (() -> ())? {
+        get { nil }
+        set {
+            newValue?()
+        }
+    }
+}
+
 private extension RootViewController {
     func animateFromIntro() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
@@ -160,7 +182,7 @@ private extension RootViewController {
         guard !didAnimate, let introVC else { return }
         didAnimate = true
         
-        guard let homeFeed: HomeFeedViewController = findInChildren() else {
+        guard let firstController: AnimatableFirstViewController = findInChildren() else {
             guard let onboarding: OnboardingStartViewController = self.findInChildren() else { return }
             
             RootAnimatorToSignIn(introVC: introVC, onboarding: onboarding).animate()
@@ -169,8 +191,8 @@ private extension RootViewController {
             return
         }
         
-        homeFeed.table.alpha = 0.01
-        homeFeed.onLoad = {
+        firstController.table.alpha = 0.01
+        firstController.onLoad = {
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(.easeInTiming)
 
@@ -187,14 +209,14 @@ private extension RootViewController {
             CATransaction.commit()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
-                homeFeed.table.alpha = 1
-                homeFeed.table.transform = .init(translationX: 0, y: 800)
+                firstController.table.alpha = 1
+                firstController.table.transform = .init(translationX: 0, y: 800)
                     
                 CATransaction.begin()
                 CATransaction.setAnimationTimingFunction(.postsEaseInOut)
 
                 UIView.animate(withDuration: 0.3) {
-                    homeFeed.table.transform = .identity
+                    firstController.table.transform = .identity
                 }
                 
                 CATransaction.commit()

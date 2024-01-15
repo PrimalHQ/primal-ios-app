@@ -103,7 +103,6 @@ private extension OnboardingFollowSuggestionsController {
             .store(in: &cancellables)
         
         Connection.regular.$isConnected.filter { $0 }.first().sink { connected in            
-            IdentityManager.instance.requestUserInfos()
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()
             IdentityManager.instance.requestUserContacts()

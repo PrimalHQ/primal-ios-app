@@ -21,10 +21,24 @@ class LargeWalletButton: MyButton, Themeable {
                 return UIImage(named: "scanWallet")
             }
         }
+        
+        var smallIcon: UIImage? {
+            icon?.scalePreservingAspectRatio(size: 22).withRenderingMode(.alwaysTemplate)
+        }
     }
 
-    private let iconView = UIImageView()
-    private let titleLabel = UILabel()
+    let iconView = UIImageView()
+    let titleLabel = UILabel()
+    
+    var variant: Variant
+    
+    var useSmallIcon = false {
+        didSet {
+//            UIView.transition(with: self, duration: 13 / 30, options: .transitionCrossDissolve) {
+//                self.iconView.image = self.useSmallIcon ? self.variant.smallIcon : self.variant.icon
+//            }
+        }
+    }
     
     override var isPressed: Bool {
         didSet {
@@ -34,6 +48,7 @@ class LargeWalletButton: MyButton, Themeable {
     }
     
     init(_ variant: Variant) {
+        self.variant = variant
         super.init(frame: .zero)
         
         iconView.image = variant.icon

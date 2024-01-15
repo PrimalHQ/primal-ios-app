@@ -215,7 +215,7 @@ final class Connection {
     }
     
     func autoReconnect() {
-        if attemptReconnection, isConnected {
+        if !attemptReconnection || isConnected {
             timeToReconnect = 4
             return
         }

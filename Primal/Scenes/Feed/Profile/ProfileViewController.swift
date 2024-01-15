@@ -91,6 +91,9 @@ final class ProfileViewController: PostFeedViewController {
     init(profile: ParsedUser) {
         self.profile = profile
         super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
+        
+        SmartContactsManager.instance.addContact(profile)
+        
         setup()
     }
     
@@ -366,7 +369,11 @@ private extension ProfileViewController {
             .sink { [weak self] result in
                 guard let user = result.users.first?.value else { return }
                 self?.userStats = result.userStats
-                self?.profile = result.createParsedUser(user)
+                
+                let parsed = result.createParsedUser(user)
+                self?.profile = parsed
+                
+                SmartContactsManager.instance.addContact(parsed)
             }
             .store(in: &cancellables)
     }

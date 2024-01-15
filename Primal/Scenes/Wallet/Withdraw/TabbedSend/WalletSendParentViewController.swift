@@ -40,7 +40,7 @@ final class WalletSendParentViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         setup()
-        
+
         set(tab, animated: false)
     }
     
@@ -49,6 +49,7 @@ final class WalletSendParentViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        updateBars(oldTab ?? .nostr)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -58,23 +59,43 @@ final class WalletSendParentViewController: UIViewController {
     }
     
     func set(_ tab: Tab, animated: Bool = true) {
+        updateBars(tab)
         guard oldTab != tab else { return }
         
         switch tab {
         case .nostr:
-            title = "Nostr Recipient"
             pageController.setViewControllers([pickVC], direction: .reverse, animated: animated)
-            activeButton = nostrButton
         case .scan:
-            title = "Scan"
             pageController.setViewControllers([scanVC], direction: oldTab == .nostr ? .forward : .reverse, animated: animated)
-            activeButton = scanButton
         case .keyboard:
-            title = "Keyboard"
             pageController.setViewControllers([keyboardVC], direction: .forward, animated: animated)
-            activeButton = keyboardButton
         }
         oldTab = tab
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        activeButton == scanButton ? .lightContent : super.preferredStatusBarStyle
+    }
+    
+    func updateBars(_ tab: Tab) {
+        switch tab {
+        case .nostr:
+            title = "Nostr Recipient"
+            activeButton = nostrButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        case .scan:
+            title = "Scan"
+            activeButton = scanButton
+            (navigationController as? MainNavigationController)?.isTransparent = true
+            navigationItem.leftBarButtonItem = backButtonWithColor(.white)
+        case .keyboard:
+            title = "Keyboard"
+            activeButton = keyboardButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        }
+        RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
     }
     
     func search(_ text: String) {
@@ -146,10 +167,6 @@ final class WalletSendParentViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
-    func searchForPubkeyAndSendUser(_ pubkey: String) {
-        
-    }
 }
 
 private extension WalletSendParentViewController {
@@ -187,9 +204,6 @@ private extension WalletSendParentViewController {
         keyboardButton.addAction(.init(handler: { [weak self] _ in
             self?.set(.keyboard)
         }), for: .touchUpInside)
-    }
-    
-    func callback(text: String, amount: ParsedLNInvoice, user: ParsedUser?) {
     }
 }
 

@@ -83,6 +83,7 @@ private extension WalletReceiveDetailsController {
         }
         
         applyButton.backgroundColor = .accent
+        applyButton.setTitleColor(.white, for: .normal)
         
         let actionStack = UIStackView([cancelButton, applyButton])
         actionStack.spacing = 16

@@ -21,6 +21,10 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let mainStack = UIStackView(axis: .vertical, [])
     private let loadingIndicator = LoadingSpinnerView()
     
+    private lazy var detailsButton = WalletActionButton(text: "ADD DETAILS", action: { [weak self] in
+        self?.show(WalletReceiveDetailsController(details: self?.additionalInfo ?? .init(satoshi: 0, description: ""), delegate: self), sender: nil)
+    })
+    
     private var cancellables: Set<AnyCancellable> = []
     
     private var lnInvoice: String? {
@@ -36,7 +40,11 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         }
     }
     
-    var additionalInfo: AdditionalDepositInfo?
+    var additionalInfo: AdditionalDepositInfo? {
+        didSet {
+            detailsButton.setTitle(additionalInfo == nil ? "ADD DETAILS" : "EDIT DETAILS", for: .normal)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -162,9 +170,7 @@ private extension WalletReceiveViewController {
                 UIPasteboard.general.string = invoice
                 self?.view.showToast("Copied!", extraPadding: false)
             }),
-            WalletActionButton(text: "ADD DETAILS", action: { [weak self] in
-                self?.show(WalletReceiveDetailsController(details: self?.additionalInfo ?? .init(satoshi: 0, description: ""), delegate: self), sender: nil)
-            })
+            detailsButton
         ])
         actionStack.spacing = 18
         actionStack.distribution = .fillEqually

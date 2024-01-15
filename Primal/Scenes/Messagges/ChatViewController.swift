@@ -73,6 +73,8 @@ final class ChatViewController: UIViewController, Themeable {
         super.init(nibName: nil, bundle: nil)
         setup()
         
+        SmartContactsManager.instance.addContact(user)
+        
         navigationItem.rightBarButtonItem = navigationBarButton(for: user)
         
         chatManager.getChatMessages(pubkey: user.data.pubkey) { [weak self] result in

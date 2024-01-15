@@ -10,7 +10,6 @@ import UIKit
 
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
-        case info
         case loading
         case activateWallet
         case buySats
@@ -33,14 +32,16 @@ final class WalletHomeViewController: UIViewController, Themeable {
     @Published var isBitcoinPrimary = true
     
     private let navBar = WalletNavView()
-    private let table = UITableView()
-    private let topEmptySpaceCover = UIView()
-    private var topEmptySpaceHeightConstraint: NSLayoutConstraint?
+    let table = UITableView()
     
     private var cancellables: Set<AnyCancellable> = []
     private var updateIsBitcoin: AnyCancellable?
     private var update: ContinousConnection?
     private var updateUpdate: AnyCancellable?
+    
+    private var forceNavbarOpen = false
+    private var extraOffset: CGFloat = 0
+    private var contentOffsetStart = CGPoint.zero
     
     private var tableData: [Section] = [] {
         didSet {
@@ -49,13 +50,15 @@ final class WalletHomeViewController: UIViewController, Themeable {
                 let oldLast = oldValue.last?.cells.last?.transaction,
                 let newLast = tableData.last?.cells.last?.transaction,
                 oldLast.id == newLast.id,
-                let oldTransactionList = oldValue.dropFirst().first?.cells.compactMap({ $0.transaction }),
-                let newTransactionList = tableData.dropFirst().first?.cells.compactMap({ $0.transaction }),
+                let oldTransactionList = oldValue.drop(while: { $0.title == nil }).first?.cells.compactMap({ $0.transaction }),
+                let newTransactionList = tableData.drop(while: { $0.title == nil }).first?.cells.compactMap({ $0.transaction }),
                 oldTransactionList.first?.id != newTransactionList.first?.id
             else {
                 table.reloadData()
                 return
             }
+            
+            let section = oldValue.first?.title == nil ? 1 : 0
             
             // Make sure other sections are not changed
             for index in oldValue.indices {
@@ -73,33 +76,14 @@ final class WalletHomeViewController: UIViewController, Themeable {
                 return
             }
             table.beginUpdates()
-            table.reloadSections(.init(integer: 0), with: .none)
             
-            let indexPaths: [IndexPath] = (0..<newTransCount).map { .init(row: $0, section: 1) }
+            if section > 0 {
+                table.reloadSections(.init(integer: 0), with: .none)
+            }
+            
+            let indexPaths: [IndexPath] = (0..<newTransCount).map { .init(row: $0, section: section) }
             table.insertRows(at: indexPaths, with: .top)
             table.endUpdates()
-        }
-    }
-    
-    var isShowingNavBar = false {
-        didSet {
-            if isShowingNavBar == oldValue { return }
-            
-            if isShowingNavBar {
-                navBar.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-            } else {
-                (table.cellForRow(at: .init(row: 0, section: 0)) as? WalletInfoCell)?.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-            }
-            
-            if !isShowingNavBar {
-                table.contentInset = isShowingNavBar ? UIEdgeInsets(top: 80, left: 0, bottom: 0, right: 0) : .zero
-            }
-            
-            UIView.animate(withDuration: 0.2) {
-                self.navBar.transform = self.isShowingNavBar ? .identity : .init(translationX: 0, y: -100)
-            } completion: { _ in
-                self.table.contentInset = self.isShowingNavBar ? UIEdgeInsets(top: 80, left: 0, bottom: 0, right: 0) : .zero
-            }
         }
     }
     
@@ -117,6 +101,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        (navigationController as? MainNavigationController)?.isTransparent = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -147,7 +132,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
-        topEmptySpaceCover.backgroundColor = .background
         table.backgroundColor = .background
         table.reloadData()
         
@@ -167,6 +151,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
 }
 
+// MARK: - TableDatasource
 extension WalletHomeViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { tableData.count }
     
@@ -186,21 +171,6 @@ extension WalletHomeViewController: UITableViewDataSource {
             if let cell = cell as? BuySatsCell {
                 cell.updateTheme()
                 cell.delegate = self
-            }
-            return cell
-        case .info:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "info", for: indexPath)
-            if let cell = cell as? WalletInfoCell {
-                updateIsBitcoin = nil
-                cell.delegate = self
-                cell.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-                updateIsBitcoin = cell.balanceConversionView.$isBitcoinPrimary.sink(receiveValue: { [weak self] isBitcoinPrimary in
-                    self?.isBitcoinPrimary = isBitcoinPrimary
-                })
-                
-                cell.backgroundColor = .background
-                cell.contentView.alpha = WalletManager.instance.userHasWallet == true ? 1 : 0.5
-                cell.contentView.isUserInteractionEnabled = WalletManager.instance.userHasWallet == true
             }
             return cell
         case .loading:
@@ -228,6 +198,7 @@ extension WalletHomeViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - Delegate
 extension WalletHomeViewController: TransactionCellDelegate {
     func transactionCellDidTapAvatar(_ cell: TransactionCell) {
         guard
@@ -248,19 +219,47 @@ extension WalletHomeViewController: UITableViewDelegate {
         return header
     }
     
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        navBar.shouldExpand = true
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        forceNavbarOpen = true
+        navBar.shouldExpand = true
+        return true
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        isShowingNavBar = scrollView.contentOffset.y > 190
-        if scrollView.contentOffset.y > 35 || scrollView.contentOffset.y < 0 {
-            topEmptySpaceCover.isHidden = true
+        if forceNavbarOpen {
+            navBar.shouldExpand = true
+            if scrollView.contentOffset.y < 5 {
+                forceNavbarOpen = false
+            }
+            return
+        }
+        
+        if navBar.shouldExpand {
+            navBar.shouldExpand = scrollView.contentOffset.y < 5
+            
+            if !navBar.shouldExpand {
+                extraOffset = navBar.expandedHeight - navBar.tightenedHeight - scrollView.contentOffset.y
+                scrollView.contentOffset.y = 1
+            }
         } else {
-            topEmptySpaceCover.isHidden = false
-            topEmptySpaceHeightConstraint?.constant = max(35 - scrollView.contentOffset.y, 0)
+            if scrollView.contentOffset.y <= 0 {
+                navBar.shouldExpand = true
+            } else if navBar.isAnimating && extraOffset > 0 {
+                extraOffset -= scrollView.contentOffset.y
+                scrollView.contentOffset.y = 1
+            } else {
+                print(navBar.isAnimating)
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .info, .loading, .error:
+        case .loading, .error:
             break
         case .buySats:
             buySatsPressed()
@@ -272,7 +271,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
 }
 
-extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate, ActivateWalletCellDelegate {
+extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
     func activateWalletPressed() {
         show(WalletActivateViewController(), sender: nil)
     }
@@ -280,35 +279,24 @@ extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate,
     func buySatsPressed() {
         present(WalletInAppPurchaseController(), animated: true)
     }
-    
-    func receiveButtonPressed() {
-        show(WalletReceiveViewController(), sender: nil)
-    }
-    
-    func sendButtonPressed() {
-        show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
-    }
-    
-    func scanButtonPressed() {
-        show(WalletSendParentViewController(startingTab: .scan), sender: nil)
-    }
 }
 
+// MARK: - HeaderPanGesture
+extension WalletHomeViewController: UIGestureRecognizerDelegate {
+    
+}
+
+// MARK: - Private
 private extension WalletHomeViewController {
     func setup() {
         title = "Wallet"
         
-        view.addSubview(table)
-        table.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        let stack = UIStackView(axis: .vertical, [navBar, table])
+        view.addSubview(stack)
+        // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
+        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: -100)
         
-        view.addSubview(navBar)
-        navBar.pinToSuperview(edges: [.horizontal, .top], safeArea: true)
-        navBar.transform = .init(translationX: 0, y: -100)
-        
-        view.addSubview(topEmptySpaceCover)
-        topEmptySpaceCover.pin(to: table, edges: [.horizontal, .top])
-        topEmptySpaceHeightConstraint = topEmptySpaceCover.heightAnchor.constraint(equalToConstant: 35)
-        topEmptySpaceHeightConstraint?.isActive = true
+        navBar.largeView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(headerPanned)))
         
         table.separatorStyle = .none
         table.dataSource = self
@@ -322,6 +310,7 @@ private extension WalletHomeViewController {
         table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
+        table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
         
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
@@ -356,7 +345,7 @@ private extension WalletHomeViewController {
             }
             
             self?.table.refreshControl?.endRefreshing()
-            var firstSection = Section(cells: [.info])
+            var firstSection = Section(cells: [])
             
             guard LoginManager.instance.method() == .nsec else {
                 self?.tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
@@ -371,22 +360,36 @@ private extension WalletHomeViewController {
                 firstSection.cells += [.buySats]
             }
             
-            self?.tableData = [firstSection] + grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
+            var tableData = [Section]()
+            if !firstSection.cells.isEmpty {
+                tableData.append(firstSection)
+            }
+            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
                 let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
-            }
+            })
+            
+            self?.tableData = tableData
         }
         .store(in: &cancellables)
         
-        navBar.receive.addAction(.init(handler: { [weak self] _ in
-            self?.receiveButtonPressed()
-        }), for: .touchUpInside)
-        navBar.send.addAction(.init(handler: { [weak self] _ in
-            self?.sendButtonPressed()
-        }), for: .touchUpInside)
-        navBar.scan.addAction(.init(handler: { [weak self] _ in
-            self?.scanButtonPressed()
-        }), for: .touchUpInside)
+        navBar.receivePressedEvent.sink { [weak self] in
+            self?.show(WalletReceiveViewController(), sender: nil)
+        }
+        .store(in: &cancellables)
+        
+        navBar.sendPressedEvent.sink { [weak self] in
+            self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
+        }
+        .store(in: &cancellables)
+        
+        navBar.scanPressedEvent.sink { [weak self] in
+            (self?.navigationController as? MainNavigationController)?.isTransparent = true
+            DispatchQueue.main.async {
+                self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+            }
+        }
+        .store(in: &cancellables)
         
         navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
             self?.isBitcoinPrimary = isBitcoinPrimary
@@ -400,5 +403,15 @@ private extension WalletHomeViewController {
             }
         }
         .store(in: &cancellables)
+    }
+    
+    
+    @objc func headerPanned(_ sender: UIPanGestureRecognizer) {
+        if case .began = sender.state {
+            contentOffsetStart = table.contentOffset
+        }
+        
+        let translation = sender.translation(in: view).y
+        table.contentOffset.y = contentOffsetStart.y - translation
     }
 }

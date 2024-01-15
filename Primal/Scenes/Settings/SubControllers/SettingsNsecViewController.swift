@@ -157,7 +157,7 @@ private extension SettingsNsecViewController {
         updateSec()
         updateTheme()
         
-        pubIcon.setUserImage(.init(data: IdentityManager.instance.user ?? .init(pubkey: "")))
+        pubIcon.setUserImage(IdentityManager.instance.parsedUser ?? .init(data: .init(pubkey: "")))
         
         deleteButton.addAction(.init(handler: { [weak self] _ in
             let alert = UIAlertController(

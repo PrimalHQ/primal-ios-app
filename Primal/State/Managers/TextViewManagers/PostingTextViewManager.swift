@@ -41,8 +41,13 @@ final class PostingTextViewManager: TextViewManager {
         setup()
     }
     
-    func replaceEditingTokenWithUser(_ user: PrimalUser) {
+    func replaceEditingTokenWithUser(_ user: ParsedUser) {
+        
+        SmartContactsManager.instance.addContact(user)
+        
         guard let currentlyEditingToken else { return }
+        
+        let user = user.data
         let replacementText = user.atIdentifier
         let newText = (textView.text as NSString).replacingCharacters(in: currentlyEditingToken.range, with: replacementText + " ")
         let maxLength = (newText as NSString).length
@@ -231,32 +236,15 @@ private extension PostingTextViewManager {
             .store(in: &cancellables)
         
         $userSearchText
-            .flatMap { text -> AnyPublisher<PostRequestResult, Never> in
-                switch text {
-                case nil:
-                    return Just(.init()).eraseToAnyPublisher()
-                case "":
-                    return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(Self.recommendedUsersNpubs.map { .string($0) })
-                    ])).publisher()
-                default:
-                   return SocketRequest(name: "user_search", payload: .object([
-                       "query": .string(text ?? ""),
-                       "limit": .number(15),
-                   ])).publisher()
+            .flatMap {
+                if let text = $0 {
+                    return SmartContactsManager.instance.userSearchPublisher(text)
                 }
+                return Just([]).eraseToAnyPublisher()
             }
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] result in
-                guard self?.userSearchText != nil else {
-                    self?.users = []
-                    self?.usersTableView.reloadData()
-                    return
-                }
-                
-                self?.users = result.users.values.map { result.createParsedUser($0) } .sorted(by: {
-                    $0.likes ?? 0 > $1.likes ?? 0
-                })
+            .sink(receiveValue: { [weak self] users in
+                self?.users = users
                 self?.usersTableView.reloadData()
             })
             .store(in: &cancellables)
@@ -296,22 +284,7 @@ extension PostingTextViewManager: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let data = users[safe: indexPath.row]?.data else { return }
+        guard let data = users[safe: indexPath.row] else { return }
         replaceEditingTokenWithUser(data)
     }
-}
-
-extension PostingTextViewManager {
-    static var recommendedUsersNpubs: [String] { [
-        "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2", // jack
-        "bf2376e17ba4ec269d10fcc996a4746b451152be9031fa48e74553dde5526bce", // carla
-        "c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11", // walker
-        "85080d3bad70ccdcd7f74c29a44f55bb85cbcd3dd0cbb957da1d215bdb931204", // preston
-        "eab0e756d32b80bcd464f3d844b8040303075a13eabc3599a762c9ac7ab91f4f", // lyn
-        "04c915daefee38317fa734444acee390a8269fe5810b2241e5e6dd343dfbecc9", // odell
-        "472f440f29ef996e92a186b8d320ff180c855903882e59d50de1b8bd5669301e", // marty
-        "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411", // nvk
-        "91c9a5e1a9744114c6fe2d61ae4de82629eaaa0fb52f48288093c7e7e036f832", // rockstar
-        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
-    ] }
 }

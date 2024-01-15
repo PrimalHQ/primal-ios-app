@@ -28,6 +28,16 @@ final class FeedNavigationController: MainNavigationController {
 }
 
 class MainNavigationController: UINavigationController, Themeable, UIGestureRecognizerDelegate {
+    var isTransparent: Bool = false {
+        didSet {
+            updateAppearance()
+        }
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        viewControllers.last?.preferredStatusBarStyle ?? super.preferredStatusBarStyle
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,19 +51,31 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     }
     
     func updateTheme() {
+        updateAppearance()
+        
+        viewControllers.forEach { $0.updateThemeIfThemeable() }
+    }
+    
+    func updateAppearance() {
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = UIColor.background
-        appearance.shadowColor = .clear
-        appearance.titleTextAttributes = [
-            .font: UIFont.appFont(withSize: 20, weight: .bold),
-            .foregroundColor: UIColor.foreground
-        ]
+        if isTransparent {
+            appearance.configureWithTransparentBackground()
+            appearance.titleTextAttributes = [
+                .font: UIFont.appFont(withSize: 20, weight: .bold),
+                .foregroundColor: UIColor.white
+            ]
+        } else {
+            appearance.backgroundColor = .background
+            appearance.shadowColor = .clear
+            appearance.titleTextAttributes = [
+                .font: UIFont.appFont(withSize: 20, weight: .bold),
+                .foregroundColor: UIColor.foreground
+            ]
+        }
         navigationBar.scrollEdgeAppearance = appearance
         navigationBar.standardAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance
         navigationBar.compactAppearance = appearance
-        
-        viewControllers.forEach { $0.updateThemeIfThemeable() }
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
