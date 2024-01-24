@@ -28,16 +28,23 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
             case let .user(user):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
             case .address(let address, let invoice, let user):
+                if address.isBitcoinAddress {
+                    return address.split(separator: "?").first?.string ?? address
+                }
                 return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
             }
         }
         
-        var name: String? { user?.data.name }
+        var name: String? {
+            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
+        }
         
         var startingAmount: Int {
             switch self {
-            case .user:                         return 0
-            case .address(_, let parsed, _):    return (parsed?.lninvoice.amount_msat ?? 0) / 1000
+            case .user:                         
+                return 0
+            case .address(_, let parsed, _):
+                return (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
         }
     }
@@ -46,6 +53,9 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
+    let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+    let nameLabel = UILabel()
+    let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
     
     let hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     
@@ -95,8 +105,6 @@ private extension WalletSendAmountController {
         sizingView.pinToSuperview(edges: .top, safeArea: true)
         sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        let profilePictureView = FLAnimatedImageView().constrainToSize(88)
-        let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
         let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
         infoParent.alignment = .center
         
@@ -118,7 +126,6 @@ private extension WalletSendAmountController {
         ])
         
         if let name = destination.name {
-            let nameLabel = UILabel()
             nameLabel.text = name
             nameLabel.font = .appFont(withSize: 20, weight: .semibold)
             nameLabel.textColor = .foreground
@@ -126,11 +133,7 @@ private extension WalletSendAmountController {
         }
         
         view.addSubview(scrollView)
-        scrollView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        scrollView.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        let bot = scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        bot.priority = .defaultHigh
-        bot.isActive = true
+        scrollView.pinToSuperview(safeArea: true)
         
         scrollView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 20)
@@ -152,13 +155,19 @@ private extension WalletSendAmountController {
         if let user = destination.user {
             profilePictureView.setUserImage(user)
         } else {
-            profilePictureView.image = UIImage(named: "Profile")
+            profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
         }
         
         nipLabel.text = destination.address
         nipLabel.font = .appFont(withSize: 16, weight: .regular)
-        nipLabel.numberOfLines = 2
         nipLabel.textAlignment = .center
+        
+        if destination.address.isBitcoinAddress {
+            nipLabel.numberOfLines = 1
+            nipLabel.lineBreakMode = .byTruncatingMiddle
+        } else {
+            nipLabel.numberOfLines = 2
+        }
         
         keyboard.delegate = self
         

@@ -118,7 +118,12 @@ extension WalletPickUserController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
-        (cell as? UserInfoTableCell)?.update(user: users[indexPath.row])
+        if let cell = cell as? UserInfoTableCell, let user = users[safe: indexPath.row] {
+            cell.update(user: user)
+            cell.secondaryLabel.text = user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+            cell.secondaryLabel.isHidden = cell.secondaryLabel.text?.isEmpty == true
+            cell.nameLabel.font = .appFont(withSize: 16, weight: .semibold)
+        }
         cell.contentView.backgroundColor = .background2
         return cell
     }

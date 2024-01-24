@@ -107,15 +107,20 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        table.reloadData()
+        
         guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
         updateUpdate = Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
             .sink { [weak self] _ in
-                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
-                    guard let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue else { return }
-                    guard let amountBTC = content.split(separator: "\"").compactMap({ Double($0) }).first else { return }
-                    let sats = Int(amountBTC * .BTC_TO_SAT)
-                    WalletManager.instance.balance = sats
+                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
+                    guard 
+                        let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
+                        let json: [String: Int] = content.decode(),
+                        let updatedAt = json["updated_at"]
+                    else { return }
+                    
+                    WalletManager.instance.updatedAt = updatedAt
                 }
             }
         
@@ -251,8 +256,6 @@ extension WalletHomeViewController: UITableViewDelegate {
             } else if navBar.isAnimating && extraOffset > 0 {
                 extraOffset -= scrollView.contentOffset.y
                 scrollView.contentOffset.y = 1
-            } else {
-                print(navBar.isAnimating)
             }
         }
     }
@@ -283,7 +286,11 @@ extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDeleg
 
 // MARK: - HeaderPanGesture
 extension WalletHomeViewController: UIGestureRecognizerDelegate {
-    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
+        let translation = pan.translation(in: view)
+        return translation.y < 0 && abs(translation.y) > abs(translation.x)
+    }
 }
 
 // MARK: - Private
@@ -296,7 +303,9 @@ private extension WalletHomeViewController {
         // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: -100)
         
-        navBar.largeView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(headerPanned)))
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(headerPanned))
+        pan.delegate = self
+        navBar.largeView.addGestureRecognizer(pan)
         
         table.separatorStyle = .none
         table.dataSource = self
@@ -412,6 +421,6 @@ private extension WalletHomeViewController {
         }
         
         let translation = sender.translation(in: view).y
-        table.contentOffset.y = contentOffsetStart.y - translation
+        table.contentOffset.y = max(5, contentOffsetStart.y - translation)
     }
 }

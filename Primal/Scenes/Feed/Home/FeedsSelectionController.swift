@@ -26,7 +26,7 @@ private extension FeedsSelectionController {
     @objc func feedButtonPressed(_ button: UIButton) {
         dismiss(animated: true)
         
-        guard let feed = IdentityManager.instance.userSettings?.content.feeds?[safe: button.tag] else { return }
+        guard let feed = IdentityManager.instance.userSettings?.feeds?[safe: button.tag] else { return }
         
         KingfisherManager.shared.cache.clearMemoryCache()
         
@@ -40,7 +40,7 @@ private extension FeedsSelectionController {
         if let pc = presentationController as? UISheetPresentationController {
             if #available(iOS 16.0, *) {
                 pc.detents = [.custom(resolver: { context in
-                    guard let count = IdentityManager.instance.userSettings?.content.feeds?.count else { return 700 }
+                    guard let count = IdentityManager.instance.userSettings?.feeds?.count else { return 700 }
                     
                     return 100 + CGFloat(count) * 66
                 })]
@@ -54,7 +54,7 @@ private extension FeedsSelectionController {
         let titleStack = UIStackView(arrangedSubviews: [UIImageView(image: UIImage(named: "ostrich")), title])
         
         var buttons: [UIButton] = []
-        let settings = IdentityManager.instance.userSettings?.content.feeds ?? []
+        let settings = IdentityManager.instance.userSettings?.feeds ?? []
         for (index, feed) in settings.enumerated() {
             let button = UIButton()
             button.setTitle(feed.name, for: .normal)

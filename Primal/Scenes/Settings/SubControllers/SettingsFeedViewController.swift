@@ -41,7 +41,7 @@ final class SettingsFeedViewController: UIViewController, Themeable {
         table.register(SettingsFeedRestoreView.self, forHeaderFooterViewReuseIdentifier: "footer")
         
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
-            self?.feeds = settings?.content.feeds ?? []
+            self?.feeds = settings?.feeds ?? []
             self?.table.reloadData()
             self?.didChange = false
         }
@@ -141,34 +141,9 @@ extension SettingsFeedViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     @objc func restoreButtonPressed() {
-        guard let userPubkey = IdentityManager.instance.user?.pubkey else { return }
-        
-        Connection.regular.requestCache(name: "get_default_app_settings", payload: .object(["client": .string("Primal iOS")])) { result in
-            
+        IdentityManager.instance.requestDefaultSettings { settings in
             var defaultFeeds: [PrimalSettingsFeed] = [.latest, .latestWithReplies]
-            
-            for object in result {
-                guard
-                    let payload = object.arrayValue?.last?.objectValue,
-                    let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1377)),
-                    case .defaultSettings = kind,
-                    let contentString = payload["content"]?.stringValue,
-                    let content = (try? JSONDecoder().decode(JSON.self, from: Data(contentString.utf8)))?.objectValue,
-                    let feeds = content["feeds"]?.arrayValue
-                else { continue }
-                
-                for feed in feeds {
-                    guard
-                        let obj = feed.objectValue,
-                        let name = obj["name"]?.stringValue,
-                        let hex = obj["hex"]?.stringValue
-                    else {
-                        continue
-                    }
-                    
-                    defaultFeeds.append(.init(name: name, hex: hex))
-                }
-            }
+            defaultFeeds.append(contentsOf: settings.feeds ?? [])
             
             IdentityManager.instance.updateFeeds(defaultFeeds)
         }

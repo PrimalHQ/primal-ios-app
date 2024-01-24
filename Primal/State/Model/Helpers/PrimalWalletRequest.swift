@@ -21,9 +21,13 @@ struct PrimalPaymentTransaction : Encodable {
   let date: Date
 }
 
+enum WalletTransactionNetwork: String {
+    case lightning, onchain
+}
+
 struct PrimalWalletRequest {
     enum SendRequestType {
-        case lnurl, lud16, lud06
+        case lnurl, lud16, lud06, onchain
     }
     
     enum RequestType {
@@ -32,7 +36,7 @@ struct PrimalWalletRequest {
         case transactions(until: Int? = nil, since: Int? = nil)
         case send(SendRequestType, target: String, pubkey: String?, amount: String, note: String, zap: NostrObject?)
         case payInvoice(lnInvoice: String, amountOverride: String?, noteOverride: String?)
-        case deposit(AdditionalDepositInfo? = nil)
+        case deposit(WalletTransactionNetwork, AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
         case activationCode(name: String, email: String, country: String, state: String?)
@@ -46,16 +50,22 @@ struct PrimalWalletRequest {
                 return "[\"is_user\",{\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}]"
             case .balance:
                 return "[\"balance\",{\"subwallet\":1}]"
-            case .deposit(let info):
+            case .deposit(let network, let info):
+                var dic: [String: JSON] = [
+                    "subwallet": 1,
+                    "network": .string(network.rawValue)
+                ]
+                
                 if let info {
                     let description = info.description.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
+                    dic["description"] = .string(description)
                     if info.satoshi > 0 {
                         let amount = info.satoshi.satsToBitcoinString()
-                        return "[\"deposit\",{\"subwallet\":1,\"amount_btc\":\"\(amount)\",\"description\":\"\(description)\"}]"
+                        dic["amount_btc"] = .string(amount)
                     }
-                    return "[\"deposit\",{\"subwallet\":1,\"description\":\"\(description)\"}]"
                 }
-                return "[\"deposit\",{\"subwallet\":1}]"
+                
+                return #"["deposit", \#(dic.encodeToString() ?? "{}")]"#
             case .transactions(let until, let since):
                 if let until {
                     return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"until\":\(until)}]"
@@ -78,6 +88,8 @@ struct PrimalWalletRequest {
                 ]
                 
                 switch type {
+                case .onchain:
+                    dic["target_bcaddr"] = .string(target)
                 case .lnurl, .lud06:
                     dic["target_lnurl"] = .string(target)
                 case .lud16:
@@ -175,13 +187,7 @@ private extension WalletRequestResult {
             }
             depositInfo = data
         case .WALLET_TRANSACTIONS:
-            guard let array = try? JSONDecoder().decode([WalletTransaction].self, from: Data(contentString.utf8))
-            else {
-                print("Error decoding: \(kind) to json")
-                return
-            }
-            
-            transactions = array
+            transactions = contentString.decode() ?? transactions
         case .WALLET_EXCHANGE_RATE:
             guard let dic:[String:String] = contentString.decode(), let rateString = dic["rate"], let rate = Double(rateString) else {
                 print("Error decoding: \(kind)")
@@ -225,6 +231,12 @@ private extension WalletRequestResult {
                 return
             }
             parsedLNInvoice = parsed
+        case .WALLET_PARSED_ONCHAIN:
+            guard let parsed: [String: String] = contentString.decode() else {
+                print("Unable to decode WALLET_PARSED_ONCHAIN")
+                return
+            }
+            onchainAddress = parsed["onchainAddress"]
         case .WALLET_IN_APP_PURCHASE, .WALLET_ACTIVATION_CODE:
             return // NO ACTION
         }

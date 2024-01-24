@@ -30,13 +30,24 @@ struct PrimalSettingsFeed: Codable, Hashable {
     static var latestWithReplies: PrimalSettingsFeed { .init(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true) }
 }
 
+struct PrimalZapDefaultSettings: Codable, Hashable {
+    var amount: Int
+    var message: String
+}
+
+struct PrimalZapListSettings: Codable, Hashable {
+    var emoji: String
+    var amount: Int
+    var message: String
+}
+
 struct PrimalSettingsContent: Codable, Hashable {
     var description: String? = "Sync app settings"
     var theme: String?
     var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
-    var defaultZapAmount: Int?
-    var zapOptions: [Int]?
+    var zapDefault: PrimalZapDefaultSettings?
+    var zapConfig: [PrimalZapListSettings] = []
     
     mutating func merge(with settings: PrimalSettingsContent) {
         if self.description == nil {
@@ -55,12 +66,12 @@ struct PrimalSettingsContent: Codable, Hashable {
             self.notifications = settings.notifications
         }
         
-        if self.defaultZapAmount == nil {
-            self.defaultZapAmount = settings.defaultZapAmount
+        if self.zapDefault == nil {
+            self.zapDefault = settings.zapDefault
         }
         
-        if self.zapOptions == nil {
-            self.zapOptions = settings.zapOptions
+        if self.zapConfig.isEmpty {
+            self.zapConfig = settings.zapConfig
         }
     }
     
@@ -68,8 +79,8 @@ struct PrimalSettingsContent: Codable, Hashable {
         return self.feeds == nil
             || self.theme == nil
             || self.notifications == nil
-            || self.zapOptions == nil
-            || self.defaultZapAmount == nil
+            || self.zapDefault == nil
+            || self.zapConfig.isEmpty
     }
 }
 

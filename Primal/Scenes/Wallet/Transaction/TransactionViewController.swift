@@ -21,16 +21,19 @@ final class TransactionViewController: FeedViewController {
         case amount(Int, incoming: Bool)
         case title(String)
         case user(ParsedUser?, message: String?)
+        case onchain(message: String?)
         case info(String, String)
         case copyInfo(String, String)
+        case actionInfo(String, String)
         case expand(Bool)
         
         var cellID: String {
             switch self {
             case .amount:           return "amount"
             case .title:            return "title"
-            case .user:             return "user"
-            case .info, .copyInfo:  return "info"
+            case .user, .onchain:   return "user"
+            case .info, .copyInfo, .actionInfo:  
+                                    return "info"
             case .expand:           return "expand"
             }
         }
@@ -167,15 +170,24 @@ private extension TransactionViewController {
     func setCells() {
         let btcAmount = abs(Double(transaction.amount_btc) ?? 0)
         let isDeposit = transaction.type == "DEPOSIT"
+        let isOnchain = transaction.onchainAddress != nil
         let date = Date(timeIntervalSince1970: TimeInterval(transaction.created_at))
         
         cells = [
             .amount(Int((btcAmount * .BTC_TO_SAT).rounded()), incoming: isDeposit),
             .title(isDeposit ? "RECEIVED FROM" : "SENT TO"),
-            .user(user, message: transaction.note),
+        ]
+        
+        if transaction.onchainAddress != nil {
+            cells.append(.onchain(message: transaction.note))
+        } else {
+            cells.append(.user(user, message: transaction.note))
+        }
+        
+        cells += [
             .info("Date", date.formatted()),
-            .info("Status", transaction.state),
-            .info("Transaction Type", transaction.type)
+            .info("Status", transaction.state.localizedCapitalized),
+            .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
         ]
             
         if isExpanded {
@@ -185,10 +197,13 @@ private extension TransactionViewController {
             }
             if let feeString = transaction.total_fee_btc, let feeBtc = Double(feeString) {
                 let fee = Int((feeBtc * .BTC_TO_SAT).rounded())
-                cells.append(.info("Transaction fee", "\(fee) sats"))
+                cells.append(.info(isOnchain ? "Mining fee" : "Transaction fee", "\(fee) sats"))
             }
             if let invoice = transaction.invoice {
                 cells.append(.copyInfo("Invoice", invoice))
+            }
+            if isOnchain {
+                cells.append(.actionInfo("Details", "view on blockchain"))
             }
         }
         

@@ -11,25 +11,32 @@ import UIKit
 final class PopupZapSelectionViewController: UIViewController {
     let userToZap: PrimalUser
     
-    private let emojis = ["👍", "🌿", "🤙", "💜", "🔥", "🚀"]
-    private var zapOptions: [Int] = [] {
+    private var zapOptions: [PrimalZapListSettings] = [] {
         didSet {
             zip(zapOptions, buttons).forEach { option, button in
-                button.title = option.shortened()
+                button.title = option.amount.shortened()
+                button.emoji = option.emoji
             }
+            
+            inputField.text = zapOptions[safe: selectedOptionIndex]?.message ?? inputField.text
+            
             updateView()
         }
     }
     
-    private var selectedOptionIndex = 0 {
+    private var selectedOptionIndex: Int? = 0 {
         didSet {
             updateView()
+            
+            guard let selectedOptionIndex else { return }
+            
+            inputField.text = zapOptions[safe: selectedOptionIndex]?.message ?? inputField.text
         }
     }
     
-    private lazy var buttons = emojis.enumerated().map {
-        let view = ZapAmountSelectionButton(emoji: $0.element, title: "-")
-        view.tag = $0.offset
+    private lazy var buttons = (0...5).map {
+        let view = ZapAmountSelectionButton(emoji: "", title: "-")
+        view.tag = $0
         view.addAction(.init(handler: { [weak self] _ in
             self?.selectedOptionIndex = view.tag
         }), for: .touchUpInside)
@@ -53,15 +60,15 @@ final class PopupZapSelectionViewController: UIViewController {
         
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] settings in
-                guard let options = settings?.content.zapOptions else { return }
-                self?.zapOptions = options.map { Int($0) }
+                guard let options = settings?.zapConfig else { return }
+                self?.zapOptions = options
             })
             .store(in: &cancellables)
         
         zapButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             self.dismiss(animated: true) { 
-                callback(self.zapOptions[safe: self.selectedOptionIndex] ?? 0, self.inputField.text ?? "")
+                callback(self.zapOptions[safe: self.selectedOptionIndex]?.amount ?? 0, self.inputField.text ?? "")
             }
         }), for: .touchUpInside)
     }
@@ -77,7 +84,7 @@ private extension PopupZapSelectionViewController {
             button.zapSelected = index == selectedOptionIndex
         }
         
-        guard let selectedZapAmount = zapOptions[safe: selectedOptionIndex] else { return }
+        guard let selectedZapAmount = zapOptions[safe: selectedOptionIndex]?.amount else { return }
         
         let mutable = NSMutableAttributedString(string: "ZAP \(userToZap.firstIdentifier.uppercased()) ", attributes: [
             .font: UIFont.appFont(withSize: 20, weight: .bold),
@@ -141,7 +148,9 @@ private extension PopupZapSelectionViewController {
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
-        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        let botC = stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        botC.isActive = true
+        botC.priority = .defaultHigh
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         

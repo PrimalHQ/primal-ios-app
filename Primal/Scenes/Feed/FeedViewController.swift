@@ -325,8 +325,9 @@ private extension FeedViewController {
             return
         }
         
-        let zapAmount = IdentityManager.instance.userSettings?.content.defaultZapAmount ?? 100
-        doZapFromCell(cell, amount: zapAmount, message: "")
+        let zapAmount = IdentityManager.instance.userSettings?.zapDefault?.amount ?? 20
+        let zapMessage = IdentityManager.instance.userSettings?.zapDefault?.message ?? ""
+        doZapFromCell(cell, amount: zapAmount, message: zapMessage)
     }
     
     func doZapFromCell(_ cell: PostCell, amount: Int, message: String) {
@@ -364,7 +365,9 @@ private extension FeedViewController {
                     self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
                 }
                 guard self?.posts.count ?? 0 > index else { return }
-                self?.table.reloadRows(at: [indexPath], with: .none)
+                if self?.view.window != nil {
+                    self?.table.reloadRows(at: [indexPath], with: .none)
+                }
             }
         }
     }

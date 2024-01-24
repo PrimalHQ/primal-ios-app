@@ -21,13 +21,14 @@ extension UILabel {
         animatingLabel.text = text
         animatingLabel.font = font
         animatingLabel.textColor = textColor
+        animatingLabel.textAlignment = textAlignment
         animatingLabel.numberOfLines = numberOfLines
         animatingLabel.frame = convert(bounds, to: root)
         root.addSubview(animatingLabel)
         
         let actionTranslation = animatingLabel.centerDistanceVectorToView(otherLabel)
         let scale: CGFloat
-        if animatingLabel.frame.width > otherLabel.frame.width {
+        if animatingLabel.frame.height > otherLabel.frame.height {
             scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
         } else {
             scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
@@ -61,6 +62,7 @@ extension UIImageView {
         animatingIV.tintColor = tintColor
         animatingIV.contentMode = contentMode
         animatingIV.layer.cornerRadius = layer.cornerRadius
+        animatingIV.clipsToBounds = clipsToBounds
         animatingIV.frame = convert(bounds, to: root)
         root.addSubview(animatingIV)
         

@@ -57,7 +57,9 @@ extension PostRequestResult {
                 let dateNum = payload["created_at"]?.doubleValue,
                 let contentJSON: JSON = contentString.decode()
             else {
-                print("Error decoding reposts string to json")
+                if !contentString.isEmpty {
+                    print("Error decoding reposts string to json")
+                }
                 return
             }
             

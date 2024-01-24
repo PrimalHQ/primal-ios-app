@@ -52,6 +52,14 @@ final class WalletSendParentViewController: UIViewController {
         updateBars(oldTab ?? .nostr)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        let title = self.title
+        updateBars(.keyboard)
+        self.title = title
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
@@ -104,30 +112,44 @@ final class WalletSendParentViewController: UIViewController {
         // Remove "nostr:"
         let text = text.components(separatedBy: ":").last ?? text
         
+        textSearch = text
+        
         if text.isEmail {
             navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            return
+        }
+        
+        if text.isBitcoinAddress {
+            if text.parsedBitcoinAddress.1 != nil {
+                navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: text.parsedBitcoinAddress.1)), animated: true)
+            } else {
+                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            }
             return
         }
         
         if text.hasPrefix("npub") {
             if let decoded = try? bech32_decode(text) {
                 self.searchForPubkey(hex_encode(decoded.data)) { [weak self] user in
-                    guard let user else { return }
+                    guard let user else {
+                        self?.textSearch = nil
+                        return
+                    }
                     self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                 }
             }
             return
         }
         
-        textSearch = text
-        
         PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let self else { return }
                 if result.message != nil {
                     self.searchForPubkey(text) { [weak self] user in
-                        self?.textSearch = nil
-                        guard let user else { return }
+                        guard let user else {
+                            self?.textSearch = nil
+                            return
+                        }
                         self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                     }
                     return

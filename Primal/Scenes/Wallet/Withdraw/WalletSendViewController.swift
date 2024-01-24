@@ -28,6 +28,9 @@ final class WalletSendViewController: UIViewController, Themeable {
             case let .user(user, _):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
             case .address(let address, let invoice, let user, _):
+                if address.isBitcoinAddress {
+                    return address.parsedBitcoinAddress.0
+                }
                 return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
             }
         }
@@ -35,14 +38,23 @@ final class WalletSendViewController: UIViewController, Themeable {
         var startingAmount: Int {
             switch self {
             case .user(_, let amount):                              return amount
-            case .address(_, let parsed, _, let startingAmount):    return startingAmount ?? (parsed?.lninvoice.amount_msat ?? 0) / 1000
+            case .address(let address, let parsed, _, let startingAmount):
+                return startingAmount ?? (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
+        }
+        
+        var name: String? {
+            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
         }
         
         var message: String {
             switch self {
             case .user:                     return ""
-            case .address(_, let parsed, _, _):
+            case .address(let address, let parsed, _, _):
+                if address.isBitcoinAddress {
+                    return address.parsedBitcoinAddress.2 ?? ""
+                }
+                
                 guard let desc = parsed?.lninvoice.description?.removingPercentEncoding else { return "" }
                 
                 return desc.split(separator: " ").dropFirst(3).joined(separator: " ")
@@ -59,9 +71,9 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     let destination: Destination
     
-    let input = LargeBalanceConversionInputView()
+    let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()
-    
+    let feeView = MiningFeeView()
     let scrollView = UIScrollView()
     
     var cancellables = Set<AnyCancellable>()
@@ -75,7 +87,6 @@ final class WalletSendViewController: UIViewController, Themeable {
         input.balance = destination.startingAmount
         messageInput.text = destination.message
         
-        input.isUserInteractionEnabled = destination.isEditable
         messageInput.superview?.isHidden = !destination.isEditable
         messageInput.isUserInteractionEnabled = destination.isEditable
     }
@@ -96,6 +107,12 @@ final class WalletSendViewController: UIViewController, Themeable {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        messageInput.resignFirstResponder()
+    }
 }
 
 private extension WalletSendViewController {
@@ -107,8 +124,9 @@ private extension WalletSendViewController {
         sizingView.pinToSuperview(edges: .top, safeArea: true)
         sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        let profilePictureView = FLAnimatedImageView().constrainToSize(120)
-        let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground }
+        let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+        let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
+        let nameLabel = UILabel()
         
         let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
         
@@ -121,20 +139,51 @@ private extension WalletSendViewController {
         sendButton.constrainToSize(height: 58)
         sendButton.layer.cornerRadius = 29
         
-        let stack = UIStackView(axis: .vertical, [
-            profilePictureView, SpacerView(height: 12),
-            nipLabel, SpacerView(height: 12), SpacerView(height: 20, priority: .defaultLow),
-            input, SpacerView(height: 12), SpacerView(height: 20, priority: .defaultLow),
-            messageParent, SpacerView(height: 12), SpacerView(height: 32, priority: .init(400)), UIView(),
-            sendButton
-        ])
+        let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+        infoParent.alignment = .center
         
-        sendButton.pinToSuperview(edges: .horizontal)
+        let inputParent = UIView()
+        let inputStack = UIStackView(axis: .vertical, [inputParent, SpacerView(height: 12)])
+        
+        let cancelButton = SimpleRoundedButton(title: "Cancel")
+        let buttonStack = UIStackView([cancelButton, sendButton])
+        buttonStack.distribution = .fillEqually
+        buttonStack.spacing = 18
+    
+        let messageStack = UIStackView(axis: .vertical, [
+            messageParent,
+            feeView,
+            SpacerView(height: 264 - (destination.address.isBitcoinAddress ? 108 : 48), priority: .defaultLow),
+            buttonStack
+        ])
+        messageStack.spacing = 16
+        
+        let stack = UIStackView(axis: .vertical, [
+            infoParent,
+            inputStack,
+            messageStack
+        ])
+        stack.distribution = .equalSpacing
+        
+        buttonStack.pinToSuperview(edges: .horizontal)
+        messageStack.pinToSuperview(edges: .horizontal)
+        inputStack.pinToSuperview(edges: .horizontal)
+        
+        if let name = destination.name {
+            nameLabel.text = name
+            nameLabel.font = .appFont(withSize: 20, weight: .semibold)
+            nameLabel.textColor = .foreground
+            infoParent.insertArrangedSubview(nameLabel, at: 2)
+        }
         
         messageParent.pinToSuperview(edges: .horizontal)
         messageParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         messageParent.addSubview(messageInput)
         messageParent.layer.cornerRadius = 24
+        
+        inputParent.addSubview(input)
+        input.pinToSuperview(edges: .vertical)
+        input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
         
         messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .top, padding: 6).pinToSuperview(edges: .bottom, padding: 2)
         messageInput.font = .appFont(withSize: 16, weight: .regular)
@@ -147,6 +196,7 @@ private extension WalletSendViewController {
                 self.scrollView.scrollRectToVisible(textView.convert(textView.frame, to: self.scrollView), animated: true)
             }
         }
+        messageInput.setContentCompressionResistancePriority(.required, for: .vertical)
         
         scrollView.keyboardDismissMode = .interactiveWithAccessory
         view.addSubview(scrollView)
@@ -167,18 +217,32 @@ private extension WalletSendViewController {
         
         profilePictureView.contentMode = .scaleAspectFill
         profilePictureView.layer.masksToBounds = true
-        profilePictureView.layer.cornerRadius = 60
+        profilePictureView.layer.cornerRadius = 44
         
         if let user = destination.user {
             profilePictureView.setUserImage(user)
             messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
         } else {
-            profilePictureView.image = UIImage(named: "Profile")
+            profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
+            messageInput.placeholderText = "message"
         }
         
+        feeView.isHidden = !destination.address.isBitcoinAddress
+        
         nipLabel.text = destination.address
-        nipLabel.numberOfLines = 2
+        nipLabel.font = .appFont(withSize: 16, weight: .regular)
         nipLabel.textAlignment = .center
+        
+        if destination.address.isBitcoinAddress {
+            nipLabel.numberOfLines = 1
+            nipLabel.lineBreakMode = .byTruncatingMiddle
+        } else {
+            nipLabel.numberOfLines = 2
+        }
+        
+        cancelButton.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }), for: .touchUpInside)
         
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.didTapView()
@@ -192,7 +256,6 @@ private extension WalletSendViewController {
     }
     
     @objc func didTapView() {
-        input.resignFirstResponder()
         messageInput.resignFirstResponder()
     }
     
@@ -200,9 +263,9 @@ private extension WalletSendViewController {
         Task { @MainActor in
             
             let amount = input.balance
+            let note = messageInput.text ?? ""
             
             if amount < 1 {
-                input.becomeFirstResponder()
                 return
             }
             
@@ -215,11 +278,13 @@ private extension WalletSendViewController {
                     try await WalletManager.instance.send(
                         user: user.data,
                         sats: amount,
-                        note: messageInput.text ?? ""
+                        note: note
                     )
                 case let .address(address, invoice, user, _):
-                    if address.isEmail {
-                        try await WalletManager.instance.sendLud16(address, sats: amount, note: messageInput.text ?? "")
+                    if address.isBitcoinAddress {
+                        try await WalletManager.instance.sendOnchain(address, sats: amount, note: note)
+                    } else if address.isEmail {
+                        try await WalletManager.instance.sendLud16(address, sats: amount, note: note)
                     } else if address.hasPrefix("lnurl") {
                         try await WalletManager.instance.sendLNURL(
                             lnurl: address,
@@ -236,7 +301,7 @@ private extension WalletSendViewController {
                     }
                 }
                 
-                spinnerVC.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) { [weak self] in
+                navigationController?.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) { [weak self] in
                     guard let self else { return }
                     
                     navigationController?.popToViewController(self, animated: false)
@@ -247,10 +312,35 @@ private extension WalletSendViewController {
                 }
             } catch {
                 let message = (error as? WalletError)?.message ?? error.localizedDescription
-                spinnerVC.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: message)), animated: true) {
+                navigationController?.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: message)), animated: true) {
                     self.navigationController?.popToViewController(self, animated: false)
                 }
             }
         }
     }
+}
+
+final class MiningFeeView: UIView {
+    let descLabel = UILabel()
+    let feeLabel = UILabel()
+    init() {
+        super.init(frame: .zero)
+        
+        let stack = UIStackView([descLabel, UIView(), feeLabel])
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
+        constrainToSize(height: 48)
+        
+        layer.cornerRadius = 24
+        backgroundColor = .background3
+        
+        descLabel.text = "Mining fee"
+        feeLabel.text = "Fast: $0.82"
+        descLabel.font = .appFont(withSize: 16, weight: .regular)
+        feeLabel.font = .appFont(withSize: 16, weight: .regular)
+        descLabel.textColor = .foreground
+        feeLabel.textColor = .foreground
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

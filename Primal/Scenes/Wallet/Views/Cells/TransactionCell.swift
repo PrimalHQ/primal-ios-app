@@ -20,6 +20,7 @@ protocol TransactionCellDelegate: AnyObject {
 final class TransactionCell: UITableViewCell, Themeable {
     
     private let profileImage = FLAnimatedImageView().constrainToSize(44)
+    private let timeIcon = UIImageView(image: UIImage(named: "walletTimeIcon"))
     
     private let nameLabel = UILabel()
     private let separator = UIView().constrainToSize(width: 1, height: 18)
@@ -30,6 +31,8 @@ final class TransactionCell: UITableViewCell, Themeable {
     private let currencyLabel = UILabel()
     
     private let arrowIcon = UIImageView(image: UIImage(named: "income"))
+    
+    private let coverView = UIView()
     
     weak var delegate: TransactionCellDelegate?
     
@@ -49,6 +52,11 @@ final class TransactionCell: UITableViewCell, Themeable {
             profileImage.setUserImage(transaction.1)
             profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
+        } else if transaction.0.onchainAddress != nil {
+            profileImage.kf.cancelDownloadTask()
+            profileImage.image = UIImage(named: "onchainPayment")
+            profileImage.contentMode = .scaleAspectFit
+            nameLabel.text = "Bitcoin"
         } else {
             profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "nonZapPayment")
@@ -56,7 +64,25 @@ final class TransactionCell: UITableViewCell, Themeable {
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
         
-        timeLabel.text = Date(timeIntervalSince1970: TimeInterval(transaction.0.created_at)).timeAgoDisplay()
+        if let completedAt = transaction.0.completed_at {
+            timeIcon.isHidden = true
+            timeLabel.text = Date(timeIntervalSince1970: TimeInterval(completedAt)).timeAgoDisplay()
+            coverView.alpha = 0
+        } else {
+            timeIcon.isHidden = false
+            timeLabel.text = "Pending"
+            
+            if coverView.alpha == 0.6 {
+                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+                    self.coverView.alpha = 0
+                }
+            } else {
+                coverView.alpha = 0
+                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+                    self.coverView.alpha = 0.6
+                }
+            }
+        }
         
         arrowIcon.transform = isDeposit ? .identity : .init(rotationAngle: .pi)
         arrowIcon.tintColor = isDeposit ? .receiveMoney : .sendMoney
@@ -97,6 +123,8 @@ final class TransactionCell: UITableViewCell, Themeable {
         amountLabel.textColor = .foreground
         currencyLabel.textColor = .foreground5
         
+        coverView.backgroundColor = .background
+        
         contentView.backgroundColor = .background
     }
 }
@@ -134,6 +162,14 @@ private extension TransactionCell {
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 12)
+        
+        contentView.addSubview(timeIcon)
+        timeIcon.pin(to: profileImage, edges: [.bottom, .trailing], padding: -2)
+        
+        contentView.addSubview(coverView)
+        coverView.pinToSuperview()
+        coverView.alpha = 0
+        coverView.isUserInteractionEnabled = false
         
         nameLabel.font = .appFont(withSize: 18, weight: .bold)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)

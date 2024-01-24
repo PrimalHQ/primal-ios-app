@@ -15,9 +15,16 @@ extension Array where Element: Equatable {
 
 public extension Array {
     subscript(safe i: Int?) -> Element? {
-        guard let i else { return nil }
-        if isEmpty || i < 0 || i >= count { return nil }
-        return self[i]
+        get {
+            guard let i else { return nil }
+            if isEmpty || i < 0 || i >= count { return nil }
+            return self[i]
+        }
+        set {
+            guard let i, let newValue else { return }
+            if isEmpty || i < 0 || i >= count { return }
+            self[i] = newValue
+        }
     }
 }
 

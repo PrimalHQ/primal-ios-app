@@ -55,7 +55,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         table.register(SettingsFeedHeaderView.self, forHeaderFooterViewReuseIdentifier: "header")
         
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
-            self?.notifications = settings?.content.notifications
+            self?.notifications = settings?.notifications
             
             self?.table.reloadData()
             self?.didChange = false

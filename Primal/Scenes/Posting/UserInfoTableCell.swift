@@ -63,6 +63,7 @@ private extension UserInfoTableCell {
         profileIcon.layer.masksToBounds = true
         
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
+        nameStack.alignment = .leading
         nameStack.axis = .vertical
         nameStack.spacing = 4
         

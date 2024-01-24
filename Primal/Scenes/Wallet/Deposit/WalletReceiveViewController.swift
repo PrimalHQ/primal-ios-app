@@ -21,6 +21,23 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let mainStack = UIStackView(axis: .vertical, [])
     private let loadingIndicator = LoadingSpinnerView()
     
+    private lazy var ludDescLabel = descLabel("Lightning Address:")
+    
+    private let lightningButton = WalletSendTabButton(icon: UIImage(named: "receiveLightning"))
+    private let onchainButton = WalletSendTabButton(icon: UIImage(named: "receiveBitcoin"))
+    private let nfcButton = WalletSendTabButton(icon: UIImage(named: "receiveNFC"))
+    
+    private var activeButton: WalletSendTabButton? {
+        didSet {
+            oldValue?.isActive = false
+            activeButton?.isActive = true
+            if activeButton == lightningButton {
+                onchainAddress = nil
+            }
+            requestInfo()
+        }
+    }
+    
     private lazy var detailsButton = WalletActionButton(text: "ADD DETAILS", action: { [weak self] in
         self?.show(WalletReceiveDetailsController(details: self?.additionalInfo ?? .init(satoshi: 0, description: ""), delegate: self), sender: nil)
     })
@@ -32,7 +49,31 @@ final class WalletReceiveViewController: UIViewController, Themeable {
             updateInfo()
         }
     }
-    var invoice: String { lnInvoice ?? depositInfo?.lnurl ?? "" }
+    private var onchainAddress: String? {
+        didSet {
+            updateInfo()
+        }
+    }
+    
+    var onchainAddressWithDetails: String? {
+        guard var onchainAddress, let additionalInfo else { return onchainAddress }
+        
+        var hasSatoshi = additionalInfo.satoshi > 0
+        if hasSatoshi {
+            onchainAddress += "?amount=\(additionalInfo.satoshi.satsToBitcoinString())"
+        }
+        
+        if !additionalInfo.description.isEmpty {
+            onchainAddress += hasSatoshi ? "&" : "?"
+            onchainAddress += "label=\(additionalInfo.description.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? additionalInfo.description)"
+        }
+        
+        return onchainAddress
+    }
+    
+    var invoice: String {
+        onchainAddressWithDetails ?? lnInvoice ?? depositInfo?.lnurl ?? ""
+    }
     
     var depositInfo: DepositInfo? {
         didSet {
@@ -77,11 +118,14 @@ extension WalletReceiveViewController: WalletReceiveDetailsControllerDelegate {
 
 private extension WalletReceiveViewController {
     func requestInfo() {
-        PrimalWalletRequest(type: .deposit(additionalInfo)).publisher().receive(on: DispatchQueue.main).sink { [weak self] res in
+        let network = activeButton == lightningButton ? WalletTransactionNetwork.lightning : .onchain
+        PrimalWalletRequest(type: .deposit(network, additionalInfo)).publisher().receive(on: DispatchQueue.main).sink { [weak self] res in
             if let data = res.depositInfo {
                 self?.depositInfo = data
             } else if let data = res.invoiceInfo {
                 self?.lnInvoice = data.lnInvoice
+            } else if let onchain = res.onchainAddress {
+                self?.onchainAddress = onchain
             } else {
                 if let message = res.message {
                     self?.showErrorMessage(message)
@@ -104,8 +148,15 @@ private extension WalletReceiveViewController {
         loadingIndicator.isHidden = true
         loadingIndicator.stop()
         
-        ludLabel.text = depositInfo.lud16
-        qrCodeImageView.image = .createQRCode(invoice)
+        if let onchainAddress {
+            ludDescLabel.text = "Bitcoin Address:"
+            ludLabel.text = onchainAddress
+        } else {
+            ludDescLabel.text = "Lightning Address:"
+            ludLabel.text = depositInfo.lud16
+        }
+        
+        qrCodeImageView.image = .createQRCode("bitcoin:\(invoice)")
         
         guard let additionalInfo else {
             amountParent.isHidden = true
@@ -128,10 +179,10 @@ private extension WalletReceiveViewController {
         
         let qrCodeParent = UIView()
         qrCodeParent.backgroundColor = .white
-        qrCodeParent.layer.cornerRadius = 24
+        qrCodeParent.layer.cornerRadius = 12
         
         qrCodeParent.addSubview(qrCodeImageView)
-        qrCodeImageView.pinToSuperview(padding: 20)
+        qrCodeImageView.pinToSuperview(padding: 16)
         qrCodeParent.heightAnchor.constraint(equalTo: qrCodeParent.widthAnchor).isActive = true
         qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -140,7 +191,7 @@ private extension WalletReceiveViewController {
         parentParent.addSubview(qrCodeParent)
         qrCodeParent.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
         
-        let width = qrCodeParent.widthAnchor.constraint(equalTo: parentParent.widthAnchor)
+        let width = qrCodeParent.widthAnchor.constraint(equalTo: parentParent.widthAnchor, constant: -40)
         width.priority = .defaultHigh
         width.isActive = true
         
@@ -175,10 +226,8 @@ private extension WalletReceiveViewController {
         actionStack.spacing = 18
         actionStack.distribution = .fillEqually
         
-        let ludDescLabel = descLabel("Receiving to:")
-        
         [
-            SpacerView(height: 30),
+            SpacerView(height: 44),
             parentParent,               SpacerView(height: 18), SpacerView(height: 8, priority: .required),
             amountParent,               SpacerView(height: 26),
             ludDescLabel,               SpacerView(height: 4, priority: .required),
@@ -194,14 +243,39 @@ private extension WalletReceiveViewController {
             $0.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
-        view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 30).pinToSuperview(edges: .vertical, safeArea: true)
+        ludLabel.lineBreakMode = .byTruncatingMiddle
+        
+        let mainStackParent = UIView()
+        mainStackParent.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical)
+        
+        let selectionStack = UIStackView([lightningButton, onchainButton, nfcButton])
+        let selectionStackParent = UIView()
+        selectionStackParent.addSubview(selectionStack)
+        selectionStack.pinToSuperview(edges: .vertical, padding: 16).centerToSuperview()
+        selectionStack.spacing = 65
+        
+        let viewStack = UIStackView(axis: .vertical, [mainStackParent, SpacerView(height: 1, color: .background3), selectionStackParent])
+        view.addSubview(viewStack)
+        viewStack.pinToSuperview(safeArea: true)
         
         view.addSubview(loadingIndicator)
         loadingIndicator.centerToSuperview().constrainToSize(70)
         
         mainStack.isHidden = true
         loadingIndicator.play()
+        
+        [lightningButton, onchainButton].forEach { button in
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.activeButton = button
+            }), for: .touchUpInside)
+        }
+        activeButton = lightningButton
+        
+        nfcButton.isHidden = true
+        nfcButton.addAction(.init(handler: { [weak self] _ in
+            self?.showErrorMessage("NFC is coming soon")
+        }), for: .touchUpInside)
     }
     
     func descLabel(_ text: String) -> UILabel {

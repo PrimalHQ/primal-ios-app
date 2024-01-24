@@ -47,6 +47,8 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
             
         interactivePopGestureRecognizer?.delegate = self
         
+        delegate = self
+        
         updateTheme()
     }
     
@@ -80,5 +82,20 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return viewControllers.count > 1
+    }
+}
+
+extension MainNavigationController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        
+        if let send = toVC as? WalletSendAmountController, let userList = fromVC as? WalletPickUserController ?? fromVC.findInChildren() {
+            return UserListToSendAnimator(userListController: userList, sendController: send)
+        }
+        
+//        if (toVC as? WalletSendAmountController != nil && fromVC as? WalletSendViewController != nil) || (fromVC as? WalletSendAmountController != nil && toVC as? WalletSendViewController != nil) {
+//            return FadeAnimator(presenting: operation == .push)
+//        }
+        
+        return nil
     }
 }

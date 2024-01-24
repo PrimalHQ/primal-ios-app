@@ -25,6 +25,7 @@ class WalletRequestResult {
     
     var parsedLNURL: ParsedLNURL?
     var parsedLNInvoice: ParsedLNInvoice?
+    var onchainAddress: String?
 }
 
 enum WalletResponseType: Int {
@@ -42,6 +43,7 @@ enum WalletResponseType: Int {
     case WALLET_ACTIVATION = 10_000_311
     case WALLET_PARSED_LNURL = 10_000_312
     case WALLET_PARSED_LNINVOICE = 10_000_313
+    case WALLET_PARSED_ONCHAIN = 10000316
 }
 
 struct WalletQuote: Codable {
@@ -99,7 +101,10 @@ struct WalletTransaction: Codable {
     var id: String
     var state: String
     var completed_at: Int?
+    var updated_at: Int?
     var created_at: Int
+    
+    var is_in_app_purchase: Bool?
     
     var is_zap: Bool
     
@@ -118,6 +123,8 @@ struct WalletTransaction: Codable {
     var exchange_rate: String?
     var total_fee_btc: String?
     var invoice: String?
+    
+    var onchainAddress: String?
     
     var zap_request: String?
 }

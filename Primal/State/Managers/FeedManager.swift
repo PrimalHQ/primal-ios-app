@@ -211,7 +211,7 @@ private extension FeedManager {
         Publishers.Zip3(
             IdentityManager.instance.$didFinishInit.filter({ $0 }).first(),
             Connection.regular.$isConnected.filter({ $0 }).first(),
-            IdentityManager.instance.$userSettings.compactMap { $0?.content.feeds?.first }
+            IdentityManager.instance.$userSettings.compactMap { $0?.feeds?.first }
         )
         .sink { [weak self] _, _, feed in
             guard let self else { return }

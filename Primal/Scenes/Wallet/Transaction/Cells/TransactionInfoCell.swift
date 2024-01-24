@@ -31,16 +31,22 @@ extension TransactionInfoCell: TransactionPartialCell {
             titleLabel.text = name
             infoLabel.text = info
             copyIcon.isHidden = true
+            infoLabel.textColor = .foreground4
         case let .copyInfo(name, info):
             titleLabel.text = name
             infoLabel.text = info
             copyIcon.isHidden = false
+            infoLabel.textColor = .foreground4
+        case let .actionInfo(name, info):
+            copyIcon.isHidden = true
+            titleLabel.text = name
+            infoLabel.text = info
+            infoLabel.textColor = .accent
         default:
             return
         }
         
         titleLabel.textColor = .foreground4
-        infoLabel.textColor = .foreground4
         copyIcon.tintColor = .foreground4
         background.backgroundColor = .background4
         border.backgroundColor = .background3

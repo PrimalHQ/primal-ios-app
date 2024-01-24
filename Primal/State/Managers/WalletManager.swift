@@ -61,6 +61,7 @@ final class WalletManager {
     
     var cancellables = Set<AnyCancellable>()
     @Published var userHasWallet: Bool?
+    @Published var updatedAt: Int?
     @Published var balance: Int = 0
     @Published var transactions: [WalletTransaction] = []
     @Published var isLoadingWallet = true
@@ -196,6 +197,10 @@ final class WalletManager {
         try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
+    func sendOnchain(_ btcAddress: String, sats: Int, note: String) async throws {
+        try await requestAsync(.send(.onchain, target: btcAddress, pubkey: nil, amount: sats.satsToBitcoinString(), note: note, zap: nil))
+    }
+    
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
         do {
             addZap(post.post.id, amount: sats)
@@ -256,7 +261,7 @@ private extension WalletManager {
             .store(in: &cancellables)
         
         $balance
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .removeDuplicates()
             .flatMap { [weak self] in
                 UserDefaults.standard.oldWalletAmount[IdentityManager.instance.userHexPubkey] = $0
                 return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher()
@@ -270,6 +275,14 @@ private extension WalletManager {
                     self.transactions = newTransactions + self.transactions
                 }
             })
+            .store(in: &cancellables)
+        
+        $updatedAt
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.refreshBalance()
+                self?.refreshTransactions()
+            }
             .store(in: &cancellables)
         
         $transactions
