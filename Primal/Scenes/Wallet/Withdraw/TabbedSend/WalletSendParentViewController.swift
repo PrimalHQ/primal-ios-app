@@ -55,15 +55,16 @@ final class WalletSendParentViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        let title = self.title
-        updateBars(.keyboard)
-        self.title = title
+        (navigationController as? MainNavigationController)?.isTransparent = false
+        navigationItem.leftBarButtonItem = customBackButton
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        navigationController?.viewControllers.remove(object: self)
+        if oldTab != .nostr {
+            navigationController?.viewControllers.remove(object: self)
+        }
     }
     
     func set(_ tab: Tab, animated: Bool = true) {

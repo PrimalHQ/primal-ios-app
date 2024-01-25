@@ -32,6 +32,13 @@ class MyButton: UIControl {
         super.touchesCancelled(touches, with: event)
         isPressed = false
     }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer.view as? UIScrollView != nil {
+            return true
+        }
+        return false
+    }
 }
 
 final class BigOnboardingButton: MyButton {

@@ -67,13 +67,19 @@ struct PrimalWalletRequest {
                 
                 return #"["deposit", \#(dic.encodeToString() ?? "{}")]"#
             case .transactions(let until, let since):
+                var dic: [String: JSON] = [
+                    "subwallet": 1,
+                    "limit": 50,
+                    "min_amount_btc": .string(UserDefaults.standard.minimumZapValue.satsToBitcoinString())
+                ]
+                
                 if let until {
-                    return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"until\":\(until)}]"
+                    dic["until"] = .number(Double(until))
                 }
                 if let since {
-                    return "[\"transactions\",{\"subwallet\":1,\"limit\":50, \"since\":\(since)}]"
+                    dic["since"] = .number(Double(since))
                 }
-                return "[\"transactions\",{\"subwallet\":1,\"limit\":50}]"
+                return #"["transactions", \#(dic.encodeToString() ?? "{}")]"#
             case let .payInvoice(lnInvoice, amountOverride, noteOverride):
                 if let amountOverride {
                     return "[\"withdraw\", {\"subwallet\":1, \"lnInvoice\": \"\(lnInvoice)\", \"amount_btc\":\"\(amountOverride)\", \"note_for_self\":\"\(noteOverride ?? "")\"}]"

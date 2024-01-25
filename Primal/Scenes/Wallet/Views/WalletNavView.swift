@@ -10,9 +10,9 @@ import UIKit
 
 final class WalletNavView: UIView, Themeable {
     // MARK: - Public
-    var sendPressedEvent = PassthroughSubject<Void, Never>()
-    var scanPressedEvent = PassthroughSubject<Void, Never>()
-    var receivePressedEvent = PassthroughSubject<Void, Never>()
+    var sendPressedEvent = PassthroughSubject<UIControl, Never>()
+    var scanPressedEvent = PassthroughSubject<UIControl, Never>()
+    var receivePressedEvent = PassthroughSubject<UIControl, Never>()
     
     @Published var shouldExpand: Bool = true
     
@@ -94,21 +94,21 @@ final class WalletNavView: UIView, Themeable {
             }
             .store(in: &cancellables)
         
-        [send, largeView.send].forEach {
-            $0.addAction(.init(handler: { [weak self] _ in
-                self?.sendPressedEvent.send(())
+        [send, largeView.send].forEach { button in
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.sendPressedEvent.send(button)
             }), for: .touchUpInside)
         }
         
-        [scan, largeView.scan].forEach {
-            $0.addAction(.init(handler: { [weak self] _ in
-                self?.scanPressedEvent.send(())
+        [scan, largeView.scan].forEach { button in
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.scanPressedEvent.send(button)
             }), for: .touchUpInside)
         }
         
-        [receive, largeView.receive].forEach {
-            $0.addAction(.init(handler: { [weak self] _ in
-                self?.receivePressedEvent.send(())
+        [receive, largeView.receive].forEach { button in
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.receivePressedEvent.send(button)
             }), for: .touchUpInside)
         }
     }

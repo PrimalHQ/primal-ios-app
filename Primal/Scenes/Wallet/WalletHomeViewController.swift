@@ -8,6 +8,19 @@
 import Combine
 import UIKit
 
+protocol WalletHomeTransitionButton: UIControl {
+    var imageView: UIImageView? { get }
+}
+
+extension UIButton: WalletHomeTransitionButton {
+    var imageBackground: UIView? { self }
+}
+
+extension LargeWalletButton: WalletHomeTransitionButton {
+    var imageView: UIImageView? { iconView }
+}
+
+
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case loading
@@ -42,6 +55,10 @@ final class WalletHomeViewController: UIViewController, Themeable {
     private var forceNavbarOpen = false
     private var extraOffset: CGFloat = 0
     private var contentOffsetStart = CGPoint.zero
+    
+    private let heavyImpact = UIImpactFeedbackGenerator(style: .heavy)
+    
+    var transitionButton: WalletHomeTransitionButton?
     
     private var tableData: [Section] = [] {
         didSet {
@@ -97,7 +114,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         WalletManager.instance.refreshBalance()
-        WalletManager.instance.loadNewTransactions()
+        WalletManager.instance.refreshTransactions()
         
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -108,6 +125,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewDidAppear(animated)
         
         table.reloadData()
+        
+        heavyImpact.prepare()
         
         guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
@@ -123,9 +142,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
                     WalletManager.instance.updatedAt = updatedAt
                 }
             }
-        
-        WalletManager.instance.refreshBalance()
-        WalletManager.instance.loadNewTransactions()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -382,17 +398,26 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
-        navBar.receivePressedEvent.sink { [weak self] in
+        navBar.receivePressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
             self?.show(WalletReceiveViewController(), sender: nil)
         }
         .store(in: &cancellables)
         
-        navBar.sendPressedEvent.sink { [weak self] in
+        navBar.sendPressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
             self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
         }
         .store(in: &cancellables)
         
-        navBar.scanPressedEvent.sink { [weak self] in
+        navBar.scanPressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
             (self?.navigationController as? MainNavigationController)?.isTransparent = true
             DispatchQueue.main.async {
                 self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)

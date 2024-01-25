@@ -121,6 +121,7 @@ extension WalletPickUserController: UITableViewDelegate, UITableViewDataSource {
         if let cell = cell as? UserInfoTableCell, let user = users[safe: indexPath.row] {
             cell.update(user: user)
             cell.secondaryLabel.text = user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+            cell.secondaryLabel.textColor = .foreground3
             cell.secondaryLabel.isHidden = cell.secondaryLabel.text?.isEmpty == true
             cell.nameLabel.font = .appFont(withSize: 16, weight: .semibold)
         }

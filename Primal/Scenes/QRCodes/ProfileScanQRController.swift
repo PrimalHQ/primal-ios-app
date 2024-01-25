@@ -12,7 +12,6 @@ import UIKit
 
 protocol QRCaptureController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var captureSession: AVCaptureSession { get }
-    
 }
 
 final class CapturePreviewView: UIView {
@@ -178,8 +177,15 @@ extension QRCaptureController {
         captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
         captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
         
-        DispatchQueue.global(qos: .background).async {
-            self.captureSession.startRunning()
-        }
+        await startRunningSession()
+    }
+    
+    func startRunningSession() async {
+        return await withCheckedContinuation({ continuation in
+            DispatchQueue.global(qos: .background).async {
+                self.captureSession.startRunning()
+                continuation.resume()
+            }
+        })
     }
 }

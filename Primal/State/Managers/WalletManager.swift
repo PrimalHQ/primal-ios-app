@@ -9,15 +9,21 @@ import Combine
 import Foundation
 
 extension UserDefaults {
-    var howManyZaps: Int {
+    var howManyZaps: Int { // Tracks how many zaps happened
         get { integer(forKey: "howManyZapsKey") }
         set { setValue(newValue, forKey: "howManyZapsKey") }
+    }
+    
+    var minimumZapValue: Int { // Minimum zap value to show
+        get { integer(forKey: .minimumZapValueKey) }
+        set { setValue(newValue, forKey: .minimumZapValueKey) }
     }
 }
 
 private extension String {
     static let oldWalletAmountKey = "oldWalletAmountKey"
     static let oldTransactionsKey = "oldTransactionsKey"
+    static let minimumZapValueKey = "minimumZapValueKey"
 }
 
 struct CodableParsedTransaction: Codable {

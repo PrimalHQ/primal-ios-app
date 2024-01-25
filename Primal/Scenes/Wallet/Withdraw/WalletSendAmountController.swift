@@ -56,6 +56,10 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     let profilePictureView = FLAnimatedImageView().constrainToSize(88)
     let nameLabel = UILabel()
     let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
+    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+    
+    let cancelButton = SimpleRoundedButton(title: "Cancel")
+    let sendButton = LargeRoundedButton(title: "Next")
     
     let hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     
@@ -105,14 +109,11 @@ private extension WalletSendAmountController {
         sizingView.pinToSuperview(edges: .top, safeArea: true)
         sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
         infoParent.alignment = .center
         
         let inputParent = UIView()
         let inputStack = UIStackView(axis: .vertical, [inputParent, SpacerView(height: 12)])
         
-        let cancelButton = SimpleRoundedButton(title: "Cancel")
-        let sendButton = LargeRoundedButton(title: "Next")
         let buttonStack = UIStackView([cancelButton, sendButton])
         buttonStack.distribution = .fillEqually
         buttonStack.spacing = 18

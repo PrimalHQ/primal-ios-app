@@ -23,7 +23,11 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
     var qrCodeFrameView = UIView()
     let previewView = CapturePreviewView()
     
+    let importImageButton = WalletSendSmallActionBlackButton(title: "Scan Image", icon: UIImage(named: "walletImageIcon"))
+    
     var cancellables: Set<AnyCancellable> = []
+    
+    let cover = UIImageView(image: UIImage(named: "qrCodeMaskLoading"))
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +45,10 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         videoPreviewLayer.frame = view.layer.bounds
         view.addSubview(previewView)
         previewView.pinToSuperview()
+        
+        view.addSubview(cover)
+        cover.contentMode = .scaleAspectFill
+        cover.pinToSuperview(safeArea: true)
 
         qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
         qrCodeFrameView.layer.borderWidth = 2
@@ -48,7 +56,6 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         
         view.bringSubviewToFront(image)
         
-        let importImageButton = WalletSendSmallActionBlackButton(title: "Scan Image", icon: UIImage(named: "walletImageIcon"))
         view.addSubview(importImageButton)
         importImageButton.pinToSuperview(edges: .bottom, padding: 40).centerToSuperview(axis: .horizontal).constrainToSize(width: 164)
         
@@ -62,10 +69,6 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
     }
     
     var isRunning = false
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -78,13 +81,9 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
             
             isRunning = true
             
-            self.startSession()
-        }
-    }
-    
-    func startSession() {
-        DispatchQueue.global(qos: .background).async {
-            self.captureSession.startRunning()
+            UIView.animate(withDuration: 0.3) {
+                self.cover.alpha = 0
+            }
         }
     }
 }

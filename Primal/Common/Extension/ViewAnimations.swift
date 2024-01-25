@@ -119,4 +119,29 @@ extension UIView {
         
         return animating
     }
+    
+    @discardableResult
+    func animateViewTo(_ frame: CGRect, radius: CGFloat, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UIView? {
+        alpha = 0.01
+        
+        let animating = UIView()
+        animating.backgroundColor = backgroundColor
+        animating.layer.cornerRadius = layer.cornerRadius
+        animating.frame = convert(bounds, to: root)
+        root.addSubview(animating)
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(timing)
+        
+        UIView.animate(withDuration: duration) {
+            animating.layer.cornerRadius = radius
+            animating.frame = frame
+        } completion: { _ in
+            animating.removeFromSuperview()
+        }
+        
+        CATransaction.commit()
+        
+        return animating
+    }
 }

@@ -88,13 +88,36 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        if let send = toVC as? WalletSendAmountController, let userList = fromVC as? WalletPickUserController ?? fromVC.findInChildren() {
-            return UserListToSendAnimator(userListController: userList, sendController: send)
+        
+        
+        if let amount = toVC as? WalletSendAmountController ?? fromVC as? WalletSendAmountController, let userList: WalletPickUserController = fromVC.findInChildren() ?? toVC.findInChildren() {
+            let isPresenting = amount == toVC
+            return UserListToSendAnimator(userListController: userList, sendController: amount, isPresenting: isPresenting)
         }
         
-//        if (toVC as? WalletSendAmountController != nil && fromVC as? WalletSendViewController != nil) || (fromVC as? WalletSendAmountController != nil && toVC as? WalletSendViewController != nil) {
-//            return FadeAnimator(presenting: operation == .push)
-//        }
+        if let home: WalletHomeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
+            let isPresenting = fromVC.children.contains(where: { $0 == home })
+            if let qrCode: WalletQRCodeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
+                if isPresenting {
+                    return WalletQRTransitionAnimator(home: home, qrController: qrCode, presenting: isPresenting)
+                }
+            }
+            
+            if let user: WalletPickUserController = fromVC.findInChildren() ?? toVC.findInChildren() {
+                if isPresenting {
+                    return WalletSendTransitionAnimator(home: home, userController: user, presenting: isPresenting)
+                }
+            }
+            
+            return nil
+        }
+        
+        if let amount = fromVC as? WalletSendAmountController ?? toVC as? WalletSendAmountController {
+            if let send = fromVC as? WalletSendViewController ?? toVC as? WalletSendViewController {
+                return WalletSendAmountSendAnimator(sendAmount: amount, send: send, presenting: amount == fromVC)
+            }
+        }
+        
         
         return nil
     }

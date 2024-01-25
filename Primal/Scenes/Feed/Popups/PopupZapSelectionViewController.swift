@@ -18,7 +18,8 @@ final class PopupZapSelectionViewController: UIViewController {
                 button.emoji = option.emoji
             }
             
-            inputField.text = zapOptions[safe: selectedOptionIndex]?.message ?? inputField.text
+            messageField.text = zapOptions[safe: selectedOptionIndex]?.message ?? messageField.text
+            amountField.text = String(zapOptions[safe: selectedOptionIndex]?.amount ?? 0)
             
             updateView()
         }
@@ -30,7 +31,10 @@ final class PopupZapSelectionViewController: UIViewController {
             
             guard let selectedOptionIndex else { return }
             
-            inputField.text = zapOptions[safe: selectedOptionIndex]?.message ?? inputField.text
+            messageField.resignFirstResponder()
+            amountField.resignFirstResponder()
+            messageField.text = zapOptions[safe: selectedOptionIndex]?.message ?? messageField.text
+            amountField.text = nil
         }
     }
     
@@ -48,7 +52,9 @@ final class PopupZapSelectionViewController: UIViewController {
     private let zapLabel = UILabel()
     private let usdLabel = UILabel()
     
-    private let inputField = UITextField()
+    private let amountParent = UIView()
+    private let amountField = UITextField()
+    private let messageField = UITextField()
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -68,7 +74,8 @@ final class PopupZapSelectionViewController: UIViewController {
         zapButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             self.dismiss(animated: true) { 
-                callback(self.zapOptions[safe: self.selectedOptionIndex]?.amount ?? 0, self.inputField.text ?? "")
+                let amount = self.zapOptions[safe: self.selectedOptionIndex]?.amount ?? Int(self.amountField.text ?? "") ?? 0
+                callback(amount, self.messageField.text ?? "")
             }
         }), for: .touchUpInside)
     }
@@ -83,6 +90,14 @@ private extension PopupZapSelectionViewController {
         for (index, button) in buttons.enumerated() {
             button.zapSelected = index == selectedOptionIndex
         }
+
+        guard let selectedOptionIndex else {
+            amountParent.backgroundColor = .background2
+            amountParent.layer.borderWidth = 1
+            return
+        }
+        amountParent.layer.borderWidth = 0
+        amountParent.backgroundColor = .background3
         
         guard let selectedZapAmount = zapOptions[safe: selectedOptionIndex]?.amount else { return }
         
@@ -109,11 +124,7 @@ private extension PopupZapSelectionViewController {
     func setup() {
         view.backgroundColor = .background4
         if let pc = presentationController as? UISheetPresentationController {
-            if #available(iOS 16.0, *) {
-                pc.detents = [.custom(resolver: { _ in 580 })]
-            } else {
-                pc.detents = [.large()]
-            }
+            pc.detents = [.custom(resolver: { _ in 656 })]
         }
         
         let pullBarParent = UIView()
@@ -141,10 +152,15 @@ private extension PopupZapSelectionViewController {
         usdLabel.textColor = .foreground3
         
         let inputParent = UIView()
-        let buttonStack = UIStackView(arrangedSubviews: [zapLabel, usdLabel, actionStack, inputParent, zapButton])
-        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 42), buttonStack, SpacerView(height: 42)])
-        
-        buttonStack.setCustomSpacing(2, after: zapLabel)
+        let buttonStack = UIStackView(axis: .vertical, [
+            zapLabel, SpacerView(height: 2, priority: .required),
+            usdLabel, SpacerView(height: 8, priority: .required), SpacerView(height: 18, priority: .defaultLow),
+            actionStack, SpacerView(height: 8, priority: .required), SpacerView(height: 12, priority: .defaultLow),
+            amountParent, SpacerView(height: 8, priority: .required), SpacerView(height: 20, priority: .defaultLow),
+            inputParent, SpacerView(height: 8, priority: .required), SpacerView(height: 28, priority: .defaultLow),
+            zapButton
+        ])
+        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 42), buttonStack, SpacerView(height: 42, priority: .defaultLow)])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
@@ -154,25 +170,42 @@ private extension PopupZapSelectionViewController {
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         
-        buttonStack.axis = .vertical
-        buttonStack.spacing = 32
-        
-        inputParent.backgroundColor = .background2
-        inputParent.layer.cornerRadius = 8
-        inputParent.addSubview(inputField)
-        inputParent.constrainToSize(height: 44)
-        inputField.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
-        inputField.attributedPlaceholder = NSAttributedString(string: "Add a comment...", attributes: [
+        amountParent.backgroundColor = .background3
+        amountParent.layer.cornerRadius = 22
+        amountParent.layer.borderColor = UIColor.accent.cgColor
+        amountParent.addSubview(amountField)
+        amountParent.constrainToSize(height: 44)
+        amountField.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
+        amountField.attributedPlaceholder = NSAttributedString(string: "Custom amount...", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),
             .foregroundColor: UIColor.foreground5
         ])
-        inputField.font = .appFont(withSize: 16, weight: .regular)
-        inputField.textColor = .foreground
-        inputField.delegate = self
+        amountField.font = .appFont(withSize: 16, weight: .regular)
+        amountField.textColor = .foreground
+        amountField.delegate = self
+        amountField.keyboardType = .numberPad
+        
+        inputParent.backgroundColor = .background3
+        inputParent.layer.cornerRadius = 22
+        inputParent.addSubview(messageField)
+        inputParent.constrainToSize(height: 44)
+        messageField.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
+        messageField.attributedPlaceholder = NSAttributedString(string: "Add a comment...", attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .foregroundColor: UIColor.foreground5
+        ])
+        messageField.font = .appFont(withSize: 16, weight: .regular)
+        messageField.textColor = .foreground
+        messageField.delegate = self
         
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
         pullBar.layer.cornerRadius = 2.5
+        
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.messageField.resignFirstResponder()
+            self?.amountField.resignFirstResponder()
+        }))
     }
 }
 
@@ -180,5 +213,11 @@ extension PopupZapSelectionViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return false
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == amountField {
+            selectedOptionIndex = nil
+        }
     }
 }

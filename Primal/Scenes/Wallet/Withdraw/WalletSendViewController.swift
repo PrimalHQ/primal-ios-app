@@ -73,7 +73,10 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()
+    let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
     let feeView = MiningFeeView()
+    let sendButton = UIButton()
+    
     let scrollView = UIScrollView()
     
     var cancellables = Set<AnyCancellable>()
@@ -128,9 +131,6 @@ private extension WalletSendViewController {
         let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
         let nameLabel = UILabel()
         
-        let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
-        
-        let sendButton = UIButton()
         sendButton.setTitle("Send", for: .normal)
         sendButton.titleLabel?.font = .appFont(withSize: 18, weight: .medium)
         sendButton.backgroundColor = .accent2
@@ -144,17 +144,12 @@ private extension WalletSendViewController {
         
         let inputParent = UIView()
         let inputStack = UIStackView(axis: .vertical, [inputParent, SpacerView(height: 12)])
-        
-        let cancelButton = SimpleRoundedButton(title: "Cancel")
-        let buttonStack = UIStackView([cancelButton, sendButton])
-        buttonStack.distribution = .fillEqually
-        buttonStack.spacing = 18
     
         let messageStack = UIStackView(axis: .vertical, [
             messageParent,
             feeView,
-            SpacerView(height: 264 - (destination.address.isBitcoinAddress ? 108 : 48), priority: .defaultLow),
-            buttonStack
+            SpacerView(height: 264 - (destination.address.isBitcoinAddress ? 108 : 48), priority: .init(500)),
+            sendButton
         ])
         messageStack.spacing = 16
         
@@ -165,15 +160,18 @@ private extension WalletSendViewController {
         ])
         stack.distribution = .equalSpacing
         
-        buttonStack.pinToSuperview(edges: .horizontal)
+        sendButton.pinToSuperview(edges: .horizontal)
         messageStack.pinToSuperview(edges: .horizontal)
         inputStack.pinToSuperview(edges: .horizontal)
+        
+        nipLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         if let name = destination.name {
             nameLabel.text = name
             nameLabel.font = .appFont(withSize: 20, weight: .semibold)
             nameLabel.textColor = .foreground
             infoParent.insertArrangedSubview(nameLabel, at: 2)
+            nameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
         messageParent.pinToSuperview(edges: .horizontal)
@@ -210,7 +208,7 @@ private extension WalletSendViewController {
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 20)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
         let height = stack.heightAnchor.constraint(equalTo: sizingView.heightAnchor, constant: -50)
-        height.priority = .init(500)
+        height.priority = .defaultHigh
         height.isActive = true
         
         stack.alignment = .center
@@ -240,13 +238,10 @@ private extension WalletSendViewController {
             nipLabel.numberOfLines = 2
         }
         
-        cancelButton.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.popViewController(animated: true)
-        }), for: .touchUpInside)
-        
         sendButton.addAction(.init(handler: { [weak self] _ in
-            self?.didTapView()
-            self?.send(sender: sendButton)
+            guard let self else { return }
+            didTapView()
+            send(sender: sendButton)
         }), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapView))

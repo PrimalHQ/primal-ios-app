@@ -69,6 +69,8 @@ private extension LargeBalanceConversionView {
         largeCurrencyLabel.font = .appFont(withSize: 16, weight: .medium)
         
         smallAmountLabel.font = .appFont(withSize: 16, weight: .regular)
+        
+        largeAmountLabel.setContentCompressionResistancePriority(.required, for: .vertical)
     }
     
     func setupLayout() {

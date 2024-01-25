@@ -19,7 +19,7 @@ final class SettingsEditZapController: UIViewController, Themeable {
     let messageInput = UITextField()
     let valueInput = UITextField()
     
-    init(_ type: EditType){
+    init(_ type: EditType) {
         editType = type
         super.init(nibName: nil, bundle: nil)
         
