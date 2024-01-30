@@ -27,6 +27,7 @@ class PostRequestResult: Codable {
     var pagination: PrimalPagination?
     
     var messageArray: [String]?
+    var userPubkey: String?
     
     var timestamps: [Date] = []
     

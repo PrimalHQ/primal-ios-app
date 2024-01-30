@@ -71,6 +71,8 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     let destination: Destination
     
+    let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+    let nameLabel = UILabel()
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()
     let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
@@ -127,9 +129,7 @@ private extension WalletSendViewController {
         sizingView.pinToSuperview(edges: .top, safeArea: true)
         sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        let profilePictureView = FLAnimatedImageView().constrainToSize(88)
         let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
-        let nameLabel = UILabel()
         
         sendButton.setTitle("Send", for: .normal)
         sendButton.titleLabel?.font = .appFont(withSize: 18, weight: .medium)
@@ -145,23 +145,33 @@ private extension WalletSendViewController {
         let inputParent = UIView()
         let inputStack = UIStackView(axis: .vertical, [inputParent, SpacerView(height: 12)])
     
-        let messageStack = UIStackView(axis: .vertical, [
+        let bottomView = UIView()
+        let bottomStack = UIStackView(axis: .vertical, [
             messageParent,
             feeView,
-            SpacerView(height: 264 - (destination.address.isBitcoinAddress ? 108 : 48), priority: .init(500)),
+            UIView(),
             sendButton
         ])
-        messageStack.spacing = 16
+        
+        bottomStack.setCustomSpacing(16, after: messageParent)
+        bottomStack.setCustomSpacing(16, after: feeView)
+        bottomView.addSubview(bottomStack)
+        bottomStack.pinToSuperview()
+
+        let botH = bottomView.heightAnchor.constraint(equalToConstant: 354)
+        botH.priority = .init(300)
+        botH.isActive = true
         
         let stack = UIStackView(axis: .vertical, [
             infoParent,
+            SpacerView(height: 16, priority: .required),
             inputStack,
-            messageStack
+            SpacerView(height: 16, priority: .required),
+            bottomView
         ])
         stack.distribution = .equalSpacing
         
-        sendButton.pinToSuperview(edges: .horizontal)
-        messageStack.pinToSuperview(edges: .horizontal)
+        bottomView.pinToSuperview(edges: .horizontal)
         inputStack.pinToSuperview(edges: .horizontal)
         
         nipLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -174,7 +184,6 @@ private extension WalletSendViewController {
             nameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         }
         
-        messageParent.pinToSuperview(edges: .horizontal)
         messageParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         messageParent.addSubview(messageInput)
         messageParent.layer.cornerRadius = 24
@@ -221,8 +230,13 @@ private extension WalletSendViewController {
             profilePictureView.setUserImage(user)
             messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
         } else {
-            profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
-            messageInput.placeholderText = "message"
+            if destination.address.isBitcoinAddress {
+                profilePictureView.image = UIImage(named: "onchainPayment")
+                messageInput.placeholderText = "Add note to self"
+            } else {
+                profilePictureView.image = UIImage(named: "nonZapPayment")
+                messageInput.placeholderText = "message"
+            }
         }
         
         feeView.isHidden = !destination.address.isBitcoinAddress
@@ -296,20 +310,24 @@ private extension WalletSendViewController {
                     }
                 }
                 
-                navigationController?.present(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true) { [weak self] in
+                // Have to use this callback as sometimes the result would come too soon
+                spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    navigationController?.popToViewController(self, animated: false)
-                    if let amountVC = navigationController?.viewControllers.first(where: { $0 as? WalletSendAmountController != nil }) {
-                        navigationController?.viewControllers.remove(object: amountVC)
+                    navigationController?.pushViewController(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                        self.navigationController?.viewControllers.removeAll(where: {
+                            $0 as? WalletSendAmountController != nil ||
+                            $0 as? WalletSendParentViewController != nil ||
+                            $0 as? WalletSendViewController != nil
+                        })
                     }
-                    navigationController?.viewControllers.remove(object: self)
                 }
             } catch {
                 let message = (error as? WalletError)?.message ?? error.localizedDescription
-                navigationController?.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: message)), animated: true) {
-                    self.navigationController?.popToViewController(self, animated: false)
-                }
+                
+                navigationController?.pushViewController(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: message)), animated: true)
             }
         }
     }

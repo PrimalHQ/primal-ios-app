@@ -39,6 +39,14 @@ extension TransactionAmountCell: TransactionPartialCell {
         
         backgroundColor = .background2
     }
+    
+    func setIsPending(_ isPending: Bool) {
+        guard isPending else { return }
+        
+        UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+            self.visibleLabel.alpha = 0.01
+        }
+    }
 }
 
 private extension TransactionAmountCell {

@@ -174,12 +174,7 @@ private extension WalletRequestResult {
         case .WALLET_OPERATION:
             print("UNHANDLED KIND: \(kind)")
         case .WALLET_BALANCE:
-            guard let balance = try? JSONDecoder().decode(WalletBalance.self, from: Data(contentString.utf8)) else {
-                print("Error decoding WALLET_BALANCE to json")
-                return
-            }
-            
-            self.balance = balance
+            balance = contentString.decode()
         case .WALLET_DEPOSIT_INVOICE:
             guard let data = try? JSONDecoder().decode(InvoiceInfo.self, from: Data(contentString.utf8)) else {
                 print("Error decoding: \(kind) to json")

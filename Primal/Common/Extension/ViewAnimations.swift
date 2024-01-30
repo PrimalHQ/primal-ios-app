@@ -13,7 +13,9 @@ extension CAMediaTimingFunction {
 
 extension UILabel {
     @discardableResult
-    func animateTransitionTo(_ otherLabel: UILabel, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UILabel {
+    func animateTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UILabel? {
+        guard let otherLabel else { return nil }
+        
         alpha = 0.01
         otherLabel.alpha = 0.01
         
@@ -52,7 +54,7 @@ extension UILabel {
 
 extension UIImageView {
     @discardableResult
-    func animateTransitionTo(_ other: UIView?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UIImageView? {
+    func animateTransitionTo(_ other: UIView?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, fade: Bool = false) -> UIImageView? {
         guard let other else { return nil }
         alpha = 0.01
         other.alpha = 0.01
@@ -79,6 +81,9 @@ extension UIImageView {
         
         UIView.animate(withDuration: duration) {
             animatingIV.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
+            if fade {
+                animatingIV.alpha = 0
+            }
         } completion: { _ in
             other.alpha = 1
             animatingIV.removeFromSuperview()

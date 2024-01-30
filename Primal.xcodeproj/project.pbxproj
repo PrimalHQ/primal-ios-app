@@ -318,6 +318,11 @@
 		B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */; };
 		B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290542B4C46890069C87F /* SmartContactsManager.swift */; };
 		B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */; };
+		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
+		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
+		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
+		B9CE4DA92B682C840060A1B8 /* transferSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = B9CE4DA82B682C840060A1B8 /* transferSuccess.json */; };
+		B9CE4DAB2B682C8B0060A1B8 /* transferFailed.json in Resources */ = {isa = PBXBuildFile; fileRef = B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -682,6 +687,11 @@
 		B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberKeyboardView.swift; sourceTree = "<group>"; };
 		B9B290542B4C46890069C87F /* SmartContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContactsManager.swift; sourceTree = "<group>"; };
 		B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
+		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
+		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
+		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
+		B9CE4DA82B682C840060A1B8 /* transferSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = transferSuccess.json; sourceTree = "<group>"; };
+		B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = transferFailed.json; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -904,6 +914,7 @@
 				9309D2322A5EA82A00FD2127 /* Array+Extra.swift */,
 				9E25ACBE2A98F9F800F0B395 /* UIImage+Extra.swift */,
 				93EAED172ABB25B300B4A1CD /* Collection+Extra.swift */,
+				B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1072,6 +1083,8 @@
 				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
 				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
 				9EB219EB2A06D2AF0037C3E5 /* splash.json */,
+				B9CE4DA82B682C840060A1B8 /* transferSuccess.json */,
+				B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -1659,11 +1672,8 @@
 		B9A200962B55A0FC003B6C6B /* Animators */ = {
 			isa = PBXGroup;
 			children = (
-				B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */,
+				B9CE4D9F2B63C8AE0060A1B8 /* Wallet */,
 				B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */,
-				B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */,
-				B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */,
-				B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */,
 			);
 			path = Animators;
 			sourceTree = "<group>";
@@ -1695,6 +1705,35 @@
 				B9B1ABA82B3336EC00837312 /* TransactionExpandInfoCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		B9CE4D9F2B63C8AE0060A1B8 /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				B9CE4DA32B63C9050060A1B8 /* Send */,
+				B9CE4DA22B63C8F30060A1B8 /* Home */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
+		B9CE4DA22B63C8F30060A1B8 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */,
+				B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		B9CE4DA32B63C9050060A1B8 /* Send */ = {
+			isa = PBXGroup;
+			children = (
+				B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */,
+				B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */,
+				B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */,
+				B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */,
+			);
+			path = Send;
 			sourceTree = "<group>";
 		};
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
@@ -1845,11 +1884,13 @@
 				B94F2BFE2AE95D790041181B /* Nacelle-UltraLight.otf in Resources */,
 				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
+				B9CE4DA92B682C840060A1B8 /* transferSuccess.json in Resources */,
 				B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */,
 				B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */,
 				9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */,
 				9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */,
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
+				B9CE4DAB2B682C8B0060A1B8 /* transferFailed.json in Resources */,
 				B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */,
 				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
@@ -1922,6 +1963,7 @@
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
 				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
+				B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */,
 				B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
@@ -1995,6 +2037,7 @@
 				9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
+				B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				93EAED182ABB25B300B4A1CD /* Collection+Extra.swift in Sources */,
 				B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */,
@@ -2085,6 +2128,7 @@
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
+				B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
@@ -2340,7 +2384,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.16;
+				MARKETING_VERSION = 1.2.17;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2385,7 +2429,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.16;
+				MARKETING_VERSION = 1.2.17;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

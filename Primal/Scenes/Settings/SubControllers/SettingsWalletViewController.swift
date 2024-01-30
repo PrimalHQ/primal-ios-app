@@ -64,7 +64,7 @@ private extension SettingsWalletViewController {
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
 //            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),
 //            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
-            SettingsInfoView(name: "Max wallet balance", desc: "1,000,000 sats", showArrow: false),                             SpacerView(height: 10),
+            SettingsInfoView(name: "Max wallet balance", desc: "\(WalletManager.instance.maxBalance.localized()) sats", showArrow: false), SpacerView(height: 10),
             maxBalanceDesc
         ])
         

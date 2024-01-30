@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import SafariServices
 
 protocol TransactionPartialCell: UITableViewCell {
     func setupWithCellInfo(_ info: TransactionViewController.CellType)
@@ -89,6 +90,10 @@ final class TransactionViewController: FeedViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cells[indexPath.row].cellID, for: indexPath)
         (cell as? TransactionPartialCell)?.setupWithCellInfo(cells[indexPath.row])
+        
+        let hasPostSection = super.tableView(tableView, numberOfRowsInSection: 1) > 0
+        (cell as? TransactionInfoCell)?.setIsLastInSection(indexPath.row + 1 + (hasPostSection ? 1 : 0) == cells.count)
+        (cell as? TransactionAmountCell)?.setIsPending(transaction.state != "SUCCEEDED")
         return cell
     }
     
@@ -101,6 +106,9 @@ final class TransactionViewController: FeedViewController {
         case .copyInfo(_, let text):
             UIPasteboard.general.string = text
             view.showToast("Copied!")
+        case .actionInfo(_, "view on blockchain"):
+            guard let onchainAddress = transaction.onchain_transaction_id, let url = URL(string: "https://mempool.space/tx/\(onchainAddress)") else { return }
+            present(SFSafariViewController(url: url), animated: true)
         case .expand:
             isExpanded.toggle()
         default:
@@ -119,10 +127,14 @@ private extension TransactionViewController {
     func setup() {
         let isDeposit = transaction.type == "DEPOSIT"
         
-        if isDeposit {
-            title = transaction.is_zap ? "Zap Received" : "Payment Received"
+        if transaction.state == "SUCCEEDED" {
+            if isDeposit {
+                title = transaction.is_zap ? "Zap Received" : "Payment Received"
+            } else {
+                title = transaction.is_zap ? "Zap Sent" : "Payment Sent"
+            }
         } else {
-            title = transaction.is_zap ? "Zap Sent" : "Payment Sent"
+            title = "Pending Transaction"
         }
         
         table.register(TransactionAmountCell.self, forCellReuseIdentifier: "amount")
@@ -178,7 +190,7 @@ private extension TransactionViewController {
             .title(isDeposit ? "RECEIVED FROM" : "SENT TO"),
         ]
         
-        if transaction.onchainAddress != nil {
+        if isOnchain {
             cells.append(.onchain(message: transaction.note))
         } else {
             cells.append(.user(user, message: transaction.note))
@@ -190,7 +202,7 @@ private extension TransactionViewController {
             .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
         ]
             
-        if isExpanded {
+        if isExpanded || isOnchain {
             cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).twoDecimalPoints()))
             if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
                 cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).twoDecimalPoints()))
@@ -202,12 +214,14 @@ private extension TransactionViewController {
             if let invoice = transaction.invoice {
                 cells.append(.copyInfo("Invoice", invoice))
             }
-            if isOnchain {
+            if transaction.onchain_transaction_id != nil {
                 cells.append(.actionInfo("Details", "view on blockchain"))
             }
         }
         
-        cells.append(.expand(isExpanded))
+        if !isOnchain {
+            cells.append(.expand(isExpanded))
+        }
         
         if !posts.isEmpty {
             cells += [.title("ZAPPED NOTE")]

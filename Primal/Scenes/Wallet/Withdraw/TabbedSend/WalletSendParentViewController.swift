@@ -116,7 +116,25 @@ final class WalletSendParentViewController: UIViewController {
         textSearch = text
         
         if text.isEmail {
-            navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            SocketRequest(name: "user_of_ln_address", payload: ["ln_address" : .string(text)]).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    guard let self else { return }
+                    
+                    if let pubkey = res.userPubkey {
+                        SocketRequest(name: "user_profile", payload: ["pubkey": .string(pubkey)]).publisher()
+                            .receive(on: DispatchQueue.main)
+                            .sink { [weak self] result in
+                                guard let self else { return }
+                                
+                                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
+                            }
+                            .store(in: &cancellables)
+                    } else {
+                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
+                    }
+                }
+                .store(in: &cancellables)
             return
         }
         

@@ -73,6 +73,7 @@ class WalletSendAmountSendAnimator: NSObject, UIViewControllerAnimatedTransition
         
         UIView.animate(withDuration: 6 / 30, delay: 3 / 30) { [self] in
             send.messageParent.transform = presenting ? .identity : .init(translationX: translationX, y: 0)
+            send.feeView.transform = presenting ? .identity : .init(translationX: translationX, y: 0)
         }
         
         UIView.animate(withDuration: 6 / 30, delay: 6 / 30) { [self] in
@@ -112,6 +113,10 @@ class WalletSendAmountSendAnimator: NSObject, UIViewControllerAnimatedTransition
             }
             
             send.view.backgroundColor = .background
+            
+            sendAmount.cancelButton.alpha = 1
+            sendAmount.keyboard.transform = .identity
+            sendAmount.keyboard.alpha = 1
             
             sendAmount.infoParent.alpha = 1
             sendAmount.input.alpha = 1

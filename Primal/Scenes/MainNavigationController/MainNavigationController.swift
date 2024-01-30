@@ -88,13 +88,6 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        
-        
-        if let amount = toVC as? WalletSendAmountController ?? fromVC as? WalletSendAmountController, let userList: WalletPickUserController = fromVC.findInChildren() ?? toVC.findInChildren() {
-            let isPresenting = amount == toVC
-            return UserListToSendAnimator(userListController: userList, sendController: amount, isPresenting: isPresenting)
-        }
-        
         if let home: WalletHomeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
             let isPresenting = fromVC.children.contains(where: { $0 == home })
             if let qrCode: WalletQRCodeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
@@ -113,8 +106,27 @@ extension MainNavigationController: UINavigationControllerDelegate {
         }
         
         if let amount = fromVC as? WalletSendAmountController ?? toVC as? WalletSendAmountController {
+            if let userList: WalletPickUserController = fromVC.findInChildren() ?? toVC.findInChildren() {
+                let isPresenting = amount == toVC
+                return UserListToSendAnimator(userListController: userList, sendController: amount, isPresenting: isPresenting)
+            }
+            
             if let send = fromVC as? WalletSendViewController ?? toVC as? WalletSendViewController {
                 return WalletSendAmountSendAnimator(sendAmount: amount, send: send, presenting: amount == fromVC)
+            }
+            
+            return nil
+        }
+        
+        if let send = fromVC as? WalletSendViewController ?? toVC as? WalletSendViewController {
+            if let spinner = toVC as? WalletSpinnerViewController {
+                return WalletSendSpinnerAnimator(sendController: send, spinner: spinner)
+            }
+        }
+        
+        if let result = toVC as? WalletTransferSummaryController {
+            if let spinner = fromVC as? WalletSpinnerViewController {
+                return WalletSpinnerToResultAnimator(spinner: spinner, result: result)
             }
         }
         

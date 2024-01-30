@@ -14,6 +14,8 @@ enum AnimationType {
     case splash
     case loadingSpinner
     case loadingSpinnerBlue
+    case transferSuccess
+    case transferFailed
     
     case zapMedium
     
@@ -27,6 +29,8 @@ enum AnimationType {
         case .loadingSpinner:       return "loadingSpinner"
         case .loadingSpinnerBlue:   return "loadingSpinnerBlue"
         case .zapMedium:        	return "zap-medium"
+        case .transferSuccess:      return "transferSuccess"
+        case .transferFailed:       return "transferFailed"
         }
     }
     

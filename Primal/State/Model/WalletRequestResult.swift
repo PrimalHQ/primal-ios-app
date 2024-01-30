@@ -65,6 +65,7 @@ enum KYCLevel: Int {
 
 struct WalletBalance: Codable {
     var amount: String
+    var max_amount: String
     var currency: String
 }
 
@@ -125,6 +126,7 @@ struct WalletTransaction: Codable {
     var invoice: String?
     
     var onchainAddress: String?
+    var onchain_transaction_id: String?
     
     var zap_request: String?
 }

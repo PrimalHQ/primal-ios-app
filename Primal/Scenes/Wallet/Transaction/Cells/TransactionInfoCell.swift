@@ -22,6 +22,18 @@ class TransactionInfoCell: UITableViewCell {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func setIsLastInSection(_ isLast: Bool) {
+        if isLast {
+            background.layer.cornerRadius = 8
+            background.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            border.alpha = 0.01
+        } else {
+            background.layer.cornerRadius = 0
+            background.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            border.alpha = 1
+        }
+    }
 }
 
 extension TransactionInfoCell: TransactionPartialCell {
@@ -58,7 +70,7 @@ private extension TransactionInfoCell {
     func setup() {
         selectionStyle = .none
         
-        let infoStack = UIStackView([titleLabel, SpacerView(width: 78, priority: .required), infoLabel, copyIcon])
+        let infoStack = UIStackView([titleLabel, UIView(), infoLabel, copyIcon])
         infoStack.alignment = .center
         infoStack.spacing = 8
         
@@ -67,6 +79,7 @@ private extension TransactionInfoCell {
         copyIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         infoLabel.lineBreakMode = .byTruncatingMiddle
+        infoLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 170).isActive = true
         
         let contentStack = UIStackView(axis: .vertical, [infoStack, border])
         contentStack.spacing = 10

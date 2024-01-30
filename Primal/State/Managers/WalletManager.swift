@@ -69,6 +69,7 @@ final class WalletManager {
     @Published var userHasWallet: Bool?
     @Published var updatedAt: Int?
     @Published var balance: Int = 0
+    @Published var maxBalance: Int = 0
     @Published var transactions: [WalletTransaction] = []
     @Published var isLoadingWallet = true
     @Published var didJustCreateWallet = false
@@ -122,9 +123,12 @@ final class WalletManager {
     func refreshBalance() {
         PrimalWalletRequest(type: .balance).publisher()
             .sink(receiveValue: { [weak self] val in
-                guard  let string = val.balance?.amount else { return }
+                guard let balance = val.balance else { return }
                 
-                let double = (Double(string) ?? 0) * .BTC_TO_SAT
+                let doubleMax = (Double(balance.max_amount) ?? 0) * .BTC_TO_SAT
+                self?.maxBalance = Int(doubleMax)
+                    
+                let double = (Double(balance.amount) ?? 0) * .BTC_TO_SAT
                 self?.balance = Int(double)
             })
             .store(in: &cancellables)

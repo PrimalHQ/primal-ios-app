@@ -11,19 +11,11 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
     let userList: WalletPickUserController
     let sendController: WalletSendAmountController
     let isPresenting: Bool
-    let userCell: UserInfoTableCell
-    init?(userListController: WalletPickUserController, sendController: WalletSendAmountController, isPresenting: Bool) {
+    
+    init(userListController: WalletPickUserController, sendController: WalletSendAmountController, isPresenting: Bool) {
         userList = userListController
         self.sendController = sendController
         self.isPresenting = isPresenting
-        
-        guard
-            let user = sendController.destination.user,
-            let index = userList.users.firstIndex(where: { $0.data.pubkey == user.data.pubkey }),
-            let userCell = userList.userTable.cellForRow(at: .init(row: index, section: 0)) as? UserInfoTableCell
-        else { return nil }
-        
-        self.userCell = userCell
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { 18 / 30 }
@@ -33,7 +25,7 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
             let fromView = transitionContext.view(forKey: .from),
             let toView = transitionContext.view(forKey: .to)
         else { return }
-
+        
         let container = transitionContext.containerView
         
         let background = UIView()
@@ -53,10 +45,15 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
             container.insertSubview(background, at: 1)
         }
         
+        var userCell: UserInfoTableCell?
+        if let user = sendController.destination.user, let index = userList.users.firstIndex(where: { $0.data.pubkey == user.data.pubkey }) {
+            userCell = userList.userTable.cellForRow(at: .init(row: index, section: 0)) as? UserInfoTableCell
+        }
+        
         if isPresenting {
-            userCell.profileIcon.animateTransitionTo(sendController.profilePictureView, duration: 18 / 30, in: container)
-            userCell.nameLabel.animateTransitionTo(sendController.nameLabel, duration: 18 / 30, in: container)
-            userCell.secondaryLabel.animateTransitionTo(sendController.nipLabel, duration: 18 / 30, in: container)
+            userCell?.profileIcon.animateTransitionTo(sendController.profilePictureView, duration: 18 / 30, in: container)
+            userCell?.nameLabel.animateTransitionTo(sendController.nameLabel, duration: 18 / 30, in: container)
+            userCell?.secondaryLabel.animateTransitionTo(sendController.nipLabel, duration: 18 / 30, in: container)
             
             UIView.animate(withDuration: 8 / 30) {
                 background.alpha = 1
@@ -67,6 +64,10 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
             } completion: { _ in
                 background.removeFromSuperview()
                 
+                userCell?.profileIcon.alpha = 1
+                userCell?.nameLabel.alpha = 1
+                userCell?.secondaryLabel.alpha = 1
+                
                 let success = !transitionContext.transitionWasCancelled
                 if !success {
                     toView.removeFromSuperview()
@@ -74,9 +75,9 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
                 transitionContext.completeTransition(success)
             }
         } else {
-            sendController.profilePictureView.animateTransitionTo(userCell.profileIcon, duration: 18 / 30, in: container)
-            sendController.nameLabel.animateTransitionTo(userCell.nameLabel, duration: 18 / 30, in: container)
-            sendController.nipLabel.animateTransitionTo(userCell.secondaryLabel, duration: 18 / 30, in: container)
+            sendController.profilePictureView.animateTransitionTo(userCell?.profileIcon, duration: 18 / 30, in: container)
+            sendController.nameLabel.animateTransitionTo(userCell?.nameLabel, duration: 18 / 30, in: container)
+            sendController.nipLabel.animateTransitionTo(userCell?.secondaryLabel, duration: 18 / 30, in: container)
             
             UIView.animate(withDuration: 10 / 30) {
                 fromView.alpha = 0

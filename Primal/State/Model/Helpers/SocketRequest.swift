@@ -185,6 +185,12 @@ extension PostRequestResult {
             chatsMetadata = chats
         case .defaultRelays:
             messageArray = contentString.decode()
+        case .userPubkey:
+            guard let data: [String: String] = contentString.decode(), let pubkey = data["pubkey"] else {
+                print("Error decoding userPubkey")
+                return
+            }
+            userPubkey = pubkey
         default:
             print("Unhandled response \(payload)")
         }
