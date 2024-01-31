@@ -175,6 +175,7 @@ private extension WalletSendAmountController {
         input.$balance.map({ $0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.viewControllers.removeAll(where: { $0 as? WalletSendParentViewController != nil })
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)
         

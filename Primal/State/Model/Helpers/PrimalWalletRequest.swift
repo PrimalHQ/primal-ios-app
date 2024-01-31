@@ -27,7 +27,7 @@ enum WalletTransactionNetwork: String {
 
 struct PrimalWalletRequest {
     enum SendRequestType {
-        case lnurl, lud16, lud06, onchain
+        case lnurl, lud16, lud06, onchain(tier: String)
     }
     
     enum RequestType {
@@ -43,6 +43,7 @@ struct PrimalWalletRequest {
         case activate(code: String)
         case parseLNURL(String)
         case exchangeRate
+        case onchainPaymentTiers(address: String, amount: String)
         
         var requestContent: String {
             switch self {
@@ -94,8 +95,9 @@ struct PrimalWalletRequest {
                 ]
                 
                 switch type {
-                case .onchain:
+                case .onchain(let tier):
                     dic["target_bcaddr"] = .string(target)
+                    dic["onchain_tier"] = .string(tier)
                 case .lnurl, .lud06:
                     dic["target_lnurl"] = .string(target)
                 case .lud16:
@@ -127,6 +129,8 @@ struct PrimalWalletRequest {
                 return "[\"parse_lninvoice\", {\"lninvoice\": \"\(lnurl)\"}]"
             case .exchangeRate:
                 return #"["exchange_rate", {}]"#
+            case .onchainPaymentTiers(let address, let amount):
+                return #"["onchain_payment_tiers", {"target_bcaddr": "\#(address)", "amount_btc": "\#(amount)"}]"#
             }
       }
   }
@@ -238,6 +242,12 @@ private extension WalletRequestResult {
                 return
             }
             onchainAddress = parsed["onchainAddress"]
+        case .WALLET_ONCHAIN_TIERS:
+            guard let parsed: [OnchainTransactionTier] = contentString.decode() else {
+                print("Unable to decode WALLET_ONCHAIN_TIERS")
+                return
+            }
+            tiers = parsed
         case .WALLET_IN_APP_PURCHASE, .WALLET_ACTIVATION_CODE:
             return // NO ACTION
         }

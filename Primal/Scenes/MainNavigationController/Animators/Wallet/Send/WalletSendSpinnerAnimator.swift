@@ -31,7 +31,7 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         
         let imageView = UIImageView(image: UIImage(named: "transitionSpinner"))
         switch Theme.current.kind {
-        case .sunriseWave, .sunsetWave: return
+        case .sunriseWave, .sunsetWave: break
         case .midnightWave, .iceWave:
             imageView.image = UIImage(named: "transitionSpinner")?.withRenderingMode(.alwaysTemplate)
             imageView.tintColor = UIColor(rgb: 0x2554ED)

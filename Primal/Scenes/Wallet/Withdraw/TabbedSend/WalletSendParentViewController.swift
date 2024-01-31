@@ -99,7 +99,7 @@ final class WalletSendParentViewController: UIViewController {
             (navigationController as? MainNavigationController)?.isTransparent = true
             navigationItem.leftBarButtonItem = backButtonWithColor(.white)
         case .keyboard:
-            title = "Keyboard"
+            title = "Send Address"
             activeButton = keyboardButton
             (navigationController as? MainNavigationController)?.isTransparent = false
             navigationItem.leftBarButtonItem = customBackButton

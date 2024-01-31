@@ -23,6 +23,8 @@ class WalletRequestResult {
     var newAddress: String?
     var quote: WalletQuote?
     
+    var tiers: [OnchainTransactionTier] = []
+    
     var parsedLNURL: ParsedLNURL?
     var parsedLNInvoice: ParsedLNInvoice?
     var onchainAddress: String?
@@ -43,6 +45,7 @@ enum WalletResponseType: Int {
     case WALLET_ACTIVATION = 10_000_311
     case WALLET_PARSED_LNURL = 10_000_312
     case WALLET_PARSED_LNINVOICE = 10_000_313
+    case WALLET_ONCHAIN_TIERS = 10_000_315
     case WALLET_PARSED_ONCHAIN = 10000316
 }
 
@@ -69,6 +72,11 @@ struct WalletBalance: Codable {
     var currency: String
 }
 
+struct WalletAmount: Codable {
+    var amount: String
+    var currency: String
+}
+
 struct ParsedLNURL: Codable {
     var min_sendable: String?
     var max_sendable: String?
@@ -85,6 +93,15 @@ struct ParsedLNInvoice: Codable {
         var amount_msat: Int
         var description: String?
     }
+}
+
+struct OnchainTransactionTier: Codable {
+    var _duration: Int
+    var estimatedDeliveryDurationInMin: Int
+    var id: String
+    var _label: String
+    var estimatedFee: WalletAmount
+    var minimumAmount: WalletAmount?
 }
 
 struct DepositInfo: Codable {

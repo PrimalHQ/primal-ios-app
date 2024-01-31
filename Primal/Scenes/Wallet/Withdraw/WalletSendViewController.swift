@@ -79,6 +79,20 @@ final class WalletSendViewController: UIViewController, Themeable {
     let feeView = MiningFeeView()
     let sendButton = UIButton()
     
+    var tiers: [WalletOnchainTier] = [] {
+        didSet {
+            feeView.alpha = tiers.isEmpty ? 0.01 : 1
+            selectedTier = tiers.first
+        }
+    }
+    var selectedTier: WalletOnchainTier? {
+        didSet {
+            guard let selectedTier else { return }
+            feeView.feeLabel.text = "\(selectedTier.name): \(selectedTier.price)"
+        }
+    }
+    var selectedTierIndex: Int { tiers.firstIndex(where: { $0.id == selectedTier?.id }) ?? 0 }
+    
     let scrollView = UIScrollView()
     
     var cancellables = Set<AnyCancellable>()
@@ -240,6 +254,7 @@ private extension WalletSendViewController {
         }
         
         feeView.isHidden = !destination.address.isBitcoinAddress
+        feeView.alpha = 0.01
         
         nipLabel.text = destination.address
         nipLabel.font = .appFont(withSize: 16, weight: .regular)
@@ -248,24 +263,56 @@ private extension WalletSendViewController {
         if destination.address.isBitcoinAddress {
             nipLabel.numberOfLines = 1
             nipLabel.lineBreakMode = .byTruncatingMiddle
+            
+            PrimalWalletRequest(type: .onchainPaymentTiers(address: destination.address, amount: destination.startingAmount.satsToBitcoinString())).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    self?.tiers = res.tiers.map {
+                        var price: String = "\($0.estimatedFee.amount) \($0.estimatedFee.currency)"
+                        if let amount = Double($0.estimatedFee.amount) {
+                            let usd = amount * .BTC_TO_USD
+                            price = "$\(usd.localized())"
+                        }
+                        
+                        let min = $0.estimatedDeliveryDurationInMin
+                        var time = min.localized() + " min"
+                        
+                        if min >= 120 {
+                            let hours = min / 60
+                            
+                            if hours >= 24 {
+                                let days = hours / 24
+                                
+                                time = "\(days) day"
+                            } else {
+                                time = "\(hours) hour"
+                            }
+                        }
+                        
+                        return .init(name: $0._label, price: price, length: time, id: $0.id)
+                    }
+                }
+                .store(in: &cancellables)
         } else {
             nipLabel.numberOfLines = 2
         }
         
         sendButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            didTapView()
+            messageInput.resignFirstResponder()
             send(sender: sendButton)
         }), for: .touchUpInside)
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-        view.addGestureRecognizer(tap)
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.messageInput.resignFirstResponder()
+        }))
+        
+        feeView.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            present(WalletOnchainTierPickController(tiers: self.tiers, selectedIndex: self.selectedTierIndex, delegate: self), animated: true)
+        }), for: .touchUpInside)
         
         updateTheme()
-    }
-    
-    @objc func didTapView() {
-        messageInput.resignFirstResponder()
     }
     
     func send(sender: UIButton) {
@@ -291,7 +338,7 @@ private extension WalletSendViewController {
                     )
                 case let .address(address, invoice, user, _):
                     if address.isBitcoinAddress {
-                        try await WalletManager.instance.sendOnchain(address, sats: amount, note: note)
+                        try await WalletManager.instance.sendOnchain(destination.address, tier: selectedTier?.id ?? "tier_fast", sats: amount, note: note)
                     } else if address.isEmail {
                         try await WalletManager.instance.sendLud16(address, sats: amount, note: note)
                     } else if address.hasPrefix("lnurl") {
@@ -333,13 +380,27 @@ private extension WalletSendViewController {
     }
 }
 
-final class MiningFeeView: UIView {
+extension WalletSendViewController: WalletOnchainTierPickDelegate {
+    func didPickTier(_ tier: String) {
+        selectedTier = tiers.first(where: { $0.id == tier }) ?? selectedTier
+    }
+}
+
+final class MiningFeeView: MyButton {
     let descLabel = UILabel()
     let feeLabel = UILabel()
+    
+    override var isPressed: Bool {
+        didSet {
+            alpha = isPressed ? 0.5 : 1
+        }
+    }
+    
     init() {
         super.init(frame: .zero)
         
         let stack = UIStackView([descLabel, UIView(), feeLabel])
+        stack.isUserInteractionEnabled = false
         addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
         constrainToSize(height: 48)
@@ -348,7 +409,7 @@ final class MiningFeeView: UIView {
         backgroundColor = .background3
         
         descLabel.text = "Mining fee"
-        feeLabel.text = "Fast: $0.82"
+        feeLabel.text = "----"
         descLabel.font = .appFont(withSize: 16, weight: .regular)
         feeLabel.font = .appFont(withSize: 16, weight: .regular)
         descLabel.textColor = .foreground

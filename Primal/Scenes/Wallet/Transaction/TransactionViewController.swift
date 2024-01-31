@@ -67,6 +67,8 @@ final class TransactionViewController: FeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
+        
+        table.reloadData()
     }
     
     override var postSection: Int { 1 }

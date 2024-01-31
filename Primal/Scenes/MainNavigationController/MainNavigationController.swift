@@ -88,6 +88,10 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
+        if let result = fromVC as? WalletTransferSummaryController {
+            return SlideDownAnimator(presenting: false)
+        }
+        
         if let home: WalletHomeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
             let isPresenting = fromVC.children.contains(where: { $0 == home })
             if let qrCode: WalletQRCodeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
@@ -129,7 +133,6 @@ extension MainNavigationController: UINavigationControllerDelegate {
                 return WalletSpinnerToResultAnimator(spinner: spinner, result: result)
             }
         }
-        
         
         return nil
     }

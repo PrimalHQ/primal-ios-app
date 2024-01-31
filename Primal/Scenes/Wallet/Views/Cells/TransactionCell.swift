@@ -36,6 +36,9 @@ final class TransactionCell: UITableViewCell, Themeable {
     
     weak var delegate: TransactionCellDelegate?
     
+    var wasPulsing = false
+    var oldProfileId = ""
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -49,7 +52,10 @@ final class TransactionCell: UITableViewCell, Themeable {
         let isDeposit = transaction.0.type == "DEPOSIT"
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
-            profileImage.setUserImage(transaction.1)
+            if oldProfileId != transaction.1.data.pubkey {
+                profileImage.setUserImage(transaction.1)
+                oldProfileId = transaction.1.data.pubkey
+            }
             profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else if transaction.0.onchainAddress != nil {
@@ -68,18 +74,30 @@ final class TransactionCell: UITableViewCell, Themeable {
             timeIcon.isHidden = true
             timeLabel.text = Date(timeIntervalSince1970: TimeInterval(completedAt)).timeAgoDisplay()
             coverView.alpha = 0
+            
+            wasPulsing = false
         } else {
             timeIcon.isHidden = false
             timeLabel.text = "Pending"
             
-            if coverView.alpha == 0.6 {
-                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
-                    self.coverView.alpha = 0
+            if !wasPulsing {
+                wasPulsing = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
+                    if self.wasPulsing {
+                        self.wasPulsing = false
+                    }
                 }
-            } else {
-                coverView.alpha = 0
-                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
-                    self.coverView.alpha = 0.6
+                
+                if coverView.alpha == 0.6 {
+                    UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+                        self.coverView.alpha = 0
+                    }
+                } else {
+                    coverView.alpha = 0
+                    UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+                        self.coverView.alpha = 0.6
+                    }
                 }
             }
         }

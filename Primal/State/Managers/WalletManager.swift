@@ -207,8 +207,8 @@ final class WalletManager {
         try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
     }
     
-    func sendOnchain(_ btcAddress: String, sats: Int, note: String) async throws {
-        try await requestAsync(.send(.onchain, target: btcAddress, pubkey: nil, amount: sats.satsToBitcoinString(), note: note, zap: nil))
+    func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
+        try await requestAsync(.send(.onchain(tier: tier), target: btcAddress, pubkey: nil, amount: sats.satsToBitcoinString(), note: note, zap: nil))
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
