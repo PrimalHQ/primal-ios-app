@@ -106,6 +106,10 @@ extension MainNavigationController: UINavigationControllerDelegate {
                 }
             }
             
+            if let receive = toVC as? WalletReceiveViewController {
+                return WalletReceiveTransitionAnimator(home: home, receive: receive, presenting: isPresenting)
+            }
+            
             return nil
         }
         

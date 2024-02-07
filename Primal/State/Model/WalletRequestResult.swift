@@ -147,3 +147,7 @@ struct WalletTransaction: Codable {
     
     var zap_request: String?
 }
+
+extension WalletTransaction {
+    var isDeposit: Bool { type == "DEPOSIT" }
+}

@@ -13,7 +13,7 @@ protocol WalletReceiveDetailsControllerDelegate: AnyObject {
 }
 
 final class WalletReceiveDetailsController: UIViewController, Themeable, KeyboardInputConnector {
-    let input = LargeBalanceConversionView(showSecondaryRow: true)
+    let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     let textInput = PlaceholderTextView()
     
@@ -66,6 +66,7 @@ private extension WalletReceiveDetailsController {
             .pinToSuperview(edges: .bottom, padding: 4)
         textParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         
+        textInput.textAlignment = .center
         textInput.placeholderText = "add comment"
         textInput.font = .appFont(withSize: 16, weight: .regular)
         textInput.backgroundColor = .clear

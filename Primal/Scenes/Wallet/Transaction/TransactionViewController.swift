@@ -45,12 +45,14 @@ final class TransactionViewController: FeedViewController {
     let transaction: WalletTransaction
     let user: ParsedUser?
     
-    var isExpanded: Bool = false {
+    var isExpanded: Bool = true {
         didSet {
             setCells()
             table.reloadData()
         }
     }
+    
+    var foregroundUpdate: AnyCancellable?
     
     init(transaction: WalletTransaction, user: ParsedUser?) {
         self.transaction = transaction
@@ -67,8 +69,23 @@ final class TransactionViewController: FeedViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        foregroundUpdate = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
+            .sink(receiveValue: { [weak self] _ in
+                self?.table.reloadData()
+            })
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
         table.reloadData()
+        
+        foregroundUpdate = nil
     }
     
     override var postSection: Int { 1 }
@@ -150,6 +167,8 @@ private extension TransactionViewController {
         if let zapInfo: ZapInfo = transaction.zap_request?.decode(), let postID = zapInfo.tags.first(where: { $0.first == "e" })?.last {
             print(postID)
             
+            isExpanded = false
+            
             SocketRequest(
                 name: "thread_view",
                 payload: .object([
@@ -192,19 +211,22 @@ private extension TransactionViewController {
             .title(isDeposit ? "RECEIVED FROM" : "SENT TO"),
         ]
         
-        if isOnchain {
+        if let pubkey = user?.data.pubkey, pubkey != IdentityManager.instance.userHexPubkey {
+            cells.append(.user(user, message: transaction.note))
+        } else if isOnchain {
             cells.append(.onchain(message: transaction.note))
         } else {
-            cells.append(.user(user, message: transaction.note))
+            cells.append(.user(nil, message: transaction.note))
         }
         
-        cells += [
-            .info("Date", date.formatted()),
-            .info("Status", transaction.state.localizedCapitalized),
-            .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
-        ]
+        cells.append(.info("Date", date.formatted()))
+        
+        if isExpanded {
+            cells += [
+                .info("Status", transaction.state.localizedCapitalized),
+                .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
+            ]
             
-        if isExpanded || isOnchain {
             cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).twoDecimalPoints()))
             if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
                 cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).twoDecimalPoints()))
@@ -221,7 +243,7 @@ private extension TransactionViewController {
             }
         }
         
-        if !isOnchain {
+        if (!isOnchain && !posts.isEmpty) || !isExpanded {
             cells.append(.expand(isExpanded))
         }
         

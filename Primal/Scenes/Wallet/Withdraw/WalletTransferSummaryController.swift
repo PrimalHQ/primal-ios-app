@@ -17,7 +17,7 @@ final class WalletTransferSummaryController: UIViewController {
     
     var state: State
     
-    let icon = LottieAnimationView().constrainToSize(width: 270, height: 270)
+    let animationView = LottieAnimationView().constrainToSize(width: 270, height: 270)
     
     init(_ state: State) {
         self.state = state
@@ -48,7 +48,7 @@ private extension WalletTransferSummaryController {
         
         let stack = UIStackView(axis: .vertical, [
             topView,    SpacerView(height: 60),
-            icon,       SpacerView(height: 4),
+            animationView,       SpacerView(height: 4),
             title,      SpacerView(height: 28),
             subtitle,   UIView(),
             close
@@ -79,7 +79,7 @@ private extension WalletTransferSummaryController {
         
         switch state {
         case .walletActivated(let newAddress):
-            icon.animation = AnimationType.transferSuccess.animation
+            animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
             title.text = "Your wallet has been activated.\nYour new Nostr lightning address is:"
@@ -100,7 +100,7 @@ private extension WalletTransferSummaryController {
             
             view.backgroundColor = .receiveMoney
         case .success(amount: let amount, address: let address):
-            icon.animation = AnimationType.transferSuccess.animation
+            animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
             title.text = "Success, payment sent!"
@@ -116,7 +116,7 @@ private extension WalletTransferSummaryController {
             
             view.backgroundColor = .receiveMoney
         case .failure(let navTitleText, let titleText, let messageText):
-            icon.animation = AnimationType.transferFailed.animation
+            animationView.animation = AnimationType.transferFailed.animation
             
             navTitle.text = navTitleText
             title.text = titleText

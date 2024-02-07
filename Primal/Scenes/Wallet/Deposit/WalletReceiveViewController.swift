@@ -19,6 +19,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let descLabel = UILabel()
     
     private let mainStack = UIStackView(axis: .vertical, [])
+    private let infoStack = UIStackView(axis: .vertical, [])
     private let loadingIndicator = LoadingSpinnerView()
     
     private lazy var ludDescLabel = descLabel("Lightning Address:")
@@ -26,6 +27,9 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let lightningButton = WalletSendTabButton(icon: UIImage(named: "receiveLightning"))
     private let onchainButton = WalletSendTabButton(icon: UIImage(named: "receiveBitcoin"))
     private let nfcButton = WalletSendTabButton(icon: UIImage(named: "receiveNFC"))
+    
+    private let lightningImage = UIImage(named: "qr-lightning")
+    private let bitcoinImage = UIImage(named: "qr-btc")
     
     private var activeButton: WalletSendTabButton? {
         didSet {
@@ -51,7 +55,9 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     }
     private var onchainAddress: String? {
         didSet {
-            updateInfo()
+            if let onchainAddress {
+                updateInfo()
+            }
         }
     }
     
@@ -93,10 +99,17 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         setup()
     }
     
+    private var ludHeightC: NSLayoutConstraint?
+    var isFirstTime = true
+    var oldQRCode = ""
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        requestInfo()
+        if isFirstTime {
+            isFirstTime = false
+        } else {
+            requestInfo()
+        }
         
         mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
@@ -148,15 +161,60 @@ private extension WalletReceiveViewController {
         loadingIndicator.isHidden = true
         loadingIndicator.stop()
         
-        if let onchainAddress {
-            ludDescLabel.text = "Bitcoin Address:"
-            ludLabel.text = onchainAddress
+        let hasExtraInfo = additionalInfo?.satoshi ?? 0 > 0 || !(additionalInfo?.description ?? "").isEmpty
+        
+        ludHeightC?.isActive = !hasExtraInfo
+        
+        let newQRCode = "bitcoin:\(invoice)"
+        
+        if qrCodeImageView.image == nil {
+            if let onchainAddress {
+                ludDescLabel.text = "Bitcoin Address:"
+                ludLabel.text = onchainAddress
+                ludLabel.font = .appFont(withSize: 18, weight: .bold)
+                ludLabel.adjustsFontSizeToFitWidth = false
+                
+                qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: bitcoinImage)
+            } else {
+                ludDescLabel.text = "Lightning Address:"
+                ludLabel.text = depositInfo.lud16
+                
+                if hasExtraInfo {
+                    ludLabel.font = .appFont(withSize: 18, weight: .bold)
+                    ludLabel.adjustsFontSizeToFitWidth = false
+                } else {
+                    ludLabel.font = .appFont(withSize: 48, weight: .bold)
+                    ludLabel.adjustsFontSizeToFitWidth = true
+                }
+                
+                qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: lightningImage)
+            }
         } else {
-            ludDescLabel.text = "Lightning Address:"
-            ludLabel.text = depositInfo.lud16
+            if newQRCode != oldQRCode {
+                UIView.transition(with: qrCodeImageView.superview ?? qrCodeImageView, duration: 0.4, options: .transitionFlipFromLeft) { [self] in
+                    if onchainAddress != nil {
+                        qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: bitcoinImage)
+                    } else {
+                        qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: lightningImage)
+                    }
+                }
+            }
+            
+            UIView.transition(with: infoStack, duration: 0.4, options: .transitionCrossDissolve) { [self] in
+                if hasExtraInfo || onchainAddress != nil {
+                    ludLabel.font = .appFont(withSize: 18, weight: .bold)
+                    ludLabel.adjustsFontSizeToFitWidth = false
+                } else {
+                    ludLabel.font = .appFont(withSize: 48, weight: .bold)
+                    ludLabel.adjustsFontSizeToFitWidth = true
+                }
+                
+                ludLabel.text = onchainAddress ?? depositInfo.lud16
+                ludDescLabel.text = onchainAddress != nil ? "Bitcoin Address:" : "Lightning Address:"
+            }
         }
         
-        qrCodeImageView.image = .createQRCode("bitcoin:\(invoice)")
+        oldQRCode = newQRCode
         
         guard let additionalInfo else {
             amountParent.isHidden = true
@@ -227,12 +285,16 @@ private extension WalletReceiveViewController {
         actionStack.distribution = .fillEqually
         
         [
-            SpacerView(height: 44),
-            parentParent,               SpacerView(height: 18), SpacerView(height: 8, priority: .required),
             amountParent,               SpacerView(height: 26),
             ludDescLabel,               SpacerView(height: 4, priority: .required),
             ludLabel,                   SpacerView(height: 20), SpacerView(height: 8, priority: .required),
-            descDescLabel, descLabel,   SpacerView(height: 20), SpacerView(height: 8, priority: .required),
+            descDescLabel, descLabel
+        ].forEach { infoStack.addArrangedSubview($0) }
+        
+        [
+            SpacerView(height: 44),
+            parentParent,               SpacerView(height: 18), SpacerView(height: 8, priority: .required),
+            infoStack,                  SpacerView(height: 20), SpacerView(height: 8, priority: .required),
             actionStack,                SpacerView(height: 30, priority: .required),
             UIView()
         ].forEach { mainStack.addArrangedSubview($0) }
@@ -244,6 +306,7 @@ private extension WalletReceiveViewController {
         }
         
         ludLabel.lineBreakMode = .byTruncatingMiddle
+        ludHeightC = ludLabel.heightAnchor.constraint(equalToConstant: 58)
         
         let mainStackParent = UIView()
         mainStackParent.addSubview(mainStack)

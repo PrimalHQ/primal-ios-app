@@ -33,7 +33,6 @@ final class SunsetWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButton") }
-    var backButtonImage: UIImage? { UIImage(named: "back") }
     var tabBarDotImage: UIImage? { UIImage(named: "newIndicator") }
     
     var statusBarStyle: UIStatusBarStyle { .lightContent }

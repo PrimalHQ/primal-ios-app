@@ -26,11 +26,19 @@ final class RootViewController: UIViewController {
     
     var didAnimate = false
     var didFinishInit = false
-
+    
+    private let transactionNotificationView = TransactionNotificationView()
+    private var transactionBotConstraint: NSLayoutConstraint?
+    
     private init() {
         super.init(nibName: nil, bundle: nil)
         quickReset(isFirstTime: true)
         addIntro()
+        
+        view.addSubview(transactionNotificationView)
+        transactionNotificationView.pinToSuperview(edges: .horizontal, padding: 32)
+        transactionBotConstraint = transactionNotificationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -220)
+        transactionBotConstraint?.isActive = true
         
         Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
@@ -150,6 +158,22 @@ final class RootViewController: UIViewController {
         intro.didMove(toParent: self)
         
         introVC = intro
+    }
+    
+    func showNewTransaction(_ parsed: (WalletTransaction, ParsedUser)) {
+        transactionNotificationView.setup(with: parsed, showBTC: true)
+        
+        transactionBotConstraint?.constant = 20
+        
+        UIView.animate(withDuration: 0.15) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.transactionNotificationView.animate()
+            self.transactionBotConstraint?.constant = -220
+            UIView.animate(withDuration: 0.2, delay: 3) {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
 }
 

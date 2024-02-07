@@ -16,6 +16,8 @@ enum AnimationType {
     case loadingSpinnerBlue
     case transferSuccess
     case transferFailed
+    case walletLightning
+    case notificationLightning
     
     case zapMedium
     
@@ -31,6 +33,8 @@ enum AnimationType {
         case .zapMedium:        	return "zap-medium"
         case .transferSuccess:      return "transferSuccess"
         case .transferFailed:       return "transferFailed"
+        case .walletLightning:      return "walletLightning"
+        case .notificationLightning:return "notificationLightning"
         }
     }
     

@@ -145,7 +145,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
             if let cell = cell as? VideoCell {
                 cell.player = player
                 cell.thumbnailImage.image = nil
-                cell.duration = r.variants.compactMap({ $0.dur }).first
+                cell.duration = r.variants.compactMap({ $0.dur }).map({ Int($0) }).first
                 
                 if let thumbnailString = thumbnails[r.url], let url = URL(string: thumbnailString) {
                     cell.thumbnailImage.kf.setImage(with: url)

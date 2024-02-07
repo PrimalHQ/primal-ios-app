@@ -1,13 +1,13 @@
 //
-//  SettingsEditMinTransactionController.swift
+//  SettingsEditMinNotificationController.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 25.1.24..
+//  Created by Pavle Stevanović on 6.2.24..
 //
 
 import UIKit
 
-final class SettingsEditMinTransactionController: UIViewController, Themeable {
+final class SettingsEditMinNotificationController: UIViewController, Themeable {
     let valueInput = UITextField()
     
     init() {
@@ -21,7 +21,7 @@ final class SettingsEditMinTransactionController: UIViewController, Themeable {
         
         guard let value = Int(valueInput.text ?? "") else { return }
 
-        UserDefaults.standard.minimumZapValue = value
+        UserDefaults.standard.minimumNotificationValue = value
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -33,11 +33,11 @@ final class SettingsEditMinTransactionController: UIViewController, Themeable {
     }
 }
 
-private extension SettingsEditMinTransactionController {
+private extension SettingsEditMinNotificationController {
     func setup() {
         updateTheme()
         
-        title = "Wallet Minimum Transaction Settings"
+        title = "Wallet Notifications Settings"
         
         let amountParent = ThemeableView().constrainToSize(height: 48).setTheme { $0.backgroundColor = .background3 }
         amountParent.addSubview(valueInput)
@@ -45,11 +45,11 @@ private extension SettingsEditMinTransactionController {
         valueInput.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
         
         let stack = UIStackView(axis: .vertical, [
-            SettingsTitleViewVibrant(title: "HIDE TRANSACTIONS IN WALLET BELOW AMOUNT"), SpacerView(height: 12),
+            SettingsTitleViewVibrant(title: "SHOW IN APP NOTIFICATIONS FOR AMOUNTS LARGER THAN"), SpacerView(height: 12),
             amountParent
         ])
         
-        valueInput.text = "\(UserDefaults.standard.minimumZapValue)"
+        valueInput.text = "\(UserDefaults.standard.minimumNotificationValue)"
         valueInput.keyboardType = .numberPad
         
         view.addSubview(stack)

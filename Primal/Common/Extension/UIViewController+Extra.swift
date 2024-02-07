@@ -24,11 +24,9 @@ extension UIViewController {
     
     var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
     
-    var customRedBackButton: UIBarButtonItem { backButtonWithImage(SunriseWave.instance.backButtonImage) }
-    
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
         let button = UIButton()
-        button.setImage(Theme.current.backButtonImage?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "back"), for: .normal)
         button.tintColor = color
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)

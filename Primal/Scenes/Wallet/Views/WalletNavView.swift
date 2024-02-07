@@ -200,9 +200,9 @@ final class SmallBalanceConversionView: LargeBalanceConversionView {
     override init(showWalletBalance: Bool = true, showSecondaryRow: Bool = false) {
         super.init(showWalletBalance: showWalletBalance, showSecondaryRow: showSecondaryRow)
         
-        large$Label.font = .appFont(withSize: 22, weight: .medium)
+        large$Label.font = .appFont(withSize: 22, weight: .light)
         largeAmountLabel.font = .appFont(withSize: 28, weight: .bold)
-        largeCurrencyLabel.font = .appFont(withSize: 16, weight: .medium)
+        largeCurrencyLabel.font = .appFont(withSize: 16, weight: .regular)
         
         largeAmountLabel.adjustsFontSizeToFitWidth = true
         

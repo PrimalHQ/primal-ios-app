@@ -82,8 +82,12 @@ private extension SettingsZapsViewController {
         
         restore.addAction(.init(handler: { _ in
             IdentityManager.instance.requestDefaultSettings { defaultS in
+                guard var settings = IdentityManager.instance.userSettings else { return }
+
+                settings.zapDefault = defaultS.zapDefault
+                settings.zapConfig = defaultS.zapConfig
                 
-                print(defaultS.zapConfig)
+                IdentityManager.instance.updateSettings(settings)
             }
         }), for: .touchUpInside)
         

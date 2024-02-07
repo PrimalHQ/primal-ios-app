@@ -1,30 +1,19 @@
 //
-//  TransactionCell.swift
+//  TransactionNotificationView.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 9.10.23..
+//  Created by Pavle Stevanović on 5.2.24..
 //
 
 import UIKit
 import FLAnimatedImage
+import Lottie
 
-extension UIColor {
-    static var receiveMoney = UIColor(rgb: 0x2CA85E)
-    static var sendMoney = UIColor(rgb: 0xCC331E)
-}
-
-protocol TransactionCellDelegate: AnyObject {
-    func transactionCellDidTapAvatar(_ cell: TransactionCell)
-}
-
-final class TransactionCell: UITableViewCell, Themeable {
-    
+final class TransactionNotificationView: UIView {
+    private var animationBackgroundView = UIView()
     private let profileImage = FLAnimatedImageView().constrainToSize(44)
-    private let timeIcon = UIImageView(image: UIImage(named: "walletTimeIcon"))
     
     private let nameLabel = UILabel()
-    private let separator = UIView().constrainToSize(width: 1, height: 18)
-    private let timeLabel = UILabel()
     private let messageLabel = UILabel()
     
     private let amountLabel = UILabel()
@@ -32,15 +21,13 @@ final class TransactionCell: UITableViewCell, Themeable {
     
     private let arrowIcon = UIImageView(image: UIImage(named: "income"))
     
-    private let coverView = UIView()
+    private let lottieView = LottieAnimationView(animation: AnimationType.notificationLightning.animation)
+    private let flippedLottieView = LottieAnimationView(animation: AnimationType.notificationLightning.animation)
     
     weak var delegate: TransactionCellDelegate?
     
-    var wasPulsing = false
-    var oldProfileId = ""
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init() {
+        super.init(frame: .zero)
         setup()
     }
     
@@ -52,50 +39,19 @@ final class TransactionCell: UITableViewCell, Themeable {
         let isDeposit = transaction.0.type == "DEPOSIT"
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
-            if oldProfileId != transaction.1.data.pubkey {
-                profileImage.setUserImage(transaction.1)
-                oldProfileId = transaction.1.data.pubkey
-            }
+            profileImage.setUserImage(transaction.1)
             profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else if transaction.0.onchainAddress != nil {
-            oldProfileId = ""
             profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "onchainPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = "Bitcoin"
         } else {
-            oldProfileId = ""
             profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "nonZapPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
-        }
-        
-        if let completedAt = transaction.0.completed_at {
-            timeIcon.isHidden = true
-            timeLabel.text = Date(timeIntervalSince1970: TimeInterval(completedAt)).timeAgoDisplay()
-            coverView.alpha = 0
-            
-            wasPulsing = false
-        } else {
-            timeIcon.isHidden = false
-            timeLabel.text = "Pending"
-            
-            if !wasPulsing {
-                wasPulsing = true
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
-                    if self.wasPulsing {
-                        self.wasPulsing = false
-                    }
-                }
-                
-                coverView.alpha = 0
-                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
-                    self.coverView.alpha = 0.6
-                }
-            }
         }
         
         arrowIcon.transform = isDeposit ? .identity : .init(rotationAngle: .pi)
@@ -125,45 +81,56 @@ final class TransactionCell: UITableViewCell, Themeable {
             currencyLabel.text = "USD"
         }
         
+        animationBackgroundView.alpha = 1
+        
         updateTheme()
     }
     
+    func animate() {
+        lottieView.play()
+        
+        UIView.animate(withDuration: 12 / 30) {
+            self.animationBackgroundView.alpha = 0
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(166)) {
+            self.flippedLottieView.play()
+        }
+    }
+    
     func updateTheme() {
-        separator.backgroundColor = .foreground5
-        timeLabel.textColor = .foreground5
         messageLabel.textColor = .foreground3
         nameLabel.textColor = .foreground
         
         amountLabel.textColor = .foreground
         currencyLabel.textColor = .foreground5
         
-        coverView.backgroundColor = .background
+        animationBackgroundView.backgroundColor = Theme.current.isDarkTheme ? UIColor(rgb: 0x9D9D9D) : .white
         
-        contentView.backgroundColor = .clear
-        backgroundColor = .clear
+        backgroundColor = .background3
     }
 }
 
-private extension TransactionCell {
+private extension TransactionNotificationView {
     func setup() {
-        selectionStyle = .none
+        layer.cornerRadius = 8
         layer.masksToBounds = false
+        clipsToBounds = false
+        
+        addSubview(animationBackgroundView)
+        animationBackgroundView.pinToSuperview()
+        animationBackgroundView.layer.cornerRadius = 8
         
         profileImage.layer.cornerRadius = 22
         profileImage.layer.masksToBounds = true
         profileImage.contentMode = .scaleAspectFill
-                
-        let nameStack = UIStackView([nameLabel, separator, timeLabel, UIView()])
-        nameStack.spacing = 8
         
-        let firstVStack = UIStackView(axis: .vertical, [nameStack, messageLabel])
+        let firstVStack = UIStackView(axis: .vertical, [nameLabel, messageLabel])
         let secondVStack = UIStackView(axis: .vertical, [amountLabel, currencyLabel])
         secondVStack.alignment = .trailing
         secondVStack.transform = .init(translationX: 0, y: -1)
         
         messageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         currencyLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         arrowIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -172,33 +139,26 @@ private extension TransactionCell {
         thirdStack.addSubview(arrowIcon)
         arrowIcon.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 4)
         
-        let mainStack = UIStackView([profileImage, SpacerView(width: 8, priority: .required), firstVStack, secondVStack, SpacerView(width: 5), thirdStack])
+        let mainStack = UIStackView([profileImage, SpacerView(width: 6, priority: .required), firstVStack, secondVStack, SpacerView(width: 5), thirdStack])
         mainStack.alignment = .center
         mainStack.spacing = 2
         thirdStack.pin(to: secondVStack, edges: .vertical)
         
-        contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 12)
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 15).pinToSuperview(edges: .vertical, padding: 12)
         
-        contentView.addSubview(timeIcon)
-        timeIcon.pin(to: profileImage, edges: [.bottom, .trailing], padding: -2)
-        
-        contentView.addSubview(coverView)
-        coverView.pinToSuperview()
-        coverView.alpha = 0
-        coverView.isUserInteractionEnabled = false
-        
-        nameLabel.font = .appFont(withSize: 18, weight: .bold)
-        timeLabel.font = .appFont(withSize: 16, weight: .regular)
-        messageLabel.font = .appFont(withSize: 16, weight: .regular)
-        amountLabel.font = .appFont(withSize: 18, weight: .bold)
+        nameLabel.font = .appFont(withSize: 16, weight: .bold)
+        messageLabel.font = .appFont(withSize: 14, weight: .regular)
+        amountLabel.font = .appFont(withSize: 16, weight: .bold)
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
         
-        profileImage.isUserInteractionEnabled = true
-        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
-    }
-    
-    @objc func profileTapped() {
-        delegate?.transactionCellDidTapAvatar(self)
+        addSubview(lottieView)
+        lottieView.centerToSuperview()
+        lottieView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.43 ).isActive = true
+        lottieView.heightAnchor.constraint(equalTo: lottieView.widthAnchor, multiplier: 1 / 2.8).isActive = true
+        
+        addSubview(flippedLottieView)
+        flippedLottieView.pin(to: lottieView)
+        flippedLottieView.transform = .init(rotationAngle: .pi)
     }
 }

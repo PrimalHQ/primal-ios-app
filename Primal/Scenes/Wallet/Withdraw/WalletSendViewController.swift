@@ -210,6 +210,7 @@ private extension WalletSendViewController {
         messageInput.font = .appFont(withSize: 16, weight: .regular)
         messageInput.backgroundColor = .clear
         messageInput.mainTextColor = .foreground
+        messageInput.textAlignment = .center
         messageInput.placeholderTextColor = .foreground.withAlphaComponent(0.6)
         messageInput.didBeginEditing = { [weak self] textView in
             guard let self else { return }
@@ -361,9 +362,12 @@ private extension WalletSendViewController {
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    navigationController?.pushViewController(WalletTransferSummaryController(.success(amount: amount, address: destination.address)), animated: true)
+                    let summary = WalletTransferSummaryController(.success(amount: amount, address: destination.address))
+                    navigationController?.pushViewController(summary, animated: true)
                     
+                    summary.view.isUserInteractionEnabled = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                        summary.view.isUserInteractionEnabled = true
                         self.navigationController?.viewControllers.removeAll(where: {
                             $0 as? WalletSendAmountController != nil ||
                             $0 as? WalletSendParentViewController != nil ||

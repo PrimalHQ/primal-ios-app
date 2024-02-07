@@ -10,20 +10,27 @@ import Foundation
 
 extension UserDefaults {
     var howManyZaps: Int { // Tracks how many zaps happened
-        get { integer(forKey: "howManyZapsKey") }
-        set { setValue(newValue, forKey: "howManyZapsKey") }
+        get { integer(forKey: .howManyZapsKey) }
+        set { setValue(newValue, forKey: .howManyZapsKey) }
     }
     
     var minimumZapValue: Int { // Minimum zap value to show
-        get { integer(forKey: .minimumZapValueKey) }
+        get { max(1, integer(forKey: .minimumZapValueKey)) }
         set { setValue(newValue, forKey: .minimumZapValueKey) }
+    }
+    
+    var minimumNotificationValue: Int {
+        get { max(minimumZapValue, integer(forKey: .minimumNotificationValueKey)) }
+        set { setValue(newValue, forKey: .minimumNotificationValueKey)}
     }
 }
 
 private extension String {
+    static let howManyZapsKey = "howManyZapsKey"
     static let oldWalletAmountKey = "oldWalletAmountKey"
     static let oldTransactionsKey = "oldTransactionsKey"
     static let minimumZapValueKey = "minimumZapValueKey"
+    static let minimumNotificationValueKey = "minimumNotificationValueKey"
 }
 
 struct CodableParsedTransaction: Codable {

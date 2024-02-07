@@ -25,7 +25,13 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
 
         let container = transitionContext.containerView
         
-        let circle = UIView(frame: .init(x: 300, y: 250, width: 0, height: 0))
+        let circle = UIView(frame: .init(
+            origin: spinner.spinner.convert(.init(
+                x: spinner.spinner.bounds.midX,
+                y: spinner.spinner.bounds.midY
+            ), to: container),
+            size: .zero
+        ))
         container.addSubview(circle)
         switch result.state {
         case .success, .walletActivated:
@@ -68,7 +74,7 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         } completion: { [self] _ in
             fromView.alpha = 1
             
-            result.icon.play()
+            result.animationView.play()
             
             let success = !transitionContext.transitionWasCancelled
             if !success {

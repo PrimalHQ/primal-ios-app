@@ -38,7 +38,7 @@ final class SettingsEditZapController: UIViewController, Themeable {
         case .editDefault:
             settings.zapDefault = .init(amount: value, message: messageInput.text ?? "")
         case .editOptionInArray(let int):
-            settings.zapConfig[safe: int] = .init(emoji: emojiInput.text ?? "", amount: value, message: messageInput.text ?? "")
+            settings.zapConfig?[safe: int] = .init(emoji: emojiInput.text ?? "", amount: value, message: messageInput.text ?? "")
         }
         IdentityManager.instance.updateSettings(settings)
     }
@@ -92,7 +92,7 @@ private extension SettingsEditZapController {
                 stack.insertArrangedSubview(view, at: index)
             }
             
-            if let settings = IdentityManager.instance.userSettings?.zapConfig[safe: index] {
+            if let settings = IdentityManager.instance.userSettings?.zapConfig?[safe: index] {
                 messageInput.text = settings.message
                 valueInput.text = "\(settings.amount)"
                 emojiInput.text = settings.emoji

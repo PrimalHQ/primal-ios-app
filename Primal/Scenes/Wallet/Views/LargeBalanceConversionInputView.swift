@@ -156,7 +156,7 @@ private extension LargeBalanceConversionInputView {
         
 //        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
-        Publishers.CombineLatest($isBitcoinPrimary, $balance).receive(on: DispatchQueue.main).sink { [weak self] _, _ in
+        Publishers.CombineLatest($isBitcoinPrimary, $balance).sink { [weak self] _, _ in
             self?.updateLabels()
         }
         .store(in: &cancellables)

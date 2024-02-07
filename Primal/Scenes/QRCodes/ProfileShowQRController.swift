@@ -110,7 +110,7 @@ private extension ProfileShowQRController {
         
         npubLabel.text = user.npub
         
-        let normalImage = UIImage.createQRCode("nostr:\(user.npub)")
+        let normalImage = UIImage.createQRCode("nostr:\(user.npub)", dimension: 280)
         qrCodeView.image = normalImage
         
         guard let alteredImage = normalImage?.maskWhiteColor(color: .clear) else { return }

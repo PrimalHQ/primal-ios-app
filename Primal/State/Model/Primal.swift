@@ -47,7 +47,7 @@ struct PrimalSettingsContent: Codable, Hashable {
     var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
     var zapDefault: PrimalZapDefaultSettings?
-    var zapConfig: [PrimalZapListSettings] = []
+    var zapConfig: [PrimalZapListSettings]?
     
     mutating func merge(with settings: PrimalSettingsContent) {
         if self.description == nil {
@@ -70,7 +70,7 @@ struct PrimalSettingsContent: Codable, Hashable {
             self.zapDefault = settings.zapDefault
         }
         
-        if self.zapConfig.isEmpty {
+        if self.zapConfig?.isEmpty != false {
             self.zapConfig = settings.zapConfig
         }
     }
@@ -80,7 +80,7 @@ struct PrimalSettingsContent: Codable, Hashable {
             || self.theme == nil
             || self.notifications == nil
             || self.zapDefault == nil
-            || self.zapConfig.isEmpty
+            || self.zapConfig?.isEmpty != false
     }
 }
 

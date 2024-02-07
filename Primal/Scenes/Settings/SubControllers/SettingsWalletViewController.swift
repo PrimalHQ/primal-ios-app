@@ -19,7 +19,8 @@ struct WalletSettings {
 }
 
 final class SettingsWalletViewController: UIViewController, Themeable {
-    let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "10 sats", showArrow: true)
+    let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "1 sats", showArrow: true)
+    let showNotifications = SettingsInfoView(name: "Show notifications above", desc: "1 sats", showArrow: true)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,7 @@ final class SettingsWalletViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         minTransaction.descLabel.text = "\(UserDefaults.standard.minimumZapValue) sats"
+        showNotifications.descLabel.text = "\(UserDefaults.standard.minimumNotificationValue) sats"
     }
     
     func updateTheme() {
@@ -55,11 +57,17 @@ private extension SettingsWalletViewController {
             self?.show(SettingsEditMinTransactionController(), sender: nil)
         }), for: .touchUpInside)
         
+        showNotifications.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsEditMinNotificationController(), sender: nil)
+        }), for: .touchUpInside)
+        
         let stack = UIStackView(axis: .vertical, [
             walletStart,                                                                                                        SpacerView(height: 10),
             descLabel("Open the wallet when Primal starts."),                                                                   SpacerView(height: 24),
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.nip05 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
+            showNotifications,                                                                                                  SpacerView(height: 10),
+            descLabel("Get notified within the app when you receive a payment above a certain size"),                           SpacerView(height: 24),
             minTransaction,                                                                                                     SpacerView(height: 10),
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
 //            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),

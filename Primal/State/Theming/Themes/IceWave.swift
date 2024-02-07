@@ -33,7 +33,6 @@ final class IceWave: AppTheme {
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     
     var menuButtonImage: UIImage? { UIImage(named: "themeButtonLight") }
-    var backButtonImage: UIImage? { UIImage(named: "backBlue") }
     var tabBarDotImage: UIImage? { UIImage(named: "newIndicatorBlue") }
     
     var statusBarStyle: UIStatusBarStyle { .darkContent }

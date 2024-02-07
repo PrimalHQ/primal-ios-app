@@ -38,16 +38,21 @@ final class WalletSpinnerViewController: UIViewController {
         message.text = "\(sats.localized()) sats to \(address)."
         
         let stack = UIStackView(axis: .vertical, [
+            navTitle, SpacerView(height: 160),
             spinner, SpacerView(height: 60),
             titleLabel, SpacerView(height: 28),
-            message
+            message,
+            UIView()
         ])
         stack.alignment = .center
         view.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 60).centerToSuperview(axis: .vertical)
+        stack
+            .pinToSuperview(edges: .horizontal, padding: 60)
+            .pinToSuperview(edges: .top, safeArea: true)
+            .pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         
         view.addSubview(navTitle)
-        navTitle.pinToSuperview(edges: .top, safeArea: true).centerToSuperview(axis: .horizontal)
+        navTitle.pinToSuperview(edges: .top, padding: 10, safeArea: true).centerToSuperview(axis: .horizontal)
         
         spinner.play()
     }

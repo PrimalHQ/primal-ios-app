@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import Lottie
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -61,6 +62,8 @@ final class MainTabBarController: UIViewController, Themeable {
         return navForTab(tab).preferredStatusBarStyle
     }
 
+    private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
+    
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
 
     var cancellables: Set<AnyCancellable> = []
@@ -174,6 +177,11 @@ final class MainTabBarController: UIViewController, Themeable {
             nav.pushViewController(vc, animated: true)
         }
     }
+    
+    func playThunderAnimation() {
+        animationView.isHidden = false
+        animationView.play(fromProgress: 0, toProgress: 1)
+    }
 }
 
 private extension MainTabBarController {
@@ -247,6 +255,11 @@ private extension MainTabBarController {
         
         updateButtons()
         addCircleWalletButton()
+        
+        view.addSubview(animationView)
+        animationView.isHidden = true
+        animationView.isUserInteractionEnabled = false
+        animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
         
         zip(buttons, tabs).forEach { button, tab in
             button.addAction(.init(handler: { [weak self] _ in

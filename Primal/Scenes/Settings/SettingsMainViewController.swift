@@ -39,19 +39,19 @@ private extension SettingsMainViewController {
         title = "Settings"
         
         let keys = SettingsOptionButton(title: "Keys")
+        let wallet = SettingsOptionButton(title: "Wallet")
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
         let feeds = SettingsOptionButton(title: "Feeds")
-        let wallet = SettingsOptionButton(title: "Wallet")
         let zaps = SettingsOptionButton(title: "Zaps")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, network, appearance, contentDisplay, muted, notifications, feeds, wallet, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -83,7 +83,11 @@ private extension SettingsMainViewController {
         
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)
         feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
-        
+
+        wallet.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
+        }), for: .touchUpInside)
+
         appearance.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsAppearanceViewController(), animated: true)
         }), for: .touchUpInside)
@@ -102,10 +106,6 @@ private extension SettingsMainViewController {
         
         notifications.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsNotificationsViewController(), animated: true)
-        }), for: .touchUpInside)
-        
-        wallet.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
         }), for: .touchUpInside)
         
         zaps.addAction(.init(handler: { [weak self] _ in

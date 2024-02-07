@@ -16,7 +16,7 @@ protocol NumberKeyboardViewDelegate: AnyObject {
 final class NumberKeyboardView: UIView {
     weak var delegate: NumberKeyboardViewDelegate?
     
-    private let dotButton = NumberKeyboardSymbolButton(".")
+    private let dotButton = NumberKeyboardSymbolButton(Locale.current.decimalSeparator ?? ".")
     
     init() {
         super.init(frame: .zero)

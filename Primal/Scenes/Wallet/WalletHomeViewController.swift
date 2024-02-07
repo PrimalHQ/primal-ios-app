@@ -5,8 +5,10 @@
 //  Created by Pavle Stevanović on 9.10.23..
 //
 
+import AudioToolbox
 import Combine
 import UIKit
+import GenericJSON
 
 protocol WalletHomeTransitionButton: UIControl {
     var imageView: UIImageView? { get }
@@ -29,9 +31,11 @@ final class WalletHomeViewController: UIViewController, Themeable {
         case error(String)
         case transaction((WalletTransaction, ParsedUser))
         
-        var transaction: WalletTransaction? {
+        var transaction: WalletTransaction? { parsedTransaction?.0 }
+        
+        var parsedTransaction: (WalletTransaction, ParsedUser)? {
             if case let .transaction(trans) = self {
-                return trans.0
+                return trans
             }
             return nil
         }
@@ -40,6 +44,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
     struct Section {
         var title: String?
         var cells: [Cell] = []
+        
+        var parsedTransactions: [(WalletTransaction, ParsedUser)] { cells.compactMap { $0.parsedTransaction } }
     }
     
     @Published var isBitcoinPrimary = true
@@ -48,9 +54,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
     let table = UITableView()
     
     private var cancellables: Set<AnyCancellable> = []
-    private var updateIsBitcoin: AnyCancellable?
     private var update: ContinousConnection?
     private var updateUpdate: AnyCancellable?
+    private var foregroundUpdate: AnyCancellable?
     
     private var forceNavbarOpen = false
     private var extraOffset: CGFloat = 0
@@ -62,45 +68,24 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     private var tableData: [Section] = [] {
         didSet {
+            if navigationController?.topViewController == parent, view.window != nil {
+                table.reloadData()
+                animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
+                return
+            }
             guard
-                oldValue.count == tableData.count,
-                let oldLast = oldValue.last?.cells.last?.transaction,
-                let newLast = tableData.last?.cells.last?.transaction,
-                oldLast.id == newLast.id,
-                let oldTransactionList = oldValue.drop(while: { $0.title == nil }).first?.cells.compactMap({ $0.transaction }),
-                let newTransactionList = tableData.drop(while: { $0.title == nil }).first?.cells.compactMap({ $0.transaction }),
-                oldTransactionList.first?.id != newTransactionList.first?.id
-            else {
-                table.reloadData()
-                return
-            }
-            
-            let section = oldValue.first?.title == nil ? 1 : 0
-            
-            // Make sure other sections are not changed
-            for index in oldValue.indices {
-                if index < 2 { continue }
-                if oldValue[index].cells.count != tableData[index].cells.count {
-                    table.reloadData()
-                    return
-                }
-            }
-            
-            let newTransCount = newTransactionList.count - oldTransactionList.count
-            
-            guard newTransCount > 0 else {
-                table.reloadData()
-                return
-            }
-            table.beginUpdates()
-            
-            if section > 0 {
-                table.reloadSections(.init(integer: 0), with: .none)
-            }
-            
-            let indexPaths: [IndexPath] = (0..<newTransCount).map { .init(row: $0, section: section) }
-            table.insertRows(at: indexPaths, with: .top)
-            table.endUpdates()
+                let newTransaction = tableData.flatMap({ $0.parsedTransactions }).first,
+                let oldTransaction = oldValue.flatMap({ $0.parsedTransactions }).first,
+                // Only notify if there is a new transaction
+                newTransaction.0.id != oldTransaction.0.id,
+                // Only if it's a deposit
+                newTransaction.0.isDeposit,
+                let amountBTC = Double(newTransaction.0.amount_btc),
+                // Only if the amount is larger than minimumNotificationValue
+                amountBTC * .BTC_TO_SAT >= Double(UserDefaults.standard.minimumNotificationValue)
+            else { return }
+                        
+            RootViewController.instance.showNewTransaction(newTransaction)
         }
     }
     
@@ -116,6 +101,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         WalletManager.instance.refreshBalance()
         WalletManager.instance.refreshTransactions()
         
+        table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         (navigationController as? MainNavigationController)?.isTransparent = false
@@ -124,9 +110,12 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        table.reloadData()
-        
         heavyImpact.prepare()
+        
+        foregroundUpdate = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
+            .sink(receiveValue: { [weak self] _ in
+                self?.table.reloadData()
+            })
         
         guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
@@ -135,11 +124,13 @@ final class WalletHomeViewController: UIViewController, Themeable {
                 self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
                     guard 
                         let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
-                        let json: [String: Int] = content.decode(),
-                        let updatedAt = json["updated_at"]
+                        let json: [String: JSON] = content.decode()
                     else { return }
                     
-                    WalletManager.instance.updatedAt = updatedAt
+                    if let updatedAt = json["updated_at"]?.doubleValue {
+                        WalletManager.instance.updatedAt = Int(updatedAt)
+                    }
+                    
                 }
             }
     }
@@ -147,8 +138,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        updateUpdate = nil
-        update = nil
+        foregroundUpdate = nil
     }
     
     func updateTheme() {
@@ -247,6 +237,11 @@ extension WalletHomeViewController: UITableViewDelegate {
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         forceNavbarOpen = true
         navBar.shouldExpand = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            self.forceNavbarOpen = false
+        }
+        
         return true
     }
     
@@ -365,15 +360,17 @@ private extension WalletHomeViewController {
         .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] hasWallet, isLoading, transactions, shouldShowBuySats in
+            guard let self else { return }
+            
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
             }
             
-            self?.table.refreshControl?.endRefreshing()
+            table.refreshControl?.endRefreshing()
             var firstSection = Section(cells: [])
             
             guard LoginManager.instance.method() == .nsec else {
-                self?.tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
+                tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
                 return
             }
             
@@ -394,7 +391,16 @@ private extension WalletHomeViewController {
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
             })
             
-            self?.tableData = tableData
+            if howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
+                mainTabBarController?.playThunderAnimation()
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                    self.tableData = tableData
+                }
+            } else {
+                self.tableData = tableData
+            }
         }
         .store(in: &cancellables)
         
@@ -447,5 +453,78 @@ private extension WalletHomeViewController {
         
         let translation = sender.translation(in: view).y
         table.contentOffset.y = max(5, contentOffsetStart.y - translation)
+    }
+    
+    func howManyCellsToAppear(_ oldValue: [Section], _ newValue: [Section]) -> Int {
+        guard table.window != nil, let indexPaths = table.indexPathsForVisibleRows else { return 0 }
+        
+        let oldIds = Set(oldValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
+        let newIds = Set(newValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
+        
+        if oldIds.isEmpty { return 0 }
+        
+        let deltaIds = newIds.subtracting(oldIds)
+        var animateCount = 0
+        for indexPath in indexPaths {
+            if let transaction = newValue[safe: indexPath.section]?.cells[safe: indexPath.row]?.transaction, deltaIds.contains(transaction.id) {
+                animateCount += 1
+            } else {
+                break
+            }
+        }
+        
+        return animateCount
+    }
+    
+    func animateCellsAppear(_ count: Int) {
+        guard count > 0 else { return }
+        
+        let cellsToAnimate = table.visibleCells.prefix(count).compactMap { $0 as? TransactionCell }
+        let otherCells = table.visibleCells.dropFirst(count)
+        
+        for cell in cellsToAnimate {
+            cell.contentView.alpha = 0
+            cell.contentView.transform = .init(translationX: 200, y: 0)
+            
+            let view = UIView()
+            view.backgroundColor = Theme.current.isDarkTheme ? .init(rgb: 0x222222) : .init(rgb: 0xCCCCCC)
+            view.frame = cell.bounds
+            view.alpha = 0
+            cell.insertSubview(view, at: 0)
+            
+            CATransaction.begin()
+            CATransaction.setAnimationTimingFunction(.easeInOutQuart)
+            
+            UIView.animate(withDuration: 6 / 30, delay: 5 / 30) {
+                cell.contentView.transform = .identity
+            }
+            
+            CATransaction.commit()
+            
+            UIView.animate(withDuration: 6 / 30, delay: 5 / 30) {
+                cell.contentView.alpha = 1
+                view.alpha = 1
+            } completion: { _ in
+                UIView.animate(withDuration: 25 / 30) {
+                    view.alpha = 0
+                } completion: { _ in
+                    view.removeFromSuperview()
+                }
+            }
+            
+        }
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(.easeInOutQuart)
+        
+        for cell in otherCells {
+            cell.contentView.transform = .init(translationX: 0, y: -CGFloat(count) * 68)
+            
+            UIView.animate(withDuration: 11 / 30) {
+                cell.contentView.transform = .identity
+            }
+        }
+        
+        CATransaction.commit()
     }
 }

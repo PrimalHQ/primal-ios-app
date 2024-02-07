@@ -148,6 +148,8 @@ private extension WalletSendAmountController {
         inputParent.addSubview(input)
         input.pinToSuperview(edges: .vertical)
         input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
+        input.animateReversed = false
+        input.isSettingFirstTime = false
         
         profilePictureView.contentMode = .scaleAspectFill
         profilePictureView.layer.masksToBounds = true
@@ -201,6 +203,10 @@ protocol KeyboardInputConnector: NumberKeyboardViewDelegate {
 }
 
 extension KeyboardInputConnector {
+    var separatorString: String {
+        Locale.current.decimalSeparator ?? "."
+    }
+    
     func triggerHapticFeedback() {
         hapticFeedbackGenerator.impactOccurred()
         hapticFeedbackGenerator.prepare()
@@ -215,15 +221,17 @@ extension KeyboardInputConnector {
             return
         }
         
-        let newAmountString = (input.largeAmountLabel.text ?? "") + "\(number)"
+        var newAmountString = (input.largeAmountLabel.text ?? "") + "\(number)"
         
-        if newAmountString.dropLast(3).last == "." { return } // Only up to two digits after .
+        if newAmountString.dropLast(3).last == separatorString.last { return } // Only up to two digits after .
         
-        if number == 0, input.largeAmountLabel.text?.contains(".") == true {
-            input.largeAmountLabel.text = newAmountString
+        if number == 0, input.largeAmountLabel.text?.contains(separatorString) == true {
+            input.setLargeLabel(newAmountString, animating: true)
             triggerHapticFeedback()
             return
         }
+        
+        newAmountString = newAmountString.replacingOccurrences(of: separatorString, with: ".")
         
         guard let doubleAmount = Double(newAmountString), doubleAmount < 1000 else { return }
         
@@ -232,9 +240,9 @@ extension KeyboardInputConnector {
     }
     
     func numberKeyboardDotPressed() {
-        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(".") == true { return }
+        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(separatorString) == true { return }
         
-        input.largeAmountLabel.text = (input.largeAmountLabel.text ?? "") + "."
+        input.largeAmountLabel.text = (input.largeAmountLabel.text ?? "") + separatorString
         triggerHapticFeedback()
     }
     
@@ -248,12 +256,12 @@ extension KeyboardInputConnector {
         
         let newAmountString = String((input.largeAmountLabel.text ?? "").dropLast())
         
-        guard newAmountString.last != ".", newAmountString.hasSuffix(".0") == false, let doubleAmount = Double(newAmountString), doubleAmount <= 500 else {
+        guard newAmountString.last != separatorString.last, newAmountString.hasSuffix("\(separatorString)0") == false, let doubleAmount = Double(newAmountString), doubleAmount <= 500 else {
             if newAmountString.isEmpty {
                 input.balance = 0
                 return
             }
-            input.largeAmountLabel.text = newAmountString
+            input.setLargeLabel(newAmountString, animating: true)
             return
         }
         

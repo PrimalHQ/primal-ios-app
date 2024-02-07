@@ -1,21 +1,21 @@
 //
-//  WalletQRTransitionAnimator.swift
+//  WalletReceiveTransitionAnimator.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 25.1.24..
+//  Created by Pavle Stevanović on 31.1.24..
 //
 
 import UIKit
 
-class WalletQRTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+class WalletReceiveTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private let presenting: Bool
     private let home: WalletHomeViewController
-    private let qrController: WalletQRCodeViewController
+    private let receive: WalletReceiveViewController
     
-    init(home: WalletHomeViewController, qrController: WalletQRCodeViewController, presenting: Bool) {
+    init(home: WalletHomeViewController, receive: WalletReceiveViewController, presenting: Bool) {
         self.presenting = presenting
         self.home = home
-        self.qrController = qrController
+        self.receive = receive
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { 12 / 30 }
@@ -29,37 +29,47 @@ class WalletQRTransitionAnimator: NSObject, UIViewControllerAnimatedTransitionin
         let container = transitionContext.containerView
         if presenting {
             container.addSubview(toView)
-            toView.alpha = 0.0
+            toView.alpha = 0
+            toView.layoutIfNeeded()
         } else {
             container.insertSubview(toView, belowSubview: fromView)
         }
         
         if self.presenting {
             let width = container.frame.width
-            let rect = CGRect(x: -width * 0.4, y: 0, width: width * 1.8, height: width * 1.8)
             
-            let backgroundAnimatingView = home.transitionButton?.imageView?.superview?.animateViewTo(rect, radius: rect.width / 2, duration: 12 / 30, in: container)
+            var endFrame = toView.frame
+            endFrame.size.height -= 200
+            endFrame.origin.y += 100
+            endFrame.size.width = endFrame.height
+            endFrame.origin.x = (width - endFrame.height) / 2
+            
+            let backgroundAnimatingView = home.transitionButton?.imageView?.superview?.animateViewTo(endFrame, radius: endFrame.width / 2, duration: 12 / 30, in: container)
             UIView.animate(withDuration: 6 / 30, delay: 6 / 30) {
                 backgroundAnimatingView?.alpha = 0
             }
             
-            qrController.importImageButton.transform = .init(translationX: 0, y: 20)
-            qrController.importImageButton.alpha = 0
+            receive.view.transform = .identity.scaledBy(x: 0.8, y: 0.8)
             
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(.easeInOutQuart)
             
             UIView.animate(withDuration: 6 / 30, delay: 6 / 30) {
-                self.qrController.importImageButton.transform = .identity
-                self.qrController.importImageButton.alpha = 1
-            } completion: { _ in
-                transitionContext.completeTransition(true)
+                self.receive.view.transform = .identity
             }
             
             CATransaction.commit()
             
-            UIView.animate(withDuration: 6 / 30, delay: 6 / 30) {
-                toView.alpha = 1
+            UIView.animate(withDuration: 6 / 30) {
+                fromView.alpha = 0
+            } completion: { _ in
+                UIView.animate(withDuration: 6 / 30) {
+                    toView.alpha = 1
+                } completion: { _ in
+                    fromView.alpha = 1
+                    
+                    transitionContext.completeTransition(true)
+                }
             }
             
             if let imageView = home.transitionButton?.imageView {
@@ -90,11 +100,7 @@ class WalletQRTransitionAnimator: NSObject, UIViewControllerAnimatedTransitionin
             }
         } else {
             UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
-                if self.presenting {
-                    toView.alpha = 1.0
-                } else {
-                    fromView.alpha = 0.0
-                }
+                fromView.alpha = 0.0
             }) { _ in
                 let success = !transitionContext.transitionWasCancelled
                 if !success {
