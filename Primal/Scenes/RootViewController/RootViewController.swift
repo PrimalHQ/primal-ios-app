@@ -26,15 +26,26 @@ final class RootViewController: UIViewController {
     
     var didAnimate = false
     var didFinishInit = false
-
+    
+    private let transactionNotificationView = TransactionNotificationView()
+    private var transactionBotConstraint: NSLayoutConstraint?
+    
+    let showTransactionNotificationDuration = 3
+    
     private init() {
         super.init(nibName: nil, bundle: nil)
         quickReset(isFirstTime: true)
         addIntro()
         
+        view.addSubview(transactionNotificationView)
+        transactionNotificationView.pinToSuperview(edges: .horizontal, padding: 32)
+        transactionBotConstraint = transactionNotificationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -220)
+        transactionBotConstraint?.isActive = true
+        
+        _ = WalletManager.instance
+        
         Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
-                IdentityManager.instance.requestUserInfos()
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
                 IdentityManager.instance.requestUserContacts()
@@ -51,7 +62,15 @@ final class RootViewController: UIViewController {
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        currentChild as? OnboardingParentViewController != nil ? .lightContent : Theme.current.statusBarStyle
+        guard let style = currentChild?.preferredStatusBarStyle else {
+            return Theme.current.statusBarStyle
+        }
+        
+        if case .default = style {
+            return Theme.current.statusBarStyle
+        }
+        
+        return style
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -144,6 +163,61 @@ final class RootViewController: UIViewController {
         
         introVC = intro
     }
+    
+    var updateCount = 0
+    func showNewTransaction(_ parsed: (WalletTransaction, ParsedUser)) {
+        transactionNotificationView.setup(with: parsed, fromOld: updateCount > 0)
+        updateCount += 1
+        
+        if updateCount > 1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(showTransactionNotificationDuration)) { [self] in
+                updateCount -= 1
+                if updateCount == 0 {
+                    transactionBotConstraint?.constant = -220
+                    UIView.animate(withDuration: 0.2) {
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            }
+            return
+        }
+        
+        transactionBotConstraint?.constant = 20
+        
+        UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0) {
+            self.view.layoutIfNeeded()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+            self.transactionNotificationView.animate()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(self.showTransactionNotificationDuration)) { [self] in
+                updateCount -= 1
+                
+                if updateCount == 0 {
+                    transactionBotConstraint?.constant = -220
+                    UIView.animate(withDuration: 0.2) {
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            }
+        }
+    }
+}
+
+protocol AnimatableFirstViewController: UIViewController {
+    var table: UITableView { get }
+    var onLoad: (() -> ())? { get set }
+}
+
+extension HomeFeedViewController: AnimatableFirstViewController { }
+extension WalletHomeViewController: AnimatableFirstViewController {
+    var onLoad: (() -> ())? {
+        get { nil }
+        set {
+            newValue?()
+        }
+    }
 }
 
 private extension RootViewController {
@@ -160,7 +234,7 @@ private extension RootViewController {
         guard !didAnimate, let introVC else { return }
         didAnimate = true
         
-        guard let homeFeed: HomeFeedViewController = findInChildren() else {
+        guard let firstController: AnimatableFirstViewController = findInChildren() else {
             guard let onboarding: OnboardingStartViewController = self.findInChildren() else { return }
             
             RootAnimatorToSignIn(introVC: introVC, onboarding: onboarding).animate()
@@ -169,8 +243,8 @@ private extension RootViewController {
             return
         }
         
-        homeFeed.table.alpha = 0.01
-        homeFeed.onLoad = {
+        firstController.table.alpha = 0.01
+        firstController.onLoad = {
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(.easeInTiming)
 
@@ -187,14 +261,14 @@ private extension RootViewController {
             CATransaction.commit()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
-                homeFeed.table.alpha = 1
-                homeFeed.table.transform = .init(translationX: 0, y: 800)
+                firstController.table.alpha = 1
+                firstController.table.transform = .init(translationX: 0, y: 800)
                     
                 CATransaction.begin()
                 CATransaction.setAnimationTimingFunction(.postsEaseInOut)
 
                 UIView.animate(withDuration: 0.3) {
-                    homeFeed.table.transform = .identity
+                    firstController.table.transform = .identity
                 }
                 
                 CATransaction.commit()

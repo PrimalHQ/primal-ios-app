@@ -97,6 +97,16 @@ extension FixedWidthInteger {
         let diff = 8 - string.count
         return "0." + (0..<diff).reduce("", { a, _ in a + "0" }) + string
     }
+    
+    func satsToUsdAmountString(_ roundingStyle: RoundingStyle) -> String {
+        let usdAmount = Double(self) * .SAT_TO_USD
+        switch roundingStyle {
+        case .twoDecimals:
+            return usdAmount.twoDecimalPoints()
+        case .removeZeros:
+            return usdAmount.localized()
+        }
+    }
 }
 
 extension Double {

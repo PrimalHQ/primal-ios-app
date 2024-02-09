@@ -5,6 +5,7 @@
 //  Created by Nikola Lukovic on 18.7.23..
 //
 
+import Combine
 import Foundation
 import Kingfisher
 
@@ -15,6 +16,8 @@ enum LoginMethod {
 
 final class LoginManager {
     static let instance: LoginManager = LoginManager()
+    
+    @Published var cachedMethod: LoginMethod?
     
     func login(_ key: String) -> Bool {
         guard let type = NKeypair.type(key) else { return false }
@@ -28,6 +31,7 @@ final class LoginManager {
     }
     
     func logout() {
+        cachedMethod = nil
         ICloudKeychainManager.instance.clearSavedKeys()
         
         KingfisherManager.shared.cache.clearMemoryCache()
@@ -39,7 +43,7 @@ final class LoginManager {
         RootViewController.instance.reset()
     }
     
-    func method() -> LoginMethod? { loginMethod() }
+    func method() -> LoginMethod? { cachedMethod ?? loginMethod() }
     
     private func login(npub: String) -> Bool {
         return ICloudKeychainManager.instance.upsertLoginInfo(npub: npub)
@@ -73,8 +77,10 @@ final class LoginManager {
         
         // assume only one saved npub until multiple accounts feature is implemented
         if let _ = ICloudKeychainManager.instance.getSavedNsec(npubs[0]) {
+            cachedMethod = .nsec
             return .nsec
         } else {
+            cachedMethod = .npub
             return .npub
         }
     }

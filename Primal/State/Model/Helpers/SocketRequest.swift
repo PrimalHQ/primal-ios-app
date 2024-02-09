@@ -18,6 +18,8 @@ struct SocketRequest {
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
         Deferred {
             Future { promise in
+                Connection.regular.autoConnectReset()
+                
                 Connection.regular.requestCache(name: name, payload: payload) { result in
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
@@ -57,7 +59,9 @@ extension PostRequestResult {
                 let dateNum = payload["created_at"]?.doubleValue,
                 let contentJSON: JSON = contentString.decode()
             else {
-                print("Error decoding reposts string to json")
+                if !contentString.isEmpty {
+                    print("Error decoding reposts string to json")
+                }
                 return
             }
             
@@ -183,6 +187,12 @@ extension PostRequestResult {
             chatsMetadata = chats
         case .defaultRelays:
             messageArray = contentString.decode()
+        case .userPubkey:
+            guard let data: [String: String] = contentString.decode(), let pubkey = data["pubkey"] else {
+                print("Error decoding userPubkey")
+                return
+            }
+            userPubkey = pubkey
         default:
             print("Unhandled response \(payload)")
         }

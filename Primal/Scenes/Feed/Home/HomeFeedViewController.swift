@@ -231,7 +231,7 @@ private extension HomeFeedViewController {
         feed.$currentFeed
             .receive(on: DispatchQueue.main)
             .sink { [weak self] feed in
-                self?.title = feed?.name
+                self?.title = feed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil)
             }
             .store(in: &cancellables)
     }

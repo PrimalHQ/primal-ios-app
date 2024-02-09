@@ -98,14 +98,14 @@ struct MediaMetadata: Codable {
             var w: Int
             var s: String
             var media_url: String
-            var dur: Int?
+            var dur: Double?
             
             var height: Int { h }
             var width: Int { w }
             var url: URL? { URL(string: media_url) }
             var animated: Bool { a != 1 }
             var size: MediaSize { .init(rawValue: s) ?? .medium }
-            var duration: Int? { dur }
+            var duration: Double? { dur }
         }
         
         func url(for size: MediaSize) -> URL? {

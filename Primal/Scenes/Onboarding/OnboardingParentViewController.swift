@@ -16,6 +16,8 @@ protocol OnboardingViewController: UIViewController {
 class OnboardingParentViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     var viewControllerStack: [UIViewController] = [OnboardingStartViewController()]
     
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    
     init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self

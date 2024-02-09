@@ -129,6 +129,41 @@ extension String : Identifiable {
         
         return false
     }
+    
+    var isBitcoinAddress: Bool {
+        guard let btcAddress = split(separator: "?").first?.string else { return false }
+        
+        let pattern = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$"
+            
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return false }
+            
+        let range = NSRange(location: 0, length: btcAddress.utf16.count)
+
+        return regex.firstMatch(in: btcAddress, options: [], range: range) != nil
+    }
+    
+    var parsedBitcoinAddress: (String, Int?, String?) {
+        let sections = split(separator: "?")
+        guard
+            let address = sections.first?.string,
+            let params = sections.last?.split(separator: "&")
+        else { return (self, nil, nil) }
+        
+        var amount: Int?
+        var label: String?
+        
+        for param in params {
+            let elements = param.split(separator: "=")
+            if elements.first == "amount", let amountString = elements.last, let btcAmount = Double(amountString) {
+                amount = Int(btcAmount * .BTC_TO_SAT)
+            }
+            if elements.first == "label", let labelText = elements.last?.removingPercentEncoding {
+                label = labelText
+            }
+        }
+        
+        return (address, amount, label)
+    }
 
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"

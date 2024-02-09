@@ -19,19 +19,25 @@ protocol TransactionCellDelegate: AnyObject {
 
 final class TransactionCell: UITableViewCell, Themeable {
     
-    private let profileImage = FLAnimatedImageView().constrainToSize(44)
+    let profileImage = FLAnimatedImageView().constrainToSize(44)
+    private let timeIcon = UIImageView(image: UIImage(named: "walletTimeIcon"))
     
-    private let nameLabel = UILabel()
+    let nameLabel = UILabel()
     private let separator = UIView().constrainToSize(width: 1, height: 18)
     private let timeLabel = UILabel()
-    private let messageLabel = UILabel()
+    let messageLabel = UILabel()
     
-    private let amountLabel = UILabel()
+    let amountLabel = UILabel()
     private let currencyLabel = UILabel()
     
     private let arrowIcon = UIImageView(image: UIImage(named: "income"))
     
+    private let coverView = UIView()
+    
     weak var delegate: TransactionCellDelegate?
+    
+    var wasPulsing = false
+    var oldProfileId = ""
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,17 +52,51 @@ final class TransactionCell: UITableViewCell, Themeable {
         let isDeposit = transaction.0.type == "DEPOSIT"
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
-            profileImage.setUserImage(transaction.1)
+            if oldProfileId != transaction.1.data.pubkey {
+                profileImage.setUserImage(transaction.1)
+                oldProfileId = transaction.1.data.pubkey
+            }
             profileImage.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
+        } else if transaction.0.onchainAddress != nil {
+            oldProfileId = ""
+            profileImage.kf.cancelDownloadTask()
+            profileImage.image = UIImage(named: "onchainPayment")
+            profileImage.contentMode = .scaleAspectFit
+            nameLabel.text = "Bitcoin"
         } else {
+            oldProfileId = ""
             profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "nonZapPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
         
-        timeLabel.text = Date(timeIntervalSince1970: TimeInterval(transaction.0.created_at)).timeAgoDisplay()
+        if let completedAt = transaction.0.completed_at {
+            timeIcon.isHidden = true
+            timeLabel.text = Date(timeIntervalSince1970: TimeInterval(completedAt)).timeAgoDisplay()
+            coverView.alpha = 0
+            
+            wasPulsing = false
+        } else {
+            timeIcon.isHidden = false
+            timeLabel.text = "Pending"
+            
+            if !wasPulsing {
+                wasPulsing = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4)) {
+                    if self.wasPulsing {
+                        self.wasPulsing = false
+                    }
+                }
+                
+                coverView.alpha = 0
+                UIView.animate(withDuration: 1, delay: 0, options: [.autoreverse, .repeat]) {
+                    self.coverView.alpha = 0.6
+                }
+            }
+        }
         
         arrowIcon.transform = isDeposit ? .identity : .init(rotationAngle: .pi)
         arrowIcon.tintColor = isDeposit ? .receiveMoney : .sendMoney
@@ -74,12 +114,12 @@ final class TransactionCell: UITableViewCell, Themeable {
         let btcAmount = (Double(transaction.0.amount_btc) ?? 0)
         
         if showBTC {
-            amountLabel.text = (btcAmount * .BTC_TO_SAT).localized()
+            amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
             currencyLabel.text = "sats"
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
             
-            let usdString = (usdAmount < 0 ? "-$" : "$") + abs(usdAmount).twoDecimalPoints()
+            let usdString = "$\(abs(usdAmount).twoDecimalPoints())"
             
             amountLabel.text = usdString
             currencyLabel.text = "USD"
@@ -97,13 +137,25 @@ final class TransactionCell: UITableViewCell, Themeable {
         amountLabel.textColor = .foreground
         currencyLabel.textColor = .foreground5
         
-        contentView.backgroundColor = .background
+        coverView.backgroundColor = .background
+        
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        profileImage.alpha = 1
+        nameLabel.alpha = 1
+        messageLabel.alpha = 1
+        amountLabel.alpha = 1
     }
 }
 
 private extension TransactionCell {
     func setup() {
         selectionStyle = .none
+        layer.masksToBounds = false
         
         profileImage.layer.cornerRadius = 22
         profileImage.layer.masksToBounds = true
@@ -119,21 +171,30 @@ private extension TransactionCell {
         
         messageLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        currencyLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        arrowIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         let thirdStack = UIView()
         thirdStack.addSubview(arrowIcon)
         arrowIcon.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 4)
         
-        let mainStack = UIStackView([profileImage, SpacerView(width: 8), firstVStack, secondVStack, SpacerView(width: 5), thirdStack])
+        let mainStack = UIStackView([profileImage, SpacerView(width: 8, priority: .required), firstVStack, secondVStack, SpacerView(width: 5), thirdStack])
         mainStack.alignment = .center
         mainStack.spacing = 2
         thirdStack.pin(to: secondVStack, edges: .vertical)
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 12)
+        
+        contentView.addSubview(timeIcon)
+        timeIcon.pin(to: profileImage, edges: [.bottom, .trailing], padding: -2)
+        
+        contentView.addSubview(coverView)
+        coverView.pinToSuperview()
+        coverView.alpha = 0
+        coverView.isUserInteractionEnabled = false
         
         nameLabel.font = .appFont(withSize: 18, weight: .bold)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)

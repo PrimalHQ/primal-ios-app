@@ -23,8 +23,11 @@ class WalletRequestResult {
     var newAddress: String?
     var quote: WalletQuote?
     
+    var tiers: [OnchainTransactionTier] = []
+    
     var parsedLNURL: ParsedLNURL?
     var parsedLNInvoice: ParsedLNInvoice?
+    var onchainAddress: String?
 }
 
 enum WalletResponseType: Int {
@@ -42,6 +45,8 @@ enum WalletResponseType: Int {
     case WALLET_ACTIVATION = 10_000_311
     case WALLET_PARSED_LNURL = 10_000_312
     case WALLET_PARSED_LNINVOICE = 10_000_313
+    case WALLET_ONCHAIN_TIERS = 10_000_315
+    case WALLET_PARSED_ONCHAIN = 10000316
 }
 
 struct WalletQuote: Codable {
@@ -62,6 +67,12 @@ enum KYCLevel: Int {
 }
 
 struct WalletBalance: Codable {
+    var amount: String
+    var max_amount: String
+    var currency: String
+}
+
+struct WalletAmount: Codable {
     var amount: String
     var currency: String
 }
@@ -84,6 +95,15 @@ struct ParsedLNInvoice: Codable {
     }
 }
 
+struct OnchainTransactionTier: Codable {
+    var _duration: Int
+    var estimatedDeliveryDurationInMin: Int
+    var id: String
+    var _label: String
+    var estimatedFee: WalletAmount
+    var minimumAmount: WalletAmount?
+}
+
 struct DepositInfo: Codable {
     var lnurl: String
     var lud16: String
@@ -99,7 +119,10 @@ struct WalletTransaction: Codable {
     var id: String
     var state: String
     var completed_at: Int?
+    var updated_at: Int?
     var created_at: Int
+    
+    var is_in_app_purchase: Bool?
     
     var is_zap: Bool
     
@@ -119,5 +142,12 @@ struct WalletTransaction: Codable {
     var total_fee_btc: String?
     var invoice: String?
     
+    var onchainAddress: String?
+    var onchain_transaction_id: String?
+    
     var zap_request: String?
+}
+
+extension WalletTransaction {
+    var isDeposit: Bool { type == "DEPOSIT" }
 }

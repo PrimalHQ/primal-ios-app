@@ -7,8 +7,11 @@
 
 import UIKit
 
-final class SearchTermTableCell: UITableViewCell {
+final class SearchTermTableCell: UITableViewCell, Themeable {
     let termLabel = UILabel()
+    let titleLabel = UILabel()
+    let icon = UIImageView(image: .init(named: "searchIconSmall"))
+    let border = UIView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -21,15 +24,11 @@ final class SearchTermTableCell: UITableViewCell {
     }
     
     func setup() {
-        let titleLabel = UILabel()
-        let icon = UIImageView(image: .init(named: "searchIconSmall"))
-        
         icon.constrainToSize(20)
         
         let labelStack = UIStackView(arrangedSubviews: [termLabel, titleLabel])
         let stack = UIStackView(arrangedSubviews: [icon, labelStack])
         
-        let border = UIView()
         contentView.addSubview(border)
         border.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
@@ -45,7 +44,9 @@ final class SearchTermTableCell: UITableViewCell {
         
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 32).pinToSuperview(edges: .vertical, padding: 12)
-     
+    }
+    
+    func updateTheme() {
         titleLabel.textColor = .foreground5
         termLabel.textColor = .foreground
         icon.tintColor = .foreground

@@ -9,56 +9,21 @@ import Combine
 import UIKit
 
 class SettingsZapsViewController: UIViewController, Themeable {
-    private lazy var inputFields = emojis.map { emoji in
-        let view = SettingsDoubleInputView()
-        view.first.text = emoji
-        return view
-    }
-    private let emojis = ["👍", "🌿", "🤙", "💜", "🔥", "🚀"]
-    private let defaultAmounts: [Int] = [21, 420, 1000, 5000, 10000, 100000]
-    private var zapOptions: [Int] = [] {
-        didSet {
-            updateView()
-        }
-    }
-    let defaultInput = SettingsZapInputView().constrainToSize(width: 120, height: 44)
     
-    private var defaultZapAmount: Int = 100 {
-        didSet {
-            defaultInput.field.text = defaultZapAmount.localized()
-        }
-    }
+    var defaultZapSettings: PrimalZapDefaultSettings?
+    var zapOptions: [PrimalZapListSettings] = []
     
-    weak var currentlyEditingField: UITextField? {
-        didSet {
-            updateView()
-        }
-    }
+    let defaultZapInfo = ZapInfoView()
+    
+    let zapOptionsStack = UIStackView(axis: .vertical, [])
     
     var cancellables: Set<AnyCancellable> = []
-    
-    var didChange = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupView()
         updateTheme()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        if let currentlyEditingField {
-            textFieldDidEndEditing(currentlyEditingField)
-        }
-        
-        if didChange {
-            guard var settings = IdentityManager.instance.userSettings else { return }
-            settings.content.defaultZapAmount = defaultZapAmount
-            settings.content.zapOptions = zapOptions
-            IdentityManager.instance.updateSettings(settings)
-        }
     }
     
     func updateTheme() {
@@ -69,208 +34,138 @@ class SettingsZapsViewController: UIViewController, Themeable {
 }
 
 private extension SettingsZapsViewController {
-    func updateView() {
-        zip(zapOptions, inputFields).forEach { option, field in
-            if field.second == currentlyEditingField {
-                field.second.text = "\(option)"
-                field.second.textColor = .foreground
-                field.backgroundColor = .background2
-            } else {
-                field.second.text = option.localized()
-                field.second.textColor = .foreground3
-                field.backgroundColor = .background3
-            }
+    func updateViews() {
+        if let defaultZapSettings {
+            defaultZapInfo.set(defaultZapSettings)
         }
+        zapOptionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        if defaultInput.field == currentlyEditingField {
-            defaultInput.field.text = "\(defaultZapAmount)"
-        } else {
-            defaultInput.field.text = defaultZapAmount.localized()
+        for (index, zapOption) in zapOptions.enumerated() {
+            let info = ZapInfoView()
+            zapOptionsStack.addArrangedSubview(info)
+            info.set(zapOption)
+            info.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+                self?.show(SettingsEditZapController(.editOptionInArray(index)), sender: nil)
+            }))
         }
     }
     
     func setupView() {
-        title = "Zaps"
-        
-        let inputContainer = UIView()
-        inputContainer.addSubview(defaultInput)
-        defaultInput.pinToSuperview(edges: [.vertical, .leading])
-        
-        let border = ThemeableView().setTheme({ $0.backgroundColor = .background3 }).constrainToSize(height: 1)
-        
-        lazy var topButtonStack = UIStackView(arrangedSubviews: Array(inputFields.prefix(3)))
-        lazy var bottomButtonStack = UIStackView(arrangedSubviews: Array(inputFields.suffix(3)))
+        title = "Zap Settings"
         
         let restore = AccentUIButton(title: "restore defaults")
         let restoreParent = UIView()
         restoreParent.addSubview(restore)
         restore.pinToSuperview(edges: [.vertical, .trailing])
         
-        [topButtonStack, bottomButtonStack].forEach {
-            $0.distribution = .fillEqually
-            $0.spacing = 14
-        }
-        
-        let stack = UIStackView(arrangedSubviews: [
-            SettingsTitleViewVibrant(title: "SET DEFAULT ZAP AMOUNT"),                  SpacerView(height: 16),
-            inputContainer,                                                             SpacerView(height: 16),
-            border,                                                                     SpacerView(height: 28),
-            SettingsTitleViewVibrant(title: "SET CUSTOM ZAP AMOUNT AND EMOJI PRESETS"), SpacerView(height: 16),
-            topButtonStack, SpacerView(height: 16), bottomButtonStack,                  SpacerView(height: 28),
-            restoreParent,                                                              UIView()
-        ])
-        
-        view.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12, safeArea: true)
-        
-        stack.axis = .vertical
-        
         updateTheme()
         
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
-        restore.addTarget(self, action: #selector(restoreDefaults), for: .touchUpInside)
+        let infoLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
+        infoLabel.font = .appFont(withSize: 14, weight: .regular)
+        infoLabel.numberOfLines = 0
+        
+        let stack = UIStackView(axis: .vertical, [
+            defaultZapInfo, SpacerView(height: 8),
+            infoLabel, SpacerView(height: 24),
+            zapOptionsStack, SpacerView(height: 24),
+            restoreParent
+        ])
+        
+        zapOptionsStack.spacing = 1
+        zapOptionsStack.layer.cornerRadius = 12
+        zapOptionsStack.layer.masksToBounds = true
+        
+        defaultZapInfo.layer.cornerRadius = 12
+        defaultZapInfo.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.show(SettingsEditZapController(.editDefault), sender: nil)
+        }))
+        
+        restore.addAction(.init(handler: { _ in
+            IdentityManager.instance.requestDefaultSettings { defaultS in
+                guard var settings = IdentityManager.instance.userSettings else { return }
+
+                settings.zapDefault = defaultS.zapDefault
+                settings.zapConfig = defaultS.zapConfig
+                
+                IdentityManager.instance.updateSettings(settings)
+            }
+        }), for: .touchUpInside)
+        
+        view.addSubview(stack)
+        stack.pinToSuperview(edges: [.top, .horizontal], padding: 20, safeArea: true)
         
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
-            self?.defaultZapAmount = settings?.content.defaultZapAmount ?? 100
-            self?.zapOptions = settings?.content.zapOptions ?? self?.defaultAmounts ?? []
+            self?.defaultZapSettings = settings?.zapDefault
+            self?.zapOptions = settings?.zapConfig ?? []
+            self?.updateViews()
         }
         .store(in: &cancellables)
         
         IdentityManager.instance.requestUserSettings()
-        
-        let inputFields: [UITextField] = view.findAllSubviews()
-        inputFields.forEach { $0.delegate = self }
-    }
-    
-    @objc func viewTapped() {
-        let inputFields: [UITextField] = view.findAllSubviews()
-        inputFields.forEach { $0.resignFirstResponder() }
-    }
-    
-    @objc func restoreDefaults() {
-        defaultZapAmount = 100
-        zapOptions = defaultAmounts
-        didChange = true
     }
 }
 
-extension SettingsZapsViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        currentlyEditingField = textField
-    }
+final class ZapInfoView: MyButton, Themeable {
+    let emojiLabel = UILabel()
+    let messageLabel = UILabel()
+    let amountLabel = UILabel()
+    let arrowImageView = UIImageView(image: UIImage(named: "settingsSmallArrow"))
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        defer {
-            if currentlyEditingField == textField {
-                currentlyEditingField = nil
-            }
+    override var isPressed: Bool {
+        didSet {
+            backgroundColor = isPressed ? .background3.withAlphaComponent(0.6) : .background3
         }
-        
-        guard let amount = Int(textField.text ?? "") else { return }
-        
-        didChange = true
-        
-        if textField == defaultInput.field {
-            defaultZapAmount = amount
-        }
-        
-        guard !zapOptions.isEmpty else { return }
-        
-        for (index, field) in inputFields.enumerated() {
-            if field.second == textField {
-                zapOptions[index] = amount
-            }
-        }
-    }
-}
-
-final class SettingsDoubleInputView: UIView, Themeable {
-    let first = UITextField().constrainToSize(height: 72)
-    let second = UITextField().constrainToSize(height: 40)
-    
-    let border1 = ThemeableView().setTheme({ $0.backgroundColor = .foreground6 }).constrainToSize(height: 1)
-    let border2 = ThemeableView().setTheme({ $0.backgroundColor = .foreground6 }).constrainToSize(height: 1)
-    let background = ThemeableView().setTheme({ $0.backgroundColor = .background }).constrainToSize(height: 4)
-    
-    let completeBackground = ThemeableView().setTheme({
-        $0.backgroundColor = .background3
-        $0.layer.cornerRadius = 6
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.foreground6.cgColor
-    })
-    
-    var borderColor: UIColor {
-        get { border1.backgroundColor ?? .foreground6 }
-        set {
-            border1.backgroundColor = newValue
-            border2.backgroundColor = newValue
-            completeBackground.layer.borderColor = newValue.cgColor
-        }
-    }
-    
-    override var backgroundColor: UIColor? {
-        get { completeBackground.backgroundColor }
-        set { completeBackground.backgroundColor = newValue }
     }
     
     init() {
         super.init(frame: .zero)
         
-        let stack = UIStackView(arrangedSubviews: [first, border1, background, border2, second])
-        stack.axis = .vertical
-        
-        [first, second].forEach { field in
-            field.textAlignment = .center
-            field.font = .appFont(withSize: 16, weight: .bold)
-            field.keyboardType = .numberPad
-        }
-        
-        first.isEnabled = false
-        first.font = .appFont(withSize: 28, weight: .bold)
-        
-        addSubview(completeBackground)
-        completeBackground.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical)
+        let stack = UIStackView([
+            emojiLabel, SpacerView(width: 16, priority: .required),
+            messageLabel, SpacerView(width: 17, priority: .required), UIView(),
+            amountLabel, SpacerView(width: 12, priority: .required), arrowImageView
+        ])
         
         addSubview(stack)
-        stack.pinToSuperview()
+        stack.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 16)
+        stack.alignment = .center
+        
+        constrainToSize(height: 48)
         
         updateTheme()
+        
+        messageLabel.lineBreakMode = .byTruncatingTail
+        emojiLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        arrowImageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        messageLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        
+        messageLabel.font = .appFont(withSize: 16, weight: .regular)
+        amountLabel.font = .appFont(withSize: 16, weight: .regular)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        second.textColor = .foreground3
-    }
-}
-
-final class SettingsZapInputView: UIView, Themeable {
-    let field = UITextField()
-    
-    init() {
-        super.init(frame: .zero)
-        
-        addSubview(field)
-        field.pinToSuperview()
-        field.textAlignment = .center
-        field.font = .appFont(withSize: 16, weight: .bold)
-        field.keyboardType = .numberPad
-        
-        layer.borderWidth = 1
-        layer.cornerRadius = 6
-        updateTheme()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func updateTheme() {
-        field.textColor = .foreground3
         backgroundColor = .background3
-        layer.borderColor = UIColor.foreground6.cgColor
+        messageLabel.textColor = .foreground
+        emojiLabel.textColor = .foreground3
+        amountLabel.textColor = .foreground3
+        arrowImageView.tintColor = .foreground3
+    }
+    
+    func set(_ settings: PrimalZapDefaultSettings) {
+        emojiLabel.font = .appFont(withSize: 16, weight: .regular)
+        emojiLabel.text = "Default"
+        messageLabel.text = settings.message
+        amountLabel.text = settings.amount.localized()
+    }
+    
+    func set(_ settings: PrimalZapListSettings) {
+        emojiLabel.font = .appFont(withSize: 24, weight: .bold)
+        emojiLabel.text = settings.emoji
+        messageLabel.text = settings.message
+        amountLabel.text = settings.amount.localized()
     }
 }
 
@@ -283,9 +178,7 @@ final class AccentUIButton: UIButton, Themeable {
         updateTheme()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
         setTitleColor(.accent, for: .normal)

@@ -111,24 +111,14 @@ private extension ChatSearchController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] text -> AnyPublisher<PostRequestResult, Never> in
+            .flatMap { [weak self] in
                 self?.userTable.reloadData()
                 
-                switch text {
-                case "":
-                    return SocketRequest(name: "user_infos", payload: .object([
-                        "pubkeys": .array(PostingTextViewManager.recommendedUsersNpubs.map { .string($0) })
-                    ])).publisher()
-                default:
-                   return SocketRequest(name: "user_search", payload: .object([
-                       "query": .string(text),
-                       "limit": .number(15),
-                   ])).publisher()
-                }
+                return SmartContactsManager.instance.userSearchPublisher($0)
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
-                self?.users = result.users.map { result.createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+                self?.users = result
             })
             .store(in: &cancellables)
     }

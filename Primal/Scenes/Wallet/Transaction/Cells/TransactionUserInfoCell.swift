@@ -30,9 +30,28 @@ class TransactionUserInfoCell: UITableViewCell {
 
 extension TransactionUserInfoCell: TransactionPartialCell {
     func setupWithCellInfo(_ info: TransactionViewController.CellType) {
-        guard case let .user(user, message) = info else { return }
+        let user: ParsedUser?
+        let message: String?
+        let onchain: Bool
+        switch info {
+        case .user(let parsedUser, let message1):
+            user = parsedUser
+            message = message1
+            onchain = false
+        case .onchain(let message1):
+            user = nil
+            message = message1
+            onchain = true
+        default:
+            return
+        }
         
-        if let user {
+        if onchain {
+            avatar.image = UIImage(named: "onchainPayment")
+            mainLabel.text = "Bitcoin payment"
+            subtitleLabel.isHidden = true
+            checkbox.isHidden = true
+        } else if let user {
             avatar.setUserImage(user)
             mainLabel.text = user.data.firstIdentifier
             subtitleLabel.text = user.data.address

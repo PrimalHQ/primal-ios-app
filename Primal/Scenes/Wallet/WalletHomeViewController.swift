@@ -5,21 +5,37 @@
 //  Created by Pavle Stevanović on 9.10.23..
 //
 
+import AudioToolbox
 import Combine
 import UIKit
+import GenericJSON
+
+protocol WalletHomeTransitionButton: UIControl {
+    var imageView: UIImageView? { get }
+}
+
+extension UIButton: WalletHomeTransitionButton {
+    var imageBackground: UIView? { self }
+}
+
+extension LargeWalletButton: WalletHomeTransitionButton {
+    var imageView: UIImageView? { iconView }
+}
+
 
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
-        case info
         case loading
         case activateWallet
         case buySats
         case error(String)
         case transaction((WalletTransaction, ParsedUser))
         
-        var transaction: WalletTransaction? {
+        var transaction: WalletTransaction? { parsedTransaction?.0 }
+        
+        var parsedTransaction: (WalletTransaction, ParsedUser)? {
             if case let .transaction(trans) = self {
-                return trans.0
+                return trans
             }
             return nil
         }
@@ -28,78 +44,34 @@ final class WalletHomeViewController: UIViewController, Themeable {
     struct Section {
         var title: String?
         var cells: [Cell] = []
+        
+        var parsedTransactions: [(WalletTransaction, ParsedUser)] { cells.compactMap { $0.parsedTransaction } }
     }
     
     @Published var isBitcoinPrimary = true
     
     private let navBar = WalletNavView()
-    private let table = UITableView()
-    private let topEmptySpaceCover = UIView()
-    private var topEmptySpaceHeightConstraint: NSLayoutConstraint?
+    let table = UITableView()
     
     private var cancellables: Set<AnyCancellable> = []
-    private var updateIsBitcoin: AnyCancellable?
-    private var update: ContinousConnection?
-    private var updateUpdate: AnyCancellable?
+    private var foregroundUpdate: AnyCancellable?
+    
+    private var forceNavbarOpen = false
+    private var extraOffset: CGFloat = 0
+    private var contentOffsetStart = CGPoint.zero
+    
+    private let heavyImpact = UIImpactFeedbackGenerator(style: .heavy)
+    
+    var transitionButton: WalletHomeTransitionButton?
+    
+    var selectedIndexPath: IndexPath?
     
     private var tableData: [Section] = [] {
         didSet {
-            guard
-                oldValue.count == tableData.count,
-                let oldLast = oldValue.last?.cells.last?.transaction,
-                let newLast = tableData.last?.cells.last?.transaction,
-                oldLast.id == newLast.id,
-                let oldTransactionList = oldValue.dropFirst().first?.cells.compactMap({ $0.transaction }),
-                let newTransactionList = tableData.dropFirst().first?.cells.compactMap({ $0.transaction }),
-                oldTransactionList.first?.id != newTransactionList.first?.id
-            else {
-                table.reloadData()
-                return
-            }
+            guard navigationController?.topViewController == parent, view.window != nil else { return }
             
-            // Make sure other sections are not changed
-            for index in oldValue.indices {
-                if index < 2 { continue }
-                if oldValue[index].cells.count != tableData[index].cells.count {
-                    table.reloadData()
-                    return
-                }
-            }
-            
-            let newTransCount = newTransactionList.count - oldTransactionList.count
-            
-            guard newTransCount > 0 else {
-                table.reloadData()
-                return
-            }
-            table.beginUpdates()
-            table.reloadSections(.init(integer: 0), with: .none)
-            
-            let indexPaths: [IndexPath] = (0..<newTransCount).map { .init(row: $0, section: 1) }
-            table.insertRows(at: indexPaths, with: .top)
-            table.endUpdates()
-        }
-    }
-    
-    var isShowingNavBar = false {
-        didSet {
-            if isShowingNavBar == oldValue { return }
-            
-            if isShowingNavBar {
-                navBar.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-            } else {
-                (table.cellForRow(at: .init(row: 0, section: 0)) as? WalletInfoCell)?.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-            }
-            
-            if !isShowingNavBar {
-                table.contentInset = isShowingNavBar ? UIEdgeInsets(top: 80, left: 0, bottom: 0, right: 0) : .zero
-            }
-            
-            UIView.animate(withDuration: 0.2) {
-                self.navBar.transform = self.isShowingNavBar ? .identity : .init(translationX: 0, y: -100)
-            } completion: { _ in
-                self.table.contentInset = self.isShowingNavBar ? UIEdgeInsets(top: 80, left: 0, bottom: 0, right: 0) : .zero
-            }
+            table.reloadData()
+            animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
         }
     }
     
@@ -113,41 +85,33 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         WalletManager.instance.refreshBalance()
-        WalletManager.instance.loadNewTransactions()
+        WalletManager.instance.recheckTransactions()
         
+        table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        (navigationController as? MainNavigationController)?.isTransparent = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
-
-        updateUpdate = Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
-            .sink { [weak self] _ in
-                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor", request: ["operation_event": event.toJSON()]) { result in
-                    guard let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue else { return }
-                    guard let amountBTC = content.split(separator: "\"").compactMap({ Double($0) }).first else { return }
-                    let sats = Int(amountBTC * .BTC_TO_SAT)
-                    WalletManager.instance.balance = sats
-                }
-            }
+        heavyImpact.prepare()
         
-        WalletManager.instance.refreshBalance()
-        WalletManager.instance.loadNewTransactions()
+        foregroundUpdate = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
+            .sink(receiveValue: { [weak self] _ in
+                self?.table.reloadData()
+            })
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        updateUpdate = nil
-        update = nil
+        foregroundUpdate = nil
     }
     
     func updateTheme() {
         view.backgroundColor = .background
-        topEmptySpaceCover.backgroundColor = .background
         table.backgroundColor = .background
         table.reloadData()
         
@@ -167,6 +131,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
 }
 
+// MARK: - TableDatasource
 extension WalletHomeViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { tableData.count }
     
@@ -186,21 +151,6 @@ extension WalletHomeViewController: UITableViewDataSource {
             if let cell = cell as? BuySatsCell {
                 cell.updateTheme()
                 cell.delegate = self
-            }
-            return cell
-        case .info:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "info", for: indexPath)
-            if let cell = cell as? WalletInfoCell {
-                updateIsBitcoin = nil
-                cell.delegate = self
-                cell.balanceConversionView.isBitcoinPrimary = isBitcoinPrimary
-                updateIsBitcoin = cell.balanceConversionView.$isBitcoinPrimary.sink(receiveValue: { [weak self] isBitcoinPrimary in
-                    self?.isBitcoinPrimary = isBitcoinPrimary
-                })
-                
-                cell.backgroundColor = .background
-                cell.contentView.alpha = WalletManager.instance.userHasWallet == true ? 1 : 0.5
-                cell.contentView.isUserInteractionEnabled = WalletManager.instance.userHasWallet == true
             }
             return cell
         case .loading:
@@ -228,6 +178,7 @@ extension WalletHomeViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - Delegate
 extension WalletHomeViewController: TransactionCellDelegate {
     func transactionCellDidTapAvatar(_ cell: TransactionCell) {
         guard
@@ -248,23 +199,55 @@ extension WalletHomeViewController: UITableViewDelegate {
         return header
     }
     
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        navBar.shouldExpand = true
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        forceNavbarOpen = true
+        navBar.shouldExpand = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            self.forceNavbarOpen = false
+        }
+        
+        return true
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        isShowingNavBar = scrollView.contentOffset.y > 190
-        if scrollView.contentOffset.y > 35 || scrollView.contentOffset.y < 0 {
-            topEmptySpaceCover.isHidden = true
+        if forceNavbarOpen {
+            navBar.shouldExpand = true
+            if scrollView.contentOffset.y < 5 {
+                forceNavbarOpen = false
+            }
+            return
+        }
+        
+        if navBar.shouldExpand {
+            navBar.shouldExpand = scrollView.contentOffset.y < 5
+            
+            if !navBar.shouldExpand {
+                extraOffset = navBar.expandedHeight - navBar.tightenedHeight - scrollView.contentOffset.y
+                scrollView.contentOffset.y = 1
+            }
         } else {
-            topEmptySpaceCover.isHidden = false
-            topEmptySpaceHeightConstraint?.constant = max(35 - scrollView.contentOffset.y, 0)
+            if scrollView.contentOffset.y <= 0 {
+                navBar.shouldExpand = true
+            } else if navBar.isAnimating && extraOffset > 0 {
+                extraOffset -= scrollView.contentOffset.y
+                scrollView.contentOffset.y = 1
+            }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .info, .loading, .error:
+        case .loading, .error:
             break
         case .buySats:
             buySatsPressed()
         case .transaction((let transaction, let user)):
+            selectedIndexPath = indexPath
             show(TransactionViewController(transaction: transaction, user: user), sender: nil)
         case .activateWallet:
             activateWalletPressed()
@@ -272,7 +255,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
 }
 
-extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate, ActivateWalletCellDelegate {
+extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
     func activateWalletPressed() {
         show(WalletActivateViewController(), sender: nil)
     }
@@ -280,35 +263,30 @@ extension WalletHomeViewController: WalletInfoCellDelegate, BuySatsCellDelegate,
     func buySatsPressed() {
         present(WalletInAppPurchaseController(), animated: true)
     }
-    
-    func receiveButtonPressed() {
-        show(WalletReceiveViewController(), sender: nil)
-    }
-    
-    func sendButtonPressed() {
-        show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
-    }
-    
-    func scanButtonPressed() {
-        show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+}
+
+// MARK: - HeaderPanGesture
+extension WalletHomeViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
+        let translation = pan.translation(in: view)
+        return translation.y < 0 && abs(translation.y) > abs(translation.x)
     }
 }
 
+// MARK: - Private
 private extension WalletHomeViewController {
     func setup() {
         title = "Wallet"
         
-        view.addSubview(table)
-        table.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        let stack = UIStackView(axis: .vertical, [navBar, table])
+        view.addSubview(stack)
+        // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
+        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: -100)
         
-        view.addSubview(navBar)
-        navBar.pinToSuperview(edges: [.horizontal, .top], safeArea: true)
-        navBar.transform = .init(translationX: 0, y: -100)
-        
-        view.addSubview(topEmptySpaceCover)
-        topEmptySpaceCover.pin(to: table, edges: [.horizontal, .top])
-        topEmptySpaceHeightConstraint = topEmptySpaceCover.heightAnchor.constraint(equalToConstant: 35)
-        topEmptySpaceHeightConstraint?.isActive = true
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(headerPanned))
+        pan.delegate = self
+        navBar.largeView.addGestureRecognizer(pan)
         
         table.separatorStyle = .none
         table.dataSource = self
@@ -322,6 +300,7 @@ private extension WalletHomeViewController {
         table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
+        table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
         
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
@@ -351,15 +330,17 @@ private extension WalletHomeViewController {
         .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] hasWallet, isLoading, transactions, shouldShowBuySats in
+            guard let self else { return }
+            
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
             }
             
-            self?.table.refreshControl?.endRefreshing()
-            var firstSection = Section(cells: [.info])
+            table.refreshControl?.endRefreshing()
+            var firstSection = Section(cells: [])
             
             guard LoginManager.instance.method() == .nsec else {
-                self?.tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
+                tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
                 return
             }
             
@@ -371,22 +352,54 @@ private extension WalletHomeViewController {
                 firstSection.cells += [.buySats]
             }
             
-            self?.tableData = [firstSection] + grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
+            var tableData = [Section]()
+            if !firstSection.cells.isEmpty {
+                tableData.append(firstSection)
+            }
+            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
                 let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
+            })
+            
+            if howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
+                mainTabBarController?.playThunderAnimation()
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                    self.tableData = tableData
+                }
+            } else {
+                self.tableData = tableData
             }
         }
         .store(in: &cancellables)
         
-        navBar.receive.addAction(.init(handler: { [weak self] _ in
-            self?.receiveButtonPressed()
-        }), for: .touchUpInside)
-        navBar.send.addAction(.init(handler: { [weak self] _ in
-            self?.sendButtonPressed()
-        }), for: .touchUpInside)
-        navBar.scan.addAction(.init(handler: { [weak self] _ in
-            self?.scanButtonPressed()
-        }), for: .touchUpInside)
+        navBar.receivePressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
+            self?.show(WalletReceiveViewController(), sender: nil)
+        }
+        .store(in: &cancellables)
+        
+        navBar.sendPressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
+            self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
+        }
+        .store(in: &cancellables)
+        
+        navBar.scanPressedEvent.sink { [weak self] button in
+            self?.transitionButton = button as? WalletHomeTransitionButton
+            
+            self?.heavyImpact.impactOccurred()
+            (self?.navigationController as? MainNavigationController)?.isTransparent = true
+            DispatchQueue.main.async {
+                self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+            }
+        }
+        .store(in: &cancellables)
         
         navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
             self?.isBitcoinPrimary = isBitcoinPrimary
@@ -400,5 +413,88 @@ private extension WalletHomeViewController {
             }
         }
         .store(in: &cancellables)
+    }
+    
+    
+    @objc func headerPanned(_ sender: UIPanGestureRecognizer) {
+        if case .began = sender.state {
+            contentOffsetStart = table.contentOffset
+        }
+        
+        let translation = sender.translation(in: view).y
+        table.contentOffset.y = max(5, contentOffsetStart.y - translation)
+    }
+    
+    func howManyCellsToAppear(_ oldValue: [Section], _ newValue: [Section]) -> Int {
+        guard table.window != nil, let indexPaths = table.indexPathsForVisibleRows else { return 0 }
+        
+        let oldIds = Set(oldValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
+        let newIds = Set(newValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
+        
+        if oldIds.isEmpty { return 0 }
+        
+        let deltaIds = newIds.subtracting(oldIds)
+        var animateCount = 0
+        for indexPath in indexPaths {
+            if let transaction = newValue[safe: indexPath.section]?.cells[safe: indexPath.row]?.transaction, deltaIds.contains(transaction.id) {
+                animateCount += 1
+            } else {
+                break
+            }
+        }
+        
+        return animateCount
+    }
+    
+    func animateCellsAppear(_ count: Int) {
+        guard count > 0 else { return }
+        
+        let cellsToAnimate = table.visibleCells.prefix(count).compactMap { $0 as? TransactionCell }
+        let otherCells = table.visibleCells.dropFirst(count)
+        
+        for cell in cellsToAnimate {
+            cell.contentView.alpha = 0
+            cell.contentView.transform = .init(translationX: 200, y: 0)
+            
+            let view = UIView()
+            view.backgroundColor = Theme.current.isDarkTheme ? .init(rgb: 0x222222) : .init(rgb: 0xCCCCCC)
+            view.frame = cell.bounds
+            view.alpha = 0
+            cell.insertSubview(view, at: 0)
+            
+            CATransaction.begin()
+            CATransaction.setAnimationTimingFunction(.easeInOutQuart)
+            
+            UIView.animate(withDuration: 6 / 30, delay: 5 / 30) {
+                cell.contentView.transform = .identity
+            }
+            
+            CATransaction.commit()
+            
+            UIView.animate(withDuration: 6 / 30, delay: 5 / 30) {
+                cell.contentView.alpha = 1
+                view.alpha = 1
+            } completion: { _ in
+                UIView.animate(withDuration: 25 / 30) {
+                    view.alpha = 0
+                } completion: { _ in
+                    view.removeFromSuperview()
+                }
+            }
+            
+        }
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(.easeInOutQuart)
+        
+        for cell in otherCells {
+            cell.contentView.transform = .init(translationX: 0, y: -CGFloat(count) * 68)
+            
+            UIView.animate(withDuration: 11 / 30) {
+                cell.contentView.transform = .identity
+            }
+        }
+        
+        CATransaction.commit()
     }
 }

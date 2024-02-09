@@ -18,12 +18,14 @@ final class IdentityManager {
     
     static let instance = IdentityManager()
 
+    var userHexPubkeyCache: String?
     var userHexPubkey: String {
         get {
             guard
+                ICloudKeychainManager.instance.userPubkey.isEmpty,
                 let result = ICloudKeychainManager.instance.getLoginInfo()
             else {
-                return ""
+                return ICloudKeychainManager.instance.userPubkey
             }
             
             return result.hexVariant.pubkey
@@ -36,7 +38,7 @@ final class IdentityManager {
     @Published var user: PrimalUser?
     @Published var parsedUser: ParsedUser?
     @Published var userStats: NostrUserProfileInfo?
-    @Published var userSettings: PrimalSettings?
+    @Published var userSettings: PrimalSettingsContent?
     @Published var userRelays: [String: RelayInfo]?
     var fullRelayList: [String] = []
     @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
@@ -45,20 +47,6 @@ final class IdentityManager {
     
     var cancellables: Set<AnyCancellable> = []
 
-    func requestUserInfos() {
-        SocketRequest(name: "user_infos", payload: ["pubkeys": [.string(userHexPubkey)]]).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let user = result.users.first?.value else { return }
-                self?.user = user
-                if user.deleted ?? false {
-                    self?.handleDeletedAccount()
-                }
-                self?.userStats = result.userStats ?? self?.userStats
-                self?.parsedUser = result.createParsedUser(user)
-            }
-            .store(in: &cancellables)
-    }
     func requestUserProfile() {
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(userHexPubkey)]).publisher()
             .receive(on: DispatchQueue.main)
@@ -73,7 +61,8 @@ final class IdentityManager {
             }
             .store(in: &cancellables)
     }
-    func requestDefaultSettings(_ callback: @escaping (_: PrimalSettings) -> Void) {
+    
+    func requestDefaultSettings(_ callback: @escaping (_: PrimalSettingsContent) -> Void) {
         let request: JSON = .object([
             "cache": .array([
                 .string("get_default_app_settings"),
@@ -90,13 +79,9 @@ final class IdentityManager {
                 switch kind {
                 case .defaultSettings:
                     var primalSettings = PrimalSettings(json: response)
-                    // Ensure Latest feed *always* exists
-                    let latestFeedExists = primalSettings?.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey }) ?? false
-                    if !latestFeedExists {
-                        primalSettings?.content.feeds?.insert(.latest, at: 0)
-                    }
+
                     if let settings = primalSettings {
-                        callback(settings)
+                        callback(settings.content)
                     }
                 default:
                         print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
@@ -104,6 +89,7 @@ final class IdentityManager {
             }
         }
     }
+    
     func requestUserSettings() {
         var request: JSON = .object([
             "cache": .array([
@@ -156,22 +142,22 @@ final class IdentityManager {
                         settings.content.feeds?.insert(.latestWithReplies, at: 1)
                     }
                     
-                    // There were breaking changes to how settingsx work over the time
+                    // There were breaking changes to how settings work over the time
                     // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
                     if settings.content.isBorked() {
                         self.requestDefaultSettings { defaultSettings in
-                            settings.content.merge(with: defaultSettings.content)
-                            self.userSettings = settings
-                            self.updateSettings(settings)
+                            settings.content.merge(with: defaultSettings)
+                            self.userSettings = settings.content
+                            self.updateSettings(settings.content)
                         }
                     } else {
-                        self.userSettings = settings
+                        self.userSettings = settings.content
                     }
                     
                     // Cache server starts tracking notifications for users *only* when they update their settings
                     // If we're a new user start tracking as soon as possible by updating their settings with default one
                     if self.isNewUser {
-                        self.updateSettings(settings)
+                        self.updateSettings(settings.content)
                         self.isNewUser = false
                         self.newUserKeypair = nil
                     }
@@ -254,12 +240,12 @@ final class IdentityManager {
         }
     }
 
-    func updateSettings(_ settings: PrimalSettings) {
+    func updateSettings(_ settings: PrimalSettingsContent) {
         if LoginManager.instance.method() != .nsec { return }
 
         userSettings = settings
         
-        guard let ev = NostrObject.updateSettings(settings.content) else { return }
+        guard let ev = NostrObject.updateSettings(settings) else { return }
         
         Connection.regular.requestCache(name: "set_app_settings", payload: .object([
             "settings_event":  .object([
@@ -298,7 +284,7 @@ final class IdentityManager {
         if LoginManager.instance.method() != .nsec { return }
 
         guard var settings = userSettings else { return }
-        settings.content.notifications = notifications
+        settings.notifications = notifications
         updateSettings(settings)
     }
     
@@ -311,7 +297,7 @@ final class IdentityManager {
         }
         
         guard var settings = userSettings else { return }
-        settings.content.feeds = feeds
+        settings.feeds = feeds
         updateSettings(settings)
     }
     
@@ -320,11 +306,11 @@ final class IdentityManager {
 
         guard
             var settings = userSettings,
-            let feeds = settings.content.feeds,
+            let feeds = settings.feeds,
             !feeds.isEmpty
         else { return }
         
-        settings.content.feeds?.append(feed)
+        settings.feeds?.append(feed)
         
         updateSettings(settings)
     }
@@ -334,11 +320,11 @@ final class IdentityManager {
 
         guard
             var settings = userSettings,
-            let feeds = settings.content.feeds,
+            let feeds = settings.feeds,
             !feeds.isEmpty
         else { return }
         
-        settings.content.feeds?.removeAll(where: { $0.hex == hex })
+        settings.feeds?.removeAll(where: { $0.hex == hex })
         
         updateSettings(settings)
     }

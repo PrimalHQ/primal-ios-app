@@ -35,7 +35,6 @@ protocol AppTheme {
     var extraColorMenu: UIColor { get }
     
     var menuButtonImage: UIImage? { get }
-    var backButtonImage: UIImage? { get }
     var tabBarDotImage: UIImage? { get }
     
     var statusBarStyle: UIStatusBarStyle { get }
@@ -47,4 +46,28 @@ protocol AppTheme {
     
     var shortTitle: String { get }
     var settingsImage: UIImage? { get }
+}
+
+extension AppTheme {
+    var isPurpleTheme: Bool {
+        switch kind {
+        case .sunriseWave, .sunsetWave:
+            return true
+        case .midnightWave, .iceWave:
+            return false
+        }
+    }
+    
+    var isBlueTheme: Bool { !isPurpleTheme }
+    
+    var isDarkTheme: Bool {
+        switch kind {
+        case .sunsetWave, .midnightWave:
+            return true
+        case .sunriseWave, .iceWave:
+            return false
+        }
+    }
+    
+    var isLightTheme: Bool { !isDarkTheme }
 }

@@ -6,28 +6,26 @@
 //
 
 import UIKit
+import QRCode
 
 extension CIImage {
     var image: UIImage { .init(ciImage: self) }
 }
 
 extension UIImage {
-    static func createQRCode(_ string: String) -> UIImage? {
-        guard
-            let data = string.data(using: .isoLatin1),
-            let outputImage = CIFilter(name: "CIQRCodeGenerator",
-                              parameters: ["inputMessage": data, "inputCorrectionLevel": "M"])?.outputImage
-        else { return nil }
-        let size = outputImage.extent.integral
-        let output = CGSize(width: 400, height: 400)
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = UIScreen.main.scale
-        return UIGraphicsImageRenderer(size: output, format: format).image { _ in
-            outputImage
-                .transformed(by: .init(scaleX: output.width/size.width, y: output.height/size.height))
-                .image
-                .draw(in: .init(origin: .zero, size: output))
+    static func createQRCode(_ string: String, dimension: Int, logo: UIImage? = nil) -> UIImage? {
+        
+        let doc = QRCode.Document(utf8String: string, errorCorrection: logo != nil ? .quantize : .default)
+        doc.design.backgroundColor(UIColor.white.cgColor)
+        doc.design.shape.eye = QRCode.EyeShape.RoundedRect()
+        doc.design.shape.onPixels = QRCode.PixelShape.RoundedPath(cornerRadiusFraction: 1)
+        doc.design.style.onPixels = QRCode.FillStyle.Solid(UIColor.black.cgColor)
+        
+        if let image = logo?.cgImage {
+            doc.logoTemplate = QRCode.LogoTemplate.CircleCenter(image: image, inset: 15)
         }
+        
+        return doc.uiImage(dimension: dimension, scale: 3)
     }
     
     func detectQRCode() -> String? {

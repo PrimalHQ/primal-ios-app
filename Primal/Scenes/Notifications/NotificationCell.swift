@@ -1,5 +1,5 @@
 //
-//  NotificationsCell.swift
+//  NotificationCell.swift
 //  Primal
 //
 //  Created by Pavle D Stevanović on 28.6.23..
@@ -8,10 +8,10 @@
 import UIKit
 
 protocol NotificationCellDelegate: PostCellDelegate {
-    func avatarListTappedInCell(_ cell: NotificationsCell, index: Int)
+    func avatarListTappedInCell(_ cell: NotificationCell, index: Int)
 }
 
-final class NotificationsCell: PostCell {
+final class NotificationCell: PostCell {
     let iconView = UIImageView()
     let iconLabel = UILabel()
     let avatarStack = AvatarView()
@@ -68,7 +68,7 @@ final class NotificationsCell: PostCell {
     }
 }
 
-private extension NotificationsCell {
+private extension NotificationCell {
     func setup() {
 //        backgroundColorView.removeFromSuperview()
         
@@ -139,7 +139,7 @@ extension GroupedNotification {
             
             if !first.data.nip05.isEmpty {
                 let attachment = NSTextAttachment()
-                attachment.image = UIImage(named: "verifiedBadge")
+                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadge") : UIImage(named: "verifiedBadgeBlue")
                 string.append(NSAttributedString(attachment: attachment))
             }
             

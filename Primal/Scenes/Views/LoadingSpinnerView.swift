@@ -14,6 +14,11 @@ enum AnimationType {
     case splash
     case loadingSpinner
     case loadingSpinnerBlue
+    case loadingDots
+    case transferSuccess
+    case transferFailed
+    case walletLightning
+    case notificationLightning
     
     case zapMedium
     
@@ -26,7 +31,12 @@ enum AnimationType {
         case .splash:               return "splashAlpha"
         case .loadingSpinner:       return "loadingSpinner"
         case .loadingSpinnerBlue:   return "loadingSpinnerBlue"
+        case .loadingDots:          return "loadingDots"
         case .zapMedium:        	return "zap-medium"
+        case .transferSuccess:      return "transferSuccess"
+        case .transferFailed:       return "transferFailed"
+        case .walletLightning:      return "walletLightning"
+        case .notificationLightning:return "notificationLightning"
         }
     }
     
@@ -41,8 +51,8 @@ enum AnimationType {
 }
 
 final class LoadingSpinnerView: LottieAnimationView, Themeable {
-    init() {
-        super.init(animation: Theme.current.loadingSpinnerAnimation.animation)
+    init(asDots: Bool = false) {
+        super.init(animation: asDots ? AnimationType.loadingDots.animation : Theme.current.loadingSpinnerAnimation.animation)
         loopMode = .loop
     }
     

@@ -9,7 +9,7 @@ import UIKit
 
 final class VerifiedImageView: UIView {
     let imageView = UIImageView()
-    let verifiedBadge = UIImageView(image: UIImage(named: "verifiedBadge"))
+    let verifiedBadge = VerifiedView()
     
     init() {
         super.init(frame: .zero)

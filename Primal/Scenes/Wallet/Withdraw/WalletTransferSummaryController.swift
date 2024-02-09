@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 final class WalletTransferSummaryController: UIViewController {
     enum State {
@@ -14,20 +15,18 @@ final class WalletTransferSummaryController: UIViewController {
         case walletActivated(newAddress: String)
     }
     
+    var state: State
+    
+    let animationView = LottieAnimationView().constrainToSize(width: 270, height: 270)
+    
     init(_ state: State) {
+        self.state = state
         super.init(nibName: nil, bundle: nil)
         
         setup(state)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
 private extension WalletTransferSummaryController {
@@ -40,17 +39,16 @@ private extension WalletTransferSummaryController {
         let navTitle = UILabel()
         topView.addSubview(back)
         topView.addSubview(navTitle)
-        back.pinToSuperview(edges: [.leading, .vertical], padding: 20)
+        back.pinToSuperview(edges: .leading, padding: 20).pinToSuperview(edges: .vertical)
         navTitle.centerToSuperview()
         
-        let icon = UIImageView()
         let title = UILabel()
         let subtitle = UILabel()
         let close = UIButton().constrainToSize(width: 152, height: 56)
         
         let stack = UIStackView(axis: .vertical, [
-            topView,    SpacerView(height: 120),
-            icon,       SpacerView(height: 60),
+            topView,    SpacerView(height: 60),
+            animationView,       SpacerView(height: 4),
             title,      SpacerView(height: 28),
             subtitle,   UIView(),
             close
@@ -68,16 +66,20 @@ private extension WalletTransferSummaryController {
         subtitle.numberOfLines = 4
         subtitle.textAlignment = .center
         
-        close.layer.cornerRadius = 8
+        close.layer.cornerRadius = 28
         close.setTitle("Close", for: .normal)
         close.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
         close.addAction(.init(handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+            if let navigationController = self?.navigationController {
+                navigationController.popViewController(animated: true)
+            } else {
+                self?.dismiss(animated: true)
+            }
         }), for: .touchUpInside)
         
         switch state {
         case .walletActivated(let newAddress):
-            icon.image = UIImage(named: "successWallet")
+            animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
             title.text = "Your wallet has been activated.\nYour new Nostr lightning address is:"
@@ -98,15 +100,12 @@ private extension WalletTransferSummaryController {
             
             view.backgroundColor = .receiveMoney
         case .success(amount: let amount, address: let address):
-            icon.image = UIImage(named: "successWallet")
+            animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
             title.text = "Success, payment sent!"
-            let formatter = NumberFormatter()
-            let satsString = formatter.string(from: amount as NSNumber) ?? String(amount)
-//            let dollarsString = formatter.string(from: (Double(amount) * .SAT_TO_USD) as NSNumber) ?? String(Double(amount) * .SAT_TO_USD)
             
-            subtitle.text = "\(satsString) sats sent to \(address)."
+            subtitle.text = "\(amount.localized()) sats sent to \(address)."
             
             close.setTitleColor(.white, for: .normal)
             [title, subtitle, navTitle].forEach {
@@ -117,7 +116,7 @@ private extension WalletTransferSummaryController {
             
             view.backgroundColor = .receiveMoney
         case .failure(let navTitleText, let titleText, let messageText):
-            icon.image = UIImage(named: "failureWallet")
+            animationView.animation = AnimationType.transferFailed.animation
             
             navTitle.text = navTitleText
             title.text = titleText

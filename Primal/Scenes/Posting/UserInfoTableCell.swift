@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-final class UserInfoTableCell: UITableViewCell {
+final class UserInfoTableCell: UITableViewCell, Themeable {
     let nameLabel = UILabel()
     let secondaryLabel = UILabel()
     let profileIcon = UIImageView(image: UIImage(named: "profile"))
@@ -26,6 +26,8 @@ final class UserInfoTableCell: UITableViewCell {
     }
     
     func update(user: ParsedUser) {
+        updateTheme()
+        
         nameLabel.text = user.data.atIdentifierWithoutAt
         secondaryLabel.text = user.data.parsedNip
         secondaryLabel.isHidden = user.data.nip05.isEmpty
@@ -43,15 +45,25 @@ final class UserInfoTableCell: UITableViewCell {
             followStack.isHidden = true
         }
     }
+    
+    func updateTheme() {
+        contentView.backgroundColor = .background
+        nameLabel.textColor = .foreground
+        followersLabel.textColor = .foreground
+        secondaryLabel.textColor = .foreground5
+        followTitleLabel.textColor = .foreground5
+    }
 }
 
 private extension UserInfoTableCell {
     func setup() {
         profileIcon.constrainToSize(36)
+        profileIcon.contentMode = .scaleAspectFill
         profileIcon.layer.cornerRadius = 18
         profileIcon.layer.masksToBounds = true
         
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
+        nameStack.alignment = .leading
         nameStack.axis = .vertical
         nameStack.spacing = 4
         
@@ -72,11 +84,5 @@ private extension UserInfoTableCell {
         followersLabel.font = .appFont(withSize: 14, weight: .bold)
         
         followTitleLabel.text = "followers"
-        
-        contentView.backgroundColor = .background
-        nameLabel.textColor = .foreground
-        followersLabel.textColor = .foreground
-        secondaryLabel.textColor = .foreground5
-        followTitleLabel.textColor = .foreground5
     }
 }

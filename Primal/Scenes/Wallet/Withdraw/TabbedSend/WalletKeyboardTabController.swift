@@ -27,14 +27,13 @@ final class WalletKeyboardTabController: UIViewController, WalletSendTabControll
         inputStack.spacing = 8
         inputStack.alignment = .top
         
-        let explanationLabel = UILabel()
         let pasteButtonParent = UIView()
         
-        let stack = UIStackView(axis: .vertical, [inputStack, explanationLabel, UIView(), pasteButtonParent])
+        let stack = UIStackView(axis: .vertical, [inputStack, UIView(), pasteButtonParent])
         stack.spacing = 12
         view.addSubview(stack)
         stack.pinToSuperview(edges: [.horizontal, .top], padding: 20, safeArea: true)
-        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -20).isActive = true
+        stack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -40).isActive = true
         
         fieldBackground.addSubview(field)
         fieldBackground.backgroundColor = .background3
@@ -48,13 +47,6 @@ final class WalletKeyboardTabController: UIViewController, WalletSendTabControll
         field.textColor = .foreground
         field.backgroundColor = .clear
         field.delegate = self
-        
-        explanationLabel.text = "Type or paste the recipient’s\nlightning address or an invoice."
-        explanationLabel.numberOfLines = 2
-        explanationLabel.adjustsFontSizeToFitWidth = true
-        explanationLabel.textAlignment = .center
-        explanationLabel.font = .appFont(withSize: 16, weight: .regular)
-        explanationLabel.textColor = .foreground3
         
         let pasteButton = WalletSendSmallActionButton(title: "Paste from clipboard", icon: UIImage(named: "pasteWallet"))
         pasteButton.addAction(.init(handler: { [weak self] _ in

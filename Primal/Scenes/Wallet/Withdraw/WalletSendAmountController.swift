@@ -28,16 +28,23 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
             case let .user(user):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
             case .address(let address, let invoice, let user):
+                if address.isBitcoinAddress {
+                    return address.split(separator: "?").first?.string ?? address
+                }
                 return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
             }
         }
         
-        var name: String? { user?.data.name }
+        var name: String? {
+            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
+        }
         
         var startingAmount: Int {
             switch self {
-            case .user:                         return 0
-            case .address(_, let parsed, _):    return (parsed?.lninvoice.amount_msat ?? 0) / 1000
+            case .user:                         
+                return 0
+            case .address(_, let parsed, _):
+                return (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
         }
     }
@@ -46,6 +53,13 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
+    let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+    let nameLabel = UILabel()
+    let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
+    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+    
+    let cancelButton = SimpleRoundedButton(title: "Cancel")
+    let sendButton = LargeRoundedButton(title: "Next")
     
     let hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
     
@@ -95,16 +109,11 @@ private extension WalletSendAmountController {
         sizingView.pinToSuperview(edges: .top, safeArea: true)
         sizingView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
-        let profilePictureView = FLAnimatedImageView().constrainToSize(88)
-        let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
-        let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
         infoParent.alignment = .center
         
         let inputParent = UIView()
         let inputStack = UIStackView(axis: .vertical, [inputParent, SpacerView(height: 12)])
         
-        let cancelButton = SimpleRoundedButton(title: "Cancel")
-        let sendButton = LargeRoundedButton(title: "Next")
         let buttonStack = UIStackView([cancelButton, sendButton])
         buttonStack.distribution = .fillEqually
         buttonStack.spacing = 18
@@ -118,7 +127,6 @@ private extension WalletSendAmountController {
         ])
         
         if let name = destination.name {
-            let nameLabel = UILabel()
             nameLabel.text = name
             nameLabel.font = .appFont(withSize: 20, weight: .semibold)
             nameLabel.textColor = .foreground
@@ -126,11 +134,7 @@ private extension WalletSendAmountController {
         }
         
         view.addSubview(scrollView)
-        scrollView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        scrollView.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        let bot = scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        bot.priority = .defaultHigh
-        bot.isActive = true
+        scrollView.pinToSuperview(safeArea: true)
         
         scrollView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .vertical, padding: 20)
@@ -144,6 +148,8 @@ private extension WalletSendAmountController {
         inputParent.addSubview(input)
         input.pinToSuperview(edges: .vertical)
         input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
+        input.animateReversed = false
+        input.isSettingFirstTime = false
         
         profilePictureView.contentMode = .scaleAspectFill
         profilePictureView.layer.masksToBounds = true
@@ -151,20 +157,32 @@ private extension WalletSendAmountController {
         
         if let user = destination.user {
             profilePictureView.setUserImage(user)
+            
+            profilePictureView.isUserInteractionEnabled = true
+            profilePictureView.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+                self?.show(ProfileViewController(profile: user), sender: nil)
+            })
         } else {
-            profilePictureView.image = UIImage(named: "Profile")
+            profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
         }
         
         nipLabel.text = destination.address
         nipLabel.font = .appFont(withSize: 16, weight: .regular)
-        nipLabel.numberOfLines = 2
         nipLabel.textAlignment = .center
+        
+        if destination.address.isBitcoinAddress {
+            nipLabel.numberOfLines = 1
+            nipLabel.lineBreakMode = .byTruncatingMiddle
+        } else {
+            nipLabel.numberOfLines = 2
+        }
         
         keyboard.delegate = self
         
         input.$balance.map({ $0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.viewControllers.removeAll(where: { $0 as? WalletSendParentViewController != nil })
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)
         
@@ -175,6 +193,10 @@ private extension WalletSendAmountController {
             case .user(let user):
                 navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance)), animated: true)
             case let .address(address, invoice, user):
+                if address.isBitcoinAddress, input.balance < 21000 {
+                    showErrorMessage("Amount too small for an on-chain transaction")
+                    return
+                }
                 navigationController?.pushViewController(WalletSendViewController(.address(address, invoice, user, startingAmount: input.balance)), animated: true)
             }
         }), for: .touchUpInside)
@@ -190,6 +212,10 @@ protocol KeyboardInputConnector: NumberKeyboardViewDelegate {
 }
 
 extension KeyboardInputConnector {
+    var separatorString: String {
+        Locale.current.decimalSeparator ?? "."
+    }
+    
     func triggerHapticFeedback() {
         hapticFeedbackGenerator.impactOccurred()
         hapticFeedbackGenerator.prepare()
@@ -204,15 +230,17 @@ extension KeyboardInputConnector {
             return
         }
         
-        let newAmountString = (input.largeAmountLabel.text ?? "") + "\(number)"
+        var newAmountString = (input.largeAmountLabel.text ?? "") + "\(number)"
         
-        if newAmountString.dropLast(3).last == "." { return } // Only up to two digits after .
+        if newAmountString.dropLast(3).last == separatorString.last { return } // Only up to two digits after .
         
-        if number == 0, input.largeAmountLabel.text?.contains(".") == true {
-            input.largeAmountLabel.text = newAmountString
+        if number == 0, input.largeAmountLabel.text?.contains(separatorString) == true {
+            input.setLargeLabel(newAmountString, animating: true)
             triggerHapticFeedback()
             return
         }
+        
+        newAmountString = newAmountString.replacingOccurrences(of: separatorString, with: ".")
         
         guard let doubleAmount = Double(newAmountString), doubleAmount < 1000 else { return }
         
@@ -221,9 +249,9 @@ extension KeyboardInputConnector {
     }
     
     func numberKeyboardDotPressed() {
-        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(".") == true { return }
+        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(separatorString) == true { return }
         
-        input.largeAmountLabel.text = (input.largeAmountLabel.text ?? "") + "."
+        input.largeAmountLabel.text = (input.largeAmountLabel.text ?? "") + separatorString
         triggerHapticFeedback()
     }
     
@@ -237,12 +265,12 @@ extension KeyboardInputConnector {
         
         let newAmountString = String((input.largeAmountLabel.text ?? "").dropLast())
         
-        guard newAmountString.last != ".", newAmountString.hasSuffix(".0") == false, let doubleAmount = Double(newAmountString), doubleAmount <= 500 else {
+        guard newAmountString.last != separatorString.last, newAmountString.hasSuffix("\(separatorString)0") == false, let doubleAmount = Double(newAmountString), doubleAmount <= 500 else {
             if newAmountString.isEmpty {
                 input.balance = 0
                 return
             }
-            input.largeAmountLabel.text = newAmountString
+            input.setLargeLabel(newAmountString, animating: true)
             return
         }
         

@@ -40,7 +40,7 @@ final class WalletSendParentViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         setup()
-        
+
         set(tab, animated: false)
     }
     
@@ -49,32 +49,62 @@ final class WalletSendParentViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        updateBars(oldTab ?? .nostr)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        (navigationController as? MainNavigationController)?.isTransparent = false
+        navigationItem.leftBarButtonItem = customBackButton
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        navigationController?.viewControllers.remove(object: self)
+        if oldTab != .nostr {
+            navigationController?.viewControllers.remove(object: self)
+        }
     }
     
     func set(_ tab: Tab, animated: Bool = true) {
+        updateBars(tab)
         guard oldTab != tab else { return }
         
         switch tab {
         case .nostr:
-            title = "Nostr Recipient"
             pageController.setViewControllers([pickVC], direction: .reverse, animated: animated)
-            activeButton = nostrButton
         case .scan:
-            title = "Scan"
             pageController.setViewControllers([scanVC], direction: oldTab == .nostr ? .forward : .reverse, animated: animated)
-            activeButton = scanButton
         case .keyboard:
-            title = "Keyboard"
             pageController.setViewControllers([keyboardVC], direction: .forward, animated: animated)
-            activeButton = keyboardButton
         }
         oldTab = tab
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        activeButton == scanButton ? .lightContent : super.preferredStatusBarStyle
+    }
+    
+    func updateBars(_ tab: Tab) {
+        switch tab {
+        case .nostr:
+            title = "Nostr Recipient"
+            activeButton = nostrButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        case .scan:
+            title = "Scan"
+            activeButton = scanButton
+            (navigationController as? MainNavigationController)?.isTransparent = true
+            navigationItem.leftBarButtonItem = backButtonWithColor(.white)
+        case .keyboard:
+            title = "Send Address"
+            activeButton = keyboardButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        }
+        RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
     }
     
     func search(_ text: String) {
@@ -83,30 +113,62 @@ final class WalletSendParentViewController: UIViewController {
         // Remove "nostr:"
         let text = text.components(separatedBy: ":").last ?? text
         
+        textSearch = text
+        
         if text.isEmail {
-            navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            SocketRequest(name: "user_of_ln_address", payload: ["ln_address" : .string(text)]).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    guard let self else { return }
+                    
+                    if let pubkey = res.userPubkey {
+                        SocketRequest(name: "user_profile", payload: ["pubkey": .string(pubkey)]).publisher()
+                            .receive(on: DispatchQueue.main)
+                            .sink { [weak self] result in
+                                guard let self else { return }
+                                
+                                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
+                            }
+                            .store(in: &cancellables)
+                    } else {
+                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
+                    }
+                }
+                .store(in: &cancellables)
+            return
+        }
+        
+        if text.isBitcoinAddress {
+            if text.parsedBitcoinAddress.1 != nil {
+                navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: text.parsedBitcoinAddress.1)), animated: true)
+            } else {
+                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            }
             return
         }
         
         if text.hasPrefix("npub") {
             if let decoded = try? bech32_decode(text) {
                 self.searchForPubkey(hex_encode(decoded.data)) { [weak self] user in
-                    guard let user else { return }
+                    guard let user else {
+                        self?.textSearch = nil
+                        return
+                    }
                     self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                 }
             }
             return
         }
         
-        textSearch = text
-        
         PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let self else { return }
                 if result.message != nil {
                     self.searchForPubkey(text) { [weak self] user in
-                        self?.textSearch = nil
-                        guard let user else { return }
+                        guard let user else {
+                            self?.textSearch = nil
+                            return
+                        }
                         self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                     }
                     return
@@ -146,10 +208,6 @@ final class WalletSendParentViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
-    func searchForPubkeyAndSendUser(_ pubkey: String) {
-        
-    }
 }
 
 private extension WalletSendParentViewController {
@@ -187,9 +245,6 @@ private extension WalletSendParentViewController {
         keyboardButton.addAction(.init(handler: { [weak self] _ in
             self?.set(.keyboard)
         }), for: .touchUpInside)
-    }
-    
-    func callback(text: String, amount: ParsedLNInvoice, user: ParsedUser?) {
     }
 }
 

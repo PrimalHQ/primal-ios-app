@@ -65,6 +65,7 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
         stack.spacing = 8
         stack.alignment = .center
         stack.axis = .vertical
+        stack.isUserInteractionEnabled = false
         
         updateTheme()
     }

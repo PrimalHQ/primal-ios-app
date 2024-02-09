@@ -58,13 +58,19 @@ private extension LargeRoundedButton {
 
 
 final class SimpleRoundedButton: UIButton {
-    init(title: String) {
+    init(title: String, accent: Bool = false) {
         super.init(frame: .zero)
         
         setTitle(title, for: .normal)
-        setTitleColor(.foreground, for: .normal)
         titleLabel?.font = .appFont(withSize: 18, weight: .medium)
-        backgroundColor = .background3
+        
+        if accent {
+            setTitleColor(.white, for: .normal)
+            backgroundColor = .accent
+        } else {
+            setTitleColor(.foreground, for: .normal)
+            backgroundColor = .background3
+        }
         
         layer.cornerRadius = 29
         constrainToSize(height: 58)

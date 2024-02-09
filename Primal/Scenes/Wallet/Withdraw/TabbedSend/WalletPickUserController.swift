@@ -87,41 +87,10 @@ private extension WalletPickUserController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] text -> AnyPublisher<[ParsedUser], Never> in
+            .flatMap { [weak self] in
                 self?.userTable.reloadData()
                 
-                switch text {
-                case "":
-                    let contacts = SmartContactsManager.instance.getContacts().prefix(10)
-                    let contactPubkeys = contacts.map { $0.pubkey }
-                    
-                    let searchContacts = Set((contactPubkeys + PostingTextViewManager.recommendedUsersNpubs))
-                    
-                    return Publishers.Merge(
-                        Just(contacts.map { .init(data: $0) }),
-                        
-                        SocketRequest(name: "user_infos", payload: .object([
-                            "pubkeys": .array(searchContacts.map { .string($0) })
-                        ]))
-                        .publisher()
-                        .map {
-                            let users = $0.getSortedUsers()
-                            
-                            let myContacts = contactPubkeys.compactMap({ pubkey in users.first(where: { $0.data.pubkey == pubkey }) })
-                            let other = users.filter { user in !myContacts.contains(where: { $0.data.npub == user.data.npub }) }
-                            
-                            return myContacts + other
-                        }
-                    ).eraseToAnyPublisher()
-                default:
-                    return SocketRequest(name: "user_search", payload: .object([
-                       "query": .string(text),
-                       "limit": .number(15),
-                    ]))
-                    .publisher()
-                    .map { $0.getSortedUsers() }
-                    .eraseToAnyPublisher()
-                }
+                return SmartContactsManager.instance.userSearchPublisher($0)
             }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] users in
@@ -149,16 +118,22 @@ extension WalletPickUserController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
-        (cell as? UserInfoTableCell)?.update(user: users[indexPath.row])
+        if let cell = cell as? UserInfoTableCell, let user = users[safe: indexPath.row] {
+            cell.update(user: user)
+            cell.secondaryLabel.text = user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+            cell.secondaryLabel.textColor = .foreground3
+            cell.secondaryLabel.isHidden = cell.secondaryLabel.text?.isEmpty == true
+            cell.nameLabel.font = .appFont(withSize: 16, weight: .semibold)
+        }
         cell.contentView.backgroundColor = .background2
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let chat = WalletSendAmountController(.user(users[indexPath.row]))
+        guard let user = users[safe: indexPath.row] else { return }
         searchInput.resignFirstResponder()
         
-        SmartContactsManager.instance.addContact(users[indexPath.row].data)
-        show(chat, sender: nil)
+        SmartContactsManager.instance.addContact(user)
+        show(WalletSendAmountController(.user(user)), sender: nil)
     }
 }

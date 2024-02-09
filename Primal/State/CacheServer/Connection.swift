@@ -53,6 +53,9 @@ final class Connection {
         // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
         Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
         
+        regular.timeToReconnect = 2
+        wallet.timeToReconnect = 2
+        
         connect()
     }
     
@@ -74,7 +77,7 @@ final class Connection {
     
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
-    private var timeToReconnect = 4
+    private var timeToReconnect: TimeInterval = 1
     private var attemptReconnection = true
     
     init(socketURL: URL) {
@@ -102,6 +105,7 @@ final class Connection {
             socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         }
         
+        lastConnectTime = .now
         attemptReconnection = true
         socket?.delegate = self
         socket?.connect()
@@ -139,7 +143,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-            print("REQUEST:\n\(jsonStr)")
+//            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
@@ -170,7 +174,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-            print("REQUEST:\n\(jsonStr)")
+//            print("REQUEST:\n\(jsonStr)")
 
             self.continousSubHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
@@ -187,7 +191,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-            print("REQUEST:\n\(jsonStr)")
+//            print("REQUEST:\n\(jsonStr)")
             self.continousSubHandlers[id] = nil
             self.socket?.send(string: jsonStr)
         }
@@ -214,26 +218,44 @@ final class Connection {
         }
     }
     
-    func autoReconnect() {
-        if attemptReconnection, isConnected {
-            timeToReconnect = 4
+    func autoConnectReset() {
+        timeToReconnect = 1
+        
+        autoReconnect()
+    }
+    
+    var lastConnectTime = Date()
+    private func autoReconnect() {
+        if isConnected || !attemptReconnection {
+            timeToReconnect = 1
             return
         }
         
+        let reconnectAttemptTime = lastConnectTime.addingTimeInterval(timeToReconnect)
+        
+        if reconnectAttemptTime > .now {
+            let delta = reconnectAttemptTime.timeIntervalSinceNow
+            Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(delta) + 1)) { [weak self] in
+                self?.autoReconnect()
+            }
+            return
+        }
+        
+        timeToReconnect *= 2
         PrimalEndpointsManager.instance.checkIfNecessary()
         connect()
+        print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(timeToReconnect))) { [weak self] in
             self?.autoReconnect()
         }
-        timeToReconnect *= 2
     }
 }
 
 extension Connection: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection: WebSocketConnection) {
         isConnected = true
-        timeToReconnect = 4
+        timeToReconnect = 1
     }
     
     func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {

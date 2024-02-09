@@ -49,7 +49,8 @@ enum NostrKind: Int {
     case defaultRelays = 10_000_124
     case followingUser = 10_000_125
     case webPreview = 10_000_128
-    case userFollowers = 10000133
+    case userFollowers = 10_000_133
+    case userPubkey = 10_000_138
 }
 
 extension NostrKind {

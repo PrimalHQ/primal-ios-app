@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import Lottie
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -51,11 +52,18 @@ final class MainTabBarController: UIViewController, Themeable {
     private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
         let isWalletSelected = (self?.currentPageIndex ?? 0) == 2
         
-        $0.backgroundColor = isWalletSelected ? .foreground6 : .background3
-        $0.tintColor = isWalletSelected ? UIColor.foreground : UIColor.foreground3
+        $0.backgroundColor = isWalletSelected ? .foreground : .background3
+        $0.tintColor = isWalletSelected ? .background : .foreground3
         $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        guard let tab = tabs[safe: currentPageIndex] else { return super.preferredStatusBarStyle }
+        return navForTab(tab).preferredStatusBarStyle
+    }
 
+    private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
+    
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
 
     var cancellables: Set<AnyCancellable> = []
@@ -74,11 +82,13 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
 
-    var currentPageIndex = 0 {
+    var currentPageIndex = WalletSettings.startInWallet ? 2 : 0 {
         didSet {
             updateButtons()
         }
     }
+    
+    var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
     
     var showTabBarBorder: Bool {
         get { !navigationBorder.isHidden }
@@ -169,6 +179,11 @@ final class MainTabBarController: UIViewController, Themeable {
             nav.pushViewController(vc, animated: true)
         }
     }
+    
+    func playThunderAnimation() {
+        animationView.isHidden = false
+        animationView.play(fromProgress: 0, toProgress: 1)
+    }
 }
 
 private extension MainTabBarController {
@@ -200,7 +215,7 @@ private extension MainTabBarController {
         messagesIndicator.isHidden = true
 
         pageVC.didMove(toParent: self) // Notify child VC
-        pageVC.setViewControllers([home], direction: .forward, animated: false)
+        pageVC.setViewControllers([WalletSettings.startInWallet ? wallet : home], direction: .forward, animated: false)
 
         vStack.axis = .vertical
 
@@ -242,6 +257,11 @@ private extension MainTabBarController {
         
         updateButtons()
         addCircleWalletButton()
+        
+        view.addSubview(animationView)
+        animationView.isHidden = true
+        animationView.isUserInteractionEnabled = false
+        animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
         
         zip(buttons, tabs).forEach { button, tab in
             button.addAction(.init(handler: { [weak self] _ in

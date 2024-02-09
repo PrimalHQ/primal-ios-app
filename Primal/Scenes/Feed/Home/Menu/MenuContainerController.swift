@@ -12,6 +12,22 @@ import UIKit
 import Kingfisher
 import FLAnimatedImage
 
+private extension String {
+    static let cachedUsersDefaultsKey = "cachedUsersDefaultsKey"
+}
+
+extension UserDefaults {
+    var cachedUserImageURLs: [String: String] {
+        get { string(forKey: .cachedUsersDefaultsKey)?.decode() ?? [:] }
+        set { setValue(newValue.encodeToString(), forKey: .cachedUsersDefaultsKey) }
+    }
+    
+    var currentUserImageURLCache: String? {
+        get { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] }
+        set { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] = newValue }
+    }
+}
+
 final class MenuContainerController: UIViewController, Themeable {
     private let profileImage = FLAnimatedImageView()
     private let nameLabel = UILabel()
@@ -229,7 +245,14 @@ private extension MenuContainerController {
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
         
+        if let userImageURL = UserDefaults.standard.currentUserImageURLCache {
+            updateForImageURL(userImageURL)
+        }
+        
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
+            if let url = user.profileImage.url(for: .small)?.absoluteString {
+                UserDefaults.standard.currentUserImageURLCache = url
+            }
             self?.update(user)
         }
         .store(in: &cancellables)
@@ -241,6 +264,11 @@ private extension MenuContainerController {
             self.followingLabel.text = stats.follows.localized()
         }
         .store(in: &cancellables)
+    }
+    
+    func updateForImageURL(_ imageURL: String) {
+        profileImage.kf.setImage(with: URL(string: imageURL))
+        menuProfileImage.kf.setImage(with: URL(string: imageURL))
     }
     
     func update(_ user: ParsedUser) {
@@ -269,8 +297,11 @@ private extension MenuContainerController {
     }
     
     @objc func profilePressed() {
-        guard let profile = IdentityManager.instance.user else { return }
-        show(ProfileViewController(profile: .init(data: profile)), sender: nil)
+        guard let profile = IdentityManager.instance.parsedUser else {
+            IdentityManager.instance.requestUserProfile()
+            return
+        }
+        show(ProfileViewController(profile: profile), sender: nil)
         resetNavigationTabBar()
     }
     

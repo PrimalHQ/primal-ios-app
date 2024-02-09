@@ -19,6 +19,8 @@ final class ICloudKeychainManager {
     private static let savedNpubsKey = "primal-saved-npubs"
     static let instance: ICloudKeychainManager = ICloudKeychainManager()
     
+    @Published var userPubkey: String = ""
+    
     func hasSavedNpubs() -> Bool {
         let items = keychain.allItems()
         
@@ -29,6 +31,7 @@ final class ICloudKeychainManager {
         
         return contains
     }
+    
     func hasSavedNpub(_ npub: String) -> Bool {
         if !hasSavedNpubs() {
             return false
@@ -95,15 +98,13 @@ final class ICloudKeychainManager {
     
     // Used until we get to support multiple accounts
     func getLoginInfo() -> NostrKeypair? {
-        if !hasSavedNpubs() {
+        guard hasSavedNpubs(), let npub = getSavedNpubs().first else {
             return nil
         }
         
-        let npubs = getSavedNpubs()
-        
-        let firstNsec = getSavedNsec(npubs[0])
-        
-        return NKeypair.nostrKeypair(npub: npubs[0], nsec: firstNsec)
+        let keypair = NKeypair.nostrKeypair(npub: npub, nsec: getSavedNsec(npub))
+        userPubkey = keypair?.hexVariant.pubkey ?? ""
+        return keypair
     }
     // Used until we get to support multiple accounts
     func upsertLoginInfo(npub: String, nsec: String? = nil) -> Bool {
@@ -139,12 +140,12 @@ final class ICloudKeychainManager {
     func clearSavedKeys() -> Bool {
         do {
             try keychain.removeAll()
+            userPubkey = ""
+            return true
         } catch let error {
             print("ICloudKeychain: \(error)")
             return false
         }
-        
-        return true
     }
     
     func removeKeypair(_ npub: String) -> Bool {
