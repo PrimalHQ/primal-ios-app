@@ -54,8 +54,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
     let table = UITableView()
     
     private var cancellables: Set<AnyCancellable> = []
-    private var update: ContinousConnection?
-    private var updateUpdate: AnyCancellable?
     private var foregroundUpdate: AnyCancellable?
     
     private var forceNavbarOpen = false
@@ -66,26 +64,14 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     var transitionButton: WalletHomeTransitionButton?
     
+    var selectedIndexPath: IndexPath?
+    
     private var tableData: [Section] = [] {
         didSet {
-            if navigationController?.topViewController == parent, view.window != nil {
-                table.reloadData()
-                animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
-                return
-            }
-            guard
-                let newTransaction = tableData.flatMap({ $0.parsedTransactions }).first,
-                let oldTransaction = oldValue.flatMap({ $0.parsedTransactions }).first,
-                // Only notify if there is a new transaction
-                newTransaction.0.id != oldTransaction.0.id,
-                // Only if it's a deposit
-                newTransaction.0.isDeposit,
-                let amountBTC = Double(newTransaction.0.amount_btc),
-                // Only if the amount is larger than minimumNotificationValue
-                amountBTC * .BTC_TO_SAT >= Double(UserDefaults.standard.minimumNotificationValue)
-            else { return }
-                        
-            RootViewController.instance.showNewTransaction(newTransaction)
+            guard navigationController?.topViewController == parent, view.window != nil else { return }
+            
+            table.reloadData()
+            animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
         }
     }
     
@@ -99,7 +85,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         WalletManager.instance.refreshBalance()
-        WalletManager.instance.refreshTransactions()
+        WalletManager.instance.recheckTransactions()
         
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
@@ -116,23 +102,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
             .sink(receiveValue: { [weak self] _ in
                 self?.table.reloadData()
             })
-        
-        guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
-
-        updateUpdate = Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
-            .sink { [weak self] _ in
-                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
-                    guard 
-                        let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
-                        let json: [String: JSON] = content.decode()
-                    else { return }
-                    
-                    if let updatedAt = json["updated_at"]?.doubleValue {
-                        WalletManager.instance.updatedAt = Int(updatedAt)
-                    }
-                    
-                }
-            }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -278,6 +247,7 @@ extension WalletHomeViewController: UITableViewDelegate {
         case .buySats:
             buySatsPressed()
         case .transaction((let transaction, let user)):
+            selectedIndexPath = indexPath
             show(TransactionViewController(transaction: transaction, user: user), sender: nil)
         case .activateWallet:
             activateWalletPressed()

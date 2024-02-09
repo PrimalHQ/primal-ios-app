@@ -96,11 +96,11 @@ private extension WalletInAppPurchaseController {
             .pinToSuperview(edges: .horizontal, padding: 35)
             .pinToSuperview(edges: .top, padding: 18, safeArea: true)
         
-        let fiatLoading = LoadingSpinnerView().constrainToSize(50)
+        let fiatLoading = LoadingSpinnerView(asDots: true).constrainToSize(50)
         view.addSubview(fiatLoading)
         fiatLoading.centerToView(fiatStack)
         
-        let satsLoading = LoadingSpinnerView().constrainToSize(50)
+        let satsLoading = LoadingSpinnerView(asDots: true).constrainToSize(50)
         view.addSubview(satsLoading)
         satsLoading.centerToView(satsStack)
         

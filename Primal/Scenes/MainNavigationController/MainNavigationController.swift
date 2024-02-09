@@ -94,6 +94,7 @@ extension MainNavigationController: UINavigationControllerDelegate {
         
         if let home: WalletHomeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
             let isPresenting = fromVC.children.contains(where: { $0 == home })
+            
             if let qrCode: WalletQRCodeViewController = fromVC.findInChildren() ?? toVC.findInChildren() {
                 if isPresenting {
                     return WalletQRTransitionAnimator(home: home, qrController: qrCode, presenting: isPresenting)
@@ -108,6 +109,10 @@ extension MainNavigationController: UINavigationControllerDelegate {
             
             if let receive = toVC as? WalletReceiveViewController {
                 return WalletReceiveTransitionAnimator(home: home, receive: receive, presenting: isPresenting)
+            }
+            
+            if let transaction = toVC as? TransactionViewController ?? fromVC as? TransactionViewController {
+                return WalletHomeToTransactionAnimator(home: home, transactionController: transaction, isPresenting: isPresenting)
             }
             
             return nil

@@ -32,12 +32,28 @@ final class ColorAnimatingLabel: UIView {
         }
     }
     
-    private let backLabel = UILabel()
-    private let frontLabel = UILabel()
+    var textAlignment: NSTextAlignment {
+        get { frontLabel.textAlignment }
+        set {
+            frontLabel.textAlignment = newValue
+            backLabel.textAlignment = newValue
+        }
+    }
     
-    func animateToColor(color: UIColor) {
+    var numberOfLines: Int {
+        get { frontLabel.numberOfLines }
+        set {
+            frontLabel.numberOfLines = newValue
+            backLabel.numberOfLines = newValue
+        }
+    }
+    
+    let backLabel = UILabel()
+    let frontLabel = UILabel()
+    
+    func animateToColor(color: UIColor, duration: TimeInterval = 1) {
         backLabel.textColor = color
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: duration) {
             self.frontLabel.alpha = 0
         } completion: { finished in
             if finished {

@@ -18,6 +18,8 @@ struct SocketRequest {
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
         Deferred {
             Future { promise in
+                Connection.regular.autoConnectReset()
+                
                 Connection.regular.requestCache(name: name, payload: payload) { result in
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }

@@ -36,6 +36,12 @@ extension UIView {
         return result
     }
     
+    func originDistanceVectorToView(_ view: UIView) -> CGPoint {
+        let myCenter = superview?.convert(frame.origin, to: nil) ?? frame.origin
+        let otherCenter = view.superview?.convert(view.frame.origin, to: nil) ?? view.frame.origin
+        return CGPoint(x: otherCenter.x - myCenter.x, y: otherCenter.y - myCenter.y)
+    }
+    
     func centerDistanceVectorToView(_ view: UIView) -> CGPoint {
         let myCenter = superview?.convert(center, to: nil) ?? center
         let otherCenter = view.superview?.convert(view.center, to: nil) ?? view.center
@@ -68,9 +74,9 @@ extension UIView {
     // MARK: - Constraints
     
     @discardableResult
-    func centerToSuperview(axis: Axis.Set = [.horizontal, .vertical]) -> Self {
+    func centerToSuperview(axis: Axis.Set = [.horizontal, .vertical], offset: CGFloat = 0) -> Self {
         guard let superview else { return self }
-        return centerToView(superview, axis: axis)
+        return centerToView(superview, axis: axis, offset: offset)
     }
     
     @discardableResult
@@ -116,13 +122,13 @@ extension UIView {
     }
     
     @discardableResult
-    func centerToView(_ view: UIView, axis: Axis.Set = [.horizontal, .vertical]) -> Self {
+    func centerToView(_ view: UIView, axis: Axis.Set = [.horizontal, .vertical], offset: CGFloat = 0) -> Self {
         translatesAutoresizingMaskIntoConstraints = false
         if axis.contains(.vertical) {
-            centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+            centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: offset).isActive = true
         }
         if axis.contains(.horizontal) {
-            centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: offset).isActive = true
         }
         return self
     }

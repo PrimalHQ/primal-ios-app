@@ -218,8 +218,14 @@ final class Connection {
         }
     }
     
+    func autoConnectReset() {
+        timeToReconnect = 1
+        
+        autoReconnect()
+    }
+    
     var lastConnectTime = Date()
-    func autoReconnect() {
+    private func autoReconnect() {
         if isConnected || !attemptReconnection {
             timeToReconnect = 1
             return

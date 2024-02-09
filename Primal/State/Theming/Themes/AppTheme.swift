@@ -49,7 +49,7 @@ protocol AppTheme {
 }
 
 extension AppTheme {
-    var isRedTheme: Bool {
+    var isPurpleTheme: Bool {
         switch kind {
         case .sunriseWave, .sunsetWave:
             return true
@@ -58,7 +58,7 @@ extension AppTheme {
         }
     }
     
-    var isBlueTheme: Bool { !isRedTheme }
+    var isBlueTheme: Bool { !isPurpleTheme }
     
     var isDarkTheme: Bool {
         switch kind {

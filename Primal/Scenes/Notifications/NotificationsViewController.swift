@@ -158,7 +158,7 @@ final class NotificationsViewController: FeedViewController {
         view.backgroundColor = .background
         tabSelectionView.backgroundColor = .background
         
-        table.register(NotificationsCell.self, forCellReuseIdentifier: postCellID)
+        table.register(NotificationCell.self, forCellReuseIdentifier: postCellID)
         table.reloadData()
     }
     
@@ -210,7 +210,7 @@ final class NotificationsViewController: FeedViewController {
         
         let data = posts[indexPath.row]
         
-        if let cell = cell as? NotificationsCell {
+        if let cell = cell as? NotificationCell {
             cell.updateForNotification(
                 notifications[indexPath.row],
                 delegate: self,
@@ -289,7 +289,7 @@ final class NotificationsViewController: FeedViewController {
 }
 
 extension NotificationsViewController: NotificationCellDelegate {
-    func avatarListTappedInCell(_ cell: NotificationsCell, index: Int) {
+    func avatarListTappedInCell(_ cell: NotificationCell, index: Int) {
         guard let user = notifications[safe: table.indexPath(for: cell)?.row]?.users[safe: index]  else { return }
         
         let profile = ProfileViewController(profile: user)

@@ -38,12 +38,28 @@ final class TransactionViewController: FeedViewController {
             case .expand:           return "expand"
             }
         }
+        
+        var isMainInfoCell: Bool {
+            switch self {
+            case .user, .onchain:   return true
+            default:                return false
+            }
+        }
+        
+        var isAmountCell: Bool {
+            switch self {
+            case .amount:           return true
+            default:                return false
+            }
+        }
     }
     
     var cells: [CellType] = []
     
     let transaction: WalletTransaction
     let user: ParsedUser?
+    
+    var didFinishAppear = false
     
     var isExpanded: Bool = true {
         didSet {
@@ -114,6 +130,24 @@ final class TransactionViewController: FeedViewController {
         (cell as? TransactionInfoCell)?.setIsLastInSection(indexPath.row + 1 + (hasPostSection ? 1 : 0) == cells.count)
         (cell as? TransactionAmountCell)?.setIsPending(transaction.state != "SUCCEEDED")
         return cell
+    }
+    
+    var firstTimeAnimating = true
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard indexPath.section == postSection else { return }
+        
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
+        guard firstTimeAnimating else { return }
+        firstTimeAnimating = false
+        
+        cell.contentView.transform = .init(translationX: 0, y: -100)
+        cell.contentView.alpha = 0
+        
+        UIView.animate(withDuration: 0.4, delay: 0.4) {
+            cell.contentView.transform = .identity
+            cell.contentView.alpha = 1
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

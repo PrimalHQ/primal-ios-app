@@ -8,6 +8,7 @@
 import UIKit
 import FLAnimatedImage
 import Lottie
+import AudioToolbox
 
 final class TransactionNotificationView: UIView {
     private var animationBackgroundView = UIView()
@@ -35,7 +36,18 @@ final class TransactionNotificationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
  
-    func setup(with transaction: (WalletTransaction, ParsedUser), showBTC: Bool) {
+    func setup(with transaction: ParsedTransaction, fromOld: Bool) {
+        if fromOld {
+            UIView.animate(withDuration: 0.1) {
+                self.animationBackgroundView.alpha = 1
+            } completion: { [self] _ in
+                setup(with: transaction, fromOld: false)
+                animate()
+            }
+            return
+        }
+        
+        let showBTC = true
         let isDeposit = transaction.0.type == "DEPOSIT"
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
@@ -87,6 +99,8 @@ final class TransactionNotificationView: UIView {
     }
     
     func animate() {
+        AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+        
         lottieView.play()
         
         UIView.animate(withDuration: 12 / 30) {
@@ -153,12 +167,14 @@ private extension TransactionNotificationView {
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
         
         addSubview(lottieView)
-        lottieView.centerToSuperview()
+        lottieView.centerToSuperview(axis: .horizontal).centerToSuperview(axis: .vertical, offset: -15)
         lottieView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.43 ).isActive = true
         lottieView.heightAnchor.constraint(equalTo: lottieView.widthAnchor, multiplier: 1 / 2.8).isActive = true
         
         addSubview(flippedLottieView)
-        flippedLottieView.pin(to: lottieView)
+        flippedLottieView.centerToSuperview(axis: .horizontal).centerToSuperview(axis: .vertical, offset: 15)
+        flippedLottieView.widthAnchor.constraint(equalTo: lottieView.widthAnchor).isActive = true
+        flippedLottieView.heightAnchor.constraint(equalTo: lottieView.heightAnchor).isActive = true
         flippedLottieView.transform = .init(rotationAngle: .pi)
     }
 }

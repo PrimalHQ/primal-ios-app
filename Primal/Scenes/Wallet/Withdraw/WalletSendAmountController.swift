@@ -157,6 +157,11 @@ private extension WalletSendAmountController {
         
         if let user = destination.user {
             profilePictureView.setUserImage(user)
+            
+            profilePictureView.isUserInteractionEnabled = true
+            profilePictureView.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+                self?.show(ProfileViewController(profile: user), sender: nil)
+            })
         } else {
             profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
         }
@@ -188,6 +193,10 @@ private extension WalletSendAmountController {
             case .user(let user):
                 navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance)), animated: true)
             case let .address(address, invoice, user):
+                if address.isBitcoinAddress, input.balance < 21000 {
+                    showErrorMessage("Amount too small for an on-chain transaction")
+                    return
+                }
                 navigationController?.pushViewController(WalletSendViewController(.address(address, invoice, user, startingAmount: input.balance)), animated: true)
             }
         }), for: .touchUpInside)

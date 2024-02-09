@@ -140,7 +140,7 @@ struct PrimalWalletRequest {
   private let pendingResult: WalletRequestResult = .init()
   
     func publisher() -> AnyPublisher<WalletRequestResult, Never> {
-        Connection.wallet.autoReconnect()
+        Connection.wallet.autoConnectReset()
         
         return Deferred {
             Future { promise in

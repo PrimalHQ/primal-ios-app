@@ -165,7 +165,8 @@ private extension WalletReceiveViewController {
         
         ludHeightC?.isActive = !hasExtraInfo
         
-        let newQRCode = "bitcoin:\(invoice)"
+        let protocolType = onchainAddress == nil ? "lightning" : "bitcoin"
+        let newQRCode = "\(protocolType):\(invoice)"
         
         if qrCodeImageView.image == nil {
             if let onchainAddress {

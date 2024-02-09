@@ -19,15 +19,15 @@ protocol TransactionCellDelegate: AnyObject {
 
 final class TransactionCell: UITableViewCell, Themeable {
     
-    private let profileImage = FLAnimatedImageView().constrainToSize(44)
+    let profileImage = FLAnimatedImageView().constrainToSize(44)
     private let timeIcon = UIImageView(image: UIImage(named: "walletTimeIcon"))
     
-    private let nameLabel = UILabel()
+    let nameLabel = UILabel()
     private let separator = UIView().constrainToSize(width: 1, height: 18)
     private let timeLabel = UILabel()
-    private let messageLabel = UILabel()
+    let messageLabel = UILabel()
     
-    private let amountLabel = UILabel()
+    let amountLabel = UILabel()
     private let currencyLabel = UILabel()
     
     private let arrowIcon = UIImageView(image: UIImage(named: "income"))
@@ -141,6 +141,14 @@ final class TransactionCell: UITableViewCell, Themeable {
         
         contentView.backgroundColor = .clear
         backgroundColor = .clear
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        profileImage.alpha = 1
+        nameLabel.alpha = 1
+        messageLabel.alpha = 1
+        amountLabel.alpha = 1
     }
 }
 

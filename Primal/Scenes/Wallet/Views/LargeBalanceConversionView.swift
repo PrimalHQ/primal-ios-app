@@ -8,15 +8,13 @@
 import Combine
 import UIKit
 
+enum RoundingStyle {
+    case twoDecimals, removeZeros
+}
+
 class LargeBalanceConversionView: UIStackView, Themeable {
-    enum RoundingStyle {
-        case twoDecimals, removeZeros
-    }
-    
     @Published var isBitcoinPrimary = true
     @Published var balance: Int = 0
-    
-    var shouldAnimate = true
     
     let largeAmountLabel = UILabel()
     let smallAmountLabel = UILabel()
@@ -24,6 +22,9 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     let largeCurrencyLabel = UILabel()
     let large$Label = UILabel()
     
+    let exchangeIcon = ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }
+    
+    let primaryRow = UIStackView()
     let secondaryRow = UIStackView()
     
     var animateReversed = true
@@ -93,10 +94,7 @@ class LargeBalanceConversionView: UIStackView, Themeable {
         isAnimating = true
         
         var views: [UIView] = []
-        let attributedText = NSMutableAttributedString(string: text, attributes: [
-            .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-            .foregroundColor: UIColor.foreground
-        ])
+        let attributedText = NSMutableAttributedString(string: text, attributes: largeLabelAttributes(.foreground))
         
         let newTextArray = text.enumerated().filter { $0.element.isNumber }
         var oldTextArray = oldText.enumerated().filter { $0.element.isNumber }
@@ -129,10 +127,7 @@ class LargeBalanceConversionView: UIStackView, Themeable {
         for ((index, char), (oldIndex, oldChar)) in (animateReversed ? Array(list.reversed()) : Array(list)) {
             if char == oldChar { continue }
             
-            attributedText.setAttributes([
-                .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-                .foregroundColor: UIColor.clear
-            ], range: .init(location: index, length: 1))
+            attributedText.setAttributes(largeLabelAttributes(.clear), range: .init(location: index, length: 1))
             
             let oldCharLabel = copyLabel(type: 1)
             
@@ -174,17 +169,11 @@ class LargeBalanceConversionView: UIStackView, Themeable {
             large$Label.transform = .init(translationX: translationX, y: 0)
             
             let oldLabel = copyLabel(type: 3)
-            oldLabel.attributedText = NSAttributedString(string: oldText, attributes: [
-                .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-                .foregroundColor: UIColor.foreground
-            ])
+            oldLabel.attributedText = NSAttributedString(string: oldText, attributes: largeLabelAttributes(.foreground))
             
             let normalLabel = copyLabel(type: 3)
             normalLabel.attributedText = attributedText
-            largeAmountLabel.attributedText = NSAttributedString(string: text, attributes: [
-                .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-                .foregroundColor: UIColor.clear
-            ])
+            largeAmountLabel.attributedText = NSAttributedString(string: text, attributes: largeLabelAttributes(.clear))
             normalLabel.alpha = 0
             
             views += [oldLabel, normalLabel]
@@ -235,11 +224,11 @@ private extension LargeBalanceConversionView {
         currencyParent.addSubview(largeCurrencyLabel)
         largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: labelOffset).pinToSuperview(edges: .horizontal)
         
-        let primaryRow = UIStackView([dollarParent, largeAmountLabel, currencyParent])
+        [dollarParent, largeAmountLabel, currencyParent].forEach { primaryRow.addArrangedSubview($0) }
         primaryRow.spacing = rowSpacing
         primaryRow.clipsToBounds = false
         
-        [smallAmountLabel, ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }].forEach { secondaryRow.addArrangedSubview($0) }
+        [smallAmountLabel, exchangeIcon].forEach { secondaryRow.addArrangedSubview($0) }
         secondaryRow.spacing = rowSpacing
         secondaryRow.alignment = .center
         
@@ -262,43 +251,84 @@ private extension LargeBalanceConversionView {
         large$Label.superview?.isHidden = isBitcoinPrimary
         largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
         
-        let usdAmount = Double(balance) * .SAT_TO_USD
-        let usdString: String = {
-            switch roundingStyle {
-            case .twoDecimals:
-                return usdAmount.twoDecimalPoints()
-            case .removeZeros:
-                return usdAmount.localized()
-            }
-        }()
-        
         let shouldAnimate = isBitcoinPrimary == self.isBitcoinPrimary
+        
+        let usdAmount = balance.satsToUsdAmountString(roundingStyle)
         
         if isBitcoinPrimary {
             setLargeLabel(balance.localized(), animating: shouldAnimate)
-            smallAmountLabel.text = "$\(usdString) USD"
+            smallAmountLabel.text = "$\(usdAmount) USD"
         } else {
-            setLargeLabel(usdString, animating: shouldAnimate)
+            setLargeLabel(usdAmount, animating: shouldAnimate)
             smallAmountLabel.text = "\(balance.localized()) sats"
         }
     }
     
     @objc func tapped() {
-        isBitcoinPrimary.toggle()
+        if secondaryRow.isHidden {
+            isBitcoinPrimary.toggle()
+        } else {
+            animateSwap()
+        }
+    }
+    
+    func animateSwap() {
+        let views = [
+            largeAmountLabel.animateColorTransitionTo(smallAmountLabel, duration: 0.2, in: self, forceHeight: true),
+            largeCurrencyLabel.animateColorTransitionTo(smallAmountLabel, duration: 0.2, in: self, forceHeight: true),
+            smallAmountLabel.animateColorTransitionTo(largeCurrencyLabel, duration: 0.2, in: self, forceHeight: true)
+        ]
+        
+        (views.last as? UILabel)?.textAlignment = .right
+        
+        primaryRow.transform = .init(scaleX: 1 / 2.1, y: 1 / 2.1).translatedBy(x: 0, y: 80)
+        
+        smallAmountLabel.alpha = 0.01
+        smallAmountLabel.transform = .init(scaleX: 2.1, y: 2.1).translatedBy(x: 0, y: -20)
+        
+        primaryRow.alpha = 0.01
+        largeAmountLabel.alpha = 1
+        largeCurrencyLabel.alpha = 1
+        large$Label.alpha = 1
+        
+        UIView.animate(withDuration: 0.2) { [self] in
+            views.forEach { $0?.alpha = 0 }
+            
+            self.isBitcoinPrimary.toggle()
+            
+            primaryRow.transform = .identity
+            primaryRow.alpha = 1
+            
+            smallAmountLabel.transform = .identity
+            smallAmountLabel.alpha = 1
+            
+            exchangeIcon.transform = .init(rotationAngle: -1 * .pi)
+            
+            layoutSubviews()
+        } completion: { [self] _ in
+            smallAmountLabel.alpha = 1
+            exchangeIcon.transform = .identity
+        }
     }
     
     func attributedTextOneCharVisible(_ text: String, _ charIndex: Int) -> NSAttributedString {
-        let str = NSMutableAttributedString(string: text, attributes: [
-            .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-            .foregroundColor: UIColor.clear
-        ])
-        
-        str.setAttributes([
-            .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
-            .foregroundColor: UIColor.foreground
-        ], range: .init(location: charIndex, length: 1))
-        
+        let str = NSMutableAttributedString(string: text, attributes: largeLabelAttributes(.clear))
+        str.setAttributes(largeLabelAttributes(.foreground), range: .init(location: charIndex, length: 1))
         return str
+    }
+    
+    func smallLabelAttributes() -> [NSAttributedString.Key: Any] {
+        [
+            .font: smallAmountLabel.font ?? .appFont(withSize: 16, weight: .regular),
+            .foregroundColor: smallAmountLabel.textColor ?? UIColor.foreground4
+        ]
+    }
+    
+    func largeLabelAttributes(_ color: UIColor) -> [NSAttributedString.Key: Any] {
+        [
+            .font: largeAmountLabel.font ?? .appFont(withSize: 48, weight: .bold),
+            .foregroundColor: color
+        ]
     }
     
     func copyLabel(type: Int) -> UILabel {

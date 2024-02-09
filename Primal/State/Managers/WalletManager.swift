@@ -6,6 +6,7 @@
 //
 
 import Combine
+import GenericJSON
 import Foundation
 
 extension UserDefaults {
@@ -69,12 +70,14 @@ enum WalletError: Error {
     }
 }
 
+typealias ParsedTransaction = (WalletTransaction, ParsedUser)
+
 final class WalletManager {
     static let instance = WalletManager()
     
     var cancellables = Set<AnyCancellable>()
     @Published var userHasWallet: Bool?
-    @Published var updatedAt: Int?
+    @Published var updatedAt: Double?
     @Published var balance: Int = 0
     @Published var maxBalance: Int = 0
     @Published var transactions: [WalletTransaction] = []
@@ -83,9 +86,11 @@ final class WalletManager {
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
     
+    private var update: ContinousConnection?
+    
     var userData: [String: ParsedUser] = [:]
     
-    @Published var parsedTransactions: [(WalletTransaction, ParsedUser)] = []
+    @Published var parsedTransactions: [ParsedTransaction] = []
     
     private var isLoadingTransactions = false
     
@@ -121,8 +126,47 @@ final class WalletManager {
         
         PrimalWalletRequest(type: .transactions()).publisher()
             .sink(receiveValue: { [weak self] val in
-                self?.transactions = val.transactions
-                self?.isLoadingTransactions = false
+                guard let self else { return }
+                var transactions = self.transactions
+                
+                let old = val.transactions.filter { new in transactions.contains(where: { $0.id == new.id }) }
+                let new = val.transactions.filter { new in !transactions.contains(where: { $0.id == new.id }) }
+                
+                for transaction in old {
+                    guard let index = transactions.firstIndex(where: { $0.id == transaction.id }) else { continue }
+                    transactions[index] = transaction
+                }
+                
+                transactions.insert(contentsOf: new, at: 0)
+                
+                self.transactions = transactions
+                self.isLoadingTransactions = false
+            })
+            .store(in: &cancellables)
+    }
+    
+    func recheckTransactions() {
+        isLoadingTransactions = true
+        
+        PrimalWalletRequest(type: .transactions()).publisher()
+            .sink(receiveValue: { [weak self] val in
+                guard let self else { return }
+                var transactions = self.transactions
+                
+                let old = val.transactions.filter { new in transactions.contains(where: { $0.id == new.id }) }
+                let new = val.transactions.filter { new in
+                    !transactions.contains(where: { $0.id == new.id }) && new.created_at > transactions.first?.created_at ?? 0
+                }
+                
+                for transaction in old {
+                    guard let index = transactions.firstIndex(where: { $0.id == transaction.id }) else { continue }
+                    transactions[index] = transaction
+                }
+                
+                transactions.insert(contentsOf: new, at: 0)
+                
+                self.transactions = transactions
+                self.isLoadingTransactions = false
             })
             .store(in: &cancellables)
     }
@@ -277,23 +321,6 @@ private extension WalletManager {
             })
             .store(in: &cancellables)
         
-        $balance
-            .removeDuplicates()
-            .flatMap { [weak self] in
-                UserDefaults.standard.oldWalletAmount[IdentityManager.instance.userHexPubkey] = $0
-                return PrimalWalletRequest(type: .transactions(since: self?.transactions.first?.created_at)).publisher()
-            }
-            .sink(receiveValue: { [weak self] val in
-                guard let self else { return }
-                
-                let newTransactions = val.transactions.filter { new in !self.transactions.contains(where: { $0.id == new.id }) }
-                
-                if !newTransactions.isEmpty {
-                    self.transactions = newTransactions + self.transactions
-                }
-            })
-            .store(in: &cancellables)
-        
         $updatedAt
             .removeDuplicates()
             .sink { [weak self] _ in
@@ -342,5 +369,62 @@ private extension WalletManager {
                 }
             }
             .store(in: &cancellables)
+        
+        $parsedTransactions.withPrevious()
+            .compactMap { oldTransactions, newTransactions -> ParsedTransaction? in
+                guard
+                    let newTransaction = newTransactions.first,
+                    let oldTransaction = oldTransactions.first,
+                    // Only notify if there is a new transaction
+                    newTransaction.0.id != oldTransaction.0.id,
+                    // Only if it's a deposit
+                    newTransaction.0.isDeposit,
+                    let amountBTC = Double(newTransaction.0.amount_btc),
+                    // Only if the amount is larger than minimumNotificationValue
+                    amountBTC * .BTC_TO_SAT >= Double(UserDefaults.standard.minimumNotificationValue)
+                else { return nil }
+                
+                return newTransaction
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] transaction in
+                self?.notifyTransactionIfNecessary(transaction)
+            }
+            .store(in: &cancellables)
+        
+        
+        guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
+
+        Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
+            .sink { [weak self] _ in
+                self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
+                    guard
+                        let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
+                        let json: [String: JSON] = content.decode()
+                    else { return }
+                    
+                    if let updatedAt = json["updated_at"]?.doubleValue {
+                        self?.updatedAt = updatedAt
+                    }
+                    
+                    if let amount = json["amount"]?.doubleValue {
+                        let balance = Int(amount * .BTC_TO_SAT)
+                        if self?.balance != balance {
+                            self?.balance = balance
+                            self?.updatedAt = Date().timeIntervalSince1970
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func notifyTransactionIfNecessary(_ transaction: ParsedTransaction) {
+        guard
+            let mainTab: MainTabBarController = RootViewController.instance.findInChildren(),
+            mainTab.currentTab != .wallet || mainTab.wallet.viewControllers.count > 1
+        else { return }
+        
+        RootViewController.instance.showNewTransaction(transaction)
     }
 }

@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Badge (2) 1.pdf",
+      "filename" : "white.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Badge.pdf",
+      "filename" : "black.svg",
       "idiom" : "universal"
     }
   ],

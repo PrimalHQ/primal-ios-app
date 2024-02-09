@@ -244,6 +244,11 @@ private extension WalletSendViewController {
         if let user = destination.user {
             profilePictureView.setUserImage(user)
             messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
+            
+            profilePictureView.isUserInteractionEnabled = true
+            profilePictureView.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+                self?.show(ProfileViewController(profile: user), sender: nil)
+            })
         } else {
             if destination.address.isBitcoinAddress {
                 profilePictureView.image = UIImage(named: "onchainPayment")

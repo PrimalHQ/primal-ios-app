@@ -13,6 +13,7 @@ extension CAMediaTimingFunction {
 
 extension UILabel {
     @discardableResult
+    
     func animateTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UILabel? {
         guard let otherLabel else { return nil }
         
@@ -35,6 +36,96 @@ extension UILabel {
         } else {
             scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
         }
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(timing)
+
+        UIView.animate(withDuration: duration) {
+            animatingLabel.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
+        } completion: { _ in
+            otherLabel.alpha = 1
+            animatingLabel.removeFromSuperview()
+        }
+        
+        CATransaction.commit()
+        
+        return animatingLabel
+    }
+    
+    @discardableResult
+    func animateColorTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, forceHeight: Bool = false) -> ColorAnimatingLabel? {
+        guard let otherLabel else { return nil }
+        
+        alpha = 0.01
+        otherLabel.alpha = 0.01
+        
+        let animatingLabel = ColorAnimatingLabel()
+        animatingLabel.text = text
+        animatingLabel.font = font
+        animatingLabel.textColor = textColor
+        animatingLabel.textAlignment = textAlignment
+        animatingLabel.numberOfLines = numberOfLines
+        animatingLabel.frame = convert(bounds, to: root)
+        animatingLabel.frontLabel.frame = animatingLabel.bounds
+        animatingLabel.backLabel.frame = animatingLabel.bounds
+        root.addSubview(animatingLabel)
+        
+        let actionTranslation = animatingLabel.centerDistanceVectorToView(otherLabel)
+        let scale: CGFloat
+        if forceHeight {
+            scale = otherLabel.font.pointSize / font.pointSize
+        } else if animatingLabel.frame.height > otherLabel.frame.height {
+            scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
+        } else {
+            scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
+        }
+        
+        animatingLabel.animateToColor(color: otherLabel.textColor, duration: duration)
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(timing)
+
+        UIView.animate(withDuration: duration) {
+            animatingLabel.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
+        } completion: { _ in
+            otherLabel.alpha = 1
+            animatingLabel.removeFromSuperview()
+        }
+        
+        CATransaction.commit()
+        
+        return animatingLabel
+    }
+    
+    @discardableResult
+    func animateLeadingTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, forceHeight: Bool = false) -> ColorAnimatingLabel? {
+        guard let otherLabel else { return nil }
+        
+        alpha = 0.01
+        otherLabel.alpha = 0.01
+        
+        let animatingLabel = ColorAnimatingLabel()
+        animatingLabel.text = text
+        animatingLabel.font = font
+        animatingLabel.textColor = textColor
+        animatingLabel.textAlignment = textAlignment
+        animatingLabel.numberOfLines = numberOfLines
+        animatingLabel.frame = convert(bounds, to: root)
+        animatingLabel.frontLabel.frame = animatingLabel.bounds
+        animatingLabel.backLabel.frame = animatingLabel.bounds
+        root.addSubview(animatingLabel)
+        
+        let actionTranslation = animatingLabel.originDistanceVectorToView(otherLabel)
+        let scale: CGFloat
+        if forceHeight {
+            scale = otherLabel.font.pointSize / font.pointSize
+        } else if animatingLabel.frame.height > otherLabel.frame.height {
+            scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
+        } else {
+            scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
+        }
+        
+        animatingLabel.animateToColor(color: otherLabel.textColor, duration: duration)
         
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(timing)

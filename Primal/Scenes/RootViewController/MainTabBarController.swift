@@ -88,6 +88,8 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
+    var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
+    
     var showTabBarBorder: Bool {
         get { !navigationBorder.isHidden }
         set {

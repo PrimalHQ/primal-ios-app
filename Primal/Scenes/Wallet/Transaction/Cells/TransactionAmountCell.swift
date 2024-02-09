@@ -8,8 +8,8 @@
 import UIKit
 
 class TransactionAmountCell: UITableViewCell {
-    private let label = UILabel()
-    private let visibleLabel = UILabel()
+    let label = UILabel()
+    let visibleLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -34,6 +34,7 @@ extension TransactionAmountCell: TransactionPartialCell {
             .foregroundColor: color
         ]))
         
+        label.textColor = color
         label.text = value.localized()
         visibleLabel.attributedText = text
         

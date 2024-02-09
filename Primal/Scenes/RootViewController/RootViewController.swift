@@ -30,6 +30,8 @@ final class RootViewController: UIViewController {
     private let transactionNotificationView = TransactionNotificationView()
     private var transactionBotConstraint: NSLayoutConstraint?
     
+    let showTransactionNotificationDuration = 3
+    
     private init() {
         super.init(nibName: nil, bundle: nil)
         quickReset(isFirstTime: true)
@@ -39,6 +41,8 @@ final class RootViewController: UIViewController {
         transactionNotificationView.pinToSuperview(edges: .horizontal, padding: 32)
         transactionBotConstraint = transactionNotificationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -220)
         transactionBotConstraint?.isActive = true
+        
+        _ = WalletManager.instance
         
         Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
@@ -160,18 +164,42 @@ final class RootViewController: UIViewController {
         introVC = intro
     }
     
+    var updateCount = 0
     func showNewTransaction(_ parsed: (WalletTransaction, ParsedUser)) {
-        transactionNotificationView.setup(with: parsed, showBTC: true)
+        transactionNotificationView.setup(with: parsed, fromOld: updateCount > 0)
+        updateCount += 1
+        
+        if updateCount > 1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(showTransactionNotificationDuration)) { [self] in
+                updateCount -= 1
+                if updateCount == 0 {
+                    transactionBotConstraint?.constant = -220
+                    UIView.animate(withDuration: 0.2) {
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            }
+            return
+        }
         
         transactionBotConstraint?.constant = 20
         
-        UIView.animate(withDuration: 0.15) {
+        UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0) {
             self.view.layoutIfNeeded()
-        } completion: { _ in
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
             self.transactionNotificationView.animate()
-            self.transactionBotConstraint?.constant = -220
-            UIView.animate(withDuration: 0.2, delay: 3) {
-                self.view.layoutIfNeeded()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(self.showTransactionNotificationDuration)) { [self] in
+                updateCount -= 1
+                
+                if updateCount == 0 {
+                    transactionBotConstraint?.constant = -220
+                    UIView.animate(withDuration: 0.2) {
+                        self.view.layoutIfNeeded()
+                    }
+                }
             }
         }
     }
