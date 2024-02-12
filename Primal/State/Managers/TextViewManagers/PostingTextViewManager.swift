@@ -25,10 +25,24 @@ final class PostingTextViewManager: TextViewManager {
     
     @Published var users: [ParsedUser] = []
     
-    var tokens: [UserToken] = []
+    var tokens: [UserToken] {
+        guard let string = textView.attributedText else { return [] }
+        
+        let entireRange = NSRange(location: 0, length: string.length)
+        
+        var tokens: [UserToken] = []
+        string.enumerateAttribute(.link, in: entireRange) { (value, linkRange, stop) in
+            guard let user = value as? PrimalUser else { return }
+            
+            tokens.append(.init(range: linkRange, text: string.attributedSubstring(from: linkRange).string, user: user))
+        }
+        return tokens
+    }
     
     @Published var currentlyEditingToken: EditingToken?
     let returnPressed = PassthroughSubject<Void, Never>()
+    
+    private var tagRegex: NSRegularExpression! { try! NSRegularExpression(pattern: "@([^\\s\\K]+)") }
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -42,23 +56,25 @@ final class PostingTextViewManager: TextViewManager {
     }
     
     func replaceEditingTokenWithUser(_ user: ParsedUser) {
-        
         SmartContactsManager.instance.addContact(user)
         
         guard let currentlyEditingToken else { return }
         
         let user = user.data
         let replacementText = user.atIdentifier
-        let newText = (textView.text as NSString).replacingCharacters(in: currentlyEditingToken.range, with: replacementText + " ")
-        let maxLength = (newText as NSString).length
-        updateTokensForReplacingRange(currentlyEditingToken.range, replacementText: replacementText + " ", maxRange: maxLength)
-        tokens.append(UserToken(
-            range: .init(location: currentlyEditingToken.range.location, length: (replacementText as NSString).length),
-            text: replacementText,
-            user: user
-        ))
+        
+        var mutable = NSMutableAttributedString(attributedString: textView.attributedText ?? .init())
+        mutable.replaceCharacters(in: currentlyEditingToken.range, with: "")
+        mutable.insert(NSAttributedString(string: replacementText, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .foregroundColor: UIColor.accent,
+            .link: user
+        ]), at: currentlyEditingToken.range.location)
+        
+        addUnattributedText(" ", to: &mutable, inRange: .init(location: currentlyEditingToken.range.location + replacementText.utf16.count, length: 0))
+        
+        updateText(mutable, cursorPosition: currentlyEditingToken.range.location + replacementText.utf16.count + 1)
         self.currentlyEditingToken = nil
-        updateText(newText, cursorPosition: currentlyEditingToken.range.location + (replacementText as NSString).length + 1)
     }
     
     override var postingText: String {
@@ -92,140 +108,142 @@ final class PostingTextViewManager: TextViewManager {
     }
     
     @objc func atButtonPressed() {
-        _ = textView(textView, shouldChangeTextIn: textView.selectedRange, replacementText: "@")
+        let range = textView.selectedRange
+        if textView(textView, shouldChangeTextIn: range, replacementText: "@") {
+            var mutable = NSMutableAttributedString(attributedString: textView.attributedText ?? .init())
+            addUnattributedText("@", to: &mutable, inRange: range)
+            
+            updateText(mutable, cursorPosition: range.location + 1)
+        }
     }
     
-    var declineAnyChange = false
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if declineAnyChange { return false }
-        
-        let oldText = textView.text as NSString
-        let newText = oldText.replacingCharacters(in: range, with: text) as NSString
-        let replacementText = text as NSString
-        
-        if text.containsOnlyEmoji {
-            // This is a workaround for issue 69 - https://github.com/PrimalHQ/primal-ios-app/issues/69
-            DispatchQueue.main.async {
-                UIView.setAnimationsEnabled(false)
-                textView.resignFirstResponder()
-                textView.becomeFirstResponder()
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    UIView.setAnimationsEnabled(true)
-                }
-            }
+        guard let attributedString = textView.attributedText else {
+            return true     // If we cannot get an attributed string, just fail gracefully and allow changes
         }
+        var mutable = NSMutableAttributedString(attributedString: attributedString)
         
-        let cursorPosition = range.location + replacementText.length
-        
-        if var currentlyEditingToken {
-            let doesOverlap = range.overlaps(currentlyEditingToken.range) && (range.location > currentlyEditingToken.range.location || range.length > 0)
-            let isContinuing = range.location == currentlyEditingToken.range.endLocation
+        let entireRange = NSRange(location: 0, length: attributedString.length)
+        var shouldAllowChange = true
+        var performEditActionManually = false
+
+        attributedString.enumerateAttribute(.link, in: entireRange, options: []) { (value, linkRange, stop) in
+            guard value != nil else {
+                return  // This range is not a link. Skip checking.
+            }
             
-            if doesOverlap || isContinuing {
-                currentlyEditingToken.range.length += replacementText.length - range.length
-                
-                if currentlyEditingToken.range.length > 0 {
-                    currentlyEditingToken.text = newText.substring(with: currentlyEditingToken.range)
-                    self.currentlyEditingToken = currentlyEditingToken
-                } else {
-                    self.currentlyEditingToken = nil
-                }
-            } else {
-                self.currentlyEditingToken = nil
+            if range.contains(linkRange.upperBound) && range.contains(linkRange.lowerBound) {
+                // Edit range engulfs all of this link's range.
+                // This link will naturally disappear, so no work needs to be done in this range.
+                return
+            }
+            else if linkRange.intersection(range) != nil {
+                // If user tries to change an existing link directly, remove the link attribute
+                mutable.removeAttribute(.link, range: linkRange)
+                mutable.addAttribute(.foregroundColor, value: UIColor.foreground, range: linkRange)
+                // Perform action manually to flush above changes to the view, and to prevent the character being added from having an attributed link property
+                performEditActionManually = true
+                return
+            }
+            else if range.location == linkRange.location + linkRange.length && range.length == 0 {
+                // If we are inserting a character at the right edge of a link, UITextInput tends to include the new character inside the link.
+                // Therefore, we need to manually append that character outside of the link
+                performEditActionManually = true
+                return
             }
         }
         
-        
-        let updateManually = {
-            self.declineAnyChange = true
-            self.updateTokensForReplacingRange(range, replacementText: text, maxRange: newText.length)
-            self.updateText(newText as String, cursorPosition: cursorPosition)
-            self.declineAnyChange = false
-            self.textViewDidChange(textView)
+        if performEditActionManually {
+            shouldAllowChange = false
+            addUnattributedText(text, to: &mutable, inRange: range)
+            
+            updateText(mutable, cursorPosition: range.location + text.count)
+        }
+
+        return shouldAllowChange
+    }
+    
+    func addUnattributedText(_ text: String, to attributedString: inout NSMutableAttributedString, inRange range: NSRange) {
+        if range.length > 0 {
+            attributedString.replaceCharacters(in: range, with: "")
         }
         
-        for (index, token) in tokens.enumerated() {
-            if range.overlaps(token.range) {
-                guard range != token.range else {
-                    tokens.remove(at: index)
-                    updateManually()
-                    return false
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    textView.selectedRange = token.range
-                }
-                return false
-            }
-        }
-        
-        switch text {
-        case "\n":
-            returnPressed.send(())
-            fallthrough
-        case " ":
-            if currentlyEditingToken != nil { // End searching if we were searching
-                currentlyEditingToken = nil
-            }
-        case "@":  // Start new user search
-            currentlyEditingToken = .init(range: NSRange(location: range.location, length: 1), text: text)
-        default:
-            break
-        }
-        
-        updateManually()
-        return false
+        attributedString.insert(NSAttributedString(string: text, attributes: [
+            .font: UIFont.appFont(withSize: 18, weight: .regular),
+            .foregroundColor: UIColor.foreground
+        ]), at: range.location)
     }
 }
 
 private extension PostingTextViewManager {
-    func updateTokensForReplacingRange(_ range: NSRange, replacementText: String, maxRange: Int) {
-        let adjustLength = (replacementText as NSString).length - range.length
-        for i in tokens.indices where tokens[i].range.location >= range.location {
-            tokens[i].range.location += adjustLength
-        }
-    }
-    
-    func rangeMatchesTokens(_ range: NSRange) -> Bool {
-        for t in tokens {
-            if t.range.location >= range.location && t.range.location <= range.endLocation {
-                return true
-            }
-            
-            if t.range.endLocation >= range.location && t.range.endLocation <= range.endLocation {
-                return true
-            }
-        }
-        
-        return false
-    }
-    
     func updateTokensForReplacingRange(tokens: [UserToken], range: NSRange, replacementText: String) -> [UserToken] {
         var tokens = tokens
         for i in tokens.indices where tokens[i].range.location >= range.location {
-            tokens[i].range.location += (replacementText as NSString).length - range.length
+            tokens[i].range.location += replacementText.utf16.count - range.length
         }
         return tokens
     }
     
-    func updateText(_ text: String, cursorPosition: Int) {
-        let mutable = NSMutableAttributedString(string: text as String, attributes: [
-            .font: textView.font as Any,
-            .foregroundColor: UIColor.foreground as Any
-        ])
+    func updateText(_ text: NSAttributedString? = nil, cursorPosition: Int? = nil) {
+        let selection = textView.selectedRange
         
-        for token in tokens {
-            mutable.addAttributes([.foregroundColor: UIColor.accent], range: token.range)
+        if let text {
+            textView.attributedText = text
         }
         
-        if let range = currentlyEditingToken?.range {
-            mutable.addAttributes([.foregroundColor: UIColor.accent], range: range)
+        if let cursorPosition {
+            textView.selectedRange = .init(location: cursorPosition, length: 0)
+        } else {
+            textView.selectedRange = selection
         }
         
-        textView.attributedText = mutable
-        textView.selectedRange = .init(location: cursorPosition, length: 0)
+        didChangeEvent.send(textView)
+    }
+    
+    func processFocusedWordForMention() {
+        guard
+            let selectedRange = textView.selectedTextRange,
+            let wordRange = rangeOfMention(in: textView, from: selectedRange.start),
+            let startPosition = textView.position(from: wordRange.start, offset: -1),
+            let cursorPosition = textView.position(from: selectedRange.start, offset: 0),
+            let newRange = textView.textRange(from: startPosition, to: cursorPosition),
+            let word = textView.text(in: newRange),
+            let nsRange = textView.convertToNSRange(startPosition, cursorPosition)
+        else {
+            currentlyEditingToken = nil
+            return
+        }
+        
+        currentlyEditingToken = .init(range: nsRange, text: word)
+    }
+    
+    func rangeOfMention(in textView: UITextView, from position: UITextPosition) -> UITextRange? {
+        var startPosition = position
+        
+        while startPosition != textView.beginningOfDocument {
+            guard let previousPosition = textView.position(from: startPosition, offset: -1),
+                  let range = textView.textRange(from: previousPosition, to: startPosition),
+                  let text = textView.text(in: range), !text.isEmpty,
+                  let lastChar = text.last else {
+                break
+            }
+
+            if [" ", "\n", "@"].contains(lastChar) {
+                return textView.textRange(from: startPosition, to: position)
+            }
+
+            startPosition = previousPosition
+        }
+
+        return nil
     }
     
     func connectPublishers() {
+        didChangeEvent.sink { [weak self] _ in
+            self?.processFocusedWordForMention()
+        }
+        .store(in: &cancellables)
+        
         $currentlyEditingToken
             .map { token in
                 guard let token else { return nil }
@@ -256,7 +274,6 @@ private extension PostingTextViewManager {
         textView.backgroundColor = .background2
         textView.delegate = self
         textView.bounces = false
-        textView.autocapitalizationType = .none
         
         usersTableView.register(UserInfoTableCell.self, forCellReuseIdentifier: "cell")
         usersTableView.delegate = self

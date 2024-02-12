@@ -333,6 +333,7 @@
 		B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */; };
 		B9CE4DC22B740A4D0060A1B8 /* loadingDots.json in Resources */ = {isa = PBXBuildFile; fileRef = B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */; };
 		B9CE4DC42B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */; };
+		B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -711,6 +712,7 @@
 		B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMinNotificationController.swift; sourceTree = "<group>"; };
 		B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingDots.json; sourceTree = "<group>"; };
 		B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHomeToTransactionAnimator.swift; sourceTree = "<group>"; };
+		B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupDatePickerController.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -1242,6 +1244,7 @@
 				9ED4160C2A48744600892235 /* PopupMenuViewController.swift */,
 				9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */,
 				B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */,
+				B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */,
 			);
 			path = Popups;
 			sourceTree = "<group>";
@@ -2160,6 +2163,7 @@
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* Profile.swift in Sources */,
+				B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
 				9ED416142A4E03E500892235 /* AvatarView.swift in Sources */,
 				9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */,
@@ -2440,7 +2444,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.30;
+				MARKETING_VERSION = 1.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2485,7 +2489,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.30;
+				MARKETING_VERSION = 1.2.31;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

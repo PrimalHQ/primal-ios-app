@@ -39,7 +39,7 @@ struct PrimalWalletRequest {
         case deposit(WalletTransactionNetwork, AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
-        case activationCode(name: String, email: String, country: String, state: String?)
+        case activationCode(name: String, email: String, date: Date, country: String, state: String?)
         case activate(code: String)
         case parseLNURL(String)
         case exchangeRate
@@ -118,8 +118,11 @@ struct PrimalWalletRequest {
             case .quote(let productId, let region):
                 let additionalParameter = Bundle.main.appStoreReceiptURL?.absoluteString ?? ""
                 return "[\"in_app_purchase_quote\", {\"product_id\": \"\(productId)\", \"region\": \"\(region)\", \"bundle_app_store_receipt_url\": \"\(additionalParameter)\"}]"
-            case let .activationCode(name, email, country, state):
-                return #"["get_activation_code", {"name": "\#(name)", "email": "\#(email)", "country": "\#(country)", "state": "\#(state ?? "")"}]"#
+            case let .activationCode(name, email, date, country, state):
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "YYYY-MM-dd"
+                let dateString = dateFormatter.string(from: date)
+                return #"["get_activation_code", {"name": "\#(name)", "email": "\#(email)", "date_of_birth": "\#(dateString)", "country": "\#(country)", "state": "\#(state ?? "")"}]"#
             case let .activate(code):
                 return "[\"activate\", {\"activation_code\": \"\(code)\"}]"
             case .parseLNURL(let lnurl):

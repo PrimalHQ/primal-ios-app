@@ -78,6 +78,7 @@ extension OnboardingViewController {
     
     func addNavigationBar(_ title: String) {
         backButton.setImage(UIImage(named: "back"), for: .normal)
+        backButton.tintColor = .white
         backButton.constrainToSize(44)
         backButton.backgroundColor = .white.withAlphaComponent(0.01)
         view.addSubview(backButton)

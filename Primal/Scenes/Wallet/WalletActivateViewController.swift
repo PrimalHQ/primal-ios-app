@@ -14,11 +14,14 @@ final class WalletActivateViewController: UIViewController {
     private let nameInput = UITextField()
     private let emailInput = UITextField()
     private let codeInput = UITextField()
+    private let dateButton = UIButton()
+    private let datePicker = UIDatePicker()
     
     private lazy var firstScreenStack = UIStackView(axis: .vertical, [
         descLabel,                  SpacerView(height: 16, priority: .required), SpacerView(height: 20),
         inputParent(nameInput),     SpacerView(height: 16, priority: .required), SpacerView(height: 8),
         inputParent(emailInput),    SpacerView(height: 16, priority: .required), SpacerView(height: 8),
+        inputParent(dateButton),    SpacerView(height: 16, priority: .required), SpacerView(height: 8),
         countryRow
     ])
     
@@ -30,6 +33,12 @@ final class WalletActivateViewController: UIViewController {
     private let statePicker = UIPickerView()
     
     private let confirmButton = LargeRoundedButton(title: "Next")
+    
+    private var date: Date? {
+        didSet {
+            updateDateButton()
+        }
+    }
     
     private var isWaitingForCode = false {
         didSet {
@@ -77,7 +86,6 @@ private extension WalletActivateViewController {
         iconParent.addSubview(icon)
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
-        
         let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
         let spacerStack = UIStackView(axis: .vertical, [SpacerView(height: 16, priority: .required), SpacerView(height: 16)])
         let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, firstScreenStack, inputParent(codeInput), spacerStack, confirmButton])
@@ -98,20 +106,29 @@ private extension WalletActivateViewController {
         descLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         [nameInput, emailInput, codeInput, countryInput, stateInput].forEach {
-            $0.font = .appFont(withSize: 18, weight: .regular)
+            $0.font = .appFont(withSize: 18, weight: .bold)
             $0.textColor = .foreground
             $0.returnKeyType = .done
             $0.delegate = self
         }
         
-        nameInput.placeholder = "your name"
-        emailInput.placeholder = "your email address"
-        codeInput.placeholder = "activation code"
-        countryInput.placeholder = "country of residence"
-        stateInput.placeholder = "state"
+        [
+            (nameInput, "your name"),
+            (emailInput, "your email address"),
+            (codeInput, "activation code"),
+            (countryInput, "country of residence"),
+            (stateInput, "state")
+        ].forEach { field, text in
+            field.attributedPlaceholder = NSAttributedString(string: text, attributes: [
+                .font: UIFont.appFont(withSize: 18, weight: .regular),
+                .foregroundColor: UIColor.foreground4
+            ])
+        }
         
         countryRow.spacing = 12
         countryRow.distribution = .fillEqually
+        
+        dateButton.contentHorizontalAlignment = .leading
         
         nameInput.keyboardType = .namePhonePad
         emailInput.keyboardType = .emailAddress
@@ -127,6 +144,12 @@ private extension WalletActivateViewController {
         countryPicker.delegate = self
         statePicker.delegate = self
         
+        updateDateButton()
+        
+        dateButton.addAction(.init(handler: { [weak self] _ in
+            self?.showDatePopup()
+        }), for: .touchUpInside)
+        
         codeInput.addAction(.init(handler: { [weak self] _ in
             self?.confirmButton.isEnabled = self?.codeInput.text?.count == 6
         }), for: .editingChanged)
@@ -138,51 +161,7 @@ private extension WalletActivateViewController {
     
     func confirmButtonPressed() {
         guard isWaitingForCode else {
-            guard let name = nameInput.text, !name.isEmpty else { nameInput.becomeFirstResponder(); return }
-            guard let email = emailInput.text, !email.isEmpty else { emailInput.becomeFirstResponder(); return }
-            guard let country = countryInput.text, !country.isEmpty else { countryInput.becomeFirstResponder(); return }
-
-            guard email.isEmail else {
-                emailInput.becomeFirstResponder()
-                emailInput.selectAll(nil)
-                return
-            }
-            
-            var state = stateInput.text
-            if country == Self.unitedStatesName {
-                if state?.isEmpty != false {
-                    stateInput.becomeFirstResponder()
-                    return
-                }
-            } else {
-                state = nil
-            }
-            
-            nameInput.resignFirstResponder()
-            emailInput.resignFirstResponder()
-            countryInput.resignFirstResponder()
-            stateInput.resignFirstResponder()
-            
-            isWaitingForCode = true
-            
-            let countryCode = Self.countryDic[country] ?? country
-            let stateCode = Self.statesDic[state ?? ""] ?? state
-            
-            PrimalWalletRequest(type: .activationCode(name: name, email: email, country: countryCode, state: stateCode)).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    if let error = res.message {
-                        self?.isWaitingForCode = false
-                        
-                        let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
-                        alert.addAction(.init(title: "OK", style: .default) { _ in
-                            self?.navigationController?.popToRootViewController(animated: true)
-                            self?.mainTabBarController?.switchToTab(.home)
-                        })
-                        self?.present(alert, animated: true)
-                    }
-                }
-                .store(in: &cancellables)
+            completeFirstScreen()
             return
         }
         
@@ -228,7 +207,53 @@ private extension WalletActivateViewController {
             .store(in: &cancellables)
     }
     
-    func inputParent(_ input: UITextField) -> UIView {
+    func completeFirstScreen() {
+        guard let name = nameInput.text, !name.isEmpty else { nameInput.becomeFirstResponder(); return }
+        guard let email = emailInput.text, !email.isEmpty else { emailInput.becomeFirstResponder(); return }
+        guard let date else { showDatePopup(); return }
+        guard let country = countryInput.text, !country.isEmpty else { countryInput.becomeFirstResponder(); return }
+
+        guard email.isEmail else {
+            emailInput.becomeFirstResponder()
+            emailInput.selectAll(nil)
+            return
+        }
+        
+        var state = stateInput.text
+        if country == Self.unitedStatesName {
+            if state?.isEmpty != false {
+                stateInput.becomeFirstResponder()
+                return
+            }
+        } else {
+            state = nil
+        }
+        
+        resignAllInput()
+        
+        isWaitingForCode = true
+        
+        let countryCode = Self.countryDic[country] ?? country
+        let stateCode = Self.statesDic[state ?? ""] ?? state
+        
+        PrimalWalletRequest(type: .activationCode(name: name, email: email, date: date, country: countryCode, state: stateCode)).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                if let error = res.message {
+                    self?.isWaitingForCode = false
+                    
+                    let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
+                    alert.addAction(.init(title: "OK", style: .default) { _ in
+                        self?.navigationController?.popToRootViewController(animated: true)
+                        self?.mainTabBarController?.switchToTab(.home)
+                    })
+                    self?.present(alert, animated: true)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func inputParent(_ input: UIView) -> UIView {
         let view = UIView()
         view.addSubview(input)
         input.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
@@ -242,6 +267,37 @@ private extension WalletActivateViewController {
         }))
         
         return view
+    }
+    
+    func updateDateButton() {
+        guard let date else {
+            dateButton.setTitle("your date of birth", for: .normal)
+            dateButton.setTitleColor(.foreground4, for: .normal)
+            dateButton.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
+            return
+        }
+        
+        let formatter = DateFormatter()
+        if let format = DateFormatter.dateFormat(fromTemplate: "yMMMMd", options: 0, locale: Locale.current) {
+            formatter.dateFormat = format
+        }
+        
+        dateButton.setTitle(formatter.string(from: date), for: .normal)
+        dateButton.setTitleColor(.foreground, for: .normal)
+        dateButton.titleLabel?.font = .appFont(withSize: 18, weight: .bold)
+    }
+    
+    func showDatePopup() {
+        resignAllInput()
+        
+        let picker = PopupDatePickerController(starting: .now) { [weak self] date in
+            self?.date = date
+        }
+        present(picker, animated: true)
+    }
+    
+    func resignAllInput() {
+        [nameInput, emailInput, countryInput, stateInput].forEach { $0.resignFirstResponder() }
     }
 }
 

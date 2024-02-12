@@ -83,11 +83,18 @@ final class Connection {
     init(socketURL: URL) {
         self.socketURL = socketURL
         self.connect()
+        
+        $isConnected.dropFirst().sink { isConnected in
+            print("CONNECTION IS CONNECTED \(self === Connection.regular ? "REG" : "WALL") = \(isConnected)")
+        }
+        .store(in: &cancellables)
     }
     
     deinit {
         socket?.disconnect()
     }
+    
+    var cancellables: Set<AnyCancellable> = []
 
     @Published var isConnected: Bool = false
     
