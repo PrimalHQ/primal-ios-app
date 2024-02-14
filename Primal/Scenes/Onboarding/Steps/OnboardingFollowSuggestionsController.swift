@@ -105,7 +105,7 @@ private extension OnboardingFollowSuggestionsController {
         Connection.regular.$isConnected.filter { $0 }.first().sink { connected in            
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()
-            IdentityManager.instance.requestUserContacts()
+            IdentityManager.instance.requestUserContactsAndRelays()
 
             MuteManager.instance.requestMuteList()
         }.store(in: &cancellables)

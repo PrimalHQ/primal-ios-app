@@ -168,7 +168,7 @@ final class IdentityManager {
             self.didFinishInit = true
         }
     }
-    func requestUserContacts(callback: (() -> Void)? = nil) {
+    func requestUserContactsAndRelays(callback: (() -> Void)? = nil) {
         let request: JSON = .object([
             "cache": .array([
                 "contact_list",
@@ -379,4 +379,8 @@ final class IdentityManager {
             RootViewController.instance.present(alert, animated: true)
         }
     }
+}
+
+private extension IdentityManager {
+    
 }

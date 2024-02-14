@@ -48,7 +48,7 @@ final class RootViewController: UIViewController {
             if connected {
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
-                IdentityManager.instance.requestUserContacts()
+                IdentityManager.instance.requestUserContactsAndRelays()
 
                 MuteManager.instance.requestMuteList()
             }

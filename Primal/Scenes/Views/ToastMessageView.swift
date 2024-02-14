@@ -8,11 +8,11 @@
 import UIKit
 
 extension UIView {
-    func showToast(_ text: String, durationSeconds: Int = 3, extraPadding: Bool = true) {
+    func showToast(_ text: String, durationSeconds: Int = 3, extraPadding: CGFloat = 90) {
         let view = ToastMessageView(text: text)
         addSubview(view)
         
-        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: extraPadding ? 102 : 18)
+        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: 18 + extraPadding)
         
         view.alpha = 0
         view.transform = .init(translationX: 0, y: 50)

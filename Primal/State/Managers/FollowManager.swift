@@ -24,7 +24,7 @@ final class FollowManager {
                 if pubkeysF.isEmpty && pubkeysUF.isEmpty { return }
                 guard isConnected else { return }
                 
-                IdentityManager.instance.requestUserContacts() {
+                IdentityManager.instance.requestUserContactsAndRelays() {
                     guard let self else { return }
                     
                     let contacts = IdentityManager.instance.userContacts.contacts.union(pubkeysF).subtracting(pubkeysUF)
@@ -77,7 +77,7 @@ final class FollowManager {
     }
     
     func addRelay(url: String) {
-        IdentityManager.instance.requestUserContacts() {
+        IdentityManager.instance.requestUserContactsAndRelays() {
             var relays = IdentityManager.instance.userRelays ?? self.makeBootstrapRelays()
             relays[url] = .init(read: true, write: true)
             IdentityManager.instance.userRelays = relays
@@ -87,7 +87,7 @@ final class FollowManager {
     }
     
     func removeRelay(url: String) {
-        IdentityManager.instance.requestUserContacts() {
+        IdentityManager.instance.requestUserContactsAndRelays() {
             var relays = IdentityManager.instance.userRelays ?? self.makeBootstrapRelays()
             
             RelaysPostbox.instance.pool.disconnect(relay: url)
@@ -105,7 +105,7 @@ final class FollowManager {
             .sink { result in
                 guard let relays = result.messageArray else { return }
                 
-                IdentityManager.instance.requestUserContacts() {
+                IdentityManager.instance.requestUserContactsAndRelays() {
                     var newRelays: [String: RelayInfo] = [:]
                     relays.forEach { newRelays[$0] = .init(read: true, write: true) }
                     IdentityManager.instance.userRelays = newRelays

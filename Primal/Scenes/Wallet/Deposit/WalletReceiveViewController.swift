@@ -278,7 +278,7 @@ private extension WalletReceiveViewController {
             WalletActionButton(text: "COPY", action: { [weak self] in
                 guard let invoice = self?.invoice else { return }
                 UIPasteboard.general.string = invoice
-                self?.view.showToast("Copied!", extraPadding: false)
+                self?.view.showToast("Copied!", extraPadding: 0)
             }),
             detailsButton
         ])

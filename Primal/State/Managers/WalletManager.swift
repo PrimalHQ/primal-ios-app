@@ -181,6 +181,7 @@ final class WalletManager {
                     
                 let double = (Double(balance.amount) ?? 0) * .BTC_TO_SAT
                 self?.balance = Int(double)
+                UserDefaults.standard.oldWalletAmount[ICloudKeychainManager.instance.userPubkey] = Int(double)
             })
             .store(in: &cancellables)
     }
@@ -391,12 +392,11 @@ private extension WalletManager {
                 self?.notifyTransactionIfNecessary(transaction)
             }
             .store(in: &cancellables)
-        
-        
-        guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
 
         Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
             .sink { [weak self] _ in
+                guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
+                
                 self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
                     guard
                         let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
@@ -410,6 +410,8 @@ private extension WalletManager {
                     if let amount = json["amount"]?.doubleValue {
                         let balance = Int(amount * .BTC_TO_SAT)
                         if self?.balance != balance {
+                            UserDefaults.standard.oldWalletAmount[ICloudKeychainManager.instance.userPubkey] = balance
+                            
                             self?.balance = balance
                             self?.updatedAt = Date().timeIntervalSince1970
                         }

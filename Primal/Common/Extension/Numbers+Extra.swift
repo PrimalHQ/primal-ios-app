@@ -122,6 +122,10 @@ extension Double {
     }
     
     func twoDecimalPoints() -> String {
-        String(format: "%.2f", self)
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.maximumFractionDigits = 2
+        nf.minimumFractionDigits = 2
+        return nf.string(from: self as NSNumber) ?? ""
     }
 }

@@ -222,7 +222,16 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     let e = ["e", post.id, "", "reply"]
     let p = ["p", post.pubkey]
     
-    return createNostrObject(content: content, kind: 1, tags: [e, p] + mentionedPubkeys.map { ["p", $0, "", "mention"] })
+    var root = ["e", post.id, "", "root"]
+    for tag in post.tags {
+        if tag.last == "root" {
+            root = tag
+        }
+    }
+    
+    let allTags = [e, p, root] + mentionedPubkeys.map { ["p", $0, "", "mention"] }
+    
+    return createNostrObject(content: content, kind: 1, tags: allTags)
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {

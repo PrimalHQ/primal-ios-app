@@ -250,8 +250,17 @@ final class Connection {
         
         timeToReconnect *= 2
         PrimalEndpointsManager.instance.checkIfNecessary()
-        connect()
-        print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
+        
+        if !Self.regular.isConnected && !Self.wallet.isConnected {
+            let time = timeToReconnect
+            print("CONNECTION - BOTH \(time) \(Date())")
+            Self.reconnect()
+            Self.regular.timeToReconnect = time
+            Self.wallet.timeToReconnect = time
+        } else {
+            print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
+            connect()
+        }
         
         Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(timeToReconnect))) { [weak self] in
             self?.autoReconnect()

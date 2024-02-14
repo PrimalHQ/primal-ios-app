@@ -50,7 +50,11 @@ final class WalletReceiveDetailsController: UIViewController, Themeable, Keyboar
         
         input.becomeFirstResponder()
     }
+    
+    var maxInputAmountSats: Int { 999999999 }
+    var maxInputAmountUSD: Double { 99999 }
 }
+
 
 private extension WalletReceiveDetailsController {
     func setup() {

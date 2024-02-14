@@ -20,7 +20,7 @@ final class SettingsNetworkViewController: UIViewController, Themeable {
         
         setup()
         
-        IdentityManager.instance.requestUserContacts()
+        IdentityManager.instance.requestUserContactsAndRelays()
     }
     
     func updateTheme() {
