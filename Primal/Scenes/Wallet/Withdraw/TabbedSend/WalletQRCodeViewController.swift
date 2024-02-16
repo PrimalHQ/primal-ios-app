@@ -61,8 +61,8 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         
         importImageButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
-                guard let code = image.detectQRCode() else { return }
+            ImagePickerManager(self, mode: .gallery) { [weak self] result in
+                guard let (image, _) = result.image, let code = image.detectQRCode() else { return }
                 self?.sendParent?.search(code)
             }
         }), for: .touchUpInside)

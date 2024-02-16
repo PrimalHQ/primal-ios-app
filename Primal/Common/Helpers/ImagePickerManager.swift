@@ -6,16 +6,39 @@
 //
 
 import UIKit
+import AVFoundation
 
-protocol ImagePickerManagerProtocol: UIViewController {
+struct GalleryVideo {
+    var thumbnail: UIImage
+    var url: URL
+}
+
+typealias GalleryImage = (UIImage, isPNG: Bool)
+
+enum ImagePickerResult {
+    case image(GalleryImage)
+    case video(GalleryVideo)
     
+    var image: GalleryImage? {
+        switch self {
+        case .image(let image): return image
+        case .video:            return nil
+        }
+    }
+    
+    var thumbnailImage: UIImage {
+        switch self {
+        case .image(let image): return image.0
+        case .video(let video): return video.thumbnail
+        }
+    }
 }
 
 final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var picker = UIImagePickerController()
     
     weak var viewController: UIViewController?
-    var pickImageCallback: (UIImage, _ isPNG: Bool) -> () = { _,_  in }
+    let pickImageCallback: (ImagePickerResult) -> ()
     
     var strongSelf: ImagePickerManager?
     
@@ -24,12 +47,15 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
     }
     
     @discardableResult
-    init(_ vc: UIViewController, mode: Mode = .dialog, _ callback: @escaping (UIImage, _ isPNG: Bool) -> ()) {
+    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false,  _ callback: @escaping (ImagePickerResult) -> ()) {
         viewController = vc
+        pickImageCallback = callback
         super.init()
         
+        if allowVideo {
+            picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary) ?? picker.mediaTypes
+        }
         picker.delegate = self
-        pickImageCallback = callback
         
         switch mode {
         case .camera:
@@ -80,17 +106,38 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
-        guard let image = info[.originalImage] as? UIImage else {
-            print("Expected a dictionary containing an image, but was provided the following: \(info)")
+        
+        if let image = info[.originalImage] as? UIImage {
+            var isPNG = false
+            if let assetPath = info[.imageURL] as? NSURL, assetPath.absoluteString?.uppercased().hasSuffix("PNG") == true {
+                isPNG = true
+            }
+
+            pickImageCallback(.image((image.updateImageOrientationUp(), isPNG)))
             return
         }
         
-        var isPNG = false
-        if let assetPath = info[.imageURL] as? NSURL, assetPath.absoluteString?.uppercased().hasSuffix("PNG") == true {
-            isPNG = true
+        guard
+            let videoURL = info[.mediaURL] as? NSURL,
+            let absolute = videoURL.absoluteURL,
+            let thumbnail = getThumbnailImage(forUrl: absolute)
+        else { return }
+        
+        pickImageCallback(.video(.init(thumbnail: thumbnail, url: absolute)))
+    }
+    
+    func getThumbnailImage(forUrl url: URL) -> UIImage? {
+        let asset: AVAsset = AVAsset(url: url)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+
+        do {
+            let thumbnailImage = try imageGenerator.copyCGImage(at: CMTimeMake(value: 1, timescale: 60), actualTime: nil)
+            return UIImage(cgImage: thumbnailImage)
+        } catch let error {
+            print(error)
         }
 
-        pickImageCallback(image.updateImageOrientationUp(), isPNG)
+        return nil
     }
 }
 

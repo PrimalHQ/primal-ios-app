@@ -126,7 +126,7 @@
 		9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF6F2A573E5100F2C379 /* UIStackView+Extra.swift */; };
 		9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF722A573E7A00F2C379 /* FormHeaderView.swift */; };
 		9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */; };
-		9E83DF792A57FDEC00F2C379 /* UploadPhotoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */; };
+		9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF782A57FDEC00F2C379 /* UploadAssetRequest.swift */; };
 		9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */; };
 		9E83DF7F2A61E58E00F2C379 /* NewPostsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF7E2A61E58E00F2C379 /* NewPostsButton.swift */; };
 		9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF802A6ED99500F2C379 /* PostingImageView.swift */; };
@@ -334,6 +334,9 @@
 		B9CE4DC22B740A4D0060A1B8 /* loadingDots.json in Resources */ = {isa = PBXBuildFile; fileRef = B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */; };
 		B9CE4DC42B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */; };
 		B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */; };
+		B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */; };
+		B9CE4DD42B7E252D0060A1B8 /* ChunkUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */; };
+		B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -507,7 +510,7 @@
 		9E83DF6F2A573E5100F2C379 /* UIStackView+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStackView+Extra.swift"; sourceTree = "<group>"; };
 		9E83DF722A573E7A00F2C379 /* FormHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormHeaderView.swift; sourceTree = "<group>"; };
 		9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerManager.swift; sourceTree = "<group>"; };
-		9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoRequest.swift; sourceTree = "<group>"; };
+		9E83DF782A57FDEC00F2C379 /* UploadAssetRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadAssetRequest.swift; sourceTree = "<group>"; };
 		9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsZapsViewController.swift; sourceTree = "<group>"; };
 		9E83DF7E2A61E58E00F2C379 /* NewPostsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostsButton.swift; sourceTree = "<group>"; };
 		9E83DF802A6ED99500F2C379 /* PostingImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingImageView.swift; sourceTree = "<group>"; };
@@ -713,6 +716,9 @@
 		B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingDots.json; sourceTree = "<group>"; };
 		B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHomeToTransactionAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupDatePickerController.swift; sourceTree = "<group>"; };
+		B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extra.swift"; sourceTree = "<group>"; };
+		B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkUploader.swift; sourceTree = "<group>"; };
+		B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBar.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -937,6 +943,7 @@
 				9E25ACBE2A98F9F800F0B395 /* UIImage+Extra.swift */,
 				93EAED172ABB25B300B4A1CD /* Collection+Extra.swift */,
 				B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */,
+				B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1195,6 +1202,7 @@
 				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
 				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
 				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
+				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
 			);
 			path = Posting;
 			sourceTree = "<group>";
@@ -1214,7 +1222,8 @@
 			isa = PBXGroup;
 			children = (
 				B9009B5F2B11082D002B0613 /* Requests */,
-				9E83DF782A57FDEC00F2C379 /* UploadPhotoRequest.swift */,
+				9E83DF782A57FDEC00F2C379 /* UploadAssetRequest.swift */,
+				B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -2061,6 +2070,7 @@
 				B9CE4DB02B697FCE0060A1B8 /* SlideDownTransition.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
+				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
@@ -2090,6 +2100,7 @@
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				B914CD6F2AA24BD300CD0BD1 /* UnmuteUserCell.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */,
+				B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */,
@@ -2100,7 +2111,7 @@
 				B9CE4DB52B6AC7750060A1B8 /* WalletReceiveTransitionAnimator.swift in Sources */,
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */,
-				9E83DF792A57FDEC00F2C379 /* UploadPhotoRequest.swift in Sources */,
+				9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				9E8834B82A323CA1005DB548 /* ProfileLinkDisplayView.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
@@ -2259,6 +2270,7 @@
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
+				B9CE4DD42B7E252D0060A1B8 /* ChunkUploader.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
@@ -2444,7 +2456,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.33;
+				MARKETING_VERSION = 1.2.34;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2489,7 +2501,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.33;
+				MARKETING_VERSION = 1.2.34;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

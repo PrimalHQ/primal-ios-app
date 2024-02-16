@@ -211,20 +211,10 @@ private extension ChatViewController {
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         imageButton.constrainToSize(48)
-        imageButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
-//                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
-            }
-        }), for: .touchUpInside)
         
         let cameraButton = UIButton()
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         cameraButton.constrainToSize(48)
-        cameraButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
-//                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
-            }
-        }), for: .touchUpInside)
         
         let atButton = UIButton()
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
@@ -335,7 +325,7 @@ private extension ChatViewController {
     func addPublishers() {
         inputManager.$isEditing.sink { [weak self] isEditing in
             guard let self = self else { return }
-            let images = self.inputManager.images
+            let images = self.inputManager.media
             
             self.postButton.isHidden = !isEditing
             self.textHeightConstraint?.isActive = !isEditing
@@ -357,7 +347,7 @@ private extension ChatViewController {
         }
         .store(in: &cancellables)
         
-        inputManager.$images.receive(on: DispatchQueue.main).sink { [weak self] images in
+        inputManager.$media.receive(on: DispatchQueue.main).sink { [weak self] images in
 //            self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
             
@@ -369,7 +359,7 @@ private extension ChatViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$images, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] _, isEmpty in
+        Publishers.CombineLatest(inputManager.$media, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] _, isEmpty in
             guard let self else { return }
             self.postButton.isEnabled = !isEmpty && !self.inputManager.isUploadingImages
             self.postButton.alpha = self.postButton.isEnabled ? 1 : 0.5

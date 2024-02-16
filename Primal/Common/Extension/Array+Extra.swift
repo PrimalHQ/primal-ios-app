@@ -26,6 +26,22 @@ public extension Array {
             self[i] = newValue
         }
     }
+    
+    func splitInSubArrays(into size: Int) -> [[Element]] {
+        var array: [[Element]] = []
+        
+        var index = 0
+        
+        let subCount = (count / size) + 1
+        
+        while array.count * subCount < count {
+            let subArray = self[(index * subCount)..<Swift.min((index + 1) * subCount, count)]
+            array.append(Array(subArray))
+            index += 1
+        }
+        
+        return array
+    }
 }
 
 extension Sequence where Iterator.Element: Hashable {

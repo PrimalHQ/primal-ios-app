@@ -238,33 +238,39 @@ final class Connection {
             return
         }
         
-        let reconnectAttemptTime = lastConnectTime.addingTimeInterval(timeToReconnect)
+//        let reconnectAttemptTime = lastConnectTime.addingTimeInterval(timeToReconnect)
         
-        if reconnectAttemptTime > .now {
-            let delta = reconnectAttemptTime.timeIntervalSinceNow
-            Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(delta) + 1)) { [weak self] in
-                self?.autoReconnect()
-            }
-            return
-        }
+//        if reconnectAttemptTime > .now {
+//            let delta = reconnectAttemptTime.timeIntervalSinceNow
+//            Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(delta) + 1)) { [weak self] in
+//                self?.autoReconnect()
+//            }
+//            return
+//        }
         
-        timeToReconnect *= 2
+        timeToReconnect = min(timeToReconnect * 2, 30)
         PrimalEndpointsManager.instance.checkIfNecessary()
+        connect()
         
-        if !Self.regular.isConnected && !Self.wallet.isConnected {
-            let time = timeToReconnect
-            print("CONNECTION - BOTH \(time) \(Date())")
-            Self.reconnect()
-            Self.regular.timeToReconnect = time
-            Self.wallet.timeToReconnect = time
-        } else {
-            print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
-            connect()
-        }
-        
+        print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
+
         Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(timeToReconnect))) { [weak self] in
             self?.autoReconnect()
         }
+//        if !Self.regular.isConnected && !Self.wallet.isConnected {
+//            let time = timeToReconnect
+//            print("CONNECTION - BOTH \(time) \(Date())")
+//            Self.reconnect()
+//            Self.regular.timeToReconnect = time
+//            Self.wallet.timeToReconnect = time
+//        } else {
+//            print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
+//            connect()
+//        }
+//        
+//        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(timeToReconnect))) { [weak self] in
+//            self?.autoReconnect()
+//        }
     }
 }
 

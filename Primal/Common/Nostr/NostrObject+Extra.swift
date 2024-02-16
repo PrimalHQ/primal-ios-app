@@ -133,6 +133,39 @@ extension NostrObject {
         createNostrChatReadEvent(pubkey)
     }
     
+    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data) -> NostrObject? {
+        let strBase64:String = "data:image/svg+xml;base64," + data.base64EncodedString()
+        
+        let content: [String: JSON] = [
+            "file_length":  .number(Double(fileLength)),
+            "upload_id":    .string(uploadID),
+            "offset":       .number(Double(offset)),
+            "data":         .string(strBase64)
+        ]
+        
+        guard
+            let pubkey = (ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair)?.hexVariant.pubkey,
+            let contentString = content.encodeToString()
+        else { return nil }
+        
+        return createNostrObject(content: contentString, kind: 10_000_135, tags: [["p", pubkey]])
+    }
+    
+    static func uploadComplete(fileLength: Int, uploadID: String, sha256: String) -> NostrObject? {        
+        let content: [String: JSON] = [
+            "file_length":  .number(Double(fileLength)),
+            "upload_id":    .string(uploadID),
+            "sha256":         .string(sha256)
+        ]
+        
+        guard
+            let pubkey = (ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair)?.hexVariant.pubkey,
+            let contentString = content.encodeToString()
+        else { return nil }
+        
+        return createNostrObject(content: contentString, kind: 10_000_135, tags: [["p", pubkey]])
+    }
+    
     static func markAllChatRead() -> NostrObject? {
         createNostrMarkAllChatsReadEvent()
     }

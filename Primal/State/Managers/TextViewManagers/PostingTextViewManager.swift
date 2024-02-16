@@ -95,7 +95,7 @@ final class PostingTextViewManager: TextViewManager {
             tokens = updateTokensForReplacingRange(tokens: tokens, range: token.range, replacementText: replacement)
         }
         
-        for image in images {
+        for image in media {
             guard case .uploaded(let url) = image.state else { continue }
             currentText = currentText.appending("\n" + url) as NSString
         }
