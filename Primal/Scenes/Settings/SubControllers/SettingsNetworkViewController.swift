@@ -14,13 +14,12 @@ final class SettingsNetworkViewController: UIViewController, Themeable {
     private let relayStack = UIStackView(axis: .vertical, [])
     
     private var cancellables: Set<AnyCancellable> = []
+    private var viewCancellables: Set<AnyCancellable> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        
-        IdentityManager.instance.requestUserContactsAndRelays()
     }
     
     func updateTheme() {
@@ -41,7 +40,6 @@ extension SettingsNetworkViewController: UITextFieldDelegate {
         let alert = UIAlertController(title: "Are you sure?", message: "Do you want to add this relay?\n\(text)", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .default) { _ in
             FollowManager.instance.addRelay(url: text)
-            RelaysPostbox.instance.connect([text])
             
             textField.text = ""
         })
@@ -58,18 +56,31 @@ private extension SettingsNetworkViewController {
         title = "Network"
         updateTheme()
         
-        RelaysPostbox.instance.pool.$connections
-            .map { c in c.sorted(by: { $0.identity > $1.identity }) }
-            .receive(on: DispatchQueue.main).sink { [weak self] relays in
-                guard let self else { return }
-                self.relayStack.subviews.forEach { $0.removeFromSuperview() }
+        IdentityManager.instance.$userRelays.receive(on: DispatchQueue.main).sink { [weak self] relays in
+            guard let self else { return }
+            
+            self.relayStack.subviews.forEach { $0.removeFromSuperview() }
+            viewCancellables = []
+            
+            for relay in relays ?? [:] {
+                let parent = UIView()
                 
-                let relayViews: [UIView] = relays.map { self.relayConnectionView($0) }
+                self.relayStack.addArrangedSubview(parent)
                 
-                relayViews.forEach { self.relayStack.addArrangedSubview($0) }
+                RelaysPostbox.instance.pool.$connections.compactMap({ $0.first(where: { c in c.identity == relay.key }) })
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] connection in
+                        guard let self else { return }
+                        parent.subviews.forEach { $0.removeFromSuperview() }
+                        let view = self.relayConnectionView(connection)
+                        parent.addSubview(view)
+                        view.pinToSuperview()
+                    }
+                    .store(in: &viewCancellables)
             }
-            .store(in: &cancellables)
-        
+        }
+        .store(in: &cancellables)
+
         let regularConnection = SettingsNetworkStatusView(title: Connection.regular.socketURL.absoluteString)
         Connection.regular.$isConnected.receive(on: DispatchQueue.main).sink { isConnected in
             regularConnection.status = isConnected

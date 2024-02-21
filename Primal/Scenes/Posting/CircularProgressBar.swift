@@ -19,7 +19,7 @@ class CircularProgressView: UIView {
     
     required init?(coder aDecoder: NSCoder) { fatalError() }
     
-    var progressColor: UIColor = .accent {
+    var progressColor: UIColor = .accent2 {
         didSet {
             progressLayer.strokeColor = progressColor.cgColor
         }

@@ -31,7 +31,7 @@ final class RelaysPostbox {
         pool.connect(relays: loadedRalays)
     }
     
-    func request(_ ev: NostrObject, specificRelay: String?, errorDelay: Double = 10, successHandler: ((_ result: [JSON]) -> Void)?, errorHandler: (() -> Void)?) {
+    func request(_ ev: NostrObject, specificRelay: String? = nil, errorDelay: Double = 10, successHandler: ((_ result: [JSON]) -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         var didSucceed: Bool?
         
         func resultHandler(result: [JSON], relay: String) {

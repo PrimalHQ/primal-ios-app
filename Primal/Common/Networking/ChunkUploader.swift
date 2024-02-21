@@ -47,11 +47,6 @@ class ChunkUploader {
     }
     
     func uploadChunks() async throws {
-        guard
-            let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
-            let privkey = keypair.hexVariant.privkey
-        else { return }
-        
         var offset = startingOffset
         
         for (index, chunk) in chunks.enumerated() {
@@ -59,7 +54,11 @@ class ChunkUploader {
                 throw UploadError.unableToProcess
             }
             
-            try await sendEvent(event)
+            do {
+                try await sendEvent(event)
+            } catch {
+                try await sendEvent(event)
+            }
             
             offset += chunk.count
             progress = CGFloat(index + 1) / CGFloat(chunks.count)
@@ -68,15 +67,18 @@ class ChunkUploader {
         completed = true
     }
     
-    
-    var responseCallback: () -> () = { }
+    var responseCallback: (Error?) -> () = { _ in }
     func sendEvent(_ event: NostrObject) async throws {
         guard let encoded = event.encodeToString() else { throw UploadError.unableToProcess }
         
-        await withCheckedContinuation { continuation in
-            responseCallback = { [weak self] in
-                self?.responseCallback = { }
-                continuation.resume()
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
+            responseCallback = { [weak self] error in
+                self?.responseCallback = { _ in }
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
             }
             
             let requestString = #"["REQ", "\#(UUID().uuidString)", { "cache": ["upload_chunk", { "event_from_user": \#(encoded) }]}]"#
@@ -119,11 +121,12 @@ extension ChunkUploader: WebSocketConnectionDelegate {
         let data = Data(string.utf8)
         guard
             let response = try? JSONDecoder().decode(JSON.self, from: data),
-            let type = response.arrayValue?.first?.stringValue,
-            type == "EOSE"
+            let type = response.arrayValue?.first?.stringValue?.uppercased()
         else { return }
         
-        responseCallback()
+        if type == "EOSE" {
+            responseCallback(nil)
+        }
     }
     
     func webSocketDidReceiveMessage(connection: WebSocketConnection, data: Data) {

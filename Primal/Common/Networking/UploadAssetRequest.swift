@@ -143,8 +143,6 @@ extension UploadAssetRequest: WebSocketConnectionDelegate {
     func webSocketDidReceiveMessage(connection: WebSocketConnection, string: String) {
         print("message: \(string)")
         
-        
-        
         guard
             let response: JSON = string.decode(),
             let type = response.arrayValue?.first?.stringValue?.uppercased()

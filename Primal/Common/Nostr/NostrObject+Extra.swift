@@ -97,8 +97,20 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
-    static func contacts(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
-        createNostrContactsEvent(contacts, relays: relays)
+    static func contacts(_ contacts: Set<String>) -> NostrObject? {
+        createNostrObject(content: IdentityManager.instance.followListContentString, kind: 3, tags: contacts.map {
+            ["p", $0]
+        })
+    }
+    
+    static func relays(_ relays: [String: RelayInfo]) -> NostrObject? {
+        let relayTags = relays.compactMap { url, info in
+            info.read && info.write ? ["r", url] :
+            info.read ? ["r", url, "read"] :
+            info.write ? ["r", url, "write"] : nil
+        }
+        
+        return createNostrObject(content: "", kind: 10002, tags: relayTags)
     }
     
     static func getSettings() -> NostrObject? {
@@ -216,23 +228,6 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
 
 fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
     createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
-}
-
-fileprivate func createNostrContactsEvent(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
-    guard let relaysJSONData = try? jsonEncoder.encode(relays) else {
-        print("Unable to encode Relays to Data")
-        return nil
-    }
-    
-    guard let relaysJSONString =  String(data: relaysJSONData, encoding: .utf8) else {
-        print("Unable to encode Relays json Data to String")
-        return nil
-    }
-    
-    let tags = contacts.map {
-        ["p", $0]
-    }
-    return createNostrObject(content: relaysJSONString, kind: 3, tags: tags)
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {

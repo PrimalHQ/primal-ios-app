@@ -11,17 +11,18 @@ import UIKit
 final class WalletActivateViewController: UIViewController {
     
     private let descLabel = UILabel()
-    private let nameInput = UITextField()
+    private let firstNameInput = UITextField()
+    private let lastNameInput = UITextField()
     private let emailInput = UITextField()
-    private let codeInput = UITextField()
+    
     private let dateButton = UIButton()
-    private let datePicker = UIDatePicker()
     
     private lazy var firstScreenStack = UIStackView(axis: .vertical, [
-        descLabel,                  SpacerView(height: 16, priority: .required), SpacerView(height: 20),
-        inputParent(nameInput),     SpacerView(height: 16, priority: .required), SpacerView(height: 8),
-        inputParent(emailInput),    SpacerView(height: 16, priority: .required), SpacerView(height: 8),
-        inputParent(dateButton),    SpacerView(height: 16, priority: .required), SpacerView(height: 8),
+        descLabel,                  SpacerView(height: 28, priority: .required),
+        inputParent(firstNameInput),SpacerView(height: 16, priority: .required),
+        inputParent(lastNameInput), SpacerView(height: 16, priority: .required),
+        inputParent(emailInput),    SpacerView(height: 16, priority: .required),
+        inputParent(dateButton),    SpacerView(height: 16, priority: .required),
         countryRow
     ])
     
@@ -29,30 +30,11 @@ final class WalletActivateViewController: UIViewController {
     private let stateInput = UITextField()
     private lazy var countryRow = UIStackView([inputParent(countryInput), inputParent(stateInput)])
     
-    private let countryPicker = UIPickerView()
-    private let statePicker = UIPickerView()
-    
     private let confirmButton = LargeRoundedButton(title: "Next")
     
     private var date: Date? {
         didSet {
             updateDateButton()
-        }
-    }
-    
-    private var isWaitingForCode = false {
-        didSet {
-            UIView.transition(with: view, duration: 0.3) {
-                self.firstScreenStack.isHidden = self.isWaitingForCode
-                self.firstScreenStack.alpha = self.isWaitingForCode ? 0 : 1
-                
-                self.codeInput.superview?.isHidden = !self.isWaitingForCode
-                self.codeInput.superview?.alpha = self.isWaitingForCode ? 1 : 0
-                
-                self.descLabel.text = self.isWaitingForCode ? "We emailed your activation code.\nPlease enter it below:" : "Activating your wallet is easy!\nAll we need is your name\nand email address:"
-                self.confirmButton.title = self.isWaitingForCode ? "Finish" : "Next"
-                self.confirmButton.isEnabled = !self.isWaitingForCode
-            }
         }
     }
     
@@ -86,17 +68,30 @@ private extension WalletActivateViewController {
         iconParent.addSubview(icon)
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
+        
         let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
         let spacerStack = UIStackView(axis: .vertical, [SpacerView(height: 16, priority: .required), SpacerView(height: 16)])
-        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, firstScreenStack, inputParent(codeInput), spacerStack, confirmButton])
+        let mainStack = UIStackView(axis: .vertical, [
+            SpacerView(height: 32),
+            iconStack,
+            firstScreenStack,
+            spacerStack,
+            confirmButton,
+            TermsAndConditionsView()
+        ])
         mainStack.distribution = .equalSpacing
-        view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36)
-        mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24).isActive = true
+        
+        let scroll = UIScrollView()
+        scroll.addSubview(mainStack)
+        view.addSubview(scroll)
+        
+        mainStack.pinToSuperview(edges: .vertical, padding: 20).pinToSuperview(edges: .horizontal, padding: 36)
+        mainStack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
+        
+        scroll.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal)
+        scroll.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
         stateInput.superview?.isHidden = true
-        codeInput.superview?.isHidden = true
-        codeInput.superview?.alpha = 0
         
         descLabel.text = "Activating your wallet is easy!\nWe just need a few details below:"
         descLabel.font = .appFont(withSize: 18, weight: .semibold)
@@ -105,7 +100,7 @@ private extension WalletActivateViewController {
         descLabel.numberOfLines = 0
         descLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-        [nameInput, emailInput, codeInput, countryInput, stateInput].forEach {
+        [firstNameInput, lastNameInput, emailInput, countryInput, stateInput].forEach {
             $0.font = .appFont(withSize: 18, weight: .bold)
             $0.textColor = .foreground
             $0.returnKeyType = .done
@@ -113,9 +108,9 @@ private extension WalletActivateViewController {
         }
         
         [
-            (nameInput, "your name"),
+            (firstNameInput, "first name"),
+            (lastNameInput, "last name"),
             (emailInput, "your email address"),
-            (codeInput, "activation code"),
             (countryInput, "country of residence"),
             (stateInput, "state")
         ].forEach { field, text in
@@ -130,19 +125,20 @@ private extension WalletActivateViewController {
         
         dateButton.contentHorizontalAlignment = .leading
         
-        nameInput.keyboardType = .namePhonePad
+        firstNameInput.keyboardType = .namePhonePad
         emailInput.keyboardType = .emailAddress
-        codeInput.keyboardType = .numberPad
-        countryInput.inputView = countryPicker
-        stateInput.inputView = statePicker
         
-        nameInput.autocapitalizationType = .words
+        firstNameInput.autocapitalizationType = .words
         emailInput.autocapitalizationType = .none
         
-        countryPicker.dataSource = self
-        statePicker.dataSource = self
-        countryPicker.delegate = self
-        statePicker.delegate = self
+        stateInput.isUserInteractionEnabled = false
+        stateInput.superview?.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.showStatePopup()
+        }))
+        countryInput.isUserInteractionEnabled = false
+        countryInput.superview?.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.showCountryPopup()
+        }))
         
         updateDateButton()
         
@@ -150,71 +146,21 @@ private extension WalletActivateViewController {
             self?.showDatePopup()
         }), for: .touchUpInside)
         
-        codeInput.addAction(.init(handler: { [weak self] _ in
-            self?.confirmButton.isEnabled = self?.codeInput.text?.count == 6
-        }), for: .editingChanged)
-        
         confirmButton.addAction(.init(handler: { [weak self] _ in
             self?.confirmButtonPressed()
         }), for: .touchUpInside)
     }
     
     func confirmButtonPressed() {
-        guard isWaitingForCode else {
-            completeFirstScreen()
-            return
-        }
-        
-        guard let code = codeInput.text, code.count == 6 else { codeInput.becomeFirstResponder(); return }
-        
-        codeInput.resignFirstResponder()
-        codeInput.isUserInteractionEnabled = false
-        confirmButton.isEnabled = false
-        
-        PrimalWalletRequest(type: .activate(code: code)).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] res in
-                guard let self else { return }
-                
-                self.codeInput.isUserInteractionEnabled = true
-                
-                guard let newAddress = res.newAddress else {
-                    self.codeInput.text = ""
-                    self.codeInput.becomeFirstResponder()
-                    return
-                }
-                
-                self.confirmButton.isEnabled = true
-                
-                WalletManager.instance.didJustCreateWallet = true
-                WalletManager.instance.isLoadingWallet = false
-                WalletManager.instance.userHasWallet = true
-                
-                self.present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {
-                    self.navigationController?.viewControllers.remove(object: self)
-                }
-                
-                guard let profile = IdentityManager.instance.user?.profileData else { return }
-                profile.lud16 = newAddress
-                IdentityManager.instance.updateProfile(profile) { success in
-                    if !success {
-                        RootViewController.instance.showErrorMessage("Unable to update profile lud16 address to \(newAddress)")
-                    } else {
-                        IdentityManager.instance.requestUserProfile()
-                    }
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func completeFirstScreen() {
-        guard let name = nameInput.text, !name.isEmpty else { nameInput.becomeFirstResponder(); return }
+        guard let firstName = firstNameInput.text, !firstName.isEmpty else { firstNameInput.becomeFirstResponder(); return }
+        guard let lastName = lastNameInput.text, !lastName.isEmpty else { lastNameInput.becomeFirstResponder(); return }
         guard let email = emailInput.text, !email.isEmpty else { emailInput.becomeFirstResponder(); return }
         guard let date else { showDatePopup(); return }
         guard let country = countryInput.text, !country.isEmpty else { countryInput.becomeFirstResponder(); return }
 
         guard email.isEmail else {
             emailInput.becomeFirstResponder()
+            emailInput.selectAll(nil)
             emailInput.selectAll(nil)
             return
         }
@@ -231,23 +177,25 @@ private extension WalletActivateViewController {
         
         resignAllInput()
         
-        isWaitingForCode = true
-        
         let countryCode = Self.countryDic[country] ?? country
         let stateCode = Self.statesDic[state ?? ""] ?? state
         
-        PrimalWalletRequest(type: .activationCode(name: name, email: email, date: date, country: countryCode, state: stateCode)).publisher()
+        confirmButton.isEnabled = false
+        
+        PrimalWalletRequest(type: .activationCode(firstName: firstName, lastName: lastName, email: email, date: date, country: countryCode, state: stateCode)).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
+                self?.confirmButton.isEnabled = true
+                
                 if let error = res.message {
-                    self?.isWaitingForCode = false
-                    
                     let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
                     alert.addAction(.init(title: "OK", style: .default) { _ in
                         self?.navigationController?.popToRootViewController(animated: true)
                         self?.mainTabBarController?.switchToTab(.home)
                     })
                     self?.present(alert, animated: true)
+                } else {
+                    self?.show(WalletActivationCodeController(), sender: nil)
                 }
             }
             .store(in: &cancellables)
@@ -287,6 +235,27 @@ private extension WalletActivateViewController {
         dateButton.titleLabel?.font = .appFont(withSize: 18, weight: .bold)
     }
     
+    func showCountryPopup() {
+        resignAllInput()
+        
+        let currentIndex = Self.countries.firstIndex(of: countryInput.text ?? "") ?? 0
+        let picker = PopupUIPickerController(options: Self.countries, startingIndex: currentIndex) { [weak self] country in
+            self?.countryInput.text = country
+            self?.stateInput.superview?.isHidden = country != Self.unitedStatesName
+        }
+        present(picker, animated: true)
+    }
+    
+    func showStatePopup() {
+        resignAllInput()
+        
+        let currentIndex = Self.states.firstIndex(of: stateInput.text ?? "") ?? 0
+        let picker = PopupUIPickerController(options: Self.states, startingIndex: currentIndex) { [weak self] state in
+            self?.stateInput.text = state
+        }
+        present(picker, animated: true)
+    }
+    
     func showDatePopup() {
         resignAllInput()
         
@@ -297,7 +266,7 @@ private extension WalletActivateViewController {
     }
     
     func resignAllInput() {
-        [nameInput, emailInput, countryInput, stateInput].forEach { $0.resignFirstResponder() }
+        [firstNameInput, emailInput, countryInput, stateInput].forEach { $0.resignFirstResponder() }
     }
 }
 
@@ -305,36 +274,6 @@ extension WalletActivateViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return false
-    }
-}
-
-extension WalletActivateViewController: UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int { return 1 }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == countryPicker {
-            return Self.countries.count
-        }
-        return Self.states.count
-    }
-}
-
-extension WalletActivateViewController: UIPickerViewDelegate {
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == countryPicker {
-            return Self.countries[row]
-        }
-        return Self.states[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == countryPicker {
-            countryInput.text = Self.countries[row]
-            stateInput.superview?.isHidden = Self.countries[row] != Self.unitedStatesName
-            return
-        }
-        let stateCode = Self.states[row]
-        stateInput.text = stateCode
     }
 }
 
@@ -373,8 +312,8 @@ private extension WalletActivateViewController {
     private static let unitedStatesName = "United States of America"
     
     static let statesDic: [String: String] = RegionInfo.allStates.reduce(into: [:], { $0[$1.label] = $1.code })
-    static let states: [String] = [""] + statesDic.sorted(by: { $0.key < $1.key }).map { $0.key }
+    static let states: [String] = statesDic.sorted(by: { $0.key < $1.key }).map { $0.key }
     
     static let countryDic: [String: String] = RegionInfo.allCountries.reduce(into: [:], { $0[$1.label] = $1.code })
-    static let countries: [String] = ["", unitedStatesName] + countryDic.filter({ $0.key != unitedStatesName}).sorted(by: { $0.key < $1.key }).map { $0.key }
+    static let countries: [String] = [unitedStatesName] + countryDic.filter({ $0.key != unitedStatesName}).sorted(by: { $0.key < $1.key }).map { $0.key }
 }

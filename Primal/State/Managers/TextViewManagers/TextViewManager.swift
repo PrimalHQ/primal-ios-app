@@ -85,6 +85,8 @@ class TextViewManager: NSObject, UITextViewDelegate {
         
         upload.$progress.removeDuplicates().receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
+                guard let postingIndex = self?.media.firstIndex(where: { $0.id == id }) else { return }
+
                 self?.media[postingIndex].state = .uploading(progress)
             }
             .store(in: &cancellables)
@@ -93,7 +95,7 @@ class TextViewManager: NSObject, UITextViewDelegate {
             .sink(receiveCompletion: { [weak self] in
                 guard case .failure(let error) = $0, let index = self?.media.firstIndex(where: { $0.id == postingImage.id }) else { return }
                 
-                self?.media[index].state = .failed
+                self?.media.remove(at: index)
                 print(error)
             }, receiveValue: { [weak self] urlString in
                 guard let index = self?.media.firstIndex(where: { $0.id == postingImage.id }) else { return }

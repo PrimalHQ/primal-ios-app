@@ -14,7 +14,31 @@ import Kingfisher
 let APP_NAME = "Primal-iOS App"
 
 final class IdentityManager {
-    private init() {}
+    private init() {
+        $userRelays.sink { info in
+            RelaysPostbox.instance.disconnect()
+            
+            guard let info else {
+                RelaysPostbox.instance.connect(bootstrap_relays)
+                return
+            }
+            
+            let writeRelays = info.filter {
+                guard $0.value.write else { return false }
+                guard let url = URL(string: $0.key) else { return false }
+                if url.scheme != "wss" { return false }
+                if url.absoluteString.containsEmoji { return false }
+                return true
+            }
+            
+            var relayKeys = Array(writeRelays.keys)
+            if relayKeys.isEmpty {
+                relayKeys = bootstrap_relays // Default relay list
+            }
+            RelaysPostbox.instance.connect(relayKeys)
+        }
+        .store(in: &cancellables)
+    }
     
     static let instance = IdentityManager()
 
@@ -40,8 +64,9 @@ final class IdentityManager {
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettingsContent?
     @Published var userRelays: [String: RelayInfo]?
-    var fullRelayList: [String] = []
-    @Published var userContacts: Contacts = Contacts(created_at: -1, contacts: [])
+    @Published var userContacts: Contacts = Contacts(created_at: -10, contacts: [])
+    
+    var followListContentString = ""
     
     @Published var didFinishInit: Bool = false
     
@@ -168,7 +193,29 @@ final class IdentityManager {
             self.didFinishInit = true
         }
     }
+    
     func requestUserContactsAndRelays(callback: (() -> Void)? = nil) {
+        requestRelays { [weak self] in
+            self?.requestUserContacts {
+                callback?()
+            }
+        }
+    }
+    
+    // Never just requestRelays as some clients might not support NIP-65
+    private func requestRelays(callback: (() -> Void)? = nil) {
+        SocketRequest(name: "get_user_relays", payload: .object(["pubkey": .string(userHexPubkey)])).publisher()
+            .sink { result in
+                if !result.relayData.isEmpty {
+                    self.userRelays = result.relayData
+                }
+                
+                callback?()
+            }
+            .store(in: &cancellables)
+    }
+    
+    func requestUserContacts(callback: (() -> Void)? = nil) {
         let request: JSON = .object([
             "cache": .array([
                 "contact_list",
@@ -178,31 +225,14 @@ final class IdentityManager {
             ])
         ])
         
+        // WE NEED TO USE OLD METHOD OF REQUEST TO GET followListContentString as String
         Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
                 switch kind {
                 case .contacts:
-                    guard var relays: [String: RelayInfo] = try? JSONDecoder().decode([String: RelayInfo].self, from: (response.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
-                        print("Error decoding contacts to json")
-                        return
-                    }
-                    
-                    self.fullRelayList = Array(relays.keys)
-                    
-                    relays = relays.filter { // We need to make sure the user doesn't have garbage in their list of relays
-                        guard let url = URL(string: $0.key) else { return false }
-                        if url.scheme != "wss" { return false }
-                        if url.absoluteString.containsEmoji { return false }
-                        return true
-                    }
-                    
-                    self.userRelays = relays
-                    
-                    let relayKeys = Array(relays.keys)
-                    
-                    RelaysPostbox.instance.connect(relayKeys)
+                    self.followListContentString = response.arrayValue?[2].objectValue?["content"]?.stringValue ?? self.followListContentString
                     
                     var tags: Set<String>?
                     if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
@@ -216,7 +246,7 @@ final class IdentityManager {
                                     let res = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
                                         $0.arrayValue?[safe: 1]?.stringValue ?? ""
                                     }
-
+                                    
                                     if let res {
                                         tags = Set<String>(res)
                                     }

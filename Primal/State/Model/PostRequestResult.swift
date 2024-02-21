@@ -29,6 +29,9 @@ class PostRequestResult: Codable {
     var messageArray: [String]?
     var userPubkey: String?
     
+    var relayData: [String: RelayInfo] = [:]
+    var contacts: Contacts?
+    
     var timestamps: [Date] = []
     
     var popularHashtags: [PopularHashtag] = []

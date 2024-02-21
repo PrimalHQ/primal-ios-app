@@ -139,7 +139,10 @@ final class WalletSendParentViewController: UIViewController {
         }
         
         if text.isBitcoinAddress {
-            if text.parsedBitcoinAddress.1 != nil {
+            if let lightning = text.parsedBitcoinAddress.lightning {
+                textSearch = nil
+                search(lightning)
+            } else if text.parsedBitcoinAddress.1 != nil {
                 navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: text.parsedBitcoinAddress.1)), animated: true)
             } else {
                 navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)

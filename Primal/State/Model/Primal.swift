@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct Contacts {
+struct Contacts: Codable {
     let created_at: Int
     var contacts: Set<String>
 }
@@ -106,8 +106,8 @@ struct PrimalSettingsNotifications: Codable, Hashable {
 }
 
 struct PrimalPagination: Codable, Hashable {
-    var since: Double
-    var until: Double
+    var since: Double?
+    var until: Double?
     var order_by: String
 }
 

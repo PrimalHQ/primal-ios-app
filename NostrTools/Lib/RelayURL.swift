@@ -8,8 +8,8 @@
 import Foundation
 
 struct RelayInfo: Codable {
-    let read: Bool
-    let write: Bool
+    var read: Bool
+    var write: Bool
 }
 
 struct RelayURL: Hashable {

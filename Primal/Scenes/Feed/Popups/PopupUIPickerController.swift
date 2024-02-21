@@ -1,26 +1,29 @@
 //
-//  PopupDatePickerController.swift
+//  PopupUIPickerController.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 12.2.24..
+//  Created by Pavle Stevanović on 20.2.24..
 //
 
 import Combine
 import UIKit
 
-final class PopupDatePickerController: UIViewController {
-    let datePicker = UIDatePicker()
+final class PopupUIPickerController: UIViewController {
+    let picker = UIPickerView()
     
     let applyButton = LargeRoundedButton(title: "Apply")
     let cancelButton = SimpleRoundedButton(title: "Cancel", accent: false)
     
-    init(starting: Date, _ callback: @escaping (Date) -> Void) {
+    let options: [String]
+    
+    init(options: [String], startingIndex: Int, _ callback: @escaping (String) -> Void) {
+        self.options = options
         super.init(nibName: nil, bundle: nil)
         
-        datePicker.date = starting
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.tintColor = .accent
+        picker.tintColor = .accent
+        picker.dataSource = self
+        picker.delegate = self
+        picker.selectRow(startingIndex, inComponent: 0, animated: false)
         
         overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         
@@ -32,7 +35,7 @@ final class PopupDatePickerController: UIViewController {
         
         applyButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            callback(datePicker.date)
+            callback(options[safe: picker.selectedRow(inComponent: 0)] ?? "")
             self.dismiss(animated: true)
         }), for: .touchUpInside)
     }
@@ -42,7 +45,7 @@ final class PopupDatePickerController: UIViewController {
     }
 }
 
-private extension PopupDatePickerController {
+private extension PopupUIPickerController {
     func setup() {
         view.backgroundColor = .background4
         if let pc = presentationController as? UISheetPresentationController {
@@ -58,7 +61,7 @@ private extension PopupDatePickerController {
         buttonStack.distribution = .fillEqually
         buttonStack.spacing = 16
         
-        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 22), datePicker, SpacerView(height: 12), buttonStack, SpacerView(height: 12)])
+        let stack = UIStackView(arrangedSubviews: [pullBarParent, SpacerView(height: 22), picker, SpacerView(height: 12), buttonStack, SpacerView(height: 12)])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
@@ -72,5 +75,21 @@ private extension PopupDatePickerController {
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
         pullBar.layer.cornerRadius = 2.5
+    }
+}
+
+extension PopupUIPickerController: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        options.count
+    }
+}
+
+extension PopupUIPickerController: UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return options[safe: row]
     }
 }

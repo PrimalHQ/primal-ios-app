@@ -51,11 +51,12 @@ enum NostrKind: Int {
     case webPreview = 10_000_128
     case userFollowers = 10_000_133
     case userPubkey = 10_000_138
+    case relays = 10_000_139
 }
 
 extension NostrKind {
     static func fromGenericJSON(_ json: JSON) -> NostrKind? {
-        guard let kind = json.arrayValue?[2].objectValue?["kind"]?.doubleValue else { return nil }
+        guard let kind = json.arrayValue?.last?.objectValue?["kind"]?.doubleValue else { return nil }
         return NostrKind(rawValue: Int(kind))
     }
 }

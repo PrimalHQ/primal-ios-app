@@ -153,7 +153,7 @@ private extension EditProfileViewController {
             OnboardingInputParent(input: bioInput).constrainToSize(height: 130), SpacerView(height: 12),
             FormHeaderView(title: "BITCOIN LIGHTNING ADDRESS", required: false),
             OnboardingInputParent(input: bitcoinInput).constrainToSize(height: 48), SpacerView(height: 12),
-            FormHeaderView(title: "NOSTR VERIFICATION (NIP-05)", required: false),
+            FormHeaderView(title: "VERIFIED NOSTR ADDRESS (NIP-05)", required: false),
             OnboardingInputParent(input: nip05Input).constrainToSize(height: 48), SpacerView(height: 12),
         ])
         formParent.addSubview(formStack)
