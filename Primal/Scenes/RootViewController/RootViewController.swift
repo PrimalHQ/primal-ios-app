@@ -20,6 +20,8 @@ extension CAMediaTimingFunction {
 final class RootViewController: UIViewController {
     static let instance = RootViewController()
     
+    var needsReset = false
+    
     private(set) var currentChild: UIViewController?
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
@@ -113,6 +115,9 @@ final class RootViewController: UIViewController {
     }
     
     func reset() {
+        dismiss(animated: true)
+        needsReset = false
+        
         addIntro()
         
         didAnimate = false

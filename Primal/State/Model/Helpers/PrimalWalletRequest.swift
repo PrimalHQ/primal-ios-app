@@ -76,8 +76,7 @@ struct PrimalWalletRequest {
                 
                 if let until {
                     dic["until"] = .number(Double(until))
-                }
-                if let since {
+                } else if let since {
                     dic["since"] = .number(Double(since))
                 }
                 return #"["transactions", \#(dic.encodeToString() ?? "{}")]"#
@@ -122,7 +121,7 @@ struct PrimalWalletRequest {
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "YYYY-MM-dd"
                 let dateString = dateFormatter.string(from: date)
-                return #"["get_activation_code", {"first_name": "\#(firstName)", "last_name": "\#(lastName)", "email": "\#(email)", "date_of_birth": "\#(dateString)", "country": "\#(country)", "state": "\#(state ?? "")"}]"#
+                return #"["get_activation_code_2", {"user_details": {"first_name": "\#(firstName)", "last_name": "\#(lastName)", "email": "\#(email)", "date_of_birth": "\#(dateString)", "country": "\#(country)", "state": "\#(state ?? "")"}}]"#
             case let .activate(code):
                 return "[\"activate\", {\"activation_code\": \"\(code)\"}]"
             case .parseLNURL(let lnurl):

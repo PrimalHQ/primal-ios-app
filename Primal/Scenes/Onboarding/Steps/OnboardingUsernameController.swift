@@ -20,7 +20,7 @@ struct AccountCreationData {
     var website: String = ""
 }
 
-class OnboardingImageUploader {
+class OnboardingSession {
     var avatarURL = "" {
         didSet {
             if let url = URL(string: avatarURL) {
@@ -39,7 +39,18 @@ class OnboardingImageUploader {
     
     var cancellables: Set<AnyCancellable> = []
     
+    static weak var instance: OnboardingSession?
+    
+    let newUserKeypair: NostrKeypair
+    
     init() {
+        guard let keypair = NostrKeypair.generate() else {
+            fatalError("Unable to generate a new keypair, this shouldn't be possible")
+        }
+        
+        newUserKeypair = keypair
+        Self.instance = self
+        
         Publishers.CombineLatest($isUploadingAvatar, $isUploadingBanner)
             .map { $0 || $1 }
             .assign(to: \.isUploading, onWeak: self)
@@ -56,7 +67,7 @@ class OnboardingImageUploader {
             self.image = image
             self.isUploadingAvatar = true
             
-            UploadAssetRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+            UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                 self?.isUploadingAvatar = false
                 switch $0 {
                 case .failure(let error):
@@ -78,7 +89,7 @@ class OnboardingImageUploader {
             self.bannerImage = image
             self.isUploadingBanner = true
             
-            UploadAssetRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+            UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                 self?.isUploadingBanner = false
                 switch $0 {
                 case .failure(let error):
@@ -111,7 +122,7 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     let progressView = PrimalProgressView(progress: 0, total: 4, markProgress: true)
     let descLabel = UILabel()
     
-    let uploader = OnboardingImageUploader()
+    let session = OnboardingSession()
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -121,8 +132,8 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     var accountData: AccountCreationData {
         AccountCreationData(
-            avatar: uploader.avatarURL,
-            banner: uploader.bannerURL,
+            avatar: session.avatarURL,
+            banner: session.bannerURL,
             bio: "",
             username: usernameInput.text ?? "",
             displayname: displayNameInput.text ?? "",
@@ -134,12 +145,6 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let keypair = NostrKeypair.generate() else {
-            fatalError("Unable to generate a new keypair, this shouldn't be possible")
-        }
-        
-        IdentityManager.instance.newUserKeypair = keypair
         
         setup()
     }
@@ -237,7 +242,7 @@ private extension OnboardingUsernameController {
             $0.returnKeyType = .done
         }
         
-        uploader.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
+        session.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
             if let image {
                 self?.avatarView.image = image
                 self?.avatarView.alpha = 1
@@ -273,13 +278,13 @@ private extension OnboardingUsernameController {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }), for: .touchUpInside)
         
         avatarView.isUserInteractionEnabled = true
         avatarView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }))
         
         usernameInput.keyboardType = .namePhonePad
@@ -288,7 +293,7 @@ private extension OnboardingUsernameController {
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self, !self.accountData.username.isEmpty else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingAboutController(data: self.accountData, uploader: self.uploader), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingAboutController(data: self.accountData, session: self.session), animated: true)
         }), for: .touchUpInside)
     }
     

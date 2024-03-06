@@ -29,7 +29,7 @@ final class WalletInfoLargeView: UIView {
         
         let balanceParent = UIView()
         balanceParent.addSubview(balanceConversionView)
-        balanceConversionView.pinToSuperview(edges: .bottom).pinToSuperview(edges: .top)
+        balanceConversionView.pinToSuperview()
         balanceConversionView.largeAmountLabel.centerToView(balanceParent, axis: .horizontal)
         balanceConversionView.roundingStyle = .twoDecimals
         

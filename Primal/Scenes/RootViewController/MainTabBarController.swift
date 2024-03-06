@@ -54,7 +54,12 @@ final class MainTabBarController: UIViewController, Themeable {
         
         $0.backgroundColor = isWalletSelected ? .foreground : .background3
         $0.tintColor = isWalletSelected ? .background : .foreground3
-        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
+        
+        if LoginManager.instance.loggedInNpubs().first == "npub1az9xj85cmxv8e9j9y80lvqp97crsqdu2fpu3srwthd99qfu9qsgstam8y8" {
+            $0.setImage(isWalletSelected ? UIImage(named: "nvkSpecialButtonPressed") : UIImage(named: "nvkSpecialButton"), for: .normal)
+        } else {
+            $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
+        }
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -102,6 +102,20 @@ final class WalletManager {
         }
     }
     
+    func reset(_ pubkey: String) {
+        parsedTransactions = []
+        
+        let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
+        balance = oldBalance
+        userHasWallet = oldBalance > 0 ? true : nil
+        
+        let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
+        transactions = oldTransactions.map { $0.0 }
+        parsedTransactions = oldTransactions
+        userZapped = [:]
+        isLoadingWallet = oldTransactions.isEmpty
+    }
+    
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
     
     func extraZapAmount(_ eventId: String) -> Int {
@@ -127,19 +141,7 @@ final class WalletManager {
         PrimalWalletRequest(type: .transactions()).publisher()
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
-                var transactions = self.transactions
-                
-                let old = val.transactions.filter { new in transactions.contains(where: { $0.id == new.id }) }
-                let new = val.transactions.filter { new in !transactions.contains(where: { $0.id == new.id }) }
-                
-                for transaction in old {
-                    guard let index = transactions.firstIndex(where: { $0.id == transaction.id }) else { continue }
-                    transactions[index] = transaction
-                }
-                
-                transactions.insert(contentsOf: new, at: 0)
-                
-                self.transactions = transactions
+                self.transactions = val.transactions
                 self.isLoadingTransactions = false
             })
             .store(in: &cancellables)
@@ -168,6 +170,15 @@ final class WalletManager {
                 self.transactions = transactions
                 self.isLoadingTransactions = false
             })
+            .store(in: &cancellables)
+    }
+    
+    func refreshHasWallet() {
+        PrimalWalletRequest(type: .isUser).publisher()
+            .sink { [weak self] val in
+                self?.isLoadingWallet = false
+                self?.userHasWallet = val.kycLevel == KYCLevel.email || val.kycLevel == KYCLevel.idDocument
+            }
             .store(in: &cancellables)
     }
     
@@ -276,28 +287,16 @@ final class WalletManager {
 
 private extension WalletManager {
     func setupPublishers() {
-        ICloudKeychainManager.instance.$userPubkey
-            .compactMap { $0.isEmpty ? nil : $0 }
+        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey
             .removeDuplicates()
-            .map { [weak self] pubkey in
-                let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
-                self?.balance = oldBalance
-                self?.userHasWallet = oldBalance > 0 ? true : nil
-                
-                let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
-                self?.transactions = oldTransactions.map { $0.0 }
-                self?.parsedTransactions = oldTransactions
-                self?.userZapped = [:]
-                self?.isLoadingWallet = oldTransactions.isEmpty
-                return pubkey
-            }
-            .debounce(for: .seconds(0.3), scheduler: RunLoop.main)
-            .flatMap { _ -> AnyPublisher<WalletRequestResult, Never> in
-                return PrimalWalletRequest(type: .isUser).publisher()
-            }
-            .sink(receiveValue: { [weak self] val in
-                self?.isLoadingWallet = false
-                self?.userHasWallet = val.kycLevel == .email || val.kycLevel == .idDocument
+        let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
+        
+        let complexPublisher = Publishers.Merge(pubkeyPublisher.first(), onlyPubkey.debounce(for: 1, scheduler: RunLoop.main)).removeDuplicates()
+        
+        complexPublisher
+            .sink(receiveValue: { [weak self] pubkey in
+                self?.reset(pubkey)
+                self?.refreshHasWallet()
             })
             .store(in: &cancellables)
         
@@ -326,7 +325,7 @@ private extension WalletManager {
             .removeDuplicates()
             .sink { [weak self] _ in
                 self?.refreshBalance()
-                self?.refreshTransactions()
+                self?.recheckTransactions()
             }
             .store(in: &cancellables)
         
@@ -397,8 +396,11 @@ private extension WalletManager {
             .sink { [weak self] _ in
                 guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
                 
+                let pubkey = event.pubkey
+                
                 self?.update = Connection.wallet.requestCacheContinous(name: "wallet_monitor_2", request: ["operation_event": event.toJSON()]) { result in
                     guard
+                        pubkey == ICloudKeychainManager.instance.userPubkey,
                         let content = result.arrayValue?.last?.objectValue?["content"]?.stringValue,
                         let json: [String: JSON] = content.decode()
                     else { return }

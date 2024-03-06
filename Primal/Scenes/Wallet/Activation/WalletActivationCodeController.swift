@@ -9,11 +9,19 @@ import Combine
 import UIKit
 
 final class WalletActivationCodeController: UIViewController {
-    private let codeInput = UITextField()
+    private let codeInput = StopSelectActionTextField()
     
     private let confirmButton = LargeRoundedButton(title: "Finish")
     
     private var cancellables = Set<AnyCancellable>()
+    
+    let email: String
+    init(email: String) {
+        self.email = email
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,36 +51,58 @@ private extension WalletActivationCodeController {
         iconParent.addSubview(icon)
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
-        let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
-        let spacerStack = UIStackView(axis: .vertical, [SpacerView(height: 16, priority: .required), SpacerView(height: 16)])
-        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconStack, inputParent(codeInput), spacerStack, confirmButton])
-        mainStack.distribution = .equalSpacing
+        let title = UILabel()
+        title.text = "Check Your Email"
+        title.font = .appFont(withSize: 20, weight: .semibold)
+        title.textColor = .foreground
+        title.textAlignment = .center
+        
+        let activationText = NSMutableAttributedString(string: "Your activation code was sent to ", attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .foregroundColor: UIColor.foreground
+        ])
+        activationText.append(.init(string: email, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .bold),
+            .foregroundColor: UIColor.foreground
+        ]))
+        activationText.append(.init(string: ". You may need to check your Junk or Spam folder.", attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .foregroundColor: UIColor.foreground
+        ]))
+        
+        let subTitle = UILabel()
+        subTitle.attributedText = activationText
+        subTitle.textAlignment = .center
+        subTitle.numberOfLines = 0
+        
+        let mainStack = UIStackView(axis: .vertical, [
+            SpacerView(height: 32),
+            iconParent,                 SpacerView(height: 69, priority: .defaultLow),
+            title,                      SpacerView(height: 12),
+            subTitle,                   SpacerView(height: 18),
+            inputParent(codeInput),     SpacerView(height: 12, priority: .required),
+            UIView(),
+            confirmButton
+        ])
+        
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36)
         mainStack.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -24).isActive = true
         
         [codeInput].forEach {
-            $0.font = .appFont(withSize: 18, weight: .bold)
+            $0.font = .appFont(withSize: 32, weight: .bold)
             $0.textColor = .foreground
             $0.returnKeyType = .done
             $0.delegate = self
         }
-        
-        [
-            (codeInput, "activation code"),
-        ].forEach { field, text in
-            field.attributedPlaceholder = NSAttributedString(string: text, attributes: [
-                .font: UIFont.appFont(withSize: 18, weight: .regular),
-                .foregroundColor: UIColor.foreground4
-            ])
-        }
-        
+        codeInput.defaultTextAttributes.updateValue(30, forKey: .kern)
         codeInput.keyboardType = .numberPad
         
         codeInput.addAction(.init(handler: { [weak self] _ in
             self?.confirmButton.isEnabled = self?.codeInput.text?.count == 6
         }), for: .editingChanged)
         
+        confirmButton.isEnabled = false
         confirmButton.addAction(.init(handler: { [weak self] _ in
             self?.confirmButtonPressed()
         }), for: .touchUpInside)
@@ -105,8 +135,8 @@ private extension WalletActivationCodeController {
                 WalletManager.instance.userHasWallet = true
                 
                 self.present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {
-                    self.navigationController?.viewControllers.remove(object: self)
                     self.navigationController?.viewControllers.removeAll(where: { $0 as? WalletActivateViewController != nil })
+                    self.navigationController?.viewControllers.remove(object: self)
                 }
                 
                 guard let profile = IdentityManager.instance.user?.profileData else { return }
@@ -124,17 +154,26 @@ private extension WalletActivationCodeController {
     
     func inputParent(_ input: UIView) -> UIView {
         let view = UIView()
-        view.addSubview(input)
-        input.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
         
-        view.backgroundColor = .background3
-        view.constrainToSize(height: 48)
-        view.layer.cornerRadius = 24
+        let backgroundViews = (1...6).map { _ in
+            let view = UIView()
+            view.backgroundColor = .background3
+            view.layer.cornerRadius = 12
+            return view
+        }
+        let stack = UIStackView(backgroundViews)
+        stack.distribution = .fillEqually
+        stack.spacing = 6
+        
+        view.addSubview(stack)
+        stack.constrainToSize(width: 290, height: 56).pinToSuperview(edges: .vertical).centerToSuperview()
+        
+        view.addSubview(input)
+        input.pin(to: stack, edges: .leading, padding: 10).pinToSuperview(edges: .trailing).centerToSuperview(axis: .vertical)
         
         view.addGestureRecognizer(BindableTapGestureRecognizer(action: {
             input.becomeFirstResponder()
         }))
-        
         return view
     }
 }
@@ -142,6 +181,27 @@ private extension WalletActivationCodeController {
 extension WalletActivationCodeController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        return false
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if var selection = textField.selectedTextRange, !selection.isEmpty {
+            textField.selectedTextRange = textField.textRange(from: selection.end, to: selection.end)
+        }
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let newLength = ((textField.text ?? "") as NSString).replacingCharacters(in: range, with: string).count
+        
+        return newLength <= 6
+    }
+}
+
+final class StopSelectActionTextField: UITextField {
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(paste(_:)){
+            return true
+        }
         return false
     }
 }

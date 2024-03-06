@@ -48,6 +48,7 @@ final class TransactionCell: UITableViewCell, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
  
+    var oldWasBtc: Bool? = nil
     func setup(with transaction: (WalletTransaction, ParsedUser), showBTC: Bool) {
         let isDeposit = transaction.0.type == "DEPOSIT"
         
@@ -114,16 +115,30 @@ final class TransactionCell: UITableViewCell, Themeable {
         let btcAmount = (Double(transaction.0.amount_btc) ?? 0)
         
         if showBTC {
-            amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
+            if let oldWasBtc, oldWasBtc != showBTC {
+                UIView.transition(with: amountLabel.superview ?? amountLabel, duration: 0.3, options: .transitionCrossDissolve) {
+                    self.amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
+                }
+            } else {
+                amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
+            }
             currencyLabel.text = "sats"
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
             
             let usdString = "$\(abs(usdAmount).twoDecimalPoints())"
             
-            amountLabel.text = usdString
+            if let oldWasBtc, oldWasBtc != showBTC {
+                UIView.transition(with: amountLabel.superview ?? amountLabel, duration: 0.3, options: .transitionCrossDissolve) {
+                    self.amountLabel.text = usdString
+                }
+            } else {
+                amountLabel.text = usdString
+            }
             currencyLabel.text = "USD"
         }
+        
+        oldWasBtc = showBTC
         
         updateTheme()
     }

@@ -29,13 +29,13 @@ final class OnboardingAboutController: UIViewController, OnboardingViewControlle
     
     @Published var editingViews: Set<UIView> = []
     
-    let uploader: OnboardingImageUploader
+    let session: OnboardingSession
     let oldData: AccountCreationData
     
     var accountData: AccountCreationData {
         AccountCreationData(
-            avatar: uploader.avatarURL,
-            banner: uploader.bannerURL,
+            avatar: session.avatarURL,
+            banner: session.bannerURL,
             bio: aboutInput.text ?? "",
             username: oldData.username,
             displayname: oldData.displayname,
@@ -45,9 +45,9 @@ final class OnboardingAboutController: UIViewController, OnboardingViewControlle
         )
     }
     
-    init(data: AccountCreationData, uploader: OnboardingImageUploader) {
+    init(data: AccountCreationData, session: OnboardingSession) {
         oldData = data
-        self.uploader = uploader
+        self.session = session
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -57,12 +57,6 @@ final class OnboardingAboutController: UIViewController, OnboardingViewControlle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let keypair = NostrKeypair.generate() else {
-            fatalError("Unable to generate a new keypair, this shouldn't be possible")
-        }
-        
-        IdentityManager.instance.newUserKeypair = keypair
         
         setup()
     }
@@ -155,7 +149,7 @@ private extension OnboardingAboutController {
         aboutInput.placeholderText = "about me"
         aboutInput.backgroundColor = .clear
         
-        uploader.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
+        session.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
             if let image {
                 self?.avatarView.image = image
                 self?.avatarView.alpha = 1
@@ -195,26 +189,26 @@ private extension OnboardingAboutController {
         avatarView.isUserInteractionEnabled = true
         avatarView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self = self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }))
         
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }), for: .touchUpInside)
         
         nextButton.isEnabled = false
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingProfileController(data: self.accountData, uploader: self.uploader), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingProfileController(data: self.accountData, session: self.session), animated: true)
         }), for: .touchUpInside)
         
         skipButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingProfileController(data: self.oldData, uploader: self.uploader), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingProfileController(data: self.oldData, session: self.session), animated: true)
         }), for: .touchUpInside)
     }
     

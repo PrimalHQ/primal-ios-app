@@ -99,7 +99,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
         hapticFeedbackGenerator.prepare()
     }
     
-    var maxInputAmountUSD: Double { Double(WalletManager.instance.balance) * .SAT_TO_USD }
+    var maxInputAmountUSD: Double { Double(WalletManager.instance.balance).satToUSD }
     
     var maxInputAmountSats: Int { WalletManager.instance.balance }
 }
@@ -150,7 +150,7 @@ private extension WalletSendAmountController {
         stack.distribution = .equalSpacing
         
         inputParent.addSubview(input)
-        input.pinToSuperview(edges: .vertical)
+        input.pinToSuperview()
         input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
         input.animateReversed = false
         input.isSettingFirstTime = false
@@ -251,7 +251,7 @@ extension KeyboardInputConnector {
         if text.dropLast(3).last == "." { return } // Only up to two digits after .
         
         if number == 0, text.contains(".") { // Manual override so 0 doesn't get eaten up with localisation
-            input.setLargeLabel(text, animating: true)
+            input.setLargeLabel(text, complexAnimation: true)
             triggerHapticFeedback()
             return
         }
@@ -261,7 +261,7 @@ extension KeyboardInputConnector {
             return
         }
         
-        input.balance = Int(doubleAmount / .SAT_TO_USD)
+        input.balance = Int(doubleAmount.usdToSAT)
         triggerHapticFeedback()
     }
     
@@ -269,7 +269,7 @@ extension KeyboardInputConnector {
         if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(decimalSeparator) == true { return }
         
         let newAmountString = (input.largeAmountLabel.text ?? "") + decimalSeparator
-        input.setLargeLabel(newAmountString, animating: true)
+        input.setLargeLabel(newAmountString, complexAnimation: true)
         triggerHapticFeedback()
     }
     
@@ -289,10 +289,10 @@ extension KeyboardInputConnector {
                 input.balance = 0
                 return
             }
-            input.setLargeLabel(newAmountString, animating: true)
+            input.setLargeLabel(newAmountString, complexAnimation: true)
             return
         }
         
-        input.balance = Int(doubleAmount / .SAT_TO_USD)
+        input.balance = Int(doubleAmount.usdToSAT)
     }
 }

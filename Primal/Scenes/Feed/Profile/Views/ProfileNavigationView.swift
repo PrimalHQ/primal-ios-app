@@ -75,7 +75,7 @@ class ProfileNavigationView: UIView, Themeable {
         }
         
         primaryLabel.text = user.firstIdentifier
-        checkboxIcon.isHidden = user.nip05.isEmpty
+        checkboxIcon.isHidden = !CheckNip05Manager.instance.isVerified(user)
         
         menuButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
         

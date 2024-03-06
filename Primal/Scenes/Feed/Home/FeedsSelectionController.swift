@@ -38,15 +38,11 @@ private extension FeedsSelectionController {
     func setup() {
         view.backgroundColor = .background2
         if let pc = presentationController as? UISheetPresentationController {
-            if #available(iOS 16.0, *) {
-                pc.detents = [.custom(resolver: { context in
-                    guard let count = IdentityManager.instance.userSettings?.feeds?.count else { return 700 }
-                    
-                    return 100 + CGFloat(count) * 66
-                })]
-            } else {
-                pc.detents = [.large()]
-            }
+            pc.detents = [.custom(resolver: { context in
+                guard let count = IdentityManager.instance.userSettings?.feeds?.count else { return 700 }
+                
+                return 100 + CGFloat(count) * 66
+            })]
         }
         
         let pullBar = UIView()

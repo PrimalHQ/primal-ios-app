@@ -68,7 +68,7 @@ extension LargeBalanceConversionInputView: UITextFieldDelegate {
                 if self.isBitcoinPrimary {
                     self.balance = Int(number)
                 } else {
-                    self.balance = Int(number * .SAT_TO_USD)
+                    self.balance = Int(number.usdToSAT)
                 }
             }
             return true
@@ -167,7 +167,7 @@ private extension LargeBalanceConversionInputView {
         large$Label.superview?.isHidden = isBitcoinPrimary
         largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
         
-        let usdAmount = Double(balance) * .SAT_TO_USD
+        let usdAmount = Double(balance).satToUSD
         let usdString = usdAmount.localized()
         
         if isBitcoinPrimary {

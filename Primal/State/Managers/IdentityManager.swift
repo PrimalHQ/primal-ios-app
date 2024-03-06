@@ -42,7 +42,6 @@ final class IdentityManager {
     
     static let instance = IdentityManager()
 
-    var userHexPubkeyCache: String?
     var userHexPubkey: String {
         get {
             guard
@@ -55,9 +54,6 @@ final class IdentityManager {
             return result.hexVariant.pubkey
         }
     }
-    
-    var isNewUser: Bool = false
-    var newUserKeypair: NostrKeypair? = nil
     
     @Published var user: PrimalUser?
     @Published var parsedUser: ParsedUser?
@@ -178,14 +174,6 @@ final class IdentityManager {
                     } else {
                         self.userSettings = settings.content
                     }
-                    
-                    // Cache server starts tracking notifications for users *only* when they update their settings
-                    // If we're a new user start tracking as soon as possible by updating their settings with default one
-                    if self.isNewUser {
-                        self.updateSettings(settings.content)
-                        self.isNewUser = false
-                        self.newUserKeypair = nil
-                    }
                 default:
                         print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
                 }
@@ -200,6 +188,15 @@ final class IdentityManager {
                 callback?()
             }
         }
+    }
+    
+    func clear() {
+        user = nil
+        parsedUser = nil
+        userStats = nil
+        userSettings = nil
+        userRelays = nil
+        userContacts = .init(created_at: -1, contacts: [])
     }
     
     // Never just requestRelays as some clients might not support NIP-65

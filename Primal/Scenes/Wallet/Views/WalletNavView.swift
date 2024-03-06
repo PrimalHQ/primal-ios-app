@@ -145,13 +145,16 @@ final class WalletNavView: UIView, Themeable {
             oldAnimViews = [
                 balanceConversionView.largeAmountLabel.animateTransitionTo(largeView.balanceConversionView.largeAmountLabel, duration: 13 / 30, in: self),
                 balanceConversionView.largeCurrencyLabel.animateTransitionTo(largeView.balanceConversionView.largeCurrencyLabel, duration: 13 / 30, in: self),
-                balanceConversionView.large$Label.animateTransitionTo(largeView.balanceConversionView.large$Label, duration: 13 / 30, in: self),
             ]
+            if !balanceConversionView.isBitcoinPrimary {
+                oldAnimViews.append(
+                    balanceConversionView.large$Label.animateTransitionTo(largeView.balanceConversionView.large$Label, duration: 13 / 30, in: self)
+                )
+            }
         } else {
             oldAnimViews = [
                 largeView.balanceConversionView.largeAmountLabel.animateTransitionTo(balanceConversionView.largeAmountLabel, duration: 13 / 30, in: self),
                 largeView.balanceConversionView.largeCurrencyLabel.animateTransitionTo(balanceConversionView.largeCurrencyLabel, duration: 13 / 30, in: self),
-                largeView.balanceConversionView.large$Label.animateTransitionTo(balanceConversionView.large$Label, duration: 13 / 30, in: self),
                 
                 largeView.send.iconView.superview?.animateViewTo(send, duration: 13 / 30, in: self),
                 largeView.scan.iconView.superview?.animateViewTo(scan, duration: 13 / 30, in: self),
@@ -161,6 +164,12 @@ final class WalletNavView: UIView, Themeable {
                 largeView.scan.iconView.animateTransitionTo(scan.imageView, duration: 13 / 30, in: self),
                 largeView.receive.iconView.animateTransitionTo(receive.imageView, duration: 13 / 30, in: self)
             ]
+            
+            if !balanceConversionView.isBitcoinPrimary {
+                oldAnimViews.append(
+                    largeView.balanceConversionView.large$Label.animateTransitionTo(balanceConversionView.large$Label, duration: 13 / 30, in: self)
+                )
+            }
         }
         
         
@@ -209,11 +218,19 @@ final class SmallBalanceConversionView: LargeBalanceConversionView {
         transform = .init(translationX: 0, y: 10)
         
         roundingStyle = .twoDecimals
+        
+        guard let dollarParent = large$Label.superview, let currencyParent = largeCurrencyLabel.superview, dollarParent != currencyParent else { return }
+        let stack = UIStackView([dollarParent, largeAmountLabel, currencyParent])
+        primaryRow.addSubview(stack)
+        stack.pinToSuperview()
+        stack.spacing = 4
     }
     
     override var labelOffset: CGFloat { 10 }
     
     override var rowSpacing: CGFloat { 4 }
+    
+    override var animate$always: Bool { false }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

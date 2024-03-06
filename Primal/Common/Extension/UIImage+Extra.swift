@@ -14,7 +14,6 @@ extension CIImage {
 
 extension UIImage {
     static func createQRCode(_ string: String, dimension: Int, logo: UIImage? = nil) -> UIImage? {
-        
         let doc = QRCode.Document(utf8String: string, errorCorrection: logo != nil ? .quantize : .default)
         doc.design.backgroundColor(UIColor.white.cgColor)
         doc.design.shape.eye = QRCode.EyeShape.RoundedRect()

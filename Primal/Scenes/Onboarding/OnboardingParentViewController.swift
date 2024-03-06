@@ -14,11 +14,25 @@ protocol OnboardingViewController: UIViewController {
 }
 
 class OnboardingParentViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-    var viewControllerStack: [UIViewController] = [OnboardingStartViewController()]
+    enum StartScreen {
+        case start
+        case login
+        case signup
+    }
+    
+    var viewControllerStack: [UIViewController]
     
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     
-    init() {
+    init(_ start: StartScreen = .start) {
+        switch start {
+        case .start:
+            viewControllerStack = [OnboardingStartViewController()]
+        case .login:
+            viewControllerStack = [OnboardingSigninController()]
+        case .signup:
+            viewControllerStack = [OnboardingUsernameController()]
+        }
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self
         delegate = self
@@ -31,6 +45,14 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         setViewControllers(viewControllerStack, direction: .forward, animated: false)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if RootViewController.instance.needsReset {
+            RootViewController.instance.reset()
+        }
     }
     
     func removeFuture(_ vc: UIViewController) {
@@ -86,6 +108,7 @@ extension OnboardingViewController {
         backButton.addAction(.init(handler: { [weak self] _ in
             self?.onboardingParent?.popViewController(animated: true)
         }), for: .touchUpInside)
+        backButton.isHidden = onboardingParent?.viewControllerStack.first == self
         
         view.addSubview(titleLabel)
         titleLabel.centerToSuperview(axis: .horizontal).centerToView(backButton, axis: .vertical)

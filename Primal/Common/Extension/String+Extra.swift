@@ -133,7 +133,7 @@ extension String : Identifiable {
     var isBitcoinAddress: Bool {
         guard let btcAddress = split(separator: "?").first?.string.lowercased() else { return false }
         
-        let pattern = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$"
+        let pattern = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,59}$"
             
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return false }
             

@@ -139,26 +139,25 @@ extension QRCaptureController {
 
     func setUpCaptureSession() async {
         guard await isAuthorized else {
-            let info = await UIAlertController(title: "Camera permission not granted", message: "Please go to System Settings and change the permissions.", preferredStyle: .alert)
-            await info.addAction(.init(title: "OK", style: .cancel))
-            await info.addAction(.init(title: "Go To Settings", style: .default) { _ in
-                Task { @MainActor in
+            Task { @MainActor in
+                let info = UIAlertController(title: "Camera permission not granted", message: "Please go to System Settings and change the permissions.", preferredStyle: .alert)
+                info.addAction(.init(title: "OK", style: .cancel))
+                info.addAction(.init(title: "Go To Settings", style: .default) { _ in
                     guard
                         let url = URL(string:UIApplication.openSettingsURLString),
                         UIApplication.shared.canOpenURL(url)
                     else { return }
 
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-            })
-            await self.present(info, animated: true)
+                })
+                self.present(info, animated: true)
+            }
             return
         }
         
-        
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInDualWideCamera], mediaType: AVMediaType.video, position: .back)
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTripleCamera, .builtInDualCamera, .builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
 
-        guard let captureDevice = deviceDiscoverySession.devices.first else {
+        guard let captureDevice = deviceDiscoverySession.devices.first ?? AVCaptureDevice.default(for: .video) else {
             print("Failed to get the camera device")
             return
         }

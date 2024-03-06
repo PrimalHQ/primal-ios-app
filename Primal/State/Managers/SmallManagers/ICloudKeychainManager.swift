@@ -9,6 +9,35 @@ import Foundation
 import Combine
 import GenericJSON
 
+extension Keychain {
+    private static let savedNpubsKey = "primal-saved-npubs"
+    
+    fileprivate func getSavedNpubs() -> [String] {
+        guard let npubsJSON = try? getString(Self.savedNpubsKey) else {
+            print("ICloudKeychain: There are no saved npubs in ICloud Keychain")
+            return []
+        }
+        
+        guard let npubs: [String] = npubsJSON.decode() else {
+            print("ICloudKeychain: Error converting npubs JSON string to [String] type")
+            return []
+        }
+        
+        return npubs
+    }
+    
+    func hasSavedNpubs() -> Bool { (try? contains(Self.savedNpubsKey)) ?? false }
+    
+    func saveNpubs(_ npubs: [String]) throws {
+        guard let npubsJSONString = npubs.encodeToString() else {
+            print("ICloudKeychain: Error converting npubs JSON Data to String")
+            return
+        }
+        
+        try set(npubsJSONString, key: Self.savedNpubsKey)
+    }
+}
+
 final class ICloudKeychainManager {
     private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal")
         .synchronizable(false)
@@ -16,50 +45,14 @@ final class ICloudKeychainManager {
     
     private init() {}
     
-    private static let savedNpubsKey = "primal-saved-npubs"
     static let instance: ICloudKeychainManager = ICloudKeychainManager()
     
     @Published var userPubkey: String = ""
     
-    func hasSavedNpubs() -> Bool {
-        let items = keychain.allItems()
-        
-        guard let contains = try? keychain.contains(Self.savedNpubsKey) else {
-            print("ICloudKeychain: There are no saved npubs in ICloud Keychain")
-            return false
-        }
-        
-        return contains
-    }
+    lazy var npubs: [String] = keychain.getSavedNpubs()
     
-    func hasSavedNpub(_ npub: String) -> Bool {
-        if !hasSavedNpubs() {
-            return false
-        }
-        
-        let npubs = getSavedNpubs()
-        
-        return npubs.contains(where: { $0 == npub })
-    }
+    func hasSavedNpub(_ npub: String) -> Bool { npubs.contains(where: { $0 == npub }) }
     
-    func getSavedNpubs() -> [String] {
-        guard let npubsJSON = try? keychain.getString(Self.savedNpubsKey) else {
-            print("ICloudKeychain: There are no saved npubs in ICloud Keychain")
-            return []
-        }
-        
-        guard let npubsJSONData = npubsJSON.data(using: .utf8) else {
-            print("ICloudKeychain: Error converting npubs JSON string to Data type")
-            return []
-        }
-        
-        guard let npubs = try? JSONDecoder().decode([String].self, from: npubsJSONData) else {
-            print("ICloudKeychain: Error converting npubs JSON string to [String] type")
-            return []
-        }
-        
-        return npubs
-    }
     func getSavedNsec(_ npub: String) -> String? {
         guard let nsec = try? keychain.getString(npub) else {
             print("ICloudKeychain: There is no nsec saved to ICloud Keychain associated with npub: \(npub)")
@@ -69,25 +62,20 @@ final class ICloudKeychainManager {
         return nsec
     }
     
-    func saveKeypair(npub: String, nsec: String) -> Bool {
-        var npubs = getSavedNpubs()
+    func saveKeypair(npub: String, nsec: String? = nil) -> Bool {
+        userPubkey = ""
         
-        if npubs.contains(where: { $0 == npub }) {
-            return true
+        if let index = npubs.firstIndex(where: { $0 == npub }) {
+            npubs.remove(at: index)
         }
         
-        npubs.append(npub)
+        npubs.insert(npub, at: 0)
         
         do {
-            let npubsJSONData = try JSONEncoder().encode(npubs)
-            
-            guard let npubsJSONString = String(data: npubsJSONData, encoding: .utf8) else {
-                print("ICloudKeychain: Error converting npubs JSON Data to String")
-                return false
+            try keychain.saveNpubs(npubs)
+            if let nsec {
+                try keychain.set(nsec, key: npub)
             }
-            
-            try keychain.set(npubsJSONString, key: Self.savedNpubsKey)
-            try keychain.set(nsec, key: npub)
         } catch let error {
             print("ICloudKeychain: \(error)")
             return false
@@ -98,42 +86,18 @@ final class ICloudKeychainManager {
     
     // Used until we get to support multiple accounts
     func getLoginInfo() -> NostrKeypair? {
-        guard hasSavedNpubs(), let npub = getSavedNpubs().first else {
-            return nil
-        }
+        guard let npub = npubs.first else { return nil }
         
         let keypair = NKeypair.nostrKeypair(npub: npub, nsec: getSavedNsec(npub))
         userPubkey = keypair?.hexVariant.pubkey ?? ""
         return keypair
     }
-    // Used until we get to support multiple accounts
-    func upsertLoginInfo(npub: String, nsec: String? = nil) -> Bool {
-        var npubs = getSavedNpubs()
-        
-        if npubs.count == 0 {
-            npubs.append(npub)
-        } else {
-            npubs[0] = npub
-        }
-        
-        do {
-            let npubsJSONData = try JSONEncoder().encode(npubs)
-            
-            guard let npubsJSONString = String(data: npubsJSONData, encoding: .utf8) else {
-                print("ICloudKeychain: Error converting npubs JSON Data to String")
-                return false
-            }
-            
-            try keychain.set(npubsJSONString, key: Self.savedNpubsKey)
-            if let privkey = nsec {
-                try keychain.set(privkey, key: npub)
-            }
-        } catch let error {
-            print("ICloudKeychain: \(error)")
-            return false
-        }
-        
-        return true
+    
+    @discardableResult
+    func logoutCurrentUser() -> Bool {
+        guard let npub = npubs.first else { return false }
+        userPubkey = ""
+        return removeKeypair(npub)
     }
     
     @discardableResult
@@ -149,19 +113,11 @@ final class ICloudKeychainManager {
     }
     
     func removeKeypair(_ npub: String) -> Bool {
-        var npubs = getSavedNpubs()
-        
+        userPubkey = ""
         npubs.remove(object: npub)
-        
+    
         do {
-            let npubsJSONData = try JSONEncoder().encode(npubs)
-            
-            guard let npubsJSONString = String(data: npubsJSONData, encoding: .utf8) else {
-                print("ICloudKeychain: Error converting npubs JSON Data to String")
-                return false
-            }
-            
-            try keychain.set(Self.savedNpubsKey, key: npubsJSONString)
+            try keychain.saveNpubs(npubs)
             try keychain.remove(npub)
         } catch let error {
             print("ICloudKeychain: \(error)")
@@ -169,53 +125,5 @@ final class ICloudKeychainManager {
         }
         
         return true
-    }
-    
-    func fetchPrimalUsersForSavedNpubs(_ callback: @escaping (_ users: [PrimalUser]) -> Void) {
-        let conn = TemporaryConnection()
-        
-        conn.$isConnected.sink { isConnected in
-            if isConnected {
-                let npubs = self.getSavedNpubs()
-                let request: JSON = .object([
-                    "pubkeys": .array(npubs.compactMap { npub in
-                        guard let decoded = try? bech32_decode(npub) else {
-                            return nil
-                        }
-                        
-                        let pubkey = hex_encode(decoded.data)
-                        
-                        return .string(pubkey)
-                    })
-                ])
-                var result: [PrimalUser] = []
-                conn.requestCache(name: "user_infos", request: request) { res in
-                    for response in res {
-                        let kind = NostrKind.fromGenericJSON(response)
-                        
-                        switch kind {
-                        case .metadata:
-                            let nostrUser = NostrContent(json: .object(response.arrayValue?[2].objectValue ?? [:]))
-                            if let primalUser = PrimalUser(nostrUser: nostrUser) {
-                                result.append(primalUser)
-                            }
-                        case .userScore:
-                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got userScore")
-                        case .mediaMetadata:
-                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got mediaMetada")
-                        default:
-                            print("ICloudKeychainManager: nostrUserForSavedNpubs: Got unexpected event kind in response: \(response)")
-                        }
-                    }
-                    callback(result)
-                    conn.disconnect()
-                    for cancellable in self.cancellables {
-                        cancellable.cancel()
-                    }
-                }
-            }
-        }.store(in: &cancellables)
-        
-        conn.connect()
     }
 }

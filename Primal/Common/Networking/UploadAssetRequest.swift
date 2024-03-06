@@ -34,6 +34,7 @@ class UploadAssetRequest {
     
     private var individualCompletion: [String: Bool] = [:] {
         didSet {
+            print(individualCompletion)
             if individualCompletion.values.reduce(true, { $0 && $1 }) {
                 socket.delegate = self
                 socket.connect()

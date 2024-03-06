@@ -54,11 +54,16 @@ class ProfileInfoCell: UITableViewCell {
         
         followsYou.isHidden = !followsUser
         
-        checkboxIcon.isHidden = user.nip05.isEmpty
-        checkboxIcon.tintColor = .accent
-        
-        secondaryLabel.isHidden = user.nip05.isEmpty
-        secondaryLabel.text = user.parsedNip
+        if CheckNip05Manager.instance.isVerified(user) {
+            checkboxIcon.isHidden = false
+            checkboxIcon.tintColor = .accent
+            
+            secondaryLabel.isHidden = false
+            secondaryLabel.text = user.parsedNip
+        } else {
+            checkboxIcon.isHidden = true
+            secondaryLabel.isHidden = true
+        }
         
         npubView.npub = user.npub
         descLabel.text = user.about.trimmingCharacters(in: .whitespacesAndNewlines)

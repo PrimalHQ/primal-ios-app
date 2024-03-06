@@ -156,7 +156,7 @@ extension NostrObject {
         ]
         
         guard
-            let pubkey = (ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair)?.hexVariant.pubkey,
+            let pubkey = getKeypair()?.hexVariant.pubkey,
             let contentString = content.encodeToString()
         else { return nil }
         
@@ -171,7 +171,7 @@ extension NostrObject {
         ]
         
         guard
-            let pubkey = (ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair)?.hexVariant.pubkey,
+            let pubkey = getKeypair()?.hexVariant.pubkey,
             let contentString = content.encodeToString()
         else { return nil }
         
@@ -201,16 +201,17 @@ extension NostrObject {
     }
 }
 
+fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()
+}
+
+fileprivate func getPrivkey() -> String? {
+    getKeypair()?.hexVariant.privkey
+}
+
 fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
-        let privkey = keypair.hexVariant.privkey
-    else {
-        return nil
-    }
+    guard let keypair = getKeypair(), let privkey = keypair.hexVariant.privkey else { return nil }
     
     return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
@@ -331,10 +332,7 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
         return nil
     }
     
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair
-    else {
+    guard let keypair = getKeypair() else {
         print("Unable to get keypair")
         return nil
     }
@@ -357,13 +355,7 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
 }
 
 fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
-        let privkey = keypair.hexVariant.privkey
-    else {
-        return nil
-    }
+    guard let privkey = getPrivkey() else { return nil }
     
     return createNostrObject(
         content: encryptDirectMessage(content, privkey: privkey, pubkey: recipientPubkey) ?? "",

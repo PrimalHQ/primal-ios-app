@@ -92,4 +92,11 @@ extension Date {
 
         return formatter.string(from: self)
     }
+    
+    func is18YearsOld() -> Bool {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let yearsAgo = calendar.date(byAdding: .year, value: -18, to: now) else { return false }
+        return self < yearsAgo
+    }
 }

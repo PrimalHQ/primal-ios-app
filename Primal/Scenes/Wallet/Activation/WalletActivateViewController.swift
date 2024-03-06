@@ -68,15 +68,12 @@ private extension WalletActivateViewController {
         iconParent.addSubview(icon)
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
-        
         let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
-        let spacerStack = UIStackView(axis: .vertical, [SpacerView(height: 16, priority: .required), SpacerView(height: 16)])
         let mainStack = UIStackView(axis: .vertical, [
             SpacerView(height: 32),
             iconStack,
-            firstScreenStack,
-            spacerStack,
-            confirmButton,
+            firstScreenStack,   SpacerView(height: 36),
+            confirmButton,      SpacerView(height: 20),
             TermsAndConditionsView()
         ])
         mainStack.distribution = .equalSpacing
@@ -85,11 +82,11 @@ private extension WalletActivateViewController {
         scroll.addSubview(mainStack)
         view.addSubview(scroll)
         
-        mainStack.pinToSuperview(edges: .vertical, padding: 20).pinToSuperview(edges: .horizontal, padding: 36)
+        mainStack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 36)
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
         
         scroll.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal)
-        scroll.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        scroll.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: 34).isActive = true
         
         stateInput.superview?.isHidden = true
         
@@ -156,8 +153,14 @@ private extension WalletActivateViewController {
         guard let lastName = lastNameInput.text, !lastName.isEmpty else { lastNameInput.becomeFirstResponder(); return }
         guard let email = emailInput.text, !email.isEmpty else { emailInput.becomeFirstResponder(); return }
         guard let date else { showDatePopup(); return }
-        guard let country = countryInput.text, !country.isEmpty else { countryInput.becomeFirstResponder(); return }
-
+        
+        if !date.is18YearsOld() {
+            showErrorMessage("You need to be at least 18 years old.")
+            return
+        }
+        
+        guard let country = countryInput.text, !country.isEmpty else { showCountryPopup(); return }
+        
         guard email.isEmail else {
             emailInput.becomeFirstResponder()
             emailInput.selectAll(nil)
@@ -168,7 +171,7 @@ private extension WalletActivateViewController {
         var state = stateInput.text
         if country == Self.unitedStatesName {
             if state?.isEmpty != false {
-                stateInput.becomeFirstResponder()
+                showStatePopup()
                 return
             }
         } else {
@@ -195,7 +198,7 @@ private extension WalletActivateViewController {
                     })
                     self?.present(alert, animated: true)
                 } else {
-                    self?.show(WalletActivationCodeController(), sender: nil)
+                    self?.show(WalletActivationCodeController(email: email), sender: nil)
                 }
             }
             .store(in: &cancellables)
@@ -259,7 +262,7 @@ private extension WalletActivateViewController {
     func showDatePopup() {
         resignAllInput()
         
-        let picker = PopupDatePickerController(starting: .now) { [weak self] date in
+        let picker = PopupDatePickerController(starting: date ?? .now) { [weak self] date in
             self?.date = date
         }
         present(picker, animated: true)

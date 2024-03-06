@@ -100,7 +100,7 @@ extension ChunkUploader: WebSocketConnectionDelegate {
     }
     
     func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
-        print("webSocketViabilityDidChange: \(isViable)")
+
     }
     
     func webSocketDidAttemptBetterPathMigration(result: Result<WebSocketConnection, NWError>) {

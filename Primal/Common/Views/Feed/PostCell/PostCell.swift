@@ -85,10 +85,15 @@ class PostCell: UITableViewCell {
         
         nameLabel.text = user.firstIdentifier
         
-        nipLabel.text = user.parsedNip
-        nipLabel.isHidden = user.nip05.isEmpty
-        checkbox.isHidden = user.nip05.isEmpty
-        checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        if CheckNip05Manager.instance.isVerified(user) {
+            nipLabel.text = user.parsedNip
+            nipLabel.isHidden = false
+            checkbox.isHidden = false
+            checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        } else {
+            nipLabel.isHidden = true
+            checkbox.isHidden = true
+        }
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()

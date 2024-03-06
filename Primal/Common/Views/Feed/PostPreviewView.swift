@@ -35,8 +35,16 @@ final class PostPreviewView: UIView {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
-        secondaryIdentifierLabel.text = user.parsedNip
-        verifiedBadge.isHidden = user.nip05.isEmpty
+        
+        if CheckNip05Manager.instance.isVerified(user) {
+            secondaryIdentifierLabel.text = user.parsedNip
+            secondaryIdentifierLabel.isHidden = false
+            verifiedBadge.isHidden = false
+            verifiedBadge.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        } else {
+            secondaryIdentifierLabel.isHidden = true
+            verifiedBadge.isHidden = true
+        }
         
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()

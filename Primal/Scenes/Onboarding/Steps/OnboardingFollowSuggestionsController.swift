@@ -13,7 +13,6 @@ final class OnboardingFollowSuggestionsController: UIViewController, OnboardingV
     enum State {
         case initial
         case followRequesting
-        case followDone
         case followFailed
     }
 
@@ -123,21 +122,24 @@ private extension OnboardingFollowSuggestionsController {
         case .followFailed:
             continueButton.isEnabled = true
             continueButton.setTitle("Follow failed, try again", for: .normal)
-        case .followDone:
-            RootViewController.instance.reset()
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                // Need to refresh to let the server update new follows
-                guard let home: HomeFeedViewController = RootViewController.instance.findInChildren() else { return }
-                home.feed.refresh()
-            }
         }
     }
 
     func initiateFollow() {
         state = .followRequesting
 
-        FollowManager.instance.sendBatchFollowEvent(selectedToFollow, successHandler: { [weak self] in
-            self?.state = .followDone
+        FollowManager.instance.sendBatchFollowEvent(selectedToFollow, successHandler: {
+            RootViewController.instance.reset()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                // Need to refresh to let the server update new follows
+                guard
+                    let main: MainTabBarController = RootViewController.instance.findInChildren(),
+                    let container = main.home.viewControllers.first as? MenuContainerController,
+                    let home = container.child as? HomeFeedViewController
+                else { return }
+                
+                home.feed.refresh()
+            }
         }, errorHandler: { [weak self] in
             self?.state = .followFailed
         })
@@ -148,7 +150,7 @@ private extension OnboardingFollowSuggestionsController {
         case .initial, .followFailed:
             initiateFollow()
             break
-        case .followDone, .followRequesting:
+        case .followRequesting:
             break
         }
     }

@@ -27,8 +27,8 @@ final class OnboardingProfileController: UIViewController, OnboardingViewControl
     let oldData: AccountCreationData
     var profile: AccountCreationData {
         var old = oldData
-        old.avatar = uploader?.avatarURL ?? old.avatar
-        old.banner = uploader?.bannerURL ?? old.banner
+        old.avatar = session.avatarURL
+        old.banner = session.bannerURL
         return old
     }
     
@@ -53,16 +53,16 @@ final class OnboardingProfileController: UIViewController, OnboardingViewControl
     
     var cancellables: Set<AnyCancellable> = []
     
-    var uploader: OnboardingImageUploader?
+    var session: OnboardingSession
     
-    init(data: AccountCreationData, uploader: OnboardingImageUploader?) {
+    init(data: AccountCreationData, session: OnboardingSession) {
         self.oldData = data
-        self.uploader = uploader
+        self.session = session
         super.init(nibName: nil, bundle: nil)
         
         setup()
         
-        uploader?.$isUploading.sink(receiveValue: { [weak self] in
+        session.$isUploading.sink(receiveValue: { [weak self] in
             self?.isUploading = $0
         })
         .store(in: &cancellables)
@@ -138,33 +138,32 @@ private extension OnboardingProfileController {
                 lud16: self.profile.lightningWallet,
                 nip05: self.profile.nip05
             )
-            
-            // yucky
-            IdentityManager.instance.isNewUser = true
 
-            guard let metadata_ev = NostrObject.metadata(profile) else {
-                fatalError("Unable to create metadata, this shouldn't be possible")
-            }
-            guard let contacts_ev = NostrObject.firstContact() else {
-                fatalError("Unable to create contacts, this shouldn't be possible")
+            guard  
+                let metadata_ev = NostrObject.metadata(profile),
+                let contacts_ev = NostrObject.firstContact()
+            else {
+                print("Unable to create profile and contacts, this shouldn't be possible")
+                return
             }
             
-            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
+            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { [weak self] _ in
                 RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
                     guard
-                        let keypair = IdentityManager.instance.newUserKeypair,
-                        let nsec = keypair.nVariant.nsec,
+                        let nsec = self?.session.newUserKeypair.nVariant.nsec,
                         LoginManager.instance.login(nsec)
                     else {
-                        fatalError("Unable to save keypair to the keychain, this shouldn't be possible")
+                        print("Unable to save keypair to the keychain, this shouldn't be possible")
+                        return
                     }
                     
-                    self.state = .created
+                    RootViewController.instance.needsReset = true
+                    self?.state = .created
                 }, errorHandler: {
-                    self.state = .ready
+                    self?.state = .ready
                 })
-            }, errorHandler: {
-                self.state = .ready
+            }, errorHandler: { [weak self] in
+                self?.state = .ready
             })
         }
     }
@@ -186,12 +185,12 @@ private extension OnboardingProfileController {
             self?.present(SFSafariViewController(url: url), animated: true)
         }
         
-        uploader?.$image.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] image in
+        session.$image.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] image in
             self?.profileView.profileImageView.image = image ?? self?.profileView.profileImageView.image
         })
         .store(in: &cancellables)
         
-        uploader?.$bannerImage.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] image in
+        session.$bannerImage.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] image in
             self?.profileView.coverImageView.image = image ?? self?.profileView.coverImageView.image
         })
         .store(in: &cancellables)
@@ -213,7 +212,7 @@ private extension OnboardingProfileController {
         
         profileView.changeBannerButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            self.uploader?.addBanner(controller: self)
+            self.session.addBanner(controller: self)
         }), for: .touchUpInside)
         
         updateView()

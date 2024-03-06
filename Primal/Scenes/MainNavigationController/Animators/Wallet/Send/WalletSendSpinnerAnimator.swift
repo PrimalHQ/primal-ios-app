@@ -29,7 +29,9 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         toView.layoutIfNeeded()
         toView.alpha = 0
         
+        let fixParent = UIView()
         let imageView = UIImageView(image: UIImage(named: "transitionSpinner"))
+        
         switch Theme.current.kind {
         case .sunriseWave, .sunsetWave: break
         case .midnightWave, .iceWave:
@@ -38,15 +40,17 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         }
         
         imageView.frame = sendController.profilePictureView.convert(sendController.profilePictureView.bounds, to: container).enlarge(60)
-        container.addSubview(imageView)
+        fixParent.addSubview(imageView)
         
-        sendController.profilePictureView.animateTransitionTo(spinner.spinner, duration: 12 / 30, in: container, fade: true)
+        container.addSubview(fixParent)
+        sendController.profilePictureView.animateTransitionTo(spinner.spinner, duration: 12 / 30, in: fixParent, fade: true)
         
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(.easeInOutQuart)
         
         UIView.animate(withDuration: 12 / 30) { [self] in
             imageView.frame = spinner.spinner.convert(spinner.spinner.bounds, to: container).enlarge(150)
+            fixParent.transform = .init(translationX: 0, y: 20)
         }
         
         CATransaction.commit()
@@ -68,7 +72,7 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
             sendController.nameLabel.alpha = 1
             fromView.alpha = 1
             
-            imageView.removeFromSuperview()
+            fixParent.removeFromSuperview()
             
             let success = !transitionContext.transitionWasCancelled
             if !success {
