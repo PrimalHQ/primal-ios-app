@@ -83,7 +83,9 @@ private extension ProfileShowQRController {
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .top, padding: 34).pinToSuperview(edges: .bottom, padding: 60, safeArea: true)
+        
         addNavigationBar("")
+        backButton.isHidden = false
         
         action.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

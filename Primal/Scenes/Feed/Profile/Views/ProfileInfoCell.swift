@@ -6,7 +6,9 @@
 //
 
 import Combine
+import Nantes
 import UIKit
+import GenericJSON
 
 protocol ProfileInfoCellDelegate: AnyObject {
     func npubPressed()
@@ -14,8 +16,16 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func zapPressed()
     func editProfilePressed()
     func messagePressed()
+    func linkPressed(_ url: URL)
     
     func didSelectTab(_ tab: Int)
+}
+
+class ProfileCellNantesDelegate {
+    weak var cell: ProfileInfoCell?
+    init(cell: ProfileInfoCell) {
+        self.cell = cell
+    }
 }
 
 class ProfileInfoCell: UITableViewCell {
@@ -32,12 +42,14 @@ class ProfileInfoCell: UITableViewCell {
     let secondaryLabel = UILabel()
     
     let npubView = NPubDisplayView()
-    let descLabel = UILabel()
+    let descLabel = NantesLabel()
     let linkView = ProfileLinkDisplayView()
     
     let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "following", "followers"])
     
     weak var delegate: ProfileInfoCellDelegate?
+    
+    lazy var nantesDelegate = ProfileCellNantesDelegate(cell: self)
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -46,7 +58,7 @@ class ProfileInfoCell: UITableViewCell {
         setup()
     }
     
-    func update(user: PrimalUser, stats: NostrUserProfileInfo?, followsUser: Bool, selectedTab: Int, delegate: ProfileInfoCellDelegate?) {
+    func update(user: PrimalUser, parsedDescription: NSAttributedString, stats: NostrUserProfileInfo?, followsUser: Bool, selectedTab: Int, delegate: ProfileInfoCellDelegate?) {
         self.delegate = delegate
         
         primaryLabel.text = user.firstIdentifier
@@ -66,7 +78,7 @@ class ProfileInfoCell: UITableViewCell {
         }
         
         npubView.npub = user.npub
-        descLabel.text = user.about.trimmingCharacters(in: .whitespacesAndNewlines)
+        descLabel.attributedText = parsedDescription
         linkView.link = user.website.trimmingCharacters(in: .whitespaces)
         
         zip(infoStack.buttons, [
@@ -98,6 +110,12 @@ class ProfileInfoCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension ProfileCellNantesDelegate: NantesLabelDelegate {
+    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
+        cell?.delegate?.linkPressed(link)
     }
 }
 
@@ -143,6 +161,12 @@ private extension ProfileInfoCell {
         primaryLabel.textColor = .foreground
         secondaryLabel.textColor = .foreground5
         descLabel.textColor = .foreground
+        
+        descLabel.enabledTextCheckingTypes = .allSystemTypes
+        descLabel.linkAttributes = [
+            .foregroundColor: UIColor.accent
+        ]
+        descLabel.delegate = nantesDelegate
         
         npubView.addTarget(self, action: #selector(npubPressed), for: .touchUpInside)
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)

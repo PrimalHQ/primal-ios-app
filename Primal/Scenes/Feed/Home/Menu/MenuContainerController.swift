@@ -51,6 +51,8 @@ final class MenuContainerController: UIViewController, Themeable {
     private var childLeftConstraint: NSLayoutConstraint?
     private var cancellables: Set<AnyCancellable> = []
     
+    private(set) var isOpen = false
+    
     let child: UIViewController
     init(child: UIViewController) {
         self.child = child
@@ -98,6 +100,7 @@ final class MenuContainerController: UIViewController, Themeable {
     }
     
     func open() {
+        isOpen = true
         mainStack.alpha = 1
         
         childLeftConstraint?.isActive = true
@@ -114,6 +117,7 @@ final class MenuContainerController: UIViewController, Themeable {
     }
     
     func close() {
+        isOpen = false
         childLeftConstraint?.isActive = false
         coverView.alpha = 0
         coverView.isHidden = true

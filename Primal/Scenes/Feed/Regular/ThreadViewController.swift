@@ -154,6 +154,8 @@ final class ThreadViewController: PostFeedViewController {
         table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
         table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
+        textInputView.tintColor = .accent
+        
         inputParent.backgroundColor = .background
         inputBackground.backgroundColor = .background3
         
@@ -513,12 +515,12 @@ private extension ThreadViewController {
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
-        
-        let gest = BindableTapGestureRecognizer { [weak self] in
-            self?.textInputView.resignFirstResponder()
-        }
-        gest.delegate = self
-        view.addGestureRecognizer(gest)
+//        
+//        let gest = BindableTapGestureRecognizer { [weak self] in
+//            self?.textInputView.resignFirstResponder()
+//        }
+//        gest.delegate = self
+//        view.addGestureRecognizer(gest)
     }
     
     func replyToString(name: String) -> NSAttributedString {

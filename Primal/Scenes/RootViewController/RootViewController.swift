@@ -143,17 +143,16 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset(isFirstTime: Bool = false) {
+        Connection.reconnect()
         if let _ = LoginManager.instance.method() {
             ThemingManager.instance.setStartingTheme(isFirstTime: isFirstTime)
             overrideUserInterfaceStyle = ContentDisplaySettings.autoDarkMode ? .unspecified : Theme.current.userInterfaceStyle
             set(MainTabBarController())
             setNeedsStatusBarAppearanceUpdate()
-            Connection.connect()
         } else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())
             setNeedsStatusBarAppearanceUpdate()
-            Connection.disconnect()
             return
         }
     }

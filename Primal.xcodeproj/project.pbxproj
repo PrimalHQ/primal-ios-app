@@ -234,6 +234,13 @@
 		B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */; };
 		B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B682B1F4577002B0613 /* CachingManager.swift */; };
 		B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */; };
+		B901C38B2BAB231800C3AA69 /* OnboardingDisplayNameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C38A2BAB231800C3AA69 /* OnboardingDisplayNameController.swift */; };
+		B901C38D2BAB237E00C3AA69 /* OnboardingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C38C2BAB237E00C3AA69 /* OnboardingSession.swift */; };
+		B901C38F2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */; };
+		B901C3912BAB307900C3AA69 /* InterestSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3902BAB307900C3AA69 /* InterestSelectionView.swift */; };
+		B901C3932BAB5A0C00C3AA69 /* OnboardingPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */; };
+		B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */; };
+		B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */; };
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
@@ -626,6 +633,13 @@
 		B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedLocalLoadingManager.swift; sourceTree = "<group>"; };
 		B9009B682B1F4577002B0613 /* CachingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingManager.swift; sourceTree = "<group>"; };
 		B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageCache.swift; sourceTree = "<group>"; };
+		B901C38A2BAB231800C3AA69 /* OnboardingDisplayNameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDisplayNameController.swift; sourceTree = "<group>"; };
+		B901C38C2BAB237E00C3AA69 /* OnboardingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSession.swift; sourceTree = "<group>"; };
+		B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInterestsController.swift; sourceTree = "<group>"; };
+		B901C3902BAB307900C3AA69 /* InterestSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestSelectionView.swift; sourceTree = "<group>"; };
+		B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPreviewController.swift; sourceTree = "<group>"; };
+		B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWalletController.swift; sourceTree = "<group>"; };
+		B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWalletCodeController.swift; sourceTree = "<group>"; };
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
@@ -1306,6 +1320,7 @@
 				B9009B4F2B07B14B002B0613 /* SignInInputField.swift */,
 				B9009B642B17A8E7002B0613 /* OnboardingInputParent.swift */,
 				B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */,
+				B901C3902BAB307900C3AA69 /* InterestSelectionView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1407,6 +1422,7 @@
 				9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */,
 				9E9F2F6F29F6AB6400A9CDF3 /* OnboardingStartViewController.swift */,
 				9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */,
+				B901C38C2BAB237E00C3AA69 /* OnboardingSession.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -1415,6 +1431,11 @@
 			isa = PBXGroup;
 			children = (
 				B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */,
+				B901C38A2BAB231800C3AA69 /* OnboardingDisplayNameController.swift */,
+				B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */,
+				B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */,
+				B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */,
+				B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */,
 				B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */,
 				9E8DE4D929F7E73E0028D3C3 /* OnboardingProfileController.swift */,
 				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
@@ -2126,6 +2147,7 @@
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumHomeViewController.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
+				B901C38D2BAB237E00C3AA69 /* OnboardingSession.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
@@ -2159,6 +2181,7 @@
 				B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
+				B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */,
 				B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */,
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				93EAED182ABB25B300B4A1CD /* Collection+Extra.swift in Sources */,
@@ -2185,6 +2208,7 @@
 				B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
+				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
 				B9B1ABA32B33368A00837312 /* TransactionTitleCell.swift in Sources */,
 				B94F2BE42AE2EFDD0041181B /* PlaceholderTextView.swift in Sources */,
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
@@ -2192,6 +2216,7 @@
 				B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				B9B1ABA72B3336D000837312 /* TransactionInfoCell.swift in Sources */,
+				B901C38B2BAB231800C3AA69 /* OnboardingDisplayNameController.swift in Sources */,
 				9E8834BE2A328767005DB548 /* CircleIconButton.swift in Sources */,
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */,
@@ -2245,6 +2270,7 @@
 				B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */,
 				9E8834CC2A37A5EB005DB548 /* UserInfoTableCell.swift in Sources */,
 				9E9F2F9129F6AB8A00A9CDF3 /* Font+Extra.swift in Sources */,
+				B901C3932BAB5A0C00C3AA69 /* OnboardingPreviewController.swift in Sources */,
 				9E8834A62A274A88005DB548 /* PostRequestResult+Processing.swift in Sources */,
 				B9009B532B07DDC0002B0613 /* OnboardingUsernameController.swift in Sources */,
 				9E8834C42A33C25F005DB548 /* RoundedSmallButton.swift in Sources */,
@@ -2282,6 +2308,7 @@
 				B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
 				B914CD712AA2647100CD0BD1 /* UnmuteUserButton.swift in Sources */,
+				B901C38F2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift in Sources */,
 				B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
@@ -2302,6 +2329,7 @@
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */,
 				B94F2BE62AE6BC720041181B /* ActivateWalletCell.swift in Sources */,
+				B901C3912BAB307900C3AA69 /* InterestSelectionView.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Request.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
@@ -2480,6 +2508,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -2516,7 +2545,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.3;
+				MARKETING_VERSION = 1.4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2561,7 +2590,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.3;
+				MARKETING_VERSION = 1.4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

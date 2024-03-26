@@ -1,24 +1,23 @@
 //
-//  OnboardingUsernameController.swift
+//  OnboardingDisplayNameController.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 17.11.23..
+//  Created by Pavle Stevanović on 20.3.24..
 //
 
 import Combine
 import UIKit
 import Kingfisher
 
-final class OnboardingUsernameController: UIViewController, OnboardingViewController {
-    
+final class OnboardingDisplayNameController: UIViewController, OnboardingViewController {
     let titleLabel = UILabel()
     let backButton: UIButton = .init()
     
     let avatarView = UIImageView(image: UIImage(named: "onboardingDefaultAvatar"))
     let addPhotoButton = SolidColorUIButton(title: "add photo", color: .white)
     
+    let aboutInput = UITextField()
     let displayNameInput = UITextField()
-    let usernameInput = UITextField()
     
     let nextButton = OnboardingMainButton("Next")
     
@@ -29,7 +28,7 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     var cancellables: Set<AnyCancellable> = []
     
-    var textFields: [UITextField] { [displayNameInput, usernameInput] }
+    var textFields: [UITextField] { [displayNameInput, aboutInput] }
     
     @Published var editingViews: Set<UIView> = []
     
@@ -37,8 +36,8 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
         AccountCreationData(
             avatar: session.avatarURL,
             banner: session.bannerURL,
-            bio: "",
-            username: usernameInput.text ?? "",
+            bio: aboutInput.text ?? "",
+            username: "",
             displayname: displayNameInput.text ?? "",
             lightningWallet: "",
             nip05: "",
@@ -65,28 +64,18 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     }
 }
 
-private extension OnboardingUsernameController {
+private extension OnboardingDisplayNameController {
     func setup() {
         addBackground(1)
         addNavigationBar("Create Account")
         
-        let avatarStack = UIStackView(axis: .vertical, [avatarView, SpacerView(height: 12), addPhotoButton])
+        let avatarStack = UIStackView(axis: .vertical, [avatarView, SpacerView(height: 8), addPhotoButton])
         avatarStack.alignment = .center
         addPhotoButton.setContentCompressionResistancePriority(.required, for: .vertical)
         
         descLabel.numberOfLines = 0
         descLabel.setContentCompressionResistancePriority(.init(1), for: .vertical)
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.lineSpacing = 8
-        paragraph.alignment = .center
-        descLabel.attributedText = .init(
-            string: "You can pick any username on Nostr. It will be shown when you get tagged in notes. Display Name will be used everywhere else.",
-            attributes: [
-                .foregroundColor:   UIColor.white,
-                .font:              UIFont.appFont(withSize: 16, weight: .semibold),
-                .paragraphStyle:    paragraph
-            ]
-        )
+        descLabel.attributedText = descAttributedString("Create a public profile on Nostr. Choose any Display Name and say something about yourself. You can easily change these things later.")
         
         let descParent = UIView()
         descParent.addSubview(descLabel)
@@ -97,14 +86,14 @@ private extension OnboardingUsernameController {
         atLabel.font = .appFont(withSize: 18, weight: .medium)
         atLabel.setContentHuggingPriority(.required, for: .horizontal)
         let formStack = UIStackView(axis: .vertical, [
-            OnboardingInputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
             OnboardingInputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: aboutInput).constrainToSize(height: 48), SpacerView(height: 12),
             descParent
         ])
         formStack.spacing = 3
         
         let keyboardSpacer = UIView()
-        let bottomStack = UIStackView(axis: .vertical, [progressView, nextButton, SpacerView(height: 12), keyboardSpacer])
+        let bottomStack = UIStackView(axis: .vertical, [nextButton, SpacerView(height: 18), progressView, keyboardSpacer])
         let mainStack = UIStackView(axis: .vertical, [UIView(), avatarStack, formStack, bottomStack])
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .bottom, padding: 12, safeArea: true)
@@ -131,7 +120,7 @@ private extension OnboardingUsernameController {
         atLabel.font = .appFont(withSize: 18, weight: .semibold)
         atLabel.contentColor = .init(rgb: 0x666666)
         
-        usernameInput.attributedPlaceholder = NSAttributedString(string: "username", attributes: [
+        aboutInput.attributedPlaceholder = NSAttributedString(string: "About You", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .semibold),
             .foregroundColor: UIColor.black.withAlphaComponent(0.5),
         ])
@@ -190,14 +179,16 @@ private extension OnboardingUsernameController {
             self.session.addPhoto(controller: self)
         }))
         
-        usernameInput.keyboardType = .namePhonePad
-        
         nextButton.isEnabled = false
         nextButton.addAction(.init(handler: { [weak self] _ in
-            guard let self = self, !self.accountData.username.isEmpty else { return }
+            guard let self = self, !self.accountData.displayname.isEmpty else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingAboutController(data: self.accountData, session: self.session), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingInterestsController(data: self.accountData, session: self.session), animated: true)
         }), for: .touchUpInside)
+        
+        displayNameInput.addAction(.init(handler: { [weak self] _ in
+            self?.nextButton.isEnabled = self?.displayNameInput.text?.isEmpty == false
+        }), for: .editingChanged)
     }
     
     @objc func viewTapped() {
@@ -221,7 +212,7 @@ private extension OnboardingUsernameController {
     }
 }
 
-extension OnboardingUsernameController: UITextFieldDelegate {
+extension OnboardingDisplayNameController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         editingViews.insert(textField)
     }
@@ -232,16 +223,5 @@ extension OnboardingUsernameController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return textField.resignFirstResponder()
-    }
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard textField == usernameInput else { return true }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            self.nextButton.isEnabled = textField.text?.isEmpty == false
-        }
-        
-        let blockedChars = NSCharacterSet.alphanumerics.inverted
-        return string.rangeOfCharacter(from: blockedChars) == nil
     }
 }

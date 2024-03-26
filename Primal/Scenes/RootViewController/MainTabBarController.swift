@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import Lottie
+import SafariServices
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -55,11 +56,7 @@ final class MainTabBarController: UIViewController, Themeable {
         $0.backgroundColor = isWalletSelected ? .foreground : .background3
         $0.tintColor = isWalletSelected ? .background : .foreground3
         
-        if LoginManager.instance.loggedInNpubs().first == "npub1az9xj85cmxv8e9j9y80lvqp97crsqdu2fpu3srwthd99qfu9qsgstam8y8" {
-            $0.setImage(isWalletSelected ? UIImage(named: "nvkSpecialButtonPressed") : UIImage(named: "nvkSpecialButton"), for: .normal)
-        } else {
-            $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
-        }
+        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -248,6 +245,9 @@ private extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] note in
                 self?.switchToTab(.home, open: ThreadViewController(threadId: note))
+                if self?.presentedViewController as? SFSafariViewController != nil{
+                    self?.dismiss(animated: true)
+                }
             }
             .store(in: &cancellables)
         
@@ -257,6 +257,9 @@ private extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] pubkey in
                 self?.switchToTab(.home, open: ProfileViewController(profile: .init(data: .init(pubkey: pubkey))))
+                if self?.presentedViewController as? SFSafariViewController != nil{
+                    self?.dismiss(animated: true)
+                }
             }
             .store(in: &cancellables)
         

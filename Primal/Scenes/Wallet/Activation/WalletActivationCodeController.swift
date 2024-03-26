@@ -8,10 +8,17 @@
 import Combine
 import UIKit
 
-final class WalletActivationCodeController: UIViewController {
+class WalletActivationCodeController: UIViewController {
+    var iconTextColor: UIColor { .foreground }
+    var inputBackgroundColor: UIColor { .background3 }
+    var inputTextColor: UIColor { .foreground }
+    var confirmButton: UIControl { confButton }
+    
+    let mainStack = UIStackView(axis: .vertical, [])
+    
     private let codeInput = StopSelectActionTextField()
     
-    private let confirmButton = LargeRoundedButton(title: "Finish")
+    private let confButton = LargeRoundedButton(title: "Finish")
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -34,6 +41,13 @@ final class WalletActivationCodeController: UIViewController {
         
         mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
+    
+    func showSummary(_ newAddress: String) {
+        present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {
+            self.navigationController?.viewControllers.removeAll(where: { $0 as? WalletActivateViewController != nil })
+            self.navigationController?.viewControllers.remove(object: self)
+        }
+    }
 }
 
 private extension WalletActivationCodeController {
@@ -43,7 +57,7 @@ private extension WalletActivationCodeController {
         view.backgroundColor = .background
         
         let icon = UIImageView(image: UIImage(named: "walletFilledLarge"))
-        icon.tintColor = .foreground
+        icon.tintColor = iconTextColor
         icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         icon.contentMode = .scaleAspectFit
         
@@ -54,20 +68,20 @@ private extension WalletActivationCodeController {
         let title = UILabel()
         title.text = "Check Your Email"
         title.font = .appFont(withSize: 20, weight: .semibold)
-        title.textColor = .foreground
+        title.textColor = iconTextColor
         title.textAlignment = .center
         
         let activationText = NSMutableAttributedString(string: "Your activation code was sent to ", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: UIColor.foreground
+            .foregroundColor: iconTextColor
         ])
         activationText.append(.init(string: email, attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .bold),
-            .foregroundColor: UIColor.foreground
+            .foregroundColor: iconTextColor
         ]))
         activationText.append(.init(string: ". You may need to check your Junk or Spam folder.", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: UIColor.foreground
+            .foregroundColor: iconTextColor
         ]))
         
         let subTitle = UILabel()
@@ -75,7 +89,7 @@ private extension WalletActivationCodeController {
         subTitle.textAlignment = .center
         subTitle.numberOfLines = 0
         
-        let mainStack = UIStackView(axis: .vertical, [
+        [
             SpacerView(height: 32),
             iconParent,                 SpacerView(height: 69, priority: .defaultLow),
             title,                      SpacerView(height: 12),
@@ -83,7 +97,7 @@ private extension WalletActivationCodeController {
             inputParent(codeInput),     SpacerView(height: 12, priority: .required),
             UIView(),
             confirmButton
-        ])
+        ].forEach { mainStack.addArrangedSubview($0) }
         
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 36)
@@ -91,7 +105,7 @@ private extension WalletActivationCodeController {
         
         [codeInput].forEach {
             $0.font = .appFont(withSize: 32, weight: .bold)
-            $0.textColor = .foreground
+            $0.textColor = inputTextColor
             $0.returnKeyType = .done
             $0.delegate = self
         }
@@ -130,14 +144,11 @@ private extension WalletActivationCodeController {
                 
                 self.confirmButton.isEnabled = true
                 
+                showSummary(newAddress)
+                
                 WalletManager.instance.didJustCreateWallet = true
                 WalletManager.instance.isLoadingWallet = false
                 WalletManager.instance.userHasWallet = true
-                
-                self.present(WalletTransferSummaryController(.walletActivated(newAddress: newAddress)), animated: true) {
-                    self.navigationController?.viewControllers.removeAll(where: { $0 as? WalletActivateViewController != nil })
-                    self.navigationController?.viewControllers.remove(object: self)
-                }
                 
                 guard let profile = IdentityManager.instance.user?.profileData else { return }
                 profile.lud16 = newAddress
@@ -157,7 +168,7 @@ private extension WalletActivationCodeController {
         
         let backgroundViews = (1...6).map { _ in
             let view = UIView()
-            view.backgroundColor = .background3
+            view.backgroundColor = inputBackgroundColor
             view.layer.cornerRadius = 12
             return view
         }
@@ -185,7 +196,7 @@ extension WalletActivationCodeController: UITextFieldDelegate {
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        if var selection = textField.selectedTextRange, !selection.isEmpty {
+        if let selection = textField.selectedTextRange, !selection.isEmpty {
             textField.selectedTextRange = textField.textRange(from: selection.end, to: selection.end)
         }
     }

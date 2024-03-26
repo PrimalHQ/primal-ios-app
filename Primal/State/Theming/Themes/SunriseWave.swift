@@ -8,7 +8,7 @@
 import UIKit
 
 /// LIGHT DEFAULT THEME
-final class SunriseWave: AppTheme {
+class SunriseWave: AppTheme {
     static let instance = SunriseWave()
     
     let kind: Theme = .sunriseWave

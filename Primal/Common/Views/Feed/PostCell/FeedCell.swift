@@ -91,7 +91,7 @@ private extension DefaultFeedCell {
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
         mainStack.setCustomSpacing(7, after: repostIndicator)
         
-        contentStack.spacing = 6
+        contentStack.spacing = 8
         
         buttonStackStandIn.constrainToSize(height: 24)
         contentView.addSubview(bottomButtonStack)
@@ -137,7 +137,7 @@ private extension FullWidthFeedCell {
         mainStack.addArrangedSubview(contentStack)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
         
-        contentStack.spacing = 6
+        contentStack.spacing = 8
         nameReplyStack.spacing = 4
         nameSuperStack.spacing = 8
         

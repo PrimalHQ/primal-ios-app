@@ -168,6 +168,11 @@ extension String : Identifiable {
         
         return (address, amount, label, lightning)
     }
+    
+    func npubToPubkey() -> String? {
+        guard let decoded = try? bech32_decode(self) else { return nil }
+        return hex_encode(decoded.data)
+    }
 
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"

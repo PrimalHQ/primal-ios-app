@@ -8,105 +8,12 @@
 import Combine
 import UIKit
 
-final class WalletSendParentViewController: UIViewController {
-    enum Tab {
-        case nostr
-        case scan
-        case keyboard
-    }
-    
-    private let pageController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    
-    private let nostrButton = WalletSendTabButton(icon: UIImage(named: "walletTabNostr"))
-    private let scanButton = WalletSendTabButton(icon: UIImage(named: "walletTabScan"))
-    private let keyboardButton = WalletSendTabButton(icon: UIImage(named: "walletTabKeyboard"))
-    
-    lazy var pickVC = WalletPickUserController()
-    lazy var scanVC = WalletQRCodeViewController()
-    lazy var keyboardVC = WalletKeyboardTabController()
-    
-    private var activeButton: WalletSendTabButton? {
-        didSet {
-            oldValue?.isActive = false
-            activeButton?.isActive = true
-        }
-    }
-    
-    private var oldTab: Tab?
-    private var textSearch: String?
-    private var cancellables: Set<AnyCancellable> = []
-    
-    init(startingTab tab: Tab) {
-        super.init(nibName: nil, bundle: nil)
-        
-        setup()
+protocol WalletSearchController: UIViewController { 
+    var textSearch: String? { get set }
+    var cancellables: Set<AnyCancellable> { get set }
+}
 
-        set(tab, animated: false)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        mainTabBarController?.setTabBarHidden(true, animated: animated)
-        updateBars(oldTab ?? .nostr)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        (navigationController as? MainNavigationController)?.isTransparent = false
-        navigationItem.leftBarButtonItem = customBackButton
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if oldTab != .nostr {
-            navigationController?.viewControllers.remove(object: self)
-        }
-    }
-    
-    func set(_ tab: Tab, animated: Bool = true) {
-        updateBars(tab)
-        guard oldTab != tab else { return }
-        
-        switch tab {
-        case .nostr:
-            pageController.setViewControllers([pickVC], direction: .reverse, animated: animated)
-        case .scan:
-            pageController.setViewControllers([scanVC], direction: oldTab == .nostr ? .forward : .reverse, animated: animated)
-        case .keyboard:
-            pageController.setViewControllers([keyboardVC], direction: .forward, animated: animated)
-        }
-        oldTab = tab
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        activeButton == scanButton ? .lightContent : super.preferredStatusBarStyle
-    }
-    
-    func updateBars(_ tab: Tab) {
-        switch tab {
-        case .nostr:
-            title = "Nostr Recipient"
-            activeButton = nostrButton
-            (navigationController as? MainNavigationController)?.isTransparent = false
-            navigationItem.leftBarButtonItem = customBackButton
-        case .scan:
-            title = "Scan"
-            activeButton = scanButton
-            (navigationController as? MainNavigationController)?.isTransparent = true
-            navigationItem.leftBarButtonItem = backButtonWithColor(.white)
-        case .keyboard:
-            title = "Send Address"
-            activeButton = keyboardButton
-            (navigationController as? MainNavigationController)?.isTransparent = false
-            navigationItem.leftBarButtonItem = customBackButton
-        }
-        RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
-    }
-    
+extension WalletSearchController {
     func search(_ text: String) {
         guard textSearch == nil else { return }
         
@@ -211,6 +118,106 @@ final class WalletSendParentViewController: UIViewController {
                 
             }
             .store(in: &cancellables)
+    }
+}
+
+final class WalletSendParentViewController: UIViewController, WalletSearchController {
+    enum Tab {
+        case nostr
+        case scan
+        case keyboard
+    }
+    
+    private let pageController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    
+    private let nostrButton = WalletSendTabButton(icon: UIImage(named: "walletTabNostr"))
+    private let scanButton = WalletSendTabButton(icon: UIImage(named: "walletTabScan"))
+    private let keyboardButton = WalletSendTabButton(icon: UIImage(named: "walletTabKeyboard"))
+    
+    lazy var pickVC = WalletPickUserController()
+    lazy var scanVC = WalletQRCodeViewController()
+    lazy var keyboardVC = WalletKeyboardTabController()
+    
+    private var activeButton: WalletSendTabButton? {
+        didSet {
+            oldValue?.isActive = false
+            activeButton?.isActive = true
+        }
+    }
+    
+    private var oldTab: Tab?
+    var textSearch: String?
+    var cancellables: Set<AnyCancellable> = []
+    
+    init(startingTab tab: Tab) {
+        super.init(nibName: nil, bundle: nil)
+        
+        setup()
+
+        set(tab, animated: false)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
+        updateBars(oldTab ?? .nostr)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        (navigationController as? MainNavigationController)?.isTransparent = false
+        navigationItem.leftBarButtonItem = customBackButton
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if oldTab != .nostr {
+            navigationController?.viewControllers.remove(object: self)
+        }
+    }
+    
+    func set(_ tab: Tab, animated: Bool = true) {
+        updateBars(tab)
+        guard oldTab != tab else { return }
+        
+        switch tab {
+        case .nostr:
+            pageController.setViewControllers([pickVC], direction: .reverse, animated: animated)
+        case .scan:
+            pageController.setViewControllers([scanVC], direction: oldTab == .nostr ? .forward : .reverse, animated: animated)
+        case .keyboard:
+            pageController.setViewControllers([keyboardVC], direction: .forward, animated: animated)
+        }
+        oldTab = tab
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        activeButton == scanButton ? .lightContent : super.preferredStatusBarStyle
+    }
+    
+    func updateBars(_ tab: Tab) {
+        switch tab {
+        case .nostr:
+            title = "Nostr Recipient"
+            activeButton = nostrButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        case .scan:
+            title = "Scan"
+            activeButton = scanButton
+            (navigationController as? MainNavigationController)?.isTransparent = true
+            navigationItem.leftBarButtonItem = backButtonWithColor(.white)
+        case .keyboard:
+            title = "Send Address"
+            activeButton = keyboardButton
+            (navigationController as? MainNavigationController)?.isTransparent = false
+            navigationItem.leftBarButtonItem = customBackButton
+        }
+        RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
     }
 }
 

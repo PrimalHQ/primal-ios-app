@@ -31,7 +31,7 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
         case .login:
             viewControllerStack = [OnboardingSigninController()]
         case .signup:
-            viewControllerStack = [OnboardingUsernameController()]
+            viewControllerStack = [OnboardingDisplayNameController()]
         }
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self
@@ -61,7 +61,16 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     
     func reset(_ viewController: UIViewController, animated: Bool) {
         viewControllerStack = [viewController]
+        
         setViewControllers([viewController], direction: .forward, animated: animated)
+    }
+    
+    func resetCrossfade(_ viewController: UIViewController) {
+        viewControllerStack = [viewController]
+        
+        UIView.transition(with: view, duration: 0.5, options: .transitionCrossDissolve) {
+            self.setViewControllers([viewController], direction: .forward, animated: false)
+        }
     }
     
     func popViewController(animated: Bool) {
@@ -98,6 +107,20 @@ extension OnboardingViewController {
         parent as? OnboardingParentViewController ?? parent?.parent as? OnboardingParentViewController
     }
     
+    func descAttributedString(_ string: String) -> NSAttributedString {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = 8
+        paragraph.alignment = .center
+        return NSAttributedString(
+            string: string,
+            attributes: [
+                .foregroundColor:   UIColor.white.withAlphaComponent(0.75),
+                .font:              UIFont.appFont(withSize: 16, weight: .semibold),
+                .paragraphStyle:    paragraph
+            ]
+        )
+    }
+    
     func addNavigationBar(_ title: String) {
         backButton.setImage(UIImage(named: "back"), for: .normal)
         backButton.tintColor = .white
@@ -128,6 +151,7 @@ extension OnboardingViewController {
         background.widthAnchor.constraint(equalTo: background.heightAnchor, multiplier: 1875 / 812).isActive = true
     
         backgroundParent.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor).isActive = true
+        backgroundParent.isUserInteractionEnabled = false
                 
         let constraint = NSLayoutConstraint(
             item: background,

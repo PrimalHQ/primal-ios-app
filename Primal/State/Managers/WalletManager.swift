@@ -103,7 +103,7 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        parsedTransactions = []
+        parsedTransactions = []     // Required because of the notification code, otherwise a notification would show when switching accounts
         
         let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
         balance = oldBalance
@@ -259,15 +259,16 @@ final class WalletManager {
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        let lud06 = user.lud06
-        if lud06.isEmpty {
-            let lud = user.lud16
-            if lud.isEmpty { throw WalletError.noLud }
+        let lud16 = user.lud16
+        if lud16.isEmpty {
+            let lud06 = user.lud06
             
-            return try await sendLud16(lud, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
+            if lud06.isEmpty { throw WalletError.noLud }
+            
+            return try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
         }
-        
-        try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+            
+        try await sendLud16(lud16, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
     }
     
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {

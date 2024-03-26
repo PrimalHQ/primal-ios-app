@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 8.6.23..
 //
 
+import Combine
 import UIKit
 import FLAnimatedImage
 import Kingfisher
@@ -40,6 +41,8 @@ class ProfileNavigationView: UIView, Themeable {
     let minSize: CGFloat = 89
     
     weak var delegate: ProfileNavigationViewDelegate?
+    
+    var cancellables: Set<AnyCancellable> = []
     
     init() {
         super.init(frame: .zero)

@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import SwiftUI
 
 class ThreadCell: PostCell {
     enum ThreadPosition {
@@ -96,11 +97,11 @@ final class DefaultThreadCell: ThreadCell {
         imageSpacerStack.spacing = 2
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [nameStack, mainLabel, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
+        let contentStack = UIStackView(axis: .vertical, [nameStack, mainLabel, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [imageSpacerStack, contentStack])
         
-        let mainStack = UIStackView(arrangedSubviews: [repostIndicator, horizontalContentStack])
+        let mainStack = UIStackView(axis: .vertical, [repostIndicator, horizontalContentStack])
         contentView.addSubview(mainStack)
         
         mainStack
@@ -121,24 +122,28 @@ final class DefaultThreadCell: ThreadCell {
             .pin(to: actionButtonStandin, edges: .horizontal, padding: -7)
         
         horizontalContentStack.spacing = 8
+        contentStack.spacing = 8
         
-        [mainStack, contentStack].forEach {
-            $0.axis = .vertical
-            $0.spacing = 6
-        }
+        mainStack.spacing = 6
         mainStack.setCustomSpacing(7, after: repostIndicator)
     }
 }
 
 final class DefaultMainThreadCell: ThreadCell {
+    let selectionTextView = UITextView()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         parentSetup()
         setup()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
+        super.update(parsedContent, position: position, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+        
+        selectionTextView.attributedText = parsedContent.attributedText
     }
     
     func setup() {
@@ -159,11 +164,11 @@ final class DefaultMainThreadCell: ThreadCell {
         horizontalProfileStack.alignment = .center
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, mainImages, linkPresentation, postPreview, SpacerView(height: 0, priority: .defaultHigh), actionButtonStandin])
+        let contentStack = UIStackView(axis: .vertical, [mainLabel, mainImages, linkPresentation, postPreview, SpacerView(height: 0, priority: .defaultHigh), actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         
-        let mainStack = UIStackView(arrangedSubviews: [repostIndicator, horizontalProfileStack, horizontalContentStack])
+        let mainStack = UIStackView(axis: .vertical, [repostIndicator, horizontalProfileStack, horizontalContentStack])
         contentView.addSubview(mainStack)
         
         mainStack
@@ -186,11 +191,111 @@ final class DefaultMainThreadCell: ThreadCell {
         horizontalContentStack.spacing = 8
         horizontalProfileStack.spacing = 8
         
-        [mainStack, contentStack].forEach {
-            $0.axis = .vertical
-            $0.spacing = 6
-        }
+        contentStack.spacing = 8
+        
+        mainStack.spacing = 6
         mainStack.setCustomSpacing(7, after: repostIndicator)
+        
+        contentView.addSubview(selectionTextView)
+        selectionTextView
+            .pin(to: mainLabel, edges: .horizontal, padding: -5)
+            .pin(to: mainLabel, edges: .top, padding: 0)
+            .pin(to: mainLabel, edges: .bottom, padding: -2)
+        selectionTextView.backgroundColor = .background2
+        selectionTextView.tintColor = .accent
+        selectionTextView.isEditable = false
+        selectionTextView.isScrollEnabled = false
+        selectionTextView.delegate = self
+    }
+}
+
+
+extension DefaultMainThreadCell: UITextViewDelegate {
+    @available(iOS 17.0, *)
+    func textView(_ textView: UITextView, primaryActionFor textItem: UITextItem, defaultAction: UIAction) -> UIAction? {
+        guard case .link(let url) = textItem.content else { return nil }
+        return .init { [weak self] _ in
+            self?.delegate?.postCellDidTapURL(self!, url: url)
+        }
+    }
+    
+    @available(iOS 17.0, *)
+    func textView(_ textView: UITextView, menuConfigurationFor textItem: UITextItem, defaultMenu: UIMenu) -> UITextItem.MenuConfiguration? {
+        guard case .link(let url) = textItem.content else { return .init(menu: defaultMenu) }
+        
+        if url.scheme == "hashtag" {
+            let hashtag = url.absoluteString.replacing("hashtag://", with: "")
+            return UITextItem.MenuConfiguration(preview: .view(HashtagPreviewView(hashtag: hashtag)), menu: .init(children: [
+                UIAction(title: "Open \(hashtag) feed", image: UIImage(systemName: "square.stack.fill"), handler: { [weak self] _ in
+                    self?.delegate?.postCellDidTapURL(self!, url: url)
+                }),
+                UIAction(title: "Copy hashtag", image: UIImage(named: "MenuCopyText"), handler: { _ in
+                    UIPasteboard.general.string = hashtag
+                    RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
+                })
+            ]))
+        }
+        
+        if url.scheme == "mention" {
+            let mention = url.absoluteString.replacing("mention://", with: "")
+            
+            return UITextItem.MenuConfiguration(preview: .view(ProfilePreviewView(pubkey: mention)), menu: .init(children: [
+                UIAction(title: "Open profile", image: UIImage(systemName: "person.crop.circle.fill"), handler: { [weak self] _ in
+                    self?.delegate?.postCellDidTapURL(self!, url: url)
+                }),
+                UIAction(title: "Copy pubkey", image: UIImage(named: "MenuCopyText"), handler: { _ in
+                    UIPasteboard.general.string = mention
+                    RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
+                })
+            ]))
+        }
+        
+        return .init(preview: .default, menu: defaultMenu)
+    }
+    
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        delegate?.postCellDidTapURL(self, url: URL)
+        return false
+    }
+}
+
+class ProfilePreviewView: UIView {
+    let pubkey: String
+    let viewController: ProfileViewController
+    init(pubkey: String) {
+        self.pubkey = pubkey
+        viewController = ProfileViewController(profile: .init(data: .init(pubkey: pubkey)))
+        super.init(frame: .zero)
+        addSubview(viewController.view)
+        viewController.view.pinToSuperview()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+class HashtagPreviewView: UIView {
+    let hashtag: String
+    let viewController: RegularFeedViewController
+    init(hashtag: String) {
+        self.hashtag = hashtag
+        viewController = RegularFeedViewController(feed: .init(search: hashtag))
+        super.init(frame: .zero)
+        addSubview(viewController.view)
+        viewController.view.pinToSuperview()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+struct HashtagView: UIViewControllerRepresentable {
+    var hashtag: String
+    
+    func makeUIViewController(context: Context) -> RegularFeedViewController {
+        RegularFeedViewController(feed: FeedManager(search: hashtag))
+    }
+    
+    func updateUIViewController(_ uiViewController: RegularFeedViewController, context: Context) {
+        
     }
 }
 

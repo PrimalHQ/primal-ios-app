@@ -397,32 +397,34 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
-        navBar.receivePressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            self?.show(WalletReceiveViewController(), sender: nil)
-        }
-        .store(in: &cancellables)
-        
-        navBar.sendPressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
-        }
-        .store(in: &cancellables)
-        
-        navBar.scanPressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            (self?.navigationController as? MainNavigationController)?.isTransparent = true
-            DispatchQueue.main.async {
-                self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+        if LoginManager.instance.method() == .nsec {
+            navBar.receivePressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                self?.show(WalletReceiveViewController(), sender: nil)
             }
+            .store(in: &cancellables)
+            
+            navBar.sendPressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
+            }
+            .store(in: &cancellables)
+            
+            navBar.scanPressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                (self?.navigationController as? MainNavigationController)?.isTransparent = true
+                DispatchQueue.main.async {
+                    self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+                }
+            }
+            .store(in: &cancellables)
         }
-        .store(in: &cancellables)
         
         navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
             self?.isBitcoinPrimary = isBitcoinPrimary

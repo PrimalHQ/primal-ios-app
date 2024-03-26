@@ -40,7 +40,7 @@ private extension LargeProfileView {
         guard let profile else { return }
         profileImageView.kf.setImage(with: URL(string: profile.avatar), placeholder: UIImage(named: "onboardingDefaultAvatar")?.withAlpha(alpha: 0.5))
         coverImageView.kf.setImage(with: URL(string: profile.banner))
-        usernameLabel.text = "@" + profile.username
+        usernameLabel.text = profile.username.isEmpty ? "" : "@" + profile.username
         descriptionLabel.text = profile.bio
         nameLabel.text = profile.displayname
         websiteLabel.text = profile.website

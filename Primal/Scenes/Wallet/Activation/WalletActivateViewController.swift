@@ -8,7 +8,12 @@
 import Combine
 import UIKit
 
-final class WalletActivateViewController: UIViewController {
+class WalletActivateViewController: UIViewController {    
+    var iconTextColor: UIColor { .foreground }
+    var inputBackgroundColor: UIColor { .background3 }
+    var inputTextColor: UIColor { .foreground }
+    var inputPlaceholderColor: UIColor { .foreground4 }
+    var confirmButton: UIControl { confButton }
     
     private let descLabel = UILabel()
     private let firstNameInput = UITextField()
@@ -16,6 +21,8 @@ final class WalletActivateViewController: UIViewController {
     private let emailInput = UITextField()
     
     private let dateButton = UIButton()
+    
+    let terms = TermsAndConditionsView()
     
     private lazy var firstScreenStack = UIStackView(axis: .vertical, [
         descLabel,                  SpacerView(height: 28, priority: .required),
@@ -26,11 +33,13 @@ final class WalletActivateViewController: UIViewController {
         countryRow
     ])
     
+    lazy var mainStack = UIStackView(axis: .vertical, [])
+    
     private let countryInput = UITextField()
     private let stateInput = UITextField()
     private lazy var countryRow = UIStackView([inputParent(countryInput), inputParent(stateInput)])
     
-    private let confirmButton = LargeRoundedButton(title: "Next")
+    private let confButton = LargeRoundedButton(title: "Next")
     
     private var date: Date? {
         didSet {
@@ -51,6 +60,10 @@ final class WalletActivateViewController: UIViewController {
         
         mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
+    
+    func showCodeController(_ email: String) {
+        show(WalletActivationCodeController(email: email), sender: nil)
+    }
 }
 
 private extension WalletActivateViewController {
@@ -60,7 +73,7 @@ private extension WalletActivateViewController {
         view.backgroundColor = .background
         
         let icon = UIImageView(image: UIImage(named: "walletFilledLarge"))
-        icon.tintColor = .foreground
+        icon.tintColor = iconTextColor
         icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         icon.contentMode = .scaleAspectFit
         
@@ -69,18 +82,19 @@ private extension WalletActivateViewController {
         icon.pinToSuperview(edges: .vertical).centerToSuperview()
         
         let iconStack = UIStackView(axis: .vertical, [iconParent, SpacerView(height: 32)])
-        let mainStack = UIStackView(axis: .vertical, [
+        [
             SpacerView(height: 32),
             iconStack,
             firstScreenStack,   SpacerView(height: 36),
             confirmButton,      SpacerView(height: 20),
-            TermsAndConditionsView()
-        ])
+            terms
+        ].forEach { mainStack.addArrangedSubview($0) }
         mainStack.distribution = .equalSpacing
         
         let scroll = UIScrollView()
         scroll.addSubview(mainStack)
         view.addSubview(scroll)
+        scroll.keyboardDismissMode = .onDrag
         
         mainStack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 36)
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -72).isActive = true
@@ -92,14 +106,14 @@ private extension WalletActivateViewController {
         
         descLabel.text = "Activating your wallet is easy!\nWe just need a few details below:"
         descLabel.font = .appFont(withSize: 18, weight: .semibold)
-        descLabel.textColor = .foreground
+        descLabel.textColor = iconTextColor
         descLabel.textAlignment = .center
         descLabel.numberOfLines = 0
         descLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         [firstNameInput, lastNameInput, emailInput, countryInput, stateInput].forEach {
             $0.font = .appFont(withSize: 18, weight: .bold)
-            $0.textColor = .foreground
+            $0.textColor = inputTextColor
             $0.returnKeyType = .done
             $0.delegate = self
         }
@@ -113,7 +127,7 @@ private extension WalletActivateViewController {
         ].forEach { field, text in
             field.attributedPlaceholder = NSAttributedString(string: text, attributes: [
                 .font: UIFont.appFont(withSize: 18, weight: .regular),
-                .foregroundColor: UIColor.foreground4
+                .foregroundColor: inputPlaceholderColor
             ])
         }
         
@@ -185,21 +199,18 @@ private extension WalletActivateViewController {
         
         confirmButton.isEnabled = false
         
+        Connection.reconnect()
+        
         PrimalWalletRequest(type: .activationCode(firstName: firstName, lastName: lastName, email: email, date: date, country: countryCode, state: stateCode)).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
-                self?.confirmButton.isEnabled = true
-                
                 if let error = res.message {
-                    let alert = UIAlertController(title: "Warning", message: error, preferredStyle: .alert)
-                    alert.addAction(.init(title: "OK", style: .default) { _ in
-                        self?.navigationController?.popToRootViewController(animated: true)
-                        self?.mainTabBarController?.switchToTab(.home)
-                    })
-                    self?.present(alert, animated: true)
+                    self?.showErrorMessage(error)
                 } else {
-                    self?.show(WalletActivationCodeController(email: email), sender: nil)
+                    self?.showCodeController(email)
                 }
+                
+                self?.confirmButton.isEnabled = true
             }
             .store(in: &cancellables)
     }
@@ -209,7 +220,7 @@ private extension WalletActivateViewController {
         view.addSubview(input)
         input.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
         
-        view.backgroundColor = .background3
+        view.backgroundColor = inputBackgroundColor
         view.constrainToSize(height: 48)
         view.layer.cornerRadius = 24
         
@@ -223,7 +234,7 @@ private extension WalletActivateViewController {
     func updateDateButton() {
         guard let date else {
             dateButton.setTitle("your date of birth", for: .normal)
-            dateButton.setTitleColor(.foreground4, for: .normal)
+            dateButton.setTitleColor(inputPlaceholderColor, for: .normal)
             dateButton.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
             return
         }
@@ -234,7 +245,7 @@ private extension WalletActivateViewController {
         }
         
         dateButton.setTitle(formatter.string(from: date), for: .normal)
-        dateButton.setTitleColor(.foreground, for: .normal)
+        dateButton.setTitleColor(inputTextColor, for: .normal)
         dateButton.titleLabel?.font = .appFont(withSize: 18, weight: .bold)
     }
     

@@ -32,6 +32,7 @@ final class ProfileViewController: PostFeedViewController {
                 table.reloadSections([0], with: .none)
             }
             navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
+            parseDescription()
         }
     }
     
@@ -82,16 +83,31 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
+    var cachedUsers: [PrimalUser] = []
+    var parsedDescription: NSAttributedString {
+        didSet {
+            table.reloadSections(.init(integer: 0), with: .fade)
+        }
+    }
+    
     var followers: [ParsedUser] = []
     var following: [ParsedUser] = []
     
     var isLoadingFollowers = false
     var isLoadingFollowing = false
     
+    let aboutTextAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.appFont(withSize: 14, weight: .regular),
+        .foregroundColor: UIColor.foreground
+    ]
+    
     init(profile: ParsedUser) {
         self.profile = profile
+        parsedDescription = NSAttributedString(string: profile.data.about, attributes: aboutTextAttributes)
+        
         super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
         
+        parseDescription()
         SmartContactsManager.instance.addContact(profile)
         
         setup()
@@ -176,7 +192,7 @@ final class ProfileViewController: PostFeedViewController {
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
-        (cell as? ProfileInfoCell)?.update(user: profile.data, stats: userStats, followsUser: followsUser, selectedTab: tab.rawValue, delegate: self)
+        (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followsUser: followsUser, selectedTab: tab.rawValue, delegate: self)
         return cell
     }
     
@@ -350,6 +366,48 @@ private extension ProfileViewController {
         navigationBar.profilePicOverlaySmall = profileOverlay2
     }
 
+    func parseDescription() {
+        var aboutText = profile.data.about
+
+        if aboutText.isEmpty || parsedDescription.string != aboutText { return }
+        
+        let npubsFound: [String] = aboutText.ranges(of: /(nostr:|@)npub1[A-Za-z0-9]+/).map { String(aboutText[$0]).replacing("nostr:", with: "").replacing("@", with: "") }
+        let pubkeys = npubsFound.compactMap { $0.npubToPubkey() }
+        
+        if !pubkeys.isEmpty {
+            let payload: [String: JSON] = [
+                "pubkeys": .array(pubkeys.map { .string($0) })
+            ]
+            
+            SocketRequest(name: "user_infos", payload: .object(payload)).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    guard let self else { return }
+                    let parsedUsers = res.getSortedUsers()
+                    
+                    for user in parsedUsers {
+                        aboutText = aboutText.replacingOccurrences(of: "nostr:\(user.data.npub)", with: user.data.displayName)
+                        aboutText = aboutText.replacingOccurrences(of: "@\(user.data.npub)", with: user.data.displayName)
+                    }
+                    
+                    let attributedString = NSMutableAttributedString(string: aboutText, attributes: aboutTextAttributes)
+
+                    for profile in parsedUsers {
+                        let range = (aboutText as NSString).range(of: profile.data.displayName)
+                        if range.location != NSNotFound {
+                            attributedString.addAttributes([
+                                .link : URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
+                                .foregroundColor: UIColor.accent
+                            ], range: range)
+                        }
+                    }
+                    parsedDescription = attributedString
+                    cachedUsers = parsedUsers.map { $0.data }
+                }
+                .store(in: &cancellables)
+        }
+    }
+    
     func requestUserProfile() {
         let profile = self.profile
         
@@ -430,6 +488,10 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func linkPressed(_ url: URL) {
+        handleURLTap(url, cachedUsers: cachedUsers)
+    }
+    
     func didSelectTab(_ tab: Int) {
         guard let new = Tab(rawValue: tab) else { return }
         

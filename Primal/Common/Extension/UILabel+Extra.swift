@@ -12,8 +12,10 @@ extension UILabel {
         let myText = (text ?? "") as NSString
         let attributes: [NSAttributedString.Key : Any] = [.font : font!]
         
+        let width = bounds.width < 1 ? 315 : bounds.width
+        
         let labelSize = myText.boundingRect(
-            with: CGSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude),
+            with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
             options: NSStringDrawingOptions.usesLineFragmentOrigin,
             attributes: attributes,
             context: nil

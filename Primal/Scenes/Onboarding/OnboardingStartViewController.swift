@@ -49,7 +49,7 @@ final class OnboardingStartViewController: UIViewController, OnboardingViewContr
     }
     
     @objc func signupPressed() {
-        onboardingParent?.pushViewController(OnboardingUsernameController(), animated: true)
+        onboardingParent?.pushViewController(OnboardingDisplayNameController(), animated: true)
     }
     
     @objc func signinPressed() {

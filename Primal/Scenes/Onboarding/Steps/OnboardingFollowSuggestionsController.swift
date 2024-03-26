@@ -90,7 +90,7 @@ private extension OnboardingFollowSuggestionsController {
         table.layer.cornerRadius = 12
         table.bounces = false
         
-        FollowSuggestionsRequest(username: "").publisher()
+        FollowSuggestionsRequest().publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion  in
                 print(completion)

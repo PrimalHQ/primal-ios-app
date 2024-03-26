@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SunsetWave: AppTheme {
+class SunsetWave: AppTheme {
     static let instance = SunsetWave()
     
     let kind: Theme = .sunsetWave
@@ -16,7 +16,7 @@ final class SunsetWave: AppTheme {
     
     let background: UIColor = .black
     let background2: UIColor = .black
-    let background3: UIColor = .init(rgb: 0x222222)
+    var background3: UIColor { .init(rgb: 0x222222) }
     let background4: UIColor = .init(rgb: 0x1A1A1A)
     
     let foreground: UIColor = .white

@@ -154,6 +154,8 @@ private extension NewPostViewController {
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         
+        textView.tintColor = .accent
+        
         setupBindings()
     }
     
