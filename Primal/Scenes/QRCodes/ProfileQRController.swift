@@ -11,7 +11,7 @@ final class ProfileQRController: OnboardingParentViewController {
     lazy var profile = ProfileShowQRController()
     lazy var scanController = ProfileScanQRController()
     
-    override init() {
+    init() {
         super.init()
         viewControllerStack = [profile]
         delegate = self

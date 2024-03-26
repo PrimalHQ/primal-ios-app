@@ -79,14 +79,14 @@ private extension NewPostViewController {
     }
     
     @objc func galleryButtonPressed() {
-        ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
-            self?.manager.processSelectedImage(image, isPNG: isPNG)
+        ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
+            self?.manager.processSelectedAsset(result)
         }
     }
     
     @objc func cameraButtonPressed() {
-        ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
-            self?.manager.processSelectedImage(image, isPNG: isPNG)
+        ImagePickerManager(self, mode: .camera) { [weak self] result in
+            self?.manager.processSelectedAsset(result)
         }
     }
     
@@ -154,6 +154,8 @@ private extension NewPostViewController {
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         
+        textView.tintColor = .accent
+        
         setupBindings()
     }
     
@@ -185,13 +187,13 @@ private extension NewPostViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest3(manager.$users, manager.$images, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
+        Publishers.CombineLatest3(manager.$users, manager.$media, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
             guard let self else { return }
             self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !self.manager.isUploadingImages && self.postButton.title(for: .normal) == self.postButtonText
         }
         .store(in: &cancellables)
                 
-        Publishers.CombineLatest(manager.$users, manager.$images).receive(on: DispatchQueue.main).sink { [weak self] users, images in
+        Publishers.CombineLatest(manager.$users, manager.$media).receive(on: DispatchQueue.main).sink { [weak self] users, images in
             guard let self else { return }
             self.imagesCollectionView.imageResources = images
             

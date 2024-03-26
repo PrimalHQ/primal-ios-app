@@ -24,8 +24,8 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     
     let exchangeIcon = ThemeableImageView(image: UIImage(named: "exchange")).setTheme { $0.tintColor = .accent }
     
-    let primaryRow = UIStackView()
-    let secondaryRow = UIStackView()
+    let primaryRow = UIView()
+    let secondaryRow = UIView()
     
     var animateReversed = true
     
@@ -60,6 +60,8 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     
     var rowSpacing: CGFloat { 6 }
     
+    var animate$always: Bool { true }
+    
     func updateTheme() {
         large$Label.textColor = .foreground4
         largeAmountLabel.textColor = .foreground
@@ -70,17 +72,17 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     var isAnimating = false
     var onAnimationEnd: (() -> ())?
     
-    func setLargeLabel(_ text: String, animating: Bool) {
+    func setLargeLabel(_ text: String, complexAnimation: Bool) {
         if isAnimating {
             onAnimationEnd = { [weak self] in
-                self?.setLargeLabel(text, animating: animating)
+                self?.setLargeLabel(text, complexAnimation: complexAnimation)
             }
             return
         }
         
         let oldText = largeAmountLabel.text ?? ""
         
-        if oldText.isEmpty || !animating {
+        if oldText.isEmpty {
             largeAmountLabel.text = text
             return
         }
@@ -91,7 +93,19 @@ class LargeBalanceConversionView: UIStackView, Themeable {
             return
         }
         
+        guard complexAnimation else {
+            setLargeLabelFade(text)
+            return
+        }
+        setLargeLabelComplex(text)
+    }
+}
+
+private extension LargeBalanceConversionView {
+    func setLargeLabelComplex(_ text: String) {
         isAnimating = true
+        
+        let oldText = largeAmountLabel.text ?? ""
         
         var views: [UIView] = []
         let attributedText = NSMutableAttributedString(string: text, attributes: largeLabelAttributes(.foreground))
@@ -196,9 +210,32 @@ class LargeBalanceConversionView: UIStackView, Themeable {
             self.onAnimationEnd = nil
         }
     }
-}
-
-private extension LargeBalanceConversionView {
+    
+    func setLargeLabelFade(_ text: String) {
+        isAnimating = true
+        
+        let oldText = largeAmountLabel.text ?? ""
+        let oldLabel = copyLabel(type: 2)
+        oldLabel.attributedText = NSAttributedString(string: oldText, attributes: largeLabelAttributes(.foreground))
+        
+        largeAmountLabel.attributedText = NSMutableAttributedString(string: text, attributes: largeLabelAttributes(.foreground))
+        largeAmountLabel.alpha = 0
+        largeAmountLabel.transform = .init(translationX: 0, y: -40)
+        
+        UIView.animate(withDuration: 0.2) {
+            self.largeAmountLabel.alpha = 1
+            self.largeAmountLabel.transform = .identity
+            
+            oldLabel.alpha = 0
+            oldLabel.transform = .init(translationX: 0, y: 40)
+        } completion: { _ in
+            oldLabel.removeFromSuperview()
+            self.isAnimating = false
+            self.onAnimationEnd?()
+            self.onAnimationEnd = nil
+        }
+    }
+    
     func setup() {
         setupLayout()
         updateTheme()
@@ -224,13 +261,22 @@ private extension LargeBalanceConversionView {
         currencyParent.addSubview(largeCurrencyLabel)
         largeCurrencyLabel.pinToSuperview(edges: .bottom, padding: labelOffset).pinToSuperview(edges: .horizontal)
         
-        [dollarParent, largeAmountLabel, currencyParent].forEach { primaryRow.addArrangedSubview($0) }
-        primaryRow.spacing = rowSpacing
+        [dollarParent, largeAmountLabel, currencyParent].forEach { primaryRow.addSubview($0) }
+        
+        largeAmountLabel.pinToSuperview(edges: .vertical)
+        dollarParent.pinToSuperview(edges: .vertical)
+        dollarParent.trailingAnchor.constraint(equalTo: largeAmountLabel.leadingAnchor, constant: -rowSpacing).isActive = true
+        
+        currencyParent.pinToSuperview(edges: .vertical)
+        currencyParent.leadingAnchor.constraint(equalTo: largeAmountLabel.trailingAnchor, constant: rowSpacing).isActive = true
+        
         primaryRow.clipsToBounds = false
         
-        [smallAmountLabel, exchangeIcon].forEach { secondaryRow.addArrangedSubview($0) }
-        secondaryRow.spacing = rowSpacing
-        secondaryRow.alignment = .center
+        [smallAmountLabel, exchangeIcon].forEach { secondaryRow.addSubview($0) }
+        smallAmountLabel.pinToSuperview()
+        smallAmountLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        exchangeIcon.centerToSuperview(axis: .vertical)
+        exchangeIcon.leadingAnchor.constraint(equalTo: smallAmountLabel.trailingAnchor, constant: rowSpacing).isActive = true
         
         addArrangedSubview(primaryRow)
         addArrangedSubview(secondaryRow)
@@ -248,19 +294,63 @@ private extension LargeBalanceConversionView {
     }
     
     func updateLabels(_ isBitcoinPrimary: Bool, _ balance: Int) {
-        large$Label.superview?.isHidden = isBitcoinPrimary
-        largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
-        
-        let shouldAnimate = isBitcoinPrimary == self.isBitcoinPrimary
+        let complexAnimation = isBitcoinPrimary == self.isBitcoinPrimary
         
         let usdAmount = balance.satsToUsdAmountString(roundingStyle)
         
         if isBitcoinPrimary {
-            setLargeLabel(balance.localized(), animating: shouldAnimate)
+            setLargeLabel(balance.localized(), complexAnimation: complexAnimation)
             smallAmountLabel.text = "$\(usdAmount) USD"
         } else {
-            setLargeLabel(usdAmount, animating: shouldAnimate)
+            setLargeLabel(usdAmount, complexAnimation: complexAnimation)
             smallAmountLabel.text = "\(balance.localized()) sats"
+        }
+        
+        if complexAnimation {
+            large$Label.alpha = 1
+            large$Label.superview?.isHidden = isBitcoinPrimary
+            largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
+        } else {
+            let copyCurrency = UILabel()
+            copyCurrency.text = !isBitcoinPrimary ? "sats" : "USD"
+            copyCurrency.font = largeCurrencyLabel.font
+            copyCurrency.textColor = largeCurrencyLabel.textColor
+            addSubview(copyCurrency)
+            copyCurrency.frame = largeCurrencyLabel.superview?.convert(largeCurrencyLabel.frame, to: self) ?? .zero
+            
+            let copy$ = UILabel()
+            if isBitcoinPrimary {
+                copy$.text = "$"
+                copy$.font = large$Label.font
+                copy$.textColor = large$Label.textColor
+                addSubview(copy$)
+                copy$.frame = large$Label.superview?.convert(large$Label.frame, to: self) ?? .zero
+            }
+            
+            large$Label.alpha = 0
+            large$Label.transform = .init(translationX: 0, y: -40)
+            large$Label.superview?.isHidden = isBitcoinPrimary
+            
+            largeCurrencyLabel.text = isBitcoinPrimary ? "sats" : "USD"
+            largeCurrencyLabel.alpha = 0
+            largeCurrencyLabel.transform = .init(translationX: 0, y: -40)
+            
+            UIView.animate(withDuration: 0.2) {
+                self.large$Label.alpha = 1
+                self.large$Label.transform = .identity
+                
+                self.largeCurrencyLabel.alpha = 1
+                self.largeCurrencyLabel.transform = .identity
+                
+                copyCurrency.alpha = 0
+                copyCurrency.transform = .init(translationX: 0, y: 40)
+                
+                copy$.alpha = 0
+                copy$.transform = .init(translationX: 0, y: 40)
+            } completion: { _ in
+                copyCurrency.removeFromSuperview()
+                copy$.removeFromSuperview()
+            }
         }
     }
     
@@ -273,14 +363,6 @@ private extension LargeBalanceConversionView {
     }
     
     func animateSwap() {
-        let views = [
-            largeAmountLabel.animateColorTransitionTo(smallAmountLabel, duration: 0.2, in: self, forceHeight: true),
-            largeCurrencyLabel.animateColorTransitionTo(smallAmountLabel, duration: 0.2, in: self, forceHeight: true),
-            smallAmountLabel.animateColorTransitionTo(largeCurrencyLabel, duration: 0.2, in: self, forceHeight: true)
-        ]
-        
-        (views.last as? UILabel)?.textAlignment = .right
-        
         primaryRow.transform = .init(scaleX: 1 / 2.1, y: 1 / 2.1).translatedBy(x: 0, y: 80)
         
         smallAmountLabel.alpha = 0.01
@@ -289,12 +371,12 @@ private extension LargeBalanceConversionView {
         primaryRow.alpha = 0.01
         largeAmountLabel.alpha = 1
         largeCurrencyLabel.alpha = 1
-        large$Label.alpha = 1
+        large$Label.alpha = isBitcoinPrimary ? 1 : 0
         
         UIView.animate(withDuration: 0.2) { [self] in
-            views.forEach { $0?.alpha = 0 }
-            
-            self.isBitcoinPrimary.toggle()
+            UIView.performWithoutAnimation {
+                isBitcoinPrimary.toggle()
+            }
             
             primaryRow.transform = .identity
             primaryRow.alpha = 1
@@ -344,7 +426,6 @@ private extension LargeBalanceConversionView {
         } else if type == 2 {
             addSubview(label)
             label.frame = largeAmountLabel.superview?.convert(largeAmountLabel.frame, to: self) ?? .zero
-            label.textAlignment = .right
         } else if type == 3 {
             largeAmountLabel.addSubview(label)
             label.frame = largeAmountLabel.bounds

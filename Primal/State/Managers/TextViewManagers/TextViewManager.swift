@@ -9,16 +9,15 @@ import Combine
 import Foundation
 import UIKit
 
-struct PostingImage {
+struct PostingAsset {
     let id = UUID().uuidString
-    var image: UIImage
-    var isPNG: Bool
-    var state = State.uploading
+    var resource: ImagePickerResult
+    var state = State.uploading(0)
     
     enum State {
         case uploaded(String)
         case failed
-        case uploading
+        case uploading(CGFloat)
     }
 }
 
@@ -26,7 +25,7 @@ class TextViewManager: NSObject, UITextViewDelegate {
     @Published var isEditing = false
     @Published var isEmpty = true
     
-    @Published var images: [PostingImage] = []
+    @Published var media: [PostingAsset] = []
     
     var didChangeEvent = PassthroughSubject<UITextView, Never>()
     
@@ -41,7 +40,7 @@ class TextViewManager: NSObject, UITextViewDelegate {
     var postingText: String {
         var text = textView.text ?? ""
         
-        for image in images {
+        for image in media {
             guard case .uploaded(let url) = image.state else { continue }
             text += "\n" + url
         }
@@ -50,7 +49,7 @@ class TextViewManager: NSObject, UITextViewDelegate {
     }
     
     var isUploadingImages: Bool {
-        for image in images {
+        for image in media {
             if case .uploading = image.state {
                 return true
             }
@@ -59,7 +58,7 @@ class TextViewManager: NSObject, UITextViewDelegate {
     }
     
     var didUploadFail: Bool {
-        for image in images {
+        for image in media {
             if case .failed = image.state {
                 return true
             }
@@ -67,36 +66,47 @@ class TextViewManager: NSObject, UITextViewDelegate {
         return false
     }
     
-    func processSelectedImage(_ image: UIImage, isPNG: Bool) {
-        let postingImage = PostingImage(image: image, isPNG: isPNG)
-        images.append(postingImage)
+    func processSelectedAsset(_ asset: ImagePickerResult) {
+        let postingImage = PostingAsset(resource: asset)
+        media.append(postingImage)
         uploadSelectedImage(postingImage.id)
     }
     
     func uploadSelectedImage(_ id: String) {
-        guard let postingIndex = images.firstIndex(where: { $0.id == id }) else { return }
+        guard let postingIndex = media.firstIndex(where: { $0.id == id }) else { return }
         
-        let postingImage = images[postingIndex]
+        let postingImage = media[postingIndex]
         
         if case .uploaded = postingImage.state { return }
         
-        images[postingIndex].state = .uploading
+        media[postingIndex].state = .uploading(0)
         
-        UploadPhotoRequest(image: postingImage.image, isPNG: postingImage.isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
-            guard case .failure(let error) = $0, let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
-            
-            self?.images[index].state = .failed
-            print(error)
-        }) { [weak self] urlString in
-            guard let index = self?.images.firstIndex(where: { $0.id == postingImage.id }) else { return }
-            
-            self?.images[index].state = .uploaded(urlString)
-        }
-        .store(in: &self.cancellables)
+        let upload = UploadAssetRequest(asset: postingImage.resource)
+        
+        upload.$progress.removeDuplicates().receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                guard let postingIndex = self?.media.firstIndex(where: { $0.id == id }) else { return }
+
+                self?.media[postingIndex].state = .uploading(progress)
+            }
+            .store(in: &cancellables)
+        
+        upload.publisher().receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] in
+                guard case .failure(let error) = $0, let index = self?.media.firstIndex(where: { $0.id == postingImage.id }) else { return }
+                
+                self?.media.remove(at: index)
+                print(error)
+            }, receiveValue: { [weak self] urlString in
+                guard let index = self?.media.firstIndex(where: { $0.id == postingImage.id }) else { return }
+                
+                self?.media[index].state = .uploaded(urlString)
+            })
+            .store(in: &self.cancellables)
     }
     
     func restartFailedUploads() {
-        for image in images {
+        for image in media {
             if case .failed = image.state {
                 uploadSelectedImage(image.id)
             }
@@ -122,11 +132,11 @@ class TextViewManager: NSObject, UITextViewDelegate {
 }
 
 extension TextViewManager: PostingImageCollectionViewDelegate {
-    func didTapImage(resource: PostingImage) {
+    func didTapImage(resource: PostingAsset) {
         
     }
     
-    func didTapDeleteImage(resource: PostingImage) {
-        images = images.filter { $0.id != resource.id }
+    func didTapDeleteImage(resource: PostingAsset) {
+        media = media.filter { $0.id != resource.id }
     }
 }

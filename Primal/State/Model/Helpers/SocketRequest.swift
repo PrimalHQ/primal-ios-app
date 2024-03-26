@@ -16,10 +16,10 @@ struct SocketRequest {
     private let pendingResult: PostRequestResult = .init()
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
-        Deferred {
-            Future { promise in
-                Connection.regular.autoConnectReset()
-                
+        Connection.regular.autoConnectReset()
+        
+        return Deferred {
+            Future { promise in                
                 Connection.regular.requestCache(name: name, payload: payload) { result in
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
@@ -35,11 +35,40 @@ struct SocketRequest {
 
 extension PostRequestResult {
     func handlePostEvent(_ payload: [String: JSON]) {
-        guard
-            let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)),
-            let contentString = payload["content"]?.stringValue
-        else {
+        guard let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)) else {
             print("UNKNOWN KIND")
+            return
+        }
+        
+        // MARK: - HASN'T CONTENT
+        switch kind {
+        case .relays:
+            guard let jsonArray = payload["tags"]?.arrayValue else { 
+                print("Error decoding relays from json")
+                return
+            }
+
+            let relayTagContent = jsonArray.compactMap { $0.arrayValue }.filter { $0.first == "r" }
+
+            let allRelays: [String: RelayInfo] = relayTagContent.map({ $0.dropFirst() }).reduce(into: [:]) { partialResult, jsonArray in
+                guard let url = jsonArray.first?.stringValue else { return }
+                if jsonArray.last?.stringValue == "read" || jsonArray.last?.stringValue == jsonArray.first?.stringValue {
+                    partialResult[url, default: .init(read: false, write: false)].read = true
+                }
+                if jsonArray.last?.stringValue == "write" || jsonArray.last?.stringValue == jsonArray.first?.stringValue {
+                    partialResult[url, default: .init(read: false, write: false)].write = true
+                }
+            }
+
+            if !allRelays.isEmpty {
+                relayData = allRelays
+            }
+        default: break
+        }
+        
+        // MARK: - HAS CONTENT
+        guard let contentString = payload["content"]?.stringValue else {
+            print("NO CONTENT STRING")
             return
         }
         
@@ -193,6 +222,17 @@ extension PostRequestResult {
                 return
             }
             userPubkey = pubkey
+        case .contacts:
+            if !contentString.isEmpty {
+                relayData = contentString.decode() ?? relayData
+            }
+            
+            guard let tagsArray = payload["tags"]?.arrayValue else { return }
+            let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
+            
+            if !tags.isEmpty {
+                contacts = Contacts(created_at: Int(payload["created_at"]?.doubleValue ?? -1), contacts: tags)
+            }
         default:
             print("Unhandled response \(payload)")
         }

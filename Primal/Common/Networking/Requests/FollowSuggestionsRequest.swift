@@ -23,10 +23,8 @@ extension Decodable {
 struct FollowSuggestionsRequest: Request {
     typealias ResponseData = Response
     
-    var username: String
-    
     let body: Any? = nil
-    var url: URL { URL(string: "https://media.primal.net/api/suggestions?twitterhandle=\(username)")! }
+    var url: URL { URL(string: "https://media.primal.net/api/suggestions")! }
     
     struct Response: Codable {
         var metadata: [String: Metadata]

@@ -66,6 +66,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     var selectedIndexPath: IndexPath?
     
+    var animationsOn = false
+    
     private var tableData: [Section] = [] {
         didSet {
             guard navigationController?.topViewController == parent, view.window != nil else { return }
@@ -79,6 +81,10 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewDidLoad()
         
         setup()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            self.animationsOn = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,6 +92,16 @@ final class WalletHomeViewController: UIViewController, Themeable {
         
         WalletManager.instance.refreshBalance()
         WalletManager.instance.recheckTransactions()
+        WalletManager.instance.loadNewExchangeRate()
+        
+        ICloudKeychainManager.instance.$userPubkey
+            .compactMap { $0.isEmpty ? nil : $0 }
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.cancellables = []
+            }
+            .store(in: &cancellables)
         
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
@@ -304,6 +320,11 @@ private extension WalletHomeViewController {
         
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
+            if WalletManager.instance.userHasWallet != true {
+                WalletManager.instance.refreshHasWallet()
+                return
+            }
+            
             WalletManager.instance.refreshTransactions()
             WalletManager.instance.refreshBalance()
         }), for: .valueChanged)
@@ -361,7 +382,9 @@ private extension WalletHomeViewController {
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
             })
             
-            if howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
+            let allowAnimation = animationsOn || transactions.count == 1
+            
+            if allowAnimation, howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
                 mainTabBarController?.playThunderAnimation()
                 AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                 
@@ -374,32 +397,34 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
-        navBar.receivePressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            self?.show(WalletReceiveViewController(), sender: nil)
-        }
-        .store(in: &cancellables)
-        
-        navBar.sendPressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
-        }
-        .store(in: &cancellables)
-        
-        navBar.scanPressedEvent.sink { [weak self] button in
-            self?.transitionButton = button as? WalletHomeTransitionButton
-            
-            self?.heavyImpact.impactOccurred()
-            (self?.navigationController as? MainNavigationController)?.isTransparent = true
-            DispatchQueue.main.async {
-                self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+        if LoginManager.instance.method() == .nsec {
+            navBar.receivePressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                self?.show(WalletReceiveViewController(), sender: nil)
             }
+            .store(in: &cancellables)
+            
+            navBar.sendPressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                self?.show(WalletSendParentViewController(startingTab: .nostr), sender: nil)
+            }
+            .store(in: &cancellables)
+            
+            navBar.scanPressedEvent.sink { [weak self] button in
+                self?.transitionButton = button as? WalletHomeTransitionButton
+                
+                self?.heavyImpact.impactOccurred()
+                (self?.navigationController as? MainNavigationController)?.isTransparent = true
+                DispatchQueue.main.async {
+                    self?.show(WalletSendParentViewController(startingTab: .scan), sender: nil)
+                }
+            }
+            .store(in: &cancellables)
         }
-        .store(in: &cancellables)
         
         navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
             self?.isBitcoinPrimary = isBitcoinPrimary
@@ -481,7 +506,6 @@ private extension WalletHomeViewController {
                     view.removeFromSuperview()
                 }
             }
-            
         }
         
         CATransaction.begin()

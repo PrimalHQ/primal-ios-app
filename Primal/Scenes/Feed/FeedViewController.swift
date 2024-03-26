@@ -127,7 +127,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         if let postToPreload = posts[safe: indexPath.row + 10] {
             if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            } else if let url = postToPreload.linkPreview?.imagesData.first?.url(for: .large), url.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             }
+            
             if let url = postToPreload.user.profileImage.url(for: .small) {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             }
@@ -248,6 +251,41 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             }
         }
     }
+    
+    func handleURLTap(_ url: URL, cachedUsers: [PrimalUser] = [], notes: [ParsedElement] = []) {
+        let urlString = url.absoluteString
+        
+        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
+            return
+        }
+        
+        guard let infoSub = urlString.split(separator: "//").last else { return }
+        let info = String(infoSub)
+        
+        if urlString.hasPrefix("hashtag"), info.isHashtag {
+            let feed = RegularFeedViewController(feed: FeedManager(search: info))
+            show(feed, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("mention") {
+            let user = cachedUsers.first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
+            
+            let profile = ProfileViewController(profile: .init(data: user))
+            show(profile, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("note") {
+            guard let ref = notes.first(where: { $0.text == info })?.reference else { return }
+            
+            let thread = ThreadViewController(threadId: ref)
+            show(thread, sender: nil)
+            return
+        }
+    }
 }
 
 private extension FeedViewController {
@@ -293,6 +331,9 @@ private extension FeedViewController {
             // This is the only way it works, otherwise it gets stuck
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
+                
+                if let menu = self.parent as? MenuContainerController, menu.isOpen { return }
+                
                 self.isShowingBars = false
                 self.shouldShowBars = true
             }
@@ -479,40 +520,8 @@ extension FeedViewController: PostCellDelegate {
         else { return }
         
         let post = posts[indexPath.row]
-        let urlString = url.absoluteString
         
-        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
-            return
-        }
-        
-        guard let infoSub = urlString.split(separator: "//").last else { return }
-        let info = String(infoSub)
-        
-        if urlString.hasPrefix("hashtag"), info.isHashtag {
-            let feed = RegularFeedViewController(feed: FeedManager(search: info))
-            show(feed, sender: nil)
-            return
-        }
-        
-        if urlString.hasPrefix("mention") {
-            guard let user = post.mentionedUsers.first(where: { $0.pubkey == info }) else { return }
-            
-            let profile = ProfileViewController(profile: .init(data: user))
-            show(profile, sender: nil)
-            return
-        }
-        
-        if urlString.hasPrefix("note") {
-            guard let ref = post.notes.first(where: { $0.text == info })?.reference else { return }
-            
-            let thread = ThreadViewController(threadId: ref)
-            show(thread, sender: nil)
-            return
-        }
-        
-        return
+        handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
     }
     
     func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource) {

@@ -154,6 +154,8 @@ final class ThreadViewController: PostFeedViewController {
         table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
         table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
+        textInputView.tintColor = .accent
+        
         inputParent.backgroundColor = .background
         inputBackground.backgroundColor = .background3
         
@@ -304,7 +306,7 @@ private extension ThreadViewController {
         
         inputManager.$isEditing.receive(on: DispatchQueue.main).sink { [weak self] isEditing in
             guard let self = self else { return }
-            let images = self.inputManager.images
+            let images = self.inputManager.media
             let users = self.inputManager.users
             
             self.textHeightConstraint?.isActive = !isEditing
@@ -344,14 +346,14 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        inputManager.$images.receive(on: DispatchQueue.main).sink { [weak self] images in
+        inputManager.$media.receive(on: DispatchQueue.main).sink { [weak self] images in
             self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
             self?.postButton.setTitle(self?.inputManager.isUploadingImages == true ? "Uploading..." : self?.postButtonText, for: .normal)
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$images, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] images, isEmpty in
+        Publishers.CombineLatest(inputManager.$media, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] images, isEmpty in
             guard let self else { return }
             let isUploading: Bool = {
                 for image in images {
@@ -366,7 +368,7 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$users, inputManager.$images)
+        Publishers.CombineLatest(inputManager.$users, inputManager.$media)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] users, images in
                 guard let self else { return }
@@ -454,8 +456,8 @@ private extension ThreadViewController {
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         imageButton.constrainToSize(48)
         imageButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .gallery) { [weak self] image, isPNG in
-                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
+                self?.inputManager.processSelectedAsset(result)
             }
         }), for: .touchUpInside)
         
@@ -463,8 +465,8 @@ private extension ThreadViewController {
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         cameraButton.constrainToSize(48)
         cameraButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .camera) { [weak self] image, isPNG in
-                self?.inputManager.processSelectedImage(image, isPNG: isPNG)
+            ImagePickerManager(self, mode: .camera) { [weak self] result in
+                self?.inputManager.processSelectedAsset(result)
             }
         }), for: .touchUpInside)
         
@@ -513,12 +515,12 @@ private extension ThreadViewController {
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
-        
-        let gest = BindableTapGestureRecognizer { [weak self] in
-            self?.textInputView.resignFirstResponder()
-        }
-        gest.delegate = self
-        view.addGestureRecognizer(gest)
+//        
+//        let gest = BindableTapGestureRecognizer { [weak self] in
+//            self?.textInputView.resignFirstResponder()
+//        }
+//        gest.delegate = self
+//        view.addGestureRecognizer(gest)
     }
     
     func replyToString(name: String) -> NSAttributedString {

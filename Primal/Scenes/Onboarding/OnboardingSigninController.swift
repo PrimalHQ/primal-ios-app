@@ -245,17 +245,15 @@ private extension OnboardingSigninController {
     }
     
     func signIn(_ nsec: String) {
-        guard LoginManager.instance.login(nsec) else {
+        guard LoginManager.instance.loginReset(nsec) else {
             state = .invalidKey
             return
         }
         
-        RootViewController.instance.reset()
-        
         if nsec.hasPrefix("nsec") { return }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-            self.showErrorMessage(title: "Logged in with npub", "Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")
+            RootViewController.instance.showErrorMessage(title: "Logged in with npub", "Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")
         }
     }
     

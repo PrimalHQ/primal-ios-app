@@ -51,6 +51,8 @@ final class MenuContainerController: UIViewController, Themeable {
     private var childLeftConstraint: NSLayoutConstraint?
     private var cancellables: Set<AnyCancellable> = []
     
+    private(set) var isOpen = false
+    
     let child: UIViewController
     init(child: UIViewController) {
         self.child = child
@@ -98,6 +100,7 @@ final class MenuContainerController: UIViewController, Themeable {
     }
     
     func open() {
+        isOpen = true
         mainStack.alpha = 1
         
         childLeftConstraint?.isActive = true
@@ -114,6 +117,7 @@ final class MenuContainerController: UIViewController, Themeable {
     }
     
     func close() {
+        isOpen = false
         childLeftConstraint?.isActive = false
         coverView.alpha = 0
         coverView.isHidden = true
@@ -145,25 +149,31 @@ private extension MenuContainerController {
     func setup() {
         updateTheme()
         
+        let profileImageRow = UIStackView([profileImage, UIView()])
+        
         let barcodeButton = UIButton()
         barcodeButton.setImage(UIImage(named: "barcode"), for: .normal)
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
-        let signOut = MenuItemButton(title: "SIGN OUT")
-        let settings = MenuItemButton(title: "SETTINGS")
         let profile = MenuItemButton(title: "PROFILE")
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
+        let settings = MenuItemButton(title: "SETTINGS")
+        let premium = MenuItemButton(title: "PREMIUM")
+        let signOut = MenuItemButton(title: "SIGN OUT")
         
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
         [
-            profileImage, titleStack, domainLabel, followStack,
+            profileImageRow, SpacerView(height: 15), titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
         
+        profileImageRow.pinToSuperview(edges: .horizontal)
+        
         view.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .horizontal, padding: 36)
+            .pinToSuperview(edges: .leading, padding: 36)
+            .pinToSuperview(edges: .trailing, padding: 80)
             .pinToSuperview(edges: .top, padding: 70)
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
@@ -188,6 +198,35 @@ private extension MenuContainerController {
         followingDescLabel.text = "Following"
         followStack.spacing = 4
         followStack.setCustomSpacing(16, after: followingDescLabel)
+        
+        let npubs = LoginManager.instance.loggedInNpubs()
+
+        for npub in npubs.dropFirst().prefix(3) {
+            let avatarImage = FLAnimatedImageView().constrainToSize(24)
+            avatarImage.isUserInteractionEnabled = true
+            avatarImage.layer.cornerRadius = 12
+            avatarImage.clipsToBounds = true
+            avatarImage.contentMode = .scaleAspectFill
+
+            LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
+                .sink { users in
+                    if avatarImage.image == nil, let user = users.first(where: { $0.data.npub == npub }) {
+                        avatarImage.setUserImage(user)
+                    }
+                }
+                .store(in: &cancellables)
+
+            profileImageRow.addArrangedSubview(SpacerView(width: 18))
+            profileImageRow.addArrangedSubview(avatarImage)
+
+            let button = UIView().constrainToSize(36)
+            button.backgroundColor = .black.withAlphaComponent(0.01)
+            view.addSubview(button)
+            button.centerToView(avatarImage)
+            button.addGestureRecognizer(BindableTapGestureRecognizer(action: {
+                _ = LoginManager.instance.loginReset(npub)
+            }))
+        }
         
         addChild(child)
         view.addSubview(child.view)
@@ -234,12 +273,27 @@ private extension MenuContainerController {
         let swipe = UISwipeGestureRecognizer(target: self, action: #selector(closeMenuTapped))
         swipe.direction = .left
         coverView.addGestureRecognizer(swipe)
+
+        profileImageRow.alignment = .center
+
+        let manageAccountsButton = ThemeableButton().setTheme {
+            $0.configuration = .simpleImage(UIImage(named: npubs.count < 2 ? "addAccount" : "moreAccounts"))
+            $0.tintColor = .foreground2
+        }
+        profileImageRow.addArrangedSubview(manageAccountsButton)
+        
+        manageAccountsButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(PopupAccountSwitchingController(), animated: true)
+        }), for: .touchUpInside)
         
         barcodeButton.addAction(.init(handler: { [weak self] _ in
             self?.qrCodePressed()
         }), for: .touchUpInside)
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
+        premium.addAction(.init(handler: { [weak self] _ in
+            self?.premiumPressed()
+        }), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
@@ -277,11 +331,19 @@ private extension MenuContainerController {
         
         let user = user.data
         if user.displayName.isEmpty {
-            nameLabel.text = user.nip05.isEmpty ? user.name : user.parsedNip
+            if CheckNip05Manager.instance.isVerified(user) {
+                nameLabel.text = user.parsedNip
+            } else {
+                nameLabel.text = user.name
+            }
             domainLabel.isHidden = true
         } else {
             nameLabel.text = user.displayName
-            domainLabel.text = user.nip05.isEmpty ? user.name : user.parsedNip
+            if CheckNip05Manager.instance.isVerified(user) {
+                domainLabel.text = user.parsedNip
+            } else {
+                domainLabel.text = user.name
+            }
             domainLabel.isHidden = false
         }
         
@@ -290,6 +352,11 @@ private extension MenuContainerController {
     }
     
     // MARK: - Objc methods
+    
+    func premiumPressed() {
+        show(PremiumHomeViewController(), sender: nil)
+        resetNavigationTabBar()
+    }
     
     func qrCodePressed() {
         show(ProfileQRController(), sender: nil)

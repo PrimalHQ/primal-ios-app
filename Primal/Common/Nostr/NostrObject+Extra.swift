@@ -97,8 +97,20 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
-    static func contacts(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
-        createNostrContactsEvent(contacts, relays: relays)
+    static func contacts(_ contacts: Set<String>) -> NostrObject? {
+        createNostrObject(content: IdentityManager.instance.followListContentString, kind: 3, tags: contacts.map {
+            ["p", $0]
+        })
+    }
+    
+    static func relays(_ relays: [String: RelayInfo]) -> NostrObject? {
+        let relayTags = relays.compactMap { url, info in
+            info.read && info.write ? ["r", url] :
+            info.read ? ["r", url, "read"] :
+            info.write ? ["r", url, "write"] : nil
+        }
+        
+        return createNostrObject(content: "", kind: 10002, tags: relayTags)
     }
     
     static func getSettings() -> NostrObject? {
@@ -133,6 +145,39 @@ extension NostrObject {
         createNostrChatReadEvent(pubkey)
     }
     
+    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data) -> NostrObject? {
+        let strBase64:String = "data:image/svg+xml;base64," + data.base64EncodedString()
+        
+        let content: [String: JSON] = [
+            "file_length":  .number(Double(fileLength)),
+            "upload_id":    .string(uploadID),
+            "offset":       .number(Double(offset)),
+            "data":         .string(strBase64)
+        ]
+        
+        guard
+            let pubkey = getKeypair()?.hexVariant.pubkey,
+            let contentString = content.encodeToString()
+        else { return nil }
+        
+        return createNostrObject(content: contentString, kind: 10_000_135, tags: [["p", pubkey]])
+    }
+    
+    static func uploadComplete(fileLength: Int, uploadID: String, sha256: String) -> NostrObject? {        
+        let content: [String: JSON] = [
+            "file_length":  .number(Double(fileLength)),
+            "upload_id":    .string(uploadID),
+            "sha256":         .string(sha256)
+        ]
+        
+        guard
+            let pubkey = getKeypair()?.hexVariant.pubkey,
+            let contentString = content.encodeToString()
+        else { return nil }
+        
+        return createNostrObject(content: contentString, kind: 10_000_135, tags: [["p", pubkey]])
+    }
+    
     static func markAllChatRead() -> NostrObject? {
         createNostrMarkAllChatsReadEvent()
     }
@@ -156,16 +201,17 @@ extension NostrObject {
     }
 }
 
+fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()
+}
+
+fileprivate func getPrivkey() -> String? {
+    getKeypair()?.hexVariant.privkey
+}
+
 fileprivate let jsonEncoder = JSONEncoder()
 
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
-        let privkey = keypair.hexVariant.privkey
-    else {
-        return nil
-    }
+    guard let keypair = getKeypair(), let privkey = keypair.hexVariant.privkey else { return nil }
     
     return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
@@ -183,23 +229,6 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
 
 fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
     createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
-}
-
-fileprivate func createNostrContactsEvent(_ contacts: Set<String>, relays: [String: RelayInfo]) -> NostrObject? {
-    guard let relaysJSONData = try? jsonEncoder.encode(relays) else {
-        print("Unable to encode Relays to Data")
-        return nil
-    }
-    
-    guard let relaysJSONString =  String(data: relaysJSONData, encoding: .utf8) else {
-        print("Unable to encode Relays json Data to String")
-        return nil
-    }
-    
-    let tags = contacts.map {
-        ["p", $0]
-    }
-    return createNostrObject(content: relaysJSONString, kind: 3, tags: tags)
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
@@ -222,7 +251,16 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     let e = ["e", post.id, "", "reply"]
     let p = ["p", post.pubkey]
     
-    return createNostrObject(content: content, kind: 1, tags: [e, p] + mentionedPubkeys.map { ["p", $0, "", "mention"] })
+    var root = ["e", post.id, "", "root"]
+    for tag in post.tags {
+        if tag.last == "root" {
+            root = tag
+        }
+    }
+    
+    let allTags = [e, p, root] + mentionedPubkeys.map { ["p", $0, "", "mention"] }
+    
+    return createNostrObject(content: content, kind: 1, tags: allTags)
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
@@ -294,10 +332,7 @@ fileprivate func createNostrFirstContactEvent() -> NostrObject? {
         return nil
     }
     
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair
-    else {
+    guard let keypair = getKeypair() else {
         print("Unable to get keypair")
         return nil
     }
@@ -320,13 +355,7 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
 }
 
 fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {
-    guard
-        IdentityManager.instance.isNewUser ? true : LoginManager.instance.method() == .nsec,
-        let keypair = ICloudKeychainManager.instance.getLoginInfo() ?? IdentityManager.instance.newUserKeypair,
-        let privkey = keypair.hexVariant.privkey
-    else {
-        return nil
-    }
+    guard let privkey = getPrivkey() else { return nil }
     
     return createNostrObject(
         content: encryptDirectMessage(content, privkey: privkey, pubkey: recipientPubkey) ?? "",

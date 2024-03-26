@@ -99,12 +99,11 @@ extension FixedWidthInteger {
     }
     
     func satsToUsdAmountString(_ roundingStyle: RoundingStyle) -> String {
-        let usdAmount = Double(self) * .SAT_TO_USD
         switch roundingStyle {
         case .twoDecimals:
-            return usdAmount.twoDecimalPoints()
+            return Double(self).satToUSD.twoDecimalPoints()
         case .removeZeros:
-            return usdAmount.localized()
+            return Double(self).satToUSD.localized()
         }
     }
 }
@@ -112,7 +111,14 @@ extension FixedWidthInteger {
 extension Double {
     static var BTC_TO_USD: Double { WalletManager.instance.btcToUsd }
     static let BTC_TO_SAT: Double = 100_000_000
-    static let SAT_TO_USD: Double = BTC_TO_USD / BTC_TO_SAT
+    
+    var satToUSD: Double {
+        (self * .BTC_TO_USD) / .BTC_TO_SAT
+    }
+    
+    var usdToSAT: Double {
+        (self * .BTC_TO_SAT) / .BTC_TO_USD
+    }
     
     func localized() -> String {
         let nf = NumberFormatter()
@@ -122,6 +128,10 @@ extension Double {
     }
     
     func twoDecimalPoints() -> String {
-        String(format: "%.2f", self)
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.maximumFractionDigits = 2
+        nf.minimumFractionDigits = 2
+        return nf.string(from: self as NSNumber) ?? ""
     }
 }

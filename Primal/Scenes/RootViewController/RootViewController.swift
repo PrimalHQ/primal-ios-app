@@ -20,6 +20,8 @@ extension CAMediaTimingFunction {
 final class RootViewController: UIViewController {
     static let instance = RootViewController()
     
+    var needsReset = false
+    
     private(set) var currentChild: UIViewController?
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
@@ -48,7 +50,7 @@ final class RootViewController: UIViewController {
             if connected {
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
-                IdentityManager.instance.requestUserContacts()
+                IdentityManager.instance.requestUserContactsAndRelays()
 
                 MuteManager.instance.requestMuteList()
             }
@@ -113,6 +115,9 @@ final class RootViewController: UIViewController {
     }
     
     func reset() {
+        dismiss(animated: true)
+        needsReset = false
+        
         addIntro()
         
         didAnimate = false
@@ -138,17 +143,16 @@ final class RootViewController: UIViewController {
     }
     
     func quickReset(isFirstTime: Bool = false) {
+        Connection.reconnect()
         if let _ = LoginManager.instance.method() {
             ThemingManager.instance.setStartingTheme(isFirstTime: isFirstTime)
             overrideUserInterfaceStyle = ContentDisplaySettings.autoDarkMode ? .unspecified : Theme.current.userInterfaceStyle
             set(MainTabBarController())
             setNeedsStatusBarAppearanceUpdate()
-            Connection.connect()
         } else {
             overrideUserInterfaceStyle = .dark
             set(OnboardingParentViewController())
             setNeedsStatusBarAppearanceUpdate()
-            Connection.disconnect()
             return
         }
     }

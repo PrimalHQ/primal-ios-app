@@ -39,7 +39,7 @@ struct PrimalWalletRequest {
         case deposit(WalletTransactionNetwork, AdditionalDepositInfo? = nil)
         case inAppPurchase(transactionId: String, quote: String)
         case quote(productId: String, countryCode: String)
-        case activationCode(name: String, email: String, country: String, state: String?)
+        case activationCode(firstName: String, lastName: String, email: String, date: Date, country: String, state: String?)
         case activate(code: String)
         case parseLNURL(String)
         case exchangeRate
@@ -76,8 +76,7 @@ struct PrimalWalletRequest {
                 
                 if let until {
                     dic["until"] = .number(Double(until))
-                }
-                if let since {
+                } else if let since {
                     dic["since"] = .number(Double(since))
                 }
                 return #"["transactions", \#(dic.encodeToString() ?? "{}")]"#
@@ -118,12 +117,15 @@ struct PrimalWalletRequest {
             case .quote(let productId, let region):
                 let additionalParameter = Bundle.main.appStoreReceiptURL?.absoluteString ?? ""
                 return "[\"in_app_purchase_quote\", {\"product_id\": \"\(productId)\", \"region\": \"\(region)\", \"bundle_app_store_receipt_url\": \"\(additionalParameter)\"}]"
-            case let .activationCode(name, email, country, state):
-                return #"["get_activation_code", {"name": "\#(name)", "email": "\#(email)", "country": "\#(country)", "state": "\#(state ?? "")"}]"#
+            case let .activationCode(firstName, lastName, email, date, country, state):
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "YYYY-MM-dd"
+                let dateString = dateFormatter.string(from: date)
+                return #"["get_activation_code_2", {"user_details": {"first_name": "\#(firstName)", "last_name": "\#(lastName)", "email": "\#(email)", "date_of_birth": "\#(dateString)", "country": "\#(country)", "state": "\#(state ?? "")"}}]"#
             case let .activate(code):
                 return "[\"activate\", {\"activation_code\": \"\(code)\"}]"
             case .parseLNURL(let lnurl):
-                if lnurl.hasPrefix("lnurl") {
+                if lnurl.lowercased().hasPrefix("lnurl") {
                     return "[\"parse_lnurl\", {\"target_lnurl\": \"\(lnurl)\"}]"
                 }
                 return "[\"parse_lninvoice\", {\"lninvoice\": \"\(lnurl)\"}]"

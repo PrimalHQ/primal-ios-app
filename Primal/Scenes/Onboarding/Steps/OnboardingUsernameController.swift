@@ -9,92 +9,6 @@ import Combine
 import UIKit
 import Kingfisher
 
-struct AccountCreationData {
-    var avatar: String = ""
-    var banner: String = ""
-    var bio: String = ""
-    var username: String = ""
-    var displayname: String = ""
-    var lightningWallet: String = ""
-    var nip05: String = ""
-    var website: String = ""
-}
-
-class OnboardingImageUploader {
-    var avatarURL = "" {
-        didSet {
-            if let url = URL(string: avatarURL) {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            }
-        }
-    }
-    var bannerURL = "https://m.primal.net/HQTd.jpg"
-    
-    @Published var isUploadingAvatar = false
-    @Published var isUploadingBanner = false
-    
-    @Published var image: UIImage?
-    @Published var bannerImage: UIImage?
-    @Published var isUploading = false
-    
-    var cancellables: Set<AnyCancellable> = []
-    
-    init() {
-        Publishers.CombineLatest($isUploadingAvatar, $isUploadingBanner)
-            .map { $0 || $1 }
-            .assign(to: \.isUploading, onWeak: self)
-            .store(in: &cancellables)
-        
-        if let url = URL(string: bannerURL) {
-            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-        }
-    }
-    
-    func addPhoto(controller: UIViewController) {
-        ImagePickerManager(controller) { [weak self] image, isPNG in
-            guard let self = self else { return }
-            self.image = image
-            self.isUploadingAvatar = true
-            
-            UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
-                self?.isUploadingAvatar = false
-                switch $0 {
-                case .failure(let error):
-                    self?.image = nil
-                    print(error)
-                case .finished:
-                    break
-                }
-            }) { [weak self] urlString in
-                self?.avatarURL = urlString
-            }
-            .store(in: &self.cancellables)
-        }
-    }
-    
-    func addBanner(controller: UIViewController) {
-        ImagePickerManager(controller) { [weak self] image, isPNG in
-            guard let self = self else { return }
-            self.bannerImage = image
-            self.isUploadingBanner = true
-            
-            UploadPhotoRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
-                self?.isUploadingBanner = false
-                switch $0 {
-                case .failure(let error):
-                    self?.bannerImage = nil
-                    print(error)
-                case .finished:
-                    break
-                }
-            }) { [weak self] urlString in
-                self?.bannerURL = urlString
-            }
-            .store(in: &cancellables)
-        }
-    }
-}
-
 final class OnboardingUsernameController: UIViewController, OnboardingViewController {
     
     let titleLabel = UILabel()
@@ -111,7 +25,7 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     let progressView = PrimalProgressView(progress: 0, total: 4, markProgress: true)
     let descLabel = UILabel()
     
-    let uploader = OnboardingImageUploader()
+    let session = OnboardingSession()
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -121,8 +35,8 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     var accountData: AccountCreationData {
         AccountCreationData(
-            avatar: uploader.avatarURL,
-            banner: uploader.bannerURL,
+            avatar: session.avatarURL,
+            banner: session.bannerURL,
             bio: "",
             username: usernameInput.text ?? "",
             displayname: displayNameInput.text ?? "",
@@ -134,12 +48,6 @@ final class OnboardingUsernameController: UIViewController, OnboardingViewContro
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let keypair = NostrKeypair.generate() else {
-            fatalError("Unable to generate a new keypair, this shouldn't be possible")
-        }
-        
-        IdentityManager.instance.newUserKeypair = keypair
         
         setup()
     }
@@ -237,7 +145,7 @@ private extension OnboardingUsernameController {
             $0.returnKeyType = .done
         }
         
-        uploader.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
+        session.$image.receive(on: DispatchQueue.main).sink { [weak self] image in
             if let image {
                 self?.avatarView.image = image
                 self?.avatarView.alpha = 1
@@ -273,13 +181,13 @@ private extension OnboardingUsernameController {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped)))
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }), for: .touchUpInside)
         
         avatarView.isUserInteractionEnabled = true
         avatarView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
-            self.uploader.addPhoto(controller: self)
+            self.session.addPhoto(controller: self)
         }))
         
         usernameInput.keyboardType = .namePhonePad
@@ -288,7 +196,7 @@ private extension OnboardingUsernameController {
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self, !self.accountData.username.isEmpty else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingAboutController(data: self.accountData, uploader: self.uploader), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingAboutController(data: self.accountData, session: self.session), animated: true)
         }), for: .touchUpInside)
     }
     

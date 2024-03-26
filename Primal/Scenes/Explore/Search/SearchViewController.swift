@@ -7,14 +7,18 @@
 
 import Combine
 import UIKit
+import SafariServices
 
-final class SearchViewController: UIViewController, Themeable {
+final class SearchViewController: UIViewController, Themeable, WalletSearchController {
+    
     let navigationExtender = SpacerView(height: 7)
     let navigationBorder = SpacerView(height: 1)
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
     
     @Published var userSearchText: String = ""
+    
+    var textSearch: String?
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -91,6 +95,36 @@ private extension SearchViewController {
             .store(in: &cancellables)
     }
     
+    func doSearch() {
+        if userSearchText.isEmpty { return }
+        
+        if userSearchText.hasPrefix("npub1") && userSearchText.count == 63 {
+            notify(.primalProfileLink, userSearchText)
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        if userSearchText.hasPrefix("note1") && userSearchText.count == 63 {
+            notify(.primalNoteLink, userSearchText)
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        if userSearchText.hasPrefix("lnurl") || userSearchText.hasPrefix("lnbc") {
+            search(userSearchText)
+            return
+        }
+        
+        if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
+            present(SFSafariViewController(url: url), animated: true)
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
+        show(feed, sender: nil)
+    }
+    
     @objc func textFieldDidChange() {
         userSearchText = searchView.inputField.text ?? ""
     }
@@ -98,8 +132,7 @@ private extension SearchViewController {
 
 extension SearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-        show(feed, sender: nil)
+        doSearch()
         return true
     }
 }
@@ -126,10 +159,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
-            if userSearchText.isEmpty { return }
-            
-            let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-            show(feed, sender: nil)
+            doSearch()
             return
         }
         

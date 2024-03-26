@@ -50,7 +50,11 @@ final class WalletReceiveDetailsController: UIViewController, Themeable, Keyboar
         
         input.becomeFirstResponder()
     }
+    
+    var maxInputAmountSats: Int { 999999999 }
+    var maxInputAmountUSD: Double { 99999 }
 }
+
 
 private extension WalletReceiveDetailsController {
     func setup() {
@@ -93,13 +97,10 @@ private extension WalletReceiveDetailsController {
         let keyboardView = NumberKeyboardView()
         keyboardView.delegate = self
         
-        let inputParent = UIView()
-        inputParent.addSubview(input)
-        input.pinToSuperview(edges: .vertical)
         let botStack = UIStackView(axis: .vertical, [keyboardView, SpacerView(height: 44), actionStack])
         
         let mainStack = UIStackView(axis: .vertical, [
-            inputParent,
+            input,
             textParent,
             botStack
         ])

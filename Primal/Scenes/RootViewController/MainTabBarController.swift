@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import Lottie
+import SafariServices
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -54,6 +55,7 @@ final class MainTabBarController: UIViewController, Themeable {
         
         $0.backgroundColor = isWalletSelected ? .foreground : .background3
         $0.tintColor = isWalletSelected ? .background : .foreground3
+        
         $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
     }
     
@@ -243,6 +245,9 @@ private extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] note in
                 self?.switchToTab(.home, open: ThreadViewController(threadId: note))
+                if self?.presentedViewController as? SFSafariViewController != nil{
+                    self?.dismiss(animated: true)
+                }
             }
             .store(in: &cancellables)
         
@@ -252,6 +257,9 @@ private extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] pubkey in
                 self?.switchToTab(.home, open: ProfileViewController(profile: .init(data: .init(pubkey: pubkey))))
+                if self?.presentedViewController as? SFSafariViewController != nil{
+                    self?.dismiss(animated: true)
+                }
             }
             .store(in: &cancellables)
         

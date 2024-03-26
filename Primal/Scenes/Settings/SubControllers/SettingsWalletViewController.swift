@@ -64,7 +64,7 @@ private extension SettingsWalletViewController {
         let stack = UIStackView(axis: .vertical, [
             walletStart,                                                                                                        SpacerView(height: 10),
             descLabel("Open the wallet when Primal starts."),                                                                   SpacerView(height: 24),
-            SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.nip05 ?? "Not set...", showArrow: false), SpacerView(height: 10),
+            SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
             showNotifications,                                                                                                  SpacerView(height: 10),
             descLabel("Get notified within the app when you receive a payment above a certain size"),                           SpacerView(height: 24),

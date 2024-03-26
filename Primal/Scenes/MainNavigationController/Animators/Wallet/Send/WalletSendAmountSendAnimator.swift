@@ -39,6 +39,10 @@ class WalletSendAmountSendAnimator: NSObject, UIViewControllerAnimatedTransition
         if presenting {
             container.addSubview(toView)
             
+            UIView.performWithoutAnimation {
+                send.input.isBitcoinPrimary = sendAmount.input.isBitcoinPrimary
+            }
+            
             send.messageParent.transform = .init(translationX: translationX, y: 0)
             send.feeView.transform = .init(translationX: translationX, y: 0)
             
@@ -52,6 +56,8 @@ class WalletSendAmountSendAnimator: NSObject, UIViewControllerAnimatedTransition
         } else {
             container.insertSubview(toView, belowSubview: fromView)
             
+            sendAmount.input.isBitcoinPrimary = send.input.isBitcoinPrimary
+            
             sendAmount.cancelButton.alpha = 0
             sendAmount.keyboard.transform = .init(translationX: -translationX, y: 0)
             sendAmount.keyboard.alpha = 0
@@ -60,7 +66,6 @@ class WalletSendAmountSendAnimator: NSObject, UIViewControllerAnimatedTransition
             
             send.sendButton.animateViewTo(sendAmount.sendButton, duration: 6 / 30, in: container)
         }
-        
         
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(.easeInOutQuart)

@@ -131,9 +131,9 @@ extension String : Identifiable {
     }
     
     var isBitcoinAddress: Bool {
-        guard let btcAddress = split(separator: "?").first?.string else { return false }
+        guard let btcAddress = split(separator: "?").first?.string.lowercased() else { return false }
         
-        let pattern = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$"
+        let pattern = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,59}$"
             
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return false }
             
@@ -142,15 +142,16 @@ extension String : Identifiable {
         return regex.firstMatch(in: btcAddress, options: [], range: range) != nil
     }
     
-    var parsedBitcoinAddress: (String, Int?, String?) {
+    var parsedBitcoinAddress: (String, Int?, String?, lightning: String?) {
         let sections = split(separator: "?")
         guard
             let address = sections.first?.string,
             let params = sections.last?.split(separator: "&")
-        else { return (self, nil, nil) }
+        else { return (self, nil, nil, nil) }
         
         var amount: Int?
         var label: String?
+        var lightning: String?
         
         for param in params {
             let elements = param.split(separator: "=")
@@ -160,9 +161,17 @@ extension String : Identifiable {
             if elements.first == "label", let labelText = elements.last?.removingPercentEncoding {
                 label = labelText
             }
+            if elements.first == "lightning", let lightningText = elements.last?.string {
+                lightning = lightningText
+            }
         }
         
-        return (address, amount, label)
+        return (address, amount, label, lightning)
+    }
+    
+    func npubToPubkey() -> String? {
+        guard let decoded = try? bech32_decode(self) else { return nil }
+        return hex_encode(decoded.data)
     }
 
     func extractTagsMentionsAndURLs() -> [String] {

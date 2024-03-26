@@ -77,17 +77,24 @@ final class Connection {
     
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
-    private var timeToReconnect: TimeInterval = 1
+    private var timeToReconnect: Int = 1
     private var attemptReconnection = true
     
     init(socketURL: URL) {
         self.socketURL = socketURL
         self.connect()
+        
+        $isConnected.dropFirst().sink { isConnected in
+            print("CONNECTION IS CONNECTED \(self === Connection.regular ? "REG" : "WALL") = \(isConnected)")
+        }
+        .store(in: &cancellables)
     }
     
     deinit {
         socket?.disconnect()
     }
+    
+    var cancellables: Set<AnyCancellable> = []
 
     @Published var isConnected: Bool = false
     
@@ -105,7 +112,6 @@ final class Connection {
             socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         }
         
-        lastConnectTime = .now
         attemptReconnection = true
         socket?.delegate = self
         socket?.connect()
@@ -143,7 +149,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-//            print("REQUEST:\n\(jsonStr)")
+            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)
@@ -219,34 +225,43 @@ final class Connection {
     }
     
     func autoConnectReset() {
-        timeToReconnect = 1
-        
-        autoReconnect()
+        DispatchQueue.main.async {
+            self.timeToReconnect = 1
+            
+            self.autoReconnect()
+        }
     }
     
-    var lastConnectTime = Date()
+    var isReconnecting = false
+    var countReconnectAttempts = 0
     private func autoReconnect() {
         if isConnected || !attemptReconnection {
             timeToReconnect = 1
+            countReconnectAttempts = 0
             return
         }
         
-        let reconnectAttemptTime = lastConnectTime.addingTimeInterval(timeToReconnect)
+        if isReconnecting { return }
         
-        if reconnectAttemptTime > .now {
-            let delta = reconnectAttemptTime.timeIntervalSinceNow
-            Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(delta) + 1)) { [weak self] in
-                self?.autoReconnect()
-            }
-            return
+        countReconnectAttempts += 1
+        isReconnecting = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            self.isReconnecting = false
         }
         
-        timeToReconnect *= 2
+        if countReconnectAttempts < 4 {
+            connect()
+        } else {
+            countReconnectAttempts = 0
+            Connection.reconnect()
+        }
+        
+        timeToReconnect = min(timeToReconnect * 2, 30) + 1
         PrimalEndpointsManager.instance.checkIfNecessary()
-        connect()
-        print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
         
-        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(Int(timeToReconnect))) { [weak self] in
+        print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
             self?.autoReconnect()
         }
     }

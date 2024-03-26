@@ -98,6 +98,10 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
        
         hapticFeedbackGenerator.prepare()
     }
+    
+    var maxInputAmountUSD: Double { Double(WalletManager.instance.balance).satToUSD }
+    
+    var maxInputAmountSats: Int { WalletManager.instance.balance }
 }
 
 private extension WalletSendAmountController {
@@ -146,7 +150,7 @@ private extension WalletSendAmountController {
         stack.distribution = .equalSpacing
         
         inputParent.addSubview(input)
-        input.pinToSuperview(edges: .vertical)
+        input.pinToSuperview()
         input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
         input.animateReversed = false
         input.isSettingFirstTime = false
@@ -209,10 +213,16 @@ private extension WalletSendAmountController {
 protocol KeyboardInputConnector: NumberKeyboardViewDelegate {
     var input: LargeBalanceConversionView { get }
     var hapticFeedbackGenerator: UIImpactFeedbackGenerator { get }
+    var maxInputAmountSats: Int { get }
+    var maxInputAmountUSD: Double { get }
 }
 
 extension KeyboardInputConnector {
-    var separatorString: String {
+    var groupingSeparator: String {
+        Locale.current.groupingSeparator ?? ","
+    }
+    
+    var decimalSeparator: String {
         Locale.current.decimalSeparator ?? "."
     }
     
@@ -223,35 +233,43 @@ extension KeyboardInputConnector {
     
     func numberKeyboardNumberPressed(_ number: Int) {
         if input.isBitcoinPrimary {
-            if input.balance > 99999 { return }
+            if input.balance > maxInputAmountSats / 10 {
+                RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 20)
+                return
+            }
             
             input.balance = input.balance * 10 + number
             triggerHapticFeedback()
             return
         }
         
-        var newAmountString = (input.largeAmountLabel.text ?? "") + "\(number)"
+        var text = input.largeAmountLabel.text ?? ""
+        text = text.replacingOccurrences(of: groupingSeparator, with: "").replacingOccurrences(of: decimalSeparator, with: ".")
         
-        if newAmountString.dropLast(3).last == separatorString.last { return } // Only up to two digits after .
+        text = text + "\(number)"
         
-        if number == 0, input.largeAmountLabel.text?.contains(separatorString) == true {
-            input.setLargeLabel(newAmountString, animating: true)
+        if text.dropLast(3).last == "." { return } // Only up to two digits after .
+        
+        if number == 0, text.contains(".") { // Manual override so 0 doesn't get eaten up with localisation
+            input.setLargeLabel(text, complexAnimation: true)
             triggerHapticFeedback()
             return
         }
         
-        newAmountString = newAmountString.replacingOccurrences(of: separatorString, with: ".")
+        guard let doubleAmount = Double(text), doubleAmount <= maxInputAmountUSD else {
+            RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 20)
+            return
+        }
         
-        guard let doubleAmount = Double(newAmountString), doubleAmount < 1000 else { return }
-        
-        input.balance = Int(doubleAmount / .SAT_TO_USD)
+        input.balance = Int(doubleAmount.usdToSAT)
         triggerHapticFeedback()
     }
     
     func numberKeyboardDotPressed() {
-        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(separatorString) == true { return }
+        if input.isBitcoinPrimary || input.largeAmountLabel.text?.contains(decimalSeparator) == true { return }
         
-        input.largeAmountLabel.text = (input.largeAmountLabel.text ?? "") + separatorString
+        let newAmountString = (input.largeAmountLabel.text ?? "") + decimalSeparator
+        input.setLargeLabel(newAmountString, complexAnimation: true)
         triggerHapticFeedback()
     }
     
@@ -264,16 +282,17 @@ extension KeyboardInputConnector {
         }
         
         let newAmountString = String((input.largeAmountLabel.text ?? "").dropLast())
-        
-        guard newAmountString.last != separatorString.last, newAmountString.hasSuffix("\(separatorString)0") == false, let doubleAmount = Double(newAmountString), doubleAmount <= 500 else {
+        let calculationString = newAmountString.replacingOccurrences(of: groupingSeparator, with: "").replacingOccurrences(of: decimalSeparator, with: ".")
+
+        guard newAmountString.last != decimalSeparator.last, newAmountString.hasSuffix("\(decimalSeparator)0") == false, let doubleAmount = Double(calculationString), doubleAmount <= maxInputAmountUSD else {
             if newAmountString.isEmpty {
                 input.balance = 0
                 return
             }
-            input.setLargeLabel(newAmountString, animating: true)
+            input.setLargeLabel(newAmountString, complexAnimation: true)
             return
         }
         
-        input.balance = Int(doubleAmount / .SAT_TO_USD)
+        input.balance = Int(doubleAmount.usdToSAT)
     }
 }

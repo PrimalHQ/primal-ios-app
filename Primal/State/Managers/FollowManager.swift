@@ -24,7 +24,7 @@ final class FollowManager {
                 if pubkeysF.isEmpty && pubkeysUF.isEmpty { return }
                 guard isConnected else { return }
                 
-                IdentityManager.instance.requestUserContacts() {
+                IdentityManager.instance.requestUserContacts {
                     guard let self else { return }
                     
                     let contacts = IdentityManager.instance.userContacts.contacts.union(pubkeysF).subtracting(pubkeysUF)
@@ -77,26 +77,20 @@ final class FollowManager {
     }
     
     func addRelay(url: String) {
-        IdentityManager.instance.requestUserContacts() {
-            var relays = IdentityManager.instance.userRelays ?? self.makeBootstrapRelays()
+        IdentityManager.instance.requestUserContactsAndRelays() {
+            var relays = IdentityManager.instance.userRelays ?? [:]
             relays[url] = .init(read: true, write: true)
             IdentityManager.instance.userRelays = relays
-            IdentityManager.instance.fullRelayList += [url]
-            self.updateFollowsAndRelays()
+            self.updateRelays()
         }
     }
     
     func removeRelay(url: String) {
-        IdentityManager.instance.requestUserContacts() {
-            var relays = IdentityManager.instance.userRelays ?? self.makeBootstrapRelays()
+        var relays = IdentityManager.instance.userRelays ?? self.makeBootstrapRelays()
             
-            RelaysPostbox.instance.pool.disconnect(relay: url)
-
-            IdentityManager.instance.fullRelayList.remove(object: url)
-            if let _ = relays.removeValue(forKey: url) {
-                IdentityManager.instance.userRelays = relays
-                self.updateFollowsAndRelays()
-            }
+        if let _ = relays.removeValue(forKey: url) {
+            IdentityManager.instance.userRelays = relays
+            self.updateRelays()
         }
     }
     
@@ -105,44 +99,30 @@ final class FollowManager {
             .sink { result in
                 guard let relays = result.messageArray else { return }
                 
-                IdentityManager.instance.requestUserContacts() {
-                    var newRelays: [String: RelayInfo] = [:]
-                    relays.forEach { newRelays[$0] = .init(read: true, write: true) }
-                    IdentityManager.instance.userRelays = newRelays
-                    RelaysPostbox.instance.disconnect()
-                    RelaysPostbox.instance.connect(relays)
+                var newRelays: [String: RelayInfo] = [:]
+                relays.forEach { newRelays[$0] = .init(read: true, write: true) }
+                IdentityManager.instance.userRelays = newRelays
                     
-                    self.updateFollowsAndRelays()
-                }
+                self.updateRelays()
             }
-            .store(in: &self.cancellables)
+            .store(in: &cancellables)
     }
     
     private func sendBatchEvent(_ pubkeys: Set<String>, successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         IdentityManager.instance.userContacts.contacts = pubkeys
         
-        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
-        
-        guard let ev = NostrObject.contacts(pubkeys, relays: relays) else {
+        guard let ev = NostrObject.contacts(pubkeys) else {
             errorHandler?()
             return
         }
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil, errorDelay: 5, successHandler: { _ in successHandler?() }, errorHandler: errorHandler)
+        RelaysPostbox.instance.request(ev, successHandler: { _ in successHandler?() }, errorHandler: errorHandler)
     }
     
-    private func updateFollowsAndRelays() {
-        let contacts = IdentityManager.instance.userContacts.contacts
-        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
+    private func updateRelays() {
+        guard let relays = IdentityManager.instance.userRelays, let ev = NostrObject.relays(relays) else { return }
         
-        guard let ev = NostrObject.contacts(contacts, relays: relays) else { return }
-        
-        // RelaysPostBox_bkp.the.send(ev)
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-            
-        }, errorHandler: {
-            
-        })
+        RelaysPostbox.instance.request(ev)
     }
     
     private func follow(_ pubkey: String) {
@@ -154,14 +134,9 @@ final class FollowManager {
         
         IdentityManager.instance.userContacts.contacts.remove(at: index)
             
-        let relays = IdentityManager.instance.userRelays ?? makeBootstrapRelays()
+        guard let ev = NostrObject.contacts(IdentityManager.instance.userContacts.contacts) else { return }
             
-        guard let ev = NostrObject.contacts(IdentityManager.instance.userContacts.contacts, relays: relays) else { return }
-            
-            //    RelaysPostBox_bkp.the.send(ev)
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
-        }, errorHandler: {
-        })
+        RelaysPostbox.instance.request(ev)
     }
     
     private func makeBootstrapRelays() -> [String: RelayInfo] {

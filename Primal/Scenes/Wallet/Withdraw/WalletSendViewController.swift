@@ -203,7 +203,7 @@ private extension WalletSendViewController {
         messageParent.layer.cornerRadius = 24
         
         inputParent.addSubview(input)
-        input.pinToSuperview(edges: .vertical)
+        input.pinToSuperview()
         input.largeAmountLabel.centerToView(inputParent, axis: .horizontal)
         
         messageInput.pinToSuperview(edges: .horizontal, padding: 10).pinToSuperview(edges: .top, padding: 6).pinToSuperview(edges: .bottom, padding: 2)

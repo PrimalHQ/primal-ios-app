@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 8.6.23..
 //
 
+import Combine
 import UIKit
 import FLAnimatedImage
 import Kingfisher
@@ -41,6 +42,8 @@ class ProfileNavigationView: UIView, Themeable {
     
     weak var delegate: ProfileNavigationViewDelegate?
     
+    var cancellables: Set<AnyCancellable> = []
+    
     init() {
         super.init(frame: .zero)
         setup()
@@ -75,7 +78,7 @@ class ProfileNavigationView: UIView, Themeable {
         }
         
         primaryLabel.text = user.firstIdentifier
-        checkboxIcon.isHidden = user.nip05.isEmpty
+        checkboxIcon.isHidden = !CheckNip05Manager.instance.isVerified(user)
         
         menuButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
         

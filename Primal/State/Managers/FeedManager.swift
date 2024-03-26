@@ -268,7 +268,8 @@ private extension FeedManager {
             let directive = currentFeed?.hex,
             !directive.hasPrefix("search;"),
             let paginationInfo,
-            paginationInfo.order_by == "created_at"
+            paginationInfo.order_by == "created_at",
+            let until = paginationInfo.until
         else {
             return Just([]).eraseToAnyPublisher()
         }
@@ -277,7 +278,7 @@ private extension FeedManager {
                 "directive": .string(directive),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
-                "since": .number(paginationInfo.until.rounded())
+                "since": .number(until.rounded())
             ]))
             .publisher()
             .receive(on: DispatchQueue.main)

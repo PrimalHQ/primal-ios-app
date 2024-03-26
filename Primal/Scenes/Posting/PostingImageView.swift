@@ -8,14 +8,14 @@
 import UIKit
 
 protocol PostingImageCollectionViewDelegate: AnyObject {
-    func didTapImage(resource: PostingImage)
-    func didTapDeleteImage(resource: PostingImage)
+    func didTapImage(resource: PostingAsset)
+    func didTapDeleteImage(resource: PostingAsset)
 }
 
 final class PostingImageCollectionView: UICollectionView {
     weak var imageDelegate: PostingImageCollectionViewDelegate?
 
-    var imageResources: [PostingImage] = [] {
+    var imageResources: [PostingAsset] = [] {
         didSet {
             reloadData()
         }
@@ -46,8 +46,7 @@ final class PostingImageCollectionView: UICollectionView {
 
 extension PostingImageCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let image = imageResources[indexPath.item].image
+        let image = imageResources[indexPath.item].resource.thumbnailImage
         
         return .init(width: image.size.width / image.size.height * height, height: height)
     }
@@ -68,19 +67,23 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            cell.imageView.image = r.image
+            cell.imageView.image = r.resource.thumbnailImage
             cell.delegate = self
             
             switch r.state {
             case .failed:
                 cell.loadingParent.isHidden = false
-                cell.loadingIndicator.stop()
-            case .uploading:
+                cell.loadingIndicator.isHidden = true
+            case .uploading(let progress):
                 cell.loadingParent.isHidden = false
-                cell.loadingIndicator.play()
+                cell.loadingIndicator.isHidden = false
+                if progress < 0.1 {
+                    cell.loadingIndicator.progress = progress
+                } else {
+                    cell.loadingIndicator.setProgressWithAnimation(duration: 0.1, value: progress)
+                }
             case .uploaded:
                 cell.loadingParent.isHidden = true
-                cell.loadingIndicator.stop()
             }
         }
         
@@ -107,7 +110,7 @@ final class PostingImageCell: UICollectionViewCell {
     let xButton = UIButton()
     
     let loadingParent = UIView()
-    let loadingIndicator = LoadingSpinnerView()
+    let loadingIndicator = CircularProgressView(frame: .init(origin: .zero, size: .init(width: 34, height: 34)))
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -122,7 +125,7 @@ final class PostingImageCell: UICollectionViewCell {
         loadingParent.backgroundColor = .background2.withAlphaComponent(0.5)
         
         loadingParent.addSubview(loadingIndicator)
-        loadingIndicator.constrainToSize(70).centerToSuperview()
+        loadingIndicator.constrainToSize(34).centerToSuperview()
         
         contentView.addSubview(xButton)
         xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 4)

@@ -29,8 +29,13 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
         updateTheme()
         
         nameLabel.text = user.data.atIdentifierWithoutAt
-        secondaryLabel.text = user.data.parsedNip
-        secondaryLabel.isHidden = user.data.nip05.isEmpty
+        
+        if CheckNip05Manager.instance.isVerified(user.data) {
+            secondaryLabel.text = user.data.parsedNip
+            secondaryLabel.isHidden = false
+        } else {
+            secondaryLabel.isHidden = true
+        }
         
         profileIcon.kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
             .processor(DownsamplingImageProcessor(size: CGSize(width: 36, height: 36))),

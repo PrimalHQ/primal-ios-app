@@ -8,7 +8,120 @@
 import Combine
 import UIKit
 
-final class WalletSendParentViewController: UIViewController {
+protocol WalletSearchController: UIViewController { 
+    var textSearch: String? { get set }
+    var cancellables: Set<AnyCancellable> { get set }
+}
+
+extension WalletSearchController {
+    func search(_ text: String) {
+        guard textSearch == nil else { return }
+        
+        // Remove "nostr:"
+        let text = text.components(separatedBy: ":").last ?? text
+        
+        textSearch = text
+        
+        if text.isEmail {
+            SocketRequest(name: "user_of_ln_address", payload: ["ln_address" : .string(text)]).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    guard let self else { return }
+                    
+                    if let pubkey = res.userPubkey {
+                        SocketRequest(name: "user_profile", payload: ["pubkey": .string(pubkey)]).publisher()
+                            .receive(on: DispatchQueue.main)
+                            .sink { [weak self] result in
+                                guard let self else { return }
+                                
+                                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
+                            }
+                            .store(in: &cancellables)
+                    } else {
+                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
+                    }
+                }
+                .store(in: &cancellables)
+            return
+        }
+        
+        if text.isBitcoinAddress {
+            let parsedBitcoinAddress = text.parsedBitcoinAddress
+            if let lightning = parsedBitcoinAddress.lightning {
+                textSearch = nil
+                search(lightning)
+            } else if let amount = parsedBitcoinAddress.1 {
+                navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: amount)), animated: true)
+            } else {
+                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+            }
+            return
+        }
+        
+        if text.hasPrefix("npub") {
+            if let decoded = try? bech32_decode(text) {
+                self.searchForPubkey(hex_encode(decoded.data)) { [weak self] user in
+                    guard let user else {
+                        self?.textSearch = nil
+                        return
+                    }
+                    self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+                }
+            }
+            return
+        }
+        
+        PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let self else { return }
+                if result.message != nil {
+                    self.searchForPubkey(text) { [weak self] user in
+                        guard let user else {
+                            self?.textSearch = nil
+                            return
+                        }
+                        self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+                    }
+                    return
+                }
+                
+                guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
+                    if let invoice = result.parsedLNInvoice {
+                        navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
+                    } else {
+                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+                    }
+                    return
+                }
+            
+                searchForPubkey(pubkey) { [weak self] user in
+                    if let invoice = result.parsedLNInvoice {
+                        self?.navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
+                    } else {
+                        self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, user)), animated: true)
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func searchForPubkey(_ pubkey: String, callback: @escaping (ParsedUser?) -> Void) {
+        SocketRequest(name: "user_infos", payload: .object(["pubkeys": [.string(pubkey)]])).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { userRes in
+                guard let simpUser = userRes.users[pubkey] else {
+                    callback(nil)
+                    return
+                }
+                
+                callback(userRes.createParsedUser(simpUser))
+                
+            }
+            .store(in: &cancellables)
+    }
+}
+
+final class WalletSendParentViewController: UIViewController, WalletSearchController {
     enum Tab {
         case nostr
         case scan
@@ -33,8 +146,8 @@ final class WalletSendParentViewController: UIViewController {
     }
     
     private var oldTab: Tab?
-    private var textSearch: String?
-    private var cancellables: Set<AnyCancellable> = []
+    var textSearch: String?
+    var cancellables: Set<AnyCancellable> = []
     
     init(startingTab tab: Tab) {
         super.init(nibName: nil, bundle: nil)
@@ -105,108 +218,6 @@ final class WalletSendParentViewController: UIViewController {
             navigationItem.leftBarButtonItem = customBackButton
         }
         RootViewController.instance.setNeedsStatusBarAppearanceUpdate()
-    }
-    
-    func search(_ text: String) {
-        guard textSearch == nil else { return }
-        
-        // Remove "nostr:"
-        let text = text.components(separatedBy: ":").last ?? text
-        
-        textSearch = text
-        
-        if text.isEmail {
-            SocketRequest(name: "user_of_ln_address", payload: ["ln_address" : .string(text)]).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    guard let self else { return }
-                    
-                    if let pubkey = res.userPubkey {
-                        SocketRequest(name: "user_profile", payload: ["pubkey": .string(pubkey)]).publisher()
-                            .receive(on: DispatchQueue.main)
-                            .sink { [weak self] result in
-                                guard let self else { return }
-                                
-                                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
-                            }
-                            .store(in: &cancellables)
-                    } else {
-                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
-                    }
-                }
-                .store(in: &cancellables)
-            return
-        }
-        
-        if text.isBitcoinAddress {
-            if text.parsedBitcoinAddress.1 != nil {
-                navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: text.parsedBitcoinAddress.1)), animated: true)
-            } else {
-                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
-            }
-            return
-        }
-        
-        if text.hasPrefix("npub") {
-            if let decoded = try? bech32_decode(text) {
-                self.searchForPubkey(hex_encode(decoded.data)) { [weak self] user in
-                    guard let user else {
-                        self?.textSearch = nil
-                        return
-                    }
-                    self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
-                }
-            }
-            return
-        }
-        
-        PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let self else { return }
-                if result.message != nil {
-                    self.searchForPubkey(text) { [weak self] user in
-                        guard let user else {
-                            self?.textSearch = nil
-                            return
-                        }
-                        self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
-                    }
-                    return
-                }
-                
-                guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
-                    if let invoice = result.parsedLNInvoice {
-                        navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
-                    } else {
-                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
-                    }
-                    return
-                }
-            
-                searchForPubkey(pubkey) { [weak self] user in
-                    if let invoice = result.parsedLNInvoice {
-                        self?.navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
-                    } else {
-                        self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, user)), animated: true)
-                    }
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func searchForPubkey(_ pubkey: String, callback: @escaping (ParsedUser?) -> Void) {
-        SocketRequest(name: "user_infos", payload: .object(["pubkeys": [.string(pubkey)]])).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { userRes in
-                guard let simpUser = userRes.users[pubkey] else {
-                    callback(nil)
-                    return
-                }
-                
-                callback(userRes.createParsedUser(simpUser))
-                
-            }
-            .store(in: &cancellables)
     }
 }
 

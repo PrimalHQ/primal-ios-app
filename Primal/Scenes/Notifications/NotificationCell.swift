@@ -137,7 +137,7 @@ extension GroupedNotification {
                 .font: UIFont.appFont(withSize: 18, weight: .heavy)
             ]))
             
-            if !first.data.nip05.isEmpty {
+            if CheckNip05Manager.instance.isVerified(first.data) {
                 let attachment = NSTextAttachment()
                 attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadge") : UIImage(named: "verifiedBadgeBlue")
                 string.append(NSAttributedString(attachment: attachment))
