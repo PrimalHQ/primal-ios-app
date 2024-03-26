@@ -248,18 +248,27 @@ fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrOb
 }
 
 fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-    let e = ["e", post.id, "", "reply"]
-    let p = ["p", post.pubkey]
-    
-    var root = ["e", post.id, "", "root"]
-    for tag in post.tags {
-        if tag.last == "root" {
-            root = tag
-        }
+    var allTags: [[String]] = []
+
+    /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
+    /// with clients that support replies but have not been updated to understand tag markers.
+    ///
+    /// https://github.com/nostr-protocol/nips/blob/master/10.md
+    ///
+    /// The tag to the root of the reply chain goes first.
+    /// The tag to the reply event being responded to goes last.
+    if let root = post.tags.last(where: { tag in tag[3] == "root" }) {
+        allTags.append(root)
+        allTags.append(["e", post.id, "", "reply"])
+    } else {
+        // For top level replies (those replying directly to the root event), only the "root" marker should be used.
+        allTags.append(["e", post.id, "", "root"])
     }
-    
-    let allTags = [e, p, root] + mentionedPubkeys.map { ["p", $0, "", "mention"] }
-    
+
+    allTags.append(["p", post.pubkey])
+
+    allTags += mentionedPubkeys.map { ["p", $0] }
+
     return createNostrObject(content: content, kind: 1, tags: allTags)
 }
 
