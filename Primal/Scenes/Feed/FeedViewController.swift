@@ -609,8 +609,29 @@ extension FeedViewController: PostCellDelegate {
         view.showToast("Copied!")
     }
     
-    func postCellDidTapReport(_ cell: PostCell) {
+    func postCellDidTapCopyRawData(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
         
+        UIPasteboard.general.string = posts[indexPath.row].post.encodeToString()
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyNoteID(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        
+        UIPasteboard.general.string = posts[indexPath.row].post.id
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyUserPubkey(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        
+        UIPasteboard.general.string = posts[indexPath.row].user.data.pubkey
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapBroadcast(_ cell: PostCell) {
+        // TODO: Something?
     }
     
     @objc func postCellDidTapMute(_ cell: PostCell) {
@@ -618,6 +639,10 @@ extension FeedViewController: PostCellDelegate {
         let pubkey = posts[indexPath.row].user.data.pubkey
         let mm = MuteManager.instance
         mm.toggleMute(pubkey)
+    }
+    
+    func postCellDidTapReport(_ cell: PostCell) {
+        // TODO: Something?
     }
 }
 

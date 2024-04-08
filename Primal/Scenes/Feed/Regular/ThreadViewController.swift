@@ -155,6 +155,7 @@ final class ThreadViewController: PostFeedViewController {
         table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
         
         textInputView.tintColor = .accent
+        textInputView.textColor = .foreground
         
         inputParent.backgroundColor = .background
         inputBackground.backgroundColor = .background3
@@ -447,9 +448,6 @@ private extension ThreadViewController {
         inputStack.setCustomSpacing(8, after: replyingToLabel)
         
         textInputView.backgroundColor = .clear
-        textInputView.font = .appFont(withSize: 16, weight: .regular)
-        textInputView.textColor = .foreground2
-        textInputView.delegate = inputManager
         textInputView.returnKeyType = .default
         
         let imageButton = UIButton()

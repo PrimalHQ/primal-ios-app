@@ -60,7 +60,9 @@ final class IdentityManager {
     @Published var userStats: NostrUserProfileInfo?
     @Published var userSettings: PrimalSettingsContent?
     @Published var userRelays: [String: RelayInfo]?
-    @Published var userContacts: Contacts = Contacts(created_at: -10, contacts: [])
+    @Published var userContacts: DatedSet = DatedSet(created_at: -10, set: [])
+    @Published var userBookmarks: DatedSet = DatedSet(created_at: -10, set: [])
+    
     
     var followListContentString = ""
     
@@ -196,7 +198,8 @@ final class IdentityManager {
         userStats = nil
         userSettings = nil
         userRelays = nil
-        userContacts = .init(created_at: -1, contacts: [])
+        userContacts = .init(created_at: -1, set: [])
+        userBookmarks = .init(created_at: -1, set: [])
     }
     
     // Never just requestRelays as some clients might not support NIP-65
@@ -252,7 +255,7 @@ final class IdentityManager {
                         }
                     }
                     if let contacts = tags {
-                        let c = Contacts(created_at: Int(response.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), contacts: contacts)
+                        let c = DatedSet(created_at: Int(response.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), set: contacts)
                         if self.userContacts.created_at <= c.created_at {
                             self.userContacts = c
                             callback?()

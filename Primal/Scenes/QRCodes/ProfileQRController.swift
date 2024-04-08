@@ -8,10 +8,11 @@
 import UIKit
 
 final class ProfileQRController: OnboardingParentViewController {
-    lazy var profile = ProfileShowQRController()
+    let profile: ProfileShowQRController
     lazy var scanController = ProfileScanQRController()
     
-    init() {
+    init(user: ParsedUser? = IdentityManager.instance.parsedUser) {
+        profile = ProfileShowQRController(user: user)
         super.init()
         viewControllerStack = [profile]
         delegate = self

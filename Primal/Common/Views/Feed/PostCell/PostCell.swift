@@ -29,6 +29,10 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapShare(_ cell: PostCell)
     func postCellDidTapCopyLink(_ cell: PostCell)
     func postCellDidTapCopyContent(_ cell: PostCell)
+    func postCellDidTapCopyRawData(_ cell: PostCell)
+    func postCellDidTapCopyNoteID(_ cell: PostCell)
+    func postCellDidTapCopyUserPubkey(_ cell: PostCell)
+    func postCellDidTapBroadcast(_ cell: PostCell)
     func postCellDidTapReport(_ cell: PostCell)
     func postCellDidTapMute(_ cell: PostCell)
 }
@@ -175,25 +179,41 @@ class PostCell: UITableViewCell {
         
         let muteTitle = isMuted ? "Unmute User" : "Mute User"
         threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
+            UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapShare(self)
             }),
-            UIAction(title: "Copy note link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
+            UIAction(title: "Copy Note Link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyLink(self)
             }),
-            UIAction(title: "Copy text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
+            UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyContent(self)
             }),
-            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+            UIAction(title: "Copy Raw Data", image: UIImage(named: "MenuCopyData"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapReport(self)
-            },
+                self.delegate?.postCellDidTapCopyRawData(self)
+            }),
+            UIAction(title: "Copy Note ID", image: UIImage(named: "MenuCopyNoteID"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyNoteID(self)
+            }),
+            UIAction(title: "Copy User Public Key", image: UIImage(named: "MenuCopyUserPubkey"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyUserPubkey(self)
+            }),
+            UIAction(title: "Broadcast", image: UIImage(named: "MenuBroadcast"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapBroadcast(self)
+            }),
             UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapMute(self)
+            },
+            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapReport(self)
             }
         ])
     }
@@ -357,7 +377,7 @@ private extension PostCell {
 }
 
 extension FLAnimatedImageView {
-    func setUserImage(_ user: ParsedUser, feed: Bool = true) {
+    func setUserImage(_ user: ParsedUser, feed: Bool = true, size: CGSize? = nil) {
         tag = tag + 1
         
         guard
@@ -365,9 +385,9 @@ extension FLAnimatedImageView {
             user.data.picture.hasSuffix("gif"),
             let url = user.profileImage.url(for: .small)
         else {
-            let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
+            let size = size ?? (frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size)
             
-            kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
+            kf.setImage(with: user.profileImage.url(for: size.width < 100 ? .small : .medium), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: size)),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage

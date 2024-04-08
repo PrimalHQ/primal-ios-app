@@ -9,6 +9,26 @@ import Combine
 import Kingfisher
 import UIKit
 
+extension UIButton.Configuration {
+    static func whiteProfileQR(_ text: String) -> UIButton.Configuration {
+        var configuration = UIButton.Configuration.borderless()
+        configuration.attributedTitle = .init(text, attributes: AttributeContainer([
+            .font: UIFont.appFont(withSize: 14, weight: .regular)
+        ]))
+        configuration.baseForegroundColor = .white
+        return configuration
+    }
+    
+    static func whiteProfileQRSelected(_ text: String) -> UIButton.Configuration {
+        var configuration = UIButton.Configuration.borderless()
+        configuration.attributedTitle = .init(text, attributes: AttributeContainer([
+            .font: UIFont.appFont(withSize: 14, weight: .semibold)
+        ]))
+        configuration.baseForegroundColor = .white
+        return configuration
+    }
+}
+
 final class QRCodeActionButton: UIButton {
     init(_ title: String) {
         super.init(frame: .zero)
@@ -26,28 +46,43 @@ final class QRCodeActionButton: UIButton {
 }
 
 final class ProfileShowQRController: UIViewController, OnboardingViewController {
+    struct MenuOption {
+        let name: String
+        let text: String
+        let qrCode: String
+    }
+    
     var titleLabel: UILabel = .init()
     var backButton: UIButton = .init()
     
     let userInfo = OnboardingProfileInfoView()
     let qrCodeView = UIImageView()
-    let npubLabel = UILabel()
+    let copyView = QRCopyView()
     let action = QRCodeActionButton("Scan QR Code")
+    let tabParent = UIView()
     
     lazy var scanController = ProfileScanQRController()
     
     private var cancellables: Set<AnyCancellable> = []
- 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    
+    let user: ParsedUser?
+    init(user: ParsedUser?) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
         
         setup()
+        
+        if let user {
+            update(user)
+        }
     }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
 private extension ProfileShowQRController {
     func setup() {
-        addBackground(1, clipToLeft: false)
+        addBackground(1.5, clipToLeft: false)
         backButton.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)
@@ -65,24 +100,19 @@ private extension ProfileShowQRController {
         
         let stack = UIStackView(axis: .vertical, [
             SpacerView(height: 70, priority: .init(1)),
-            userInfo,   SpacerView(height: 12),
-            qrParent,   SpacerView(height: 4),
-            npubLabel,  SpacerView(height: 12),
+            userInfo,   SpacerView(height: 26),
+            tabParent,
+            qrParent,   SpacerView(height: 20),
+            copyView,  SpacerView(height: 12),
             UIView(),
             action
         ])
         stack.alignment = .center
-        stack.isHidden = true
         
         action.pinToSuperview(edges: .horizontal)
         
-        npubLabel.pin(to: qrParent, edges: .horizontal, padding: 20)
-        npubLabel.lineBreakMode = .byTruncatingMiddle
-        npubLabel.textColor = .white
-        npubLabel.font = .appFont(withSize: 16, weight: .regular)
-        
         view.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .top, padding: 34).pinToSuperview(edges: .bottom, padding: 60, safeArea: true)
+        stack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .top, padding: 18).pinToSuperview(edges: .bottom, padding: 45, safeArea: true)
         
         addNavigationBar("")
         backButton.isHidden = false
@@ -92,32 +122,88 @@ private extension ProfileShowQRController {
             let scan = (self.onboardingParent as? ProfileQRController)?.scanController ?? self.scanController
             self.onboardingParent?.pushViewController(scan, animated: true)
         }), for: .touchUpInside)
-        
-        IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
-            guard let user else { return }
-            self?.update(user)
-            stack.isHidden = false
-        }
-        .store(in: &cancellables)
     }
     
-    func update(_ user: PrimalUser) {
-        userInfo.image.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "onboardingDefaultAvatar")?.withAlpha(alpha: 0.5), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 108, height: 108))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
-        userInfo.name.text = user.firstIdentifier
-        userInfo.address.text = user.lud16
+    func update(_ user: ParsedUser) {
+        userInfo.image.setUserImage(user, feed: false, size: .init(width: 108, height: 108))
+        userInfo.name.text = user.data.firstIdentifier
+        userInfo.address.text = user.data.lud16
         
-        npubLabel.text = user.npub
+        updateTabs(user)
+    }
+    
+    func updateTabs(_ user: ParsedUser) {
+        tabParent.subviews.forEach { $0.removeFromSuperview() }
         
-        let normalImage = UIImage.createQRCode("nostr:\(user.npub)", dimension: 280)
-        qrCodeView.image = normalImage
+        var options: [MenuOption] = [.init(name: "PUBLIC KEY", text: user.data.npub, qrCode: "nostr:\(user.data.npub)")]
+        if !user.data.lud16.isEmpty {
+            options.append(.init(name: "LIGHTNING ADDRESS", text: user.data.lud16, qrCode: "lightning:\(user.data.lud16)"))
+        }
         
-        guard let alteredImage = normalImage?.maskWhiteColor(color: .clear) else { return }
+        if options.count != 2 {
+            copyView.text = user.data.npub
+            qrCodeView.image = UIImage.createWhiteTransparentQRCode("nostr:\(user.data.npub)", dimension: 280)
+            tabParent.isHidden = true
+            return
+        }
         
-        qrCodeView.image = alteredImage.withRenderingMode(.alwaysTemplate)
-        qrCodeView.tintColor = .white
+        tabParent.isHidden = false
+        
+        let buttons = options.map { (UIButton(configuration: .whiteProfileQR($0.name)), UIButton(configuration: .whiteProfileQRSelected($0.name))) }
+        
+        let indicatorView = SpacerView(height: 4, color: .white)
+        indicatorView.layer.cornerRadius = 2
+        tabParent.addSubview(indicatorView)
+        
+        for ((button, selectedButton), option) in zip(buttons, options) {
+            let isFirst = button == buttons.first?.0
+            
+            tabParent.addSubview(button)
+            button.pinToSuperview(edges: .top)
+            if isFirst {
+                button.pin(to: qrCodeView, edges: .leading).pinToSuperview(edges: .bottom, padding: 30).pinToSuperview(edges: .leading)
+                
+                indicatorView.pin(to: button, edges: .horizontal).pin(to: button, edges: .bottom, padding: -5)
+            } else {
+                button.pin(to: qrCodeView, edges: .trailing).pinToSuperview(edges: .trailing)
+            }
+            
+            tabParent.addSubview(selectedButton)
+            selectedButton.centerToView(button)
+            
+            button.isHidden = isFirst
+            selectedButton.isHidden = !isFirst
+            
+            button.addAction(.init(handler: { [weak self] _ in
+                guard let self else { return }
+                
+                zip(buttons, options).forEach { (buttonTuple, option) in
+                    buttonTuple.0.isHidden = buttonTuple.0 == button
+                    buttonTuple.1.isHidden = buttonTuple.0 != button
+                }
+                
+                // Remove to remove old constraints
+                indicatorView.removeFromSuperview()
+                tabParent.addSubview(indicatorView)
+                indicatorView.pin(to: button, edges: .horizontal).pin(to: button, edges: .bottom, padding: -10)
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.tabParent.layoutIfNeeded()
+                }
+                
+                UIView.transition(with: copyView, duration: 0.3, options: .transitionCrossDissolve) {
+                    self.copyView.text = option.text
+                }
+                
+                UIView.transition(with: qrCodeView.superview ?? qrCodeView, duration: 0.3, options: isFirst ? .transitionFlipFromLeft : .transitionFlipFromRight) {
+                    self.qrCodeView.image = UIImage.createWhiteTransparentQRCode(option.qrCode, dimension: 280)
+                }
+            }), for: .touchUpInside)
+            
+            if isFirst {
+                copyView.text = option.text
+                qrCodeView.image = UIImage.createWhiteTransparentQRCode(option.qrCode, dimension: 280)
+            }
+        }
     }
 }

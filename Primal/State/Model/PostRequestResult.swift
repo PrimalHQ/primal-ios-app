@@ -30,7 +30,7 @@ class PostRequestResult: Codable {
     var userPubkey: String?
     
     var relayData: [String: RelayInfo] = [:]
-    var contacts: Contacts?
+    var contacts: DatedSet?
     
     var timestamps: [Date] = []
     

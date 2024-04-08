@@ -231,7 +231,7 @@ extension PostRequestResult {
             let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
             
             if !tags.isEmpty {
-                contacts = Contacts(created_at: Int(payload["created_at"]?.doubleValue ?? -1), contacts: tags)
+                contacts = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
             }
         default:
             print("Unhandled response \(payload)")
