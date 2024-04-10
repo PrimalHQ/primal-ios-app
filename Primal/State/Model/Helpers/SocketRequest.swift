@@ -231,8 +231,21 @@ extension PostRequestResult {
             let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
             
             if !tags.isEmpty {
-                contacts = Contacts(created_at: Int(payload["created_at"]?.doubleValue ?? -1), contacts: tags)
+                contacts = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
             }
+        case .bookmarks:
+            guard let tagsArray = payload["tags"]?.arrayValue else { return }
+            let tags: [Tag] = tagsArray.compactMap {
+                .init(type: $0.arrayValue?[safe: 0]?.stringValue ?? "", text: $0.arrayValue?[safe: 1]?.stringValue ?? "")
+            }
+            
+            if !tags.isEmpty {
+                bookmarks = DatedTagArray(created_at: Int(payload["created_at"]?.doubleValue ?? -1), array: tags)
+            }
+        case .relayHints:
+            let hints: [String: String] = contentString.decode() ?? [:]
+            
+            RelayHintManager.instance.addHints(hints)
         default:
             print("Unhandled response \(payload)")
         }

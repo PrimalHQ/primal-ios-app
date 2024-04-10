@@ -115,12 +115,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data,
-                        didLike: LikeManager.instance.hasLiked(data.post.id),
-                        didRepost: PostManager.instance.hasReposted(data.post.id),
-                        didZap: WalletManager.instance.hasZapped(data.post.id),
-                        isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
-            )
+            cell.update(data)
             cell.delegate = self
         }
         
@@ -439,6 +434,18 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapBookmark(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        BookmarkManager.instance.bookmark(posts[index].post.id)
+        cell.updateMenu(posts[index])
+    }
+    
+    func postCellDidTapUnbookmark(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        BookmarkManager.instance.unbookmark(posts[index].post.id)
+        cell.updateMenu(posts[index])
+    }
+    
     func postCellDidLongTapZap(_ cell: PostCell) {
         zapFromCell(cell, showPopup: true)
     }
@@ -609,8 +616,29 @@ extension FeedViewController: PostCellDelegate {
         view.showToast("Copied!")
     }
     
-    func postCellDidTapReport(_ cell: PostCell) {
+    func postCellDidTapCopyRawData(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
         
+        UIPasteboard.general.string = posts[indexPath.row].post.encodeToString()
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyNoteID(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        
+        UIPasteboard.general.string = posts[indexPath.row].noteId()
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapCopyUserPubkey(_ cell: PostCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        
+        UIPasteboard.general.string = posts[indexPath.row].user.data.pubkey
+        view.showToast("Copied!")
+    }
+    
+    func postCellDidTapBroadcast(_ cell: PostCell) {
+        // TODO: Something?
     }
     
     @objc func postCellDidTapMute(_ cell: PostCell) {
@@ -618,6 +646,10 @@ extension FeedViewController: PostCellDelegate {
         let pubkey = posts[indexPath.row].user.data.pubkey
         let mm = MuteManager.instance
         mm.toggleMute(pubkey)
+    }
+    
+    func postCellDidTapReport(_ cell: PostCell) {
+        // TODO: Something?
     }
 }
 

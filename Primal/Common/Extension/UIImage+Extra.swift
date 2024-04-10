@@ -13,6 +13,20 @@ extension CIImage {
 }
 
 extension UIImage {
+    static func createWhiteTransparentQRCode(_ string: String, dimension: Int, logo: UIImage? = nil) -> UIImage? {
+        let doc = QRCode.Document(utf8String: string, errorCorrection: logo != nil ? .quantize : .default)
+        doc.design.backgroundColor(UIColor.clear.cgColor)
+        doc.design.shape.eye = QRCode.EyeShape.RoundedRect()
+        doc.design.shape.onPixels = QRCode.PixelShape.RoundedPath(cornerRadiusFraction: 1)
+        doc.design.style.onPixels = QRCode.FillStyle.Solid(UIColor.white.cgColor)
+        
+        if let image = logo?.cgImage {
+            doc.logoTemplate = QRCode.LogoTemplate.CircleCenter(image: image, inset: 15)
+        }
+        
+        return doc.uiImage(dimension: dimension, scale: 3)
+    }
+    
     static func createQRCode(_ string: String, dimension: Int, logo: UIImage? = nil) -> UIImage? {
         let doc = QRCode.Document(utf8String: string, errorCorrection: logo != nil ? .quantize : .default)
         doc.design.backgroundColor(UIColor.white.cgColor)
@@ -48,42 +62,6 @@ extension UIImage {
         }
 
         return nil
-    }
-    
-    func maskWhiteColor(color: UIColor) -> UIImage? {
-        let maskingColors: [CGFloat] = [1, 255, 1, 255, 1, 255]
-//        let maskingColors: [CGFloat] = [0, 254, 0, 254, 0, 254]
-        let bounds = CGRect(origin: .zero, size: size)
-
-        let maskImage = cgImage!
-        var returnImage: UIImage?
-
-        // make sure image has no alpha channel
-        let rFormat = UIGraphicsImageRendererFormat()
-        rFormat.opaque = true
-        let renderer = UIGraphicsImageRenderer(size: size, format: rFormat)
-        let noAlphaImage = renderer.image {
-            (context) in
-            self.draw(at: .zero)
-        }
-
-        let noAlphaCGRef = noAlphaImage.cgImage
-
-        if let imgRefCopy = noAlphaCGRef?.copy(maskingColorComponents: maskingColors) {
-
-            let rFormat = UIGraphicsImageRendererFormat()
-            rFormat.opaque = false
-            let renderer = UIGraphicsImageRenderer(size: size, format: rFormat)
-            returnImage = renderer.image {
-                (context) in
-                context.cgContext.clip(to: bounds, mask: maskImage)
-                context.cgContext.setFillColor(color.cgColor)
-                context.cgContext.fill(bounds)
-                context.cgContext.draw(imgRefCopy, in: bounds)
-            }
-
-        }
-        return returnImage
     }
     
     func withAlpha(alpha: CGFloat) -> UIImage? {

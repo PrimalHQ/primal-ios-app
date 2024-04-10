@@ -29,12 +29,40 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapShare(_ cell: PostCell)
     func postCellDidTapCopyLink(_ cell: PostCell)
     func postCellDidTapCopyContent(_ cell: PostCell)
+    func postCellDidTapCopyRawData(_ cell: PostCell)
+    func postCellDidTapCopyNoteID(_ cell: PostCell)
+    func postCellDidTapCopyUserPubkey(_ cell: PostCell)
+    func postCellDidTapBroadcast(_ cell: PostCell)
     func postCellDidTapReport(_ cell: PostCell)
     func postCellDidTapMute(_ cell: PostCell)
+    func postCellDidTapBookmark(_ cell: PostCell)
+    func postCellDidTapUnbookmark(_ cell: PostCell)
 }
 
 class PostCellNantesDelegate {
     weak var cell: PostCell?
+}
+
+struct PostInfo {
+    var isBookmarked: Bool
+    var isLiked: Bool
+    var isMuted: Bool
+    var isReplied: Bool
+    var isReposted: Bool
+    var isZapped: Bool
+}
+
+extension ParsedContent {
+    var postInfo: PostInfo {
+        .init(
+            isBookmarked: BookmarkManager.instance.isBookmarked(post.id),
+            isLiked: LikeManager.instance.hasLiked(post.id),
+            isMuted: MuteManager.instance.isMuted(user.data.pubkey),
+            isReplied: PostManager.instance.hasReplied(post.id),
+            isReposted: PostManager.instance.hasReposted(post.id),
+            isZapped: WalletManager.instance.hasZapped(post.id)
+        )
+    }
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -79,8 +107,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        let didReply = PostManager.instance.hasReplied(content.post.id)
+    func update(_ content: ParsedContent) {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -168,32 +195,63 @@ class PostCell: UITableViewCell {
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         
-        replyButton.set(didReply ? max(1, content.post.replies) : content.post.replies, filled: didReply)
-        zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: didZap)
-        likeButton.set(didLike ? max(1, content.post.likes) : content.post.likes, filled: didLike)
-        repostButton.set(didRepost ? max(1, content.post.reposts) : content.post.reposts, filled: didRepost)
+        let postInfo = content.postInfo
         
-        let muteTitle = isMuted ? "Unmute User" : "Mute User"
+        replyButton.set(postInfo.isReplied ? max(1, content.post.replies) : content.post.replies, filled: postInfo.isReplied)
+        zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: postInfo.isZapped)
+        likeButton.set(postInfo.isLiked ? max(1, content.post.likes) : content.post.likes, filled: postInfo.isLiked)
+        repostButton.set(postInfo.isReposted ? max(1, content.post.reposts) : content.post.reposts, filled: postInfo.isReposted)
+        
+        updateMenu(content)
+    }
+    
+    func updateMenu(_ content: ParsedContent) {
+        let postInfo = content.postInfo
+        let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
+        
         threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
+            UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapShare(self)
             }),
-            UIAction(title: "Copy note link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
+            UIAction(title: "Copy Note Link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyLink(self)
             }),
-            UIAction(title: "Copy text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
+            postInfo.isBookmarked ?
+                UIAction(title: "Remove From Bookmarks", image: UIImage(named: "MenuBookmarkFilled"), handler: { [unowned self] _ in
+                    self.delegate?.postCellDidTapUnbookmark(self)
+                }) :
+                UIAction(title: "Add To Bookmarks", image: UIImage(named: "MenuBookmark"), handler: { [unowned self] _ in
+                    self.delegate?.postCellDidTapBookmark(self)
+                }),
+            UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyContent(self)
             }),
-            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+            UIAction(title: "Copy Raw Data", image: UIImage(named: "MenuCopyData"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapReport(self)
-            },
+                self.delegate?.postCellDidTapCopyRawData(self)
+            }),
+            UIAction(title: "Copy Note ID", image: UIImage(named: "MenuCopyNoteID"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyNoteID(self)
+            }),
+            UIAction(title: "Copy User Public Key", image: UIImage(named: "MenuCopyUserPubkey"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapCopyUserPubkey(self)
+            }),
+            UIAction(title: "Broadcast", image: UIImage(named: "MenuBroadcast"), handler: { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapBroadcast(self)
+            }),
             UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapMute(self)
+            },
+            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.postCellDidTapReport(self)
             }
         ])
     }
@@ -357,7 +415,7 @@ private extension PostCell {
 }
 
 extension FLAnimatedImageView {
-    func setUserImage(_ user: ParsedUser, feed: Bool = true) {
+    func setUserImage(_ user: ParsedUser, feed: Bool = true, size: CGSize? = nil) {
         tag = tag + 1
         
         guard
@@ -365,9 +423,9 @@ extension FLAnimatedImageView {
             user.data.picture.hasSuffix("gif"),
             let url = user.profileImage.url(for: .small)
         else {
-            let size = frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size
+            let size = size ?? (frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size)
             
-            kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
+            kf.setImage(with: user.profileImage.url(for: size.width < 100 ? .small : .medium), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: size)),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage

@@ -157,11 +157,12 @@ private extension MenuContainerController {
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
         let profile = MenuItemButton(title: "PROFILE")
+        let bookmarks = MenuItemButton(title: "BOOKMARKS")
         let settings = MenuItemButton(title: "SETTINGS")
         let premium = MenuItemButton(title: "PREMIUM")
         let signOut = MenuItemButton(title: "SIGN OUT")
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, bookmarks, settings, signOut])
         [
             profileImageRow, SpacerView(height: 15), titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
@@ -290,6 +291,10 @@ private extension MenuContainerController {
             self?.qrCodePressed()
         }), for: .touchUpInside)
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
+        bookmarks.addAction(.init(handler: { [unowned self] _ in
+            show(PublicBookmarksViewController(), sender: nil)
+            resetNavigationTabBar()
+        }), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         premium.addAction(.init(handler: { [weak self] _ in
             self?.premiumPressed()
@@ -302,6 +307,11 @@ private extension MenuContainerController {
         if let userImageURL = UserDefaults.standard.currentUserImageURLCache {
             updateForImageURL(userImageURL)
         }
+        
+//        BookmarkManager.instance.$cachedBookmarks.map({ !$0.array.isEmpty })
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.isEnabled, on: bookmarks)
+//            .store(in: &cancellables)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             if let url = user.profileImage.url(for: .small)?.absoluteString {
@@ -466,6 +476,7 @@ final class MenuItemButton: UIButton, Themeable {
     
     func updateTheme() {
         setTitleColor(.foreground2, for: .normal)
+        setTitleColor(.foreground2.withAlphaComponent(0.5), for: .disabled)
         setTitleColor(.foreground2.withAlphaComponent(0.5), for: .highlighted)
     }
 }

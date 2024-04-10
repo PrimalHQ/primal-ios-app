@@ -137,6 +137,10 @@ extension NostrObject {
         createNostrMuteListEvent(mutedPubkeys)
     }
     
+    static func bookmarks(_ bookmarks: [Tag]) -> NostrObject? {
+        createNostrBookmarkListEvent(bookmarks)
+    }
+    
     static func message(_ content: String, recipientPubkey: String) -> NostrObject? {
         createNostrMessageEvent(content: content, recipientPubkey: recipientPubkey)
     }
@@ -259,10 +263,10 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     /// The tag to the reply event being responded to goes last.
     if let root = post.tags.last(where: { tag in tag[3] == "root" }) {
         allTags.append(root)
-        allTags.append(["e", post.id, "", "reply"])
+        allTags.append(["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "reply"])
     } else {
         // For top level replies (those replying directly to the root event), only the "root" marker should be used.
-        allTags.append(["e", post.id, "", "root"])
+        allTags.append(["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "root"])
     }
 
     allTags.append(["p", post.pubkey])
@@ -361,6 +365,12 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
     let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
 
     return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
+}
+
+fileprivate func createNostrBookmarkListEvent(_ bookmarks: [Tag]) -> NostrObject? {
+    let tags = bookmarks.map({ bookmark in [bookmark.type, bookmark.text] })
+
+    return createNostrObject(content: "", kind: NostrKind.bookmarks.rawValue, tags: tags)
 }
 
 fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {

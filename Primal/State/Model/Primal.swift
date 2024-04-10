@@ -8,9 +8,19 @@
 import Foundation
 import GenericJSON
 
-struct Contacts: Codable {
+struct DatedSet: Codable {
     let created_at: Int
-    var contacts: Set<String>
+    var set: Set<String> = []
+}
+
+struct Tag: Codable, Hashable {
+    var type: String
+    var text: String
+}
+
+struct DatedTagArray: Codable {
+    let created_at: Int
+    var array: [Tag] = []
 }
 
 struct PrimalNoteStatus: Codable, Hashable {

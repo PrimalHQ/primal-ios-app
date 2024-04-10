@@ -39,7 +39,7 @@ final class NotificationCell: PostCell {
     
     func updateForNotification(_ notification: GroupedNotification, delegate: NotificationCellDelegate, didLike: Bool, didRepost: Bool, didZap: Bool) {
         if let post = notification.post {
-            update(post, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: false)
+            update(post)
             postContentStack.isHidden = false
             bottomButtonStack.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
         } else {
@@ -56,8 +56,8 @@ final class NotificationCell: PostCell {
         notificationCellDelegate = delegate
     }
     
-    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty

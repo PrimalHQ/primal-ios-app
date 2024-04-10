@@ -66,7 +66,7 @@ final class PostingTextViewManager: TextViewManager {
         var mutable = NSMutableAttributedString(attributedString: textView.attributedText ?? .init())
         mutable.replaceCharacters(in: currentlyEditingToken.range, with: "")
         mutable.insert(NSAttributedString(string: replacementText, attributes: [
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .font: UIFont.appFont(withSize: 18, weight: .regular),
             .foregroundColor: UIColor.accent,
             .link: user
         ]), at: currentlyEditingToken.range.location)
