@@ -50,6 +50,7 @@ final class ProfileShowQRController: UIViewController, OnboardingViewController 
         let name: String
         let text: String
         let qrCode: String
+        let logo: UIImage?
     }
     
     var titleLabel: UILabel = .init()
@@ -135,14 +136,15 @@ private extension ProfileShowQRController {
     func updateTabs(_ user: ParsedUser) {
         tabParent.subviews.forEach { $0.removeFromSuperview() }
         
-        var options: [MenuOption] = [.init(name: "PUBLIC KEY", text: user.data.npub, qrCode: "nostr:\(user.data.npub)")]
+        let firstOption = MenuOption(name: "PUBLIC KEY", text: user.data.npub, qrCode: "nostr:\(user.data.npub)", logo: UIImage(named: "qr-nostr"))
+        var options: [MenuOption] = [firstOption]
         if !user.data.lud16.isEmpty {
-            options.append(.init(name: "LIGHTNING ADDRESS", text: user.data.lud16, qrCode: "lightning:\(user.data.lud16)"))
+            options.append(.init(name: "LIGHTNING ADDRESS", text: user.data.lud16, qrCode: "lightning:\(user.data.lud16)", logo: UIImage(named: "qr-lightning")))
         }
         
         if options.count != 2 {
-            copyView.text = user.data.npub
-            qrCodeView.image = UIImage.createWhiteTransparentQRCode("nostr:\(user.data.npub)", dimension: 280)
+            copyView.text = firstOption.text
+            qrCodeView.image = .createQRCode(firstOption.qrCode, dimension: 280, logo: firstOption.logo)
             tabParent.isHidden = true
             return
         }
@@ -196,13 +198,13 @@ private extension ProfileShowQRController {
                 }
                 
                 UIView.transition(with: qrCodeView.superview ?? qrCodeView, duration: 0.3, options: isFirst ? .transitionFlipFromLeft : .transitionFlipFromRight) {
-                    self.qrCodeView.image = UIImage.createWhiteTransparentQRCode(option.qrCode, dimension: 280)
+                    self.qrCodeView.image = .createQRCode(option.qrCode, dimension: 280, logo: option.logo)
                 }
             }), for: .touchUpInside)
             
             if isFirst {
                 copyView.text = option.text
-                qrCodeView.image = UIImage.createWhiteTransparentQRCode(option.qrCode, dimension: 280)
+                qrCodeView.image = .createQRCode(option.qrCode, dimension: 280, logo: option.logo)
             }
         }
     }

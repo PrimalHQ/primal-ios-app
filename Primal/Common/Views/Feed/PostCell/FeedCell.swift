@@ -16,8 +16,8 @@ class FeedCell: PostCell {
     
     override var useShortText: Bool { true }
     
-    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
@@ -118,8 +118,8 @@ final class FullWidthFeedCell: FeedCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
         
         nameSuperStack.alignment = parsedContent.replyingTo != nil ? .top : .center
         

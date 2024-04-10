@@ -137,6 +137,10 @@ extension NostrObject {
         createNostrMuteListEvent(mutedPubkeys)
     }
     
+    static func bookmarks(_ bookmarks: [Tag]) -> NostrObject? {
+        createNostrBookmarkListEvent(bookmarks)
+    }
+    
     static func message(_ content: String, recipientPubkey: String) -> NostrObject? {
         createNostrMessageEvent(content: content, recipientPubkey: recipientPubkey)
     }
@@ -248,17 +252,17 @@ fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrOb
 }
 
 fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-    let e = ["e", post.id, "", "reply"]
+    let e = ["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "reply"]
     let p = ["p", post.pubkey]
     
-    var root = ["e", post.id, "", "root"]
+    var root = ["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "root"]
     for tag in post.tags {
         if tag.last == "root" {
             root = tag
         }
     }
     
-    let allTags = [e, p, root] + mentionedPubkeys.map { ["p", $0, "", "mention"] }
+    let allTags = [e, p, root] + mentionedPubkeys.map { ["p", $0, RelayHintManager.instance.getRelayHint($0), "mention"] }
     
     return createNostrObject(content: content, kind: 1, tags: allTags)
 }
@@ -352,6 +356,12 @@ fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObje
     let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
 
     return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
+}
+
+fileprivate func createNostrBookmarkListEvent(_ bookmarks: [Tag]) -> NostrObject? {
+    let tags = bookmarks.map({ bookmark in [bookmark.type, bookmark.text] })
+
+    return createNostrObject(content: "", kind: NostrKind.bookmarks.rawValue, tags: tags)
 }
 
 fileprivate func createNostrMessageEvent(content: String, recipientPubkey: String) -> NostrObject? {

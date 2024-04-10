@@ -260,6 +260,8 @@
 		B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */; };
 		B91BB9642B3E10C3003F6B2A /* WalletKeyboardTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */; };
 		B91C46232BC3D35500AC2C9B /* BookmarkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91C46222BC3D35500AC2C9B /* BookmarkManager.swift */; };
+		B91C46252BC44BA000AC2C9B /* RelayHintManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */; };
+		B91C46272BC6866A00AC2C9B /* PublicBookmarksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91C46262BC6866A00AC2C9B /* PublicBookmarksViewController.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -661,6 +663,8 @@
 		B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletKeyboardTabController.swift; sourceTree = "<group>"; };
 		B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B91C46222BC3D35500AC2C9B /* BookmarkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkManager.swift; sourceTree = "<group>"; };
+		B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayHintManager.swift; sourceTree = "<group>"; };
+		B91C46262BC6866A00AC2C9B /* PublicBookmarksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicBookmarksViewController.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -1123,6 +1127,7 @@
 				B9B290542B4C46890069C87F /* SmartContactsManager.swift */,
 				B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */,
 				B91C46222BC3D35500AC2C9B /* BookmarkManager.swift */,
+				B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1524,6 +1529,7 @@
 			children = (
 				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 				9ED416012A42483D00892235 /* RegularFeedViewController.swift */,
+				B91C46262BC6866A00AC2C9B /* PublicBookmarksViewController.swift */,
 			);
 			path = Regular;
 			sourceTree = "<group>";
@@ -2124,6 +2130,7 @@
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* MainNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
+				B91C46252BC44BA000AC2C9B /* RelayHintManager.swift in Sources */,
 				9EB219F12A0919930037C3E5 /* Numbers+Extra.swift in Sources */,
 				B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */,
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
@@ -2247,6 +2254,7 @@
 				B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
 				93CACB0929F525B6003BBCE5 /* list.c in Sources */,
+				B91C46272BC6866A00AC2C9B /* PublicBookmarksViewController.swift in Sources */,
 				B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */,
 				9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */,
 				B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */,
@@ -2551,7 +2559,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.8;
+				MARKETING_VERSION = 1.5.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2596,7 +2604,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.8;
+				MARKETING_VERSION = 1.5.1;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

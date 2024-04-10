@@ -208,7 +208,7 @@ final class FollowsYouView: UIView {
         
         addSubview(label)
         label.pinToSuperview(edges: .horizontal, padding: 8).centerToSuperview()
-        label.font = .appFont(withSize: 14, weight: .thin)
+        label.font = .appFont(withSize: 14, weight: .regular)
         label.text = "follows you"
         
         constrainToSize(height: 22)

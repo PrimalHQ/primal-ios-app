@@ -35,10 +35,34 @@ protocol PostCellDelegate: AnyObject {
     func postCellDidTapBroadcast(_ cell: PostCell)
     func postCellDidTapReport(_ cell: PostCell)
     func postCellDidTapMute(_ cell: PostCell)
+    func postCellDidTapBookmark(_ cell: PostCell)
+    func postCellDidTapUnbookmark(_ cell: PostCell)
 }
 
 class PostCellNantesDelegate {
     weak var cell: PostCell?
+}
+
+struct PostInfo {
+    var isBookmarked: Bool
+    var isLiked: Bool
+    var isMuted: Bool
+    var isReplied: Bool
+    var isReposted: Bool
+    var isZapped: Bool
+}
+
+extension ParsedContent {
+    var postInfo: PostInfo {
+        .init(
+            isBookmarked: BookmarkManager.instance.isBookmarked(post.id),
+            isLiked: LikeManager.instance.hasLiked(post.id),
+            isMuted: MuteManager.instance.isMuted(user.data.pubkey),
+            isReplied: PostManager.instance.hasReplied(post.id),
+            isReposted: PostManager.instance.hasReposted(post.id),
+            isZapped: WalletManager.instance.hasZapped(post.id)
+        )
+    }
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -83,8 +107,7 @@ class PostCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(_ content: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        let didReply = PostManager.instance.hasReplied(content.post.id)
+    func update(_ content: ParsedContent) {
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -172,12 +195,20 @@ class PostCell: UITableViewCell {
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         
-        replyButton.set(didReply ? max(1, content.post.replies) : content.post.replies, filled: didReply)
-        zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: didZap)
-        likeButton.set(didLike ? max(1, content.post.likes) : content.post.likes, filled: didLike)
-        repostButton.set(didRepost ? max(1, content.post.reposts) : content.post.reposts, filled: didRepost)
+        let postInfo = content.postInfo
         
-        let muteTitle = isMuted ? "Unmute User" : "Mute User"
+        replyButton.set(postInfo.isReplied ? max(1, content.post.replies) : content.post.replies, filled: postInfo.isReplied)
+        zapButton.set(content.post.satszapped + WalletManager.instance.extraZapAmount(content.post.id), filled: postInfo.isZapped)
+        likeButton.set(postInfo.isLiked ? max(1, content.post.likes) : content.post.likes, filled: postInfo.isLiked)
+        repostButton.set(postInfo.isReposted ? max(1, content.post.reposts) : content.post.reposts, filled: postInfo.isReposted)
+        
+        updateMenu(content)
+    }
+    
+    func updateMenu(_ content: ParsedContent) {
+        let postInfo = content.postInfo
+        let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
+        
         threeDotsButton.menu = .init(children: [
             UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
                 guard let self else { return }
@@ -187,6 +218,13 @@ class PostCell: UITableViewCell {
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyLink(self)
             }),
+            postInfo.isBookmarked ?
+                UIAction(title: "Remove From Bookmarks", image: UIImage(named: "MenuBookmarkFilled"), handler: { [unowned self] _ in
+                    self.delegate?.postCellDidTapUnbookmark(self)
+                }) :
+                UIAction(title: "Add To Bookmarks", image: UIImage(named: "MenuBookmark"), handler: { [unowned self] _ in
+                    self.delegate?.postCellDidTapBookmark(self)
+                }),
             UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
                 guard let self else { return }
                 self.delegate?.postCellDidTapCopyContent(self)

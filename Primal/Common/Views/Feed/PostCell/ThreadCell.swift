@@ -19,12 +19,12 @@ class ThreadCell: PostCell {
     lazy var contentSpacer = UIView()
     lazy var parentIndicator = UIView()
     
-    override func update(_ parsedContent: ParsedContent, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        update(parsedContent, position: .child, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    override func update(_ parsedContent: ParsedContent) {
+        update(parsedContent, position: .child)
     }
     
-    func update(_ parsedContent: ParsedContent, position: ThreadPosition, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        super.update(parsedContent, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    func update(_ parsedContent: ParsedContent, position: ThreadPosition) {
+        super.update(parsedContent)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
@@ -140,8 +140,8 @@ final class DefaultMainThreadCell: ThreadCell {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition, didLike: Bool, didRepost: Bool, didZap: Bool, isMuted: Bool) {
-        super.update(parsedContent, position: position, didLike: didLike, didRepost: didRepost, didZap: didZap, isMuted: isMuted)
+    override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition) {
+        super.update(parsedContent, position: position)
         
         selectionTextView.attributedText = parsedContent.attributedText
     }

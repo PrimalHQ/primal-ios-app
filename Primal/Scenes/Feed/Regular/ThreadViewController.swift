@@ -134,13 +134,7 @@ final class ThreadViewController: PostFeedViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
         if let cell = cell as? ThreadCell {
-            cell.update(data,
-                    position: position,
-                    didLike: LikeManager.instance.hasLiked(data.post.id),
-                    didRepost: PostManager.instance.hasReposted(data.post.id),
-                    didZap: WalletManager.instance.hasZapped(data.post.id),
-                    isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
-            )
+            cell.update(data, position: position)
             cell.delegate = self
         }
         return cell

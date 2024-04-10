@@ -115,12 +115,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         if let cell = cell as? FeedCell {
             let data = posts[indexPath.row]
-            cell.update(data,
-                        didLike: LikeManager.instance.hasLiked(data.post.id),
-                        didRepost: PostManager.instance.hasReposted(data.post.id),
-                        didZap: WalletManager.instance.hasZapped(data.post.id),
-                        isMuted: MuteManager.instance.isMuted(data.user.data.pubkey)
-            )
+            cell.update(data)
             cell.delegate = self
         }
         
@@ -439,6 +434,18 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: PostCellDelegate {
+    func postCellDidTapBookmark(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        BookmarkManager.instance.bookmark(posts[index].post.id)
+        cell.updateMenu(posts[index])
+    }
+    
+    func postCellDidTapUnbookmark(_ cell: PostCell) {
+        guard let index = table.indexPath(for: cell)?.row else { return }
+        BookmarkManager.instance.unbookmark(posts[index].post.id)
+        cell.updateMenu(posts[index])
+    }
+    
     func postCellDidLongTapZap(_ cell: PostCell) {
         zapFromCell(cell, showPopup: true)
     }
@@ -619,7 +626,7 @@ extension FeedViewController: PostCellDelegate {
     func postCellDidTapCopyNoteID(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
-        UIPasteboard.general.string = posts[indexPath.row].post.id
+        UIPasteboard.general.string = posts[indexPath.row].noteId()
         view.showToast("Copied!")
     }
     
