@@ -160,12 +160,9 @@ extension ParsedContent {
         }
     }
     
-    func webURL() -> String {
-        guard let note = bech32_note_id(post.id) else {
-            return "https://primal.net/e/\(post.id)"
-        }
-        return "https://primal.net/e/\(note)"
-    }
+    func noteId() -> String { bech32_note_id(post.id) ?? post.id }
+    
+    func webURL() -> String { "https://primal.net/e/\(noteId())" }
     
     var isEmpty: Bool {
         post.isEmpty || user.data.id.isEmpty

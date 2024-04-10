@@ -386,14 +386,16 @@ private extension ProfileViewController {
                     let parsedUsers = res.getSortedUsers()
                     
                     for user in parsedUsers {
-                        aboutText = aboutText.replacingOccurrences(of: "nostr:\(user.data.npub)", with: user.data.displayName)
-                        aboutText = aboutText.replacingOccurrences(of: "@\(user.data.npub)", with: user.data.displayName)
+                        let replacementString = "@\(user.data.firstIdentifier)"
+                        aboutText = aboutText.replacingOccurrences(of: "nostr:\(user.data.npub)", with: replacementString)
+                        aboutText = aboutText.replacingOccurrences(of: "@\(user.data.npub)", with: replacementString)
                     }
                     
                     let attributedString = NSMutableAttributedString(string: aboutText, attributes: aboutTextAttributes)
 
                     for profile in parsedUsers {
-                        let range = (aboutText as NSString).range(of: profile.data.displayName)
+                        let replacementString = "@\(profile.data.firstIdentifier)"
+                        let range = (aboutText as NSString).range(of: replacementString)
                         if range.location != NSNotFound {
                             attributedString.addAttributes([
                                 .link : URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
@@ -488,7 +490,8 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
-    func linkPressed(_ url: URL) {
+    func linkPressed(_ url: URL?) {
+        guard let url = url ?? URL(string: profile.data.website) else { return }
         handleURLTap(url, cachedUsers: cachedUsers)
     }
     
@@ -496,6 +499,10 @@ extension ProfileViewController: ProfileInfoCellDelegate {
         guard let new = Tab(rawValue: tab) else { return }
         
         self.tabToBe = new
+    }
+    
+    func qrPressed() {
+        show(ProfileQRController(user: profile), sender: nil)
     }
     
     func messagePressed() {

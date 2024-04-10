@@ -58,9 +58,10 @@ final class EditProfileViewController: UIViewController, Themeable {
     }
     
     let profile: PrimalUser
-    
+    var checkedLud16: String
     init(profile: PrimalUser) {
         self.profile = profile
+        checkedLud16 = profile.lud16
         super.init(nibName: nil, bundle: nil)
         
         avatarView.kf.setImage(with: URL(string: profile.picture), placeholder: UIImage(named: "Profile"))
@@ -143,7 +144,7 @@ private extension EditProfileViewController {
         atLabel.font = .appFont(withSize: 18, weight: .medium)
         atLabel.setContentHuggingPriority(.required, for: .horizontal)
         let formStack = UIStackView(axis: .vertical, [
-            FormHeaderView(title: "USERNAME", required: true),
+            FormHeaderView(title: "USERNAME", required: false),
             OnboardingInputParent(input: UIStackView([atLabel, usernameInput])).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "DISPLAY NAME", required: false),
             OnboardingInputParent(input: displayNameInput).constrainToSize(height: 48), SpacerView(height: 12),
@@ -232,6 +233,11 @@ private extension EditProfileViewController {
         bitcoinInput.keyboardType = .webSearch
         nip05Input.keyboardType = .webSearch
         
+        usernameInput.autocapitalizationType = .none
+        websiteInput.autocapitalizationType = .none
+        bitcoinInput.autocapitalizationType = .none
+        nip05Input.autocapitalizationType = .none
+        
         addBannerButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             ImagePickerManager(self) { [weak self] result in
@@ -263,10 +269,10 @@ private extension EditProfileViewController {
 //                return
 //            }
             
-            guard let username = self.usernameInput.text, !username.isEmpty else {
-                self.usernameInput.becomeFirstResponder()
-                return
-            }
+//            guard let username = self.usernameInput.text, !username.isEmpty else {
+//                self.usernameInput.becomeFirstResponder()
+//                return
+//            }
             
             self.updateAccount()
         }), for: .touchUpInside)
@@ -296,6 +302,28 @@ private extension EditProfileViewController {
         
         let profile = self.profile
         let data: Profile = accountData
+        
+        if checkedLud16 != accountData.lud16, let newLud = accountData.lud16 {
+            CheckLud16Request(lud16: newLud).publisher().receive(on: DispatchQueue.main)
+                .sink { [weak self] isGood in
+                    if isGood {
+                        self?.checkedLud16 = newLud
+                        self?.updateAccount()
+                    } else {
+                        let parts = newLud.split(separator: "@")
+                        if parts.count == 2 {
+                            self?.showErrorMessage("Invalid lightning address. User '\(parts[0])' doesn't exist on \(parts[1]).")
+                        } else {
+                            self?.showErrorMessage("Invalid lightning address.")
+                        }
+                        self?.bitcoinInput.becomeFirstResponder()
+                        self?.nextButton.isEnabled = true
+                        self?.nextButton.title = "Save Profile"
+                    }
+                }
+                .store(in: &cancellables)
+            return
+        }
         
         IdentityManager.instance.updateProfile(data) { [weak self] in
             guard $0 else {

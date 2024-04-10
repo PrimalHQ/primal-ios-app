@@ -11,12 +11,12 @@ import UIKit
 import GenericJSON
 
 protocol ProfileInfoCellDelegate: AnyObject {
-    func npubPressed()
     func followPressed(in cell: ProfileInfoCell)
+    func qrPressed()
     func zapPressed()
     func editProfilePressed()
     func messagePressed()
-    func linkPressed(_ url: URL)
+    func linkPressed(_ url: URL?)
     
     func didSelectTab(_ tab: Int)
 }
@@ -29,6 +29,7 @@ class ProfileCellNantesDelegate {
 }
 
 class ProfileInfoCell: UITableViewCell {
+    let qrButton = CircleIconButton(icon: UIImage(named: "profileQR"))
     let zapButton = CircleIconButton(icon: UIImage(named: "profileZap"))
     let messageButton = CircleIconButton(icon: UIImage(named: "profileMessage"))
     let followButton = BrightSmallButton(title: "follow")
@@ -40,10 +41,8 @@ class ProfileInfoCell: UITableViewCell {
     let followsYou = FollowsYouView()
     
     let secondaryLabel = UILabel()
-    
-    let npubView = NPubDisplayView()
     let descLabel = NantesLabel()
-    let linkView = ProfileLinkDisplayView()
+    let linkView = UILabel()
     
     let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "following", "followers"])
     
@@ -77,9 +76,8 @@ class ProfileInfoCell: UITableViewCell {
             secondaryLabel.isHidden = true
         }
         
-        npubView.npub = user.npub
         descLabel.attributedText = parsedDescription
-        linkView.link = user.website.trimmingCharacters(in: .whitespaces)
+        linkView.text = user.website.trimmingCharacters(in: .whitespaces)
         
         zip(infoStack.buttons, [
             (stats?.note_count ?? 0).shortenedLocalized(),
@@ -121,7 +119,7 @@ extension ProfileCellNantesDelegate: NantesLabelDelegate {
 
 private extension ProfileInfoCell {
     func setup() {
-        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 400, priority: .defaultLow), zapButton, messageButton, followButton, unfollowButton, editProfile])
+        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 400, priority: .defaultLow), qrButton, zapButton, messageButton, followButton, unfollowButton, editProfile])
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
@@ -139,13 +137,12 @@ private extension ProfileInfoCell {
         descLabel.font = .appFont(withSize: 14, weight: .regular)
         descLabel.numberOfLines = 0
         
-        let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, npubView, descLabel, linkView, infoStack])
+        let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, descLabel, linkView, infoStack])
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(14, after: actionStack)
         mainStack.setCustomSpacing(8, after: primaryStack)
         mainStack.setCustomSpacing(12, after: secondaryLabel)
-        mainStack.setCustomSpacing(16, after: npubView)
         mainStack.setCustomSpacing(8, after: descLabel)
         mainStack.setCustomSpacing(16, after: infoStack)
         
@@ -168,9 +165,20 @@ private extension ProfileInfoCell {
         ]
         descLabel.delegate = nantesDelegate
         
-        npubView.addTarget(self, action: #selector(npubPressed), for: .touchUpInside)
+        linkView.font = .appFont(withSize: 14, weight: .regular)
+        linkView.textColor = .accent
+        linkView.isUserInteractionEnabled = true
+        linkView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.linkPressed(nil)
+        }))
+        
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
         unfollowButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
+        
+        qrButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.qrPressed()
+        }), for: .touchUpInside)
+        
         editProfile.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.editProfilePressed()
         }), for: .touchUpInside)
@@ -187,10 +195,6 @@ private extension ProfileInfoCell {
         .store(in: &cancellables)
     }
     
-    @objc func npubPressed() {
-        delegate?.npubPressed()
-    }
-    
     @objc func followPressed() {
         delegate?.followPressed(in: self)
     }
@@ -204,7 +208,7 @@ final class FollowsYouView: UIView {
         
         addSubview(label)
         label.pinToSuperview(edges: .horizontal, padding: 8).centerToSuperview()
-        label.font = .appFont(withSize: 14, weight: .thin)
+        label.font = .appFont(withSize: 14, weight: .regular)
         label.text = "follows you"
         
         constrainToSize(height: 22)

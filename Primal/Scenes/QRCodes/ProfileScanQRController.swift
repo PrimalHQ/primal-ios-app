@@ -84,7 +84,7 @@ extension ProfileScanQRController: AVCaptureMetadataOutputObjectsDelegate {
 
 private extension ProfileScanQRController {
     func setup() {
-        addBackground(2)
+        addBackground(2.5)
         addNavigationBar("Scan QR Code")
         
         let descLabel = UILabel()
@@ -108,7 +108,7 @@ private extension ProfileScanQRController {
         mainStack.centerToSuperview().constrainToSize(width: 280)
         
         view.addSubview(action)
-        action.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .bottom, padding: 60, safeArea: true)
+        action.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .bottom, padding: 45, safeArea: true)
         
         qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
         qrCodeFrameView.layer.borderWidth = 2

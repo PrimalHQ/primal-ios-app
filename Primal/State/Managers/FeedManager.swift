@@ -62,6 +62,12 @@ final class FeedManager {
         refresh()
     }
     
+    init(feed: PrimalSettingsFeed) {
+        currentFeed = feed
+        initSubscriptions()
+        refresh()
+    }
+    
     init(search: String) {
         currentFeed = .init(name: "Search: \(search)", hex: "search;\(search)")
         initSubscriptions()

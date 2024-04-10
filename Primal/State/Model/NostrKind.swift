@@ -24,6 +24,7 @@ enum NostrKind: Int {
     case channelMuteUser = 44
     
     case muteList = 10_000
+    case bookmarks = 10_003
     
     case categoryList = 30_000
     
@@ -52,6 +53,7 @@ enum NostrKind: Int {
     case userFollowers = 10_000_133
     case userPubkey = 10_000_138
     case relays = 10_000_139
+    case relayHints = 10_000_141
 }
 
 extension NostrKind {
