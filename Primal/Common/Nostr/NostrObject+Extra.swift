@@ -261,7 +261,7 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     ///
     /// The tag to the root of the reply chain goes first.
     /// The tag to the reply event being responded to goes last.
-    if let root = post.tags.last(where: { tag in tag[3] == "root" }) {
+    if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
         allTags.append(root)
         allTags.append(["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "reply"])
     } else {
