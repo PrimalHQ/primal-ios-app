@@ -55,6 +55,8 @@ final class IdentityManager {
         }
     }
     
+    var parsedUserSafe: ParsedUser { parsedUser ?? .init(data: user ?? .init(pubkey: userHexPubkey)) }
+    
     @Published var user: PrimalUser?
     @Published var parsedUser: ParsedUser?
     @Published var userStats: NostrUserProfileInfo?

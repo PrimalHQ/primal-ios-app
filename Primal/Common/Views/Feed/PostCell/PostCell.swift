@@ -12,31 +12,46 @@ import LinkPresentation
 import FLAnimatedImage
 import Nantes
 
-protocol PostCellDelegate: AnyObject {
-    func postCellDidTapURL(_ cell: PostCell, url: URL?)
-    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource)
-    func postCellDidTapEmbeddedImages(_ cell: PostCell, resource: MediaMetadata.Resource)
-    func postCellDidTapProfile(_ cell: PostCell)
-    func postCellDidTapPost(_ cell: PostCell)
-    func postCellDidTapLike(_ cell: PostCell)
-    func postCellDidTapZap(_ cell: PostCell)
-    func postCellDidLongTapZap(_ cell: PostCell)
-    func postCellDidTapRepost(_ cell: PostCell)
-    func postCellDidTapReply(_ cell: PostCell)
-    func postCellDidTapEmbededPost(_ cell: PostCell)
-    func postCellDidTapRepostedProfile(_ cell: PostCell)
+enum PostCellEvent {
+    case url(URL?)
+    case images(MediaMetadata.Resource)
+    case embeddedImages(MediaMetadata.Resource)
+    case profile
+    case post
+    case like
+    case zap
+    case longTapZap
+    case repost
+    case reply
+    case embeddedPost
+    case repostedProfile
     
-    func postCellDidTapShare(_ cell: PostCell)
-    func postCellDidTapCopyLink(_ cell: PostCell)
-    func postCellDidTapCopyContent(_ cell: PostCell)
-    func postCellDidTapCopyRawData(_ cell: PostCell)
-    func postCellDidTapCopyNoteID(_ cell: PostCell)
-    func postCellDidTapCopyUserPubkey(_ cell: PostCell)
-    func postCellDidTapBroadcast(_ cell: PostCell)
-    func postCellDidTapReport(_ cell: PostCell)
-    func postCellDidTapMute(_ cell: PostCell)
-    func postCellDidTapBookmark(_ cell: PostCell)
-    func postCellDidTapUnbookmark(_ cell: PostCell)
+    case payInvoice
+    
+    case zapDetails
+    case likeDetails
+    case repostDetails
+    
+    case share
+    case copy(NoteCopiableProperty)
+    case broadcast
+    case report
+    case mute
+    case bookmark
+    case unbookmark
+}
+
+enum NoteCopiableProperty {
+    case link
+    case content
+    case rawData
+    case noteID
+    case userPubkey
+    case invoice
+}
+
+protocol PostCellDelegate: AnyObject {
+    func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent)
 }
 
 class PostCellNantesDelegate {
@@ -78,6 +93,7 @@ class PostCell: UITableViewCell {
     let nipLabel = UILabel()
     let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
+    let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
@@ -155,6 +171,13 @@ class PostCell: UITableViewCell {
             repostIndicator.isHidden = true
         }
         
+        if let invoice = content.invoice {
+            invoiceView.updateForInvoice(invoice)
+            invoiceView.isHidden = false
+        } else {
+            invoiceView.isHidden = true
+        }
+        
         imageAspectConstraint?.isActive = false
         imageAspectConstraint = nil
     
@@ -210,48 +233,45 @@ class PostCell: UITableViewCell {
         let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
         
         threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapShare(self)
+            UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [unowned self] _ in
+                delegate?.postCellDidTap(self, .share)
             }),
-            UIAction(title: "Copy Note Link", image: UIImage(named: "MenuCopyLink"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapCopyLink(self)
+            UIAction(title: "Copy Note Link", image: UIImage(named: "MenuCopyLink"), handler: { [unowned self] _ in
+                delegate?.postCellDidTap(self, .copy(.link))
             }),
             postInfo.isBookmarked ?
                 UIAction(title: "Remove From Bookmarks", image: UIImage(named: "MenuBookmarkFilled"), handler: { [unowned self] _ in
-                    self.delegate?.postCellDidTapUnbookmark(self)
+                    delegate?.postCellDidTap(self, .unbookmark)
                 }) :
                 UIAction(title: "Add To Bookmarks", image: UIImage(named: "MenuBookmark"), handler: { [unowned self] _ in
-                    self.delegate?.postCellDidTapBookmark(self)
+                    delegate?.postCellDidTap(self, .unbookmark)
                 }),
-            UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.postCellDidTapCopyContent(self)
+            UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [unowned self] _ in
+                delegate?.postCellDidTap(self, .copy(.content))
             }),
             UIAction(title: "Copy Raw Data", image: UIImage(named: "MenuCopyData"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapCopyRawData(self)
+                delegate?.postCellDidTap(self, .copy(.rawData))
             }),
             UIAction(title: "Copy Note ID", image: UIImage(named: "MenuCopyNoteID"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapCopyNoteID(self)
+                delegate?.postCellDidTap(self, .copy(.noteID))
             }),
             UIAction(title: "Copy User Public Key", image: UIImage(named: "MenuCopyUserPubkey"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapCopyUserPubkey(self)
+                delegate?.postCellDidTap(self, .copy(.userPubkey))
             }),
             UIAction(title: "Broadcast", image: UIImage(named: "MenuBroadcast"), handler: { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapBroadcast(self)
+                delegate?.postCellDidTap(self, .broadcast)
             }),
             UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapMute(self)
+                delegate?.postCellDidTap(self, .mute)
             },
             UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.postCellDidTapReport(self)
+                delegate?.postCellDidTap(self, .report)
             }
         ])
     }
@@ -260,10 +280,10 @@ class PostCell: UITableViewCell {
 extension PostCell: ImageCollectionViewDelegate {
     func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource) {
         if collection == mainImages {
-            delegate?.postCellDidTapImages(self, resource: resource)
+            delegate?.postCellDidTap(self, .images(resource))
         }
         if collection == postPreview.mainImages {
-            delegate?.postCellDidTapEmbeddedImages(self, resource: resource)
+            delegate?.postCellDidTap(self, .embeddedImages(resource))
         }
     }
 }
@@ -271,7 +291,7 @@ extension PostCell: ImageCollectionViewDelegate {
 extension PostCellNantesDelegate: NantesLabelDelegate {
     func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
         guard let cell else { return }
-        cell.delegate?.postCellDidTapURL(cell, url: link)
+        cell.delegate?.postCellDidTap(cell, .url(link))
     }
 }
 
@@ -317,7 +337,7 @@ private extension PostCell {
         mainLabel.delegate = nantesDelegate
         mainLabel.labelTappedBlock = { [weak self] in
             guard let self else { return }
-            self.delegate?.postCellDidTapPost(self)
+            self.delegate?.postCellDidTap(self, .post)
         }
         
         mainImages.imageDelegate = self
@@ -353,6 +373,14 @@ private extension PostCell {
         postPreview.mainImages.addGestureRecognizer(previewImageTap)
         postPreview.mainImages.imageDelegate = self
         
+        invoiceView.copyButton.addAction(.init(handler: { [unowned self] _ in
+            delegate?.postCellDidTap(self, .copy(.invoice))
+        }), for: .touchUpInside)
+        
+        invoiceView.payButton.addAction(.init(handler: { [unowned self] _ in
+            delegate?.postCellDidTap(self, .payInvoice)
+        }), for: .touchUpInside)
+        
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
             repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
@@ -369,48 +397,48 @@ private extension PostCell {
     }
     
     @objc func zapTapped() {
-        delegate?.postCellDidTapZap(self)
+        delegate?.postCellDidTap(self, .zap)
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
         guard case .began = recognizer.state else { return }
-        delegate?.postCellDidLongTapZap(self)
+        delegate?.postCellDidTap(self, .longTapZap)
     }
     
     @objc func linkPreviewTapped() {
-        delegate?.postCellDidTapURL(self, url: nil)
+        delegate?.postCellDidTap(self, .url(nil))
     }
     
     @objc func embedTapped() {
-        delegate?.postCellDidTapEmbededPost(self)
+        delegate?.postCellDidTap(self, .embeddedPost)
     }
     
     @objc func embedImageTapped() {
         guard let index = postPreview.mainImages.collection.indexPathsForVisibleItems.first?.row else { return }
-        delegate?.postCellDidTapEmbeddedImages(self, resource: postPreview.mainImages.resources[index])
+        delegate?.postCellDidTap(self, .embeddedImages(postPreview.mainImages.resources[index]))
     }
     
     @objc func profileTapped() {
-        delegate?.postCellDidTapProfile(self)
+        delegate?.postCellDidTap(self, .profile)
     }
     
     @objc func repostProfileTapped() {
-        delegate?.postCellDidTapRepostedProfile(self)
+        delegate?.postCellDidTap(self, .repostedProfile)
     }
     
     @objc func repostTapped() {
-        delegate?.postCellDidTapRepost(self)
+        delegate?.postCellDidTap(self, .repost)
     }
     
     @objc func replyTapped() {
-        delegate?.postCellDidTapReply(self)
+        delegate?.postCellDidTap(self, .reply)
     }
     
     @objc func likeTapped() {
         likeButton.animView.play()
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
-        delegate?.postCellDidTapLike(self)
+        delegate?.postCellDidTap(self, .like)
     }
 }
 

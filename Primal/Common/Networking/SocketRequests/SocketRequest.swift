@@ -63,6 +63,19 @@ extension PostRequestResult {
             if !allRelays.isEmpty {
                 relayData = allRelays
             }
+        case .zapReceipt:
+            guard 
+                let id = payload["id"]?.stringValue,
+                let tags = payload["tags"]?.arrayValue,
+                let descriptionTagArray = tags.compactMap({ $0.arrayValue }).first(where: { $0.first == "description" }),
+                let zapContent: JSON = descriptionTagArray[safe: 1]?.stringValue?.decode()
+            else {
+                print("Error decoding relays from json")
+                return
+            }
+            
+            zapReceipts[id] = zapContent
+            return
         default: break
         }
         
@@ -246,6 +259,12 @@ extension PostRequestResult {
             let hints: [String: String] = contentString.decode() ?? [:]
             
             RelayHintManager.instance.addHints(hints)
+        case .postZaps:
+            guard let zap: PrimalZapEvent = contentString.decode() else {
+                print("Error decoding postZaps")
+                return
+            }
+            postZaps.append(zap)
         default:
             print("Unhandled response \(payload)")
         }

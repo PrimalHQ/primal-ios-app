@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import FLAnimatedImage
 
-final class ChatViewController: UIViewController, Themeable {
+final class ChatViewController: UIViewController, Themeable, WalletSearchController {
     enum Cell {
         case message(ProcessedMessage)
         case timeLabel(Date)
@@ -17,8 +17,13 @@ final class ChatViewController: UIViewController, Themeable {
         
         var cellID: String {
             switch self {
-            case .message:
-                return "cell"
+            case .message(let processed):
+                switch processed.message {
+                case .text:
+                    return "cell"
+                case .invoice:
+                    return "invoice-cell"
+                }
             case .timeLabel:
                 return "time"
             case .loading:
@@ -45,6 +50,7 @@ final class ChatViewController: UIViewController, Themeable {
     private var inputContentMaxHeightConstraint: NSLayoutConstraint?
     
     var cancellables: Set<AnyCancellable> = []
+    var textSearch: String?
     
     lazy var inputManager = ChatTextViewManager(textView: textInputView)
     
@@ -91,6 +97,7 @@ final class ChatViewController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
     
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
         mainTabBarController?.showTabBarBorder = false
     }
     
@@ -147,6 +154,7 @@ private extension ChatViewController {
         table.register(ChatMessageCell.self, forCellReuseIdentifier: "cell")
         table.register(ChatTimeCell.self, forCellReuseIdentifier: "time")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
+        table.register(ChatInvoiceCell.self, forCellReuseIdentifier: "invoice-cell")
         
         inputBackground.layer.cornerRadius = 20
         
@@ -297,7 +305,8 @@ private extension ChatViewController {
             return
         }
         
-        let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let originalText = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
+        var text = originalText
         
         guard !text.isEmpty else {
             showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
@@ -308,16 +317,44 @@ private extension ChatViewController {
         postButton.isEnabled = false
         postButton.alpha = 0.5
         
-        let date = Date()
-        messages.append(.init(id: "", user: .init(data: .init(pubkey: IdentityManager.instance.userHexPubkey)), date: date, message: text, status: .sending))
+        let invoices = text.extractInvoices()
+        var newMessages: [ProcessedMessage] = invoices.map {
+            .init(
+                id: UUID().uuidString,
+                user: .init(data: .init(pubkey: IdentityManager.instance.userHexPubkey)),
+                date: Date(),
+                message: .invoice($0),
+                status: .sending
+            )
+        }
         
-        PostManager.instance.sendMessageEvent(message: text, userPubkey: user.data.pubkey) { [weak self] success in
-            guard let self, let index = messages.firstIndex(where: { $0.date == date }) else { return }
+        for invoice in invoices {
+            text = text.replacingOccurrences(of: invoice.string, with: "")
+        }
+        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if !text.isEmpty {
+            newMessages.insert(
+                .init(
+                    id: UUID().uuidString,
+                    user: .init(data: .init(pubkey: IdentityManager.instance.userHexPubkey)),
+                    date: Date(),
+                    message: .text(text),
+                    status: .sending
+                ),
+                at: 0
+            )
+        }
+        
+        let ids = newMessages.map { $0.id }
+        
+        messages.append(contentsOf: newMessages)
+        
+        PostManager.instance.sendMessageEvent(message: originalText, userPubkey: user.data.pubkey) { [weak self] success in
+            guard let self else { return }
             
-            if success {
-                self.messages[index].status = .sent
-            } else {
-                self.messages[index].status = .failed
+            for index in messages.indices where ids.contains(where: { $0 == self.messages[index].id }) {
+                messages[index].status = success ? .sent : .failed
             }
         }
     }
@@ -491,6 +528,28 @@ extension ChatViewController: UITableViewDataSource {
 }
 
 extension ChatViewController: ChatMessageCellDelegate {
+    func copyInvoiceForMessageCell(_ cell: ChatMessageCell) {
+        guard
+            let index = table.indexPath(for: cell)?.row,
+            case let .message(message) = cells[index],
+            case .invoice(let invoice) = message.message
+        else { return }
+        
+        UIPasteboard.general.string = invoice.string
+        view.showToast("Copied!")
+    }
+    
+    func payInvoiceForMessageCell(_ cell: ChatMessageCell) {
+        guard
+            let index = table.indexPath(for: cell)?.row,
+            case let .message(message) = cells[index],
+            case .invoice(let invoice) = message.message
+        else { return }
+        
+        search(invoice.string)
+        textSearch = nil
+    }
+    
     func contextMenuForMessageCell(_ cell: ChatMessageCell) -> UIMenu? {
         guard
             let index = table.indexPath(for: cell)?.row,
@@ -498,20 +557,20 @@ extension ChatViewController: ChatMessageCellDelegate {
         else { return nil }
         
         var items: [UIAction] = [
-            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(systemName: "square.and.arrow.up")) { action in
-                UIPasteboard.general.string = message.message
+            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
+                UIPasteboard.general.string = message.message.text
             }
         ]
         
         if !message.id.isEmpty {
-            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(systemName: "square.and.arrow.up")) { action in
+            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
                 UIPasteboard.general.string = message.id
             })
         }
         
         if message.user.data.pubkey != IdentityManager.instance.userHexPubkey {
             items.append(contentsOf: [
-                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(systemName: "square.and.arrow.up")) { action in
+                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
                     UIPasteboard.general.string = message.user.data.pubkey
                 },
                 UIAction(title: "Mute user", image: UIImage(named: "blockIcon"), handler: { [weak self] _ in

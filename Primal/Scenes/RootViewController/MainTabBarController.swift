@@ -35,7 +35,7 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
 
-    let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let vcParentView = UIView()
 
     lazy var buttons = tabs.map { _ in UIButton() }
 
@@ -167,18 +167,43 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
         let nav: UINavigationController = navForTab(tab)
+        let currentTab = navForTab(currentTab)
         
-        if false == pageVC.viewControllers?.contains(where: { $0 == nav }) {
-            let index = tabs.firstIndex(of: tab) ?? 6
-            pageVC.setViewControllers([nav],
-                                      direction: currentPageIndex < index ? .forward : .reverse,
-                                      animated: true
-            )
-            currentPageIndex = index
+        defer {
+            if let vc {
+                nav.pushViewController(vc, animated: true)
+            }
         }
         
-        if let vc {
-            nav.pushViewController(vc, animated: true)
+        if nav == currentTab { return }
+        
+        nav.willMove(toParent: self)
+        addChild(nav) // Add child VC
+        vcParentView.addSubview(nav.view)
+        nav.view.pinToSuperview()
+        nav.didMove(toParent: self)
+        
+        currentPageIndex = tabs.firstIndex(of: tab) ?? 6
+        
+        nav.view.alpha = 0
+        
+        currentTab.view.transform = .init(translationX: 0, y: 50) // No idea why we need to set it to 50 offset, such is life
+        
+        UIView.animate(withDuration: 5 / 30, delay: 0, options: [.curveEaseIn]) {
+            currentTab.view.alpha = 0
+            currentTab.view.transform = .init(translationX: 0, y: 90)
+        } completion: { _ in
+            currentTab.willMove(toParent: nil)
+            currentTab.removeFromParent()
+            currentTab.view.removeFromSuperview()
+            currentTab.didMove(toParent: nil)
+            
+            currentTab.view.alpha = 1
+            currentTab.view.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 5 / 30, delay: 3 / 30, options: [.curveEaseOut]) {
+            nav.view.alpha = 1
         }
     }
     
@@ -192,11 +217,16 @@ private extension MainTabBarController {
     func setup() {
         updateTheme()
         
-        pageVC.willMove(toParent: self)
-        addChild(pageVC) // Add child VC
-        view.addSubview(pageVC.view)
-        pageVC.view.pinToSuperview()
+        view.addSubview(vcParentView)
+        vcParentView.pinToSuperview()
         
+        let nav = navForTab(currentTab)
+        nav.willMove(toParent: self)
+        addChild(nav) // Add child VC
+        vcParentView.addSubview(nav.view)
+        nav.view.pinToSuperview()
+        nav.didMove(toParent: self)
+
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
@@ -215,9 +245,6 @@ private extension MainTabBarController {
         }
         notificationIndicator.isHidden = true
         messagesIndicator.isHidden = true
-
-        pageVC.didMove(toParent: self) // Notify child VC
-        pageVC.setViewControllers([WalletSettings.startInWallet ? wallet : home], direction: .forward, animated: false)
 
         vStack.axis = .vertical
 
@@ -309,12 +336,12 @@ private extension MainTabBarController {
     }
 
     func menuButtonPressedForTab(_ tab: MainTab) {
-        let nav = navForTab(tab)
-        guard pageVC.viewControllers?.contains(nav) == true else {
+        guard currentTab == tab else {
             switchToTab(tab)
             return
         }
-
+        
+        let nav = navForTab(tab)
         if nav.viewControllers.count > 1 {
             nav.popToRootViewController(animated: true)
             return

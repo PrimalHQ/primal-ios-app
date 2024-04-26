@@ -104,8 +104,8 @@ private extension SearchViewController {
             return
         }
         
-        if userSearchText.hasPrefix("note1") && userSearchText.count == 63 {
-            notify(.primalNoteLink, userSearchText)
+        if userSearchText.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
+            notify(.primalNoteLink, text)
             navigationController?.popViewController(animated: true)
             return
         }

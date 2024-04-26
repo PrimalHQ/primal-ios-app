@@ -72,7 +72,42 @@ extension Date {
         }
         
         if seconds < 0 {
-            return "from the future"
+            return "in the future"
+        }
+        
+        return "now"
+    }
+    
+    func timeInFutureDisplayLong() -> String {
+        let seconds = -Date().timeIntervalSince(self)
+        
+        let years = Int(seconds / 31622400)
+        if years > 0 {
+            return "in \(years) year\(years == 1 ? "" : "s")"
+        }
+        
+        let months = Int(seconds / 2678400)
+        if months > 0 {
+            return "in \(months) month\(months == 1 ? "" : "s")"
+        }
+        
+        let days = Int(seconds / 86400)
+        if days > 0 {
+            return "in \(days) day\(days == 1 ? "" : "s")"
+        }
+        
+        let hours = Int(seconds / 3600)
+        if hours > 0 {
+            return "in \(hours) hour\(hours == 1 ? "" : "s")"
+        }
+        
+        let minutes = Int(seconds / 60)
+        if minutes > 0 {
+            return "in \(minutes) minute\(minutes == 1 ? "" : "s")"
+        }
+        
+        if seconds < 0 {
+            return "in the past"
         }
         
         return "now"

@@ -169,17 +169,20 @@ extension String : Identifiable {
         return (address, amount, label, lightning)
     }
     
-    func npubToPubkey() -> String? {
+    func encodedToHex() -> String? {
         guard let decoded = try? bech32_decode(self) else { return nil }
         return hex_encode(decoded.data)
     }
+    
+    func npubToPubkey() -> String? { encodedToHex() }
+    func noteIdToHex() -> String? { encodedToHex() }
     
     func lud16toLNUrl() -> String? {
         let parts = split(separator: "@")
         if (parts.count != 2) { return nil }
 
-        var host = parts[1]
-        var lnurlp = parts[0]
+        let host = parts[1]
+        let lnurlp = parts[0]
 
         return "https://\(host)/.well-known/lnurlp/\(lnurlp)"
     }

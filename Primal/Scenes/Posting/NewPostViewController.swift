@@ -189,7 +189,15 @@ private extension NewPostViewController {
         
         Publishers.CombineLatest3(manager.$users, manager.$media, manager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] users, images, isEmpty in
             guard let self else { return }
-            self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !self.manager.isUploadingImages && self.postButton.title(for: .normal) == self.postButtonText
+            let isUploadingImages: Bool = {
+                for image in images {
+                    if case .uploading = image.state {
+                        return true
+                    }
+                }
+                return false
+            }()
+            self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !isUploadingImages && self.postButton.title(for: .normal) == self.postButtonText
         }
         .store(in: &cancellables)
                 

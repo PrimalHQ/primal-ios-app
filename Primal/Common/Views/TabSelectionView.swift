@@ -36,6 +36,10 @@ final class TabSelectionView: UIView, Themeable {
     func updateTheme() {
         updateButtons(selectedTab)
     }
+    
+    func set(tab: Int) {
+        selectedTab = max(0, min(tab, buttons.count - 1))
+    }
 }
 
 private extension TabSelectionView {

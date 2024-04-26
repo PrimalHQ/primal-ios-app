@@ -27,18 +27,20 @@ class PostFeedViewController: FeedViewController {
         return super.tableView(tableView, cellForRowAt: indexPath)
     }
     
-    override func postCellDidTapMute(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        let pubkey = posts[indexPath.row].user.data.pubkey
-        let mm = MuteManager.instance
+    override func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
+        guard case .mute = event, let indexPath = table.indexPath(for: cell) else {
+            super.postCellDidTap(cell, event)
+            return
+        }
         
-        guard !mm.isMuted(pubkey) else {
-            super.postCellDidTapMute(cell)
+        let pubkey = posts[indexPath.row].user.data.pubkey
+        guard !MuteManager.instance.isMuted(pubkey) else {
+            super.postCellDidTap(cell, .mute)
             return
         }
         
         feed.parsedPosts = feed.parsedPosts.filter { $0.user.data.pubkey != pubkey }
-        super.postCellDidTapMute(cell)
+        super.postCellDidTap(cell, .mute)
     }
     
     override func updateTheme() {

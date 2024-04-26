@@ -17,6 +17,7 @@ final class PostPreviewView: UIView {
     let verifiedBadge = VerifiedView()
     let mainLabel = NantesLabel()
     let seeMoreLabel = UILabel()
+    let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let linkPreview = LinkPreview()
 
@@ -81,6 +82,13 @@ final class PostPreviewView: UIView {
             linkPreview.isHidden = false
         } else {
             linkPreview.isHidden = true
+        }
+        
+        if let invoice = content.invoice {
+            invoiceView.updateForInvoice(invoice)
+            invoiceView.isHidden = false
+        } else {
+            invoiceView.isHidden = true
         }
         
         mainLabel.attributedText = content.attributedText
@@ -148,7 +156,7 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), mainImages, linkPreview
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)

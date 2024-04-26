@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 final class PublicBookmarksViewController: PostFeedViewController {
-    let emptyView = EmptyBookmarksView()
+    let emptyView = EmptyTableView(title: "Your bookmarks will appear here")
     
     init() {
         let feed = FeedManager(feed: .init(name: "", hex: "bookmarks;\(IdentityManager.instance.userHexPubkey)"))
@@ -66,11 +66,11 @@ final class PublicBookmarksViewController: PostFeedViewController {
     }
 }
 
-final class EmptyBookmarksView: UIView, Themeable {
+class EmptyTableView: UIView, Themeable {
     let label = UILabel()
     let refresh = UIButton()
     
-    init() {
+    init(title: String) {
         super.init(frame: .zero)
         
         let stack = UIStackView(axis: .vertical, [label, refresh])
@@ -81,7 +81,7 @@ final class EmptyBookmarksView: UIView, Themeable {
         stack.spacing = 18
     
         label.font = .appFont(withSize: 15, weight: .regular)
-        label.text = "Your bookmarks will appear here"
+        label.text = title
         
         refresh.titleLabel?.font = .appFont(withSize: 15, weight: .bold)
         refresh.setTitle("REFRESH", for: .normal)

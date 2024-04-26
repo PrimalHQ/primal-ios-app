@@ -13,11 +13,25 @@ enum MessageStatus: String {
     case failed
 }
 
+enum MessageContent {
+    case text(String)
+    case invoice(Invoice)
+    
+    var text: String {
+        switch self {
+        case .text(let string):
+            return string
+        case .invoice(let invoice):
+            return invoice.string
+        }
+    }
+}
+
 struct ProcessedMessage {
     var id: String
     var user: ParsedUser
     var date: Date
-    var message: String
+    var message: MessageContent
     var status: MessageStatus
 }
 
@@ -53,7 +67,7 @@ extension PostRequestResult {
                     id: latest.id,
                     user: latest.pubkey == pubkey ? parsed : createParsedUser(messageUser),
                     date: latest.date,
-                    message: decryptDirectMessage(latest.message, privkey: privkey, pubkey: latest.pubkey == pubkey ? pubkey : latest.recipientPubkey) ?? "",
+                    message: .text(decryptDirectMessage(latest.message, privkey: privkey, pubkey: latest.pubkey == pubkey ? pubkey : latest.recipientPubkey) ?? ""),
                     status: .sent
                 )
             )
@@ -67,17 +81,88 @@ extension PostRequestResult {
             let privkey = loginInfo.privkey
         else { return [] }
         
-        return encryptedMessages.compactMap {
-            guard let user = users[$0.pubkey] else { return nil }
+        return encryptedMessages.flatMap { encMessage -> [ProcessedMessage] in
+            guard let user = users[encMessage.pubkey] else { return [] }
             
-            return .init(
-                id: $0.id,
-                user: createParsedUser(user),
-                date: $0.date,
-                message: decryptDirectMessage($0.message, privkey: privkey, pubkey: $0.pubkey == loginInfo.pubkey ? $0.recipientPubkey : $0.pubkey) ?? "",
-                status: .sent
-            )
+            var message = decryptDirectMessage(encMessage.message, privkey: privkey, pubkey: encMessage.pubkey == loginInfo.pubkey ? encMessage.recipientPubkey : encMessage.pubkey) ?? ""
+            
+            let invoices = message.extractInvoices()
+            
+            for invoice in invoices {
+                message = message.replacingOccurrences(of: invoice.string, with: "")
+            }
+            
+            message = message.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            var result: [ProcessedMessage] = invoices.map { 
+                .init(
+                    id: encMessage.id,
+                    user: createParsedUser(user),
+                    date: encMessage.date,
+                    message: .invoice($0),
+                    status: .sent
+                )
+            }
+            
+            if !message.isEmpty {
+                result.insert(
+                    .init(
+                        id: encMessage.id,
+                        user: createParsedUser(user),
+                        date: encMessage.date,
+                        message: .text(message),
+                        status: .sent
+                    ), 
+                    at: 0
+                )
+            }
+            
+            return result
         }
         .sorted { $0.date < $1.date }
+    }
+}
+
+extension String {
+    func extractInvoices() -> [Invoice] {
+        return parse_mentions().compactMap { block in
+            switch block {
+            case .invoice(let invoice):
+                return invoice
+            default:
+                return nil
+            }
+        }
+    }
+}
+
+private extension String {
+    func parse_mentions() -> [Block] {
+        var out: [Block] = []
+        
+        var bs = blocks()
+        bs.num_blocks = 0;
+        
+        blocks_init(&bs)
+        
+        let bytes = self.utf8CString
+        let _ = bytes.withUnsafeBufferPointer { p in
+            damus_parse_content(&bs, p.baseAddress)
+        }
+        
+        var i = 0
+        while (i < bs.num_blocks) {
+            let block = bs.blocks[i]
+            
+            if let converted = convert_block(block, tags: []) {
+                out.append(converted)
+            }
+            
+            i += 1
+        }
+        
+        blocks_free(&bs)
+        
+        return out
     }
 }

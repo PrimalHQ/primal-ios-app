@@ -347,7 +347,7 @@ private extension WalletSendViewController {
                         try await WalletManager.instance.sendOnchain(destination.address, tier: selectedTier?.id ?? "tier_fast", sats: amount, note: note)
                     } else if address.isEmail {
                         try await WalletManager.instance.sendLud16(address, sats: amount, note: note)
-                    } else if address.hasPrefix("lnurl") {
+                    } else if address.lowercased().hasPrefix("lnurl") {
                         try await WalletManager.instance.sendLNURL(
                             lnurl: address,
                             pubkey: user?.data.pubkey,

@@ -86,6 +86,8 @@ final class WalletManager {
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
     
+    let zapEvent = PassthroughSubject<ParsedZap, Never>()
+    
     private var update: ContinousConnection?
     
     var userData: [String: ParsedUser] = [:]
@@ -277,6 +279,7 @@ final class WalletManager {
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
         do {
+            zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
             addZap(post.post.id, amount: sats)
             try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
         } catch {
@@ -370,28 +373,6 @@ private extension WalletManager {
                 }
             }
             .store(in: &cancellables)
-        
-        $parsedTransactions.withPrevious()
-            .compactMap { oldTransactions, newTransactions -> ParsedTransaction? in
-                guard
-                    let newTransaction = newTransactions.first,
-                    let oldTransaction = oldTransactions.first,
-                    // Only notify if there is a new transaction
-                    newTransaction.0.id != oldTransaction.0.id,
-                    // Only if it's a deposit
-                    newTransaction.0.isDeposit,
-                    let amountBTC = Double(newTransaction.0.amount_btc),
-                    // Only if the amount is larger than minimumNotificationValue
-                    amountBTC * .BTC_TO_SAT >= Double(UserDefaults.standard.minimumNotificationValue)
-                else { return nil }
-                
-                return newTransaction
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] transaction in
-                self?.notifyTransactionIfNecessary(transaction)
-            }
-            .store(in: &cancellables)
 
         Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
             .sink { [weak self] _ in
@@ -422,14 +403,5 @@ private extension WalletManager {
                 }
             }
             .store(in: &cancellables)
-    }
-    
-    func notifyTransactionIfNecessary(_ transaction: ParsedTransaction) {
-        guard
-            let mainTab: MainTabBarController = RootViewController.instance.findInChildren(),
-            mainTab.currentTab != .wallet || mainTab.wallet.viewControllers.count > 1
-        else { return }
-        
-        RootViewController.instance.showNewTransaction(transaction)
     }
 }

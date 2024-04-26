@@ -9,6 +9,7 @@ import AVKit
 import Combine
 import UIKit
 import Kingfisher
+import Photos
 
 final class VideoCell: UICollectionViewCell {
     let thumbnailImage = UIImageView()
@@ -87,10 +88,65 @@ final class VideoCell: UICollectionViewCell {
         }), for: .touchUpInside)
         
         contentView.backgroundColor = .background3
+        
+        let interaction = UIContextMenuInteraction(delegate: self)
+        contentView.addInteraction(interaction)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension VideoCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(
+            identifier: nil,
+            previewProvider: nil,
+            actionProvider: { suggestedActions in
+                UIMenu(title: "", children: [
+                    UIAction(title: "Save Video", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
+                        guard let self, let videoPath = player?.url else { return }
+                        saveVideo(videoPath)
+                    }),
+                    UIAction(title: "Share Video", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
+                        guard let self, let videoPath = player?.url else { return }
+                        let activityViewController = UIActivityViewController(activityItems: [videoPath], applicationActivities: nil)
+                        RootViewController.instance.present(activityViewController, animated: true, completion: nil)
+                    }),
+                    UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
+                        guard let self, let url = player?.url else { return }
+                        UIPasteboard.general.string = url
+                        RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
+                    }
+                ] + suggestedActions)
+            })
+    }
+    
+    func saveVideo(_ urlString: String) {
+        guard 
+            let url = URL(string: urlString),
+            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+        else { return }
+        
+        RootViewController.instance.view?.showToast("Downloading!", extraPadding: 0)
+        
+        DispatchQueue.global(qos: .background).async {
+            let urlData = NSData(contentsOf: url)
+            let filePath="\(documentsPath)/tempFile.mp4"
+            DispatchQueue.main.async {
+                urlData?.write(toFile: filePath, atomically: true)
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
+                }) { completed, error in
+                    if completed {
+                        DispatchQueue.main.async {
+                            RootViewController.instance.view?.showToast("Saved!", extraPadding: 0)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

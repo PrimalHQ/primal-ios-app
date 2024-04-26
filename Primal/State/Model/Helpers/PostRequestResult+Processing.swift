@@ -189,13 +189,19 @@ extension PostRequestResult {
             }
         }
         
+        
+        
         for media in mediaMetadata where media.event_id == post.id {
             p.mediaResources = media.resources.filter { text.contains($0.url) }
             p.videoThumbnails = media.thumbnails ?? p.videoThumbnails
         }
         
         if p.mediaResources.isEmpty {
-            p.mediaResources = imageURLs.map { .init(url: $0, variants: []) }
+            p.mediaResources = imageURLs
+                .sorted(by: {
+                    text.range(of: $0)?.lowerBound ?? text.startIndex < text.range(of: $1)?.lowerBound ?? text.startIndex
+                })
+                .map { .init(url: $0, variants: []) }
         }
         
         for string in videoURLS.reversed() {
@@ -206,6 +212,15 @@ extension PostRequestResult {
         
         // Don't show link preview if post contains media gallery
         if !p.mediaResources.isEmpty { p.linkPreview = nil }
+        
+        let blocks = text.parse_mentions()
+        for block in blocks {
+            if case .invoice(let invoice) = block {
+                p.invoice = invoice
+                itemsToRemove.append(invoice.string)
+                break
+            }
+        }
         
         // MARK: - Editing text
         
@@ -266,6 +281,7 @@ extension PostRequestResult {
         
         let nsText = text as NSString
         
+        p.zaps = postZaps.filter { $0.event_id == post.id }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
@@ -322,6 +338,11 @@ private extension String {
         guard case .mention(let mention) = parse_mentions().first else { return nil }
             
         return mention.ref.id
+    }
+    
+    func invoiceFromString() -> Invoice? {
+        guard case .invoice(let invoice) = parse_mentions().first else { return nil }
+        return invoice
     }
     
     func parse_mentions() -> [Block] {
