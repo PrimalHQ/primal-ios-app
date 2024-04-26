@@ -18,6 +18,8 @@ class FeedButton: MyButton {
     var filledColor: UIColor { normalColor }
     var normalColor: UIColor { .foreground4 }
     
+    var bigMode = false
+    
     init() {
         super.init(frame: .zero)
         setup()
@@ -59,14 +61,14 @@ class FeedButton: MyButton {
 }
 
 final class FeedReplyButton: FeedButton {
-    override var filledIcon: UIImage? { UIImage(named: "feedCommentFilled") }
-    override var normalIcon: UIImage? { UIImage(named: "feedComment") }
+    override var normalIcon: UIImage? { bigMode ? .init(named: "feedCommentBig") : UIImage(named: "feedComment") }
+    override var filledIcon: UIImage? { bigMode ? .init(named: "feedCommentBigFilled") : UIImage(named: "feedCommentFilled") }
     
     override var filledColor: UIColor { .foreground2 }
 }
 
 final class FeedRepostButton: FeedButton {
-    override var normalIcon: UIImage? { UIImage(named: "feedRepost") }
+    override var normalIcon: UIImage? { bigMode ? .init(named: "feedRepostBig") : UIImage(named: "feedRepost") }
     
     override var filledColor: UIColor { .init(rgb: 0x52CE0A) }
     
@@ -105,8 +107,8 @@ class AnimatedFeedButton: FeedButton {
 }
 
 final class FeedLikeButton: AnimatedFeedButton {
-    override var normalIcon: UIImage? { UIImage(named: "feedHeart") }
-    override var filledIcon: UIImage? { UIImage(named: "feedHeartFilled") }
+    override var normalIcon: UIImage? { bigMode ? .init(named: "feedLikeBig") : UIImage(named: "feedHeart") }
+    override var filledIcon: UIImage? { bigMode ? .init(named: "feedLikeBigFilled") : UIImage(named: "feedHeartFilled") }
 
     override var filledColor: UIColor { .init(rgb: 0xCA079F) }
     
@@ -117,8 +119,8 @@ final class FeedLikeButton: AnimatedFeedButton {
 }
 
 final class FeedZapButton: FeedButton {
-    override var filledIcon: UIImage? { .init(named: "feedZapFilled") }
-    override var normalIcon: UIImage? { .init(named: "feedZap") }
+    override var normalIcon: UIImage? { bigMode ? .init(named: "feedZapBig") : .init(named: "feedZap") }
+    override var filledIcon: UIImage? { bigMode ? .init(named: "feedZapBigFilled") : .init(named: "feedZapFilled") }
     
     override var filledColor: UIColor { .init(rgb: 0xFF9F2F) }
 }

@@ -20,23 +20,32 @@ enum AnimationType {
     case walletLightning
     case notificationLightning
     
+    case postCellSkeleton
+    case postCellSkeletonLight
+    case zapGallerySkeleton
+    case zapGallerySkeletonLight
+    
     case zapMedium
     
     static var animationCache: [AnimationType: LottieAnimation] = [:]
     
     var name: String {
         switch self {
-        case .iconZap:              return "iconZap"
-        case .iconLike:             return "iconLike"
-        case .splash:               return "splashAlpha"
-        case .loadingSpinner:       return "loadingSpinner"
-        case .loadingSpinnerBlue:   return "loadingSpinnerBlue"
-        case .loadingDots:          return "loadingDots"
-        case .zapMedium:        	return "zap-medium"
-        case .transferSuccess:      return "transferSuccess"
-        case .transferFailed:       return "transferFailed"
-        case .walletLightning:      return "walletLightning"
-        case .notificationLightning:return "notificationLightning"
+        case .iconZap:                  return "iconZap"
+        case .iconLike:                 return "iconLike"
+        case .splash:                   return "splashAlpha"
+        case .loadingSpinner:           return "loadingSpinner"
+        case .loadingSpinnerBlue:       return "loadingSpinnerBlue"
+        case .loadingDots:              return "loadingDots"
+        case .zapMedium:                return "zap-medium"
+        case .transferSuccess:          return "transferSuccess"
+        case .transferFailed:           return "transferFailed"
+        case .walletLightning:          return "walletLightning"
+        case .notificationLightning:    return "notificationLightning"
+        case .zapGallerySkeleton:       return "zapGallerySkeleton"
+        case .zapGallerySkeletonLight:  return "zapGallerySkeletonLight"
+        case .postCellSkeleton:         return "postCellSkeleton"
+        case .postCellSkeletonLight:    return "postCellSkeletonLight"
         }
     }
     

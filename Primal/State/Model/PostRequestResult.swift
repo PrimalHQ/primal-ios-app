@@ -15,6 +15,9 @@ class PostRequestResult: Codable {
     var mediaMetadata: [MediaMetadata] = []
     var webPreviews: [WebPreviews] = []
     
+    var postZaps: [PrimalZapEvent] = []
+    var zapReceipts: [String: JSON] = [:]
+    
     var order: [String] = []
     
     var users: [String: PrimalUser] = [:]

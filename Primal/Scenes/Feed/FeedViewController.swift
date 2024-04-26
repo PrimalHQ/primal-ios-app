@@ -14,9 +14,8 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
-    
-    static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 100)
+class FeedViewController: UIViewController, UITableViewDataSource, Themeable, WalletSearchController {
+    static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
     let table = UITableView()
@@ -53,6 +52,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     }
         
     var cancellables: Set<AnyCancellable> = []
+    var textSearch: String?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -102,7 +102,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
     
     @discardableResult
     func open(post: ParsedContent) -> FeedViewController {
-        let threadVC = ThreadViewController(threadId: post.post.id)
+        let threadVC = ThreadViewController(post: post)
         show(threadVC, sender: nil)
         return threadVC
     }
@@ -281,6 +281,75 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable {
             return
         }
     }
+    
+    func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
+        guard let index = table.indexPath(for: cell)?.row, let post = posts[safe: index] else { return }
+
+        switch event {
+        case .url(let URL):
+            guard let url = URL ?? post.linkPreview?.url else { return }
+            handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
+        case .images(let resource):
+            postCellDidTapImages(cell, resource: resource)
+        case .embeddedImages(let resource):
+            postCellDidTapEmbeddedImages(cell, resource: resource)
+        case .profile:
+            show(ProfileViewController(profile: post.user), sender: nil)
+        case .post:
+            open(post: post)
+        case .like:
+            LikeManager.instance.sendLikeEvent(post: post.post)
+            
+            hapticGenerator.impactOccurred()
+            
+            cell.likeButton.animateTo(post.post.likes + 1, filled: true)
+        case .zap:
+            zapFromCell(cell, showPopup: false)
+        case .longTapZap:
+            zapFromCell(cell, showPopup: true)
+        case .repost:
+            postCellDidTapRepost(cell)
+        case .reply:
+            guard let thread = open(post: post) as? ThreadViewController else { return }
+        
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                thread.textInputView.becomeFirstResponder()
+            }
+        case .embeddedPost:
+            open(post: post.embededPost ?? post)
+        case .repostedProfile:
+            guard let profile = post.reposted?.user else { return }
+            show(ProfileViewController(profile: profile), sender: nil)
+        case .payInvoice:
+            guard let invoice = post.invoice else { return }
+            search(invoice.string)
+            textSearch = nil
+        case .zapDetails:
+            show(NoteReactionsParentController(.zaps, noteId: post.post.id), sender: nil)
+        case .likeDetails:
+            show(NoteReactionsParentController(.likes, noteId: post.post.id), sender: nil)
+        case .repostDetails:
+            show(NoteReactionsParentController(.reposts, noteId: post.post.id), sender: nil)
+        case .share:
+            let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
+            present(activityViewController, animated: true, completion: nil)
+        case .copy(let property):
+            UIPasteboard.general.string = post.propertyText(property)
+            view.showToast("Copied!")
+        case .broadcast:
+            break // TODO: Something?
+        case .report:
+            break // TODO: Something?
+        case .mute:
+            MuteManager.instance.toggleMute(post.user.data.pubkey)
+        case .bookmark:
+            BookmarkManager.instance.bookmark(post.post.id)
+            cell.updateMenu(post)
+        case .unbookmark:
+            BookmarkManager.instance.unbookmark(post.post.id)
+            cell.updateMenu(post)
+        }
+    }
 }
 
 private extension FeedViewController {
@@ -392,7 +461,9 @@ private extension FeedViewController {
                 UserDefaults.standard.howManyZaps += 1
                 if UserDefaults.standard.howManyZaps >= 3 {
                     guard let scene = self?.view.window?.windowScene else { return }
+                    #if !DEBUG
                     SKStoreReviewController.requestReview(in: scene)
+                    #endif
                 }
             } catch {
                 if let e = error as? WalletError {
@@ -409,72 +480,31 @@ private extension FeedViewController {
     }
     
     func animateZap(_ cell: PostCell, amount: Int) {
-        view.addSubview(Self.bigZapAnimView)
-        Self.bigZapAnimView
-            .pin(to: cell.zapButton.iconView, edges: .top, padding: -38.5)
-            .pin(to: cell.zapButton.iconView, edges: .leading, padding: -114.5)
+        let animView = Self.bigZapAnimView
+        
+        view.addSubview(animView)
+        animView
+            .centerToView(cell.zapButton.iconView, axis: .vertical, offset: 2)
+            .centerToView(cell.zapButton.iconView, axis: .horizontal, offset: 62)
         
         view.layoutIfNeeded()
         
-        cell.zapButton.iconView.alpha = 0.01
         cell.zapButton.animateTo(amount, filled: true)
         
         heavy.impactOccurred()
         
-        Self.bigZapAnimView.alpha = 1
-        Self.bigZapAnimView.play { _ in
+        animView.alpha = 1
+        animView.play { _ in
             UIView.animate(withDuration: 0.2) {
-                cell.zapButton.iconView.alpha = 1
-                Self.bigZapAnimView.alpha = 0
+                animView.alpha = 0
             } completion: { _ in
-                Self.bigZapAnimView.removeFromSuperview()
+                animView.removeFromSuperview()
             }
         }
     }
 }
 
 extension FeedViewController: PostCellDelegate {
-    func postCellDidTapBookmark(_ cell: PostCell) {
-        guard let index = table.indexPath(for: cell)?.row else { return }
-        BookmarkManager.instance.bookmark(posts[index].post.id)
-        cell.updateMenu(posts[index])
-    }
-    
-    func postCellDidTapUnbookmark(_ cell: PostCell) {
-        guard let index = table.indexPath(for: cell)?.row else { return }
-        BookmarkManager.instance.unbookmark(posts[index].post.id)
-        cell.updateMenu(posts[index])
-    }
-    
-    func postCellDidLongTapZap(_ cell: PostCell) {
-        zapFromCell(cell, showPopup: true)
-    }
-    
-    func postCellDidTapZap(_ cell: PostCell) {
-        zapFromCell(cell, showPopup: false)
-    }
-    
-    func postCellDidTapProfile(_ cell: PostCell) {
-        guard let index = table.indexPath(for: cell)?.row else { return }
-        let profile = ProfileViewController(profile: posts[index].user)
-        show(profile, sender: nil)
-    }
-    
-    func postCellDidTapRepostedProfile(_ cell: PostCell) {
-        guard let index = table.indexPath(for: cell)?.row, let profile = posts[index].reposted?.user else { return }
-        show(ProfileViewController(profile: profile), sender: nil)
-    }
-    
-    func postCellDidTapLike(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        LikeManager.instance.sendLikeEvent(post: posts[indexPath.row].post)
-        
-        hapticGenerator.impactOccurred()
-        
-        cell.likeButton.animateTo(posts[indexPath.row].post.likes + 1, filled: true)
-    }
-    
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         let post = posts[indexPath.row].post
@@ -493,42 +523,6 @@ extension FeedViewController: PostCellDelegate {
         }))
         
         present(popup, animated: true)
-    }
-    
-    func postCellDidTapReply(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let thread = open(post: posts[indexPath.row]) as? ThreadViewController
-        else { return }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-            thread.textInputView.becomeFirstResponder()
-        }
-    }
-    
-    func postCellDidTapPost(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        open(post: posts[indexPath.row])
-    }
-    
-    func postCellDidTapEmbededPost(_ cell: PostCell) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let post = posts[indexPath.row].embededPost
-        else { return }
-        
-        open(post: post)
-    }
-    
-    func postCellDidTapURL(_ cell: PostCell, url: URL?) {
-        guard
-            let indexPath = table.indexPath(for: cell),
-            let url = url ?? posts[indexPath.row].linkPreview?.url
-        else { return }
-        
-        let post = posts[indexPath.row]
-        
-        handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
     }
     
     func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource) {
@@ -593,64 +587,6 @@ extension FeedViewController: PostCellDelegate {
         
         present(FullScreenVideoPlayerController(player), animated: true) 
     }
-    
-    // MARK: - Menu actions
-    func postCellDidTapShare(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        let activityViewController = UIActivityViewController(activityItems: [posts[indexPath.row].webURL()], applicationActivities: nil)
-        present(activityViewController, animated: true, completion: nil)
-    }
-    
-    func postCellDidTapCopyLink(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        UIPasteboard.general.string = posts[indexPath.row].webURL()
-        view.showToast("Copied!")
-    }
-    
-    func postCellDidTapCopyContent(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        UIPasteboard.general.string = posts[indexPath.row].attributedText.string
-        view.showToast("Copied!")
-    }
-    
-    func postCellDidTapCopyRawData(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        UIPasteboard.general.string = posts[indexPath.row].post.encodeToString()
-        view.showToast("Copied!")
-    }
-    
-    func postCellDidTapCopyNoteID(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        UIPasteboard.general.string = posts[indexPath.row].noteId()
-        view.showToast("Copied!")
-    }
-    
-    func postCellDidTapCopyUserPubkey(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
-        UIPasteboard.general.string = posts[indexPath.row].user.data.pubkey
-        view.showToast("Copied!")
-    }
-    
-    func postCellDidTapBroadcast(_ cell: PostCell) {
-        // TODO: Something?
-    }
-    
-    @objc func postCellDidTapMute(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        let pubkey = posts[indexPath.row].user.data.pubkey
-        let mm = MuteManager.instance
-        mm.toggleMute(pubkey)
-    }
-    
-    func postCellDidTapReport(_ cell: PostCell) {
-        // TODO: Something?
-    }
 }
 
 extension FeedViewController: UITableViewDelegate {
@@ -659,3 +595,15 @@ extension FeedViewController: UITableViewDelegate {
     }
 }
 
+extension ParsedContent {
+    func propertyText(_ property: NoteCopiableProperty) -> String? {
+        switch property {
+        case .link:         return webURL()
+        case .content:      return attributedText.string
+        case .rawData:      return post.encodeToString()
+        case .noteID:       return noteId()
+        case .userPubkey:   return user.data.pubkey
+        case .invoice:      return invoice?.string
+        }
+    }
+}

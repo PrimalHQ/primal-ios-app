@@ -11,6 +11,8 @@ import SafariServices
 
 protocol ChatMessageCellDelegate: AnyObject {
     func contextMenuForMessageCell(_ cell: ChatMessageCell) -> UIMenu?
+    func copyInvoiceForMessageCell(_ cell: ChatMessageCell)
+    func payInvoiceForMessageCell(_ cell: ChatMessageCell)
 }
 
 class ChatMessageCell: UITableViewCell, Themeable {
@@ -98,7 +100,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
         updateTheme()
         
         // Due to a bug with the Nantes library we must first set colors, and then set the text
-        label.text = message.message
+        label.text = message.message.text
     }
     
     func updateTheme() {

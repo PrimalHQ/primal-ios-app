@@ -28,6 +28,7 @@ final class ImageGalleryView: UIView {
     
     let progress = PrimalProgressView(bottomPadding: 0)
 
+    var noDownsampling = false
     var resources: [MediaMetadata.Resource] {
         didSet {
             collection.reloadData()
@@ -162,12 +163,20 @@ extension ImageGalleryView: UICollectionViewDataSource {
             }
         } else {
             if let cell = cell as? ImageCell {
-                cell.imageView.kf.setImage(with: r.url(for: .large), options: [
-                    .processor(DownsamplingImageProcessor(size: frame.size)),
-                    .transition(.fade(0.1)),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage
-                ])
+                if noDownsampling {
+                    cell.imageView.kf.setImage(with: r.url(for: .large), options: [
+                        .transition(.fade(0.1)),
+                        .scaleFactor(UIScreen.main.scale),
+                        .cacheOriginalImage
+                    ])
+                } else {
+                    cell.imageView.kf.setImage(with: r.url(for: .large), options: [
+                        .processor(DownsamplingImageProcessor(size: frame.size)),
+                        .transition(.fade(0.1)),
+                        .scaleFactor(UIScreen.main.scale),
+                        .cacheOriginalImage
+                    ])
+                }
                 cell.url = r.url
                 cell.delegate = self
             }

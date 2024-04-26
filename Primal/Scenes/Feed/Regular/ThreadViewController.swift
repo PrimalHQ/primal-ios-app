@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import SafariServices
 
 extension FeedDesign {
     var threadCellClass: AnyClass {
@@ -18,14 +19,7 @@ extension FeedDesign {
         }
     }
     
-    var threadMainCellClass: AnyClass {
-        switch self {
-        case .standard:
-            return DefaultMainThreadCell.self
-        case .fullWidth:
-            return FullWidthThreadCell.self
-        }
-    }
+    var threadMainCellClass: AnyClass { DefaultMainThreadCell.self }
 }
 
 final class ThreadViewController: PostFeedViewController {
@@ -59,10 +53,32 @@ final class ThreadViewController: PostFeedViewController {
     
     private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView)
     
+    var mainPostZaps: [ParsedZap]? { didSet { table.reloadData() } }
+    
+    @Published var mainPostRepliesHeightArray: [CGFloat] = [0, 150, 0, 0, 0]
+    
+    var isLoading = true { 
+        didSet {
+            mainPostRepliesHeightArray[1] = isLoading ? 150 : 0
+            table.reloadData()
+        }
+    }
+    
+    convenience init(post: ParsedContent) {
+        self.init(threadId: post.post.id)
+        let copy = post.copy()
+        copy.reposted = nil
+        posts = [copy]
+        
+        updateReplyToLabel()
+    }
+    
     init(threadId: String) {
         id = threadId
         super.init(feed: FeedManager(threadId: threadId))
         setup()
+        
+        refreshZaps()
     }
     
     required init?(coder: NSCoder) {
@@ -76,9 +92,6 @@ final class ThreadViewController: PostFeedViewController {
         mainTabBarController?.showTabBarBorder = false
 
         didLoadView = true
-        
-        view.bringSubviewToFront(loadingSpinner)
-        loadingSpinner.play()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -117,7 +130,21 @@ final class ThreadViewController: PostFeedViewController {
         return super.open(post: post)
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int { isLoading ? 2 : 1 }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == postSection {
+            return super.tableView(tableView, numberOfRowsInSection: section)
+        }
+        return 1
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 1 {
+            mainPostRepliesHeightArray[1] = 150
+            return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+        }
+        
         let data = posts[indexPath.row]
         let position: ThreadCell.ThreadPosition
         scope: do {
@@ -133,9 +160,19 @@ final class ThreadViewController: PostFeedViewController {
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
-        if let cell = cell as? ThreadCell {
+        if position == .main, let cell = cell as? DefaultMainThreadCell {
+            cell.update(data, zaps: mainPostZaps)
+            cell.delegate = self
+            cell.zapGallery.delegate = self
+        } else if let cell = cell as? ThreadCell {
             cell.update(data, position: position)
             cell.delegate = self
+        }
+        DispatchQueue.main.async { [self] in // Now the cell has been laid out
+            let heightIndex = indexPath.row - mainPositionInThread
+            if heightIndex >= 0 && heightIndex < mainPostRepliesHeightArray.count {
+                mainPostRepliesHeightArray[heightIndex] = cell.contentView.frame.height
+            }
         }
         return cell
     }
@@ -147,6 +184,7 @@ final class ThreadViewController: PostFeedViewController {
         
         table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
         table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
+        table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         
         textInputView.tintColor = .accent
         textInputView.textColor = .foreground
@@ -154,10 +192,14 @@ final class ThreadViewController: PostFeedViewController {
         inputParent.backgroundColor = .background
         inputBackground.backgroundColor = .background3
         
-        guard !posts.isEmpty else { return }
+        updateReplyToLabel()
+    }
+    
+    func updateReplyToLabel() {
+        guard let post = posts[safe: mainPositionInThread] else { return }
         
-        placeholderLabel.text = "Reply to \(posts[mainPositionInThread].user.data.displayName)"
-        replyingToLabel.attributedText = replyToString(name: posts[mainPositionInThread].user.data.name)
+        placeholderLabel.text = "Reply to \(post.user.data.displayName)"
+        replyingToLabel.attributedText = replyToString(name: post.user.data.name)
     }
     
     override func updateBars() {
@@ -255,6 +297,15 @@ private extension ThreadViewController {
         textInputView.resignFirstResponder()
     }
     
+    func refreshZaps() {
+        NoteZapsRequest(noteId: id).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] zaps in
+                self?.mainPostZaps = zaps
+            })
+            .store(in: &cancellables)
+    }
+    
     func addPublishers() {
         feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
             guard let self, let mainPost = parsed.first(where: { $0.post.id == self.id }) else { return }
@@ -262,27 +313,51 @@ private extension ThreadViewController {
             let postsBefore = parsed.filter { $0.post.created_at < mainPost.post.created_at }
             let postsAfter = parsed.filter { $0.post.created_at > mainPost.post.created_at }
             
+            if !parsed.isEmpty {
+                isLoading = false
+            }
+            
             self.posts = []
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
             
-            self.refreshControl.endRefreshing()
-            if !parsed.isEmpty {
-                self.loadingSpinner.stop()
-                self.loadingSpinner.isHidden = true
-            }
+            refreshControl.endRefreshing()
             
-            self.didLoadData = true
+            didLoadData = true
             
-            let user = self.posts[self.mainPositionInThread].user.data
+            let user = posts[self.mainPositionInThread].user.data
             
-            self.placeholderLabel.text = "Reply to \(user.displayName)"
+            placeholderLabel.text = "Reply to \(user.displayName)"
             
-            self.replyingToLabel.attributedText = self.replyToString(name: user.name)
+            replyingToLabel.attributedText = self.replyToString(name: user.name)
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest($didLoadData, $didLoadView).receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] in
+        WalletManager.instance.zapEvent.debounce(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard let self, zap.postId == id else { return }
+            var zaps = mainPostZaps ?? []
+            let index = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
+            zaps.insert(zap, at: index)
+            mainPostZaps = zaps
+        }
+        .store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            Publishers.Merge(Just(true), Publishers.keyboardShown.map { $0 }),
+            $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
+        )
+        .sink { [weak self] (isKeyboardShown, contentSize) in
+            guard let self, posts.count - mainPositionInThread < 6 else {
+                self?.table.contentInset = .init(top: 12, left: 0, bottom: 50, right: 0)
+                return
+            }
+            
+            let botInset = 50 + max(0, table.frame.height - 62 - contentSize)
+            self.table.contentInset = .init(top: 12, left: 0, bottom: botInset, right: 0)
+        }
+        .store(in: &cancellables)
+        
+        Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
             self.didMoveToMain = true
@@ -295,6 +370,12 @@ private extension ThreadViewController {
                 }
             } else {
                 self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                DispatchQueue.main.async {
+                    self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                    DispatchQueue.main.async {
+                        self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                    }
+                }
             }
         })
         .store(in: &cancellables)
@@ -379,8 +460,11 @@ private extension ThreadViewController {
         
         title = "Thread"
         
+        loadingSpinner.removeFromSuperview()
+        
         table.keyboardDismissMode = .interactive
-        table.contentInset = .init(top: 12, left: 0, bottom: 50, right: 0)
+        table.contentInset = .init(top: 12, left: 0, bottom: 700, right: 0)
+        table.contentOffset = .init(x: 0, y: -12)
         
         stack.addArrangedSubview(inputParent)
         stack.addArrangedSubview(bottomBarSpacer)
@@ -417,7 +501,7 @@ private extension ThreadViewController {
             .pinToSuperview(edges: .bottom, padding: 5)
         
         placeholderLabel
-            .pinToSuperview(edges: .leading, padding: 21)
+            .pinToSuperview(edges: .horizontal, padding: 21)
             .centerToSuperview(axis: .vertical)
         
         textInputView
@@ -500,19 +584,14 @@ private extension ThreadViewController {
         usersTableView.isHidden = true
         
         refreshControl.addAction(.init(handler: { [unowned self] _ in
-            self.feed.requestThread(postId: self.id)
+            feed.requestThread(postId: id)
+            refreshZaps()
         }), for: .valueChanged)
         
         NSLayoutConstraint.activate([
             usersTableView.bottomAnchor.constraint(equalTo: inputParent.topAnchor),
             usersTableView.topAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor)
         ])
-//        
-//        let gest = BindableTapGestureRecognizer { [weak self] in
-//            self?.textInputView.resignFirstResponder()
-//        }
-//        gest.delegate = self
-//        view.addGestureRecognizer(gest)
     }
     
     func replyToString(name: String) -> NSAttributedString {
@@ -532,5 +611,34 @@ private extension ThreadViewController {
 extension ThreadViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         textInputView.isFirstResponder
+    }
+}
+
+extension ThreadViewController: ZapGalleryViewDelegate {
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
+        let profileVC = ProfileViewController(profile: zap.user)
+        var items: [UIAction] = [
+            UIAction(title: "Open Profile", image: UIImage(systemName: "person.crop.circle.fill"), handler: { [weak self] _ in
+                self?.show(profileVC, sender: nil)
+            })
+        ]
+        
+        if !zap.message.isEmpty {
+            items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
+                UIPasteboard.general.string = zap.message
+                
+                self?.view.showToast("Copied!")
+            })
+            
+            if zap.message.isValidURL, let url = URL(string: zap.message) {
+                items.append(.init(title: "Open URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
+                    self?.present(SFSafariViewController(url: url), animated: true)
+                })
+            }
+        }
+        
+        return .init(previewProvider: { profileVC }, actionProvider: { suggested in
+            return UIMenu(title: zap.message, children: items + suggested)
+        })
     }
 }

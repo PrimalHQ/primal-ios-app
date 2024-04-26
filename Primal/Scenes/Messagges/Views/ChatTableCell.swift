@@ -51,9 +51,9 @@ final class ChatTableCell: UITableViewCell, Themeable {
         newIndicator.isHidden = chat.newMessagesCount == 0
         
         if chat.latest.user.data.id != chat.user.data.id {
-            messageLabel.text = "You: \(chat.latest.message)"
+            messageLabel.text = "You: \(chat.latest.message.text)"
         } else {
-            messageLabel.text = chat.latest.message
+            messageLabel.text = chat.latest.message.text
         }
         
         profileImageView.setUserImage(chat.user)

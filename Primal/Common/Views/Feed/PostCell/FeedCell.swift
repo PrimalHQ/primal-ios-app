@@ -82,7 +82,7 @@ private extension DefaultFeedCell {
     func setup() {
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameStack, replyingToView, textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), buttonStackStandIn
+            nameStack, replyingToView, textStack, invoiceView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), buttonStackStandIn
         ])
         
         let horizontalStack = UIStackView(arrangedSubviews: [profileImageView, contentStack])
@@ -131,7 +131,7 @@ private extension FullWidthFeedCell {
     func setup() {
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, mainImages, linkPresentation, postPreview, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, mainImages, linkPresentation, postPreview, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)

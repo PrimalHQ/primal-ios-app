@@ -99,18 +99,14 @@ final class Connection {
     @Published var isConnected: Bool = false
     
     private func connect() {
-        if isConnected {
-            disconnect()
-        }
+        disconnect()
         
-        if socket == nil {
-            let options = NWProtocolWebSocket.Options()
-            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-            let ua = "\(APP_NAME)/\(appVersion) (main)"
-            options.autoReplyPing = true // from default settings of NWWebsocket
-            options.setAdditionalHeaders([("User-Agent", ua)])
-            socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
-        }
+        let options = NWProtocolWebSocket.Options()
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let ua = "\(APP_NAME)/\(appVersion) (main)"
+        options.autoReplyPing = true // from default settings of NWWebsocket
+        options.setAdditionalHeaders([("User-Agent", ua)])
+        socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
         
         attemptReconnection = true
         socket?.delegate = self
@@ -149,7 +145,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-            print("REQUEST:\n\(jsonStr)")
+//            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
             self.socket?.send(string: jsonStr)

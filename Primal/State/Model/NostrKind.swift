@@ -23,6 +23,8 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case zapReceipt = 9735
+    
     case muteList = 10_000
     case bookmarks = 10_003
     
@@ -50,6 +52,7 @@ enum NostrKind: Int {
     case defaultRelays = 10_000_124
     case followingUser = 10_000_125
     case webPreview = 10_000_128
+    case postZaps = 10_000_129
     case userFollowers = 10_000_133
     case userPubkey = 10_000_138
     case relays = 10_000_139

@@ -364,3 +364,12 @@ extension PrimalFeedPost {
         id == "empty" || (id.isEmpty && pubkey.isEmpty)
     }
 }
+
+struct PrimalZapEvent: Codable {
+    var created_at: Int
+    var event_id: String
+    var zap_receipt_id: String
+    var receiver: String
+    var amount_sats: Int
+    var sender: String
+}

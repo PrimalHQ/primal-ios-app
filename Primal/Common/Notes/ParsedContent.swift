@@ -59,10 +59,13 @@ final class ParsedContent {
     var mentions: [ParsedElement] = []
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
+    var zaps: [PrimalZapEvent] = []
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
     var linkPreview: LinkMetadata?
+    
+    var invoice: Invoice?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
@@ -166,5 +169,34 @@ extension ParsedContent {
     
     var isEmpty: Bool {
         post.isEmpty || user.data.id.isEmpty
+    }
+}
+
+extension ParsedContent {
+    func copy() -> ParsedContent {
+        let new = ParsedContent(post: post, user: user)
+        new.hashtags = hashtags
+        new.mentions = mentions
+        new.notes = notes
+        new.httpUrls = httpUrls
+        new.zaps = zaps
+        
+        new.mediaResources = mediaResources
+        new.videoThumbnails = videoThumbnails
+        new.linkPreview = linkPreview
+        
+        new.invoice = invoice
+        
+        new.text = text
+        new.attributedText = attributedText
+        new.attributedTextShort = attributedTextShort
+        
+        new.embededPost = embededPost
+        new.reposted = reposted
+        
+        new.mentionedUsers = mentionedUsers
+        
+        new.replyingTo = replyingTo        
+        return new
     }
 }
