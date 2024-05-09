@@ -43,7 +43,7 @@ final class MainTabBarController: UIViewController, Themeable {
     let messagesIndicator = NotificationsIndicator()
     
     private let buttonStackParent = UIView()
-    private lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
+    private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
     private let safeAreaSpacer = UIView()
     private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
         $0.backgroundColor = .background

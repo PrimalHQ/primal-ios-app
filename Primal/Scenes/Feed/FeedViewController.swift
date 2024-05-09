@@ -21,7 +21,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     let table = UITableView()
     let safeAreaSpacer = UIView()
     let navigationBorder = UIView().constrainToSize(height: 1)
-    lazy var stack = UIStackView(arrangedSubviews: [safeAreaSpacer, navigationBorder, table])
+    lazy var stack = UIStackView(arrangedSubviews: [table])
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
@@ -50,7 +50,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             table.insertRows(at: indexes, with: .none)
         }
     }
-        
+    
     var cancellables: Set<AnyCancellable> = []
     var textSearch: String?
     
@@ -81,7 +81,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             let index = posts.firstIndex(where: { post in  post.mediaResources.contains(where: { $0.url == playingRN }) }),
             table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
         else { return }
-            
+        
         DispatchQueue.main.async {
             VideoPlaybackManager.instance.currentlyPlaying?.play()
         }
@@ -90,15 +90,80 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        shouldShowBars = true
-        if animated {
-            animateBars()
-        } else {
-            updateBars()
-        }
-        
         VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        
+        if animated {
+            animateBarsToVisible()
+        } else {
+            setBarsToTransform(0)
+        }
     }
+    
+    var topBarHeight: CGFloat = 100
+    var barsMaxTransform: CGFloat { topBarHeight }
+    var prevPosition: CGFloat = 0
+    var prevTransform: CGFloat = 0
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let newPosition = scrollView.contentOffset.y
+        let delta = newPosition - prevPosition
+        prevPosition = newPosition
+        
+        if !scrollView.isTracking { return }
+        
+        let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
+        let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
+        
+        setBarsToTransform(newTransform)
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        if velocity.y < -0.1 {
+            animateBarsToVisible()
+        } else if velocity.y > 0.1 {
+            animateBarsToInvisible()
+        } else {
+            setBarsDependingOnPosition()
+        }
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        setBarsDependingOnPosition()
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        animateBarsToVisible()
+        return true
+    }
+    
+    func setBarsToTransform(_ transform: CGFloat) {
+        prevTransform = transform
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
+        navigationBorder.transform = .init(translationX: 0, y: transform)
+        mainTabBarController?.vStack.transform = .init(translationX: 0, y: -transform)
+    }
+    
+    func animateBarsToTransform(_ transform: CGFloat) {
+        UIView.animate(withDuration: 0.2) {
+            self.setBarsToTransform(transform)
+        }
+    }
+    
+    func animateBarsToVisible() {
+        animateBarsToTransform(0)
+    }
+    
+    func animateBarsToInvisible() {
+        animateBarsToTransform(-barsMaxTransform)
+    }
+    
+    func setBarsDependingOnPosition() {
+        if prevTransform < -(barsMaxTransform / 2) && table.contentOffset.y > 0 {
+            animateBarsToInvisible()
+        } else {
+            animateBarsToVisible()
+        }
+    }
+    
     
     @discardableResult
     func open(post: ParsedContent) -> FeedViewController {
@@ -155,97 +220,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     }
     
     private var barForegroundObserver: NSObjectProtocol?
-    private(set) var lastContentOffset: CGFloat = 0
-    private(set) var safeAreaSpacerHeight: CGFloat = 0
-    @Published private(set) var isAnimatingBars = false
-    @Published private(set) var isShowingBars = true
-    var shouldShowBars: Bool {
-        get { scrollDirectionCounter >= 0 }
-        set { scrollDirectionCounter = newValue ? 100 : -100 }
-    }
-    @Published private var scrollDirectionCounter = 0 // This is used to track in which direction is the scrollview scrolling and for how long (disregard any scrolling that hasn't been happening for at least 5 update cycles because system sometimes scrolls the content)
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y < 100 {
-            scrollDirectionCounter = 100
-        } else {
-            if (lastContentOffset > scrollView.contentOffset.y) {
-                scrollDirectionCounter = max(1, scrollDirectionCounter + 1)
-            }
-            if (lastContentOffset < scrollView.contentOffset.y) {
-                scrollDirectionCounter = min(-1, scrollDirectionCounter - 1)
-            }
-        }
-
-        // update the new position acquired
-        lastContentOffset = scrollView.contentOffset.y
-    }
-    
-    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
-        shouldShowBars = true
-        return true
-    }
-    
-    func updateBars() {
-        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? self.shouldShowBars : true
-        
-        safeAreaSpacer.isHidden = !shouldShowBars
-        navigationBorder.isHidden = !shouldShowBars
-        mainTabBarController?.setTabBarHidden(!shouldShowBars, animated: false)
-        navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-        if ContentDisplaySettings.fullScreenFeed {
-            table.contentOffset = .init(x: 0, y: table.contentOffset.y + ((shouldShowBars ? 1 : -1) * self.safeAreaSpacerHeight))
-        }
-
-        isAnimatingBars = true
-        isShowingBars = self.shouldShowBars
-        isAnimatingBars = false
-    }
-    
-    func animateBars() {
-        var shouldShowBars = scrollDirectionCounter >= 0
-        let endBarState = shouldShowBars
-        guard !isAnimatingBars, shouldShowBars != isShowingBars else { return }
-        
-        if !ContentDisplaySettings.fullScreenFeed {
-            shouldShowBars = true  // Disable override
-        }
-        
-        isAnimatingBars = true
-        table.bounces = shouldShowBars
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-            self.isShowingBars = endBarState
-            self.isAnimatingBars = false
-        }
-        
-        let oldValue = !shouldShowBars
-        
-        safeAreaSpacerHeight = max(safeAreaSpacerHeight, safeAreaSpacer.frame.height)
-        
-        let shouldMoveOffset = ContentDisplaySettings.fullScreenFeed && (safeAreaSpacer.superview != nil) && (safeAreaSpacer.isHidden != oldValue)
-        
-        if !shouldShowBars {
-            // MAKE SURE TO DO THIS AFTER ANIMATION IN OTHER CASE
-            safeAreaSpacer.isHidden = oldValue
-            if shouldMoveOffset {
-                table.contentOffset = .init(x: 0, y: table.contentOffset.y - safeAreaSpacerHeight)
-            }
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.mainTabBarController?.setTabBarHidden(oldValue, animated: false)
-            self.navigationController?.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-        } completion: { _ in
-            if shouldShowBars {
-                self.safeAreaSpacer.isHidden = oldValue
-                self.navigationBorder.isHidden = oldValue
-                if shouldMoveOffset {
-                    self.table.contentOffset = .init(x: 0, y: self.table.contentOffset.y + self.safeAreaSpacerHeight)
-                }
-            }
-        }
-    }
     
     func handleURLTap(_ url: URL, cachedUsers: [PrimalUser] = [], notes: [ParsedElement] = []) {
         let urlString = url.absoluteString
@@ -366,9 +340,16 @@ private extension FeedViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = .init(top: 0, left: 0, bottom: 90, right: 0)
+        table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
+
+        DispatchQueue.main.async {
+            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
+            self.table.contentInset = .init(top: self.barsMaxTransform, left: 0, bottom: 90, right: 0)
+            self.table.contentOffset = .init(x: 0, y: -self.barsMaxTransform)
+        }
         
-        safeAreaSpacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        view.addSubview(navigationBorder)
+        navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
         table.refreshControl = refreshControl
         
@@ -376,20 +357,6 @@ private extension FeedViewController {
         loadingSpinner.centerToSuperview().constrainToSize(70)
         
         updateTheme()
-    
-        let shouldShowPublisher = $scrollDirectionCounter
-            .filter({ abs($0) > 20 }) // Disregard small scrolling (sometimes the system scrolls quickly)
-            .map { $0 > 0 }
-        
-        Publishers.CombineLatest3($isShowingBars, shouldShowPublisher, $isAnimatingBars)
-            .dropFirst()
-            .sink { [weak self] isShowing, shouldShow, isAnimating in
-                guard isShowing != shouldShow, !isAnimating, self?.view.window != nil else { return }
-                DispatchQueue.main.async {
-                    self?.animateBars()
-                }
-            }
-            .store(in: &cancellables)
         
         barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
             // This is the only way it works, otherwise it gets stuck
@@ -398,8 +365,8 @@ private extension FeedViewController {
                 
                 if let menu = self.parent as? MenuContainerController, menu.isOpen { return }
                 
-                self.isShowingBars = false
-                self.shouldShowBars = true
+//                self.isShowingBars = false
+//                self.shouldShowBars = true
             }
         }
     }

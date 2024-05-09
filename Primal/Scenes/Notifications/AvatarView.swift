@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 
 final class AvatarView: UIView {
-    let avatarViews = (1...10).map { _ in UIImageView() }
+    let avatarViews = (1...6).map { _ in UIImageView() }
     let extraView = UIView()
     let extraLabel = UILabel()
     
@@ -22,7 +22,7 @@ final class AvatarView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setImages(_ images: [URL]) {
+    func setImages(_ images: [URL], userCount: Int) {
         for view in avatarViews { view.isHidden = true }
         
         zip(avatarViews, images).forEach { view, url in
@@ -39,8 +39,9 @@ final class AvatarView: UIView {
             first.isHidden = false
         }
         
-        extraView.isHidden = images.count <= 10
-        let extraCount = min(images.count - 10, 99)
+        let imagesCount = max(1, images.count)
+        extraView.isHidden = imagesCount == userCount
+        let extraCount = min(userCount - imagesCount, 99)
         extraLabel.text = "+\(extraCount)"
     }
 }
@@ -58,25 +59,22 @@ private extension AvatarView {
             $0.constrainToSize(32)
             $0.layer.cornerRadius = 16
             $0.layer.masksToBounds = true
-            $0.layer.borderWidth = 1
-            $0.layer.borderColor = UIColor.white.cgColor
         }
         
-        stack.spacing = -8
-        stack.alignment = .top
+        stack.spacing = 4
         
         extraView.addSubview(extraLabel)
         extraLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 2)
         
         extraLabel.textAlignment = .center
         extraLabel.adjustsFontSizeToFitWidth = true
-        extraLabel.textColor = .foreground2
-        extraLabel.font = .appFont(withSize: 14, weight: .medium)
+        extraLabel.textColor = .foreground3
+        extraLabel.font = .appFont(withSize: 12, weight: .semibold)
         
-        extraView.backgroundColor = .init(rgb: 0xC8C8C8)
+        extraView.backgroundColor = .foreground6
         
         addSubview(stack)
-        stack.pinToSuperview(edges: [.leading, .vertical])
+        stack.pinToSuperview()
         
         constrainToSize(height: 32)
     }

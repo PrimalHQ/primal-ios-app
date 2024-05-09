@@ -40,7 +40,9 @@ final class ProfileViewController: PostFeedViewController {
     
     var followsUser = false {
         didSet {
-            table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            if view.window != nil {
+                table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
         }
     }
     
@@ -101,6 +103,8 @@ final class ProfileViewController: PostFeedViewController {
         .foregroundColor: UIColor.foreground
     ]
     
+    override var barsMaxTransform: CGFloat { navigationBar.maxSize }
+    
     init(profile: ParsedUser) {
         self.profile = profile
         parsedDescription = NSAttributedString(string: profile.data.about, attributes: aboutTextAttributes)
@@ -131,15 +135,15 @@ final class ProfileViewController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         loadingSpinner.play()
+        
+        topBarHeight = 0
     }
     
     override func updateTheme() {
         super.updateTheme()
         
-        table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileInfoCell.self, forCellReuseIdentifier: postCellID + "profile")
         table.register(MutedUserCell.self, forCellReuseIdentifier: postCellID + "muted")
-        table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 100, right: 0)
     }
     
     // MARK: - TableView
@@ -218,22 +222,10 @@ final class ProfileViewController: PostFeedViewController {
         navigationBar.updateSize(offest - navigationBar.maxSize)
     }
     
-    override func updateBars() {
-        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
+    override func setBarsToTransform(_ transform: CGFloat) {
+        super.setBarsToTransform(transform)
         
-        super.updateBars()
-        
-        navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -200)
-    }
-    
-    override func animateBars() {
-        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
-        
-        super.animateBars()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.navigationBar.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -200)
-        }
+        navigationBar.transform = .init(translationX: 0, y: transform)
     }
 }
 
@@ -321,7 +313,6 @@ private extension ProfileViewController {
             .sink { [weak self] posts in
                 guard let self else { return }
                 self.posts = posts
-                self.table.contentInset = .init(top: self.navigationBar.maxSize, left: 0, bottom: 100, right: 0)
                 
                 self.loadingSpinner.isHidden = true
                 self.loadingSpinner.stop()
@@ -337,7 +328,6 @@ private extension ProfileViewController {
             self?.feed.refresh()
         }), for: .valueChanged)
         
-        table.contentInset = .init(top: navigationBar.maxSize, left: 0, bottom: 100, right: 0)
         table.register(ProfileFollowCell.self, forCellReuseIdentifier: "userCell")
         
         view.addSubview(navigationBar)

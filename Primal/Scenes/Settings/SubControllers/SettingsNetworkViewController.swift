@@ -16,6 +16,13 @@ final class SettingsNetworkViewController: UIViewController, Themeable {
     private var cancellables: Set<AnyCancellable> = []
     private var viewCancellables: Set<AnyCancellable> = []
     
+    private let resetButton = UIButton(
+        configuration: .simpleImage(UIImage(systemName: "arrow.clockwise")),
+        primaryAction: .init(handler: { _ in
+            Connection.reconnect()
+        })
+    )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,8 +30,10 @@ final class SettingsNetworkViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
+        
+        navigationItem.leftBarButtonItem = customBackButton
+        resetButton.tintColor = .foreground
     }
 }
 
@@ -53,7 +62,8 @@ extension SettingsNetworkViewController: UITextFieldDelegate {
 
 private extension SettingsNetworkViewController {
     func setup() {
-        title = "Network"
+        title = "Network"        
+        navigationItem.rightBarButtonItem = .init(customView: resetButton)
         updateTheme()
         
         IdentityManager.instance.$userRelays.receive(on: DispatchQueue.main).sink { [weak self] relays in

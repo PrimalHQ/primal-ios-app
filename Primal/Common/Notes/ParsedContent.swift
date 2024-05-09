@@ -93,19 +93,46 @@ extension ParsedUser {
     }
 }
 
+enum ParsedContentTextStyle {
+    case regular, enlarged, notifications
+    
+    var maximumLineHeight: CGFloat {
+        switch self {
+        case .regular:          return FontSizeSelection.current.contentLineHeight
+        case .enlarged:         return FontSizeSelection.current.contentLineHeight + 2
+        case .notifications:    return FontSizeSelection.current.contentLineHeight
+        }
+    }
+    
+    var fontSize: CGFloat {
+        switch self {
+        case .regular:          return FontSizeSelection.current.contentFontSize
+        case .enlarged:         return FontSizeSelection.current.contentFontSize + 2
+        case .notifications:    return FontSizeSelection.current.contentFontSize
+        }
+    }
+    
+    var color: UIColor {
+        switch self {
+        case .regular, .enlarged:   return .foreground
+        case .notifications:        return .foreground2
+        }
+    }
+}
+
 extension ParsedContent {
-    func buildContentString(enlarge: Bool = false) {
+    func buildContentString(style: ParsedContentTextStyle = .regular) {
         let enlargingAmount: CGFloat = 2
         
         let fs = FontSizeSelection.current
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = fs.contentLineSpacing
-        style.maximumLineHeight = fs.contentLineHeight + (enlarge ? enlargingAmount : 0)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = fs.contentLineSpacing
+        paragraph.maximumLineHeight = style.maximumLineHeight
         
         let result = NSMutableAttributedString(string: text, attributes: [
-            .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: fs.contentFontSize + (enlarge ? enlargingAmount : 0), weight: .regular),
-            .paragraphStyle: style
+            .foregroundColor: style.color,
+            .font: UIFont.appFont(withSize: style.fontSize, weight: .regular),
+            .paragraphStyle: paragraph
         ])
         
         for element in httpUrls {

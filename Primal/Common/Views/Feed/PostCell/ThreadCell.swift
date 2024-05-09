@@ -43,7 +43,7 @@ class ThreadCell: PostCell {
             topConstraint?.constant = 0
             bottomConstraint?.constant = -12
             
-            parsedContent.buildContentString(enlarge: true)
+            parsedContent.buildContentString(style: .enlarged)
             mainLabel.attributedText = parsedContent.attributedText
         case .child:
             contentSpacer.isHidden = false

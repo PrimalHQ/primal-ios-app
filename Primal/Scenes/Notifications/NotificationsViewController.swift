@@ -56,9 +56,6 @@ final class NotificationsViewController: FeedViewController {
     var isLoading = false
     var didReachEnd = false
     
-    let newSpacer = UIView()
-    var newSpacerHeightConstraint: NSLayoutConstraint?
-    
     var newNotifications: Int = 0 {
         didSet {
             let main: MainTabBarController? = RootViewController.instance.findInChildren()
@@ -77,6 +74,8 @@ final class NotificationsViewController: FeedViewController {
     
     override init() {
         super.init()
+        
+        setup()
         
         Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
             self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
@@ -106,23 +105,28 @@ final class NotificationsViewController: FeedViewController {
         continousConnection?.end()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
+    override var barsMaxTransform: CGFloat {
+        super.topBarHeight + 60
+    }
+    
+    func setup() {
         title = "Notifications"
         
         loadingSpinner.transform = .init(translationX: 0, y: -70)
         
         updateTheme()
         
-        stack.insertArrangedSubview(tabSelectionView, at: 1)
+        view.addSubview(tabSelectionView)
+        tabSelectionView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
-        stack.insertArrangedSubview(newSpacer, at: 0)
-        DispatchQueue.main.async {
-            let const = self.newSpacer.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
-            const.priority = .defaultHigh
-            const.isActive = true
-        }
+//        let spacer = UIView()
+//        stack.insertArrangedSubview(spacer, at: 0)
+//        spacer.heightAnchor.constraint(equalTo: self.tabSelectionView.heightAnchor).isActive = true
+        
+        navigationBorder.removeFromSuperview()
+        view.addSubview(navigationBorder)
+        navigationBorder.pin(to: tabSelectionView, edges: .horizontal)
+        navigationBorder.topAnchor.constraint(equalTo: tabSelectionView.bottomAnchor).isActive = true
         
         tabSelectionView.$selectedTab
             .compactMap({ Tab(rawValue: $0) })
@@ -213,12 +217,9 @@ final class NotificationsViewController: FeedViewController {
         if let cell = cell as? NotificationCell {
             cell.updateForNotification(
                 notifications[indexPath.row],
-                delegate: self,
-                didLike: LikeManager.instance.hasLiked(data.post.id),
-                didRepost: PostManager.instance.hasReposted(data.post.id),
-                didZap: WalletManager.instance.hasZapped(data.post.id)
+                isNew: indexPath.row <= separatorIndex,
+                delegate: self
             )
-            cell.border.backgroundColor = indexPath.row == separatorIndex ? .foreground : .foreground6
         }
         
         if indexPath.row > posts.count - 10 {
@@ -226,23 +227,6 @@ final class NotificationsViewController: FeedViewController {
         }
         
         return cell
-    }
-    
-    override func animateBars() {
-        let shouldShowBars = self.shouldShowBars
-        
-        super.animateBars()
-        
-        newSpacerHeightConstraint?.isActive = false
-        
-        if !shouldShowBars {
-            newSpacerHeightConstraint = newSpacer.heightAnchor.constraint(equalToConstant: 30)
-            newSpacerHeightConstraint?.isActive = true
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.stack.layoutIfNeeded()
-        }
     }
     
     override func open(post: ParsedContent) -> FeedViewController {
@@ -280,11 +264,18 @@ final class NotificationsViewController: FeedViewController {
                 if notifications.isEmpty {
                     self.didReachEnd = true
                 } else {
+                    notifications.forEach { $0.post?.buildContentString(style: .notifications) }
                     self.notifications += notifications
                 }
                 self.isLoading = false
             }
             .store(in: &cancellables)
+    }
+    
+    override func setBarsToTransform(_ transform: CGFloat) {
+        super.setBarsToTransform(transform)
+        
+        tabSelectionView.transform = .init(translationX: 0, y: transform)
     }
 }
 

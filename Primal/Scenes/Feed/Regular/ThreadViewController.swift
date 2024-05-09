@@ -39,7 +39,6 @@ final class ThreadViewController: PostFeedViewController {
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
-    private let bottomBarSpacer = UIView()
     
     private let postButtonText = "Reply"
     
@@ -57,7 +56,7 @@ final class ThreadViewController: PostFeedViewController {
     
     @Published var mainPostRepliesHeightArray: [CGFloat] = [0, 150, 0, 0, 0]
     
-    var isLoading = true { 
+    var isLoading = true {
         didSet {
             mainPostRepliesHeightArray[1] = isLoading ? 150 : 0
             table.reloadData()
@@ -85,12 +84,14 @@ final class ThreadViewController: PostFeedViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var bottomBarHeight: CGFloat = 150
+    override var barsMaxTransform: CGFloat { bottomBarHeight }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
 
         mainTabBarController?.showTabBarBorder = false
-
+        
         didLoadView = true
     }
     
@@ -100,6 +101,8 @@ final class ThreadViewController: PostFeedViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
         mainTabBarController?.showTabBarBorder = false
+        
+        bottomBarHeight = 116 + view.safeAreaInsets.bottom
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -202,47 +205,12 @@ final class ThreadViewController: PostFeedViewController {
         replyingToLabel.attributedText = replyToString(name: post.user.data.name)
     }
     
-    override func updateBars() {
-        guard posts.count > 10 else { return }
+    override func setBarsToTransform(_ transform: CGFloat) {
+        if !didMoveToMain || posts.count < 10 { return }
         
-        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
+        super.setBarsToTransform(transform)
         
-        super.updateBars()
-        
-        bottomBarSpacer.isHidden = !shouldShowBars
-        inputParent.isHidden = !shouldShowBars
-        inputParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 300)
-        inputParent.alpha = shouldShowBars ? 1 : 0
-    }
-    
-    override func animateBars() {
-        guard posts.count > 10 else { return }
-        let shouldShowBars = ContentDisplaySettings.fullScreenFeed ? shouldShowBars : true
-        
-        super.animateBars()
-        
-        if !shouldShowBars {
-            inputParent.isHidden = true
-            bottomBarSpacer.isHidden = true
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.inputParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 300)
-            self.inputParent.alpha = shouldShowBars ? 1 : 0
-        } completion: { _ in
-            if shouldShowBars {
-                self.inputParent.isHidden = false
-                self.bottomBarSpacer.isHidden = false
-            }
-        }
-    }
-    
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        super.scrollViewDidScroll(scrollView)
-        
-        if inputManager.isEditing {
-            shouldShowBars = true
-        }
+        inputParent.transform = .init(translationX: 0, y: -transform)
     }
 }
 
@@ -343,17 +311,28 @@ private extension ThreadViewController {
         .store(in: &cancellables)
         
         Publishers.CombineLatest(
-            Publishers.Merge(Just(true), Publishers.keyboardShown.map { $0 }),
+            Publishers.keyboardState,
             $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
         )
-        .sink { [weak self] (isKeyboardShown, contentSize) in
+        .sink { [weak self] (keyboardState, contentSize) in
+            let topBarHeight: CGFloat = (self?.topBarHeight ?? 100) + 12
+            
             guard let self, posts.count - mainPositionInThread < 6 else {
-                self?.table.contentInset = .init(top: 12, left: 0, bottom: 50, right: 0)
+                switch keyboardState {
+                case .hidden:
+                    self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: 150, right: 0)
+                case .shown(let height):
+                    self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: height, right: 0)
+                }
                 return
             }
-            
-            let botInset = 50 + max(0, table.frame.height - 62 - contentSize)
-            self.table.contentInset = .init(top: 12, left: 0, bottom: botInset, right: 0)
+            switch keyboardState {
+            case .hidden:
+                let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - topBarHeight - contentSize)
+                self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
+            case .shown(let height):
+                self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: height + 300, right: 0)
+            }
         }
         .store(in: &cancellables)
         
@@ -463,11 +442,16 @@ private extension ThreadViewController {
         loadingSpinner.removeFromSuperview()
         
         table.keyboardDismissMode = .interactive
-        table.contentInset = .init(top: 12, left: 0, bottom: 700, right: 0)
-        table.contentOffset = .init(x: 0, y: -12)
+        table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
+        table.contentOffset = .init(x: 0, y: -112)
         
-        stack.addArrangedSubview(inputParent)
-        stack.addArrangedSubview(bottomBarSpacer)
+        view.addSubview(inputParent)
+        inputParent.pinToSuperview(edges: .horizontal)
+        inputParent.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        let botC = inputParent.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        botC.priority = .defaultHigh
+        botC.isActive = true
+        inputParent.frame = .init(origin: .init(x: 0, y: 700), size: .init(width: 350, height: 100))
         
         inputBackground.layer.cornerRadius = 22
         inputBackground.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
@@ -515,12 +499,6 @@ private extension ThreadViewController {
             .pinToSuperview(edges: .bottom)
         
         inputBorder.pinToSuperview(edges: [.top, .horizontal])
-        
-        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
-        bottomC.priority = .defaultLow
-        bottomC.isActive = true
-        
-        bottomBarSpacer.topAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
         
         inputStack.spacing = 4
         inputStack.setCustomSpacing(8, after: replyingToLabel)
@@ -640,5 +618,9 @@ extension ThreadViewController: ZapGalleryViewDelegate {
         return .init(previewProvider: { profileVC }, actionProvider: { suggested in
             return UIMenu(title: zap.message, children: items + suggested)
         })
+    }
+    
+    func mainActionForZap(_ zap: ParsedZap) {
+        show(ProfileViewController(profile: zap.user), sender: nil)
     }
 }
