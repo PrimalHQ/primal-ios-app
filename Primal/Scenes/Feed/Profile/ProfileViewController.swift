@@ -471,6 +471,14 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
             IdentityManager.instance.removeFeedFromList(hex: profile.data.pubkey)
         }
     }
+    
+    func tappedFollowUsersMuteList() {
+        hapticGenerator.impactOccurred()
+        
+        FollowUsersMutelistRequest(pubkey: profile.data.pubkey).execute()
+        
+        view.showToast("Followed")
+    }
 }
 
 extension ProfileViewController: MutedUserCellDelegate {

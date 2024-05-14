@@ -90,10 +90,10 @@ class ProfileInfoCell: UITableViewCell {
         
         infoStack.set(selectedTab)
         
-        editProfile.isHidden = user.pubkey != IdentityManager.instance.userHexPubkey
-        zapButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
+        editProfile.isHidden = !user.isCurrentUser
+        zapButton.isHidden = user.isCurrentUser
 
-        if user.pubkey == IdentityManager.instance.userHexPubkey {
+        if user.isCurrentUser {
             followButton.isHidden = true
             unfollowButton.isHidden = true
         } else {

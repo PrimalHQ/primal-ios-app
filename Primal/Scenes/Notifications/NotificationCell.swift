@@ -22,7 +22,8 @@ final class NotificationCell: PostCell {
     
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
-    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), bottomButtonStack])
+    lazy var bottomBarStandIn = UIView()
+    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, bottomBarStandIn])
     
     var notificationCellDelegate: NotificationCellDelegate? {
         get { delegate as? NotificationCellDelegate }
@@ -43,7 +44,7 @@ final class NotificationCell: PostCell {
         if let post = notification.post {
             update(post)
             postContentStack.isHidden = false
-            bottomButtonStack.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
+            bottomBarStandIn.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
         } else {
             postContentStack.isHidden = true
         }
@@ -71,6 +72,7 @@ final class NotificationCell: PostCell {
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
+        mainLabel.numberOfLines = parsedContent.user.isCurrentUser ? 6 : 20
         
         layoutSubviews()
         
@@ -80,7 +82,11 @@ final class NotificationCell: PostCell {
 
 private extension NotificationCell {
     func setup() {
-//        backgroundColorView.removeFromSuperview()
+        bottomBarStandIn.addSubview(bottomButtonStack)
+        bottomButtonStack
+            .pinToSuperview(edges: .horizontal, padding: -8)
+            .pinToSuperview(edges: .top, padding: -6)
+            .pinToSuperview(edges: .bottom, padding: -12)
         
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         
@@ -171,7 +177,7 @@ extension GroupedNotification {
             
             if CheckNip05Manager.instance.isVerified(first.data) {
                 let attachment = NSTextAttachment()
-                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadge") : UIImage(named: "verifiedBadgeBlue")
+                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadgeNotifications") : UIImage(named: "verifiedBadgeNotificationsBlue")
                 string.append(NSAttributedString(attachment: attachment))
             }
             
@@ -179,17 +185,17 @@ extension GroupedNotification {
         }
         
         if users.count > 1 {
-            let text = "and \(users.count) other" + (users.count == 2 ? " " : "s ")
+            let text = "and \(users.count - 1) other" + (users.count == 2 ? "" : "s")
             string.append(NSAttributedString(string: text, attributes: [
                 .foregroundColor: UIColor.foreground,
                 .font: UIFont.appFont(withSize: 18, weight: .regular)
             ]))
         }
         
-        string.append(NSAttributedString(string: notificationTypeText, attributes: [
-            .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: 18, weight: .regular)
-        ]))
+//        string.append(NSAttributedString(string: notificationTypeText, attributes: [
+//            .foregroundColor: UIColor.foreground,
+//            .font: UIFont.appFont(withSize: 18, weight: .regular)
+//        ]))
         
         return string
     }
@@ -208,10 +214,7 @@ extension GroupedNotification {
                 .foregroundColor: UIColor(rgb: 0x52CE0A)
             ])
         case .YOUR_POST_WAS_REPLIED_TO:
-            return .init(string: post.post.replies.shortened(), attributes: [
-                .font: UIFont.appFont(withSize: 14, weight: .medium),
-                .foregroundColor: UIColor.brandText
-            ])
+            return nil
         case .YOUR_POST_WAS_ZAPPED:
             return .init(string: post.post.satszapped.shortened(), attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .medium),
@@ -275,13 +278,13 @@ extension NotificationType {
         case .NEW_USER_FOLLOWED_YOU:
             return "notifFollow"
         case .YOUR_POST_WAS_ZAPPED:
-            return "feedZapFilled"
+            return "notifPostZap1"
         case .YOUR_POST_WAS_LIKED:
-            return "feedHeartFilled"
+            return "notifPostLike1"
         case .YOUR_POST_WAS_REPOSTED:
-            return "feedRepost"
+            return "notifPostRepost1"
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "feedCommentFilled"
+            return "notifPostReply1"
         case .YOU_WERE_MENTIONED_IN_POST:
             return "notifUserMention"
         case .YOUR_POST_WAS_MENTIONED_IN_POST:

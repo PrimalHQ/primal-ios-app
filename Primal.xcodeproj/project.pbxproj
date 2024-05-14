@@ -264,6 +264,7 @@
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
+		B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */; };
 		B91BB95D2B3B3854003F6B2A /* ErrorMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */; };
 		B91BB95F2B3CC2C7003F6B2A /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95E2B3CC2C7003F6B2A /* ImageCell.swift */; };
 		B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */; };
@@ -689,6 +690,7 @@
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
+		B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUsersMutelistRequest.swift; sourceTree = "<group>"; };
 		B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageCell.swift; sourceTree = "<group>"; };
 		B91BB95E2B3CC2C7003F6B2A /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		B91BB9602B3DE8AE003F6B2A /* WalletSendParentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendParentViewController.swift; sourceTree = "<group>"; };
@@ -1630,6 +1632,7 @@
 				B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */,
 				B90032902BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift */,
 				B91B45B02BE9001D0073A539 /* WebSocket.swift */,
+				B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */,
 			);
 			path = SocketRequests;
 			sourceTree = "<group>";
@@ -2467,6 +2470,7 @@
 				9E6B38CB29F9487F00144073 /* Request.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
+				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
@@ -2681,7 +2685,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.3;
+				MARKETING_VERSION = 1.7.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2726,7 +2730,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.3;
+				MARKETING_VERSION = 1.7.8;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

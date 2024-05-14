@@ -365,8 +365,7 @@ private extension FeedViewController {
                 
                 if let menu = self.parent as? MenuContainerController, menu.isOpen { return }
                 
-//                self.isShowingBars = false
-//                self.shouldShowBars = true
+                self.animateBarsToVisible()
             }
         }
     }

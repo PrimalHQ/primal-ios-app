@@ -43,7 +43,7 @@ final class NotificationsViewController: FeedViewController {
         }
     }
     
-    var notifications: [GroupedNotification] = [] {
+    @Published var notifications: [GroupedNotification] = [] {
         didSet {
             // We must assign posts to an array of posts that match so we can pass control to the FeedViewController
             posts = notifications.map { $0.post ?? .init(post: .empty, user: $0.users.first ?? ParsedUser(data: .empty)) }
@@ -53,8 +53,10 @@ final class NotificationsViewController: FeedViewController {
     
     var tabSelectionView = TabSelectionView(tabs: ["ALL", "ZAPS", "REPLIES", "MENTIONS"])
     
-    var isLoading = false
-    var didReachEnd = false
+    @Published var isLoading = false
+    @Published var didReachEnd = false
+    
+    var until = Date()
     
     var newNotifications: Int = 0 {
         didSet {
@@ -95,6 +97,16 @@ final class NotificationsViewController: FeedViewController {
             }
         }
         .store(in: &cancellables)
+        
+        $notifications
+            .debounce(for: 0.3, scheduler: RunLoop.main)
+            .filter { [weak self] notifications in
+                self?.table.indexPathsForVisibleRows?.first?.row ?? 0 > notifications.count - 10
+            }
+            .sink { [weak self] _ in
+                self?.loadMore()
+            }
+            .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -169,11 +181,12 @@ final class NotificationsViewController: FeedViewController {
     func refresh() {
         didReachEnd = false
         isLoading = true
+        until = Date()
         
         let tab = self.tab
         let payload = JSON.object([
             "pubkey": idJsonID,
-            "limit": .number(max(Double(newNotifications + 20), 50)),
+            "limit": .number(max(Double(newNotifications + 20), 100)),
             "type_group": .string(tab.apiName)
         ])
         
@@ -181,18 +194,23 @@ final class NotificationsViewController: FeedViewController {
             SocketRequest(name: "get_notifications", payload: payload).publisher(),
             SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": idJsonID])).publisher()
         )
-        .map { newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
+        .map { [weak self] newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
             let lastSeen = seenResult.timestamps.first ?? .init(timeIntervalSince1970: 0)
             let parsed = newResult.getParsedNotifications()
             
+            if let self {
+                until = parsed.last?.mainNotification.date ?? until
+            }
+            
             let new = parsed.filter { $0.mainNotification.date >= lastSeen }
             let old = parsed.filter { $0.mainNotification.date < lastSeen }
-            return (new.grouped(), old)
+            return (new.grouped(), old.grouped())
         }
         .receive(on: DispatchQueue.main)
         .sink { [weak self] newResult, seenResult in
             self?.separatorIndex = newResult.count - 1
             self?.notifications = newResult + seenResult
+            self?.notifications.forEach { $0.post?.buildContentString(style: .notifications) }
             self?.table.reloadData()
             self?.isLoading = false
             
@@ -212,8 +230,6 @@ final class NotificationsViewController: FeedViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         
-        let data = posts[indexPath.row]
-        
         if let cell = cell as? NotificationCell {
             cell.updateForNotification(
                 notifications[indexPath.row],
@@ -222,7 +238,7 @@ final class NotificationsViewController: FeedViewController {
             )
         }
         
-        if indexPath.row > posts.count - 10 {
+        if indexPath.row > posts.count - 15 {
             loadMore()
         }
         
@@ -244,11 +260,10 @@ final class NotificationsViewController: FeedViewController {
     func loadMore() {
         guard !isLoading, !didReachEnd else { return }
         
-        let until = notifications.last?.mainNotification.date ?? Date()
         let payload = JSON.object([
             "pubkey": idJsonID,
-            "limit": .number(50),
-            "until": .number(until.timeIntervalSince1970.rounded()),
+            "limit": .number(152),
+            "until": .number(until.timeIntervalSince1970.rounded() - 1),
             "type_group": .string(tab.apiName)
         ])
         
@@ -258,14 +273,16 @@ final class NotificationsViewController: FeedViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] notifications in
                 guard let self, self.isLoading else { return }
-                
-                let notifications = notifications.filter { newNotif in !self.notifications.contains(where: { $0.mainNotification.date == newNotif.mainNotification.date }) }
+
+                if let date = notifications.last?.mainNotification.date {
+                    until = date
+                }
                 
                 if notifications.isEmpty {
                     self.didReachEnd = true
                 } else {
                     notifications.forEach { $0.post?.buildContentString(style: .notifications) }
-                    self.notifications += notifications
+                    self.notifications += notifications.grouped()
                 }
                 self.isLoading = false
             }
@@ -281,7 +298,11 @@ final class NotificationsViewController: FeedViewController {
 
 extension NotificationsViewController: NotificationCellDelegate {
     func avatarListTappedInCell(_ cell: NotificationCell, index: Int) {
-        guard let user = notifications[safe: table.indexPath(for: cell)?.row]?.users[safe: index]  else { return }
+        guard let notification = notifications[safe: table.indexPath(for: cell)?.row] else { return }
+        
+        let filteredUsers = notification.users.filter { $0.profileImage.url(for: .small) != nil }
+        
+        guard let user = filteredUsers[safe: index]  else { return }
         
         let profile = ProfileViewController(profile: user)
         show(profile, sender: nil)
@@ -322,7 +343,9 @@ extension Array where Element == GroupedNotification {
             }
         }
         
-        return grouped
+        return grouped.sorted(by: {
+            $0.mainNotification.date > $1.mainNotification.date
+        })
     }
 }
 

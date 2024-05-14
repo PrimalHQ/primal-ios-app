@@ -39,8 +39,8 @@ final class AvatarView: UIView {
             first.isHidden = false
         }
         
-        let imagesCount = max(1, images.count)
-        extraView.isHidden = imagesCount == userCount
+        let imagesCount = images.count.clamp(1, avatarViews.count)
+        extraView.isHidden = imagesCount >= userCount
         let extraCount = min(userCount - imagesCount, 99)
         extraLabel.text = "+\(extraCount)"
     }

@@ -137,6 +137,10 @@ extension NostrObject {
         createNostrMuteListEvent(mutedPubkeys)
     }
     
+    static func followedMuteLists(content: String, tags: [[String]]) -> NostrObject? {
+        createNostrObject(content: content, kind: 30_000, tags: tags)
+    }
+    
     static func bookmarks(_ bookmarks: [Tag]) -> NostrObject? {
         createNostrBookmarkListEvent(bookmarks)
     }

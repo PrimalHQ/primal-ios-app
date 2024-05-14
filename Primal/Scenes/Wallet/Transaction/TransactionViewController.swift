@@ -80,11 +80,15 @@ final class TransactionViewController: FeedViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    override var barsMaxTransform: CGFloat { 0 }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
+        
+        table.contentInset = .zero
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -167,6 +171,10 @@ final class TransactionViewController: FeedViewController {
         default:
             return
         }
+    }
+    
+    override func setBarsToTransform(_ transform: CGFloat) {
+        return
     }
     
     override func updateTheme() {

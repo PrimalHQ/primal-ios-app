@@ -91,6 +91,8 @@ extension ParsedUser {
     func webURL() -> String {
         "https://primal.net/p/\(data.npub)"
     }
+    
+    var isCurrentUser: Bool { data.isCurrentUser }
 }
 
 enum ParsedContentTextStyle {
@@ -122,8 +124,6 @@ enum ParsedContentTextStyle {
 
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
-        let enlargingAmount: CGFloat = 2
-        
         let fs = FontSizeSelection.current
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = fs.contentLineSpacing

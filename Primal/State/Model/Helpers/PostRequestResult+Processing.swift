@@ -33,6 +33,13 @@ extension PostRequestResult {
     )}
     
     func process() -> [ParsedContent] {
+        mentions.forEach { mention in
+            guard mention.kind == 30023 else { return }
+                
+                
+            print("MENTION")
+        }
+        
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
@@ -155,6 +162,23 @@ extension PostRequestResult {
             }
         }
         
+        let naddr1MentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+        
+        if let profileMentionRegex = try? NSRegularExpression(pattern: naddr1MentionPattern, options: []) {
+            profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard let matchRange = match?.range else { return }
+                    
+                let mentionText = (text as NSString).substring(with: matchRange)
+                
+                guard let address = mentionText.split(separator: ":").last else { return }
+                    
+                if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                    referencedPosts.append((mentionText, mention))
+                }
+            }
+        }
+        
+        
         if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
             itemsToRemove.append(mentionText)
@@ -197,18 +221,18 @@ extension PostRequestResult {
         }
         
         if p.mediaResources.isEmpty {
-            p.mediaResources = imageURLs
-                .sorted(by: {
-                    text.range(of: $0)?.lowerBound ?? text.startIndex < text.range(of: $1)?.lowerBound ?? text.startIndex
-                })
-                .map { .init(url: $0, variants: []) }
+            p.mediaResources = imageURLs.map { .init(url: $0, variants: []) }
         }
         
-        for string in videoURLS.reversed() {
+        for string in videoURLS {
             if !p.mediaResources.contains(where: { string.hasPrefix($0.url) }) {
-                p.mediaResources.insert(.init(url: string, variants: []), at: 0)
+                p.mediaResources.append(.init(url: string, variants: []))
             }
         }
+        
+        p.mediaResources.sort(by: {
+            text.range(of: $0.url)?.lowerBound ?? text.startIndex < text.range(of: $1.url)?.lowerBound ?? text.startIndex
+        })
         
         // Don't show link preview if post contains media gallery
         if !p.mediaResources.isEmpty { p.linkPreview = nil }
@@ -331,6 +355,8 @@ extension PrimalUser {
     var parsedNip: String { nip05.hasPrefix("_@") ? nip05.replacingOccurrences(of: "_@", with: "") : nip05 }
     
     var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
+    
+    var isCurrentUser: Bool { pubkey == IdentityManager.instance.userHexPubkey }
 }
 
 private extension String {

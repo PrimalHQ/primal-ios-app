@@ -274,7 +274,7 @@ class ZapGalleryView: UIView {
                     pill.transform = .init(translationX: 300, y: 0)
                     
                     var background: UIView?
-                    if pill.zap.user.data.pubkey == IdentityManager.instance.userHexPubkey {
+                    if pill.zap.user.isCurrentUser {
                         let view = UIView()
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()
