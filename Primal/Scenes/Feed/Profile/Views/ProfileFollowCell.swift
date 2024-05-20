@@ -43,8 +43,8 @@ final class ProfileFollowCell: UITableViewCell, Themeable {
         
         action.isFollowing = FollowManager.instance.isFollowing(user.data.pubkey)
         
-        action.alpha = user.data.pubkey == IdentityManager.instance.userHexPubkey ? 0.01 : 1
-        action.isEnabled = user.data.pubkey != IdentityManager.instance.userHexPubkey
+        action.alpha = user.isCurrentUser ? 0.01 : 1
+        action.isEnabled = !user.isCurrentUser
         
         avatar.setUserImage(user)
         

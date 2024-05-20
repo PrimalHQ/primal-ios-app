@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import NostrSDK
 
 extension Character {
     /// A simple emoji is one scalar and presented to the user as an Emoji
@@ -37,7 +38,7 @@ extension String {
 extension URL {
     var isImageURL: Bool { lastPathComponent.isImageURLPathComponent }
     
-    var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent || absoluteString.isYoutubeVideoURL }
+    var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent }
 }
 
 extension String : Identifiable {
@@ -169,6 +170,10 @@ extension String : Identifiable {
         return (address, amount, label, lightning)
     }
     
+    func hexToNoteId() -> String? { bech32_note_id(self) }
+    
+    func hexToNpub() -> String? { PublicKey(hex: self)?.npub }
+    
     func encodedToHex() -> String? {
         guard let decoded = try? bech32_decode(self) else { return nil }
         return hex_encode(decoded.data)
@@ -185,6 +190,15 @@ extension String : Identifiable {
         let lnurlp = parts[0]
 
         return "https://\(host)/.well-known/lnurlp/\(lnurlp)"
+    }
+    
+    func extractHashtags() -> [String] {
+        let regex = try! NSRegularExpression(pattern: "#(\\w+)", options: [])
+        let results = regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
+            
+        return results
+            .compactMap { Range($0.range, in: self) }
+            .map { String(self[$0].dropFirst()) }
     }
 
     func extractTagsMentionsAndURLs() -> [String] {

@@ -36,7 +36,7 @@ final class PrimalEndpointsManager {
     }
     
     static var regularURL: URL {
-        URL(string: "wss://cache1.primal.net/v1") ??
+//        URL(string: "wss://cache0.primal.net/v1") ??
         URL(string: UserDefaults.standard.endpointsLastValue?.mobile_cache_server_v1.first ?? "wss://cache.primal.net/v1") ?? URL(string: "wss://cache.primal.net/v1")!
     }
     static var walletURL: URL {

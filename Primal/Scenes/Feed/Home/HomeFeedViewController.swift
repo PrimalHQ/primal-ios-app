@@ -43,8 +43,10 @@ final class HomeFeedViewController: PostFeedViewController {
             }
         } else if old == 0 {
             newPostsViewParent.isHidden = false
-            UIView.animate(withDuration: 0.9, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
+            newPostsView.transform = .init(translationX: 0, y: -30)
+            UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
                 self.newPostsView.alpha = 1
+                self.newPostsView.transform = .identity
             }
         }
     }
@@ -90,7 +92,7 @@ final class HomeFeedViewController: PostFeedViewController {
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
             feed.addAllFuturePosts()
-            shouldShowBars = true
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
                 self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
             }
@@ -150,34 +152,18 @@ final class HomeFeedViewController: PostFeedViewController {
         }
     }
     
-    override func updateBars() {
-        let shouldShowBars = shouldShowBars
+    override func setBarsToTransform(_ transform: CGFloat) {
+        super.setBarsToTransform(transform)
         
-        super.updateBars()
+        let percent = abs(transform / barsMaxTransform)
+        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+
+        postButton.alpha = 1 - percent
+        postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
+        postButtonParent.transform = .init(translationX: 0, y: -transform)
         
-        postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
-        postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 200)
-        newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-        newPostsViewParent.alpha = shouldShowBars ? 1 : 0
-    }
-    
-    override func animateBars() {
-        let shouldShowBars = shouldShowBars
-        
-        super.animateBars()
-        
-        UIView.animate(withDuration: 0.53, delay: shouldShowBars ? 0.2 : 0) {
-            self.postButton.transform = shouldShowBars ? .identity : .init(scaleX: 0.1, y: 0.1).rotated(by: .pi / 2)
-        }
-        
-        UIView.animate(withDuration: 0.6, delay: shouldShowBars ? 0 : 0.2) {
-            self.postButtonParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: 200)
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.newPostsViewParent.transform = shouldShowBars ? .identity : .init(translationX: 0, y: -100)
-            self.newPostsViewParent.alpha = shouldShowBars ? 1 : 0
-        }
+        newPostsViewParent.transform = .init(translationX: 0, y: transform)
+        newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
     }
 }
 

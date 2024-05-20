@@ -709,8 +709,8 @@ func privkey_to_pubkey(privkey: String) -> String? {
     guard let sec = hex_decode(privkey) else {
         return nil
     }
-    guard let key = try? secp256k1.Signing.PrivateKey(rawRepresentation: sec) else {
+    guard let key = try? secp256k1.Schnorr.PrivateKey(dataRepresentation: sec) else {
         return nil
     }
-    return hex_encode(Data(key.publicKey.xonly.bytes))
+    return hex_encode(Data(key.xonly.bytes))
 }

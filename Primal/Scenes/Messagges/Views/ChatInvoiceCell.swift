@@ -43,7 +43,7 @@ class ChatInvoiceCell: ChatMessageCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func setupWith(message: ProcessedMessage, roundSide: Bool) {
-        cachedIsMine = message.user.data.pubkey == IdentityManager.instance.userHexPubkey
+        cachedIsMine = message.user.isCurrentUser
         
         super.setupWith(message: message, roundSide: roundSide)
         

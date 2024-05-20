@@ -553,10 +553,6 @@
       "PT"
     ],
     [
-      "Puerto Rico",
-      "PC"
-    ],
-    [
       "Qatar",
       "QA"
     ],
@@ -827,6 +823,10 @@
       "US-DE"
     ],
     [
+      "Washington, D.C.",
+      "US-DC"
+    ],
+    [
       "Florida",
       "US-FL"
     ],
@@ -945,6 +945,10 @@
     [
       "Pennsylvania",
       "US-PA"
+    ],
+    [
+      "Puerto Rico",
+      "US-PR"
     ],
     [
       "Rhode Island",

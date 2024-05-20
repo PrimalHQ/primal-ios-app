@@ -50,7 +50,7 @@ extension WalletSearchController {
             if let lightning = parsedBitcoinAddress.lightning {
                 textSearch = nil
                 search(lightning)
-            } else if let amount = parsedBitcoinAddress.1 {
+            } else if let amount = parsedBitcoinAddress.1, amount > 0 {
                 navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: amount)), animated: true)
             } else {
                 navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
@@ -87,7 +87,11 @@ extension WalletSearchController {
                 
                 guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
                     if let invoice = result.parsedLNInvoice {
-                        navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
+                        if invoice.lninvoice.amount_msat > 0 {
+                            navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
+                        } else {
+                            navigationController?.pushViewController(WalletSendAmountController(.address(text, invoice, nil)), animated: true)
+                        }
                     } else {
                         navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
                     }
@@ -96,7 +100,11 @@ extension WalletSearchController {
             
                 searchForPubkey(pubkey) { [weak self] user in
                     if let invoice = result.parsedLNInvoice {
-                        self?.navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
+                        if invoice.lninvoice.amount_msat > 0 {
+                            self?.navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
+                        } else {
+                            self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, invoice, user)), animated: true)
+                        }
                     } else {
                         self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, user)), animated: true)
                     }

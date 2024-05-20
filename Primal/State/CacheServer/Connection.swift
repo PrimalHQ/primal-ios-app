@@ -71,7 +71,7 @@ final class Connection {
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     
-    private var socket: NWWebSocket?
+    private var socket: WebSocket
     private var subHandlers: [String: ([JSON]) -> Void] = [:]
     private var responseBuffer: [String: [JSON]] = [:]
     
@@ -81,6 +81,7 @@ final class Connection {
     private var attemptReconnection = true
     
     init(socketURL: URL) {
+        socket = WebSocket(socketURL)
         self.socketURL = socketURL
         self.connect()
         
@@ -91,34 +92,49 @@ final class Connection {
     }
     
     deinit {
-        socket?.disconnect()
+        socket.disconnect()
     }
     
     var cancellables: Set<AnyCancellable> = []
+    var socketResponse: AnyCancellable?
 
     @Published var isConnected: Bool = false
     
     private func connect() {
         disconnect()
         
-        let options = NWProtocolWebSocket.Options()
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-        let ua = "\(APP_NAME)/\(appVersion) (main)"
-        options.autoReplyPing = true // from default settings of NWWebsocket
-        options.setAdditionalHeaders([("User-Agent", ua)])
-        socket = NWWebSocket(url: socketURL, options: options, connectionQueue: Self.dispatchQueue)
+        socket = WebSocket(socketURL)
+        
+        socketResponse = socket.subject.receive(on: Self.dispatchQueue).sink { [weak self] event in
+            guard let self else { return }
+            
+            switch event {
+            case .connected:
+                isConnected = true
+            case .message(let message):
+                switch message {
+                case .string(let string):
+                    guard let json: JSON = string.decode() else { return }
+                    processMessage(json)
+                case .data(let data):
+                    print("RECEIVED HEX DATA")
+                @unknown default:
+                    return
+                }
+            case .disconnected(_, _):
+                isConnected = false
+            case .error(_):
+                isConnected = false
+            }
+        }
         
         attemptReconnection = true
-        socket?.delegate = self
-        socket?.connect()
-        socket?.ping(interval: 10.0)
+        socket.connect()
     }
     
     private func disconnect() {
         attemptReconnection = false
-        socket?.delegate = nil
-        socket?.disconnect()
-        socket = nil
+        socket.disconnect()
         isConnected =  false
     }
     
@@ -145,10 +161,10 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-//            print("REQUEST:\n\(jsonStr)")
+            print("REQUEST:\n\(jsonStr)")
             self.responseBuffer[subId] = .init()
             self.subHandlers[subId] = handler
-            self.socket?.send(string: jsonStr)
+            self.socket.send(.string(jsonStr))
         }
     }
     
@@ -179,7 +195,7 @@ final class Connection {
 //            print("REQUEST:\n\(jsonStr)")
 
             self.continousSubHandlers[subId] = handler
-            self.socket?.send(string: jsonStr)
+            self.socket.send(.string(jsonStr))
         }
         return .init(id: subId, connection: self)
     }
@@ -195,7 +211,7 @@ final class Connection {
                  
 //            print("REQUEST:\n\(jsonStr)")
             self.continousSubHandlers[id] = nil
-            self.socket?.send(string: jsonStr)
+            self.socket.send(.string(jsonStr))
         }
     }
     

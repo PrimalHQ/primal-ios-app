@@ -90,10 +90,10 @@ class ProfileInfoCell: UITableViewCell {
         
         infoStack.set(selectedTab)
         
-        editProfile.isHidden = user.pubkey != IdentityManager.instance.userHexPubkey
-        zapButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
+        editProfile.isHidden = !user.isCurrentUser
+        zapButton.isHidden = user.isCurrentUser
 
-        if user.pubkey == IdentityManager.instance.userHexPubkey {
+        if user.isCurrentUser {
             followButton.isHidden = true
             unfollowButton.isHidden = true
         } else {
@@ -156,7 +156,7 @@ private extension ProfileInfoCell {
         
         contentView.backgroundColor = .background2
         primaryLabel.textColor = .foreground
-        secondaryLabel.textColor = .foreground5
+        secondaryLabel.textColor = .foreground3
         descLabel.textColor = .foreground
         
         descLabel.enabledTextCheckingTypes = .allSystemTypes

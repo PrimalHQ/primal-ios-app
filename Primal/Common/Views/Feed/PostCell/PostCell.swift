@@ -12,72 +12,8 @@ import LinkPresentation
 import FLAnimatedImage
 import Nantes
 
-enum PostCellEvent {
-    case url(URL?)
-    case images(MediaMetadata.Resource)
-    case embeddedImages(MediaMetadata.Resource)
-    case profile
-    case post
-    case like
-    case zap
-    case longTapZap
-    case repost
-    case reply
-    case embeddedPost
-    case repostedProfile
-    
-    case payInvoice
-    
-    case zapDetails
-    case likeDetails
-    case repostDetails
-    
-    case share
-    case copy(NoteCopiableProperty)
-    case broadcast
-    case report
-    case mute
-    case bookmark
-    case unbookmark
-}
-
-enum NoteCopiableProperty {
-    case link
-    case content
-    case rawData
-    case noteID
-    case userPubkey
-    case invoice
-}
-
 protocol PostCellDelegate: AnyObject {
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent)
-}
-
-class PostCellNantesDelegate {
-    weak var cell: PostCell?
-}
-
-struct PostInfo {
-    var isBookmarked: Bool
-    var isLiked: Bool
-    var isMuted: Bool
-    var isReplied: Bool
-    var isReposted: Bool
-    var isZapped: Bool
-}
-
-extension ParsedContent {
-    var postInfo: PostInfo {
-        .init(
-            isBookmarked: BookmarkManager.instance.isBookmarked(post.id),
-            isLiked: LikeManager.instance.hasLiked(post.id),
-            isMuted: MuteManager.instance.isMuted(user.data.pubkey),
-            isReplied: PostManager.instance.hasReplied(post.id),
-            isReposted: PostManager.instance.hasReposted(post.id),
-            isZapped: WalletManager.instance.hasZapped(post.id)
-        )
-    }
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
@@ -205,7 +141,7 @@ class PostCell: UITableViewCell {
             }
             
             if imageAspectConstraint == nil { // In case the image was not in memory we use placeholder sizes
-                let multiplier: CGFloat = url?.isVideoURL == true ? (url?.isYoutubeVideoURL == true ? 0.8 : (9 / 16)) : 1
+                let multiplier: CGFloat = url?.isVideoURL == true ? 9 / 16 : 1
                 
                 let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
                 aspect.priority = .defaultHigh
@@ -232,48 +168,28 @@ class PostCell: UITableViewCell {
         let postInfo = content.postInfo
         let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
         
-        threeDotsButton.menu = .init(children: [
-            UIAction(title: "Share Note", image: UIImage(named: "MenuShare"), handler: { [unowned self] _ in
-                delegate?.postCellDidTap(self, .share)
-            }),
-            UIAction(title: "Copy Note Link", image: UIImage(named: "MenuCopyLink"), handler: { [unowned self] _ in
-                delegate?.postCellDidTap(self, .copy(.link))
-            }),
-            postInfo.isBookmarked ?
-                UIAction(title: "Remove From Bookmarks", image: UIImage(named: "MenuBookmarkFilled"), handler: { [unowned self] _ in
-                    delegate?.postCellDidTap(self, .unbookmark)
-                }) :
-                UIAction(title: "Add To Bookmarks", image: UIImage(named: "MenuBookmark"), handler: { [unowned self] _ in
-                    delegate?.postCellDidTap(self, .unbookmark)
-                }),
-            UIAction(title: "Copy Note Text", image: UIImage(named: "MenuCopyText"), handler: { [unowned self] _ in
-                delegate?.postCellDidTap(self, .copy(.content))
-            }),
-            UIAction(title: "Copy Raw Data", image: UIImage(named: "MenuCopyData"), handler: { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .copy(.rawData))
-            }),
-            UIAction(title: "Copy Note ID", image: UIImage(named: "MenuCopyNoteID"), handler: { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .copy(.noteID))
-            }),
-            UIAction(title: "Copy User Public Key", image: UIImage(named: "MenuCopyUserPubkey"), handler: { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .copy(.userPubkey))
-            }),
-            UIAction(title: "Broadcast", image: UIImage(named: "MenuBroadcast"), handler: { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .broadcast)
-            }),
-            UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .mute)
-            },
-            UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
-                guard let self else { return }
-                delegate?.postCellDidTap(self, .report)
+        let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        
+        let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
+            ("Share Note", "MenuShare", .share, []),
+            ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
+            postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
+            ("Copy Note Text", "MenuCopyText", .copy(.content), []),
+            ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
+            ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
+            ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
+            ("Broadcast", "MenuBroadcast", .broadcast, []),
+            (muteTitle, "blockIcon", .mute, .destructive),
+            ("Report user", "warningIcon", .report, .destructive)
+        ]
+
+        threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
+            UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
+                guard let self = self else { return }
+                delegate?.postCellDidTap(self, action)
             }
-        ])
+        })
     }
 }
 
@@ -285,13 +201,6 @@ extension PostCell: ImageCollectionViewDelegate {
         if collection == postPreview.mainImages {
             delegate?.postCellDidTap(self, .embeddedImages(resource))
         }
-    }
-}
-
-extension PostCellNantesDelegate: NantesLabelDelegate {
-    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
-        guard let cell else { return }
-        cell.delegate?.postCellDidTap(cell, .url(link))
     }
 }
 
@@ -439,40 +348,5 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
         delegate?.postCellDidTap(self, .like)
-    }
-}
-
-extension FLAnimatedImageView {
-    func setUserImage(_ user: ParsedUser, feed: Bool = true, size: CGSize? = nil) {
-        tag = tag + 1
-        
-        guard
-            !feed || ContentDisplaySettings.animatedAvatars,
-            user.data.picture.hasSuffix("gif"),
-            let url = user.profileImage.url(for: .small)
-        else {
-            let size = size ?? (frame.size.width < 5 ? CGSize(width: 50, height: 50) : frame.size)
-            
-            kf.setImage(with: user.profileImage.url(for: size.width < 100 ? .small : .medium), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: size)),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
-            ])
-            return
-        }
-        
-        kf.cancelDownloadTask()
-        image = UIImage(named: "Profile")
-        let oldTag = tag
-
-        CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
-            switch result {
-            case .success(let image):
-                guard self?.tag == oldTag else { return }
-                self?.animatedImage = image
-            case .failure(let error):
-                print(error)
-            }
-        }
     }
 }

@@ -57,7 +57,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
     }
     
     func setupWith(message: ProcessedMessage, roundSide: Bool) {
-        let isMine = message.user.data.pubkey == IdentityManager.instance.userHexPubkey
+        let isMine = message.user.isCurrentUser
         
         coloredBackgroundView.isHidden = !isMine
         stack.alignment = isMine ? .trailing : .leading

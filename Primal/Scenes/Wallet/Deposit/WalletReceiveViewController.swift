@@ -276,9 +276,14 @@ private extension WalletReceiveViewController {
         
         let actionStack = UIStackView([
             WalletActionButton(text: "COPY", action: { [weak self] in
-                guard let invoice = self?.invoice else { return }
-                UIPasteboard.general.string = invoice
-                self?.view.showToast("Copied!", extraPadding: 0)
+                guard let self else { return }
+                
+                if let depositInfo, invoice == depositInfo.lnurl {
+                    UIPasteboard.general.string = depositInfo.lud16
+                } else {
+                    UIPasteboard.general.string = invoice
+                }
+                view.showToast("Copied!", extraPadding: 0)
             }),
             detailsButton
         ])

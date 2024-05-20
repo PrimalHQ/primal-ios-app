@@ -46,20 +46,15 @@ enum FeedDesign: String {
     case standard, fullWidth
     
     static var current: FeedDesign {
-        get { FeedDesign(rawValue: UserDefaults.standard.string(forKey: "FeedDesign") ?? "") ?? .standard }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: "FeedDesign")
-            ThemingManager.instance.themeDidChange()
-        }
+        get { .fullWidth }
+//        set {
+//            UserDefaults.standard.set(newValue.rawValue, forKey: "FeedDesign")
+//            ThemingManager.instance.themeDidChange()
+//        }
     }
     
     var feedCellClass: AnyClass {
-        switch self {
-        case .standard:
-            return DefaultFeedCell.self
-        case .fullWidth:
-            return FullWidthFeedCell.self
-        }
+        NewFeedCell.self
     }
 }
 

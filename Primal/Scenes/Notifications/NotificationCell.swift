@@ -16,11 +16,14 @@ final class NotificationCell: PostCell {
     let iconLabel = UILabel()
     let avatarStack = AvatarView()
     let titleLabel = UILabel()
+    let auxTitleLabel = UILabel()
     let border = SpacerView(height: 1)
+    let newIndicator = UIView().constrainToSize(8)
     
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
-    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, SpacerView(height: 0), bottomButtonStack])
+    lazy var bottomBarStandIn = UIView()
+    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, bottomBarStandIn])
     
     var notificationCellDelegate: NotificationCellDelegate? {
         get { delegate as? NotificationCellDelegate }
@@ -37,11 +40,11 @@ final class NotificationCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForNotification(_ notification: GroupedNotification, delegate: NotificationCellDelegate, didLike: Bool, didRepost: Bool, didZap: Bool) {
+    func updateForNotification(_ notification: GroupedNotification, isNew: Bool, delegate: NotificationCellDelegate) {
         if let post = notification.post {
             update(post)
             postContentStack.isHidden = false
-            bottomButtonStack.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
+            bottomBarStandIn.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
         } else {
             postContentStack.isHidden = true
         }
@@ -49,11 +52,19 @@ final class NotificationCell: PostCell {
         iconView.image = notification.icon
         iconLabel.attributedText = notification.iconText
         
-        avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) })
+        avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
         titleLabel.attributedText = notification.titleText
+        auxTitleLabel.attributedText = notification.titleText
+        
+        titleLabel.isHidden = notification.users.count == 1
+        auxTitleLabel.isHidden = notification.users.count != 1
+        
+        timeLabel.text = notification.mainNotification.date.timeAgoDisplay()
         
         notificationCellDelegate = delegate
+        
+        newIndicator.isHidden = !isNew
     }
     
     override func update(_ parsedContent: ParsedContent) {
@@ -61,6 +72,7 @@ final class NotificationCell: PostCell {
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
+        mainLabel.numberOfLines = parsedContent.user.isCurrentUser ? 6 : 20
         
         layoutSubviews()
         
@@ -70,10 +82,22 @@ final class NotificationCell: PostCell {
 
 private extension NotificationCell {
     func setup() {
-//        backgroundColorView.removeFromSuperview()
+        bottomBarStandIn.addSubview(bottomButtonStack)
+        bottomButtonStack
+            .pinToSuperview(edges: .horizontal, padding: -8)
+            .pinToSuperview(edges: .top, padding: -6)
+            .pinToSuperview(edges: .bottom, padding: -12)
         
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
-        let contentStack = UIStackView(arrangedSubviews: [avatarStack, titleLabel, postContentStack])
+        
+        let auxParent = UIView()
+        auxParent.addSubview(auxTitleLabel)
+        auxTitleLabel.pinToSuperview(edges: .horizontal)
+        auxTitleLabel.centerToSuperview(axis: .vertical)
+        
+        let firstRow = UIStackView([avatarStack, auxParent, timeLabel])
+        
+        let contentStack = UIStackView(arrangedSubviews: [firstRow, titleLabel, postContentStack])
         let mainStack = UIStackView(arrangedSubviews: [iconStack, contentStack])
         
         avatarStack.constrainToSize(height: 32)
@@ -83,14 +107,28 @@ private extension NotificationCell {
         titleLabel.numberOfLines = 0
         iconLabel.textAlignment = .center
         
+        timeLabel.font = .appFont(withSize: 14, weight: .regular)
+        timeLabel.textColor = .foreground4
+        timeLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
+        auxTitleLabel.adjustsFontSizeToFitWidth = true
+        auxTitleLabel.numberOfLines = 2
+        
+        firstRow.spacing = 8
+        
         contentView.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .leading, padding: 8)
-            .pinToSuperview(edges: .trailing, padding: 20)
-            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .leading, padding: 12)
+            .pinToSuperview(edges: .trailing, padding: 22)
+            .pinToSuperview(edges: .top, padding: 12)
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         bottomC.priority = .defaultHigh
         bottomC.isActive = true
+        
+        contentView.addSubview(newIndicator)
+        newIndicator.pinToSuperview(edges: [.top, .trailing], padding: 10)
+        newIndicator.layer.cornerRadius = 4
+        newIndicator.backgroundColor = .accent
         
         [contentStack, postContentStack, iconStack].forEach {
             $0.axis = .vertical
@@ -117,7 +155,7 @@ private extension NotificationCell {
         
         contentView.addSubview(border)
         border.pinToSuperview(edges: [.horizontal, .bottom])
-        border.backgroundColor = .foreground6
+        border.backgroundColor = .background3
         
         for (index, imageView) in avatarStack.avatarViews.enumerated() {
             imageView.isUserInteractionEnabled = true
@@ -133,31 +171,32 @@ extension GroupedNotification {
         let string = NSMutableAttributedString()
         if let first = users.first {
             string.append(NSAttributedString(string: first.data.firstIdentifier, attributes: [
-                .foregroundColor: UIColor.foreground2,
-                .font: UIFont.appFont(withSize: 18, weight: .heavy)
+                .foregroundColor: UIColor.foreground,
+                .font: UIFont.appFont(withSize: 18, weight: .bold)
             ]))
+            
+            string.append(.init(string: " "))
             
             if CheckNip05Manager.instance.isVerified(first.data) {
                 let attachment = NSTextAttachment()
-                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadge") : UIImage(named: "verifiedBadgeBlue")
+                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadgeNotifications") : UIImage(named: "verifiedBadgeNotificationsBlue")
                 string.append(NSAttributedString(attachment: attachment))
-            }
-            
-            string.append(.init(string: " "))
+                string.append(.init(string: " "))
+            }            
         }
         
         if users.count > 1 {
-            let text = "and \(users.count) other" + (users.count == 2 ? " " : "s ")
+            let text = "and \(users.count - 1) other" + (users.count == 2 ? "" : "s")
             string.append(NSAttributedString(string: text, attributes: [
-                .foregroundColor: UIColor.foreground2,
+                .foregroundColor: UIColor.foreground,
                 .font: UIFont.appFont(withSize: 18, weight: .regular)
             ]))
         }
         
-        string.append(NSAttributedString(string: notificationTypeText, attributes: [
-            .foregroundColor: UIColor.foreground2,
-            .font: UIFont.appFont(withSize: 18, weight: .regular)
-        ]))
+//        string.append(NSAttributedString(string: notificationTypeText, attributes: [
+//            .foregroundColor: UIColor.foreground,
+//            .font: UIFont.appFont(withSize: 18, weight: .regular)
+//        ]))
         
         return string
     }
@@ -176,10 +215,7 @@ extension GroupedNotification {
                 .foregroundColor: UIColor(rgb: 0x52CE0A)
             ])
         case .YOUR_POST_WAS_REPLIED_TO:
-            return .init(string: post.post.replies.shortened(), attributes: [
-                .font: UIFont.appFont(withSize: 14, weight: .medium),
-                .foregroundColor: UIColor.brandText
-            ])
+            return nil
         case .YOUR_POST_WAS_ZAPPED:
             return .init(string: post.post.satszapped.shortened(), attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .medium),
@@ -243,13 +279,13 @@ extension NotificationType {
         case .NEW_USER_FOLLOWED_YOU:
             return "notifFollow"
         case .YOUR_POST_WAS_ZAPPED:
-            return "feedZapFilled"
+            return "notifPostZap1"
         case .YOUR_POST_WAS_LIKED:
-            return "feedHeartFilled"
+            return "notifPostLike1"
         case .YOUR_POST_WAS_REPOSTED:
-            return "feedRepost"
+            return "notifPostRepost1"
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "feedCommentFilled"
+            return "notifPostReply1"
         case .YOU_WERE_MENTIONED_IN_POST:
             return "notifUserMention"
         case .YOUR_POST_WAS_MENTIONED_IN_POST:

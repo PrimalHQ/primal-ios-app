@@ -56,7 +56,7 @@ private extension TransactionAmountCell {
         selectionStyle = .none
         
         contentView.addSubview(label)
-        label.centerToSuperview().pinToSuperview(edges: .top, padding: 44).pinToSuperview(edges: .bottom, padding: 4)
+        label.centerToSuperview().pinToSuperview(edges: .top, padding: 42).pinToSuperview(edges: .bottom, padding: 4)
         
         contentView.addSubview(visibleLabel)
         visibleLabel.pin(to: label, edges: [.leading, .bottom])

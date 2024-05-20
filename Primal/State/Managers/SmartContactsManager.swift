@@ -118,7 +118,7 @@ final class SmartContactsManager {
     }
     
     func addContact(_ contact: ParsedUser) {
-        if contact.data.pubkey == IdentityManager.instance.userHexPubkey {
+        if contact.isCurrentUser {
             // Can't add self as contact
             return
         }

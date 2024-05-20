@@ -10,6 +10,7 @@ import Lottie
 
 protocol ZapGalleryViewDelegate: AnyObject {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
+    func mainActionForZap(_ zap: ParsedZap)
 }
 
 class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
@@ -19,6 +20,13 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
         func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
             guard let zapInteraction = self.interaction else { return nil }
             return zapInteraction.galleryView?.delegate?.menuConfigurationForZap(zapInteraction.zap)
+        }
+        
+        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+            guard let interaction = self.interaction else { return }
+            animator.addCompletion {
+                interaction.galleryView?.delegate?.mainActionForZap(interaction.zap)
+            }
         }
     }
     weak var galleryView: ZapGalleryView?
@@ -266,7 +274,7 @@ class ZapGalleryView: UIView {
                     pill.transform = .init(translationX: 300, y: 0)
                     
                     var background: UIView?
-                    if pill.zap.user.data.pubkey == IdentityManager.instance.userHexPubkey {
+                    if pill.zap.user.isCurrentUser {
                         let view = UIView()
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()

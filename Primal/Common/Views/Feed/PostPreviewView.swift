@@ -65,7 +65,7 @@ final class PostPreviewView: UIView {
         } else {
             let url = content.mediaResources.first?.url
             
-            let multiplier: CGFloat = url?.isVideoURL == true ? (url?.isYoutubeVideoURL == true ? 0.8 : (9 / 16)) : 1
+            let multiplier: CGFloat = url?.isVideoURL == true ? 9 / 16 : 1
             
             let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
             aspect.priority = .defaultHigh

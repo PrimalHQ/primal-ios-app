@@ -59,7 +59,7 @@ final class ParsedContent {
     var mentions: [ParsedElement] = []
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
-    var zaps: [PrimalZapEvent] = []
+    var zaps: [ParsedZap] = []
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
@@ -91,21 +91,48 @@ extension ParsedUser {
     func webURL() -> String {
         "https://primal.net/p/\(data.npub)"
     }
+    
+    var isCurrentUser: Bool { data.isCurrentUser }
+}
+
+enum ParsedContentTextStyle {
+    case regular, enlarged, notifications
+    
+    var maximumLineHeight: CGFloat {
+        switch self {
+        case .regular:          return FontSizeSelection.current.contentLineHeight
+        case .enlarged:         return FontSizeSelection.current.contentLineHeight + 2
+        case .notifications:    return FontSizeSelection.current.contentLineHeight
+        }
+    }
+    
+    var fontSize: CGFloat {
+        switch self {
+        case .regular:          return FontSizeSelection.current.contentFontSize
+        case .enlarged:         return FontSizeSelection.current.contentFontSize + 2
+        case .notifications:    return FontSizeSelection.current.contentFontSize
+        }
+    }
+    
+    var color: UIColor {
+        switch self {
+        case .regular, .enlarged:   return .foreground
+        case .notifications:        return .foreground2
+        }
+    }
 }
 
 extension ParsedContent {
-    func buildContentString(enlarge: Bool = false) {
-        let enlargingAmount: CGFloat = 2
-        
+    func buildContentString(style: ParsedContentTextStyle = .regular) {
         let fs = FontSizeSelection.current
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = fs.contentLineSpacing
-        style.maximumLineHeight = fs.contentLineHeight + (enlarge ? enlargingAmount : 0)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = fs.contentLineSpacing
+        paragraph.maximumLineHeight = style.maximumLineHeight
         
         let result = NSMutableAttributedString(string: text, attributes: [
-            .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: fs.contentFontSize + (enlarge ? enlargingAmount : 0), weight: .regular),
-            .paragraphStyle: style
+            .foregroundColor: style.color,
+            .font: UIFont.appFont(withSize: style.fontSize, weight: .regular),
+            .paragraphStyle: paragraph
         ])
         
         for element in httpUrls {
@@ -179,7 +206,6 @@ extension ParsedContent {
         new.mentions = mentions
         new.notes = notes
         new.httpUrls = httpUrls
-        new.zaps = zaps
         
         new.mediaResources = mediaResources
         new.videoThumbnails = videoThumbnails

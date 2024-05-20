@@ -15,6 +15,7 @@ protocol ProfileNavigationViewDelegate: AnyObject {
     func tappedShareProfile()
     func tappedReportUser()
     func tappedMuteUser()
+    func tappedFollowUsersMuteList()
 }
 
 class ProfileNavigationView: UIView, Themeable {
@@ -80,7 +81,7 @@ class ProfileNavigationView: UIView, Themeable {
         primaryLabel.text = user.firstIdentifier
         checkboxIcon.isHidden = !CheckNip05Manager.instance.isVerified(user)
         
-        menuButton.isHidden = user.pubkey == IdentityManager.instance.userHexPubkey
+        menuButton.isHidden = user.isCurrentUser
         
         updateMenuButton(isMuted: isMuted)
     }
@@ -240,6 +241,10 @@ private extension ProfileNavigationView {
                         UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { [weak self] _ in
                             self?.delegate?.tappedAddUserFeed()
                         },
+                        UIAction(title: "Follow user's mute list", image: UIImage(named: "blockIcon"), handler: { [weak self] _ in
+                            self?.delegate?.tappedFollowUsersMuteList()
+                        }),
+                        
                         UIAction(title: "Share user profile", image: UIImage(named: "MenuShare")) { [weak self] _ in
                             self?.delegate?.tappedShareProfile()
                         },

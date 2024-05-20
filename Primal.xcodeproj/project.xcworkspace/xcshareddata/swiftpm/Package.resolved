@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift",
       "state" : {
-        "revision" : "db51c407d3be4a051484a141bf0bff36c43d3b1e",
-        "version" : "1.8.0"
+        "revision" : "c9c3df6ab812de32bae61fc0cd1bf6d45170ebf0",
+        "version" : "1.8.2"
       }
     },
     {
@@ -64,6 +64,15 @@
       }
     },
     {
+      "identity" : "nostr-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nostr-sdk/nostr-sdk-ios",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5dfd3eacfd29fba11122be5229a36dcf4eb49782"
+      }
+    },
+    {
       "identity" : "nwwebsocket",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pusher/NWWebSocket.git",
@@ -84,9 +93,10 @@
     {
       "identity" : "secp256k1.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jb55/secp256k1.swift",
+      "location" : "https://github.com/GigaBitcoin/secp256k1.swift",
       "state" : {
-        "revision" : "40b4b38b3b1c83f7088c76189a742870e0ca06a9"
+        "revision" : "9683e8e311c76d8114cd308b697dad2f9fc58fed",
+        "version" : "0.17.0"
       }
     },
     {
