@@ -175,13 +175,14 @@ extension GroupedNotification {
                 .font: UIFont.appFont(withSize: 18, weight: .bold)
             ]))
             
+            string.append(.init(string: " "))
+            
             if CheckNip05Manager.instance.isVerified(first.data) {
                 let attachment = NSTextAttachment()
                 attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadgeNotifications") : UIImage(named: "verifiedBadgeNotificationsBlue")
                 string.append(NSAttributedString(attachment: attachment))
-            }
-            
-            string.append(.init(string: " "))
+                string.append(.init(string: " "))
+            }            
         }
         
         if users.count > 1 {

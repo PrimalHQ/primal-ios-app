@@ -178,7 +178,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        if let cell = cell as? FeedCell {
+        if let cell = cell as? PostCell {
             let data = posts[indexPath.row]
             cell.update(data)
             cell.delegate = self
@@ -531,7 +531,7 @@ extension FeedViewController: PostCellDelegate {
     }
     
     func handleVideoUrlTapped(_ url: String, in cell: PostCell) {
-        guard url.isVideoURL, !url.isYoutubeVideoURL else {
+        guard url.isVideoURL else {
             if let url = URL(string: url) {
                 let safari = SFSafariViewController(url: url)
                 present(safari, animated: true)
@@ -558,18 +558,5 @@ extension FeedViewController: PostCellDelegate {
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         open(post: posts[indexPath.row])
-    }
-}
-
-extension ParsedContent {
-    func propertyText(_ property: NoteCopiableProperty) -> String? {
-        switch property {
-        case .link:         return webURL()
-        case .content:      return attributedText.string
-        case .rawData:      return post.encodeToString()
-        case .noteID:       return noteId()
-        case .userPubkey:   return user.data.pubkey
-        case .invoice:      return invoice?.string
-        }
     }
 }

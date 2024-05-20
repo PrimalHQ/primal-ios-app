@@ -51,14 +51,14 @@ private extension SettingsAppearanceViewController {
             guard let newValue = slider?.slider.selectedNumber, let selection = FontSizeSelection(rawValue: newValue - 1) else { return }
             FontSizeSelection.current = selection
         }), for: .valueChanged)
-        
-        let toggle = SettingsToggleView(title: "Use full width layout")
-        toggle.toggle.setOn(FeedDesign.current == .fullWidth, animated: false)
-        toggle.toggle.addAction(.init(handler: { [weak toggle] _ in
-            guard let newValue = toggle?.toggle.isOn else { return }
-            FeedDesign.current = newValue ? .fullWidth : .standard
-        }), for: .valueChanged)
-        
+//        
+//        let toggle = SettingsToggleView(title: "Use full width layout")
+//        toggle.toggle.setOn(FeedDesign.current == .fullWidth, animated: false)
+//        toggle.toggle.addAction(.init(handler: { [weak toggle] _ in
+//            guard let newValue = toggle?.toggle.isOn else { return }
+//            FeedDesign.current = newValue ? .fullWidth : .standard
+//        }), for: .valueChanged)
+//        
         themeExplanation.toggle.setOn(ContentDisplaySettings.autoDarkMode, animated: false)
         themeExplanation.toggle.addAction(.init(handler: { [weak themeExplanation] _ in
             guard let newValue = themeExplanation?.toggle.isOn else { return }
@@ -84,9 +84,9 @@ private extension SettingsAppearanceViewController {
             SettingsTitleViewVibrant(title: "FONT"),        SpacerView(height: 22, priority: .defaultLow),
             slider,                                         SpacerView(height: 20, priority: .defaultHigh),
             BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
-            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12, priority: .defaultLow),
-            toggle,                                         SpacerView(height: 16, priority: .defaultHigh),
-            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
+//            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12, priority: .defaultLow),
+//            toggle,                                         SpacerView(height: 16, priority: .defaultHigh),
+//            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
             SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12, priority: .defaultLow),
             previewParent
         ])

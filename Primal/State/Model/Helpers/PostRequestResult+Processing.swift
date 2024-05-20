@@ -8,8 +8,9 @@
 import Foundation
 import LinkPresentation
 import Kingfisher
+import NostrSDK
 
-extension PostRequestResult {
+extension PostRequestResult: MetadataCoding {
     func getSortedUsers() -> [ParsedUser] {
         users.map { createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
     }
@@ -33,13 +34,6 @@ extension PostRequestResult {
     )}
     
     func process() -> [ParsedContent] {
-        mentions.forEach { mention in
-            guard mention.kind == 30023 else { return }
-                
-                
-            print("MENTION")
-        }
-        
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
@@ -57,9 +51,21 @@ extension PostRequestResult {
                 return post
             }
         
+        
+        let parsedUsers = getSortedUsers()
+        let parsedZaps = postZaps.map { primalZapEvent in
+            ParsedZap(
+                receiptId: primalZapEvent.zap_receipt_id,
+                postId: primalZapEvent.event_id,
+                amountSats: primalZapEvent.amount_sats,
+                message: zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                user: parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
+            )
+        }
+        
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
-            .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true)}
-  
+            .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps) }
+        
         if order.isEmpty {
             return normalPosts
         }
@@ -74,7 +80,8 @@ extension PostRequestResult {
         post: PrimalFeedPost,
         user: ParsedUser,
         mentions: [ParsedContent],
-        removeExtractedPost: Bool
+        removeExtractedPost: Bool,
+        parsedZaps: [ParsedZap] = []
     ) -> ParsedContent {
         let p = ParsedContent(post: post, user: user)
         
@@ -169,12 +176,35 @@ extension PostRequestResult {
                 guard let matchRange = match?.range else { return }
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
+
+                guard 
+                    let address = mentionText.split(separator: ":").last,
+                    let metadata = try? decodedMetadata(from: String(address)),
+                    let id = metadata.identifier,
+                    let mention = self.mentions.first(where: {
+                        $0.kind == 30023 && $0.tags.contains(["d", id])
+                    }),
+                    let npub = mention.pubkey.hexToNpub(),
+                    let noteid = mention.id.hexToNoteId()
+                else { return }
                 
-                guard let address = mentionText.split(separator: ":").last else { return }
-                    
-                if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    referencedPosts.append((mentionText, mention))
-                }
+                let urlString = "https://highlighter.com/\(npub)/\(noteid)"
+                
+                guard let url = URL(string: urlString) else { return }
+                
+                otherURLs.insert(mentionText, at: 0)
+                itemsToRemove.append(mentionText)
+                
+                p.linkPreview = .init(
+                    url: url,
+                    imagesData: [],
+                    data: WebPreview(
+                        md_image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
+                        md_title: mention.tags.first(where: { $0.first == "title" })?[safe: 1],
+                        md_description: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                        url: urlString
+                    )
+                )
             }
         }
         
@@ -305,7 +335,7 @@ extension PostRequestResult {
         
         let nsText = text as NSString
         
-        p.zaps = postZaps.filter { $0.event_id == post.id }
+        p.zaps = parsedZaps.filter { $0.postId == post.id }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }

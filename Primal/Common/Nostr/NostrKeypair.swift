@@ -129,11 +129,11 @@ extension HexKeypair {
             print("HexKeypair: Failed to hex decode privkey")
             return nil
         }
-        guard let key = try? secp256k1.Signing.PrivateKey(rawRepresentation: sec) else {
+        guard let key = try? secp256k1.Schnorr.PrivateKey(dataRepresentation: sec) else {
             return nil
         }
         
-        return hex_encode(Data(key.publicKey.xonly.bytes))
+        return hex_encode(Data(key.xonly.bytes))
     }
     
     static func nsecToHexPrivkey(_ nsec: String) -> String? {
@@ -164,7 +164,7 @@ extension HexKeypair {
 extension NostrKeypair {
     static func generate() -> NostrKeypair? {
         guard let key = try? secp256k1.Signing.PrivateKey() else { return nil }
-        let privkey = hex_encode(key.rawRepresentation)
+        let privkey = hex_encode(key.dataRepresentation)
         let pubkey = hex_encode(Data(key.publicKey.xonly.bytes))
         
         return HexKeypair.nostrKeypair(hexPubkey: pubkey, hexPrivkey: privkey)

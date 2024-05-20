@@ -64,7 +64,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         var isEditable: Bool {
             switch self {
             case .user:                     return true
-            case .address(_, let parsed, _, _):  return parsed == nil || parsed?.lninvoice.amount_msat == 0
+            case .address(_, let parsed, _, _):  return parsed == nil || parsed?.lninvoice.description?.isEmpty != false
             }
         }
     }

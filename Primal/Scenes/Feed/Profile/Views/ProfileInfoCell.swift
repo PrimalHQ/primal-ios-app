@@ -156,7 +156,7 @@ private extension ProfileInfoCell {
         
         contentView.backgroundColor = .background2
         primaryLabel.textColor = .foreground
-        secondaryLabel.textColor = .foreground5
+        secondaryLabel.textColor = .foreground3
         descLabel.textColor = .foreground
         
         descLabel.enabledTextCheckingTypes = .allSystemTypes

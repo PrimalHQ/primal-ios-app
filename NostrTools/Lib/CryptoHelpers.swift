@@ -685,7 +685,6 @@
 import Foundation
 import CommonCrypto
 import secp256k1
-import secp256k1_implementation
 
 enum EncEncoding {
     case base64
@@ -743,7 +742,7 @@ func get_shared_secret(privkey: String, pubkey: String) -> [UInt8]? {
     
     var ok =
     secp256k1_ec_pubkey_parse(
-        secp256k1.Context.raw,
+        secp256k1.Context.rawRepresentation,
         &publicKey,
         pk_bytes,
         pk_bytes.count) != 0
@@ -753,7 +752,7 @@ func get_shared_secret(privkey: String, pubkey: String) -> [UInt8]? {
     }
     
     ok = secp256k1_ecdh(
-        secp256k1.Context.raw,
+        secp256k1.Context.rawRepresentation,
         &shared_secret,
         &publicKey,
         privkey_bytes, {(output,x32,_,_) in

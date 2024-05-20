@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import secp256k1_implementation
+import secp256k1
 import GenericJSON
 
 extension NostrObject {
@@ -201,9 +201,12 @@ extension NostrObject {
             ["amount", "\(sats)000"]
         ]
         
-        if let relays = IdentityManager.instance.userRelays?.keys, !relays.isEmpty {
-            tags.append(["relays"] + Array(relays))
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
         }
+        
+        tags.append(["relays"] + Array(relays))
         
         return createNostrObject(content: note, kind: 9734, tags: tags)
     }
@@ -240,9 +243,9 @@ fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-    createNostrObject(content: content, kind: 1, tags: mentionedPubkeys.map {
-        ["p", $0, "", "mention"]
-    })
+    createNostrObject(content: content, kind: 1, tags:
+        mentionedPubkeys.map({ ["p", $0, "", "mention"] }) + content.extractHashtags().map({ ["t", $0] })
+    )
 }
 
 fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrObject? {
@@ -276,6 +279,8 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     allTags.append(["p", post.pubkey])
 
     allTags += mentionedPubkeys.map { ["p", $0] }
+    
+    allTags += content.extractHashtags().map({ ["t", $0] })
 
     return createNostrObject(content: content, kind: 1, tags: allTags)
 }
@@ -464,7 +469,7 @@ fileprivate func createNostrObjectSig(privkey: String, id: String) -> String? {
         return nil
     }
     
-    guard let key = try? secp256k1.Signing.PrivateKey(rawRepresentation: privkeyBytes) else {
+    guard let key = try? secp256k1.Schnorr.PrivateKey(dataRepresentation: privkeyBytes) else {
         print("Unable to get key from privkey bytes")
         return nil
     }
@@ -476,10 +481,10 @@ fileprivate func createNostrObjectSig(privkey: String, id: String) -> String? {
         return nil
     }
     
-    guard let sig = try? key.schnorr.signature(message: &idBytes, auxiliaryRand: &aux_rand) else {
+    guard let sig = try? key.signature(message: &idBytes, auxiliaryRand: &aux_rand) else {
         print("Failed to create signature for: \(id)")
         return nil
     }
     
-    return hex_encode(sig.rawRepresentation)
+    return sig.dataRepresentation.toHexString()
 }

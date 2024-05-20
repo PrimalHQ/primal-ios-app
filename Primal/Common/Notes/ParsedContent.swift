@@ -59,7 +59,7 @@ final class ParsedContent {
     var mentions: [ParsedElement] = []
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
-    var zaps: [PrimalZapEvent] = []
+    var zaps: [ParsedZap] = []
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
@@ -206,7 +206,6 @@ extension ParsedContent {
         new.mentions = mentions
         new.notes = notes
         new.httpUrls = httpUrls
-        new.zaps = zaps
         
         new.mediaResources = mediaResources
         new.videoThumbnails = videoThumbnails

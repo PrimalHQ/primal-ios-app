@@ -25,13 +25,6 @@ struct ContentDisplaySettings {
         set { UserDefaults.standard.set(newValue, forKey: .animatedAvatarsKey) }
     }
     
-    
-    static var fullScreenFeed: Bool {
-        get { UserDefaults.standard.bool(forKey: .fullScreenFeedKey) }
-        set { UserDefaults.standard.set(newValue, forKey: .fullScreenFeedKey) }
-    }
-    
-    
     static var autoDarkMode: Bool {
         get { UserDefaults.standard.bool(forKey: .autoDarkModeKey) }
         set { UserDefaults.standard.set(newValue, forKey: .autoDarkModeKey) }
@@ -56,15 +49,12 @@ private extension SettingsContentDisplayController {
         
         let autoplay = SettingsSwitchView("Auto play videos")
         let animatedAvatars = SettingsSwitchView("Show animated avatars")
-        let fullScreenFeed = SettingsSwitchView("Full screen feed display")
         
         let stack = UIStackView(axis: .vertical, [
             autoplay, SpacerView(height: 10),
             descLabel("Start playing videos automatically as you scroll the feed. Turn this off to use less network data."), SpacerView(height: 32),
             animatedAvatars, SpacerView(height: 10),
             descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32),
-            fullScreenFeed, SpacerView(height: 10),
-            descLabel("Maximize screen real estate by hiding app header & footer as you scroll down the feed."), SpacerView(height: 32),
         ])
         
         let scroll = UIScrollView()
@@ -82,7 +72,6 @@ private extension SettingsContentDisplayController {
         
         autoplay.switchView.isOn = ContentDisplaySettings.autoPlayVideos
         animatedAvatars.switchView.isOn = ContentDisplaySettings.animatedAvatars
-        fullScreenFeed.switchView.isOn = ContentDisplaySettings.fullScreenFeed
         
         autoplay.switchView.addAction(.init(handler: { [weak autoplay] _ in
             guard let value = autoplay?.switchView.isOn else { return }
@@ -93,11 +82,6 @@ private extension SettingsContentDisplayController {
             guard let value = animatedAvatars?.switchView.isOn else { return }
             ContentDisplaySettings.animatedAvatars = value
             ThemingManager.instance.themeDidChange()
-        }), for: .valueChanged)
-        
-        fullScreenFeed.switchView.addAction(.init(handler: { [weak fullScreenFeed] _ in
-            guard let value = fullScreenFeed?.switchView.isOn else { return }
-            ContentDisplaySettings.fullScreenFeed = value
         }), for: .valueChanged)
     }
     
