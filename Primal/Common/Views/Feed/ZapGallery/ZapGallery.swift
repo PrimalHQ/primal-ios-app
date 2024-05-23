@@ -47,7 +47,9 @@ class ZapGalleryView: UIView {
     let stack = UIStackView()
     let animationStack = UIStackView()
     
-    var delegate: ZapGalleryViewDelegate?
+    weak var delegate: ZapGalleryViewDelegate?
+    
+    var singleLine: Bool = false
     
     init() {
         super.init(frame: .zero)
@@ -83,7 +85,10 @@ class ZapGalleryView: UIView {
         }
     }
     
-    var animatingChanges = false
+    var animatingChanges: Bool {
+        guard let id = WalletManager.instance.animatingZap.value?.receiptId else { return false }
+        return zaps.contains(where: { $0.receiptId == id })
+    }
     
     func playSkeleton() {
         skeletonLoader.isHidden = !zaps.isEmpty
@@ -98,13 +103,37 @@ class ZapGalleryView: UIView {
             $0.removeFromSuperview()
             if animatingChanges {
                 animationStack.addArrangedSubview($0)
+                if singleLine {
+                    $0.pinToSuperview(edges: .horizontal)
+                }
             }
         }
         defer {
             if animatingChanges {
                 // Start animating
                 animateStacks()
+            } else {
+                print("NOT ANIMATING")
             }
+        }
+        
+        if singleLine {
+            let hStack = UIStackView()
+            hStack.spacing = 0
+            
+            if let first = zaps.first {
+                hStack.addArrangedSubview(zapView(first, text: true))
+                hStack.addArrangedSubview(SpacerView(width: 375, priority: .init(1)))
+                stack.addArrangedSubview(hStack)
+                hStack.pinToSuperview(edges: .horizontal)
+            }
+            
+            zaps.dropFirst().prefix(3).enumerated().forEach { (index, zap) in
+                let view = ZapAvatarView(zap: zap)
+                view.layer.zPosition = CGFloat(999 - index)
+                hStack.addArrangedSubview(view)
+            }
+            return
         }
         
         if zaps.count < 4 {
@@ -154,7 +183,7 @@ class ZapGalleryView: UIView {
         return view
     }
     
-    func findPillInStack(receiptId: String) -> ZapPillView? {
+    func findPillInStack(receiptId: String) -> ZapGalleryChildView? {
         stack.findAllSubviews().first(where: { $0.zap.receiptId == receiptId })
     }
     
@@ -162,13 +191,15 @@ class ZapGalleryView: UIView {
         layoutIfNeeded()
         animationStack.layoutIfNeeded()
         
+        print("ANIMATING")
+        
         var zapAnimations: [String: () -> ()] = [:]
 
         for view in animationStack.arrangedSubviews {
             guard let stack = view as? UIStackView else { continue }
 
             for view in stack.arrangedSubviews {
-                guard let zapView = view as? ZapPillView else {
+                guard let zapView = view as? ZapGalleryChildView else {
                     UIView.animate(withDuration: 6 / 30) {
                         view.alpha = 0.01
                     }
@@ -204,8 +235,6 @@ class ZapGalleryView: UIView {
                     
                     animatingPill.layoutIfNeeded()
                     
-                    frame.size.width -= textPill.label.frame.width - 8
-                    
                     // Translate animation
                     zapAnimations[receiptId] = {
                         newPill.alpha = 0.01
@@ -221,11 +250,20 @@ class ZapGalleryView: UIView {
 
                         UIView.animate(withDuration: 3 / 30) {
                             label.alpha = 0
+                            if newPill as? ZapAvatarView != nil {
+                                animatingPill.amountLabel.alpha = 0
+                                animatingPill.amountLabel.isHidden = true
+                            }
                         }
                         
                         UIView.animate(withDuration: 12 / 30) {
                             animatingPill.label.isHidden = true
-                            animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                            if newPill as? ZapAvatarView != nil {
+                                animatingPill.endSpacer.isHidden = true
+                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x - 6, y: deltaY)
+                            } else {
+                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                            }
                         } completion: { _ in
                             newPill.alpha = 1
                             animatingPill.removeFromSuperview()

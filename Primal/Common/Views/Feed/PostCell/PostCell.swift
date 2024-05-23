@@ -12,13 +12,17 @@ import LinkPresentation
 import FLAnimatedImage
 import Nantes
 
-protocol PostCellDelegate: AnyObject {
+protocol PostCellDelegate: AnyObject, ZapGalleryViewDelegate {
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
-    weak var delegate: PostCellDelegate?
+    weak var delegate: PostCellDelegate? {
+        didSet {
+            zapGallery.delegate = delegate
+        }
+    }
     
     let bottomBorder = UIView()
     let threeDotsButton = UIButton()
@@ -41,6 +45,8 @@ class PostCell: UITableViewCell {
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
+    
+    let zapGallery = ZapGalleryView()
     
     weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?
@@ -289,6 +295,10 @@ private extension PostCell {
         invoiceView.payButton.addAction(.init(handler: { [unowned self] _ in
             delegate?.postCellDidTap(self, .payInvoice)
         }), for: .touchUpInside)
+        
+        zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+            delegate?.postCellDidTap(self, .zapDetails)
+        }))
         
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)

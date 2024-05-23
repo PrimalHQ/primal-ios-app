@@ -13,6 +13,20 @@ class PostFeedViewController: FeedViewController {
     init(feed: FeedManager) {
         self.feed = feed
         super.init()
+        
+        feed.refreshCellMenuEmitter.receive(on: DispatchQueue.main).sink { [weak self] index in
+            guard
+                let self, self.view.window != nil,
+                table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
+            else { return }
+            
+            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+                cell.updateMenu(posts[index])
+            } else {
+                table.reloadData()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {

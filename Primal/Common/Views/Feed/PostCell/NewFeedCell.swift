@@ -13,13 +13,16 @@ class NewFeedCell: PostCell {
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
+    let bookmarkButton = UIButton()
     
     override var useShortText: Bool { true }
     
     lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
     lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
     
-    let zapGallery = ZapGalleryView()
+    // MARK: - State
+    var isShowingBookmarked = false
+    var lastContentId: String?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,6 +32,11 @@ class NewFeedCell: PostCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
+        if parsedContent.post.id != lastContentId {
+            zapGallery.zaps = []
+            lastContentId = parsedContent.post.id
+        }
+        
         super.update(parsedContent)
         
         textStack.isHidden = parsedContent.text.isEmpty
@@ -44,15 +52,21 @@ class NewFeedCell: PostCell {
         nameSuperStack.alignment = parsedContent.replyingTo != nil ? .top : .center
         
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
+    }
+    
+    override func updateMenu(_ content: ParsedContent) {
+        super.updateMenu(content)
         
-        if parsedContent.zaps.isEmpty {
+        if content.zaps.isEmpty {
             zapGallery.isHidden = true
+            zapGallery.zaps = []
         } else {
             zapGallery.isHidden = false
-            zapGallery.zaps = parsedContent.zaps
+            zapGallery.zaps = content.zaps
         }
-        // Must be after we've set zaps for the first time, otherwise the zaps will animate every time threads are opened
-//        zapGallery.animatingChanges = true
+        
+        isShowingBookmarked = content.postInfo.isBookmarked
+        bookmarkButton.setImage(UIImage(named: isShowingBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
     }
 }
 
@@ -71,6 +85,8 @@ private extension NewFeedCell {
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        zapGallery.singleLine = true
         
         contentView.addSubview(mainStack)
     
@@ -103,7 +119,24 @@ private extension NewFeedCell {
         
         buttonStackStandIn.constrainToSize(height: 24)
         contentView.addSubview(bottomButtonStack)
-        bottomButtonStack.pin(to: buttonStackStandIn, edges: .horizontal, padding: -8).centerToView(buttonStackStandIn)
+        bottomButtonStack
+            .pin(to: buttonStackStandIn, edges: .leading, padding: -8)
+            .pin(to: buttonStackStandIn, edges: .trailing, padding: 16)
+            .centerToView(buttonStackStandIn)
+        
+        bottomButtonStack.distribution = .fillEqually
+        
+        
+        contentView.addSubview(bookmarkButton)
+        bookmarkButton
+            .pin(to: buttonStackStandIn, edges: .trailing, padding: -2)
+            .centerToView(buttonStackStandIn, axis: .vertical)
+        
+        bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
+        }), for: .touchUpInside)
     }
 }
 

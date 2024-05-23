@@ -182,21 +182,21 @@ extension GroupedNotification {
                 attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadgeNotifications") : UIImage(named: "verifiedBadgeNotificationsBlue")
                 string.append(NSAttributedString(attachment: attachment))
                 string.append(.init(string: " "))
-            }            
+            }
         }
         
         if users.count > 1 {
-            let text = "and \(users.count - 1) other" + (users.count == 2 ? "" : "s")
+            let text = "and \(users.count - 1) other" + (users.count == 2 ? "\n" : "s\n")
             string.append(NSAttributedString(string: text, attributes: [
                 .foregroundColor: UIColor.foreground,
                 .font: UIFont.appFont(withSize: 18, weight: .regular)
             ]))
         }
         
-//        string.append(NSAttributedString(string: notificationTypeText, attributes: [
-//            .foregroundColor: UIColor.foreground,
-//            .font: UIFont.appFont(withSize: 18, weight: .regular)
-//        ]))
+        string.append(NSAttributedString(string: notificationTypeText, attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: 18, weight: .regular)
+        ]))
         
         return string
     }
