@@ -69,6 +69,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        table.reloadData()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -460,7 +466,9 @@ private extension FeedViewController {
         heavy.impactOccurred()
         
         animView.alpha = 1
-        animView.play { _ in
+        animView.play()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
             UIView.animate(withDuration: 0.2) {
                 animView.alpha = 0
             } completion: { _ in
@@ -558,5 +566,38 @@ extension FeedViewController: PostCellDelegate {
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         open(post: posts[indexPath.row])
+    }
+}
+
+extension FeedViewController: ZapGalleryViewDelegate {
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
+        let profileVC = ProfileViewController(profile: zap.user)
+        var items: [UIAction] = [
+            UIAction(title: "Open Profile", image: UIImage(systemName: "person.crop.circle.fill"), handler: { [weak self] _ in
+                self?.show(profileVC, sender: nil)
+            })
+        ]
+        
+        if !zap.message.isEmpty {
+            items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
+                UIPasteboard.general.string = zap.message
+                
+                self?.view.showToast("Copied!")
+            })
+            
+            if zap.message.isValidURL, let url = URL(string: zap.message) {
+                items.append(.init(title: "Open URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
+                    self?.present(SFSafariViewController(url: url), animated: true)
+                })
+            }
+        }
+        
+        return .init(previewProvider: { profileVC }, actionProvider: { suggested in
+            return UIMenu(title: zap.message, children: items + suggested)
+        })
+    }
+    
+    func mainActionForZap(_ zap: ParsedZap) {
+        show(ProfileViewController(profile: zap.user), sender: nil)
     }
 }

@@ -117,7 +117,7 @@ extension String : Identifiable {
     }
     
     var isNip27Mention: Bool {
-        let mentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let mentionPattern = "\\b(nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
         
         guard let mentionRegex = try? Regex(mentionPattern) else {
             print("Unable to create mention pattern regex")
@@ -204,7 +204,7 @@ extension String : Identifiable {
     func extractTagsMentionsAndURLs() -> [String] {
         let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
         let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
-        let nip27MentionPattern = "\\bnostr:((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nip27MentionPattern = "\\b(nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
 
         guard
             let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
@@ -236,17 +236,16 @@ extension String : Identifiable {
                 ranges.insert(range)
             }
         }
-        var result: Set<String> = []
+        var result: [String] = []
         var currentIndex = self.startIndex
         for range in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
-            if currentIndex < range.lowerBound {
-                result.insert(String(self[currentIndex..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+            if currentIndex > range.lowerBound {
+                continue
             }
-            result.insert(String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
+            result.append(String(self[range]).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\n", with: ""))
             currentIndex = range.upperBound
         }
-        result.insert(String(self[currentIndex...]))
-        return Array(result)
+        return result
     }
     
     func removingDoubleEmptyLines() -> String {

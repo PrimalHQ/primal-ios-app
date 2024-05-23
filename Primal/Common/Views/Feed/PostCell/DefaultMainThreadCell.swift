@@ -10,7 +10,6 @@ import UIKit
 final class DefaultMainThreadCell: ThreadCell {
     let selectionTextView = MainThreadCellTextView()
     
-    let zapGallery = ZapGalleryView()
     var zapGalleryHeightConstraint: NSLayoutConstraint?
     
     let repliesLabel = UILabel()
@@ -71,8 +70,6 @@ final class DefaultMainThreadCell: ThreadCell {
                 
                 zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
             }
-            // Must be after we've set zaps for the first time, otherwise the zaps will animate every time threads are opened
-            zapGallery.animatingChanges = true
         } else {
             zapGallery.isHidden = post.zaps == 0
             zapGallery.zaps = []
@@ -177,10 +174,6 @@ final class DefaultMainThreadCell: ThreadCell {
             delegate?.postCellDidTap(self, cachedIsBookmarked ? .unbookmark : .bookmark)
             cachedIsBookmarked.toggle()
         }), for: .touchUpInside)
-        
-        zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .zapDetails)
-        }))
         
         zapsLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)

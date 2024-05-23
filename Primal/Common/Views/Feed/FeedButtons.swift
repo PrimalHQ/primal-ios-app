@@ -30,12 +30,13 @@ class FeedButton: MyButton {
     }
     
     func setup() {
-        let hStack = UIStackView(arrangedSubviews: [iconView, titleLabel])
+        let hStack = UIStackView(arrangedSubviews: [iconView, SpacerView(width: 4), titleLabel])
         addSubview(hStack)
         
         hStack.pinToSuperview(padding: 8)
-        hStack.spacing = 4
         hStack.alignment = .center
+        
+        iconView.setContentHuggingPriority(.required, for: .horizontal)
         
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
     }

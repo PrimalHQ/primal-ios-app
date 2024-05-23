@@ -166,7 +166,6 @@ final class ThreadViewController: PostFeedViewController {
         if position == .main, let cell = cell as? DefaultMainThreadCell {
             cell.update(data, zaps: mainPostZaps)
             cell.delegate = self
-            cell.zapGallery.delegate = self
         } else if let cell = cell as? ThreadCell {
             cell.update(data, position: position)
             cell.delegate = self
@@ -589,38 +588,5 @@ private extension ThreadViewController {
 extension ThreadViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         textInputView.isFirstResponder
-    }
-}
-
-extension ThreadViewController: ZapGalleryViewDelegate {
-    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
-        let profileVC = ProfileViewController(profile: zap.user)
-        var items: [UIAction] = [
-            UIAction(title: "Open Profile", image: UIImage(systemName: "person.crop.circle.fill"), handler: { [weak self] _ in
-                self?.show(profileVC, sender: nil)
-            })
-        ]
-        
-        if !zap.message.isEmpty {
-            items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
-                UIPasteboard.general.string = zap.message
-                
-                self?.view.showToast("Copied!")
-            })
-            
-            if zap.message.isValidURL, let url = URL(string: zap.message) {
-                items.append(.init(title: "Open URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
-                    self?.present(SFSafariViewController(url: url), animated: true)
-                })
-            }
-        }
-        
-        return .init(previewProvider: { profileVC }, actionProvider: { suggested in
-            return UIMenu(title: zap.message, children: items + suggested)
-        })
-    }
-    
-    func mainActionForZap(_ zap: ParsedZap) {
-        show(ProfileViewController(profile: zap.user), sender: nil)
     }
 }

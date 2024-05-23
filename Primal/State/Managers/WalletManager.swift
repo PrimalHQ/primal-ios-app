@@ -87,6 +87,7 @@ final class WalletManager {
     @Published var btcToUsd: Double = 44022
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
+    let animatingZap = CurrentValueSubject<ParsedZap?, Never>(nil)
     
     private var update: ContinousConnection?
     
@@ -332,6 +333,17 @@ private extension WalletManager {
                 self?.recheckTransactions()
             }
             .store(in: &cancellables)
+        
+        // Whatever is in zapEvent is also the animatingZap
+        zapEvent.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] zap in self?.animatingZap.send(zap) })
+            .store(in: &cancellables)
+        
+        // Clear animating zap
+        animatingZap.debounce(for: 1, scheduler: RunLoop.main).sink { [weak self] zap in
+            if zap == nil { return }
+            self?.animatingZap.send(nil)
+        }
+        .store(in: &cancellables)
         
         $transactions
             .receive(on: DispatchQueue.main)

@@ -8,16 +8,52 @@
 import UIKit
 import FLAnimatedImage
 
-class ZapPillView: UIView {
-    let image = FLAnimatedImageView().constrainToSize(22)
-    let amountLabel = UILabel()
-    
-    lazy var stack = UIStackView(arrangedSubviews: [image, amountLabel])
-    
+class ZapGalleryChildView: UIView {
     let zap: ParsedZap
     init(zap: ParsedZap) {
         self.zap = zap
         super.init(frame: .zero)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+class ZapAvatarView: ZapGalleryChildView {
+    let image = FLAnimatedImageView().constrainToSize(22)
+    
+    override init(zap: ParsedZap) {
+        super.init(zap: zap)
+        
+        image.contentMode = .scaleAspectFill
+        image.layer.cornerRadius = 11
+        image.layer.masksToBounds = true
+        
+        image.setUserImage(zap.user, size: .init(width: 22, height: 22))
+        
+        let imageBackground = UIView().constrainToSize(24)
+        imageBackground.layer.cornerRadius = 12
+        imageBackground.backgroundColor = UIColor.background
+        imageBackground.addSubview(image)
+        image.pinToSuperview(padding: 1)
+        
+        addSubview(imageBackground)
+        imageBackground.pinToSuperview(edges: [.vertical, .trailing]).pinToSuperview(edges: .leading, padding: -6)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class ZapPillView: ZapGalleryChildView {
+    let image = FLAnimatedImageView().constrainToSize(22)
+    let amountLabel = UILabel()
+    let endSpacer = SpacerView(width: 2)
+    
+    lazy var stack = UIStackView(arrangedSubviews: [image, amountLabel, endSpacer])
+    
+    override init(zap: ParsedZap) {
+        super.init(zap: zap)
         
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 11
@@ -30,7 +66,7 @@ class ZapPillView: UIView {
         amountLabel.text = zap.amountSats.localized()
         
         addSubview(stack)
-        stack.pinToSuperview(edges: [.leading, .vertical], padding: 1).pinToSuperview(edges: .trailing, padding: 10)
+        stack.pinToSuperview(padding: 1)
         stack.alignment = .center
         stack.spacing = 8
         
@@ -55,7 +91,7 @@ class ZapPillTextView: ZapPillView {
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        stack.addArrangedSubview(label)
+        stack.insertArrangedSubview(label, at: 2)
         
         label.font = .appFont(withSize: 14, weight: .regular)
         label.textColor = .foreground3

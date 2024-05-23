@@ -153,17 +153,40 @@ extension PostRequestResult: MetadataCoding {
         }
         
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\bnostr:((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
         
-        if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
-            profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+            postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
+                
+                let naventString: String = {
+                    if mentionText.hasPrefix("nostr:") { return mentionText }
+                    if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
+                    return "nostr:\(mentionText)"
+                }()
                     
-                if let mentionId = mentionText.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                    referencedPosts.append((mentionText, mention))
+                }
+            }
+        }
+        
+        // MARK: - Finding and extracting mentioned notes without "nostr:" or "@" prefix
+        let nevent1WildcardMentionPattern = "\\b((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        
+        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1WildcardMentionPattern, options: []) {
+            postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard let matchRange = match?.range else { return }
+                    
+                let mentionText = (text as NSString).substring(with: matchRange)
+                
+                let naventString: String = "nostr:\(mentionText)"
+                    
+                if !referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }), let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
                     referencedPosts.append((mentionText, mention))
                 }
             }
@@ -243,8 +266,6 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
-        
-        
         for media in mediaMetadata where media.event_id == post.id {
             p.mediaResources = media.resources.filter { text.contains($0.url) }
             p.videoThumbnails = media.thumbnails ?? p.videoThumbnails
@@ -311,7 +332,7 @@ extension PostRequestResult: MetadataCoding {
                     
                     guard
                         item.isNip27Mention,
-                        let npub = item.split(separator: ":")[safe: 1]?.string,
+                        let npub = item.split(separator: ":").last?.string,
                         let decoded = try? bech32_decode(npub)
                     else { return nil }
                     let pubkey = hex_encode(decoded.data)
