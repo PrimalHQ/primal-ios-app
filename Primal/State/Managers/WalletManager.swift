@@ -292,8 +292,9 @@ final class WalletManager {
 
 private extension WalletManager {
     func setupPublishers() {
-        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey
-            .removeDuplicates()
+        // Necessary to getLoginInfo so that userPubkey is properly set
+        _ = ICloudKeychainManager.instance.getLoginInfo()
+        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
         let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
         
         let complexPublisher = Publishers.Merge(pubkeyPublisher.first(), onlyPubkey.debounce(for: 1, scheduler: RunLoop.main)).removeDuplicates()

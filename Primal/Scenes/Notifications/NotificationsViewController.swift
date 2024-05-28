@@ -171,6 +171,8 @@ final class NotificationsViewController: FeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
+        posts.forEach { $0.buildContentString(style: .notifications) }
+        
         view.backgroundColor = .background
         tabSelectionView.backgroundColor = .background
         

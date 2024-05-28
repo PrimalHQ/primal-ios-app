@@ -99,9 +99,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         
         if animated {
-            animateBarsToVisible()
+            if prevTransform != 0 {
+                animateBarsToVisible()
+            }
         } else {
-            setBarsToTransform(0)
+            if prevTransform != 0 {
+                setBarsToTransform(0)
+            }
         }
     }
     

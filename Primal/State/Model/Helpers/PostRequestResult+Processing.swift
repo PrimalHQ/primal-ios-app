@@ -38,20 +38,6 @@ extension PostRequestResult: MetadataCoding {
             .compactMap({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
         
-        let reposts: [ParsedContent] = reposts
-            .compactMap { repost in
-                guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
-                
-                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
-                
-                guard let nostrUser = users[repost.pubkey] else { return post }
-                
-                post.reposted = .init(users: [createParsedUser(nostrUser)], date: repost.date, id: repost.id)
-                
-                return post
-            }
-        
-        
         let parsedUsers = getSortedUsers()
         let parsedZaps = postZaps.map { primalZapEvent in
             ParsedZap(
@@ -62,6 +48,19 @@ extension PostRequestResult: MetadataCoding {
                 user: parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
             )
         }
+        
+        let reposts: [ParsedContent] = reposts
+            .compactMap { repost in
+                guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
+                
+                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps)
+                
+                guard let nostrUser = users[repost.pubkey] else { return post }
+                
+                post.reposted = .init(users: [createParsedUser(nostrUser)], date: repost.date, id: repost.id)
+                
+                return post
+            }
         
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
             .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps) }

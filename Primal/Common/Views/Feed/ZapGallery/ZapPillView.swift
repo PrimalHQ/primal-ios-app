@@ -61,6 +61,7 @@ class ZapPillView: ZapGalleryChildView {
         
         amountLabel.font = .appFont(withSize: 14, weight: .semibold)
         amountLabel.textColor = .foreground
+        amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         image.setUserImage(zap.user, size: .init(width: 22, height: 22))
         amountLabel.text = zap.amountSats.localized()

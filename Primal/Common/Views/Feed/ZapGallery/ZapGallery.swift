@@ -123,7 +123,9 @@ class ZapGalleryView: UIView {
             
             if let first = zaps.first {
                 hStack.addArrangedSubview(zapView(first, text: true))
-                hStack.addArrangedSubview(SpacerView(width: 375, priority: .init(1)))
+                let spacer = SpacerView(width: 375, priority: .init(1))
+                hStack.addArrangedSubview(spacer)
+                hStack.setCustomSpacing(8, after: spacer)
                 stack.addArrangedSubview(hStack)
                 hStack.pinToSuperview(edges: .horizontal)
             }
