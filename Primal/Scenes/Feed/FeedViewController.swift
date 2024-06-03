@@ -19,7 +19,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     var refreshControl = UIRefreshControl()
     let table = UITableView()
-    let safeAreaSpacer = UIView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -378,6 +377,26 @@ private extension FeedViewController {
                 self.animateBarsToVisible()
             }
         }
+        
+        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard let self, let index = posts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
+            var zaps = posts[index].zaps
+            let zapIndex = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
+            zaps.insert(zap, at: zapIndex)
+            posts[index].zaps = zaps
+            
+            guard
+                self.view.window != nil,
+                table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
+            else { return }
+            
+            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+                cell.updateMenu(posts[index])
+            } else {
+                table.reloadData()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func zapFromCell(_ cell: PostCell, showPopup: Bool) {

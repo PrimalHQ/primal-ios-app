@@ -33,6 +33,48 @@ extension PostRequestResult: MetadataCoding {
         followers: userFollowers[user.pubkey]
     )}
     
+    func getLongFormPosts() -> [ParsedLongFormPost] {
+        let posts = process()
+        
+        return longFormPosts.compactMap { post -> ParsedLongFormPost? in
+            guard
+                let title = post.title,
+                let user = users[post.event.pubkey],
+                let id = post.event.tags.first(where: { $0.first == "d" })?[safe: 1]
+            else { return nil }
+            
+            return .init(
+                id: id,
+                title: title,
+                image: post.image,
+                summary: post.summary,
+                words: longFormWordCount[post.event.id],
+                zaps: postZaps.compactMap { primalZapEvent -> ParsedZap? in
+                    guard
+                        primalZapEvent.event_id == post.event.id,
+                        let user = users[primalZapEvent.sender]
+                    else { return nil }
+                    
+                    return ParsedZap(
+                        receiptId: primalZapEvent.zap_receipt_id,
+                        postId: primalZapEvent.event_id,
+                        amountSats: primalZapEvent.amount_sats,
+                        message: zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                        user: createParsedUser(user)
+                    )
+                }, 
+                replies: posts.compactMap({
+                    if $0.replyingTo?.post.id == post.event.id {
+                        return $0
+                    }
+                    return nil
+                }),
+                event: post.event,
+                user: createParsedUser(user)
+            )
+        }
+    }
+    
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
@@ -204,7 +246,7 @@ extension PostRequestResult: MetadataCoding {
                     let metadata = try? decodedMetadata(from: String(address)),
                     let id = metadata.identifier,
                     let mention = self.mentions.first(where: {
-                        $0.kind == 30023 && $0.tags.contains(["d", id])
+                        $0.kind == NostrKind.longForm.rawValue && $0.tags.contains(["d", id])
                     }),
                     let npub = mention.pubkey.hexToNpub(),
                     let noteid = mention.id.hexToNoteId()

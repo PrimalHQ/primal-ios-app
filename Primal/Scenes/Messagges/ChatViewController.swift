@@ -141,7 +141,7 @@ private extension ChatViewController {
         
         let stack = UIStackView(axis: .vertical, [navigationBarExtender, navigationBorder, table, inputParent, bottomBarSpacer])
         view.addSubview(stack)
-        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview()
@@ -202,7 +202,7 @@ private extension ChatViewController {
         
         inputBorder.pinToSuperview(edges: [.top, .horizontal])
         
-        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
         bottomC.priority = .defaultLow
         bottomC.isActive = true
         

@@ -36,8 +36,6 @@ final class FeedManager {
     var lastRefreshDate: Date = .distantPast
     var blockFuturePosts: Bool { lastRefreshDate.timeIntervalSinceNow > -10 }
     
-    let refreshCellMenuEmitter: PassthroughSubject<Int, Never> = .init()
-    
     // this is a map, matches post id of the repost with the original already added post in the post list
     var alreadyAddedReposts: [String: ParsedContent] = [:]
 
@@ -169,16 +167,6 @@ private extension FeedManager {
                 newPostObjects = newPostObjects.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user?.data.pubkey != pubkey }
             }
             .store(in: &cancellables)
-        
-        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
-            guard let self, let index = parsedPosts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
-            var zaps = parsedPosts[index].zaps
-            let zapIndex = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
-            zaps.insert(zap, at: zapIndex)
-            parsedPosts[index].zaps = zaps
-            refreshCellMenuEmitter.send(index)
-        }
-        .store(in: &cancellables)
         
         postsEmitter.sink { [weak self] result in
             guard let self else { return }

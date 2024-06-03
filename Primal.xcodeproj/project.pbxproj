@@ -339,6 +339,17 @@
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
 		B99E03872BF76554006CCECB /* FLAnimatedImage+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03862BF76554006CCECB /* FLAnimatedImage+User.swift */; };
 		B99E03892BF7B10C006CCECB /* NewFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03882BF7B10C006CCECB /* NewFeedCell.swift */; };
+		B99E038C2C05682B006CCECB /* ReadsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E038B2C05682B006CCECB /* ReadsViewController.swift */; };
+		B99E038F2C05756F006CCECB /* LongFormContentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E038E2C05756F006CCECB /* LongFormContentCell.swift */; };
+		B99E03922C060BD0006CCECB /* LongFormContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03912C060BD0006CCECB /* LongFormContentController.swift */; };
+		B99E03972C061D67006CCECB /* longForm.html in Resources */ = {isa = PBXBuildFile; fileRef = B99E03962C061D67006CCECB /* longForm.html */; };
+		B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03982C07801A006CCECB /* WKWebView+Extra.swift */; };
+		B99E039C2C07C059006CCECB /* Ink in Frameworks */ = {isa = PBXBuildFile; productRef = B99E039B2C07C059006CCECB /* Ink */; };
+		B99E039E2C07C714006CCECB /* LongFormNavExtensionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */; };
+		B99E03A02C07C75E006CCECB /* LongFormQuoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E039F2C07C75E006CCECB /* LongFormQuoteView.swift */; };
+		B99E03A22C08E8F3006CCECB /* LongFormCommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */; };
+		B99E03A42C09D095006CCECB /* markdown.css in Resources */ = {isa = PBXBuildFile; fileRef = B99E03A32C09D095006CCECB /* markdown.css */; };
+		B99E03A62C0A09CF006CCECB /* AppChromeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */; };
 		B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */; };
 		B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
@@ -770,6 +781,16 @@
 		B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParsedContent+PostInfo.swift"; sourceTree = "<group>"; };
 		B99E03862BF76554006CCECB /* FLAnimatedImage+User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FLAnimatedImage+User.swift"; sourceTree = "<group>"; };
 		B99E03882BF7B10C006CCECB /* NewFeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFeedCell.swift; sourceTree = "<group>"; };
+		B99E038B2C05682B006CCECB /* ReadsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadsViewController.swift; sourceTree = "<group>"; };
+		B99E038E2C05756F006CCECB /* LongFormContentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormContentCell.swift; sourceTree = "<group>"; };
+		B99E03912C060BD0006CCECB /* LongFormContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormContentController.swift; sourceTree = "<group>"; };
+		B99E03962C061D67006CCECB /* longForm.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = longForm.html; sourceTree = "<group>"; };
+		B99E03982C07801A006CCECB /* WKWebView+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKWebView+Extra.swift"; sourceTree = "<group>"; };
+		B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormNavExtensionView.swift; sourceTree = "<group>"; };
+		B99E039F2C07C75E006CCECB /* LongFormQuoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormQuoteView.swift; sourceTree = "<group>"; };
+		B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormCommentsController.swift; sourceTree = "<group>"; };
+		B99E03A32C09D095006CCECB /* markdown.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = markdown.css; sourceTree = "<group>"; };
+		B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppChromeManager.swift; sourceTree = "<group>"; };
 		B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryController.swift; sourceTree = "<group>"; };
 		B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFullScreenViewController.swift; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
@@ -833,6 +854,7 @@
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
+				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
@@ -1040,6 +1062,7 @@
 				B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */,
 				B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */,
 				B94429252BD4442D00746FBC /* Keyboard+Extra.swift */,
+				B99E03982C07801A006CCECB /* WKWebView+Extra.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1450,7 +1473,6 @@
 			children = (
 				9ED415FD2A42441600892235 /* Supporting */,
 				9ED415F82A41DF3100892235 /* Views */,
-				9ED415F52A40FDEC00892235 /* Search */,
 				9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */,
 			);
 			path = Explore;
@@ -1478,7 +1500,7 @@
 				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
-				9E9C42152A1401F500F9D7ED /* Explore */,
+				B99E038A2C0567FA006CCECB /* Reads */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				B9F9331B2B88F6C40064B495 /* Premium */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
@@ -1870,6 +1892,40 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		B99E038A2C0567FA006CCECB /* Reads */ = {
+			isa = PBXGroup;
+			children = (
+				B99E038D2C05755C006CCECB /* Views */,
+				9ED415F52A40FDEC00892235 /* Search */,
+				9E9C42152A1401F500F9D7ED /* Explore */,
+				B99E03902C060BBC006CCECB /* LongForm */,
+				B99E038B2C05682B006CCECB /* ReadsViewController.swift */,
+			);
+			path = Reads;
+			sourceTree = "<group>";
+		};
+		B99E038D2C05755C006CCECB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B99E038E2C05756F006CCECB /* LongFormContentCell.swift */,
+				B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */,
+				B99E039F2C07C75E006CCECB /* LongFormQuoteView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B99E03902C060BBC006CCECB /* LongForm */ = {
+			isa = PBXGroup;
+			children = (
+				B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */,
+				B99E03912C060BD0006CCECB /* LongFormContentController.swift */,
+				B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */,
+				B99E03962C061D67006CCECB /* longForm.html */,
+				B99E03A32C09D095006CCECB /* markdown.css */,
+			);
+			path = LongForm;
+			sourceTree = "<group>";
+		};
 		B99E7BD12B238A6800756F40 /* ImageGallery */ = {
 			isa = PBXGroup;
 			children = (
@@ -2035,6 +2091,7 @@
 				933B85742A9F6EC400C48FF6 /* CryptoSwift */,
 				B9F933172B867D860064B495 /* QRCode */,
 				B99E037D2BF3F277006CCECB /* NostrSDK */,
+				B99E039B2C07C059006CCECB /* Ink */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -2087,7 +2144,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					939330F129A3E36F003954C2 = {
 						CreatedOnToolsVersion = 14.2;
@@ -2123,6 +2180,7 @@
 				933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */,
 				B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
+				B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -2141,6 +2199,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
+				B99E03972C061D67006CCECB /* longForm.html in Resources */,
 				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
 				B91C46282BC6D03B00AC2C9B /* PrivacyInfo.xcprivacy in Resources */,
 				9E40D6EE2A0D22D4008AE854 /* loadingSpinner.json in Resources */,
@@ -2161,6 +2220,7 @@
 				B9CE4DAB2B682C8B0060A1B8 /* transferFailed.json in Resources */,
 				B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */,
 				B9CE4DC22B740A4D0060A1B8 /* loadingDots.json in Resources */,
+				B99E03A42C09D095006CCECB /* markdown.css in Resources */,
 				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
@@ -2224,6 +2284,7 @@
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				B900328F2BD26F4D00ADD2E5 /* NoteLikesViewController.swift in Sources */,
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
+				B99E038C2C05682B006CCECB /* ReadsViewController.swift in Sources */,
 				B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
@@ -2284,6 +2345,7 @@
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
+				B99E038F2C05756F006CCECB /* LongFormContentCell.swift in Sources */,
 				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,
 				B9CE4DB02B697FCE0060A1B8 /* SlideDownTransition.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
@@ -2355,6 +2417,7 @@
 				B9009B4C2B068653002B0613 /* OnboardingProfileImageView.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
 				B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */,
+				B99E03A02C07C75E006CCECB /* LongFormQuoteView.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
 				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
@@ -2370,6 +2433,7 @@
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
+				B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */,
 				B9B1ABA52B3336B000837312 /* TransactionUserInfoCell.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
@@ -2442,9 +2506,11 @@
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
+				B99E039E2C07C714006CCECB /* LongFormNavExtensionView.swift in Sources */,
 				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
+				B99E03A22C08E8F3006CCECB /* LongFormCommentsController.swift in Sources */,
 				B94F2BC92AD7206C0041181B /* WalletPickUserController.swift in Sources */,
 				B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */,
 				93F27DA82A27FA8E004ADA55 /* LikeManager.swift in Sources */,
@@ -2471,7 +2537,9 @@
 				B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */,
 				9E5BD9432A1E701C008DFFBE /* SelfSizingTextView.swift in Sources */,
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
+				B99E03A62C0A09CF006CCECB /* AppChromeManager.swift in Sources */,
 				B91BB95F2B3CC2C7003F6B2A /* ImageCell.swift in Sources */,
+				B99E03922C060BD0006CCECB /* LongFormContentController.swift in Sources */,
 				B99E03892BF7B10C006CCECB /* NewFeedCell.swift in Sources */,
 				B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
@@ -2601,6 +2669,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2662,6 +2731,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2712,7 +2782,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.21;
+				MARKETING_VERSION = 1.7.25;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2757,7 +2827,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.21;
+				MARKETING_VERSION = 1.7.25;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2961,6 +3031,14 @@
 				kind = branch;
 			};
 		};
+		B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnsundell/ink.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.0;
+			};
+		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dagronf/qrcode.git";
@@ -3021,6 +3099,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
 			productName = NostrSDK;
+		};
+		B99E039B2C07C059006CCECB /* Ink */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */;
+			productName = Ink;
 		};
 		B9F933172B867D860064B495 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;

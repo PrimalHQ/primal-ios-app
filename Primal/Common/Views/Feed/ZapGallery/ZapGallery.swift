@@ -112,8 +112,6 @@ class ZapGalleryView: UIView {
             if animatingChanges {
                 // Start animating
                 animateStacks()
-            } else {
-                print("NOT ANIMATING")
             }
         }
         

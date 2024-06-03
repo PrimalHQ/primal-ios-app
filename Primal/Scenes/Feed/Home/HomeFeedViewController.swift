@@ -8,11 +8,32 @@
 import Combine
 import UIKit
 
-final class HomeFeedViewController: PostFeedViewController {
-    let feedButton = UIButton()
+extension UIButton.Configuration {
+    static func navChevronButton(title: String) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = .init(title, attributes: AttributeContainer([
+            .font: UIFont.appFont(withSize: 20, weight: .bold),
+            .foregroundColor: UIColor.foreground
+        ]))
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 18, bottom: 0, trailing: 0)
+        config.image = UIImage(named: "navChevron")?.withTintColor(.foreground).withRenderingMode(.alwaysOriginal)
+        config.imagePadding = 8
+        config.imagePlacement = .trailing
+        return config
+    }
+}
 
+final class HomeFeedViewController: PostFeedViewController {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
+    
+    lazy var navTitleButton = UIButton(configuration: .navChevronButton(title: "Latest"), primaryAction: .init(handler: { [weak self] _ in
+        self?.present(FeedsSelectionController(feed: self?.feed ?? .init(feed: .latest)), animated: true)
+    }))
+    
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "tabIcon-explore")), primaryAction: .init(handler: { [weak self] _ in
+        self?.show(SearchViewController(), sender: nil)
+    }))
     
     var onLoad: (() -> ())? {
         didSet {
@@ -66,14 +87,12 @@ final class HomeFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Latest"
+        navigationItem.titleView = navTitleButton
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchButton)
         
         loadingSpinner.transform = .init(translationX: 0, y: -70)
         
-        feedButton.constrainToSize(44)
-        feedButton.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
-        feedButton.setImage(UIImage(named: "feedPicker")?.scalePreservingAspectRatio(targetSize: .init(width: 22, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: feedButton)
+        
         
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
         view.addSubview(postButtonParent)
@@ -122,10 +141,6 @@ final class HomeFeedViewController: PostFeedViewController {
         loadingSpinner.play()
     }
     
-    @objc func openFeedSelection() {
-        present(FeedsSelectionController(feed: feed), animated: true)
-    }
-    
     @objc func postPressed() {
         present(NewPostViewController(), animated: true)
     }
@@ -133,8 +148,15 @@ final class HomeFeedViewController: PostFeedViewController {
     override func updateTheme() {               
         super.updateTheme()
         
-        feedButton.backgroundColor = .background
-        feedButton.tintColor = .foreground3
+        searchButton.tintColor = .foreground3
+        
+        updateTitle()
+    }
+    
+    func updateTitle() {
+        if let title = feed.currentFeed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil) {
+            navTitleButton.configuration = .navChevronButton(title: title)
+        }
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -217,7 +239,7 @@ private extension HomeFeedViewController {
         feed.$currentFeed
             .receive(on: DispatchQueue.main)
             .sink { [weak self] feed in
-                self?.title = feed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil)
+                self?.updateTitle()
             }
             .store(in: &cancellables)
     }

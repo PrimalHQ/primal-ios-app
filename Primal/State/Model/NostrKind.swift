@@ -29,6 +29,7 @@ enum NostrKind: Int {
     case bookmarks = 10_003
     
     case categoryList = 30_000
+    case longForm = 30_023
     
     case settings = 30_078
     
@@ -57,6 +58,7 @@ enum NostrKind: Int {
     case userPubkey = 10_000_138
     case relays = 10_000_139
     case relayHints = 10_000_141
+    case longFormMetadata = 10_000_144
 }
 
 extension NostrKind {
