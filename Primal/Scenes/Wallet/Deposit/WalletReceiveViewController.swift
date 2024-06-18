@@ -55,7 +55,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     }
     private var onchainAddress: String? {
         didSet {
-            if let onchainAddress {
+            if onchainAddress != nil {
                 updateInfo()
             }
         }

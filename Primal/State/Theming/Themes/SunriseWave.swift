@@ -27,8 +27,8 @@ class SunriseWave: AppTheme {
     let foreground5: UIColor = .init(rgb: 0x808080)
     var foreground6: UIColor = .init(rgb: 0xC8C8C8)
     
-    let accent: UIColor = .init(rgb: 0xCA079F)
-    let accent2: UIColor = .init(rgb: 0xCA079F)
+    let accent: UIColor = .init(rgb: 0xCA077C)
+    let accent2: UIColor = .init(rgb: 0xCA077C)
     let accent3: UIColor = .init(rgb: 0xAB268E)
     
     let extraColorMenu: UIColor = .init(rgb: 0x222222)

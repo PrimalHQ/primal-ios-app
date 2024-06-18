@@ -28,8 +28,14 @@ class NewPostViewController: UIViewController {
     lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
     
     private var cancellables: Set<AnyCancellable> = []
-        
-    init() {
+    
+    var replyToPost: PrimalFeedPost?
+    
+    var onPost: (() -> Void)?
+    
+    init(replyToPost: PrimalFeedPost? = nil, onPost: (() -> Void)? = nil) {
+        self.replyToPost = replyToPost
+        self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -67,14 +73,25 @@ private extension NewPostViewController {
         postButton.isEnabled = false
         postButton.setTitle(" " + postButtonText + " ", for: .normal)
         
-        PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys) { [weak self] success in
+        let callback: (Bool) -> Void = { [weak self] success in
             if success {
                 self?.postButton.setTitle("Posted", for: .normal)
-                self?.dismiss(animated: true)
+                self?.onPost?()
+                self?.dismiss(animated: true) {
+                    self?.postButton.setTitle(self?.postButtonText, for: .normal)
+                    self?.manager.media = []
+                    self?.textView.text = ""
+                }
             } else {
                 self?.postButton.setTitle(self?.postButtonText, for: .normal)
                 self?.postButton.isEnabled = true
             }
+        }
+        
+        if let replyToPost {
+            PostManager.instance.sendReplyEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, post: replyToPost, callback)
+        } else {
+            PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, callback)
         }
     }
     

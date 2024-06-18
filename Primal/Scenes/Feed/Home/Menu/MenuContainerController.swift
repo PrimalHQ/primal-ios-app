@@ -432,6 +432,7 @@ private extension MenuContainerController {
         case .began:
             coverView.isHidden = false
             child.beginAppearanceTransition(false, animated: true)
+            (child as? FeedViewController)?.animateBarsToVisible()
             fallthrough
         case .changed:
             mainStack.alpha = 1

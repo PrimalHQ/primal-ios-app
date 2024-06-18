@@ -128,4 +128,17 @@ enum FontSizeSelection: Int {
             }
         }
     }
+    
+    var name: String {
+        switch self {
+        case .small:
+            return "small"
+        case .standard:
+            return "standard"
+        case .large:
+            return "large"
+        case .huge:
+            return "huge"
+        }
+    }
 }

@@ -447,10 +447,10 @@ private extension ThreadViewController {
         view.addSubview(inputParent)
         inputParent.pinToSuperview(edges: .horizontal)
         inputParent.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        let botC = inputParent.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        let botC = inputParent.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
         botC.priority = .defaultHigh
         botC.isActive = true
-        inputParent.frame = .init(origin: .init(x: 0, y: 700), size: .init(width: 350, height: 100))
+        inputParent.frame = .init(origin: .init(x: 0, y: 900), size: .init(width: 350, height: 100))
         
         inputBackground.layer.cornerRadius = 22
         inputBackground.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true

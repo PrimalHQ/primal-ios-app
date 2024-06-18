@@ -141,7 +141,7 @@ private extension ChatViewController {
         
         let stack = UIStackView(axis: .vertical, [navigationBarExtender, navigationBorder, table, inputParent, bottomBarSpacer])
         view.addSubview(stack)
-        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview()
@@ -202,7 +202,7 @@ private extension ChatViewController {
         
         inputBorder.pinToSuperview(edges: [.top, .horizontal])
         
-        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -56)
+        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
         bottomC.priority = .defaultLow
         bottomC.isActive = true
         
@@ -368,7 +368,7 @@ private extension ChatViewController {
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             
-            let isImageHidden = !isEditing || images.isEmpty
+//            let isImageHidden = !isEditing || images.isEmpty
             
             UIView.animate(withDuration: 0.2) {
 //                self.inputBackground.backgroundColor = isEditing ? .background3 : .background3
@@ -388,7 +388,7 @@ private extension ChatViewController {
 //            self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
             
-            let isHidden = images.isEmpty
+//            let isHidden = images.isEmpty
 //            UIView.animate(withDuration: 0.3, animations: {
 //                self.imagesCollectionView.isHidden = isHidden
 //                self.imagesCollectionView.alpha = isHidden ? 0 : 1

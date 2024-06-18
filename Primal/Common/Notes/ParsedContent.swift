@@ -47,6 +47,48 @@ final class ParsedUser {
     }
 }
 
+class ParsedLongFormPost {
+    let title: String
+    let image: String?
+    let summary: String?
+    let words: Int?
+    
+    let identifier: String
+    
+    var zaps: [ParsedZap]
+    
+    var replies: [ParsedContent]
+    
+    var stats: NostrContentStats
+    
+    let event: NostrContent
+    let user: ParsedUser
+    
+    init(
+        id: String,
+        title: String,
+        image: String?,
+        summary: String?,
+        words: Int?,
+        zaps: [ParsedZap],
+        replies: [ParsedContent],
+        stats: NostrContentStats,
+        event: NostrContent,
+        user: ParsedUser
+    ) {
+        identifier = id
+        self.title = title
+        self.image = image
+        self.summary = summary
+        self.words = words
+        self.zaps = zaps
+        self.replies = replies
+        self.stats = stats
+        self.event = event
+        self.user = user
+    }
+}
+
 final class ParsedContent {
     var post: PrimalFeedPost
     let user: ParsedUser

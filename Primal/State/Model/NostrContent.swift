@@ -129,3 +129,11 @@ struct WebPreview: Codable {
     
     var url: String
 }
+
+struct LongFormPost: Codable {
+    var title: String?
+    var image: String?
+    var summary: String?
+    
+    var event: NostrContent
+}

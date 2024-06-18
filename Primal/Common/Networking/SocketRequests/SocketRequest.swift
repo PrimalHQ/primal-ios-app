@@ -265,6 +265,26 @@ extension PostRequestResult {
                 return
             }
             postZaps.append(zap)
+        case .longFormMetadata:
+            guard let json: JSON = contentString.decode(), let objectValue = json.objectValue else {
+                print("Error decoding longFormMetadata")
+                return
+            }
+            
+            if let eventId = objectValue["event_id"]?.stringValue, let words = objectValue["words"]?.doubleValue {
+                longFormWordCount[eventId] = Int(words)
+            } else {
+                print("Error decoding longFormMetadata")
+            }
+        case .longForm:
+            let longFormEvent = NostrContent(jsonData: payload)
+
+            longFormPosts.append(.init(
+                title: longFormEvent.tags.first(where: { $0.first == "title" })?[safe: 1],
+                image: longFormEvent.tags.first(where: { $0.first == "image" })?[safe: 1],
+                summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                event: longFormEvent
+            ))
         default:
             print("Unhandled response \(payload)")
         }

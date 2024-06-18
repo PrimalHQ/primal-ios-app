@@ -261,13 +261,19 @@ private extension EditProfileViewController {
             }
         }), for: .touchUpInside)
         
+        var count = 0
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             
-//            guard let name = self.displayNameInput.text, !name.isEmpty else {
-//                self.displayNameInput.becomeFirstResponder()
-//                return
-//            }
+            if let nip05 = self.nip05Input.text, !nip05.isEmpty, !nip05.isEmail {
+                self.nip05Input.text = ""
+                self.nip05Input.becomeFirstResponder()
+                count += 1
+                if count > 1 {
+                    self.showErrorMessage("Needs to be email format.")
+                }
+                return
+            }
             
 //            guard let username = self.usernameInput.text, !username.isEmpty else {
 //                self.usernameInput.becomeFirstResponder()

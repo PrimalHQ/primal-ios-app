@@ -335,8 +335,6 @@ private extension ProfileViewController {
         navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         navigationBar.delegate = self
         
-        safeAreaSpacer.removeFromSuperview()
-        
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         
         requestUserProfile()
