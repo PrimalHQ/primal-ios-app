@@ -101,9 +101,7 @@ final class IdentityManager {
                 
                 switch kind {
                 case .defaultSettings:
-                    var primalSettings = PrimalSettings(json: response)
-
-                    if let settings = primalSettings {
+                    if let settings = PrimalSettings(json: response) {
                         callback(settings.content)
                     }
                 default:

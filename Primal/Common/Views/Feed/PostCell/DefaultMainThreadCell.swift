@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class DefaultMainThreadCell: ThreadCell {
+class DefaultMainThreadCell: ThreadCell {
     let selectionTextView = MainThreadCellTextView()
     
     var zapGalleryHeightConstraint: NSLayoutConstraint?

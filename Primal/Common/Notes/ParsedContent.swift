@@ -59,6 +59,8 @@ class ParsedLongFormPost {
     
     var replies: [ParsedContent]
     
+    var stats: NostrContentStats
+    
     let event: NostrContent
     let user: ParsedUser
     
@@ -70,6 +72,7 @@ class ParsedLongFormPost {
         words: Int?,
         zaps: [ParsedZap],
         replies: [ParsedContent],
+        stats: NostrContentStats,
         event: NostrContent,
         user: ParsedUser
     ) {
@@ -80,6 +83,7 @@ class ParsedLongFormPost {
         self.words = words
         self.zaps = zaps
         self.replies = replies
+        self.stats = stats
         self.event = event
         self.user = user
     }

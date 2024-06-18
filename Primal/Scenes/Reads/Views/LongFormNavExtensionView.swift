@@ -9,12 +9,12 @@ import UIKit
 import FLAnimatedImage
 
 extension UIButton.Configuration {
-    static func accent12(_ text: String) -> UIButton.Configuration {
+    static func accent14(_ text: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         config.baseBackgroundColor = .accent2
         config.attributedTitle = .init(text, attributes: .init([
-            .font: UIFont.appFont(withSize: 12, weight: .semibold),
+            .font: UIFont.appFont(withSize: 14, weight: .semibold),
             .foregroundColor: UIColor.white
         ]))
         return config
@@ -26,7 +26,7 @@ class LongFormNavExtensionView: UIView, Themeable {
     let secondaryLabel = UILabel()
     let profileIcon = FLAnimatedImageView(image: UIImage(named: "profile"))
     let border = SpacerView(height: 1)
-    let goBackstageButton = UIButton(configuration: .accent12("Go Backstage")).constrainToSize(height: 28)
+    let goBackstageButton = UIButton(configuration: .accent14("Go Backstage")).constrainToSize(height: 36)
     
     init(_ user: ParsedUser) {
         super.init(frame: .zero)
@@ -57,7 +57,7 @@ class LongFormNavExtensionView: UIView, Themeable {
         secondaryLabel.textColor = .foreground5
         
         border.backgroundColor = .background3
-        goBackstageButton.configuration = .accent12("Go Backstage")
+        goBackstageButton.configuration = .accent14("Subscribe")
     }
 }
 

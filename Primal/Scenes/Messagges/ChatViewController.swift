@@ -368,7 +368,7 @@ private extension ChatViewController {
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             
-            let isImageHidden = !isEditing || images.isEmpty
+//            let isImageHidden = !isEditing || images.isEmpty
             
             UIView.animate(withDuration: 0.2) {
 //                self.inputBackground.backgroundColor = isEditing ? .background3 : .background3
@@ -388,7 +388,7 @@ private extension ChatViewController {
 //            self?.imagesCollectionView.imageResources = images
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
             
-            let isHidden = images.isEmpty
+//            let isHidden = images.isEmpty
 //            UIView.animate(withDuration: 0.3, animations: {
 //                self.imagesCollectionView.isHidden = isHidden
 //                self.imagesCollectionView.alpha = isHidden ? 0 : 1

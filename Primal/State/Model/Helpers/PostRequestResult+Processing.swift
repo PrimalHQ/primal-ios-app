@@ -69,6 +69,7 @@ extension PostRequestResult: MetadataCoding {
                     }
                     return nil
                 }),
+                stats: stats[post.event.id] ?? .empty(post.event.id),
                 event: post.event,
                 user: createParsedUser(user)
             )

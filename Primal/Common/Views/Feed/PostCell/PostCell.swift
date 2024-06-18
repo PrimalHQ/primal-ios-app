@@ -45,6 +45,7 @@ class PostCell: UITableViewCell {
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
+    let bookmarkButton = UIButton()
     
     let zapGallery = ZapGalleryView()
     
@@ -52,6 +53,10 @@ class PostCell: UITableViewCell {
     var metadataUpdater: AnyCancellable?
     
     let nantesDelegate = PostCellNantesDelegate()
+    
+    // MARK: - State
+    var isShowingBookmarked = false
+    
     
     var useShortText: Bool { false }
     
@@ -196,6 +201,9 @@ class PostCell: UITableViewCell {
                 delegate?.postCellDidTap(self, action)
             }
         })
+        
+        isShowingBookmarked = content.postInfo.isBookmarked
+        bookmarkButton.setImage(UIImage(named: isShowingBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
     }
 }
 
@@ -299,6 +307,12 @@ private extension PostCell {
         zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
+        
+        bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
+        }), for: .touchUpInside)
         
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)

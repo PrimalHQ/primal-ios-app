@@ -88,7 +88,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        if let result = fromVC as? WalletTransferSummaryController {
+        if fromVC as? WalletTransferSummaryController != nil {
             return SlideDownAnimator(presenting: false)
         }
         

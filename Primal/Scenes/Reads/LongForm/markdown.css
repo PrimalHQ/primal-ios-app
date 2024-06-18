@@ -154,6 +154,7 @@
   --h6-line-height: 32px;
 }
 
+
 p {
   color: var(--text-primary);
   font-family: Nacelle;
@@ -312,6 +313,7 @@ img {
   margin-bottom: 20px;
   border-radius: 4px;
   overflow: hidden;
+  max-width: 100%;
 }
 
 img + sup {
@@ -357,7 +359,6 @@ del {
   color: inherit;
 }
 
-
 th {
   color: var(--text-primary);
   font-size: var(--p-font-size);
@@ -382,4 +383,3 @@ td > *, th > * {
   font-weight: inherit;
   line-height: inherit;
 }
-

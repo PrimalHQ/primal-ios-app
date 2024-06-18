@@ -30,6 +30,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     var postCellID = "cell" // Needed for updating the theme
     
     var postSection: Int { 0 }
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
+        if indexPath.section != postSection { return nil }
+        return posts[safe: indexPath.row]
+    }
     var posts: [ParsedContent] = [] {
         didSet {
             guard oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
@@ -266,15 +270,21 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     }
     
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
-        guard let index = table.indexPath(for: cell)?.row, let post = posts[safe: index] else { return }
-
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
+        
+        performEvent(event, withPost: post, inCell: cell)
+    }
+    
+    func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
         switch event {
         case .url(let URL):
             guard let url = URL ?? post.linkPreview?.url else { return }
             handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
         case .images(let resource):
+            guard let cell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
+            guard let cell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
             show(ProfileViewController(profile: post.user), sender: nil)
@@ -285,12 +295,15 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             
             hapticGenerator.impactOccurred()
             
-            cell.likeButton.animateTo(post.post.likes + 1, filled: true)
+            cell?.likeButton.animateTo(post.post.likes + 1, filled: true)
         case .zap:
+            guard let cell else { return }
             zapFromCell(cell, showPopup: false)
         case .longTapZap:
+            guard let cell else { return }
             zapFromCell(cell, showPopup: true)
         case .repost:
+            guard let cell else { return }
             postCellDidTapRepost(cell)
         case .reply:
             guard let thread = open(post: post) as? ThreadViewController else { return }
@@ -318,7 +331,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            view.showToast("Copied!")
+            RootViewController.instance.view.showToast("Copied!")
         case .broadcast:
             break // TODO: Something?
         case .report:
@@ -327,10 +340,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             MuteManager.instance.toggleMute(post.user.data.pubkey)
         case .bookmark:
             BookmarkManager.instance.bookmark(post.post.id)
-            cell.updateMenu(post)
+            cell?.updateMenu(post)
         case .unbookmark:
             BookmarkManager.instance.unbookmark(post.post.id)
-            cell.updateMenu(post)
+            cell?.updateMenu(post)
         }
     }
 }
@@ -400,9 +413,12 @@ private extension FeedViewController {
     }
     
     func zapFromCell(_ cell: PostCell, showPopup: Bool) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
+        guard 
+            let indexPath = table.indexPath(for: cell),
+            let post = postForIndexPath(indexPath)
+        else { return }
         
-        let postUser = posts[indexPath.row].user.data
+        let postUser = post.user.data
         if postUser.address == nil {
             showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
             return
@@ -431,9 +447,11 @@ private extension FeedViewController {
     }
     
     func doZapFromCell(_ cell: PostCell, amount: Int, message: String) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        let index = indexPath.row
-        let parsed = posts[index]
+        guard 
+            let indexPath = table.indexPath(for: cell),
+            let parsed = postForIndexPath(indexPath)
+        else { return }
+        
         
         let newZapAmount = parsed.post.satszapped + amount
         
@@ -466,9 +484,8 @@ private extension FeedViewController {
                 } else {
                     self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
                 }
-                guard self?.posts.count ?? 0 > index else { return }
                 if self?.view.window != nil {
-                    self?.table.reloadRows(at: [indexPath], with: .none)
+                    self?.table.reloadData()
                 }
             }
         }
@@ -588,7 +605,8 @@ extension FeedViewController: PostCellDelegate {
 
 extension FeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        open(post: posts[indexPath.row])
+        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
+        open(post: post)
     }
 }
 

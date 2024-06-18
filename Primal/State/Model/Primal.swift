@@ -246,13 +246,13 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let tags: [[String]]
     let content: String
     let sig: String
-    let likes: Int
+    var likes: Int
     let mentions: Int
-    let replies: Int
-    let zaps: Int
+    var replies: Int
+    var zaps: Int
     var satszapped: Int
     let score24h: Int
-    let reposts: Int
+    var reposts: Int
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id

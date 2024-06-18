@@ -333,6 +333,7 @@
 		B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */; };
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
+		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
@@ -350,12 +351,16 @@
 		B99E03A22C08E8F3006CCECB /* LongFormCommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */; };
 		B99E03A42C09D095006CCECB /* markdown.css in Resources */ = {isa = PBXBuildFile; fileRef = B99E03A32C09D095006CCECB /* markdown.css */; };
 		B99E03A62C0A09CF006CCECB /* AppChromeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */; };
+		B99E03A82C0DF2ED006CCECB /* PostReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */; };
+		B99E03AB2C0DFB9F006CCECB /* PostTagsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03AA2C0DFB9F006CCECB /* PostTagsCell.swift */; };
+		B99E03AD2C0DFBC6006CCECB /* PostCommentsTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */; };
 		B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */; };
 		B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
+		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
 		B9B1AB9A2B2C730400837312 /* regions.json in Resources */ = {isa = PBXBuildFile; fileRef = B9B1AB982B2C730400837312 /* regions.json */; };
 		B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */; };
 		B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */; };
@@ -776,6 +781,7 @@
 		B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNetworkViewController.swift; sourceTree = "<group>"; };
 		B94F2C052AF5184D0041181B /* RoundedInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedInputField.swift; sourceTree = "<group>"; };
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
+		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
 		B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParsedContent+PostInfo.swift"; sourceTree = "<group>"; };
@@ -791,12 +797,16 @@
 		B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormCommentsController.swift; sourceTree = "<group>"; };
 		B99E03A32C09D095006CCECB /* markdown.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = markdown.css; sourceTree = "<group>"; };
 		B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppChromeManager.swift; sourceTree = "<group>"; };
+		B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostReactionsCell.swift; sourceTree = "<group>"; };
+		B99E03AA2C0DFB9F006CCECB /* PostTagsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTagsCell.swift; sourceTree = "<group>"; };
+		B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentsTitleCell.swift; sourceTree = "<group>"; };
 		B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryController.swift; sourceTree = "<group>"; };
 		B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFullScreenViewController.swift; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
+		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
 		B9B1AB982B2C730400837312 /* regions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = regions.json; sourceTree = "<group>"; };
 		B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAmountCell.swift; sourceTree = "<group>"; };
@@ -1907,9 +1917,12 @@
 		B99E038D2C05755C006CCECB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B99E03A92C0DFB69006CCECB /* CommentCells */,
 				B99E038E2C05756F006CCECB /* LongFormContentCell.swift */,
 				B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */,
 				B99E039F2C07C75E006CCECB /* LongFormQuoteView.swift */,
+				B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */,
+				B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1924,6 +1937,16 @@
 				B99E03A32C09D095006CCECB /* markdown.css */,
 			);
 			path = LongForm;
+			sourceTree = "<group>";
+		};
+		B99E03A92C0DFB69006CCECB /* CommentCells */ = {
+			isa = PBXGroup;
+			children = (
+				B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */,
+				B99E03AA2C0DFB9F006CCECB /* PostTagsCell.swift */,
+				B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */,
+			);
+			path = CommentCells;
 			sourceTree = "<group>";
 		};
 		B99E7BD12B238A6800756F40 /* ImageGallery */ = {
@@ -2361,6 +2384,7 @@
 				B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */,
 				B94A0E2B2AAB4B0900DEBFE1 /* ChatViewController.swift in Sources */,
 				B900328D2BD268A100ADD2E5 /* ZapTableViewCell.swift in Sources */,
+				B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */,
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */,
@@ -2426,6 +2450,7 @@
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
 				B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */,
+				B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
 				B9B1ABA72B3336D000837312 /* TransactionInfoCell.swift in Sources */,
 				B901C38B2BAB231800C3AA69 /* OnboardingDisplayNameController.swift in Sources */,
@@ -2459,6 +2484,7 @@
 				B91C46272BC6866A00AC2C9B /* PublicBookmarksViewController.swift in Sources */,
 				B94F2BEB2AE6C2DE0041181B /* LargeRoundedButton.swift in Sources */,
 				9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */,
+				B99E03AD2C0DFBC6006CCECB /* PostCommentsTitleCell.swift in Sources */,
 				B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
@@ -2468,6 +2494,7 @@
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */,
 				9ED416062A446F2A00892235 /* SettingsFeedViewController.swift in Sources */,
+				B99E03A82C0DF2ED006CCECB /* PostReactionsCell.swift in Sources */,
 				B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
@@ -2563,6 +2590,7 @@
 				9E6B38CB29F9487F00144073 /* Request.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
+				B99E03AB2C0DFB9F006CCECB /* PostTagsCell.swift in Sources */,
 				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
@@ -2782,7 +2810,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.25;
+				MARKETING_VERSION = 1.7.29;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2827,7 +2855,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.25;
+				MARKETING_VERSION = 1.7.29;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
