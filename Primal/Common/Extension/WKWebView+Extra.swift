@@ -11,7 +11,7 @@ struct WebViewCache {
     private static var cached = WKWebView()
     
     static func setup() {
-        cached.loadHTMLString("", baseURL: nil)
+        cached.loadHTMLString("", baseURL: Bundle.main.bundleURL)
         cached.injectScript(fontFileName: "Nacelle-Regular", type: .otf, fontFamilyName: "Nacelle")
     }
     

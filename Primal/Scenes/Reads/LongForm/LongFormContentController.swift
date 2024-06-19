@@ -11,11 +11,19 @@ import Ink
 import WebKit
 import SafariServices
 
+enum LongFormContentSegment {
+    case text(String)
+    case post(ParsedContent)
+}
+
 class LongFormContentController: UIViewController, Themeable, AnimatedChromeController {
     let scrollView = UIScrollView()
     let zapGallery = ZapGalleryView()
     lazy var navExtension = LongFormNavExtensionView(content.user)
-    let webView = WebViewCache.getWebView()
+    let contentStack = UIStackView(axis: .vertical, [])
+    
+    var webViews: [WKWebView] = []
+    var embeddedPostControllers: [LongFormEmbeddedPostController] = []
     
     let commentZapPill = CommentZapPill()
     
@@ -40,7 +48,7 @@ class LongFormContentController: UIViewController, Themeable, AnimatedChromeCont
         super.viewDidAppear(animated)
         
         UIView.animate(withDuration: 0.1) {
-            self.webView.alpha = 1
+            self.contentStack.alpha = 1
         }
     }
     
@@ -52,7 +60,7 @@ class LongFormContentController: UIViewController, Themeable, AnimatedChromeCont
     
     func updateTheme() {
         view.backgroundColor = .background2
-        webView.scrollView.backgroundColor = .background2
+        webViews.forEach { $0.scrollView.backgroundColor = .background2 }
         
         navigationItem.leftBarButtonItem = customBackButton
         
@@ -95,17 +103,15 @@ private extension LongFormContentController {
         midStackParent.addSubview(midStack)
         midStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
         
-        let webViewParent = UIView()
-        webViewParent.addSubview(webView)
-        webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
-        
         let mainStack = UIStackView(axis: .vertical, [
             navExtension,
             SpacerView(height: 20),
             midStackParent,
-            webViewParent,
+            contentStack,
             commentsVC.view
         ])
+        
+        contentStack.alpha = 0.01
         
         if let image = content.image {
             let imageView = UIImageView()
@@ -142,46 +148,56 @@ private extension LongFormContentController {
         
         commentsVC.viewHeight.assign(to: \.constant, on: commentHeight).store(in: &cancellables)
         
-        load(MarkdownParser().html(from: content.event.content))
-        
-        webView.scrollView.bounces = false
-        let height = webView.heightAnchor.constraint(equalToConstant: 300)
-        webView.scrollView.isScrollEnabled = false
-        webView.navigationDelegate = self
-        height.isActive = true
-        
-        webView.alpha = 0
-        
-        for i in 1...7 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(i)) { [weak self] in
-                self?.webView.calculateSize { size in
-                    print("SIZE: \(size)")
-                    height.constant = size
-                }
-            }
-        }
-        
         view.addSubview(commentZapPill)
         commentZapPill.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 60, safeArea: true)
         
         commentZapPill.commentButton.addAction(.init(handler: { [weak self] _ in
             self?.commentsVC.postCommentPressed()
         }), for: .touchUpInside)
+        
+        populateContent()
     }
     
-    func load(_ content: String) {
-        guard
-            let htmlPath = Bundle.main.path(forResource: "longForm", ofType: "html"),
-            var htmlContent = try? String(contentsOfFile: htmlPath, encoding: .utf8),
-            let cssPath = Bundle.main.path(forResource: "markdown", ofType: "css"),
-            let cssContent = try? String(contentsOfFile: cssPath, encoding: .utf8)
-        else { return }
+    func populateContent() {
+        let parts = content.event.content.splitLongFormParts(mentions: content.mentions)
+        let parser = MarkdownParser()
         
-        htmlContent = htmlContent.replacingOccurrences(of: "{{ CONTENT }}", with: content)
-        htmlContent = htmlContent.replacingOccurrences(of: "{{ THEME }}", with: "\(Theme.current.shortTitle) \(FontSizeSelection.current.name)")
-        htmlContent = htmlContent.replacingOccurrences(of: "{{ CSS }}", with: cssContent)
+        for part in parts {
+            switch part {
+            case .post(let post):
+                let embedded = LongFormEmbeddedPostController(content: post)
+                embeddedPostControllers.append(embedded)
+                addChild(embedded)
+                contentStack.addArrangedSubview(embedded.view)
+                embedded.didMove(toParent: self)
+                break
+            case .text(let text):
+                let webView = WebViewCache.getWebView()
+                let webViewParent = UIView()
+                webViewParent.addSubview(webView)
+                webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
+                contentStack.addArrangedSubview(webViewParent)
         
-        webView.loadHTMLString(htmlContent, baseURL: nil)
+                webView.scrollView.bounces = false
+                let height = webView.heightAnchor.constraint(equalToConstant: 20)
+                webView.scrollView.isScrollEnabled = false
+                webView.navigationDelegate = self
+                height.isActive = true
+        
+                for i in 1...7 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(i)) {
+                        webView.calculateSize { size in
+                            print("SIZE: \(size)")
+                            height.constant = size
+                        }
+                        
+//                        webView.loadMarkdown(parser.html(from: text))
+                    }
+                }
+        
+                webView.loadMarkdown(parser.html(from: text))
+            }
+        }
     }
     
     func updateMenu() {
@@ -215,5 +231,25 @@ extension LongFormContentController: WKNavigationDelegate {
             return .cancel
         }
         return .allow
+    }
+}
+
+extension WKWebView {
+    static let htmlMarkdown: String = {
+        guard 
+            let htmlPath = Bundle.main.path(forResource: "longForm", ofType: "html"),
+            let cssPath = Bundle.main.path(forResource: "markdown", ofType: "css"),
+            let cssContent = try? String(contentsOfFile: cssPath, encoding: .utf8)
+        else { return "" }
+        
+        return ((try? String(contentsOfFile: htmlPath, encoding: .utf8)) ?? "").replacingOccurrences(of: "{{ CSS }}", with: cssContent)
+    }()
+    
+    func loadMarkdown(_ content: String) {
+        let htmlContent = Self.htmlMarkdown
+            .replacingOccurrences(of: "{{ CONTENT }}", with: content)
+            .replacingOccurrences(of: "{{ THEME }}", with: "\(Theme.current.shortTitle) \(FontSizeSelection.current.name)")
+        
+        loadHTMLString(htmlContent, baseURL: Bundle.main.bundleURL)
     }
 }

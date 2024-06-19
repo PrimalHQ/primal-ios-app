@@ -71,6 +71,8 @@ final class ReadsViewController: UIViewController, Themeable {
         border.backgroundColor = .background3
         
         table.reloadData()
+        
+        posts.forEach { $0.mentions.forEach { $0.buildContentString() }}
     }
 }
 

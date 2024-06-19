@@ -394,6 +394,7 @@
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */; };
+		B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
 		B9F933182B867D860064B495 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = B9F933172B867D860064B495 /* QRCode */; };
@@ -840,6 +841,7 @@
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckLud16Request.swift; sourceTree = "<group>"; };
+		B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostController.swift; sourceTree = "<group>"; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
@@ -1932,6 +1934,7 @@
 			children = (
 				B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */,
 				B99E03912C060BD0006CCECB /* LongFormContentController.swift */,
+				B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */,
 				B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */,
 				B99E03962C061D67006CCECB /* longForm.html */,
 				B99E03A32C09D095006CCECB /* markdown.css */,
@@ -2595,6 +2598,7 @@
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
+				B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
@@ -2810,7 +2814,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.29;
+				MARKETING_VERSION = 1.7.30;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2855,7 +2859,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.29;
+				MARKETING_VERSION = 1.7.30;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

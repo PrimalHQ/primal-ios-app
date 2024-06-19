@@ -11,20 +11,17 @@
             word-wrap: break-word;
         }
         
-        .ice {
+        .ice, .sunrise{
           background-color: white;
         }
 
-        .midnight {
+        .midnight, .sunset {
           background-color: black;
         }
-
-        .sunrise {
-          background-color: white;
-        }
-
-        .sunset {
-          background-color: black;
+        
+        @font-face {
+            font-family: 'Nacelle';
+            src: url('Nacelle-Regular.otf') format('opentype');
         }
         
         {{ CSS }}
@@ -32,9 +29,5 @@
 </head>
 <body class="{{ THEME }}">
     {{ CONTENT }}
-    
-    <script>
-        
-    </script>
 </body>
 </html>

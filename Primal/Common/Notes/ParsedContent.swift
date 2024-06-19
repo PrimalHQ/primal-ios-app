@@ -64,6 +64,9 @@ class ParsedLongFormPost {
     let event: NostrContent
     let user: ParsedUser
     
+    var mentions: [ParsedContent] = []
+    var mentionedUsers: [ParsedUser] = []
+    
     init(
         id: String,
         title: String,

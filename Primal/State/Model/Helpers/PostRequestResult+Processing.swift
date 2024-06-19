@@ -36,6 +36,12 @@ extension PostRequestResult: MetadataCoding {
     func getLongFormPosts() -> [ParsedLongFormPost] {
         let posts = process()
         
+        let mentions: [ParsedContent] = mentions
+            .compactMap({ createPrimalPost(content: $0) })
+            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
+        
+        let parsedUsers = getSortedUsers()
+        
         return longFormPosts.compactMap { post -> ParsedLongFormPost? in
             guard
                 let title = post.title,
@@ -43,7 +49,7 @@ extension PostRequestResult: MetadataCoding {
                 let id = post.event.tags.first(where: { $0.first == "d" })?[safe: 1]
             else { return nil }
             
-            return .init(
+            let longForm  = ParsedLongFormPost(
                 id: id,
                 title: title,
                 image: post.image,
@@ -73,6 +79,11 @@ extension PostRequestResult: MetadataCoding {
                 event: post.event,
                 user: createParsedUser(user)
             )
+            
+            longForm.mentionedUsers = parsedUsers
+            longForm.mentions = mentions
+            
+            return longForm
         }
     }
     
@@ -450,6 +461,47 @@ extension PrimalUser {
     var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
     
     var isCurrentUser: Bool { pubkey == IdentityManager.instance.userHexPubkey }
+}
+
+extension String {
+    func splitLongFormParts(mentions: [ParsedContent]) -> [LongFormContentSegment] {
+        let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        guard let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) else { return [] }
+        
+        var segments = [LongFormContentSegment]()
+        var prevRangeStart: Int = 0
+        let nsString = (self as NSString)
+        
+        postMentionRegex.enumerateMatches(in: self, options: [], range: NSRange(startIndex..., in: self)) { match, _, _ in
+            guard let matchRange = match?.range else { return }
+                
+            let mentionText = nsString.substring(with: matchRange)
+            
+            let naventString: String = {
+                if mentionText.hasPrefix("nostr:") { return mentionText }
+                if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
+                return "nostr:\(mentionText)"
+            }()
+                
+            if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                let prevTextRange = NSRange(location: prevRangeStart, length: matchRange.location - prevRangeStart)
+                let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)
+                if !prevText.isEmpty {
+                    segments.append(.text(prevText))
+                }
+                
+                segments.append(.post(mention))
+                prevRangeStart = matchRange.endLocation
+            }
+        }
+        
+        let finalText = dropFirst(prevRangeStart).trimmingCharacters(in: .whitespacesAndNewlines)
+        if !finalText.isEmpty {
+            segments.append(.text(finalText))
+        }
+        
+        return segments
+    }
 }
 
 private extension String {
