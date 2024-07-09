@@ -143,6 +143,12 @@ extension MainNavigationController: UINavigationControllerDelegate {
             }
         }
         
+        if let longForm = toVC as? LongFormContentController {
+            if let reads: ReadsViewController = fromVC.findInChildren() {
+                return ReadsToLongFormTransition(reads: reads, longFormController: longForm, presenting: true)
+            }
+        }
+        
         return nil
     }
 }

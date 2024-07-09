@@ -285,6 +285,18 @@ extension PostRequestResult {
                 summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
                 event: longFormEvent
             ))
+        case .eventBroadcastResponse:
+            print(payload)
+            
+            guard 
+                let json: JSON = contentString.decode(),
+                let response = json.arrayValue?.first?.objectValue?["responses"]?.arrayValue?.first?.arrayValue,
+                let statusArrayString = response.dropFirst().first?.stringValue,
+                let statusArray: JSON = statusArrayString.decode(),
+                let status = statusArray.arrayValue?.first?.stringValue
+            else { return }
+            
+            eventBroadcastSuccessful = eventBroadcastSuccessful || status == "OK"
         default:
             print("Unhandled response \(payload)")
         }

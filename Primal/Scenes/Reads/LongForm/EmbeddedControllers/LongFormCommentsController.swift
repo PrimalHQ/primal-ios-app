@@ -108,6 +108,7 @@ class LongFormCommentsController: FeedViewController {
     override func updateTheme() {
         super.updateTheme()
         
+        table.register(LongFormCommentCell.self, forCellReuseIdentifier: postCellID)
         table.register(PostReactionsCell.self, forCellReuseIdentifier: postCellID + "reactions")
     }
     

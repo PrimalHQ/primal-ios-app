@@ -108,7 +108,8 @@ private extension OnboardingFollowSuggestionsController {
 
             MuteManager.instance.requestMuteList()
         }.store(in: &cancellables)
-        Connection.connect()
+        
+        Connection.reconnect()
     }
 
     func updateView() {

@@ -333,6 +333,7 @@
 		B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */; };
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
+		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
@@ -395,6 +396,12 @@
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */; };
 		B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */; };
+		B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */; };
+		B9DF0CAD2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */; };
+		B9DF0CB02C25920C009ADC7B /* ReadsToLongFormTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAF2C25920C009ADC7B /* ReadsToLongFormTransition.swift */; };
+		B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */; };
+		B9DF0CB52C25AE0F009ADC7B /* LargeZapPillViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */; };
+		B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
 		B9F933182B867D860064B495 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = B9F933172B867D860064B495 /* QRCode */; };
@@ -782,6 +789,8 @@
 		B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNetworkViewController.swift; sourceTree = "<group>"; };
 		B94F2C052AF5184D0041181B /* RoundedInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedInputField.swift; sourceTree = "<group>"; };
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
+		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
+		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
@@ -842,6 +851,12 @@
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckLud16Request.swift; sourceTree = "<group>"; };
 		B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostController.swift; sourceTree = "<group>"; };
+		B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormCommentCell.swift; sourceTree = "<group>"; };
+		B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostCell.swift; sourceTree = "<group>"; };
+		B9DF0CAF2C25920C009ADC7B /* ReadsToLongFormTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadsToLongFormTransition.swift; sourceTree = "<group>"; };
+		B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapGalleryView.swift; sourceTree = "<group>"; };
+		B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapPillViews.swift; sourceTree = "<group>"; };
+		B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormZapsPostCell.swift; sourceTree = "<group>"; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
@@ -969,6 +984,7 @@
 		939330F429A3E36F003954C2 /* Primal */ = {
 			isa = PBXGroup;
 			children = (
+				B950FB112C35DD260088F9E3 /* Primal.entitlements */,
 				9393313D29A3E6DE003954C2 /* Info.plist */,
 				B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */,
 				9393312C29A3E534003954C2 /* State */,
@@ -1306,6 +1322,7 @@
 				9EF4BFC92A8BFD16003396AA /* FontSlider.swift */,
 				B914CD6E2AA24BD300CD0BD1 /* UnmuteUserCell.swift */,
 				B914CD702AA2647100CD0BD1 /* UnmuteUserButton.swift */,
+				B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1919,6 +1936,8 @@
 		B99E038D2C05755C006CCECB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF0CB32C25ADF6009ADC7B /* LargeZapGallery */,
+				B9DF0CA92C2374B7009ADC7B /* PostCells */,
 				B99E03A92C0DFB69006CCECB /* CommentCells */,
 				B99E038E2C05756F006CCECB /* LongFormContentCell.swift */,
 				B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */,
@@ -1932,10 +1951,9 @@
 		B99E03902C060BBC006CCECB /* LongForm */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF0CB62C25EB75009ADC7B /* EmbeddedControllers */,
 				B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */,
 				B99E03912C060BD0006CCECB /* LongFormContentController.swift */,
-				B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */,
-				B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */,
 				B99E03962C061D67006CCECB /* longForm.html */,
 				B99E03A32C09D095006CCECB /* markdown.css */,
 			);
@@ -1945,7 +1963,6 @@
 		B99E03A92C0DFB69006CCECB /* CommentCells */ = {
 			isa = PBXGroup;
 			children = (
-				B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */,
 				B99E03AA2C0DFB9F006CCECB /* PostTagsCell.swift */,
 				B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */,
 			);
@@ -1973,6 +1990,7 @@
 		B9A200962B55A0FC003B6C6B /* Animators */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF0CAE2C2591F8009ADC7B /* Reads */,
 				B9CE4D9F2B63C8AE0060A1B8 /* Wallet */,
 				B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */,
 				B9CE4DAF2B697FCE0060A1B8 /* SlideDownTransition.swift */,
@@ -2071,6 +2089,43 @@
 				B9CE4DD82B8505C40060A1B8 /* WalletActivationCodeController.swift */,
 			);
 			path = Activation;
+			sourceTree = "<group>";
+		};
+		B9DF0CA92C2374B7009ADC7B /* PostCells */ = {
+			isa = PBXGroup;
+			children = (
+				B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */,
+				B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */,
+				B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */,
+				B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */,
+			);
+			path = PostCells;
+			sourceTree = "<group>";
+		};
+		B9DF0CAE2C2591F8009ADC7B /* Reads */ = {
+			isa = PBXGroup;
+			children = (
+				B9DF0CAF2C25920C009ADC7B /* ReadsToLongFormTransition.swift */,
+			);
+			path = Reads;
+			sourceTree = "<group>";
+		};
+		B9DF0CB32C25ADF6009ADC7B /* LargeZapGallery */ = {
+			isa = PBXGroup;
+			children = (
+				B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */,
+				B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */,
+			);
+			path = LargeZapGallery;
+			sourceTree = "<group>";
+		};
+		B9DF0CB62C25EB75009ADC7B /* EmbeddedControllers */ = {
+			isa = PBXGroup;
+			children = (
+				B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */,
+				B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */,
+			);
+			path = EmbeddedControllers;
 			sourceTree = "<group>";
 		};
 		B9F9331B2B88F6C40064B495 /* Premium */ = {
@@ -2333,6 +2388,7 @@
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
 				93F27D9E2A27DE32004ADA55 /* Connection.swift in Sources */,
 				B9318F652B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift in Sources */,
+				B9DF0CB52C25AE0F009ADC7B /* LargeZapPillViews.swift in Sources */,
 				9ED4161A2A4F7C8800892235 /* SettingsToggleCell.swift in Sources */,
 				93CACAFB29F525B6003BBCE5 /* talstr.c in Sources */,
 				93CACB0229F525B6003BBCE5 /* node_id.c in Sources */,
@@ -2342,6 +2398,7 @@
 				B91BB9642B3E10C3003F6B2A /* WalletKeyboardTabController.swift in Sources */,
 				B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */,
 				9E9F2F8629F6AB6400A9CDF3 /* Buttons.swift in Sources */,
+				B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */,
 				9EF4BFC22A8BE96F003396AA /* MidnightWave.swift in Sources */,
 				9ED4160D2A48744600892235 /* PopupMenuViewController.swift in Sources */,
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
@@ -2356,6 +2413,7 @@
 				9E9F2F9329F6AB8A00A9CDF3 /* UIViewController+Extra.swift in Sources */,
 				B94F2BBC2AD428400041181B /* LargeBalanceConversionView.swift in Sources */,
 				B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */,
+				B9DF0CAD2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift in Sources */,
 				B94F2BC72AD720250041181B /* WalletSendViewController.swift in Sources */,
 				9309D22C2A5EA7A300FD2127 /* ICloudKeychainManager.swift in Sources */,
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
@@ -2392,6 +2450,7 @@
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				9ECFD3242A013B3C000D1B2F /* FeedCell.swift in Sources */,
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
+				B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */,
 				B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */,
 				9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */,
 				932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */,
@@ -2554,6 +2613,7 @@
 				B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */,
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				B9CE4DBC2B7154AE0060A1B8 /* TransactionNotificationView.swift in Sources */,
+				B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
 				B94F2BDD2ADDC6320041181B /* WalletInAppPurchaseController.swift in Sources */,
 				B90032912BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift in Sources */,
@@ -2580,6 +2640,7 @@
 				93F27DAA2A27FB41004ADA55 /* PostManager.swift in Sources */,
 				B94F2BD42ADC3C060041181B /* WalletReceiveDetailsController.swift in Sources */,
 				B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */,
+				B9DF0CB02C25920C009ADC7B /* ReadsToLongFormTransition.swift in Sources */,
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
@@ -2627,6 +2688,7 @@
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
+				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
 				B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2791,6 +2853,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Primal/Primal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2814,7 +2877,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.30;
+				MARKETING_VERSION = 1.8.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2836,6 +2899,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Primal/Primal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2859,7 +2923,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7.30;
+				MARKETING_VERSION = 1.8.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -77,7 +77,7 @@ final class MuteManager {
             return
         }
 
-        RelaysPostbox.instance.request(muteListEvent, specificRelay: nil, successHandler: { _ in
+        RelaysPostbox.instance.request(muteListEvent, successHandler: { _ in
             if let callback {
                 callback()
             }

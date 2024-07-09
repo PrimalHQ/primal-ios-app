@@ -48,8 +48,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
         var parsedTransactions: [(WalletTransaction, ParsedUser)] { cells.compactMap { $0.parsedTransaction } }
     }
     
-    @Published var isBitcoinPrimary = true
-    
     private let navBar = WalletNavView()
     let table = UITableView()
     
@@ -77,10 +75,16 @@ final class WalletHomeViewController: UIViewController, Themeable {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    init() {
+        super.init(nibName: nil, bundle: nil)
         
         setup()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             self.animationsOn = true
@@ -181,7 +185,7 @@ extension WalletHomeViewController: UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             
             if let cell = cell as? TransactionCell {
-                cell.setup(with: transaction, showBTC: isBitcoinPrimary)
+                cell.setup(with: transaction, showBTC: WalletManager.instance.isBitcoinPrimary)
                 cell.delegate = self
             }
             
@@ -426,18 +430,24 @@ private extension WalletHomeViewController {
             .store(in: &cancellables)
         }
         
-        navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { [weak self] isBitcoinPrimary in
-            self?.isBitcoinPrimary = isBitcoinPrimary
+        navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { isBitcoinPrimary in
+            WalletManager.instance.isBitcoinPrimary = isBitcoinPrimary
         }
         .store(in: &cancellables)
         
-        $isBitcoinPrimary.dropFirst().removeDuplicates().throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true).sink { [weak self] _ in
+        WalletManager.instance.$isBitcoinPrimary.dropFirst().removeDuplicates().throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true).sink { [weak self] _ in
             guard let self else { return }
             if self.tableData.count > 1 {
                 self.table.reloadData()
             }
         }
         .store(in: &cancellables)
+        
+        WalletManager.instance.$userHasWallet
+            .map { $0 ?? false }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, onWeak: navBar.blockerView)
+            .store(in: &cancellables)
     }
     
     

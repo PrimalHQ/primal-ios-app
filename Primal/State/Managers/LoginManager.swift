@@ -73,7 +73,6 @@ final class LoginManager {
         WalletManager.instance.reset(IdentityManager.instance.userHexPubkey)
         KingfisherManager.shared.cache.clearMemoryCache()
         RelaysPostbox.instance.disconnect()
-        Connection.disconnect()
         FollowManager.instance.pubkeysToFollow = []
         FollowManager.instance.pubkeysToUnfollow = []
     }

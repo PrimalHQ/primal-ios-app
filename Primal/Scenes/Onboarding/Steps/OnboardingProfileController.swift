@@ -147,8 +147,8 @@ private extension OnboardingProfileController {
                 return
             }
             
-            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { [weak self] _ in
-                RelaysPostbox.instance.request(contacts_ev, specificRelay: nil, successHandler: { _ in
+            RelaysPostbox.instance.request(metadata_ev, successHandler: { [weak self] _ in
+                RelaysPostbox.instance.request(contacts_ev, successHandler: { _ in
                     guard
                         let nsec = self?.session.newUserKeypair.nVariant.nsec,
                         LoginManager.instance.login(nsec)

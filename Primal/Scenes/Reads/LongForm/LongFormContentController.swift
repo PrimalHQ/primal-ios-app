@@ -16,14 +16,25 @@ enum LongFormContentSegment {
     case post(ParsedContent)
 }
 
+extension Date {
+    func shortFormatString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale.current
+        dateFormatter.dateFormat = "MMMM d, yyyy"
+        return dateFormatter.string(from: self)
+    }
+}
+
 class LongFormContentController: UIViewController, Themeable, AnimatedChromeController {
     let scrollView = UIScrollView()
-    let zapGallery = ZapGalleryView()
     lazy var navExtension = LongFormNavExtensionView(content.user)
+    let contentParent = UIStackView(axis: .vertical, [])
     let contentStack = UIStackView(axis: .vertical, [])
     
     var webViews: [WKWebView] = []
-    var embeddedPostControllers: [LongFormEmbeddedPostController] = []
+    var embeddedPostControllers: [LongFormEmbeddedPostController<LongFormEmbeddedPostCell>] = []
+    
+    let zapEmbededController = LongFormEmbeddedPostController<LongFormZapsPostCell>()
     
     let commentZapPill = CommentZapPill()
     
@@ -32,6 +43,18 @@ class LongFormContentController: UIViewController, Themeable, AnimatedChromeCont
     
     let bookmarkNavButton = UIButton().constrainToSize(width: 30)
     let threeDotsButton = UIButton().constrainToSize(width: 30)
+    
+    var summary: LongFormQuoteView?
+    let imageView = UIImageView()
+    let titleLabel = ThemeableLabel().setTheme {
+        $0.textColor = .foreground
+        $0.font = .appFont(withSize: (FontSizeSelection.current.contentFontSize + 1) * 2, weight: .heavy)
+    }
+    
+    let dateLabel = ThemeableLabel().setTheme {
+        $0.textColor = .foreground4
+        $0.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
+    }
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -44,12 +67,14 @@ class LongFormContentController: UIViewController, Themeable, AnimatedChromeCont
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        UIView.animate(withDuration: 0.1) {
-            self.contentStack.alpha = 1
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -68,6 +93,7 @@ class LongFormContentController: UIViewController, Themeable, AnimatedChromeCont
         threeDotsButton.tintColor = .foreground3
         
         commentsVC.updateTheme()
+        embeddedPostControllers.forEach { $0.updateTheme() }
     }
 }
 
@@ -82,19 +108,12 @@ private extension LongFormContentController {
         
         view.addSubview(scrollView)
         scrollView.pinToSuperview()
+        scrollView.bounces = false
         scrollView.delegate = chromeManager
         
-        let dateLabel = ThemeableLabel().setTheme {
-            $0.textColor = .foreground4
-            $0.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
-        }
+        let date = Date(timeIntervalSince1970: content.event.created_at)
+        dateLabel.text = date.shortFormatString()
         
-        dateLabel.text = "May 13, 2024"
-        
-        let titleLabel = ThemeableLabel().setTheme {
-            $0.textColor = .foreground
-            $0.font = .appFont(withSize: (FontSizeSelection.current.contentFontSize + 1) * 2, weight: .heavy)
-        }
         titleLabel.text = content.title
         titleLabel.numberOfLines = 0
         
@@ -103,18 +122,17 @@ private extension LongFormContentController {
         midStackParent.addSubview(midStack)
         midStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
         
+        contentParent.addArrangedSubview(contentStack)
+        contentParent.addArrangedSubview(commentsVC.view)
+        
         let mainStack = UIStackView(axis: .vertical, [
             navExtension,
             SpacerView(height: 20),
             midStackParent,
-            contentStack,
-            commentsVC.view
+            contentParent
         ])
         
-        contentStack.alpha = 0.01
-        
         if let image = content.image {
-            let imageView = UIImageView()
             imageView.kf.setImage(with: URL(string: image))
             imageView.constrainToSize(height: 180)
             imageView.contentMode = .scaleAspectFill
@@ -127,21 +145,32 @@ private extension LongFormContentController {
         
         if let summary = content.summary {
             midStack.addArrangedSubview(SpacerView(height: 20))
-            midStack.addArrangedSubview(LongFormQuoteView(summary))
+            let view = LongFormQuoteView(summary)
+            midStack.addArrangedSubview(view)
+            self.summary = view
         }
         
+        let post = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: .empty("")), user: content.user)
+        post.zaps = content.zaps
+        
+        zapEmbededController.posts = [post]
+        
         midStack.addArrangedSubview(SpacerView(height: 20))
-        midStack.addArrangedSubview(zapGallery)
-        zapGallery.zaps = content.zaps
+        midStack.addArrangedSubview(zapEmbededController.view)
         
         commentsVC.willMove(toParent: self)
         addChild(commentsVC)
+        
+        zapEmbededController.willMove(toParent: self)
+        addChild(zapEmbededController)
         
         scrollView.addSubview(mainStack)
         mainStack.pinToSuperview()
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
         commentsVC.didMove(toParent: self)
+        zapEmbededController.didMove(toParent: self)
+        
         let commentHeight = commentsVC.view.heightAnchor.constraint(equalToConstant: 300)
         commentHeight.priority = .defaultHigh
         commentHeight.isActive = true
@@ -165,13 +194,37 @@ private extension LongFormContentController {
         for part in parts {
             switch part {
             case .post(let post):
-                let embedded = LongFormEmbeddedPostController(content: post)
+                let embedded = LongFormEmbeddedPostController<LongFormEmbeddedPostCell>(
+                    content: post,
+                    allowAdvancedInteraction: true
+                )
                 embeddedPostControllers.append(embedded)
                 addChild(embedded)
                 contentStack.addArrangedSubview(embedded.view)
                 embedded.didMove(toParent: self)
                 break
             case .text(let text):
+                var replacedText = text
+                let nip27MentionPattern = "\\b(nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+                if let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: []) {
+                    profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                        guard let matchRange = match?.range else { return }
+                            
+                        let mentionText = (text as NSString).substring(with: matchRange)
+                        
+                        guard
+                            let user: ParsedUser = {
+                                guard let npub = mentionText.split(separator: ":").last?.string else { return nil }
+                                
+                                return content.mentionedUsers.first(where: { $0.data.npub == npub }) ?? .init(data: .init(pubkey: HexKeypair.npubToHexPubkey(npub) ?? npub))
+                            }()
+                        else { return }
+                        
+                        let mention = "[\(user.data.atIdentifier)](profile://\(user.data.pubkey))"
+                        replacedText = replacedText.replacingOccurrences(of: mentionText, with: mention)
+                    }
+                }
+                
                 let webView = WebViewCache.getWebView()
                 let webViewParent = UIView()
                 webViewParent.addSubview(webView)
@@ -185,17 +238,24 @@ private extension LongFormContentController {
                 height.isActive = true
         
                 for i in 1...7 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(i)) {
-                        webView.calculateSize { size in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(i * i * 300)) { [weak webView, weak height] in
+                        webView?.calculateSize { size in
                             print("SIZE: \(size)")
-                            height.constant = size
+                            height?.constant = size
                         }
-                        
-//                        webView.loadMarkdown(parser.html(from: text))
                     }
                 }
         
-                webView.loadMarkdown(parser.html(from: text))
+                webView.loadMarkdown(parser.html(from: replacedText))
+            }
+        }
+        
+        contentStack.alpha = 0.01
+        commentsVC.view.alpha = 0.01
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+            UIView.animate(withDuration: 0.2) {
+                self.contentStack.alpha = 1
+                self.commentsVC.view.alpha = 1
             }
         }
     }
@@ -226,7 +286,12 @@ extension LongFormContentController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
         if navigationAction.navigationType == .linkActivated {
             if let url = navigationAction.request.url {
-                present(SFSafariViewController(url: url), animated: true)
+                if url.scheme == "profile", let pubkey = url.host() {
+                    let user = content.mentionedUsers.first(where: { $0.data.pubkey == pubkey }) ?? .init(data: .init(pubkey: pubkey))
+                    show(ProfileViewController(profile: user), sender: nil)
+                } else if UIApplication.shared.canOpenURL(url) {
+                    present(SFSafariViewController(url: url), animated: true)
+                }
             }
             return .cancel
         }

@@ -85,6 +85,7 @@ final class WalletManager {
     @Published var didJustCreateWallet = false
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
+    @Published var isBitcoinPrimary = true
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
     let animatingZap = CurrentValueSubject<ParsedZap?, Never>(nil)

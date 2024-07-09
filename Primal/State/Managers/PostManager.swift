@@ -31,7 +31,7 @@ final class PostManager {
             return
         }
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil) { result in
+        RelaysPostbox.instance.request(ev) { result in
             callback(true)
         } errorHandler: {
             callback(false)
@@ -52,7 +52,7 @@ final class PostManager {
         lastPostedEvent = ev
         
         self.userReposts.insert(ev.id)
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
             self.userReposts.remove(ev.id)
@@ -72,7 +72,7 @@ final class PostManager {
         }
         lastPostedEvent = ev
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
             callback(true)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
@@ -97,7 +97,7 @@ final class PostManager {
         
         self.userReplied.insert(post.id)
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
             callback(true)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }

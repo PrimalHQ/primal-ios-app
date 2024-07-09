@@ -19,6 +19,8 @@ final class WalletNavView: UIView, Themeable {
     let expandedHeight: CGFloat = 295
     let tightenedHeight: CGFloat = 82
     
+    let blockerView = UIView()
+    
     // MARK: - Private
     let balanceConversionView = SmallBalanceConversionView()
     private let send = ThemeableButton().constrainToSize(48).setTheme {
@@ -111,6 +113,10 @@ final class WalletNavView: UIView, Themeable {
                 self?.receivePressedEvent.send(button)
             }), for: .touchUpInside)
         }
+        
+        addSubview(blockerView)
+        blockerView.pinToSuperview()
+        blockerView.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -119,6 +125,8 @@ final class WalletNavView: UIView, Themeable {
     
     func updateTheme() {
         backgroundColor = .background
+        
+        blockerView.backgroundColor = .background.withAlphaComponent(0.5)
     }
     
     func animateExpansion(_ shouldExpand: Bool) {

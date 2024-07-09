@@ -27,7 +27,7 @@ class UploadAssetRequest {
     
     private var individualProgress: [String: CGFloat] = [:] {
         didSet {
-            progress = individualProgress.values.reduce(0, +) / CGFloat(individualProgress.count)
+            progress = max(0.05, individualProgress.values.reduce(0, +) / CGFloat(individualProgress.count))
             print(progress)
         }
     }

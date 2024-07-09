@@ -7,22 +7,25 @@
 
 import UIKit
 
-class LongFormEmbeddedPostController: FeedViewController {
+class LongFormEmbeddedPostController<T: PostCell>: FeedViewController {
     override var barsMaxTransform: CGFloat { 0 }
     
     var heightConstraint: NSLayoutConstraint?
     
-    init(content: ParsedContent) {
+    var allowAdvancedInteraction: Bool
+    
+    init(content: ParsedContent? = nil, allowAdvancedInteraction: Bool = false) {
+        self.allowAdvancedInteraction = allowAdvancedInteraction
         super.init()
         
-        table.register(PostCommentsTitleCell.self, forCellReuseIdentifier: "title")
-        table.register(PostTagsCell.self, forCellReuseIdentifier: "tags")
         table.isScrollEnabled = false
         DispatchQueue.main.async {
             self.table.contentInset = .zero
         }
         
-        posts = [content]
+        if let content {
+            posts = [content]
+        }
         
         navigationBorder.removeFromSuperview()
         
@@ -30,6 +33,8 @@ class LongFormEmbeddedPostController: FeedViewController {
         constraint.priority = .defaultHigh
         constraint.isActive = true
         self.heightConstraint = constraint
+        
+        loadingSpinner.removeFromSuperview()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -47,5 +52,17 @@ class LongFormEmbeddedPostController: FeedViewController {
             self.heightConstraint = constraint
         }
         return cell
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        table.register(T.self, forCellReuseIdentifier: postCellID)
+        table.reloadData()
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard allowAdvancedInteraction else { return }
+        super.tableView(tableView, didSelectRowAt: indexPath)
     }
 }

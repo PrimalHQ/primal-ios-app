@@ -47,7 +47,7 @@ class PostCell: UITableViewCell {
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     let bookmarkButton = UIButton()
     
-    let zapGallery = ZapGalleryView()
+    var zapGallery: ZapGallery = SmallZapGalleryView()
     
     weak var imageAspectConstraint: NSLayoutConstraint?
     var metadataUpdater: AnyCancellable?

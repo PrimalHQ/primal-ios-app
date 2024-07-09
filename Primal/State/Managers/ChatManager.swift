@@ -27,15 +27,33 @@ final class ChatManager {
     
     var cancellables: Set<AnyCancellable> = []
     
-    func getRecentChats(_ relation: Relation, callback: @escaping ([Chat]) -> Void) {
-        Connection.regular.$isConnected.filter { $0 }
-            .first()
-            .flatMap({ _ in
-                SocketRequest(name: "get_directmsg_contacts", payload: .object([
-                    "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                    "relation": .string(relation.rawValue)
-                ])).publisher()
-            })
+    func getAllChats(_ relation: Relation, callback: @escaping ([Chat]) -> Void) {
+        SocketRequest(name: "get_directmsg_contacts", payload: .object([
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "relation": .string(relation.rawValue),
+            "limit": 100
+        ]))
+        .publisher()
+        .map { $0.processChats() }
+        .receive(on: DispatchQueue.main)
+        .sink { result in
+            callback(result)
+        }
+        .store(in: &cancellables)
+    }
+    
+    func getRecentChats(_ relation: Relation, until: Int? = nil, callback: @escaping ([Chat]) -> Void) {
+        var payload: [String: JSON] = [
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "relation": .string(relation.rawValue),
+            "limit": until == nil ? 20 : 40
+        ]
+        
+        if let until {
+            payload["until"] = .number(Double(until))
+        }
+        
+        SocketRequest(name: "get_directmsg_contacts", payload: .object(payload)).publisher()
             .map { $0.processChats() }
             .receive(on: DispatchQueue.main)
             .sink { result in

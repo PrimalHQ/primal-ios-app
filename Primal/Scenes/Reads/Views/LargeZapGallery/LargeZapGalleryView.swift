@@ -1,57 +1,38 @@
 //
-//  ZapGallery.swift
+//  LargeZapGalleryView.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 23.4.24..
+//  Created by Pavle Stevanović on 21.6.24..
 //
 
 import UIKit
 import Lottie
 
-protocol ZapGalleryViewDelegate: AnyObject {
+protocol LargeZapGalleryDelegate: AnyObject {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
     func mainActionForZap(_ zap: ParsedZap)
 }
 
-protocol ZapGallery: UIView {
-    var delegate: ZapGalleryViewDelegate? { get set }
-    var zaps: [ParsedZap] { get set }
-    var singleLine: Bool { get set }
-}
-
-class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
-    class Delegate: NSObject, UIContextMenuInteractionDelegate {
-        weak var interaction: GalleryZapPillMenuInteraction?
-        
-        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-            guard let zapInteraction = self.interaction else { return nil }
-            return zapInteraction.galleryView?.delegate?.menuConfigurationForZap(zapInteraction.zap)
-        }
-        
-        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-            guard let interaction = self.interaction else { return }
-            animator.addCompletion {
-                interaction.galleryView?.delegate?.mainActionForZap(interaction.zap)
-            }
-        }
-    }
-    weak var galleryView: ZapGallery?
-    let zap: ParsedZap
-    let interactionDelegate = Delegate()
-    init(galleryView: SmallZapGalleryView, zap: ParsedZap) {
-        self.galleryView = galleryView
-        self.zap = zap
-        
-        super.init(delegate: interactionDelegate)
-        
-        interactionDelegate.interaction = self
+extension UIButton.Configuration {
+    static func zapPillButton() -> UIButton.Configuration {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        config.baseBackgroundColor = .foreground
+        config.attributedTitle = .init("Zap", attributes: .init([
+            .font: UIFont.appFont(withSize: 14, weight: .bold),
+            .foregroundColor: UIColor.background2
+        ]))
+        config.image = UIImage(named: "topZapGalleryIcon")?.withTintColor(.background2, renderingMode: .alwaysOriginal)
+        config.imagePadding = 4
+        return config
     }
 }
 
-class SmallZapGalleryView: UIView, ZapGallery {
-    let skeletonLoader = LottieAnimationView()
+class LargeZapGalleryView: UIView, ZapGallery {
     let stack = UIStackView()
     let animationStack = UIStackView()
+    
+    let zapPillButton = UIButton(configuration: .zapPillButton()).constrainToSize(height: 28)
     
     weak var delegate: ZapGalleryViewDelegate?
     
@@ -71,14 +52,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
         
         animationStack.isUserInteractionEnabled = false
         
-        addSubview(skeletonLoader)
-        skeletonLoader.animation = Theme.current.isDarkTheme ? AnimationType.zapGallerySkeleton.animation : AnimationType.zapGallerySkeletonLight.animation
-        skeletonLoader.loopMode = .loop
-        skeletonLoader
-            .constrainToSize(width: 375, height: 66.66)
-            .pinToSuperview(edges: .leading, padding: -10)
-            .pinToSuperview(edges: .top, padding: -6)
-        
         clipsToBounds = true
     }
     
@@ -87,20 +60,12 @@ class SmallZapGalleryView: UIView, ZapGallery {
     var zaps: [ParsedZap] = [] {
         didSet {
             update()
-            playSkeleton()
         }
     }
     
     var animatingChanges: Bool {
         guard let id = WalletManager.instance.animatingZap.value?.receiptId else { return false }
         return zaps.contains(where: { $0.receiptId == id })
-    }
-    
-    func playSkeleton() {
-        skeletonLoader.isHidden = !zaps.isEmpty
-        if zaps.isEmpty {
-            skeletonLoader.play()
-        }
     }
         
     func update() {
@@ -109,9 +74,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
             $0.removeFromSuperview()
             if animatingChanges {
                 animationStack.addArrangedSubview($0)
-                if singleLine {
-                    $0.pinToSuperview(edges: .horizontal)
-                }
             }
         }
         defer {
@@ -121,43 +83,19 @@ class SmallZapGalleryView: UIView, ZapGallery {
             }
         }
         
-        if singleLine {
-            let hStack = UIStackView()
-            hStack.spacing = 0
-            
-            if let first = zaps.first {
-                hStack.addArrangedSubview(zapView(first, text: true))
-                let spacer = SpacerView(width: 375, priority: .init(1))
-                hStack.addArrangedSubview(spacer)
-                hStack.setCustomSpacing(8, after: spacer)
-                stack.addArrangedSubview(hStack)
-                hStack.pinToSuperview(edges: .horizontal)
-            }
-            
-            zaps.dropFirst().prefix(3).enumerated().forEach { (index, zap) in
-                let view = ZapAvatarView(zap: zap)
-                view.layer.zPosition = CGFloat(999 - index)
-                hStack.addArrangedSubview(view)
-            }
-            return
-        }
-        
-        if zaps.count < 4 {
-            let hStack = UIStackView()
-            hStack.spacing = 6
-            
-            if let first = zaps.first {
-                hStack.addArrangedSubview(zapView(first, text: true))
-                stack.addArrangedSubview(hStack)
-            }
-            
-            zaps.dropFirst().forEach { hStack.addArrangedSubview(zapView($0, text: false)) }
-            return
-        }
-        
         if let first = zaps.first {
             let hStack = UIStackView(arrangedSubviews: [zapView(first, text: true)])
             stack.addArrangedSubview(hStack)
+            
+            if zaps.count == 1 {
+                hStack.spacing = 6
+                hStack.addArrangedSubview(zapPillButton)
+                
+                return
+            }
+        } else {
+            stack.addArrangedSubview(zapPillButton)
+            return
         }
         
         let hStack = UIStackView()
@@ -169,31 +107,36 @@ class SmallZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 24 > frame.width {
-                let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(24)
+            if currentWidth + 110 > frame.width {
+                let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(28)
                 hStack.addArrangedSubview(image)
-                break
+                hStack.addArrangedSubview(zapPillButton)
+                stack.addArrangedSubview(hStack)
+                return
             }
             
             hStack.addArrangedSubview(view)
         }
         
         if !hStack.arrangedSubviews.isEmpty {
+            hStack.addArrangedSubview(zapPillButton)
             stack.addArrangedSubview(hStack)
         }
     }
     
-    func zapView(_ zap: ParsedZap, text: Bool) -> ZapPillView {
-        let view = text ? ZapPillTextView(zap: zap) : ZapPillView(zap: zap)
-        view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
+    func zapView(_ zap: ParsedZap, text: Bool) -> LargeZapPillView {
+        let view = text ? LargeZapPillTextView(zap: zap) : LargeZapPillView(zap: zap)
+//        view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
         return view
     }
     
-    func findPillInStack(receiptId: String) -> ZapGalleryChildView? {
+    func findPillInStack(receiptId: String) -> LargeZapGalleryChildView? {
         stack.findAllSubviews().first(where: { $0.zap.receiptId == receiptId })
     }
     
     func animateStacks() {
+        (animationStack.arrangedSubviews.last as? UIStackView)?.addArrangedSubview(UIButton(configuration: .zapPillButton()))
+        
         layoutIfNeeded()
         animationStack.layoutIfNeeded()
         
@@ -205,7 +148,27 @@ class SmallZapGalleryView: UIView, ZapGallery {
             guard let stack = view as? UIStackView else { continue }
 
             for view in stack.arrangedSubviews {
-                guard let zapView = view as? ZapGalleryChildView else {
+                guard let zapView = view as? LargeZapGalleryChildView else {
+                    if let animatingButton = view as? UIButton, let realButton = (self.stack.arrangedSubviews.last as? UIStackView)?.arrangedSubviews.last {
+                        let newOrigin = realButton.convert(CGPoint.zero, to: self)
+                        let oldOrigin = animatingButton.convert(CGPoint.zero, to: self)
+                        
+                        var deltaY = newOrigin.y - oldOrigin.y
+                        if deltaY > 5 { // Hardcode Y translation because for some reason it is not correct
+                            deltaY = 36
+                        }
+
+                        realButton.alpha = 0.01
+
+                        UIView.animate(withDuration: 12 / 30) {
+                            animatingButton.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                        } completion: { _ in
+                            realButton.alpha = 1
+                        }
+
+                        continue
+                    }
+                    
                     UIView.animate(withDuration: 6 / 30) {
                         view.alpha = 0.01
                     }
@@ -223,10 +186,10 @@ class SmallZapGalleryView: UIView, ZapGallery {
                     continue
                 }
                 
-                if let textPill = zapView as? ZapPillTextView, newPill as? ZapPillTextView == nil {
+                if let textPill = zapView as? LargeZapPillTextView, newPill as? LargeZapPillTextView == nil {
                     // Transform and translate text pill into regular pill
                     
-                    let animatingPill = ZapPillTextView(zap: textPill.zap)
+                    let animatingPill = LargeZapPillTextView(zap: textPill.zap)
                     addSubview(animatingPill)
                     animatingPill.pin(to: textPill, edges: [.leading, .top])
                     layoutIfNeeded()
@@ -259,21 +222,11 @@ class SmallZapGalleryView: UIView, ZapGallery {
                             
                             animatingPill.zapIcon.alpha = 0
                             animatingPill.zapIcon.isHidden = true
-                            
-                            if newPill as? ZapAvatarView != nil {
-                                animatingPill.amountLabel.alpha = 0
-                                animatingPill.amountLabel.isHidden = true
-                            }
                         }
                         
                         UIView.animate(withDuration: 12 / 30) {
                             animatingPill.label.isHidden = true
-                            if newPill as? ZapAvatarView != nil {
-                                animatingPill.endSpacer.isHidden = true
-                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x - 6, y: deltaY)
-                            } else {
-                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
-                            }
+                            animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
                         } completion: { _ in
                             newPill.alpha = 1
                             animatingPill.removeFromSuperview()
@@ -307,7 +260,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
             guard let hStack = view as? UIStackView else { continue }
             
             for view in hStack.arrangedSubviews {
-                guard let pill = view as? ZapPillView else {
+                guard let pill = view as? LargeZapPillView else {
                     view.alpha = 0.01
                     UIView.animate(withDuration: 6 / 30, delay: 3 / 30) {
                         view.alpha = 1

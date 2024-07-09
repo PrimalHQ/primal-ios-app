@@ -98,7 +98,7 @@ final class NotificationsViewController: FeedViewController {
         }
         .store(in: &cancellables)
         
-        $notifications
+        $notifications.dropFirst()
             .debounce(for: 0.3, scheduler: RunLoop.main)
             .filter { [weak self] notifications in
                 self?.table.indexPathsForVisibleRows?.first?.row ?? 0 > notifications.count - 10
@@ -141,6 +141,7 @@ final class NotificationsViewController: FeedViewController {
         navigationBorder.topAnchor.constraint(equalTo: tabSelectionView.bottomAnchor).isActive = true
         
         tabSelectionView.$selectedTab
+            .dropFirst()
             .compactMap({ Tab(rawValue: $0) })
             .assign(to: \.tab, onWeak: self)
             .store(in: &cancellables)

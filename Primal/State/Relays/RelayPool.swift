@@ -49,7 +49,7 @@ final class RelayPool {
     }
     
     func connect(_ relay: String) {
-        guard let url = URL(string: relay) else { return }
+        guard let url = URL(string: relay), relay.hasPrefix("wss://") else { return }
         let rc = RelayConnection(socketURL: url, dispatchQueue: Self.dispatchQueue)
         
         rc.state
@@ -101,20 +101,6 @@ final class RelayPool {
                         } else {
                             self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
                         }
-                    }
-                }
-            }
-        }
-    }
-    
-    func requestTo(_ specificRelay: String, _ ev: NostrObject, _ handler: @escaping (_ result: [JSON], _ relay: String) -> Void) {
-        Self.dispatchQueue.async {
-            for connection in self.connections {
-                if connection.identity == specificRelay {
-                    if connection.state.value == .connected {
-                        connection.request(ev, handler)
-                    } else {
-                        self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
                     }
                 }
             }

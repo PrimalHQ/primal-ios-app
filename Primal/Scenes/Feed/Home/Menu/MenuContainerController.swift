@@ -106,7 +106,7 @@ final class MenuContainerController: UIViewController, Themeable {
         childLeftConstraint?.isActive = true
         coverView.isHidden = false
         mainTabBarController?.hideForMenu()
-        child.viewWillDisappear(true)
+        child.beginAppearanceTransition(false, animated: true)
     }
     
     func resetNavigationTabBar() {
@@ -122,6 +122,7 @@ final class MenuContainerController: UIViewController, Themeable {
         coverView.alpha = 0
         coverView.isHidden = true
         mainTabBarController?.showButtons()
+        child.endAppearanceTransition()
     }
     
     func updateTheme() {

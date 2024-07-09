@@ -278,7 +278,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
         switch event {
         case .url(let URL):
-            guard let url = URL ?? post.linkPreview?.url else { return }
+            guard var url = URL ?? post.linkPreview?.url else { return }
+            
+            if url.absoluteString.lowercased().hasPrefix("http://") {
+                url = .init(string: "https://" + url.absoluteString.dropFirst(7)) ?? url
+            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+                url = .init(string: "https://" + url.absoluteString) ?? url
+            }
+            
             handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
         case .images(let resource):
             guard let cell else { return }
@@ -403,7 +410,7 @@ private extension FeedViewController {
                 table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
             else { return }
             
-            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+            if posts[index].zaps.count > 2, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
                 cell.updateMenu(posts[index])
             } else {
                 table.reloadData()
@@ -494,10 +501,14 @@ private extension FeedViewController {
     func animateZap(_ cell: PostCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
-        view.addSubview(animView)
-        animView
-            .centerToView(cell.zapButton.iconView, axis: .vertical, offset: 2)
-            .centerToView(cell.zapButton.iconView, axis: .horizontal, offset: 62)
+        let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : (cell.zapGallery as? LargeZapGalleryView)?.zapPillButton.imageView
+        
+        if let iconToPin {
+            view.addSubview(animView)
+            animView
+                .centerToView(iconToPin, axis: .vertical, offset: 2)
+                .centerToView(iconToPin, axis: .horizontal, offset: 62)
+        }
         
         view.layoutIfNeeded()
         

@@ -13,7 +13,6 @@ extension CAMediaTimingFunction {
 
 extension UILabel {
     @discardableResult
-    
     func animateTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart) -> UILabel? {
         guard let otherLabel else { return nil }
         
@@ -26,115 +25,43 @@ extension UILabel {
         animatingLabel.textColor = textColor
         animatingLabel.textAlignment = textAlignment
         animatingLabel.numberOfLines = numberOfLines
-        animatingLabel.frame = convert(bounds, to: root)
-        root.addSubview(animatingLabel)
+        animatingLabel.anchorPoint = (.zero)
+        animatingLabel.frame = bounds
         
-        let actionTranslation = animatingLabel.centerDistanceVectorToView(otherLabel)
-        let scale: CGFloat
-        if animatingLabel.frame.height > otherLabel.frame.height {
-            scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        } else {
-            scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        }
+        let scale = otherLabel.font.pointSize / font.pointSize
         
-        CATransaction.begin()
-        CATransaction.setAnimationTimingFunction(timing)
-
-        UIView.animate(withDuration: duration) {
-            animatingLabel.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
-        } completion: { _ in
-            otherLabel.alpha = 1
-            animatingLabel.removeFromSuperview()
-        }
+        let otherAnimatingLabel = UILabel()
+        otherAnimatingLabel.text = otherLabel.text
+        otherAnimatingLabel.font = otherLabel.font
+        otherAnimatingLabel.textColor = otherLabel.textColor
+        otherAnimatingLabel.textAlignment = otherLabel.textAlignment
+        otherAnimatingLabel.numberOfLines = otherLabel.numberOfLines
+        otherAnimatingLabel.anchorPoint = .zero //init(x: 0, y: 1)
+        otherAnimatingLabel.frame = otherLabel.bounds
+        otherAnimatingLabel.alpha = 0
+        otherAnimatingLabel.transform = .init(scaleX: 1 / scale, y: 1 / scale)
         
-        CATransaction.commit()
-        
-        return animatingLabel
-    }
-    
-    @discardableResult
-    func animateColorTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, forceHeight: Bool = false) -> ColorAnimatingLabel? {
-        guard let otherLabel else { return nil }
-        
-        alpha = 0.01
-        otherLabel.alpha = 0.01
-        
-        let animatingLabel = ColorAnimatingLabel()
-        animatingLabel.text = text
-        animatingLabel.font = font
-        animatingLabel.textColor = textColor
-        animatingLabel.textAlignment = textAlignment
-        animatingLabel.numberOfLines = numberOfLines
-        animatingLabel.frame = convert(bounds, to: root)
-        animatingLabel.frontLabel.frame = animatingLabel.bounds
-        animatingLabel.backLabel.frame = animatingLabel.bounds
-        root.addSubview(animatingLabel)
-        
-        let actionTranslation = animatingLabel.centerDistanceVectorToView(otherLabel)
-        let scale: CGFloat
-        if forceHeight {
-            scale = otherLabel.font.pointSize / font.pointSize
-        } else if animatingLabel.frame.height > otherLabel.frame.height {
-            scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        } else {
-            scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        }
-        
-        animatingLabel.animateToColor(color: otherLabel.textColor, duration: duration)
+        let parent = UIView()
+        parent.clipsToBounds = true
+        parent.frame = convert(bounds, to: root)
+        parent.addSubview(animatingLabel)
+        parent.addSubview(otherAnimatingLabel)
+        root.addSubview(parent)
         
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(timing)
 
         UIView.animate(withDuration: duration) {
-            animatingLabel.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
+            animatingLabel.transform = .init(scaleX: scale, y: scale)
+            otherAnimatingLabel.transform = .identity
+            
+            parent.frame = otherLabel.convert(otherLabel.bounds, to: root)
+            
+            animatingLabel.alpha = 0
+            otherAnimatingLabel.alpha = 1
         } completion: { _ in
             otherLabel.alpha = 1
-            animatingLabel.removeFromSuperview()
-        }
-        
-        CATransaction.commit()
-        
-        return animatingLabel
-    }
-    
-    @discardableResult
-    func animateLeadingTransitionTo(_ otherLabel: UILabel?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, forceHeight: Bool = false) -> ColorAnimatingLabel? {
-        guard let otherLabel else { return nil }
-        
-        alpha = 0.01
-        otherLabel.alpha = 0.01
-        
-        let animatingLabel = ColorAnimatingLabel()
-        animatingLabel.text = text
-        animatingLabel.font = font
-        animatingLabel.textColor = textColor
-        animatingLabel.textAlignment = textAlignment
-        animatingLabel.numberOfLines = numberOfLines
-        animatingLabel.frame = convert(bounds, to: root)
-        animatingLabel.frontLabel.frame = animatingLabel.bounds
-        animatingLabel.backLabel.frame = animatingLabel.bounds
-        root.addSubview(animatingLabel)
-        
-        let actionTranslation = animatingLabel.originDistanceVectorToView(otherLabel)
-        let scale: CGFloat
-        if forceHeight {
-            scale = otherLabel.font.pointSize / font.pointSize
-        } else if animatingLabel.frame.height > otherLabel.frame.height {
-            scale = min(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        } else {
-            scale = max(otherLabel.frame.width / animatingLabel.frame.width, otherLabel.frame.height / animatingLabel.frame.height)
-        }
-        
-        animatingLabel.animateToColor(color: otherLabel.textColor, duration: duration)
-        
-        CATransaction.begin()
-        CATransaction.setAnimationTimingFunction(timing)
-
-        UIView.animate(withDuration: duration) {
-            animatingLabel.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
-        } completion: { _ in
-            otherLabel.alpha = 1
-            animatingLabel.removeFromSuperview()
+            parent.removeFromSuperview()
         }
         
         CATransaction.commit()
@@ -159,19 +86,15 @@ extension UIImageView {
         animatingIV.frame = convert(bounds, to: root)
         root.addSubview(animatingIV)
         
-        let actionTranslation = animatingIV.centerDistanceVectorToView(other)
-        let scale: CGFloat
-        if animatingIV.frame.width > other.frame.width {
-            scale = min(other.frame.width / animatingIV.frame.width, other.frame.height / animatingIV.frame.height)
-        } else {
-            scale = max(other.frame.width / animatingIV.frame.width, other.frame.height / animatingIV.frame.height)
-        }
-        
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(timing)
         
         UIView.animate(withDuration: duration) {
-            animatingIV.transform = .init(translationX: actionTranslation.x, y: actionTranslation.y).scaledBy(x: scale, y: scale)
+            animatingIV.tintColor = other.tintColor
+            animatingIV.contentMode = other.contentMode
+            animatingIV.layer.cornerRadius = other.layer.cornerRadius
+            animatingIV.clipsToBounds = other.clipsToBounds
+            animatingIV.frame = other.convert(other.bounds, to: root)
             if fade {
                 animatingIV.alpha = 0
             }

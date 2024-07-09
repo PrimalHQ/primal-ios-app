@@ -20,11 +20,20 @@ final class ExploreViewController: UIViewController, Themeable {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    init() {
+        super.init(nibName: nil, bundle: nil)
         
         setup()
+        
+        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                self?.hashtags  = result.popularHashtags
+            }
+            .store(in: &cancellables)
     }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

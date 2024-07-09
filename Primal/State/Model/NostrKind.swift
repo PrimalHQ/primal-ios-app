@@ -59,6 +59,7 @@ enum NostrKind: Int {
     case relays = 10_000_139
     case relayHints = 10_000_141
     case longFormMetadata = 10_000_144
+    case eventBroadcastResponse = 10_000_149
 }
 
 extension NostrKind {

@@ -21,7 +21,11 @@ final class RelaysPostbox {
     
     var loadedRalays: [String] = []
     
+    var cancellables: Set<AnyCancellable> = []
+    
     func connect(_ relays: [String]) {
+        if NetworkSettings.enhancedPrivacy { return } // Disable connecting to the relays
+        
         loadedRalays += relays
         self.pool.connect(relays: relays)
     }
@@ -31,7 +35,7 @@ final class RelaysPostbox {
         pool.connect(relays: loadedRalays)
     }
     
-    func request(_ ev: NostrObject, specificRelay: String? = nil, errorDelay: Double = 10, successHandler: ((_ result: [JSON]) -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
+    func request(_ ev: NostrObject, errorDelay: Double = 10, successHandler: ((_ result: [JSON]) -> Void)? = nil, errorHandler: (() -> Void)? = nil) {
         var didSucceed: Bool?
         
         func resultHandler(result: [JSON], relay: String) {
@@ -43,10 +47,28 @@ final class RelaysPostbox {
             }
         }
         
-        if let specificRelay {
-            self.pool.requestTo(specificRelay, ev, resultHandler)
-        } else {
-            self.pool.request(ev, resultHandler)
+        pool.request(ev, resultHandler)
+        
+        var relays = IdentityManager.instance.userRelays?.keys as? [String] ?? []
+        if relays.isEmpty { relays = bootstrap_relays }
+        
+        if let jsonEV: JSON = ev.encodeToString()?.decode() {
+            SocketRequest(name: "broadcast_events", payload: [
+                "events": .array([jsonEV]),
+                "relays": .array(relays.map { .string($0) })
+            ])
+            .publisher()
+            .sink { res in
+                if res.eventBroadcastSuccessful {
+                    DispatchQueue.main.async {
+                        if didSucceed != true {
+                            didSucceed = true
+                            successHandler?([])
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + errorDelay) {

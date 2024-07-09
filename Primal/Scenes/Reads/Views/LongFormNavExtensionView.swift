@@ -26,7 +26,7 @@ class LongFormNavExtensionView: UIView, Themeable {
     let secondaryLabel = UILabel()
     let profileIcon = FLAnimatedImageView(image: UIImage(named: "profile"))
     let border = SpacerView(height: 1)
-    let goBackstageButton = UIButton(configuration: .accent14("Go Backstage")).constrainToSize(height: 36)
+    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 36)
     
     init(_ user: ParsedUser) {
         super.init(frame: .zero)
@@ -57,7 +57,7 @@ class LongFormNavExtensionView: UIView, Themeable {
         secondaryLabel.textColor = .foreground5
         
         border.backgroundColor = .background3
-        goBackstageButton.configuration = .accent14("Subscribe")
+        subscribeButton.configuration = .accent14("Subscribe")
     }
 }
 
@@ -73,7 +73,7 @@ private extension LongFormNavExtensionView {
         nameStack.axis = .vertical
         nameStack.spacing = 4
         
-        let mainStack = UIStackView(arrangedSubviews: [profileIcon, nameStack, goBackstageButton])
+        let mainStack = UIStackView(arrangedSubviews: [profileIcon, nameStack, subscribeButton])
         mainStack.alignment = .center
         mainStack.spacing = 8
         

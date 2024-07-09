@@ -31,7 +31,7 @@ final class LikeManager {
                 
         userLikes.insert(post.id)
         
-        RelaysPostbox.instance.request(ev, specificRelay: nil, successHandler: { _ in
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
             self.userLikes.remove(ev.id)

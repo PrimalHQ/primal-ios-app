@@ -77,7 +77,7 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
             case .uploading(let progress):
                 cell.loadingParent.isHidden = false
                 cell.loadingIndicator.isHidden = false
-                if progress < 0.1 {
+                if progress < 0.01 {
                     cell.loadingIndicator.progress = progress
                 } else {
                     cell.loadingIndicator.setProgressWithAnimation(duration: 0.1, value: progress)

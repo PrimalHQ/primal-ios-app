@@ -29,6 +29,8 @@ class PostRequestResult: Codable {
     var longFormWordCount: [String: Int] = [:]
     var longFormPosts: [LongFormPost] = []
     
+    var eventBroadcastSuccessful = false
+    
     var message: String?
     var pagination: PrimalPagination?
     

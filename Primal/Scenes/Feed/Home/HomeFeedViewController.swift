@@ -27,11 +27,9 @@ final class HomeFeedViewController: PostFeedViewController {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
-    lazy var navTitleView = DropdownNavigationView(title: "Latest")
+//    lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "tabIcon-explore")), primaryAction: .init(handler: { [weak self] _ in
-        self?.navigationController?.fadeTo(SearchViewController())
-    }))
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "Feed")))
     
     var onLoad: (() -> ())? {
         didSet {
@@ -85,9 +83,10 @@ final class HomeFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.titleView = navTitleView
+        self.title = "Latest"
+//        navigationItem.titleView = navTitleView
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchButton)
-        navTitleView.button.addAction( .init(handler: { [weak self] _ in
+        searchButton.addAction(.init(handler: { [weak self] _ in
             self?.present(FeedsSelectionController(feed: self?.feed ?? .init(feed: .latest)), animated: true)
         }), for: .touchUpInside)
         
@@ -154,7 +153,7 @@ final class HomeFeedViewController: PostFeedViewController {
     
     func updateTitle() {
         if let title = feed.currentFeed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil) {
-            navTitleView.title = title
+            self.title = title
         }
     }
     
