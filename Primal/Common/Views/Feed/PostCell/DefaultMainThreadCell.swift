@@ -19,8 +19,6 @@ class DefaultMainThreadCell: ThreadCell {
     
     lazy var infoRow = UIStackView([repliesLabel, zapsLabel, likesLabel, repostsLabel, UIView()])
     
-    let bookmarksButton = UIButton()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         parentSetup()
@@ -78,8 +76,18 @@ class DefaultMainThreadCell: ThreadCell {
         }
     }
     
+    override func updateMenu(_ content: ParsedContent) {
+        super.updateMenu(content)
+        
+        bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
+            .sink { [weak self] isBookmarked in
+                self?.isShowingBookmarked = isBookmarked
+                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarksBigFilled" : "feedBookmarksBig"), for: .normal)
+            } 
+    }
+    
     func setBookmarkButton() {
-        bookmarksButton.setImage(cachedIsBookmarked ? UIImage(named: "feedBookmarksBigFilled") : UIImage(named: "feedBookmarksBig"), for: .normal)
+        bookmarkButton.setImage(cachedIsBookmarked ? UIImage(named: "feedBookmarksBigFilled") : UIImage(named: "feedBookmarksBig"), for: .normal)
     }
     
     func infoString(_ count: Int, _ singleTitle: String, _ pluralTitle: String) -> NSAttributedString {
@@ -129,7 +137,7 @@ class DefaultMainThreadCell: ThreadCell {
         zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
-        let contentStack = UIStackView(axis: .vertical, [textViewParent, invoiceView, mainImages, linkPresentation, postPreview])
+        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview])
         let mainStack = UIStackView(axis: .vertical, [horizontalProfileStack, contentStack, descStack])
         contentView.addSubview(mainStack)
         
@@ -157,7 +165,7 @@ class DefaultMainThreadCell: ThreadCell {
             .pinToSuperview(edges: .vertical, padding: -5)
         
         selectionTextView.backgroundColor = .background2
-        selectionTextView.tintColor = .accent
+        selectionTextView.linkTextAttributes = [:]
         selectionTextView.isEditable = false
         selectionTextView.isScrollEnabled = false
         selectionTextView.delegate = self
@@ -167,10 +175,10 @@ class DefaultMainThreadCell: ThreadCell {
             $0.bigMode = true
         }
         
-        bottomButtonStack.addArrangedSubview(bookmarksButton)
+        bottomButtonStack.addArrangedSubview(bookmarkButton)
         
-        bookmarksButton.tintColor = .foreground4
-        bookmarksButton.addAction(.init(handler: { [unowned self] _ in
+        bookmarkButton.tintColor = .foreground4
+        bookmarkButton.addAction(.init(handler: { [unowned self] _ in
             delegate?.postCellDidTap(self, cachedIsBookmarked ? .unbookmark : .bookmark)
             cachedIsBookmarked.toggle()
         }), for: .touchUpInside)
@@ -230,6 +238,17 @@ extension DefaultMainThreadCell: UITextViewDelegate {
                     RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
                 })
             ]))
+        }
+        
+        if url.scheme == "highlight" {
+            let highlight = url.absoluteString.replacingOccurrences(of: "highlight://", with: "")
+            
+//            return UITextItem.MenuConfiguration(preview: .view(ProfilePreviewView(pubkey: mention)), menu: .init(children: [
+//                UIAction(title: "Open Article", image: UIImage(systemName: "person.crop.circle.fill"), handler: { [weak self] _ in
+//                    self?.delegate?.postCellDidTap(self!, .url(url))
+//                })
+//            ]))
+            return nil
         }
         
         return .init(preview: .default, menu: defaultMenu)

@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import UIKit
 import LinkPresentation
+import NostrSDK
 
 final class ParsedElement: Equatable {
     static func == (lhs: ParsedElement, rhs: ParsedElement) -> Bool {
@@ -47,51 +48,6 @@ final class ParsedUser {
     }
 }
 
-class ParsedLongFormPost {
-    let title: String
-    let image: String?
-    let summary: String?
-    let words: Int?
-    
-    let identifier: String
-    
-    var zaps: [ParsedZap]
-    
-    var replies: [ParsedContent]
-    
-    var stats: NostrContentStats
-    
-    let event: NostrContent
-    let user: ParsedUser
-    
-    var mentions: [ParsedContent] = []
-    var mentionedUsers: [ParsedUser] = []
-    
-    init(
-        id: String,
-        title: String,
-        image: String?,
-        summary: String?,
-        words: Int?,
-        zaps: [ParsedZap],
-        replies: [ParsedContent],
-        stats: NostrContentStats,
-        event: NostrContent,
-        user: ParsedUser
-    ) {
-        identifier = id
-        self.title = title
-        self.image = image
-        self.summary = summary
-        self.words = words
-        self.zaps = zaps
-        self.replies = replies
-        self.stats = stats
-        self.event = event
-        self.user = user
-    }
-}
-
 final class ParsedContent {
     var post: PrimalFeedPost
     let user: ParsedUser
@@ -105,11 +61,15 @@ final class ParsedContent {
     var mentions: [ParsedElement] = []
     var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
+    var highlights: [ParsedElement] = []
     var zaps: [ParsedZap] = []
+    
+    var highlightEvents: [ParsedContent] = []
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
     var linkPreview: LinkMetadata?
+    var article: Article?
     
     var invoice: Invoice?
     
@@ -228,6 +188,21 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
+        for element in highlights {
+            let newParagraph = NSMutableParagraphStyle()
+            newParagraph.lineSpacing = 0
+            newParagraph.minimumLineHeight = 28
+            newParagraph.maximumLineHeight = 28
+            
+            result.addAttributes([
+                .foregroundColor: UIColor.foreground,
+                .backgroundColor: UIColor.init(rgb: 0x3D4933),
+                .font: UIFont.appFont(withSize: 16, weight: .regular),
+                .link: URL(string: "highlight://\(element.reference)"),
+                .paragraphStyle: newParagraph
+            ], range: .init(location: element.position, length: element.length))
+        }
+        
         attributedText = result
         if result.length > 1200 {
             attributedTextShort = result.attributedSubstring(from: .init(location: 0, length: 1000))
@@ -236,12 +211,32 @@ extension ParsedContent {
         }
     }
     
-    func noteId() -> String { bech32_note_id(post.id) ?? post.id }
+    func noteId() -> String {
+        post.kind == NostrKind.longForm.rawValue ?
+            getATagID() ?? bech32_note_id(post.id) ?? post.id
+          : bech32_note_id(post.id) ?? post.id
+    }
     
     func webURL() -> String { "https://primal.net/e/\(noteId())" }
     
     var isEmpty: Bool {
         post.isEmpty || user.data.id.isEmpty
+    }
+}
+
+extension ParsedContent: MetadataCoding {
+    func getATagID() -> String? {
+        guard
+            post.kind == NostrKind.longForm.rawValue,
+            let tagId = post.tags.first(where: { $0.first == "d" })?[safe: 1]
+        else { return bech32_note_id(post.id) }
+        
+//        var metadata = Metadata(relays: validatedRelayURLStrings, identifier: tagId)
+//        metadata.pubkey = post.pubkey
+//        metadata.kind = UInt32(NostrKind.longForm.rawValue)
+//
+//        return try? encodedIdentifier(with: metadata, identifierType: .address)
+        return nil
     }
 }
 

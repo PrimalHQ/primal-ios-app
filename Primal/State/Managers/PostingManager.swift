@@ -1,5 +1,5 @@
 //
-//  PostManager.swift
+//  PostingManager.swift
 //  Primal
 //
 //  Created by Nikola Lukovic on 1.6.23..
@@ -8,20 +8,43 @@
 import Combine
 import Foundation
 
-final class PostManager {
+final class PostingManager {
     private init() {}
     
-    static let instance: PostManager = PostManager()
+    static let instance: PostingManager = PostingManager()
     
     @Published var userReposts: Set<String> = []
     @Published var userReplied: Set<String> = []
+    @Published var userLikes: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []
     
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
+    func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
     var lastPostedEvent: NostrObject?
+    
+    func sendLikeEvent(post: PrimalFeedPost) {
+        if LoginManager.instance.method() != .nsec { return }
+
+        guard !hasLiked(post.id) else {
+            return
+        }
+                
+        guard let ev = NostrObject.like(post: post) else {
+            print("Error creating nostr like event")
+            return
+        }
+                
+        userLikes.insert(post.id)
+        
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
+            // do nothing
+        }, errorHandler: {
+            self.userLikes.remove(ev.id)
+        })
+    }
     
     func sendMessageEvent(message: String, userPubkey: String, _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
@@ -38,10 +61,10 @@ final class PostManager {
         }
     }
     
-    func sendRepostEvent(nostrContent: NostrContent) {
+    func sendRepostEvent(post: PrimalFeedPost) {
         if LoginManager.instance.method() != .nsec { return }
 
-        guard var ev = NostrObject.repost(nostrContent) else {
+        guard var ev = NostrObject.repost(post) else {
             print("Error creating repost event")
             return
         }
@@ -51,7 +74,7 @@ final class PostManager {
         }
         lastPostedEvent = ev
         
-        self.userReposts.insert(ev.id)
+        userReposts.insert(ev.id)
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
@@ -95,14 +118,50 @@ final class PostManager {
         }
         lastPostedEvent = ev
         
-        self.userReplied.insert(post.id)
+        userReplied.insert(post.universalID)
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             callback(true)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
-            self.userReplied.remove(post.id)
+            self.userReplied.remove(post.universalID)
+            callback(false)
+        })
+    }
+    
+    func sendHighlightEvent(_ content: String, article: Article, _ callback: @escaping (Bool) -> Void) -> NostrObject? {
+        if LoginManager.instance.method() != .nsec { return nil }
+
+        guard let ev = NostrObject.highlight(content, article: article) else {
+            callback(false)
+            return nil
+        }
+        
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
+            callback(true)
+            
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
+        }, errorHandler: {
+            callback(false)
+        })
+        
+        return ev
+    }
+    
+    func deleteHighlightEvents(_ highlights: [Highlight], _ callback: @escaping (Bool) -> Void) {
+        if LoginManager.instance.method() != .nsec { return }
+        
+        guard let ev = NostrObject.delete(highlights) else {
+            callback(false)
+            return
+        }
+        
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
+            callback(true)
+            
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
+        }, errorHandler: {
             callback(false)
         })
     }

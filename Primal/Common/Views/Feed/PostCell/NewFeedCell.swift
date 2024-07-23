@@ -102,7 +102,7 @@ private extension NewFeedCell {
     
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, mainImages, linkPresentation, postPreview, zapGallery, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapGallery, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
@@ -117,7 +117,7 @@ private extension NewFeedCell {
         bottomButtonStack
             .pin(to: buttonStackStandIn, edges: .leading, padding: -8)
             .pin(to: buttonStackStandIn, edges: .trailing, padding: 16)
-            .centerToView(buttonStackStandIn)
+            .centerToView(buttonStackStandIn, axis: .vertical)
         
         bottomButtonStack.distribution = .fillEqually
         

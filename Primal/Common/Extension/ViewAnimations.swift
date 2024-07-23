@@ -20,9 +20,13 @@ extension UILabel {
         otherLabel.alpha = 0.01
         
         let animatingLabel = UILabel()
-        animatingLabel.text = text
-        animatingLabel.font = font
-        animatingLabel.textColor = textColor
+        if let attributedText {
+            animatingLabel.attributedText = attributedText
+        } else {
+            animatingLabel.text = text
+            animatingLabel.font = font
+            animatingLabel.textColor = textColor
+        }
         animatingLabel.textAlignment = textAlignment
         animatingLabel.numberOfLines = numberOfLines
         animatingLabel.anchorPoint = (.zero)
@@ -31,9 +35,13 @@ extension UILabel {
         let scale = otherLabel.font.pointSize / font.pointSize
         
         let otherAnimatingLabel = UILabel()
-        otherAnimatingLabel.text = otherLabel.text
-        otherAnimatingLabel.font = otherLabel.font
-        otherAnimatingLabel.textColor = otherLabel.textColor
+        if let attributedText = otherLabel.attributedText {
+            otherAnimatingLabel.attributedText = attributedText
+        } else {
+            otherAnimatingLabel.text = otherLabel.text
+            otherAnimatingLabel.font = otherLabel.font
+            otherAnimatingLabel.textColor = otherLabel.textColor
+        }
         otherAnimatingLabel.textAlignment = otherLabel.textAlignment
         otherAnimatingLabel.numberOfLines = otherLabel.numberOfLines
         otherAnimatingLabel.anchorPoint = .zero //init(x: 0, y: 1)

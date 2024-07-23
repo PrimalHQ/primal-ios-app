@@ -35,6 +35,7 @@ class PostCell: UITableViewCell {
     let mainLabel = NantesLabel()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
+    let articleView = ArticleFeedView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
@@ -50,13 +51,12 @@ class PostCell: UITableViewCell {
     var zapGallery: ZapGallery = SmallZapGalleryView()
     
     weak var imageAspectConstraint: NSLayoutConstraint?
-    var metadataUpdater: AnyCancellable?
+    var bookmarkUpdater: AnyCancellable?
     
     let nantesDelegate = PostCellNantesDelegate()
     
     // MARK: - State
     var isShowingBookmarked = false
-    
     
     var useShortText: Bool { false }
     
@@ -116,6 +116,13 @@ class PostCell: UITableViewCell {
             repostIndicator.isHidden = false
         } else {
             repostIndicator.isHidden = true
+        }
+        
+        if let article = content.article {
+            articleView.setUp(article)
+            articleView.isHidden = false
+        } else {
+            articleView.isHidden = true
         }
         
         if let invoice = content.invoice {
@@ -202,8 +209,11 @@ class PostCell: UITableViewCell {
             }
         })
         
-        isShowingBookmarked = content.postInfo.isBookmarked
-        bookmarkButton.setImage(UIImage(named: isShowingBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
+            .sink { [weak self] isBookmarked in
+                self?.isShowingBookmarked = isBookmarked
+                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+            }
     }
 }
 
@@ -306,6 +316,10 @@ private extension PostCell {
         
         zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
+        }))
+        
+        articleView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+            delegate?.postCellDidTap(self, .article)
         }))
         
         bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)

@@ -27,9 +27,11 @@ final class HomeFeedViewController: PostFeedViewController {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
-//    lazy var navTitleView = DropdownNavigationView(title: "Latest")
+    lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "Feed")))
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "tabIcon-explore")), primaryAction: .init(handler: { [weak self] _ in
+        self?.navigationController?.fadeTo(SearchViewController())
+    }))
     
     var onLoad: (() -> ())? {
         didSet {
@@ -83,10 +85,14 @@ final class HomeFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Latest"
-//        navigationItem.titleView = navTitleView
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchButton)
-        searchButton.addAction(.init(handler: { [weak self] _ in
+        navTitleView.title = "Latest"
+        navigationItem.titleView = navTitleView
+        let searchParent = UIView()
+        searchParent.addSubview(searchButton)
+        searchButton.pinToSuperview(edges: [.vertical, .leading]).pinToSuperview(edges: .trailing, padding: -12)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchParent)
+        searchButton.imageView?.transform = .init(translationX: 12, y: 0)
+        navTitleView.button.addAction(.init(handler: { [weak self] _ in
             self?.present(FeedsSelectionController(feed: self?.feed ?? .init(feed: .latest)), animated: true)
         }), for: .touchUpInside)
         
@@ -153,8 +159,9 @@ final class HomeFeedViewController: PostFeedViewController {
     
     func updateTitle() {
         if let title = feed.currentFeed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil) {
-            self.title = title
+            navTitleView.title = title
         }
+        navTitleView.updateTheme()
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

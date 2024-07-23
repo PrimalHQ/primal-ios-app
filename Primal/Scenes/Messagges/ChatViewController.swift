@@ -350,7 +350,7 @@ private extension ChatViewController {
         
         messages.append(contentsOf: newMessages)
         
-        PostManager.instance.sendMessageEvent(message: originalText, userPubkey: user.data.pubkey) { [weak self] success in
+        PostingManager.instance.sendMessageEvent(message: originalText, userPubkey: user.data.pubkey) { [weak self] success in
             guard let self else { return }
             
             for index in messages.indices where ids.contains(where: { $0 == self.messages[index].id }) {

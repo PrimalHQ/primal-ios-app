@@ -39,6 +39,7 @@ extension UIViewController {
         button.setImage(UIImage(named: "back"), for: .normal)
         button.tintColor = color
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.contentHorizontalAlignment = .leading
         button.constrainToSize(44)
         return UIBarButtonItem(customView: button)
     }

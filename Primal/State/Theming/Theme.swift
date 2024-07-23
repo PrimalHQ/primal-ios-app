@@ -27,6 +27,19 @@ enum Theme: String {
             )
     }()
     
+    static var inverse: AppTheme {
+        switch current.kind {
+        case .sunriseWave:
+            return Theme.midnightWave.theme
+        case .sunsetWave:
+            return Theme.iceWave.theme
+        case .midnightWave:
+            return Theme.sunriseWave.theme
+        case .iceWave:
+            return Theme.sunsetWave.theme
+        }
+    }
+    
     static var defaultTheme: AppTheme? {
         get {
             Theme(rawValue: UserDefaults.standard.string(forKey: .currentAppThemeDefaultsKey) ?? "")?.theme

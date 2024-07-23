@@ -17,7 +17,7 @@ extension UIViewController {
 }
 
 enum MainTab: String {
-    case home, explore, wallet, messages, notifications
+    case home, reads, wallet, messages, notifications
     
     var tabImage: UIImage? {
         UIImage(named: "tabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
@@ -30,7 +30,7 @@ enum MainTab: String {
 
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
     lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
@@ -70,7 +70,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
     var cancellables: Set<AnyCancellable> = []
     
-    private let tabs: [MainTab] = [.home, .explore, .wallet, .notifications, .messages]
+    private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .messages]
 
     var hasNewNotifications = false {
         didSet {
@@ -132,7 +132,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
         updateButtons()
 
-        [home, explore, wallet, messages, notifications].forEach {
+        [home, reads, wallet, messages, notifications].forEach {
             $0.updateThemeIfThemeable()
         }
         
@@ -154,8 +154,8 @@ final class MainTabBarController: UIViewController, Themeable {
         switch tab {
         case .home:
             return home
-        case .explore:
-            return explore
+        case .reads:
+            return reads
         case .wallet:
             return wallet
         case .messages:

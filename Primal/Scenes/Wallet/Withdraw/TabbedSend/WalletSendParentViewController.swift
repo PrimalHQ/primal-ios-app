@@ -17,8 +17,15 @@ extension WalletSearchController {
     func search(_ text: String) {
         guard textSearch == nil else { return }
         
-        // Remove "nostr:"
-        let text = text.components(separatedBy: ":").last ?? text
+        var text = text
+        
+        if text.hasPrefix("nostr:") {
+            text = text.replacingOccurrences(of: "nostr:", with: "")
+        } else if text.hasPrefix("bitcoin:") {
+            text = text.replacingOccurrences(of: "bitcoin:", with: "")
+        } else if text.hasPrefix("lightning:") {
+            text = text.replacingOccurrences(of: "lightning:", with: "")
+        }
         
         textSearch = text
         

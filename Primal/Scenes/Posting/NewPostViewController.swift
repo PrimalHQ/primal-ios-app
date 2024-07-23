@@ -89,9 +89,9 @@ private extension NewPostViewController {
         }
         
         if let replyToPost {
-            PostManager.instance.sendReplyEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, post: replyToPost, callback)
+            PostingManager.instance.sendReplyEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, post: replyToPost, callback)
         } else {
-            PostManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, callback)
+            PostingManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, callback)
         }
     }
     

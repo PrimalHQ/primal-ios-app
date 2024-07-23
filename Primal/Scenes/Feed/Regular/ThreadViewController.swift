@@ -22,7 +22,7 @@ extension FeedDesign {
     var threadMainCellClass: AnyClass { DefaultMainThreadCell.self }
 }
 
-final class ThreadViewController: PostFeedViewController {
+final class ThreadViewController: PostFeedViewController, ArticleCellController {
     let id: String
     
     var didPostNewComment = false
@@ -39,6 +39,18 @@ final class ThreadViewController: PostFeedViewController {
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
+    
+    var articles: [Article] = [] {
+        didSet {
+            var offset = table.contentOffset
+            table.reloadData()
+            if oldValue.count == 0 && articles.count == 1 {
+                guard let height = self.table.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height else { return }
+                offset.y += height
+                table.contentOffset = offset
+            }
+        }
+    }
     
     private let postButtonText = "Reply"
     
@@ -111,6 +123,8 @@ final class ThreadViewController: PostFeedViewController {
         mainTabBarController?.showTabBarBorder = true
     }
     
+    override var postSection: Int { 1 }
+    
     @discardableResult
     override func open(post: ParsedContent) -> FeedViewController {
         guard post.post.id != id else { return self }
@@ -133,9 +147,12 @@ final class ThreadViewController: PostFeedViewController {
         return super.open(post: post)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int { isLoading ? 2 : 1 }
+    func numberOfSections(in tableView: UITableView) -> Int { isLoading ? 3 : 2 }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return articles.count
+        }
         if section == postSection {
             return super.tableView(tableView, numberOfRowsInSection: section)
         }
@@ -143,9 +160,18 @@ final class ThreadViewController: PostFeedViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 1 {
+        if indexPath.section == 2 { // Loading
             mainPostRepliesHeightArray[1] = 150
             return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+        }
+        
+        if indexPath.section == 0 { // Parent Article
+            let cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
+            if let articleCell = cell as? ArticleCell {
+                articleCell.setUp(articles[indexPath.row])
+                articleCell.bottomSpacer.isHidden = false
+            }
+            return cell
         }
         
         let data = posts[indexPath.row]
@@ -177,6 +203,20 @@ final class ThreadViewController: PostFeedViewController {
             }
         }
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == postSection {
+            super.tableView(tableView, didSelectRowAt: indexPath)
+            return
+        }
+        if indexPath.section == 0, let article = articles[safe: indexPath.row] {
+            if let oldVC = navigationController?.viewControllers.first(where: { ($0 as? ArticleViewController)?.content.event.id == article.event.id }) {
+                navigationController?.popToViewController(oldVC, animated: true)
+                return
+            }
+            show(ArticleViewController(content: article), sender: nil)
+        }
     }
     
     override func updateTheme() {
@@ -238,7 +278,7 @@ private extension ThreadViewController {
         textInputLoadingIndicator.isHidden = false
         textInputLoadingIndicator.play()
         
-        PostManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] success in
+        PostingManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] success in
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                 guard let self else { return }
@@ -300,6 +340,19 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
+        Publishers.CombineLatest($posts, feed.$parsedLongForm)
+            .debounce(for: 0.05, scheduler: RunLoop.main)
+            .sink { [weak self] posts, articles in
+                guard
+                    let self,
+                    let originalReply = posts.first?.replyingTo, originalReply.post.kind == 30023,
+                    let article = articles.first(where: { $0.event.id == originalReply.post.id })
+                else { return }
+                
+                self.articles = [article]
+            }
+            .store(in: &cancellables)
+        
         WalletManager.instance.zapEvent.debounce(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
             guard let self, zap.postId == id else { return }
             var zaps = mainPostZaps ?? []
@@ -344,14 +397,14 @@ private extension ThreadViewController {
                 self.didPostNewComment = false
                 DispatchQueue.main.async {
                     let index = min(self.posts.count - 1, self.mainPositionInThread + 1)
-                    self.table.scrollToRow(at: IndexPath(row: index, section: 0), at: .top, animated: true)
+                    self.table.scrollToRow(at: IndexPath(row: index, section: self.postSection), at: .top, animated: true)
                 }
             } else {
-                self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: postSection), at: .top, animated: false)
                 DispatchQueue.main.async {
-                    self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                    self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: false)
                     DispatchQueue.main.async {
-                        self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: 0), at: .top, animated: false)
+                        self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: false)
                     }
                 }
             }
@@ -381,7 +434,7 @@ private extension ThreadViewController {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 if self.mainPositionInThread < self.posts.count {
-                    self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: 0), at: .top, animated: true)
+                    self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
                 }
             }
         }
@@ -443,6 +496,7 @@ private extension ThreadViewController {
         table.keyboardDismissMode = .interactive
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
+        table.register(ArticleCell.self, forCellReuseIdentifier: "article")
         
         view.addSubview(inputParent)
         inputParent.pinToSuperview(edges: .horizontal)

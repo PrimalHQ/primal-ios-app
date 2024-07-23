@@ -89,8 +89,8 @@ extension NostrObject {
         createNostrPostEvent(content, mentionedPubkeys: mentionedPubkeys)
     }
     
-    static func repost(_ nostrContent: NostrContent) -> NostrObject? {
-        createNostrRepostEvent(nostrContent)
+    static func repost(_ post: PrimalFeedPost) -> NostrObject? {
+        createNostrRepostEvent(post)
     }
     
     static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
@@ -100,6 +100,21 @@ extension NostrObject {
     static func contacts(_ contacts: Set<String>) -> NostrObject? {
         createNostrObject(content: IdentityManager.instance.followListContentString, kind: 3, tags: contacts.map {
             ["p", $0]
+        })
+    }
+    
+    static func highlight(_ content: String, article: Article) -> NostrObject? {
+        createNostrObject(content: content, kind: NostrKind.highlight.rawValue, tags: [
+            ["context", content],
+            ["alt", "This is a highlight created in https://primal.net iOS application"],
+            ["a", article.asParsedContent.post.universalID],
+            ["p", article.event.pubkey]
+        ])
+    }
+    
+    static func delete(_ highlights: [Highlight]) -> NostrObject? {
+        createNostrObject(content: "Removing highlight", kind: NostrKind.eventDeletion.rawValue, tags: highlights.map {
+            ["e", $0.event.id]
         })
     }
     
@@ -239,7 +254,7 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
 }
 
 fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
-    createNostrObject(content: "+", kind: 7, tags: [["e", post.id], ["p", post.pubkey]])
+    createNostrObject(content: "+", kind: 7, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
@@ -248,14 +263,15 @@ fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [Stri
     )
 }
 
-fileprivate func createNostrRepostEvent(_ nostrContent: NostrContent) -> NostrObject? {
+fileprivate func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? {
+    let nostrContent = post.toRepostNostrContent()
     guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
         print("Error encoding post json for repost")
         return nil
     }
     let jsonStr = String(data: jsonData, encoding: .utf8)!
     
-    return createNostrObject(content: jsonStr, kind: 6, tags: [["e", nostrContent.id], ["p", nostrContent.pubkey]])
+    return createNostrObject(content: jsonStr, kind: 6, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
 }
 
 fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
@@ -270,10 +286,10 @@ fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, 
     /// The tag to the reply event being responded to goes last.
     if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
         allTags.append(root)
-        allTags.append(["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "reply"])
+        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
     } else {
         // For top level replies (those replying directly to the root event), only the "root" marker should be used.
-        allTags.append(["e", post.id, RelayHintManager.instance.getRelayHint(post.id), "root"])
+        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
     }
 
     allTags.append(["p", post.pubkey])

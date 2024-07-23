@@ -121,7 +121,7 @@ private extension LongFormEmbeddedPostCell {
         bottomButtonStack
             .pin(to: buttonStackStandIn, edges: .leading, padding: -8)
             .pin(to: buttonStackStandIn, edges: .trailing, padding: 16)
-            .centerToView(buttonStackStandIn)
+            .centerToView(buttonStackStandIn, axis: .vertical)
         
         bottomButtonStack.distribution = .fillEqually
         

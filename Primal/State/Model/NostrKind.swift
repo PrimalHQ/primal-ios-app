@@ -24,6 +24,7 @@ enum NostrKind: Int {
     case channelMuteUser = 44
     
     case zapReceipt = 9735
+    case highlight = 9802
     
     case muteList = 10_000
     case bookmarks = 10_003

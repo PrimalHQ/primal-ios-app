@@ -38,12 +38,12 @@ class DropdownNavigationView: UIView, Themeable {
     }
 }
 
-final class ReadsViewController: UIViewController, Themeable {
+final class ReadsViewController: UIViewController, ArticleCellController, Themeable {
     let table = UITableView()
     
     var cancellables: Set<AnyCancellable> = []
     
-    var posts: [ParsedLongFormPost] = [] {
+    var articles: [Article] = [] {
         didSet {
             table.reloadData()
         }
@@ -72,7 +72,7 @@ final class ReadsViewController: UIViewController, Themeable {
         
         table.reloadData()
         
-        posts.forEach { $0.mentions.forEach { $0.buildContentString() }}
+        articles.forEach { $0.mentions.forEach { $0.buildContentString() }}
     }
 }
 
@@ -93,7 +93,7 @@ private extension ReadsViewController {
             .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .top, padding: 6, safeArea: true)
             .pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
-        table.register(LongFormContentCell.self, forCellReuseIdentifier: "cell")
+        table.register(ArticleCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
@@ -102,11 +102,22 @@ private extension ReadsViewController {
         border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 6, safeArea: true)
         
         load()
+        
+        NotificationCenter.default.publisher(for: .userMuted)
+            .compactMap { $0.object as? String }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] pubkey in
+                guard let self else { return }
+                
+                articles = articles.filter { $0.user.data.pubkey != pubkey }
+            }
+            .store(in: &cancellables)
+
     }
         
     func load(regular: Bool = true) {
         navTitleView.title = regular ? "Nostr Reads" : "All Reads"
-        posts = []
+        articles = []
         
         var payload: [String: JSON] = [
             "limit": .number(100)
@@ -117,33 +128,63 @@ private extension ReadsViewController {
         
         SocketRequest(name: "long_form_content_feed", payload: .object(payload))
             .publisher()
-            .map { $0.getLongFormPosts() }
+            .map { $0.getArticles().filter({ !MuteManager.instance.isMuted($0.event.pubkey)}) }
             .receive(on: DispatchQueue.main)
-            .assign(to: \.posts, onWeak: self)
+            .assign(to: \.articles, onWeak: self)
             .store(in: &cancellables)
     }
 }
 
 extension ReadsViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { posts.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { articles.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        (cell as? LongFormContentCell)?.setUp(posts[indexPath.row])
+        (cell as? ArticleCell)?.setUp(articles[indexPath.row], delegate: self)
         return cell
     }
 }
 
+extension ReadsViewController: ArticleCellDelegate {
+    func articleCellDidSelect(_ cell: ArticleCell, action: PostCellEvent) {
+        guard let indexPath = table.indexPath(for: cell), let article = articles[safe: indexPath.row] else { return }
+        
+        performEvent(action, withPost: article.asParsedContent)
+    }
+    
+    func performEvent(_ event: PostCellEvent, withPost post: ParsedContent) {
+        switch event {
+        case .share:
+            let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
+            present(activityViewController, animated: true, completion: nil)
+        case .copy(let property):
+            UIPasteboard.general.string = post.propertyText(property)
+            RootViewController.instance.view.showToast("Copied!")
+        case .report:
+            break // TODO: Something?
+        case .mute:
+            MuteManager.instance.toggleMute(post.user.data.pubkey)
+        case .bookmark:
+            BookmarkManager.instance.bookmark(post)
+        case .unbookmark:
+            BookmarkManager.instance.unbookmark(post)
+        default:
+            break
+        }
+    }
+    
+}
+
 extension ReadsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let post = posts[safe: indexPath.row] else { return }
+        guard let post = articles[safe: indexPath.row] else { return }
         
-        let longForm = LongFormContentController(content: post)
+        let longForm = ArticleViewController(content: post)
         show(longForm, sender: nil)
     }
 }
 
-extension ParsedLongFormPost {
+extension Article {
     var url: URL? {
         guard
             let npub = event.pubkey.hexToNpub(),
@@ -153,5 +194,9 @@ extension ParsedLongFormPost {
         let urlString = "https://highlighter.com/\(npub)/\(noteid)"
     
         return URL(string: urlString)
+    }
+    
+    var asParsedContent: ParsedContent {
+        .init(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
     }
 }

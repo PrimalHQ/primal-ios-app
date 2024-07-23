@@ -1,5 +1,5 @@
 //
-//  ReadsToLongFormTransition.swift
+//  ArticleTransition.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 21.6.24..
@@ -7,14 +7,27 @@
 
 import UIKit
 
-class ReadsToLongFormTransition: NSObject, UIViewControllerAnimatedTransitioning {
+protocol ArticleCellController: UIViewController {
+    var articles: [Article] { get }
+    var table: UITableView { get }
+}
+
+class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
     private let presenting: Bool
-    private let reads: ReadsViewController
-    private let lfController: LongFormContentController
+    private let listVC: ArticleCellController
+    private let lfController: ArticleViewController
     
-    init(reads: ReadsViewController, longFormController: LongFormContentController, presenting: Bool) {
+    init?(listVC: ArticleCellController, longFormController: ArticleViewController, presenting: Bool) {
+        if !listVC.articles.contains(where: { $0.event.id == longFormController.content.event.id }) {
+            return nil
+        }
+        
+        if !presenting && longFormController.scrollView.contentOffset.y > 500 {
+            return nil
+        }
+        
         self.presenting = presenting
-        self.reads = reads
+        self.listVC = listVC
         self.lfController = longFormController
     }
     
@@ -45,9 +58,9 @@ class ReadsToLongFormTransition: NSObject, UIViewControllerAnimatedTransitioning
             container.insertSubview(background, at: 1)
         }
         
-        var contentCell: LongFormContentCell?
-        if let index = reads.posts.firstIndex(where: { $0.event.id == lfController.content.event.id }) {
-            contentCell = reads.table.cellForRow(at: .init(row: index, section: 0)) as? LongFormContentCell
+        var contentCell: ArticleCell?
+        if let index = listVC.articles.firstIndex(where: { $0.event.id == lfController.content.event.id }) {
+            contentCell = listVC.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
         }
         
         if presenting {
@@ -116,6 +129,43 @@ class ReadsToLongFormTransition: NSObject, UIViewControllerAnimatedTransitioning
                 transitionContext.completeTransition(success)
             }
         } else {
+            if let contentCell {
+                lfController.navExtension.profileIcon.animateTransitionTo(contentCell.avatar, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                lfController.titleLabel.animateTransitionTo(contentCell.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                lfController.navExtension.nameLabel.animateTransitionTo(contentCell.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                if lfController.imageView.superview != nil {
+                    lfController.imageView.animateTransitionTo(contentCell.contentImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                }
+            }
+            
+            UIView.animate(withDuration: 10 / 30) {
+                toView.alpha = 1
+                background.alpha = 1
+            }
+            
+            UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
+                self.lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
+                self.lfController.dateLabel.transform = .init(translationX: 0, y: 20)
+                self.lfController.navExtension.subscribeButton.alpha = 0
+                self.lfController.dateLabel.alpha = 0
+            }
+            
+            if let summary = lfController.summary {
+                UIView.animate(withDuration: 4 / 30, delay: 9 / 30) {
+                    summary.transform = .init(translationX: 0, y: 10)
+                    summary.alpha = 0
+                }
+            }
+            
+            let zapGallery = lfController.zapEmbededController.view
+            
+            UIView.animate(withDuration: 3.5 / 30, delay: 12 / 30) {
+                zapGallery?.transform = .init(translationX: 0, y: 40)
+                zapGallery?.alpha = 0
+                self.lfController.contentParent.alpha = 0
+                self.lfController.contentParent.transform = .init(translationX: 0, y: 40)
+            }
+            
             UIView.animate(withDuration: 10 / 30) {
                 fromView.alpha = 0
             }

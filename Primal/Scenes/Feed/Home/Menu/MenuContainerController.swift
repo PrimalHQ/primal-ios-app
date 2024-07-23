@@ -265,7 +265,7 @@ private extension MenuContainerController {
         menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
         menuButtonParent.addSubview(menuProfileImage)
-        menuProfileImage.constrainToSize(32).centerToSuperview()
+        menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)

@@ -139,13 +139,13 @@ extension PostRequestResult {
             }
             
             if noteStatus.liked {
-                LikeManager.instance.userLikes.insert(noteStatus.event_id)
+                PostingManager.instance.userLikes.insert(noteStatus.event_id)
             }
             if noteStatus.replied {
-                PostManager.instance.userReplied.insert(noteStatus.event_id)
+                PostingManager.instance.userReplied.insert(noteStatus.event_id)
             }
             if noteStatus.reposted {
-                PostManager.instance.userReposts.insert(noteStatus.event_id)
+                PostingManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
                 WalletManager.instance.setZapUnknown(noteStatus.event_id)
@@ -286,8 +286,6 @@ extension PostRequestResult {
                 event: longFormEvent
             ))
         case .eventBroadcastResponse:
-            print(payload)
-            
             guard 
                 let json: JSON = contentString.decode(),
                 let response = json.arrayValue?.first?.objectValue?["responses"]?.arrayValue?.first?.arrayValue,
@@ -297,6 +295,8 @@ extension PostRequestResult {
             else { return }
             
             eventBroadcastSuccessful = eventBroadcastSuccessful || status == "OK"
+        case .highlight:
+            highlights.append(NostrContent(json: .object(payload)))
         default:
             print("Unhandled response \(payload)")
         }

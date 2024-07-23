@@ -10,6 +10,7 @@ import UIKit
 // This is a cell that only contains the reactions bar
 class PostReactionsCell: DefaultMainThreadCell {
     let zapInfoView = SatoshiInfoView()
+    let tagsView = PostTagsView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -20,8 +21,9 @@ class PostReactionsCell: DefaultMainThreadCell {
         descStack.spacing = 8
         descStack.setCustomSpacing(16, after: infoRow)
         
-        let mainStack = UIStackView(axis: .vertical, [zapInfoView, descStack])
+        let mainStack = UIStackView(axis: .vertical, [tagsView, zapInfoView, descStack])
         mainStack.spacing = 12
+        mainStack.setCustomSpacing(20, after: tagsView)
         
         contentView.addSubview(mainStack)
         mainStack
@@ -30,10 +32,12 @@ class PostReactionsCell: DefaultMainThreadCell {
             .pinToSuperview(edges: .horizontal, padding: 20)
     }
     
-    override func update(_ parsedContent: ParsedContent) {
-        parsedContent.post.zaps = 1389
-        parsedContent.post.likes = 7
-        parsedContent.post.reposts = 3
+    override func update(_ parsedContent: ParsedContent) {        
+        zapInfoView.sats = parsedContent.post.satszapped
+        
+        tagsView.tags = parsedContent.post.tags.filter({ $0.first == "t" }).compactMap { $0[safe: 1] }
+        tagsView.isHidden = tagsView.tags.isEmpty
+
         super.update(parsedContent, zaps: [])
     }
     
@@ -49,8 +53,8 @@ class SatoshiInfoView: UIView {
         }
     }
     
-    let satLabel = UILabel()
-    let dollarLabel = UILabel()
+    private let satLabel = UILabel()
+    private let dollarLabel = UILabel()
     
     init() {
         super.init(frame: .zero)

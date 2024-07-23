@@ -32,7 +32,7 @@ class ContinousConnection {
 final class Connection {
     // MARK: - Static
     
-    static let dispatchQueue = DispatchQueue(label: "com.primal.connection")
+    static var dispatchQueue = DispatchQueue(label: "com.primal.connection")
     
     static let regular = Connection(socketURL: PrimalEndpointsManager.regularURL)
     static let wallet = Connection(socketURL: PrimalEndpointsManager.walletURL)
@@ -52,6 +52,8 @@ final class Connection {
         
         regular.timeToReconnect = 2
         wallet.timeToReconnect = 2
+        
+        dispatchQueue = .init(label: "connection-\(UUID().uuidString.prefix(15))")
         
         connect()
     }

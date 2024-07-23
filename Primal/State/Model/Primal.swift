@@ -13,7 +13,7 @@ struct DatedSet: Codable {
     var set: Set<String> = []
 }
 
-struct Tag: Codable, Hashable {
+struct Tag: Codable, Hashable, Equatable {
     var type: String
     var text: String
 }
@@ -241,6 +241,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
 
 struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let id: String
+    let kind: Int
     let pubkey: String
     let created_at: Double
     let tags: [[String]]
@@ -256,6 +257,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id
+        self.kind = Int(nostrPost.kind)
         self.pubkey = nostrPost.pubkey
         self.created_at = nostrPost.created_at
         self.tags = nostrPost.tags
@@ -272,6 +274,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     
     init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int, mentions: Int, replies: Int, zaps: Int, satszapped: Int, score24h: Int, reposts: Int) {
         self.id = id
+        self.kind = 1
         self.pubkey = pubkey
         self.created_at = created_at
         self.tags = tags
@@ -287,7 +290,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     }
     
     func toRepostNostrContent() -> NostrContent {
-        return NostrContent(kind: 1, content: self.content, id: self.id, created_at: self.created_at, pubkey: self.pubkey, sig: self.sig, tags: self.tags)
+        return NostrContent(kind: Int32(kind), content: content, id: id, created_at: self.created_at, pubkey: self.pubkey, sig: self.sig, tags: self.tags)
     }
 }
 

@@ -705,6 +705,11 @@ func bech32_note_id(_ evid: String) -> String? {
     return bech32_encode(hrp: "note", bytes)
 }
 
+func bech32_article_id(_ evid: String) -> String? {
+    guard let bytes = hex_decode(evid) else { return nil }
+    return bech32_encode(hrp: "naddr", bytes)
+}
+
 func privkey_to_pubkey(privkey: String) -> String? {
     guard let sec = hex_decode(privkey) else {
         return nil

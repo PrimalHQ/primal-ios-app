@@ -34,10 +34,10 @@ class LongFormQuoteView: UIStackView, Themeable {
         border.backgroundColor = .foreground4
         
         let paragraph = NSMutableParagraphStyle()
-        paragraph.lineSpacing = 7
+        paragraph.lineSpacing = 8
         
         label.attributedText = NSAttributedString(string: text, attributes: [
-            .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular),
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
             .foregroundColor: UIColor.foreground,
             .paragraphStyle: paragraph
         ])

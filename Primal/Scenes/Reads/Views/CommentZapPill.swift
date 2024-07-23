@@ -27,6 +27,9 @@ class CommentZapPill: UIView, Themeable {
     let commentButton = UIButton()
     let zapButton = UIButton()
     
+    var comments: Int = 0 { didSet { updateTheme() } }
+    var sats: Int = 0 { didSet { updateTheme() } }
+    
     init() {
         super.init(frame: .zero)
         
@@ -51,8 +54,8 @@ class CommentZapPill: UIView, Themeable {
     
     
     func updateTheme() {
-        commentButton.configuration = .longFormEventButton(image: UIImage(named: "feedComment"), title: "24")
-        zapButton.configuration = .longFormEventButton(image: UIImage(named: "feedZap"), title: "15,250")
+        commentButton.configuration = .longFormEventButton(image: UIImage(named: "feedComment"), title: comments.localized())
+        zapButton.configuration = .longFormEventButton(image: UIImage(named: "feedZap"), title: sats.localized())
         
         commentButton.tintColor = .foreground4
         zapButton.tintColor = .foreground4

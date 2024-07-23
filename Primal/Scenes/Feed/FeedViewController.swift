@@ -34,7 +34,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         if indexPath.section != postSection { return nil }
         return posts[safe: indexPath.row]
     }
-    var posts: [ParsedContent] = [] {
+    @Published var posts: [ParsedContent] = [] {
         didSet {
             guard oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
                 table.reloadData()
@@ -234,14 +234,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     private var barForegroundObserver: NSObjectProtocol?
     
-    func handleURLTap(_ url: URL, cachedUsers: [PrimalUser] = [], notes: [ParsedElement] = []) {
+    func handleURLTap(_ url: URL, from content: ParsedContent? = nil, cachedUsers: [PrimalUser] = []) {
         let urlString = url.absoluteString
-        
-        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
-            return
-        }
         
         guard let infoSub = urlString.split(separator: "//").last else { return }
         let info = String(infoSub)
@@ -253,7 +247,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         }
         
         if urlString.hasPrefix("mention") {
-            let user = cachedUsers.first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
+            let user = (content?.mentionedUsers ?? cachedUsers).first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
             
             let profile = ProfileViewController(profile: .init(data: user))
             show(profile, sender: nil)
@@ -261,10 +255,46 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         }
         
         if urlString.hasPrefix("note") {
-            guard let ref = notes.first(where: { $0.text == info })?.reference else { return }
+            guard let ref = content?.notes.first(where: { $0.text == info })?.reference else { return }
             
             let thread = ThreadViewController(threadId: ref)
             show(thread, sender: nil)
+            return
+        }
+        
+        if urlString.hasPrefix("highlight") {
+            guard 
+                let highlight = content?.highlightEvents.first(where: { $0.post.id == info }),
+                let articleId = highlight.post.tags.first(where: { $0.first == "a" })?[safe: 1]
+            else { return }
+            
+            let infoArray = articleId.split(separator: ":")
+            
+            guard
+                let kind = Int(infoArray.first ?? ""),
+                let pubkey = infoArray[safe: 1],
+                let id = infoArray[safe: 2]
+            else { return }
+            
+            if let article = content?.article, article.event.kind == kind, article.event.pubkey == pubkey, article.identifier == id {
+                let articleVC = ArticleViewController(content: article)
+                show(articleVC, sender: nil)
+            } else {
+                show(LoadArticleController(kind: kind, identifier: String(id), pubkey: String(pubkey)), sender: nil)
+            }
+            return
+        }
+        
+        var url = url
+        if urlString.isValidURL {
+            if urlString.lowercased().hasPrefix("http://") {
+                url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
+            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+                url = .init(string: "https://" + url.absoluteString) ?? url
+            }
+            
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
             return
         }
     }
@@ -278,15 +308,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
         switch event {
         case .url(let URL):
-            guard var url = URL ?? post.linkPreview?.url else { return }
+            guard let url = URL ?? post.linkPreview?.url else { return }
             
-            if url.absoluteString.lowercased().hasPrefix("http://") {
-                url = .init(string: "https://" + url.absoluteString.dropFirst(7)) ?? url
-            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
-                url = .init(string: "https://" + url.absoluteString) ?? url
-            }
-            
-            handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
+            handleURLTap(url, from: post)
         case .images(let resource):
             guard let cell else { return }
             postCellDidTapImages(cell, resource: resource)
@@ -298,7 +322,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         case .post:
             open(post: post)
         case .like:
-            LikeManager.instance.sendLikeEvent(post: post.post)
+            PostingManager.instance.sendLikeEvent(post: post.post)
             
             hapticGenerator.impactOccurred()
             
@@ -313,6 +337,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             guard let cell else { return }
             postCellDidTapRepost(cell)
         case .reply:
+            if post.post.kind == NostrKind.longForm.rawValue {
+                return
+            }
+            
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
@@ -323,6 +351,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
             show(ProfileViewController(profile: profile), sender: nil)
+        case .article:
+            guard let article = post.article else { return }
+            show(ArticleViewController(content: article), sender: nil)
         case .payInvoice:
             guard let invoice = post.invoice else { return }
             search(invoice.string)
@@ -346,10 +377,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         case .mute:
             MuteManager.instance.toggleMute(post.user.data.pubkey)
         case .bookmark:
-            BookmarkManager.instance.bookmark(post.post.id)
+            BookmarkManager.instance.bookmark(post)
             cell?.updateMenu(post)
         case .unbookmark:
-            BookmarkManager.instance.unbookmark(post.post.id)
+            BookmarkManager.instance.unbookmark(post)
             cell?.updateMenu(post)
         }
     }
@@ -536,12 +567,12 @@ extension FeedViewController: PostCellDelegate {
         let popup = PopupMenuViewController()
         
         popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
-            PostManager.instance.sendRepostEvent(nostrContent: post.toRepostNostrContent())
+            PostingManager.instance.sendRepostEvent(post: post)
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
-            guard let noteRef = bech32_note_id(post.id) else { return }
+            guard let noteRef = bech32_note_id(post.universalID) else { return }
             let new = NewPostViewController()
             new.textView.text = "\n\nnostr:\(noteRef)"
             self.present(new, animated: true)

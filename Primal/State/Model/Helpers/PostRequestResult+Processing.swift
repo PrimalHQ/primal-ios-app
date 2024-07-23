@@ -33,60 +33,6 @@ extension PostRequestResult: MetadataCoding {
         followers: userFollowers[user.pubkey]
     )}
     
-    func getLongFormPosts() -> [ParsedLongFormPost] {
-        let posts = process()
-        
-        let mentions: [ParsedContent] = mentions
-            .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
-        
-        let parsedUsers = getSortedUsers()
-        
-        return longFormPosts.compactMap { post -> ParsedLongFormPost? in
-            guard
-                let title = post.title,
-                let user = users[post.event.pubkey],
-                let id = post.event.tags.first(where: { $0.first == "d" })?[safe: 1]
-            else { return nil }
-            
-            let longForm  = ParsedLongFormPost(
-                id: id,
-                title: title,
-                image: post.image,
-                summary: post.summary,
-                words: longFormWordCount[post.event.id],
-                zaps: postZaps.compactMap { primalZapEvent -> ParsedZap? in
-                    guard
-                        primalZapEvent.event_id == post.event.id,
-                        let user = users[primalZapEvent.sender]
-                    else { return nil }
-                    
-                    return ParsedZap(
-                        receiptId: primalZapEvent.zap_receipt_id,
-                        postId: primalZapEvent.event_id,
-                        amountSats: primalZapEvent.amount_sats,
-                        message: zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
-                        user: createParsedUser(user)
-                    )
-                }, 
-                replies: posts.compactMap({
-                    if $0.replyingTo?.post.id == post.event.id {
-                        return $0
-                    }
-                    return nil
-                }),
-                stats: stats[post.event.id] ?? .empty(post.event.id),
-                event: post.event,
-                user: createParsedUser(user)
-            )
-            
-            longForm.mentionedUsers = parsedUsers
-            longForm.mentions = mentions
-            
-            return longForm
-        }
-    }
-    
     func process() -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
@@ -104,7 +50,7 @@ extension PostRequestResult: MetadataCoding {
         }
         
         let reposts: [ParsedContent] = reposts
-            .compactMap { repost in
+            .compactMap { repost -> ParsedContent? in
                 guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
                 
                 let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps)
@@ -185,23 +131,29 @@ extension PostRequestResult: MetadataCoding {
         }
         
         // MARK: - Finding parent note
-        for tagArray in post.tags {
-            guard
-                tagArray.count >= 4, tagArray[0] == "e", tagArray[3] == "root" || tagArray[3] == "reply",
-                let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
-            else { continue }
-            
-            p.replyingTo = parentNote
+        let findReply = { (tag: String) -> ParsedContent? in
+            for tagArray in post.tags {
+                guard
+                    tagArray.count >= 4, tagArray[3] == tag,
+                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] || $0.post.universalID == tagArray[1] })
+                else { continue }
+                
+                return parentNote
+            }
+            return nil
         }
+        
+        p.replyingTo = findReply("reply") ?? findReply("root") 
         
         if p.replyingTo == nil {
             for tagArray in post.tags {
                 guard
-                    tagArray.count >= 2, tagArray[0] == "e",
-                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
+                    tagArray.count >= 2, tagArray[0] == "a" || tagArray[0] == "e",
+                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] || $0.post.universalID == tagArray[1] })
                 else { continue }
                 
                 p.replyingTo = parentNote
+                break
             }
         }
         
@@ -209,12 +161,14 @@ extension PostRequestResult: MetadataCoding {
         let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
+        var highlights: [(String, ParsedContent)] = []
         
+        let tmpText = text as NSString
         if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
             postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
                     
-                let mentionText = (text as NSString).substring(with: matchRange)
+                let mentionText = tmpText.substring(with: matchRange)
                 
                 let naventString: String = {
                     if mentionText.hasPrefix("nostr:") { return mentionText }
@@ -223,7 +177,14 @@ extension PostRequestResult: MetadataCoding {
                 }()
                     
                 if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    referencedPosts.append((mentionText, mention))
+                    if mention.post.kind == NostrKind.highlight.rawValue  {
+                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                        
+                        text = text.replacingOccurrences(of: mentionText, with: "\n\(content)\n")
+                        highlights.append((content, mention))
+                    } else {
+                        referencedPosts.append((mentionText, mention))
+                    }
                 }
             }
         }
@@ -245,45 +206,40 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
-        let naddr1MentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
-        
-        if let profileMentionRegex = try? NSRegularExpression(pattern: naddr1MentionPattern, options: []) {
-            profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                guard let matchRange = match?.range else { return }
+        let articleMentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+        if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
+            articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard p.article == nil, let matchRange = match?.range else { return }
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
 
-                guard 
+                guard
                     let address = mentionText.split(separator: ":").last,
                     let metadata = try? decodedMetadata(from: String(address)),
                     let id = metadata.identifier,
                     let mention = self.mentions.first(where: {
                         $0.kind == NostrKind.longForm.rawValue && $0.tags.contains(["d", id])
-                    }),
-                    let npub = mention.pubkey.hexToNpub(),
-                    let noteid = mention.id.hexToNoteId()
+                    })
                 else { return }
                 
-                let urlString = "https://highlighter.com/\(npub)/\(noteid)"
-                
-                guard let url = URL(string: urlString) else { return }
-                
-                otherURLs.insert(mentionText, at: 0)
                 itemsToRemove.append(mentionText)
                 
-                p.linkPreview = .init(
-                    url: url,
-                    imagesData: [],
-                    data: WebPreview(
-                        md_image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
-                        md_title: mention.tags.first(where: { $0.first == "title" })?[safe: 1],
-                        md_description: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
-                        url: urlString
-                    )
+                print(mention.id)
+               
+                p.article = Article(
+                    id: id,
+                    title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",
+                    image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
+                    summary: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                    words: nil,
+                    zaps: [],
+                    replies: [],
+                    stats: stats[mention.id] ?? .empty(mention.id),
+                    event: mention,
+                    user: createParsedUser(users[mention.pubkey] ?? PrimalUser(pubkey: mention.pubkey))
                 )
             }
         }
-        
         
         if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
@@ -409,11 +365,13 @@ extension PostRequestResult: MetadataCoding {
         
         let nsText = text as NSString
         
-        p.zaps = parsedZaps.filter { $0.postId == post.id }
+        p.zaps = parsedZaps.filter { $0.postId == post.id || $0.postId == post.universalID }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
         p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
+        p.highlights = highlights.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id)}
+        p.highlightEvents = highlights.map { $0.1 }
         p.text = text
         p.buildContentString()
         

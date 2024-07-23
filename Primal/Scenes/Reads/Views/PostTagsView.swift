@@ -1,5 +1,5 @@
 //
-//  PostTagsCell.swift
+//  PostTagsView.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 3.6.24..
@@ -7,9 +7,7 @@
 
 import UIKit
 
-class PostTagsCell: UITableViewCell {
-    let layout = UICollectionViewFlowLayout()
-    
+class PostTagsView: UIView {
     let mainStack = UIStackView(axis: .vertical, [])
     
     var tags: [String] = [] {
@@ -18,13 +16,11 @@ class PostTagsCell: UITableViewCell {
         }
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        selectionStyle = .none
+    init() {
+        super.init(frame: .zero)
         
         addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
+        mainStack.pinToSuperview()
         mainStack.spacing = 4
         mainStack.alignment = .leading
     }
@@ -100,30 +96,5 @@ class PostTagView: UIView {
         titleLabel.text = title
         titleLabel.textColor = .foreground3
         backgroundColor = .background3
-    }
-}
-
-
-class PostTagCollectionViewCell: UICollectionViewCell {
-    private let titleLabel = UILabel()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        titleLabel.font = .appFont(withSize: 14, weight: .regular)
-        
-        contentView.constrainToSize(height: 26)
-        contentView.layer.cornerRadius = 13
-        
-        contentView.addSubview(titleLabel)
-        titleLabel.pinToSuperview(edges: .horizontal, padding: 10).centerToSuperview()
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    func update(_ title: String) {
-        titleLabel.text = title
-        titleLabel.textColor = .foreground3
-        contentView.backgroundColor = .background3
     }
 }

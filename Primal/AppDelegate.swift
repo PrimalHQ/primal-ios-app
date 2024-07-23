@@ -23,7 +23,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         PrimalEndpointsManager.instance.checkIfNecessary()
         
-        WebViewCache.setup()
+        ArticleWebViewCache.setup()
         
         return true
     }

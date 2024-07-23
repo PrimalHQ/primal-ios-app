@@ -20,6 +20,7 @@ enum PostCellEvent {
     case reply
     case embeddedPost
     case repostedProfile
+    case article
     
     case payInvoice
     

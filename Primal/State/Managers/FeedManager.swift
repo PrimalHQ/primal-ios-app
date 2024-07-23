@@ -23,6 +23,7 @@ final class FeedManager {
         
     let newParsedPosts: PassthroughSubject<[ParsedContent], Never> = .init()
     @Published var parsedPosts: [ParsedContent] = []
+    @Published var parsedLongForm: [Article] = []
     var paginationInfo: PrimalPagination?
     
     @Published var newAddedPosts = 0
@@ -110,6 +111,7 @@ final class FeedManager {
         newAddedPosts = 0
         alreadyAddedReposts = [:]
         parsedPosts.removeAll()
+        parsedLongForm.removeAll()
         paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
@@ -170,6 +172,8 @@ private extension FeedManager {
         
         postsEmitter.sink { [weak self] result in
             guard let self else { return }
+            
+            self.parsedLongForm += result.getArticles()
             
             var sorted = result.process()
             
@@ -272,7 +276,7 @@ private extension FeedManager {
         
         guard
             let directive = currentFeed?.hex,
-            !directive.hasPrefix("search;"),
+            !directive.hasPrefix("search;"), !directive.hasPrefix("bookmarks;"),
             let paginationInfo,
             paginationInfo.order_by == "created_at",
             let until = paginationInfo.until

@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 class LongFormCommentsController: FeedViewController {
-    let content: ParsedLongFormPost
+    let content: Article
     var parsedContent: ParsedContent?
     
     @Published private var cellHeight: [CGFloat] = []
@@ -28,12 +28,11 @@ class LongFormCommentsController: FeedViewController {
     
     override var barsMaxTransform: CGFloat { 0 }
     
-    init(content: ParsedLongFormPost) {
+    init(content: Article) {
         self.content = content
         super.init()
         
         table.register(PostCommentsTitleCell.self, forCellReuseIdentifier: "title")
-        table.register(PostTagsCell.self, forCellReuseIdentifier: "tags")
         table.isScrollEnabled = false
         DispatchQueue.main.async {
             self.table.contentInset = .zero
@@ -60,18 +59,9 @@ class LongFormCommentsController: FeedViewController {
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
-    var tags: [String] {
-        parsedContent?.post.tags.filter({ $0.first == "t" }).compactMap { $0[safe: 1] } ?? []
-    }
-    
-    var hasTags: Bool { !tags.isEmpty }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            if hasTags {
-                return 3
-            }
-            return 2
+            return 1
         }
         return super.tableView(tableView, numberOfRowsInSection: section)
     }
@@ -85,21 +75,6 @@ class LongFormCommentsController: FeedViewController {
             return cell
         }
         
-        if hasTags && indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "tags", for: indexPath)
-            (cell as? PostTagsCell)?.tags = tags
-            return cell
-        }
-        
-        if indexPath.row == 0 || (hasTags && indexPath.row == 1) {
-            let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + "reactions", for: indexPath)
-            if let parsedContent, let postCell = cell as? PostCell {
-                postCell.update(parsedContent)
-                postCell.delegate = self
-            }
-            return cell
-        }
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
         (cell as? PostCommentsTitleCell)?.delegate = self
         return cell
@@ -109,7 +84,6 @@ class LongFormCommentsController: FeedViewController {
         super.updateTheme()
         
         table.register(LongFormCommentCell.self, forCellReuseIdentifier: postCellID)
-        table.register(PostReactionsCell.self, forCellReuseIdentifier: postCellID + "reactions")
     }
     
     func reload() {
@@ -123,9 +97,10 @@ class LongFormCommentsController: FeedViewController {
         .publisher()
         .receive(on: DispatchQueue.main)
         .sink { [weak self] res in
-            self?.parsedContent = res.getLongFormPostsAsParsedContent().first
+            let article = res.getArticles().first
+            self?.parsedContent = article?.asParsedContent
             
-            let posts = res.getLongFormPosts().first?.replies ?? []
+            let posts = article?.replies ?? []
             self?.cellHeight = posts.map { _ in 200 }
             self?.posts = posts
         }
@@ -137,19 +112,5 @@ extension LongFormCommentsController: PostCommentsTitleCellDelegate {
     func postCommentPressed() {
         newCommentVC.replyToPost = parsedContent?.post
         present(newCommentVC, animated: true)
-    }
-}
-
-extension PostRequestResult {
-    func getLongFormPostsAsParsedContent() -> [ParsedContent] {
-        getLongFormPosts().map {
-            .init(
-                post: .init(
-                    nostrPost: $0.event,
-                    nostrPostStats: stats[$0.event.id] ?? .empty($0.event.id)
-                ),
-                user: $0.user
-            )
-        }
     }
 }

@@ -37,6 +37,8 @@ class PostRequestResult: Codable {
     var messageArray: [String]?
     var userPubkey: String?
     
+    var highlights: [NostrContent] = []
+    
     var relayData: [String: RelayInfo] = [:]
     var relayHint: String?
     

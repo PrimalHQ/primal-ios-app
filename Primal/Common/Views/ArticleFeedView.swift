@@ -1,15 +1,15 @@
 //
-//  LongFormContentCell.swift
+//  ArticleFeedView.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 28.5.24..
+//  Created by Pavle Stevanović on 10.7.24..
 //
 
 import UIKit
 import FLAnimatedImage
 
-class LongFormContentCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(22)
+class ArticleFeedView: UIView, Themeable {
+    let avatar = FLAnimatedImageView().constrainToSize(20)
     let nameLabel = UILabel()
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
@@ -20,22 +20,25 @@ class LongFormContentCell: UITableViewCell, Themeable {
     let zapIcon = UIImageView(image: UIImage(named: "longFormZapIcon"))
     let zapView = UserGalleryView()
     let contentImageView = UIImageView().constrainToSize(width: 100)
-    let border = UIView().constrainToSize(height: 1)
     
-    let threeDotsButton = UIButton(configuration: .simpleImage(UIImage(named: "threeDots")))
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init() {
+        super.init(frame: .zero)
         
         setup()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setUp(_ content: ParsedLongFormPost) {
+    func setUp(_ content: Article) {
         updateTheme()
         
-        titleLabel.text = content.title
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
+        titleLabel.attributedText = NSAttributedString(string: content.title, attributes: [
+            .paragraphStyle: paragraphStyle,
+            .font: UIFont.appFont(withSize: 22, weight: .heavy),
+            .foregroundColor: UIColor.foreground
+        ])
         
         if let words = content.words {
             durationLabel.text = "\(1 + (words / 200)) min read"
@@ -53,8 +56,14 @@ class LongFormContentCell: UITableViewCell, Themeable {
             contentImageView.widthAnchor.constraint(equalToConstant: 100),
             height
         ])
-        if let image = content.image {
-            contentImageView.kf.setImage(with: URL(string: image), placeholder: UIImage(named: "longFormPlaceholderImage")) { [weak self] result in
+        
+        let imageURL: URL? = {
+            if let image = content.image { return URL(string: image) }
+            return content.user.profileImage.url(for: .medium)
+        }()
+        
+        if let imageURL {
+            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage")) { [weak self] result in
                 guard let self else { return }
                 switch result {
                 case .success(let value):
@@ -63,7 +72,7 @@ class LongFormContentCell: UITableViewCell, Themeable {
                     let imageAspectRatio = image.size.width / image.size.height
                                         
                     let aspectC = contentImageView.widthAnchor.constraint(equalTo: contentImageView.heightAnchor, multiplier: imageAspectRatio)
-                    aspectC.priority = .defaultHigh
+                    aspectC.priority = .defaultLow
                     aspectC.isActive = true
                 case .failure(let error):
                     print(error) // Handle the error if needed
@@ -91,33 +100,32 @@ class LongFormContentCell: UITableViewCell, Themeable {
     
     func updateTheme() {
         nameLabel.textColor = .foreground2
-        timeLabel.textColor = .foreground2
-        dot.backgroundColor = .foreground2
-        threeDotsButton.tintColor = .foreground2
+        timeLabel.textColor = .foreground4
+        dot.backgroundColor = .foreground4
         durationLabel.textColor = .foreground2
         commentIcon.tintColor = .foreground2
         commentLabel.textColor = .foreground2
         zapIcon.tintColor = .foreground2
         
-        border.backgroundColor = .background3
-        
-        contentImageView.layer.borderColor = UIColor.background3.cgColor
+        contentImageView.layer.borderColor = UIColor.foreground6.cgColor
         
         titleLabel.textColor = .foreground
+        
+        backgroundColor = .background4
     }
 }
 
-private extension LongFormContentCell {
+private extension ArticleFeedView {
     func setup() {
-        selectionStyle = .none
-        
-        let firstRow = UIStackView([avatar, nameLabel, dot, timeLabel, UIView(), threeDotsButton])
+        let firstRow = UIStackView([avatar, nameLabel, dot, timeLabel, UIView()])
         nameLabel.setContentHuggingPriority(.required, for: .horizontal)
         timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         firstRow.alignment = .center
         firstRow.spacing = 4
         firstRow.setCustomSpacing(8, after: avatar)
         dot.layer.cornerRadius = 1.5
+        
+        layer.cornerRadius = 8
         
         let contentStack = UIStackView([titleLabel, contentImageView])
         contentStack.spacing = 12
@@ -128,23 +136,24 @@ private extension LongFormContentCell {
         botStack.setCustomSpacing(4, after: commentIcon)
         botStack.setCustomSpacing(9, after: zapIcon)
         botStack.alignment = .center
+        botStack.constrainToSize(height: 22)
         
         let mainStack = UIStackView(axis: .vertical, [firstRow, contentStack, botStack])
-        mainStack.spacing = 8
+        mainStack.spacing = 10
         
-        contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 12)
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 12).pinToSuperview(edges: .top, padding: 10)
         
-        avatar.layer.cornerRadius = 11
+        avatar.layer.cornerRadius = 10
         avatar.layer.masksToBounds = true
         avatar.contentMode = .scaleAspectFill
         
-        nameLabel.font = .appFont(withSize: 15, weight: .regular)
-        timeLabel.font = .appFont(withSize: 15, weight: .regular)
+        nameLabel.font = .appFont(withSize: 14, weight: .bold)
+        timeLabel.font = .appFont(withSize: 14, weight: .regular)
         
-        titleLabel.font = .appFont(withSize: 20, weight: .heavy)
+        titleLabel.font = .appFont(withSize: 22, weight: .heavy)
         durationLabel.font = .appFont(withSize: 15, weight: .regular)
-        commentLabel.font = .appFont(withSize: 15, weight: .regular)
+        commentLabel.font = .appFont(withSize: 14, weight: .regular)
         
         titleLabel.numberOfLines = 5
         
@@ -152,8 +161,5 @@ private extension LongFormContentCell {
         contentImageView.layer.cornerRadius = 4
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
-        
-        contentView.addSubview(border)
-        border.pinToSuperview(edges: [.horizontal, .bottom])
     }
 }
