@@ -44,12 +44,7 @@ class LongFormEmbeddedPostController<T: PostCell>: FeedViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         DispatchQueue.main.async {
-            self.heightConstraint?.isActive = false
-            
-            let constraint = self.view.heightAnchor.constraint(equalToConstant: cell.contentView.frame.height)
-            constraint.priority = .defaultHigh
-            constraint.isActive = true
-            self.heightConstraint = constraint
+            self.heightConstraint?.constant = cell.contentView.frame.height
         }
         return cell
     }

@@ -263,4 +263,21 @@ extension String : Identifiable {
         }
         return text
     }
+    
+    func escapedHtml() -> String {
+        return self
+//        var newString = self
+//        let htmlEscapes = [
+//            "&": "&amp;",
+//            "<": "&lt;",
+//            "\"": "&quot;",
+//            "'": "&#39;"
+//        ]
+//        
+//        for (key, value) in htmlEscapes {
+//            newString = newString.replacingOccurrences(of: key, with: value)
+//        }
+//        
+//        return newString
+    }
 }

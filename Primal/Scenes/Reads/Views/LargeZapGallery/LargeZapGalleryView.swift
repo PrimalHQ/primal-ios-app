@@ -18,7 +18,7 @@ extension UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         config.baseBackgroundColor = .foreground
-        config.attributedTitle = .init("Zap", attributes: .init([
+        config.attributedTitle = .init("Be the first to zap this article!", attributes: .init([
             .font: UIFont.appFont(withSize: 14, weight: .bold),
             .foregroundColor: UIColor.background2
         ]))
@@ -78,6 +78,9 @@ class LargeZapGalleryView: UIView, ZapGallery {
         }
         defer {
             if animatingChanges {
+                if zaps.count == 1 {
+                    animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+                }
                 // Start animating
                 animateStacks()
             }
@@ -88,9 +91,6 @@ class LargeZapGalleryView: UIView, ZapGallery {
             stack.addArrangedSubview(hStack)
             
             if zaps.count == 1 {
-                hStack.spacing = 6
-                hStack.addArrangedSubview(zapPillButton)
-                
                 return
             }
         } else {
@@ -110,7 +110,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
             if currentWidth + 110 > frame.width {
                 let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(28)
                 hStack.addArrangedSubview(image)
-                hStack.addArrangedSubview(zapPillButton)
+//                hStack.addArrangedSubview(zapPillButton)
                 stack.addArrangedSubview(hStack)
                 return
             }
@@ -119,7 +119,6 @@ class LargeZapGalleryView: UIView, ZapGallery {
         }
         
         if !hStack.arrangedSubviews.isEmpty {
-            hStack.addArrangedSubview(zapPillButton)
             stack.addArrangedSubview(hStack)
         }
     }
@@ -135,8 +134,6 @@ class LargeZapGalleryView: UIView, ZapGallery {
     }
     
     func animateStacks() {
-        (animationStack.arrangedSubviews.last as? UIStackView)?.addArrangedSubview(UIButton(configuration: .zapPillButton()))
-        
         layoutIfNeeded()
         animationStack.layoutIfNeeded()
         

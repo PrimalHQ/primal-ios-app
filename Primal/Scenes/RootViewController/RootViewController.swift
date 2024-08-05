@@ -157,6 +157,14 @@ final class RootViewController: UIViewController {
         
         introVC = intro
     }
+    
+    func showToast(_ message: String) {
+        if let presentedViewController {
+            presentedViewController.view.showToast(message)
+        } else {
+            view.showToast(message)
+        }
+    }
 }
 
 protocol AnimatableFirstViewController: UIViewController {

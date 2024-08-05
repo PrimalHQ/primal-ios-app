@@ -13,7 +13,7 @@ extension UIButton.Configuration {
         config.image = image?.withRenderingMode(.alwaysTemplate)
         config.imagePadding = 4
 
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 9, bottom: 0, trailing: 9)
 
         config.attributedTitle = .init(title, attributes: .init([
             .font: UIFont.appFont(withSize: 14, weight: .regular),
@@ -35,7 +35,7 @@ class CommentZapPill: UIView, Themeable {
         
         let stack = UIStackView([commentButton, zapButton])
         addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 6).pinToSuperview(edges: .vertical)
+        stack.pinToSuperview(edges: .horizontal, padding: 9).pinToSuperview(edges: .vertical)
         stack.spacing = 4
         
         commentButton.setContentHuggingPriority(.required, for: .horizontal)
@@ -43,9 +43,9 @@ class CommentZapPill: UIView, Themeable {
         zapButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         commentButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        layer.cornerRadius = 17
+        layer.cornerRadius = 24
         layer.borderWidth = 1
-        constrainToSize(height: 34)
+        constrainToSize(height: 48)
         
         updateTheme()
     }

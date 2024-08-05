@@ -35,9 +35,10 @@ class NewHighlightPostViewController: UIViewController {
     
     let article: Article
     let highlight: Highlight
-    init(article: Article, highlight: Highlight) {
+    init(article: Article, highlight: Highlight, onPost: (() -> Void)? = nil) {
         self.article = article
         self.highlight = highlight
+        self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
         setup()
     }
@@ -71,10 +72,10 @@ private extension NewHighlightPostViewController {
         }()
         
         let articleText: String = {
-            return ""
+            return "\nnostr:\(article.asParsedContent.noteId())"
         }()
         
-        let text = manager.postingText.trimmingCharacters(in: .whitespacesAndNewlines) + highlightText + articleText
+        let text = (manager.postingText + highlightText + articleText).trimmingCharacters(in: .whitespacesAndNewlines)
         
         postButton.isEnabled = false
         postButton.setTitle(" " + postButtonText + " ", for: .normal)
@@ -82,11 +83,11 @@ private extension NewHighlightPostViewController {
         let callback: (Bool) -> Void = { [weak self] success in
             if success {
                 self?.postButton.setTitle("Posted", for: .normal)
-                self?.onPost?()
                 self?.dismiss(animated: true) {
                     self?.postButton.setTitle(self?.postButtonText, for: .normal)
                     self?.manager.media = []
                     self?.textView.text = ""
+                    self?.onPost?()
                 }
             } else {
                 self?.postButton.setTitle(self?.postButtonText, for: .normal)

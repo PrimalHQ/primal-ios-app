@@ -52,7 +52,7 @@ final class ReadsViewController: UIViewController, ArticleCellController, Themea
     lazy var navTitleView = DropdownNavigationView(title: "Nostr Reads")
     let border = UIView().constrainToSize(height: 1)
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "tabIcon-explore")), primaryAction: .init(handler: { [weak self] _ in
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
         self?.navigationController?.fadeTo(SearchViewController())
     }))
     
@@ -60,6 +60,12 @@ final class ReadsViewController: UIViewController, ArticleCellController, Themea
         super.viewDidLoad()
         
         setup()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     func updateTheme() {

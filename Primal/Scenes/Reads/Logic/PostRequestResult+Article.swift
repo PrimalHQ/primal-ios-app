@@ -76,6 +76,8 @@ extension PostRequestResult {
         return longFormPosts.compactMap { post -> Article? in
             guard let id = post.event.tags.first(where: { $0.first == "d" })?[safe: 1] else { return nil }
             
+            let aTag = "\(NostrKind.longForm.rawValue):\(post.event.pubkey):\(id)"
+            
             let longForm  = Article(
                 id: id,
                 title: post.title ?? "",
@@ -100,6 +102,9 @@ extension PostRequestResult {
                     if $0.replyingTo?.post.id == post.event.id {
                         return $0
                     }
+                    if $0.post.tags.contains(where: { tags in tags.first == "a" && tags.dropFirst().first == aTag}) {
+                        return $0
+                    }
                     return nil
                 }),
                 stats: stats[post.event.id] ?? .empty(post.event.id),
@@ -115,10 +120,17 @@ extension PostRequestResult {
     }
     
     func getHighlights() -> [Highlight] {
-        let posts = process()
-        
-        return highlights.map { obj in
-            .init(user: createParsedUser(users[obj.pubkey] ?? .init(pubkey: obj.pubkey)), event: obj)
+        return highlights.map { obj in .init(
+            user: createParsedUser(users[obj.pubkey] ?? .init(pubkey: obj.pubkey)),
+            event: obj
+        ) }
+    }
+    
+    func getHighlightComments() -> [String: [ParsedContent]] {
+        return process().reduce(into: [:]) { partialResult, comment in
+            guard let content = comment.replyingTo?.post.content else { return }
+
+            partialResult[content] = partialResult[content, default: []] + [comment]
         }
     }
 }

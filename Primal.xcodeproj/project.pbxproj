@@ -342,6 +342,14 @@
 		B98DD8B82C49540700E8369A /* HighlightUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B72C49540700E8369A /* HighlightUsersView.swift */; };
 		B98DD8BA2C502DA300E8369A /* NewHighlightPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B92C502DA300E8369A /* NewHighlightPostViewController.swift */; };
 		B98DD8BC2C50333200E8369A /* CompactArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BB2C50333200E8369A /* CompactArticleView.swift */; };
+		B98DD8BE2C515FB200E8369A /* ArticleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */; };
+		B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BF2C52A59900E8369A /* HighlightCommentsController.swift */; };
+		B98DD8C22C52A9AD00E8369A /* HighlightCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C12C52A9AD00E8369A /* HighlightCommentCell.swift */; };
+		B98DD8C42C57E94A00E8369A /* ArticleChromeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C32C57E94A00E8369A /* ArticleChromeManager.swift */; };
+		B98DD8C62C59118E00E8369A /* ArticleSelectionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C52C59118E00E8369A /* ArticleSelectionMenuView.swift */; };
+		B98DD8C82C5C108700E8369A /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C72C5C108700E8369A /* Article.swift */; };
+		B98DD8CA2C5CFDB800E8369A /* ArticleFeedSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */; };
+		B98DD8CC2C5D0BD200E8369A /* ArticleTopInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
@@ -807,6 +815,14 @@
 		B98DD8B72C49540700E8369A /* HighlightUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightUsersView.swift; sourceTree = "<group>"; };
 		B98DD8B92C502DA300E8369A /* NewHighlightPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHighlightPostViewController.swift; sourceTree = "<group>"; };
 		B98DD8BB2C50333200E8369A /* CompactArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactArticleView.swift; sourceTree = "<group>"; };
+		B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleImageView.swift; sourceTree = "<group>"; };
+		B98DD8BF2C52A59900E8369A /* HighlightCommentsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCommentsController.swift; sourceTree = "<group>"; };
+		B98DD8C12C52A9AD00E8369A /* HighlightCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCommentCell.swift; sourceTree = "<group>"; };
+		B98DD8C32C57E94A00E8369A /* ArticleChromeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleChromeManager.swift; sourceTree = "<group>"; };
+		B98DD8C52C59118E00E8369A /* ArticleSelectionMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleSelectionMenuView.swift; sourceTree = "<group>"; };
+		B98DD8C72C5C108700E8369A /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedSelectionController.swift; sourceTree = "<group>"; };
+		B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleTopInfoView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
@@ -1264,6 +1280,7 @@
 				93F27DAE2A280F4C004ADA55 /* PostRequestResult.swift */,
 				9ED4160E2A4B7A8500892235 /* Notification.swift */,
 				B94F2BB22AD056D10041181B /* WalletRequestResult.swift */,
+				B98DD8C72C5C108700E8369A /* Article.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1941,6 +1958,8 @@
 			isa = PBXGroup;
 			children = (
 				B98DD8B42C4949E900E8369A /* HighlightViewController.swift */,
+				B98DD8BF2C52A59900E8369A /* HighlightCommentsController.swift */,
+				B98DD8C12C52A9AD00E8369A /* HighlightCommentCell.swift */,
 			);
 			path = Highlight;
 			sourceTree = "<group>";
@@ -1984,6 +2003,9 @@
 				B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */,
 				B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */,
 				B98DD8B72C49540700E8369A /* HighlightUsersView.swift */,
+				B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */,
+				B98DD8C52C59118E00E8369A /* ArticleSelectionMenuView.swift */,
+				B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1993,10 +2015,12 @@
 			children = (
 				B9DF0CB62C25EB75009ADC7B /* EmbeddedControllers */,
 				B99E03A52C0A09CF006CCECB /* AppChromeManager.swift */,
+				B98DD8C32C57E94A00E8369A /* ArticleChromeManager.swift */,
 				B99E03912C060BD0006CCECB /* ArticleViewController.swift */,
 				B99E03962C061D67006CCECB /* longForm.html */,
 				B99E03A32C09D095006CCECB /* markdown.css */,
 				B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */,
+				B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */,
 			);
 			path = LongForm;
 			sourceTree = "<group>";
@@ -2421,6 +2445,7 @@
 				9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */,
 				9E55CC6B2A03C6D1002D3DC4 /* FeedsSelectionController.swift in Sources */,
 				B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */,
+				B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
@@ -2469,6 +2494,7 @@
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
+				B98DD8C62C59118E00E8369A /* ArticleSelectionMenuView.swift in Sources */,
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
@@ -2486,6 +2512,7 @@
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
+				B98DD8C82C5C108700E8369A /* Article.swift in Sources */,
 				B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */,
 				B94A0E2B2AAB4B0900DEBFE1 /* ChatViewController.swift in Sources */,
 				B900328D2BD268A100ADD2E5 /* ZapTableViewCell.swift in Sources */,
@@ -2500,6 +2527,7 @@
 				9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */,
 				932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */,
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
+				B98DD8C22C52A9AD00E8369A /* HighlightCommentCell.swift in Sources */,
 				B91C46232BC3D35500AC2C9B /* BookmarkManager.swift in Sources */,
 				B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */,
 				9E8834B62A323C3B005DB548 /* QRCopyView.swift in Sources */,
@@ -2550,6 +2578,7 @@
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
 				B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */,
 				B99E03A02C07C75E006CCECB /* LongFormQuoteView.swift in Sources */,
+				B98DD8BE2C515FB200E8369A /* ArticleImageView.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
 				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
@@ -2569,6 +2598,8 @@
 				B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */,
 				B9B1ABA52B3336B000837312 /* TransactionUserInfoCell.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
+				B98DD8CA2C5CFDB800E8369A /* ArticleFeedSelectionController.swift in Sources */,
+				B98DD8C42C57E94A00E8369A /* ArticleChromeManager.swift in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
 				B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */,
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
@@ -2695,6 +2726,7 @@
 				B99E03872BF76554006CCECB /* FLAnimatedImage+User.swift in Sources */,
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */,
+				B98DD8CC2C5D0BD200E8369A /* ArticleTopInfoView.swift in Sources */,
 				B94F2BE62AE6BC720041181B /* ActivateWalletCell.swift in Sources */,
 				B901C3912BAB307900C3AA69 /* InterestSelectionView.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
@@ -2925,7 +2957,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.10;
+				MARKETING_VERSION = 1.9.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2971,7 +3003,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.10;
+				MARKETING_VERSION = 1.9.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

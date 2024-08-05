@@ -32,6 +32,7 @@ extension UIButton.Configuration {
 protocol HighlightViewControllerDelegate: AnyObject {
     func highlightControllerDidHighlight(_ controller: HighlightViewController, highlight: Highlight)
     func highlightControllerDidRemoveHighlight(_ controller: HighlightViewController, highlight: Highlight)
+    func highlightControllerDidAddComment(_ controller: HighlightViewController)
 }
 
 class HighlightViewController: UIViewController {
@@ -42,8 +43,12 @@ class HighlightViewController: UIViewController {
         didSet {
             usersView.users = highlights.map { $0.user }
             usersView.isHidden = highlights.isEmpty
-            
-            (presentationController as? UISheetPresentationController)?.invalidateDetents()
+        }
+    }
+    
+    var comments: [ParsedContent] {
+        didSet {
+            commentsVC.posts = comments
         }
     }
     
@@ -56,6 +61,7 @@ class HighlightViewController: UIViewController {
     )
     
     lazy var usersView = HighlightUsersView(users: highlights.map { $0.user })
+    let commentsVC: HighlightCommentsController
     
     var isHighlighted: Bool {
         didSet {
@@ -67,10 +73,14 @@ class HighlightViewController: UIViewController {
     
     weak var delegate: HighlightViewControllerDelegate?
     
-    init(article: Article, highlights: [Highlight]) {
+    var cancellables: Set<AnyCancellable> = []
+    
+    init(article: Article, highlights: [Highlight], comments: [ParsedContent]) {
         self.article = article
         self.highlights = highlights
         self.content = highlights.first?.content ?? ""
+        self.comments = comments
+        commentsVC = .init(comments: comments)
         
         isHighlighted = highlights.contains(where: { $0.user.isCurrentUser })
         super.init(nibName: nil, bundle: nil)
@@ -91,12 +101,20 @@ private extension HighlightViewController {
                 .custom(resolver: { [weak self] _ in
                     guard let self else { return 295 }
                     
-                    let base: CGFloat = highlights.isEmpty ? 215 : 295
+                    let base: CGFloat = highlights.isEmpty ? 215 : 275
                     
-                    return base
+                    return base + commentsVC.viewHeight
                 })
             ]
         }
+        
+        commentsVC.$viewHeight.debounce(for: 0.1, scheduler: DispatchQueue.main).sink { [weak self] _ in
+            let sheet = self?.presentationController as? UISheetPresentationController
+            sheet?.animateChanges {
+                sheet?.invalidateDetents()
+            }
+        }
+        .store(in: &cancellables)
         
         let pullBarParent = UIView()
         let pullBar = UIView()
@@ -115,14 +133,17 @@ private extension HighlightViewController {
             UIButton(configuration: .highlightActionButton(icon: UIImage(named: "commentIcon24"), title: "Quote"), primaryAction: .init(handler: { [weak self] _ in
                 guard let self, let highlight = highlights.first else { return }
                 
-                present(NewHighlightPostViewController(article: article, highlight: highlight), animated: true)
+                present(NewHighlightPostViewController(article: article, highlight: highlight, onPost: { [weak self] in
+                    self?.dismiss(animated: true)
+                }), animated: true)
             })),
             UIButton(configuration: .highlightActionButton(icon: UIImage(named: "quoteIcon24"), title: "Comment"), primaryAction: .init(handler: { [weak self] _ in
                 guard let self, let hightlight = highlights.first else { return }
                 
                 present(NewPostViewController(
-                    replyToPost: .init(nostrPost: hightlight.event, nostrPostStats: .empty("")), onPost: {
-                        // TODO: REFRESH COMMENTS
+                    replyToPost: .init(nostrPost: hightlight.event, nostrPostStats: .empty("")), onPost: { [weak self] in
+                        guard let self else { return }
+                        delegate?.highlightControllerDidAddComment(self)
                     }),
                     animated: true
                 )
@@ -139,25 +160,30 @@ private extension HighlightViewController {
             pullBarParent, SpacerView(height: 20),
             title, SpacerView(height: 24),
             BorderView(), usersView, BorderView(),
-            // Here goes table view with comments
+            commentsVC.view,
             SpacerView(height: 24, priority: .init(rawValue: 1)),
             buttonStack
         ])
+        
+        commentsVC.willMove(toParent: self)
+        addChild(commentsVC)
+        
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .bottom, padding: 52)
+        
+        commentsVC.didMove(toParent: self)
         
         highlightToggleButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
             if isHighlighted {
-                let myHighlights = highlights.filter({ $0.user.isCurrentUser })
+                isHighlighted = false
                 
-                guard !myHighlights.isEmpty else {
-                    isHighlighted = false
-                    return
-                }
+                let myHighlights = highlights.filter({ $0.user.isCurrentUser })
+                guard !myHighlights.isEmpty else { return }
                 
                 highlightToggleButton.isEnabled = false
+                
                 PostingManager.instance.deleteHighlightEvents(myHighlights) { [weak self] success in
                     guard let self else { return }
                     
@@ -171,11 +197,15 @@ private extension HighlightViewController {
                         if highlights.isEmpty {
                             dismiss(animated: true)
                         }
+                    } else {
+                        isHighlighted = true
                     }
                 }
                 return
             } else {
                 guard !content.isEmpty else { return }
+                
+                isHighlighted = true
                 
                 highlightToggleButton.isEnabled = false
                 var event: NostrObject?

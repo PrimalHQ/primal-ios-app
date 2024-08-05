@@ -29,7 +29,7 @@ extension UserDefaults {
 }
 
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = FLAnimatedImageView()
+    private let profileImage = FLAnimatedImageView().constrainToSize(52)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -248,7 +248,6 @@ private extension MenuContainerController {
         
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
-        profileImage.constrainToSize(52)
         profileImage.contentMode = .scaleAspectFill
         profileImage.layer.cornerRadius = 26
         profileImage.layer.masksToBounds = true

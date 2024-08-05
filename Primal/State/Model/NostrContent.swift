@@ -136,4 +136,6 @@ struct LongFormPost: Codable {
     var summary: String?
     
     var event: NostrContent
+    
+    var shortened: Bool { event.kind == NostrKind.shortenedArticle.rawValue }
 }

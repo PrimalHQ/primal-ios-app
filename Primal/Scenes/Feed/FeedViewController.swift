@@ -14,7 +14,7 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class FeedViewController: UIViewController, UITableViewDataSource, Themeable, WalletSearchController {
+class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
@@ -29,6 +29,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     var postCellID = "cell" // Needed for updating the theme
     
+    var animateInserts = true
+    
     var postSection: Int { 0 }
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         if indexPath.section != postSection { return nil }
@@ -36,7 +38,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     }
     @Published var posts: [ParsedContent] = [] {
         didSet {
-            guard oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
+            guard animateInserts, oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
                 table.reloadData()
                 return
             }
@@ -181,7 +183,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     @discardableResult
     func open(post: ParsedContent) -> FeedViewController {
         let threadVC = ThreadViewController(post: post)
-        show(threadVC, sender: nil)
+        showViewController(threadVC)
         return threadVC
     }
     
@@ -221,6 +223,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
+        open(post: post)
+    }
+    
     func updateTheme() {        
         updateCellID()
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
@@ -242,7 +249,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         
         if urlString.hasPrefix("hashtag"), info.isHashtag {
             let feed = RegularFeedViewController(feed: FeedManager(search: info))
-            show(feed, sender: nil)
+            showViewController(feed)
             return
         }
         
@@ -250,7 +257,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             let user = (content?.mentionedUsers ?? cachedUsers).first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
             
             let profile = ProfileViewController(profile: .init(data: user))
-            show(profile, sender: nil)
+            showViewController(profile)
             return
         }
         
@@ -258,7 +265,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             guard let ref = content?.notes.first(where: { $0.text == info })?.reference else { return }
             
             let thread = ThreadViewController(threadId: ref)
-            show(thread, sender: nil)
+            showViewController(thread)
             return
         }
         
@@ -278,9 +285,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             
             if let article = content?.article, article.event.kind == kind, article.event.pubkey == pubkey, article.identifier == id {
                 let articleVC = ArticleViewController(content: article)
-                show(articleVC, sender: nil)
+                showViewController(articleVC)
             } else {
-                show(LoadArticleController(kind: kind, identifier: String(id), pubkey: String(pubkey)), sender: nil)
+                showViewController(LoadArticleController(kind: kind, identifier: String(id), pubkey: String(pubkey)))
             }
             return
         }
@@ -318,7 +325,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             guard let cell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
-            show(ProfileViewController(profile: post.user), sender: nil)
+            showViewController(ProfileViewController(profile: post.user))
         case .post:
             open(post: post)
         case .like:
@@ -337,7 +344,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             guard let cell else { return }
             postCellDidTapRepost(cell)
         case .reply:
-            if post.post.kind == NostrKind.longForm.rawValue {
+            if post.post.isArticle {
                 return
             }
             
@@ -350,10 +357,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             open(post: post.embededPost ?? post)
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
-            show(ProfileViewController(profile: profile), sender: nil)
+            showViewController(ProfileViewController(profile: profile))
         case .article:
             guard let article = post.article else { return }
-            show(ArticleViewController(content: article), sender: nil)
+            showViewController(ArticleViewController(content: article))
         case .payInvoice:
             guard let invoice = post.invoice else { return }
             search(invoice.string)
@@ -369,7 +376,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            RootViewController.instance.view.showToast("Copied!")
+            RootViewController.instance.showToast("Copied!")
         case .broadcast:
             break // TODO: Something?
         case .report:
@@ -382,6 +389,18 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         case .unbookmark:
             BookmarkManager.instance.unbookmark(post)
             cell?.updateMenu(post)
+        }
+    }
+    
+    func showViewController(_ viewController: UIViewController) {
+        if let navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+            return
+        }
+        if let presentingViewController, let navigationController: UINavigationController = presentingViewController.findInChildren() {
+            dismiss(animated: true) {
+                navigationController.pushViewController(viewController, animated: true)
+            }
         }
     }
 }
@@ -431,8 +450,12 @@ private extension FeedViewController {
         
         WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
             guard let self, let index = posts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
+            
             var zaps = posts[index].zaps
+            if zaps.contains(where: { $0.receiptId == zap.receiptId }) { return }
+            
             let zapIndex = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
+            
             zaps.insert(zap, at: zapIndex)
             posts[index].zaps = zaps
             
@@ -642,13 +665,6 @@ extension FeedViewController: PostCellDelegate {
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
         
         present(FullScreenVideoPlayerController(player), animated: true) 
-    }
-}
-
-extension FeedViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
-        open(post: post)
     }
 }
 

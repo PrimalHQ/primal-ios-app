@@ -76,6 +76,15 @@ extension PostRequestResult {
             
             zapReceipts[id] = zapContent
             return
+        case .shortenedArticle:
+            let longFormEvent = NostrContent(jsonData: payload)
+
+            longFormPosts.append(.init(
+                title: longFormEvent.tags.first(where: { $0.first == "title" })?[safe: 1],
+                image: longFormEvent.tags.first(where: { $0.first == "image" })?[safe: 1],
+                summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                event: longFormEvent
+            ))               
         default: break
         }
         

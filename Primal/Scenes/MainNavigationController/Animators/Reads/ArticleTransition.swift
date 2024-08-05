@@ -63,12 +63,14 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             contentCell = listVC.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
         }
         
+        let topInfoView = lfController.topInfoView
+        
         if presenting {
             contentCell?.avatar.animateTransitionTo(lfController.navExtension.profileIcon, duration: 16 / 30, in: container, timing: .postsEaseInOut)
-            contentCell?.titleLabel.animateTransitionTo(lfController.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+            contentCell?.titleLabel.animateTransitionTo(topInfoView.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.nameLabel.animateTransitionTo(lfController.navExtension.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
-            if lfController.imageView.superview != nil {
-                contentCell?.contentImageView.animateTransitionTo(lfController.imageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+            if !topInfoView.imageView.isHidden {
+                contentCell?.contentImageView.animateTransitionTo(topInfoView.imageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             }
             
             UIView.animate(withDuration: 10 / 30) {
@@ -77,29 +79,28 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             }
             
             lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
-            lfController.dateLabel.transform = .init(translationX: 0, y: 20)
+            topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
             lfController.navExtension.subscribeButton.alpha = 0
-            lfController.dateLabel.alpha = 0
+            topInfoView.dateLabel.alpha = 0
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
                 self.lfController.navExtension.subscribeButton.transform = .identity
-                self.lfController.dateLabel.transform = .identity
+                topInfoView.dateLabel.transform = .identity
                 self.lfController.navExtension.subscribeButton.alpha = 1
-                self.lfController.dateLabel.alpha = 1
+                topInfoView.dateLabel.alpha = 1
             }
             
-            if let summary = lfController.summary {
-                summary.transform = .init(translationX: 0, y: 10)
-                summary.alpha = 0
+            let summary = lfController.topInfoView.summary
+            summary.transform = .init(translationX: 0, y: 10)
+            summary.alpha = 0
                 
-                UIView.animate(withDuration: 4 / 30, delay: 9 / 30) {
-                    summary.transform = .identity
-                    summary.alpha = 1
-                }
+            UIView.animate(withDuration: 4 / 30, delay: 9 / 30) {
+                summary.transform = .identity
+                summary.alpha = 1
             }
             
             lfController.navExtension.secondaryLabel.alpha = 0
-            let zapGallery = lfController.zapEmbededController.view
+            let zapGallery = topInfoView.zapEmbededController.view
             zapGallery?.transform = .init(translationX: 0, y: 40)
             zapGallery?.alpha = 0
             lfController.contentParent.alpha = 0
@@ -131,10 +132,10 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         } else {
             if let contentCell {
                 lfController.navExtension.profileIcon.animateTransitionTo(contentCell.avatar, duration: 16 / 30, in: container, timing: .postsEaseInOut)
-                lfController.titleLabel.animateTransitionTo(contentCell.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                topInfoView.titleLabel.animateTransitionTo(contentCell.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 lfController.navExtension.nameLabel.animateTransitionTo(contentCell.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
-                if lfController.imageView.superview != nil {
-                    lfController.imageView.animateTransitionTo(contentCell.contentImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                if !topInfoView.imageView.isHidden {
+                    topInfoView.imageView.animateTransitionTo(contentCell.contentImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 }
             }
             
@@ -145,19 +146,18 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
                 self.lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
-                self.lfController.dateLabel.transform = .init(translationX: 0, y: 20)
+                topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
                 self.lfController.navExtension.subscribeButton.alpha = 0
-                self.lfController.dateLabel.alpha = 0
+                topInfoView.dateLabel.alpha = 0
             }
             
-            if let summary = lfController.summary {
-                UIView.animate(withDuration: 4 / 30, delay: 9 / 30) {
-                    summary.transform = .init(translationX: 0, y: 10)
-                    summary.alpha = 0
-                }
+            let summary = topInfoView.summary
+            UIView.animate(withDuration: 4 / 30, delay: 9 / 30) {
+                summary.transform = .init(translationX: 0, y: 10)
+                summary.alpha = 0
             }
             
-            let zapGallery = lfController.zapEmbededController.view
+            let zapGallery = topInfoView.zapEmbededController.view
             
             UIView.animate(withDuration: 3.5 / 30, delay: 12 / 30) {
                 zapGallery?.transform = .init(translationX: 0, y: 40)

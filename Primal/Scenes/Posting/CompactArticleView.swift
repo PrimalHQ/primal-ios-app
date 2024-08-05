@@ -29,22 +29,11 @@ class CompactArticleView: UIView, Themeable {
         updateTheme()
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 6
+        paragraphStyle.lineSpacing = 8
         titleLabel.attributedText = NSAttributedString(string: content.title, attributes: [
             .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 22, weight: .heavy),
+            .font: UIFont.appFont(withSize: 16, weight: .heavy),
             .foregroundColor: UIColor.foreground
-        ])
-        
-        
-        NSLayoutConstraint.deactivate(contentImageView.constraints)
-        let height = contentImageView.heightAnchor.constraint(equalToConstant: 72)
-        height.priority = .defaultLow
-        NSLayoutConstraint.activate([
-            contentImageView.heightAnchor.constraint(lessThanOrEqualToConstant: 144),
-            contentImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
-            contentImageView.widthAnchor.constraint(equalToConstant: 100),
-            height
         ])
         
         let imageURL: URL? = {
@@ -53,21 +42,7 @@ class CompactArticleView: UIView, Themeable {
         }()
         
         if let imageURL {
-            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage")) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let value):
-                    let image = value.image
-                    
-                    let imageAspectRatio = image.size.width / image.size.height
-                                        
-                    let aspectC = contentImageView.widthAnchor.constraint(equalTo: contentImageView.heightAnchor, multiplier: imageAspectRatio)
-                    aspectC.priority = .defaultLow
-                    aspectC.isActive = true
-                case .failure(let error):
-                    print(error) // Handle the error if needed
-                }
-            }
+            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage"))
         } else {
             contentImageView.kf.cancelDownloadTask()
             contentImageView.image = UIImage(named: "longFormPlaceholderImage")
@@ -120,13 +95,14 @@ private extension CompactArticleView {
         nameLabel.font = .appFont(withSize: 14, weight: .bold)
         timeLabel.font = .appFont(withSize: 14, weight: .regular)
         
-        titleLabel.font = .appFont(withSize: 22, weight: .heavy)
-        
-        titleLabel.numberOfLines = 5
+        titleLabel.font = .appFont(withSize: 16, weight: .heavy)
+        titleLabel.numberOfLines = 2
+        titleLabel.lineBreakMode = .byTruncatingTail
         
         contentImageView.layer.borderWidth = 1
         contentImageView.layer.cornerRadius = 4
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
+        contentImageView.constrainToSize(width: 88, height: 48)
     }
 }

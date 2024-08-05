@@ -158,7 +158,7 @@ private extension ArticleFeedView {
         titleLabel.numberOfLines = 5
         
         contentImageView.layer.borderWidth = 1
-        contentImageView.layer.cornerRadius = 4
+        contentImageView.layer.cornerRadius = 8
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
     }

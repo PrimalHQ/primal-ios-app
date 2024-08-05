@@ -39,7 +39,7 @@ class LongFormNavExtensionView: UIView, Themeable {
     func update(user: ParsedUser) {
         updateTheme()
         
-        nameLabel.text = user.data.atIdentifierWithoutAt
+        nameLabel.text = user.data.firstIdentifier
         
         if CheckNip05Manager.instance.isVerified(user.data) {
             secondaryLabel.text = user.data.parsedNip

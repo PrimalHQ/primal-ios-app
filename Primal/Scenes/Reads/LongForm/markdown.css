@@ -1,40 +1,52 @@
 .sunset {
-  --text-primary: #ffffff;
-  --text-tertiary: #757575;
+  --text-color: #D5D5D5;
+  --text-heading: #FFFFFF;
+  --blockquote-border: #757575;
   --subtile-devider: #444444;
   --accent-links: #f800c1;
   --background-input: #222222;
+  --highlight: #3D4933;
+  --highlight-selected: #516440;
 }
 
 .midnight {
-  --text-primary: #ffffff;
-  --text-tertiary: #757575;
+  --text-color: #D5D5D5;
+  --text-heading: #FFFFFF;
+  --blockquote-border: #757575;
   --subtile-devider: #444444;
   --accent-links: #2394EF;
   --background-input: #222222;
+  --highlight: #3D4933;
+  --highlight-selected: #516440;
 }
 
 .sunrise {
-  --text-primary: #111111;
-  --text-tertiary: #808080;
+  --text-color: #444444;
+  --text-heading: #111111;
+  --blockquote-border: #808080;
   --subtile-devider: #c8c8c8;
   --accent-links: #CA077C;
   --background-input: #e5e5e5;
+  --highlight: #E8F3E8;
+  --highlight-selected: #A3D0A2;
 }
 
 .ice {
-  --text-primary: #111111;
-  --text-tertiary: #808080;
+  --text-color: #444444;
+  --text-heading: #111111;
+  --blockquote-border: #808080;
   --subtile-devider: #c8c8c8;
   --accent-links: #2394EF;
   --background-input: #e5e5e5;
+  --highlight: #E8F3E8;
+  --highlight-selected: #A3D0A2;
 }
 
 .small {
   --p-font-size: 15px;
   --p-font-weight: 400;
   --p-font-weight-bold:700;
-  --p-line-height: 23px;
+  --p-line-height: 26px;
 
   --h1-font-size: 30px;
   --h1-font-weight: 700;
@@ -69,7 +81,7 @@
 
   --h1-font-size: 32px;
   --h1-font-weight: 700;
-  --h1-line-height: 44px;
+  --h1-line-height: 40px;
 
   --h2-font-size: 28px;
   --h2-font-weight: 700;
@@ -96,7 +108,7 @@
   --p-font-size: 18px;
   --p-font-weight: 400;
   --p-font-weight-bold:700;
-  --p-line-height: 26px;
+  --p-line-height: 30px;
 
   --h1-font-size: 36px;
   --h1-font-weight: 700;
@@ -127,7 +139,7 @@
   --p-font-size: 20px;
   --p-font-weight: 400;
   --p-font-weight-bold:700;
-  --p-line-height: 28px;
+  --p-line-height: 32px;
 
   --h1-font-size: 40px;
   --h1-font-weight: 700;
@@ -156,7 +168,7 @@
 
 
 p {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -166,7 +178,7 @@ p {
 }
 
 h1 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h1-font-size);
   font-weight: var(--h1-font-weight);
@@ -176,7 +188,7 @@ h1 {
 }
 
 h2 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h2-font-size);
   font-weight: var(--h2-font-weight);
@@ -186,7 +198,7 @@ h2 {
 }
 
 h3 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h3-font-size);
   font-weight: var(--h3-font-weight);
@@ -196,7 +208,7 @@ h3 {
 }
 
 h4 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h4-font-size);
   font-weight: var(--h4-font-weight);
@@ -206,7 +218,7 @@ h4 {
 }
 
 h5 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h5-font-size);
   font-weight: var(--h5-font-weight);
@@ -216,7 +228,7 @@ h5 {
 }
 
 h6 {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-family: Nacelle, sans-serif;
   font-size: var(--h6-font-size);
   font-weight: var(--h6-font-weight);
@@ -233,13 +245,13 @@ hr {
 
 ul {
   margin-left: 0px;
-  padding-left: 14px;
+  padding-left: var(--p-line-height);
   margin-bottom: 20px;
 }
 
 li {
   padding-left: 8px;
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -249,7 +261,7 @@ li {
 }
 
 li::marker {
-  content: '•';
+  content: 'â€¢';
 }
 
 li > ul {
@@ -264,7 +276,7 @@ ol {
 
 li {
   padding-left: 8px;
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -285,7 +297,7 @@ dl {
 }
 
 dt {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -294,7 +306,7 @@ dt {
 
 dd {
   padding-left: 8px;
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -323,7 +335,7 @@ img + sup {
 
 
 blockquote {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: Nacelle, sans-serif;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -332,7 +344,7 @@ blockquote {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 20px;
-  border-left: 4px solid var(--text-tertiary);
+  border-left: 4px solid var(--blockquote-border);
 }
 
 a {
@@ -341,6 +353,7 @@ a {
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
   line-height: var(--p-line-height);
+  text-decoration: none;
 }
 
 pre, code, mark {
@@ -348,7 +361,7 @@ pre, code, mark {
 }
 
 code {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-family: "Fira Mono";
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
@@ -360,7 +373,7 @@ del {
 }
 
 th {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight-bold);
   line-height: var(--p-line-height);
@@ -369,7 +382,7 @@ th {
 }
 
 td {
-  color: var(--text-primary);
+  color: var(--text-color);
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
   line-height: var(--p-line-height);
@@ -382,4 +395,24 @@ td > *, th > * {
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
+}
+
+a[data-highlight] {
+  display: inline;
+  background-color: var(--highlight);
+  color: var(--text-heading);
+  font-size: var(--p-font-size);
+  font-weight: var(--p-font-weight);
+  line-height: var(--p-line-height);
+  text-decoration: none;
+}
+
+a[data-highlight][data-highlight-selected] {
+  display: inline;
+  background-color: var(--highlight-selected);
+  color: var(--text-heading);
+  font-size: var(--p-font-size);
+  font-weight: var(--p-font-weight);
+  line-height: var(--p-line-height);
+  text-decoration: none;
 }

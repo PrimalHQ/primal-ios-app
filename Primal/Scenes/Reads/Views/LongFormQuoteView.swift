@@ -11,8 +11,13 @@ class LongFormQuoteView: UIStackView, Themeable {
     let label  = UILabel()
     let border = SpacerView(width: 4)
     
-    let text: String
-    init(_ text: String) {
+    var text: String {
+        didSet {
+            updateTheme()
+        }
+    }
+    
+    init(_ text: String = "") {
         self.text = text
         super.init(frame: .zero)
         
@@ -34,7 +39,7 @@ class LongFormQuoteView: UIStackView, Themeable {
         border.backgroundColor = .foreground4
         
         let paragraph = NSMutableParagraphStyle()
-        paragraph.lineSpacing = 8
+        paragraph.lineSpacing = 6
         
         label.attributedText = NSAttributedString(string: text, attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),

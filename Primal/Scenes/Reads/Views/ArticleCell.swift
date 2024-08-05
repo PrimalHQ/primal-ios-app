@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import FLAnimatedImage
+import Kingfisher
 
 protocol ArticleCellDelegate: AnyObject {
     func articleCellDidSelect(_ cell: ArticleCell, action: PostCellEvent)
@@ -47,13 +48,14 @@ class ArticleCell: UITableViewCell, Themeable {
         updateTheme()
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 26.0 / 22.0
+        paragraphStyle.lineSpacing = 1
+        paragraphStyle.lineBreakMode = .byTruncatingTail
 
         titleLabel.attributedText = NSAttributedString(string: content.title, attributes: [
             .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 22, weight: .heavy),
+            .font: UIFont.appFont(withSize: 32 / 1.4176, weight: .heavy),
             .foregroundColor: UIColor.foreground,
-            .kern: -0.44
+            .kern: -0.58 / 1.4176
         ])
         
         if let words = content.words {
@@ -90,6 +92,12 @@ class ArticleCell: UITableViewCell, Themeable {
                     let aspectC = contentImageView.widthAnchor.constraint(equalTo: contentImageView.heightAnchor, multiplier: imageAspectRatio)
                     aspectC.priority = .defaultHigh
                     aspectC.isActive = true
+                    
+                    contentImageView.kf.setImage(with: imageURL, options: [
+                        .scaleFactor(UIScreen.main.scale),
+                        .cacheOriginalImage,
+                        .processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100 / imageAspectRatio)))
+                    ])
                 case .failure(let error):
                     print(error) // Handle the error if needed
                 }
@@ -205,7 +213,7 @@ private extension ArticleCell {
         titleLabel.numberOfLines = 5
         
         contentImageView.layer.borderWidth = 1
-        contentImageView.layer.cornerRadius = 4
+        contentImageView.layer.cornerRadius = 8
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
         

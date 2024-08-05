@@ -48,6 +48,10 @@ final class ParsedUser {
     }
 }
 
+extension PrimalFeedPost {
+    var isArticle: Bool { kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue }
+}
+
 final class ParsedContent {
     var post: PrimalFeedPost
     let user: ParsedUser
@@ -196,8 +200,7 @@ extension ParsedContent {
             
             result.addAttributes([
                 .foregroundColor: UIColor.foreground,
-                .backgroundColor: UIColor.init(rgb: 0x3D4933),
-                .font: UIFont.appFont(withSize: 16, weight: .regular),
+                .backgroundColor: UIColor.highlight,
                 .link: URL(string: "highlight://\(element.reference)"),
                 .paragraphStyle: newParagraph
             ], range: .init(location: element.position, length: element.length))
@@ -231,12 +234,11 @@ extension ParsedContent: MetadataCoding {
             let tagId = post.tags.first(where: { $0.first == "d" })?[safe: 1]
         else { return bech32_note_id(post.id) }
         
-//        var metadata = Metadata(relays: validatedRelayURLStrings, identifier: tagId)
-//        metadata.pubkey = post.pubkey
-//        metadata.kind = UInt32(NostrKind.longForm.rawValue)
-//
-//        return try? encodedIdentifier(with: metadata, identifierType: .address)
-        return nil
+        var metadata = Metadata(identifier: tagId)
+        metadata.pubkey = post.pubkey
+        metadata.kind = UInt32(NostrKind.longForm.rawValue)
+
+        return try? encodedIdentifier(with: metadata, identifierType: .address)
     }
 }
 

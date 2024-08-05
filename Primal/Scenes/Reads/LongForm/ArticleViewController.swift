@@ -13,6 +13,7 @@ import SafariServices
 
 enum LongFormContentSegment {
     case text(String)
+    case image(String)
     case post(ParsedContent)
 }
 
@@ -54,34 +55,20 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
     var webViews: [ArticleWebView] = []
     var embeddedPostControllers: [LongFormEmbeddedPostController<LongFormEmbeddedPostCell>] = []
     
-    let zapEmbededController = LongFormEmbeddedPostController<LongFormZapsPostCell>()
-    
     let commentZapPill = CommentZapPill()
     
     lazy var infoVC = LongFormEmbeddedPostController<PostReactionsCell>()
     lazy var commentsVC = LongFormCommentsController(content: content)
-    lazy var chromeManager = AppChromeManager(viewController: self, extraBottomView: commentZapPill, bottomBarHeight: 130)
+    lazy var chromeManager = ArticleChromeManager(viewController: self, extraTopView: navExtension, extraBottomView: commentZapPill, bottomBarHeight: 130)
     
     let bookmarkNavButton = UIButton().constrainToSize(width: 30)
     let threeDotsButton = UIButton().constrainToSize(width: 30)
     
-    var summary: LongFormQuoteView?
-    let imageView = UIImageView()
-    lazy var titleLabel = ThemeableLabel().setTheme { [weak self] in
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 34.0 / 32.0
-        $0.attributedText = NSAttributedString(string: self?.content.title ?? "", attributes: [
-            .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 32, weight: .heavy),
-            .foregroundColor: UIColor.foreground,
-            .kern: -0.64
-        ])
-    }
+    weak var highlightedWebView: ArticleWebView?
+    let selectionMenuView = ArticleSelectionMenuView()
+    var selectionMenuConstraint: NSLayoutConstraint?
     
-    let dateLabel = ThemeableLabel().setTheme {
-        $0.textColor = .foreground4
-        $0.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
-    }
+    var topInfoView = ArticleTopInfoView()
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -91,11 +78,18 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
             updateHighlights()
         }
     }
+    
+    var highlightComments: [String: [ParsedContent]] = [:]
+    
     init(content: Article) {
         self.content = content
         super.init(nibName: nil, bundle: nil)
         setup()
         reloadHighlights()
+        
+        if content.event.kind == NostrKind.shortenedArticle.rawValue {
+            reload()
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -118,7 +112,6 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
     
     func updateTheme() {
         view.backgroundColor = .background2
-        webViews.forEach { $0.scrollView.backgroundColor = .background2 }
         
         navigationItem.leftBarButtonItem = customBackButton
         
@@ -143,19 +136,20 @@ private extension ArticleViewController {
         .receive(on: DispatchQueue.main)
         .sink { [weak self] res in
             self?.scrollView.refreshControl?.endRefreshing()
-            guard let self, let content = res.getArticles().first(where: { $0.event.id == self.content.event.id }) else { return}
-            self.content = content
+            guard 
+                let self,
+                let content = res.getArticles().first(where: { $0.event.id == self.content.event.id && $0.event.kind == NostrKind.longForm.rawValue })
+            else { return }
             
-            if let parsed = res.getArticles().first(where: { $0.event.id == content.event.id }) {
-                commentsVC.parsedContent = parsed.asParsedContent
-            }
+            self.content = content
+            commentsVC.parsedContent = content.asParsedContent
             
             populateContent()
         }
         .store(in: &cancellables)
     }
     
-    func reloadHighlights() {
+    func reloadHighlights(_ callback: (([Highlight], [String: [ParsedContent]]) -> Void)? = nil) {
         //get_highlights(pubkey, identifier, user_pubkey=nothing)
         SocketRequest(name: "get_highlights", payload: [
             "pubkey": .string(content.event.pubkey),
@@ -164,24 +158,42 @@ private extension ArticleViewController {
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
-        .map { $0.getHighlights() }
+        .map { ($0.getHighlights(), $0.getHighlightComments()) }
         .receive(on: DispatchQueue.main)
-        .assign(to: \.highlights, onWeak: self)
+        .sink(receiveValue: { [weak self] highlights, comments in
+            self?.highlights = highlights
+            self?.highlightComments = comments
+            
+            callback?(highlights, comments)
+        })
         .store(in: &cancellables)
     }
     
-    func updateHighlights() {
-        let parser = MarkdownParser()
-        let parts = content.event.content.splitLongFormParts(mentions: content.mentions)
-        let textParts: [String] = parts.compactMap {
+    var parts: [LongFormContentSegment] {
+        content.event.content.escapedHtml().splitLongFormParts(mentions: content.mentions)
+    }
+    
+    var textParts: [String] {
+        parts.compactMap {
             switch $0 {
-            case .post:
-                return nil
             case .text(let text):
                 return text
+            default:
+                return nil
             }
         }
-        
+    }
+    
+    func hideHighlightMenu() {
+        UIView.animate(withDuration: 0.1) {
+            self.selectionMenuView.alpha = 0
+        }
+        highlightedWebView = nil
+    }
+    
+    func updateHighlights() {
+        hideHighlightMenu()
+        let parser = MarkdownParser()
         zip(textParts, webViews).forEach { (text, webView) in
             webView.loadMarkdown(parser.html(from: updateText(text)))
         }
@@ -197,57 +209,25 @@ private extension ArticleViewController {
         view.addSubview(scrollView)
         scrollView.pinToSuperview()
         scrollView.delegate = chromeManager
-        scrollView.refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
+        let refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
             self?.reload()
         }))
-        
-        let date = Date(timeIntervalSince1970: content.event.created_at)
-        dateLabel.text = date.shortFormatString()
-        
-        titleLabel.numberOfLines = 0
-        titleLabel.font = .appFont(withSize: 32, weight: .heavy)
-        
-        let midStack = UIStackView(axis: .vertical, [dateLabel, SpacerView(height: 15), titleLabel])
-        let midStackParent = UIView()
-        midStackParent.addSubview(midStack)
-        midStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
+        scrollView.refreshControl = refreshControl
         
         contentParent.addArrangedSubview(contentStack)
         contentParent.addArrangedSubview(infoVC.view)
         contentParent.addArrangedSubview(commentsVC.view)
         
         let mainStack = UIStackView(axis: .vertical, [
-            navExtension,
-            SpacerView(height: 16),
-            midStackParent,
+            SpacerView(height: 12),
+            topInfoView,
             contentParent
         ])
         
-        if let image = content.image {
-            imageView.kf.setImage(with: URL(string: image)) { [weak self] res in
-                guard let self, case .success(let result) = res else { return }
-                
-                let s = result.image.size
-                imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height).isActive = true
-            }
-            imageView.contentMode = .scaleAspectFill
-            imageView.layer.cornerRadius = 4
-            imageView.layer.masksToBounds = true
-            imageView.isUserInteractionEnabled = true
-            imageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-                self?.present(ImageGalleryController(current: image), animated: true)
-            }))
-            
-            midStack.addArrangedSubview(SpacerView(height: 15))
-            midStack.addArrangedSubview(imageView)
-        }
-        
-        if let summary = content.summary?.trimmingCharacters(in: .whitespacesAndNewlines) {
-            midStack.addArrangedSubview(SpacerView(height: 16))
-            let view = LongFormQuoteView(summary)
-            midStack.addArrangedSubview(view)
-            self.summary = view
-        }
+        topInfoView.imageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self, let image = content.image else { return }
+            ImageGalleryController(current: image, all: allImages).present(from: self, imageView: topInfoView.imageView)
+        }))
         
         let post = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: .empty("")), user: content.user)
         BookmarkManager.instance.isBookmarkedPublisher(post).receive(on: DispatchQueue.main).sink { [weak self] isBookmarked in
@@ -263,11 +243,9 @@ private extension ArticleViewController {
         NotificationCenter.default.publisher(for: .articleSettingsUpdated)
             .sink { [weak self] _ in
                 self?.updateMenu()
+                self?.updateHighlights()
             }
             .store(in: &cancellables)
-        
-        midStack.addArrangedSubview(SpacerView(height: 16))
-        midStack.addArrangedSubview(zapEmbededController.view)
         
         commentsVC.willMove(toParent: self)
         addChild(commentsVC)
@@ -275,16 +253,27 @@ private extension ArticleViewController {
         infoVC.willMove(toParent: self)
         addChild(infoVC)
         
-        zapEmbededController.willMove(toParent: self)
-        addChild(zapEmbededController)
+        topInfoView.zapEmbededController.willMove(toParent: self)
+        addChild(topInfoView.zapEmbededController)
         
         scrollView.addSubview(mainStack)
         mainStack.pinToSuperview()
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
+        scrollView.contentInset = UIEdgeInsets(top: 64, left: 0, bottom: 0, right: 0)
+        
+        scrollView.addSubview(selectionMenuView)
+        selectionMenuView.pinToSuperview(edges: .horizontal, padding: 20)
+        selectionMenuConstraint = selectionMenuView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0)
+        selectionMenuConstraint?.isActive = true
+        selectionMenuView.alpha = 0
+        
+        view.addSubview(navExtension)
+        navExtension.pinToSuperview(edges: [.horizontal, .top])
+        
         commentsVC.didMove(toParent: self)
         infoVC.didMove(toParent: self)
-        zapEmbededController.didMove(toParent: self)
+        topInfoView.zapEmbededController.didMove(toParent: self)
         
         let commentHeight = commentsVC.view.heightAnchor.constraint(equalToConstant: 300)
         commentHeight.priority = .defaultHigh
@@ -293,7 +282,9 @@ private extension ArticleViewController {
         commentsVC.viewHeight.assign(to: \.constant, on: commentHeight).store(in: &cancellables)
         
         view.addSubview(commentZapPill)
-        commentZapPill.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 60, safeArea: true)
+        commentZapPill.anchorPoint = .init(x: 1, y: 1)
+        commentZapPill.pinToSuperview(edges: .bottom, padding: 36, safeArea: true)
+        commentZapPill.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: -12).isActive = true
         
         commentZapPill.commentButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
@@ -307,6 +298,16 @@ private extension ArticleViewController {
             }
         }), for: .touchUpInside)
         
+        commentZapPill.zapButton.addAction(.init(handler: { [weak self] _ in
+            guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostCell else { return }
+            infoVC.performEvent(.zap, withPost: content.asParsedContent, inCell: infoCell)
+        }), for: .touchUpInside)
+        
+        commentZapPill.addGestureRecognizer(BindableLongTapGestureRecognizer { [weak self] in
+            guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostCell else { return }
+            infoVC.performEvent(.longTapZap, withPost: content.asParsedContent, inCell: infoCell)
+        })
+        
         bookmarkNavButton.addAction(.init(handler: { _ in
             if BookmarkManager.instance.isBookmarked(post) {
                 BookmarkManager.instance.unbookmark(post)
@@ -315,7 +316,53 @@ private extension ArticleViewController {
             }
         }), for: .touchUpInside)
         
+        navExtension.profileIcon.isUserInteractionEnabled = true
+        navExtension.profileIcon.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self else { return }
+            show(ProfileViewController(profile: content.user), sender: nil)
+        }))
+        
         populateContent()
+        
+        selectionMenuView.highlight.addAction(.init(handler: { [weak self] _ in
+            guard let webView = self?.highlightedWebView else { return }
+            webView.selectedText { text in
+                guard let text, let _ = self?.highlight(text: text) else { return }
+            }
+        }), for: .touchUpInside)
+        
+        selectionMenuView.quote.addAction(.init(handler: { [weak self] _ in
+            guard let webView = self?.highlightedWebView else { return }
+            webView.selectedText { [weak self] text in
+                guard let self, let text, let highlight = highlight(text: text) else { return }
+                present(NewHighlightPostViewController(article: content, highlight: highlight), animated: true)
+            }
+        }), for: .touchUpInside)
+        
+        selectionMenuView.comment.addAction(.init(handler: { [weak self] _ in
+            guard let webView = self?.highlightedWebView else { return }
+            webView.selectedText { [weak self] text in
+                guard let self, let text, let highlight = highlight(text: text) else { return }
+                
+                present(NewPostViewController(
+                    replyToPost: .init(nostrPost: highlight.event, nostrPostStats: .empty("")),
+                    onPost: { [weak self] in
+                        self?.reloadHighlights()
+                    }
+                ), animated: true)
+            }
+        }), for: .touchUpInside)
+        
+        selectionMenuView.copy.addAction(.init(handler: { [weak self] _ in
+            guard let webView = self?.highlightedWebView else { return }
+            self?.hideHighlightMenu()
+            webView.selectedText { text in
+                guard let text, !text.isEmpty else { return }
+                UIPasteboard.general.string = text
+                self?.view.showToast("Copied!")
+                webView.clearSelection()
+            }
+        }), for: .touchUpInside)
     }
     
     func populateContent() {
@@ -327,19 +374,22 @@ private extension ArticleViewController {
         embeddedPostControllers = []
         webViews = []
         contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        topInfoView.update(content)
         
         let parsedContent = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: content.stats), user: content.user)
         parsedContent.zaps = content.zaps
-        zapEmbededController.posts = [parsedContent]
+        topInfoView.zapEmbededController.posts = [parsedContent]
         infoVC.posts = [parsedContent]
         
         commentZapPill.sats = content.stats.satszapped
         
-        let parts = content.event.content.splitLongFormParts(mentions: content.mentions)
         let parser = MarkdownParser()
         
         for part in parts {
             switch part {
+            case .image(let url):
+                let imageView = ArticleImageView(url: url, delegate: self)
+                contentStack.addArrangedSubview(imageView)
             case .post(let post):
                 let embedded = LongFormEmbeddedPostController<LongFormEmbeddedPostCell>(
                     content: post,
@@ -359,16 +409,6 @@ private extension ArticleViewController {
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
         
-                let height = webView.heightAnchor.constraint(equalToConstant: 20)
-                height.isActive = true
-        
-                for i in 1...7 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(i * i * 300)) { [weak webView, weak height] in
-                        webView?.calculateSize { size in
-                            height?.constant = size
-                        }
-                    }
-                }
                 webView.loadMarkdown(parser.html(from: updateText(text)))
             }
         }
@@ -389,7 +429,7 @@ private extension ArticleViewController {
         if let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: []) {
             profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
-                    
+                
                 let mentionText = (text as NSString).substring(with: matchRange)
                 
                 guard
@@ -405,8 +445,13 @@ private extension ArticleViewController {
             }
         }
         
-        for highlight in highlights {
-            replacedText = replacedText.replacingOccurrences(of: highlight.content, with: "[\(highlight.content)](highlight://\(highlight.event.id))")
+        if !ArticleSettings.hideArticleHighlights {
+            for highlight in highlights {
+                replacedText = replacedText.replacingOccurrences(
+                    of: highlight.content,
+                    with: "&#8203;<a href='highlight://\(highlight.event.id)' data-highlight='\(highlight.event.id)'>\(highlight.content)</a>"
+                )
+            }
         }
         
         return replacedText
@@ -417,8 +462,8 @@ private extension ArticleViewController {
             ("Share Article", "MenuShare", .postEvent(.share), []),
             
             ArticleSettings.hideArticleHighlights ?
-                ("Show Highlights", "MenuShare", .showHighlights, []) :
-                ("Hide Highlights", "MenuShare", .hideHighlights, []),
+                ("Show Highlights", "MenuShowHighlights", .showHighlights, []) :
+                ("Hide Highlights", "MenuHideHighlights", .hideHighlights, []),
             
             BookmarkManager.instance.isBookmarked(content.asParsedContent) ?
                 ("Remove Bookmark", "MenuBookmarkFilled", .postEvent(.unbookmark), []) :
@@ -455,6 +500,60 @@ private extension ArticleViewController {
             }
         })
     }
+    
+    func highlight(text: String) -> Highlight? {
+        var ev: NostrObject?
+        
+        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard
+            let event = PostingManager.instance.sendHighlightEvent(text, article: content, { [weak self] success in
+                guard !success, let self else { return }
+                
+                highlights.removeAll(where: { $0.event.id == ev?.id })
+            })
+        else { return nil }
+        
+        ev = event
+        
+        let highlight = Highlight(
+            user: IdentityManager.instance.parsedUser ?? ParsedUser(data: .init(pubkey: IdentityManager.instance.userHexPubkey)),
+            event: .init(
+                kind: Int32(NostrKind.highlight.rawValue),
+                content: event.content,
+                id: event.id,
+                created_at: Double(event.created_at),
+                pubkey: event.pubkey,
+                sig: event.sig,
+                tags: event.tags
+            )
+        )
+        highlights.append(highlight)
+        ArticleSettings.hideArticleHighlights = false
+        
+        return highlight
+    }
+}
+
+extension ArticleViewController: ArticleImageViewDelegate {
+    var allImages: [String] {
+        let parts = content.event.content.escapedHtml().splitLongFormParts(mentions: [])
+        let allImages = parts.compactMap {
+            switch $0 {
+            case .image(let string):    return string
+            default:                    return nil
+            }
+        }
+        
+        if let mainImageURL = topInfoView.mainImageURL {
+            return [mainImageURL] + allImages
+        }
+        return allImages
+    }
+    
+    func imageViewDidTapImage(_ view: ArticleImageView, url: String) {
+        ImageGalleryController(current: url, all: allImages).present(from: self, imageView: view.imageView)
+    }
 }
 
 enum ArticleMenuAction {
@@ -464,6 +563,14 @@ enum ArticleMenuAction {
 }
 
 extension ArticleViewController: HighlightViewControllerDelegate {
+    func highlightControllerDidAddComment(_ controller: HighlightViewController) {
+        reloadHighlights() { [weak controller] highlights, comments in
+            guard let controller else { return }
+            controller.highlights = highlights.filter { $0.content == controller.content }
+            controller.comments = comments[controller.content] ?? []
+        }
+    }
+    
     func highlightControllerDidHighlight(_ controller: HighlightViewController, highlight: Highlight) {
         highlights.append(highlight)
     }
@@ -474,26 +581,20 @@ extension ArticleViewController: HighlightViewControllerDelegate {
 }
 
 extension ArticleViewController: ArticleWebViewDelegate {
-    func articleWebViewHighlight(_ webView: ArticleWebView, text: String) {
-        var ev: NostrObject?
+    func articleWebViewDismissSelected(_ webView: ArticleWebView) {
+        hideHighlightMenu()
+    }
+    
+    func articleWebViewSelected(_ webView: ArticleWebView, selected text: String, at y: Double) {
+        if text.isEmpty {
+            hideHighlightMenu()
+            return
+        }
         
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        ev = PostingManager.instance.sendHighlightEvent(text, article: content) { [weak self] success in
-            if success {
-                guard let self, let user = IdentityManager.instance.parsedUser else { return }
-                highlights.append(.init(user: user, event: .init(
-                    kind: Int32(NostrKind.highlight.rawValue),
-                    content: text,
-                    id: ev?.id ?? UUID().uuidString,
-                    created_at: Double(ev?.created_at ?? Int64(Date().timeIntervalSince1970)),
-                    pubkey: IdentityManager.instance.userHexPubkey,
-                    sig: ev?.sig ?? "",
-                    tags: ev?.tags ?? []
-                )))
-            } else {
-                print("Failed to highlight")
-            }
+        selectionMenuConstraint?.constant = webView.convert(.init(x: 0, y: y), to: scrollView).y - 105
+        highlightedWebView = webView
+        UIView.animate(withDuration: 0.1) {
+            self.selectionMenuView.alpha = 1
         }
     }
     
@@ -501,7 +602,7 @@ extension ArticleViewController: ArticleWebViewDelegate {
         guard let highlight = highlights.first(where: { $0.event.id == id }) else { return }
         
         let allHighlights = highlights.filter { $0.content == highlight.content }
-        let highlightVC = HighlightViewController(article: content, highlights: allHighlights)
+        let highlightVC = HighlightViewController(article: content, highlights: allHighlights, comments: highlightComments[highlight.content] ?? [])
         highlightVC.delegate = self
         present(highlightVC, animated: true)
     }

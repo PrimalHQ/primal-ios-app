@@ -180,7 +180,7 @@ extension PostRequestResult: MetadataCoding {
                     if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
-                        text = text.replacingOccurrences(of: mentionText, with: "\n\(content)\n")
+                        text = text.replacingOccurrences(of: mentionText, with: content)
                         highlights.append((content, mention))
                     } else {
                         referencedPosts.append((mentionText, mention))
@@ -223,8 +223,6 @@ extension PostRequestResult: MetadataCoding {
                 else { return }
                 
                 itemsToRemove.append(mentionText)
-                
-                print(mention.id)
                
                 p.article = Article(
                     id: id,
@@ -424,7 +422,7 @@ extension PrimalUser {
 extension String {
     func splitLongFormParts(mentions: [ParsedContent]) -> [LongFormContentSegment] {
         let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-        guard let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) else { return [] }
+        guard let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) else { return [.text(self)] }
         
         var segments = [LongFormContentSegment]()
         var prevRangeStart: Int = 0
@@ -458,7 +456,49 @@ extension String {
             segments.append(.text(finalText))
         }
         
-        return segments
+        // Now look for images
+        let allSegments = segments.flatMap {
+            switch $0 {
+            case .image, .post: return [$0]
+            case .text(let text):
+                let regexPattern = #"!\[([^\]]*)\]\(([^)]+)\)"#
+                guard let regex = try? NSRegularExpression(pattern: regexPattern, options: []) else {
+                    return [$0]
+                }
+                
+                var subSegments: [LongFormContentSegment] = []
+                
+                prevRangeStart = 0
+                let nsString = (text as NSString)
+                
+                regex.enumerateMatches(in: text, options: [], range: NSRange(startIndex..., in: text)) { match, _, _ in
+                    guard let match else { return }
+                                        
+                    if let urlRange = Range(match.range(at: 2), in: text) {
+                        let url = String(text[urlRange])
+                        
+                        let prevTextRange = NSRange(location: prevRangeStart, length: match.range.location - prevRangeStart)
+                        let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)
+                        if !prevText.isEmpty {
+                            subSegments.append(.text(prevText))
+                        }
+                        
+                        subSegments.append(.image(url))
+                        prevRangeStart = match.range.endLocation
+                    }
+                }
+                
+                let finalText = text.dropFirst(prevRangeStart).trimmingCharacters(in: .whitespacesAndNewlines)
+                if !finalText.isEmpty {
+                    subSegments.append(.text(finalText))
+                }
+                
+                return subSegments
+            }
+        }
+        
+        print(allSegments)
+        return allSegments
     }
 }
 

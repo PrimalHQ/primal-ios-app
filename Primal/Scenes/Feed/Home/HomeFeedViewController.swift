@@ -29,7 +29,7 @@ final class HomeFeedViewController: PostFeedViewController {
     
     lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "tabIcon-explore")), primaryAction: .init(handler: { [weak self] _ in
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
         self?.navigationController?.fadeTo(SearchViewController())
     }))
     

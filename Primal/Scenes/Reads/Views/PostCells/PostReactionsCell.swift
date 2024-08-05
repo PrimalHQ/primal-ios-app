@@ -17,8 +17,11 @@ class PostReactionsCell: DefaultMainThreadCell {
         
         contentView.subviews.forEach { $0.removeFromSuperview() }
         
-        let descStack = UIStackView(axis: .vertical, [infoRow, SpacerView(height: 1, color: .background3), bottomButtonStack])
-        descStack.spacing = 8
+        let descStack = UIStackView(axis: .vertical, [
+            infoRow, SpacerView(height: 8),
+            SpacerView(height: 1, color: .background3), SpacerView(height: 10),
+            bottomButtonStack, SpacerView(height: 8)
+        ])
         descStack.setCustomSpacing(16, after: infoRow)
         
         let mainStack = UIStackView(axis: .vertical, [tagsView, zapInfoView, descStack])
