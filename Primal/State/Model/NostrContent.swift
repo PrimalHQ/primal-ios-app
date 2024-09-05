@@ -76,13 +76,6 @@ struct NostrUserProfileInfo: Codable {
     var notes: Int32 { note_count ?? 0 }
 }
 
-enum MediaSize: String {
-    case small = "s"
-    case large = "l"
-    case medium = "m"
-    case original = "o"
-}
-
 struct MediaMetadata: Codable {
     let event_id: String
     let resources: [Resource]

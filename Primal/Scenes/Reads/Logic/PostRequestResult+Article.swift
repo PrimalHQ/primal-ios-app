@@ -40,7 +40,7 @@ class Article {
         user: ParsedUser
     ) {
         identifier = id
-        self.title = title
+        self.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         self.image = image
         self.summary = summary
         self.words = words
@@ -60,6 +60,24 @@ class Highlight {
     init(user: ParsedUser, event: NostrContent) {
         self.user = user
         self.event = event
+    }
+}
+
+struct ReadsFeed: Codable {
+    var name: String
+    var spec: String
+    var description: String?
+    var feedkind: String?
+    var enabled: Bool?
+}
+
+extension PostRequestResult {
+    var readFeeds: [ReadsFeed] {
+        guard let event = events.first(where: {
+            Int($0["kind"]?.doubleValue ?? 0) == NostrKind.feedsSettings.rawValue
+        }) else { return [] }
+        
+        return event["content"]?.stringValue?.decode() ?? []
     }
 }
 

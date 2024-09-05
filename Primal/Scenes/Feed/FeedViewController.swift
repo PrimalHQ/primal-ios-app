@@ -389,6 +389,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         case .unbookmark:
             BookmarkManager.instance.unbookmark(post)
             cell?.updateMenu(post)
+        case .articleTag(let tag):
+            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
         }
     }
     

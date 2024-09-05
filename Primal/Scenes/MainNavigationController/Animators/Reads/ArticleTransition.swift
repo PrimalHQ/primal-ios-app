@@ -17,14 +17,25 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
     private let listVC: ArticleCellController
     private let lfController: ArticleViewController
     
-    init?(listVC: ArticleCellController, longFormController: ArticleViewController, presenting: Bool) {
-        if !listVC.articles.contains(where: { $0.event.id == longFormController.content.event.id }) {
-            return nil
-        }
-        
+    init?(listVCs: [ArticleCellController], longFormController: ArticleViewController, presenting: Bool) {
         if !presenting && longFormController.scrollView.contentOffset.y > 500 {
             return nil
         }
+        
+        guard let listVC = listVCs.first(where: { vc in
+            guard
+                let index = vc.articles.firstIndex(where: { $0.event.id == longFormController.content.event.id }),
+                let contentCell = vc.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
+            else { return false }
+            
+            let point = contentCell.contentView.convert(CGPoint.zero, to: longFormController.view)
+            if point.x < -200 || point.x > 200 {
+                return false
+            }
+            
+            return true
+        })
+        else { return nil }
         
         self.presenting = presenting
         self.listVC = listVC
@@ -64,11 +75,22 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         }
         
         let topInfoView = lfController.topInfoView
+        let contentViews = [lfController.contentStack, lfController.infoVC.view, lfController.commentsVC.view]
         
         if presenting {
             contentCell?.avatar.animateTransitionTo(lfController.navExtension.profileIcon, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.titleLabel.animateTransitionTo(topInfoView.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.nameLabel.animateTransitionTo(lfController.navExtension.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+            
+            if topInfoView.imageView.isHidden, lfController.content.image != nil, let image = contentCell?.contentImageView.image {
+                topInfoView.imageView.image = image
+                topInfoView.imageView.isHidden = false
+                let hC = topInfoView.imageView.widthAnchor.constraint(equalTo: topInfoView.imageView.heightAnchor, multiplier: image.size.width / image.size.height)
+                hC.isActive = true
+                hC.priority = .defaultHigh
+                lfController.view.layoutIfNeeded()
+            }
+            
             if !topInfoView.imageView.isHidden {
                 contentCell?.contentImageView.animateTransitionTo(topInfoView.imageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             }
@@ -103,8 +125,11 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             let zapGallery = topInfoView.zapEmbededController.view
             zapGallery?.transform = .init(translationX: 0, y: 40)
             zapGallery?.alpha = 0
-            lfController.contentParent.alpha = 0
-            lfController.contentParent.transform = .init(translationX: 0, y: 40)
+            
+            contentViews.forEach {
+                $0?.alpha = 0
+                $0?.transform = .init(translationX: 0, y: 40)
+            }
             
             UIView.animate(withDuration: 3.5 / 30, delay: 12 / 30) {
                 zapGallery?.transform = .identity
@@ -113,8 +138,10 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             } 
         
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
-                self.lfController.contentParent.alpha = 1
-                self.lfController.contentParent.transform = .identity
+                contentViews.forEach {
+                    $0?.alpha = 1
+                    $0?.transform = .identity
+                }
             } completion: { _ in
                 background.removeFromSuperview()
                 
@@ -162,8 +189,10 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             UIView.animate(withDuration: 3.5 / 30, delay: 12 / 30) {
                 zapGallery?.transform = .init(translationX: 0, y: 40)
                 zapGallery?.alpha = 0
-                self.lfController.contentParent.alpha = 0
-                self.lfController.contentParent.transform = .init(translationX: 0, y: 40)
+                contentViews.forEach {
+                    $0?.alpha = 0
+                    $0?.transform = .init(translationX: 0, y: 40)
+                }
             }
             
             UIView.animate(withDuration: 10 / 30) {

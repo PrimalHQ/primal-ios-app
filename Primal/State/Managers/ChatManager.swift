@@ -63,45 +63,37 @@ final class ChatManager {
     }
     
     func getChatMessagesHistory(pubkey: String, until: Double, _ callback: @escaping ([ProcessedMessage]) -> Void) {
-        Connection.regular.$isConnected.filter { $0 }
-            .first()
-            .flatMap { _ in
-                SocketRequest(name: "get_directmsgs", payload: .object([
-                    "limit": .number(20),
-                    "until": .number(until),
-                    "receiver": .string(pubkey),
-                    "sender": .string(IdentityManager.instance.userHexPubkey)
-                ])).publisher()
-            }
-            .map { $0.processMessages()}
-            .receive(on: DispatchQueue.main)
-            .sink { result in
-                callback(result)
-            }
-            .store(in: &cancellables)
+        SocketRequest(name: "get_directmsgs", payload: .object([
+            "limit": .number(20),
+            "until": .number(until),
+            "receiver": .string(pubkey),
+            "sender": .string(IdentityManager.instance.userHexPubkey)
+        ])).publisher()
+        .map { $0.processMessages()}
+        .receive(on: DispatchQueue.main)
+        .sink { result in
+            callback(result)
+        }
+        .store(in: &cancellables)
     }
     
     func getChatMessages(pubkey: String, since: Double = 0, _ callback: @escaping ([ProcessedMessage]) -> Void) {
-        Connection.regular.$isConnected.filter { $0 }
-            .first()
-            .flatMap { _ in
-                SocketRequest(name: "get_directmsgs", payload: .object([
-                    "limit": .number(20),
-                    "since": .number(since),
-                    "receiver": .string(pubkey),
-                    "sender": .string(IdentityManager.instance.userHexPubkey)
-                ])).publisher()
-            }
-            .map { $0.processMessages()}
-            .receive(on: DispatchQueue.main)
-            .sink { result in
-                callback(result)
-            }
-            .store(in: &cancellables)
+        SocketRequest(name: "get_directmsgs", payload: .object([
+            "limit": .number(20),
+            "since": .number(since),
+            "receiver": .string(pubkey),
+            "sender": .string(IdentityManager.instance.userHexPubkey)
+        ])).publisher()
+        .map { $0.processMessages()}
+        .receive(on: DispatchQueue.main)
+        .sink { result in
+            callback(result)
+        }
+        .store(in: &cancellables)
     }
     
     func updateChatCount() {
-        Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
+        Connection.regular.isConnectedPublisher.filter { $0 }.sink { [weak self] _ in
             self?.continousConnection = Connection.regular.requestCacheContinous(name: "directmsg_count", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in

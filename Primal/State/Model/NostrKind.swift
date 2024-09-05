@@ -34,6 +34,8 @@ enum NostrKind: Int {
     
     case settings = 30_078
     
+    case handlerInfo = 31_990
+    
     case ack = 10_000_098
     case noteStats = 10_000_100
     case netStats = 10_000_101
@@ -61,7 +63,10 @@ enum NostrKind: Int {
     case relayHints = 10_000_141
     case longFormMetadata = 10_000_144
     case eventBroadcastResponse = 10_000_149
-    case hightlightGroups = 10_000_151
+    case articleFeeds = 10_000_152
+    case highlightGroups = 10_000_151
+    case feedsSettings = 10_000_155
+    
     case shortenedArticle = 10_030_023
 }
 

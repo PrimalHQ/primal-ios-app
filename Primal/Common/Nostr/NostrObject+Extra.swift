@@ -97,6 +97,20 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
+    static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
+        var allTags: [[String]] = []
+
+        let articleID = article.asParsedContent.post.universalID
+        allTags.append(["e", highlight.id, "", "highlight"])
+        allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
+
+        allTags.append(["p", article.event.pubkey])
+        allTags += mentionedPubkeys.map { ["p", $0] }
+        allTags += content.extractHashtags().map({ ["t", $0] })
+
+        return createNostrObject(content: content, kind: 1, tags: allTags)
+    }
+    
     static func contacts(_ contacts: Set<String>) -> NostrObject? {
         createNostrObject(content: IdentityManager.instance.followListContentString, kind: 3, tags: contacts.map {
             ["p", $0]
@@ -215,6 +229,10 @@ extension NostrObject {
             ["e", post.post.id],
             ["amount", "\(sats)000"]
         ]
+        
+        if post.post.kind == NostrKind.longForm.rawValue || post.post.kind == NostrKind.shortenedArticle.rawValue {
+            tags.insert(["a", post.post.universalID], at: 0)
+        }
         
         var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
         if relays.isEmpty {

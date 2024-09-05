@@ -49,7 +49,6 @@ struct ArticleSettings {
 class ArticleViewController: UIViewController, Themeable, AnimatedChromeController {
     let scrollView = UIScrollView()
     lazy var navExtension = LongFormNavExtensionView(content.user)
-    let contentParent = UIStackView(axis: .vertical, [])
     let contentStack = UIStackView(axis: .vertical, [])
     
     var webViews: [ArticleWebView] = []
@@ -154,15 +153,15 @@ private extension ArticleViewController {
         SocketRequest(name: "get_highlights", payload: [
             "pubkey": .string(content.event.pubkey),
             "identifier": .string(content.identifier),
-            "kind": .number(Double(content.event.kind)),
+            "kind": .number(Double(NostrKind.longForm.rawValue)),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
         .map { ($0.getHighlights(), $0.getHighlightComments()) }
         .receive(on: DispatchQueue.main)
         .sink(receiveValue: { [weak self] highlights, comments in
-            self?.highlights = highlights
             self?.highlightComments = comments
+            self?.highlights = highlights
             
             callback?(highlights, comments)
         })
@@ -195,7 +194,7 @@ private extension ArticleViewController {
         hideHighlightMenu()
         let parser = MarkdownParser()
         zip(textParts, webViews).forEach { (text, webView) in
-            webView.loadMarkdown(parser.html(from: updateText(text)))
+            webView.updateContent(parser.html(from: updateText(text)))
         }
     }
     
@@ -211,17 +210,16 @@ private extension ArticleViewController {
         scrollView.delegate = chromeManager
         let refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
             self?.reload()
+            self?.reloadHighlights()
         }))
         scrollView.refreshControl = refreshControl
-        
-        contentParent.addArrangedSubview(contentStack)
-        contentParent.addArrangedSubview(infoVC.view)
-        contentParent.addArrangedSubview(commentsVC.view)
         
         let mainStack = UIStackView(axis: .vertical, [
             SpacerView(height: 12),
             topInfoView,
-            contentParent
+            contentStack,
+            infoVC.view,
+            commentsVC.view
         ])
         
         topInfoView.imageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
@@ -279,6 +277,8 @@ private extension ArticleViewController {
         commentHeight.priority = .defaultHigh
         commentHeight.isActive = true
         
+        commentsVC.view.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor, constant: -300).isActive = true
+        
         commentsVC.viewHeight.assign(to: \.constant, on: commentHeight).store(in: &cancellables)
         
         view.addSubview(commentZapPill)
@@ -288,9 +288,11 @@ private extension ArticleViewController {
         
         commentZapPill.commentButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            
-            let maxOffset = scrollView.contentSize.height - scrollView.frame.height
-            let commentsOffset = min(commentsVC.view.frame.minY + scrollView.frame.height - 200, maxOffset)
+                        
+            let commentsOffset = infoVC.view.frame.minY - 60 + {
+                guard let infoCell = self.infoVC.table.cellForRow(at: IndexPath(row: 0, section: 0)) as? PostReactionsCell else { return 0 }
+                return infoCell.tagsView.frame.height
+            }()
             if scrollView.contentOffset.y >= commentsOffset - 200 {
                 commentsVC.postCommentPressed()
             } else {
@@ -300,13 +302,8 @@ private extension ArticleViewController {
         
         commentZapPill.zapButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostCell else { return }
-            infoVC.performEvent(.zap, withPost: content.asParsedContent, inCell: infoCell)
-        }), for: .touchUpInside)
-        
-        commentZapPill.addGestureRecognizer(BindableLongTapGestureRecognizer { [weak self] in
-            guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostCell else { return }
             infoVC.performEvent(.longTapZap, withPost: content.asParsedContent, inCell: infoCell)
-        })
+        }), for: .touchUpInside)
         
         bookmarkNavButton.addAction(.init(handler: { _ in
             if BookmarkManager.instance.isBookmarked(post) {
@@ -366,14 +363,8 @@ private extension ArticleViewController {
     }
     
     func populateContent() {
-        embeddedPostControllers.forEach {
-            $0.willMove(toParent: nil)
-            $0.removeFromParent()
-            $0.didMove(toParent: nil)
-        }
-        embeddedPostControllers = []
-        webViews = []
-        contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        let oldViewCount = contentStack.arrangedSubviews.count
+        
         topInfoView.update(content)
         
         let parsedContent = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: content.stats), user: content.user)
@@ -383,8 +374,9 @@ private extension ArticleViewController {
         
         commentZapPill.sats = content.stats.satszapped
         
-        let parser = MarkdownParser()
+        if oldViewCount > 0 { return } // Temporary
         
+        let parser = MarkdownParser()
         for part in parts {
             switch part {
             case .image(let url):
@@ -409,7 +401,7 @@ private extension ArticleViewController {
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
         
-                webView.loadMarkdown(parser.html(from: updateText(text)))
+                webView.updateContent(parser.html(from: updateText(text)))
             }
         }
         

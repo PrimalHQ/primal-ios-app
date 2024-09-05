@@ -242,6 +242,12 @@ extension ParsedContent: MetadataCoding {
     }
 }
 
+extension NostrContent: MetadataCoding {
+    func getNevent() -> String? {
+        try? encodedIdentifier(with: Metadata(pubkey: pubkey, eventId: id, kind: UInt32(kind)), identifierType: .event)
+    }
+}
+
 extension ParsedContent {
     func copy() -> ParsedContent {
         let new = ParsedContent(post: post, user: user)

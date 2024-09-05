@@ -130,14 +130,14 @@ private extension HighlightViewController {
         title.textColor = .foreground
         
         let buttonStack = UIStackView([
-            UIButton(configuration: .highlightActionButton(icon: UIImage(named: "commentIcon24"), title: "Quote"), primaryAction: .init(handler: { [weak self] _ in
+            UIButton(configuration: .highlightActionButton(icon: UIImage(named: "quoteIcon24"), title: "Quote"), primaryAction: .init(handler: { [weak self] _ in
                 guard let self, let highlight = highlights.first else { return }
                 
                 present(NewHighlightPostViewController(article: article, highlight: highlight, onPost: { [weak self] in
                     self?.dismiss(animated: true)
                 }), animated: true)
             })),
-            UIButton(configuration: .highlightActionButton(icon: UIImage(named: "quoteIcon24"), title: "Comment"), primaryAction: .init(handler: { [weak self] _ in
+            UIButton(configuration: .highlightActionButton(icon: UIImage(named: "commentIcon24"), title: "Comment"), primaryAction: .init(handler: { [weak self] _ in
                 guard let self, let hightlight = highlights.first else { return }
                 
                 present(NewPostViewController(

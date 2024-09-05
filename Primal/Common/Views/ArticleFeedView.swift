@@ -7,6 +7,7 @@
 
 import UIKit
 import FLAnimatedImage
+import Kingfisher
 
 class ArticleFeedView: UIView, Themeable {
     let avatar = FLAnimatedImageView().constrainToSize(20)
@@ -19,7 +20,7 @@ class ArticleFeedView: UIView, Themeable {
     let commentLabel = UILabel()
     let zapIcon = UIImageView(image: UIImage(named: "longFormZapIcon"))
     let zapView = UserGalleryView()
-    let contentImageView = UIImageView().constrainToSize(width: 100)
+    let contentImageView = UIImageView().constrainToSize(width: 100, height: 72)
     
     init() {
         super.init(frame: .zero)
@@ -47,37 +48,17 @@ class ArticleFeedView: UIView, Themeable {
             durationLabel.isHidden = true
         }
         
-        NSLayoutConstraint.deactivate(contentImageView.constraints)
-        let height = contentImageView.heightAnchor.constraint(equalToConstant: 72)
-        height.priority = .defaultLow
-        NSLayoutConstraint.activate([
-            contentImageView.heightAnchor.constraint(lessThanOrEqualToConstant: 144),
-            contentImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
-            contentImageView.widthAnchor.constraint(equalToConstant: 100),
-            height
-        ])
-        
         let imageURL: URL? = {
             if let image = content.image { return URL(string: image) }
             return content.user.profileImage.url(for: .medium)
         }()
         
         if let imageURL {
-            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage")) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let value):
-                    let image = value.image
-                    
-                    let imageAspectRatio = image.size.width / image.size.height
-                                        
-                    let aspectC = contentImageView.widthAnchor.constraint(equalTo: contentImageView.heightAnchor, multiplier: imageAspectRatio)
-                    aspectC.priority = .defaultLow
-                    aspectC.isActive = true
-                case .failure(let error):
-                    print(error) // Handle the error if needed
-                }
-            }
+            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage"), options: [
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .processor(ResizingImageProcessor(referenceSize: .init(width: 100, height: 72)))
+            ])
         } else {
             contentImageView.kf.cancelDownloadTask()
             contentImageView.image = UIImage(named: "longFormPlaceholderImage")

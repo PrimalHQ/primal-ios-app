@@ -17,6 +17,17 @@ struct ZapInfo: Codable {
     let tags: [[String]]
 }
 
+extension ArticleCell: TransactionPartialCell {
+    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+        guard case .article(let article) = info else { return }
+        setUp(article)
+        border.isHidden = true
+        threeDotsButton.isHidden = true
+        contentView.backgroundColor = .background4
+        contentView.layer.cornerRadius = 8
+    }
+}
+
 final class TransactionViewController: FeedViewController {
     enum CellType {
         case amount(Int, incoming: Bool)
@@ -27,6 +38,7 @@ final class TransactionViewController: FeedViewController {
         case copyInfo(String, String)
         case actionInfo(String, String)
         case expand(Bool)
+        case article(Article)
         
         var cellID: String {
             switch self {
@@ -36,6 +48,7 @@ final class TransactionViewController: FeedViewController {
             case .info, .copyInfo, .actionInfo:  
                                     return "info"
             case .expand:           return "expand"
+            case .article:          return "article"
             }
         }
         
@@ -58,6 +71,7 @@ final class TransactionViewController: FeedViewController {
     
     let transaction: WalletTransaction
     let user: ParsedUser?
+    var article: Article?
     
     var didFinishAppear = false
     
@@ -168,6 +182,9 @@ final class TransactionViewController: FeedViewController {
             present(SFSafariViewController(url: url), animated: true)
         case .expand:
             isExpanded.toggle()
+            table.contentInset = .init(top: 0, left: 0, bottom: 100, right: 0)
+        case .article(let article):
+            show(ArticleViewController(content: article), sender: nil)
         default:
             return
         }
@@ -203,6 +220,7 @@ private extension TransactionViewController {
         table.register(TransactionUserInfoCell.self, forCellReuseIdentifier: "user")
         table.register(TransactionInfoCell.self, forCellReuseIdentifier: "info")
         table.register(TransactionExpandInfoCell.self, forCellReuseIdentifier: "expand")
+        table.register(ArticleCell.self, forCellReuseIdentifier: "article")
         
         setCells()
         
@@ -220,8 +238,15 @@ private extension TransactionViewController {
                 ])
             )
             .publisher()
-            .map { $0.process() }
             .receive(on: DispatchQueue.main)
+            .map { [weak self] in
+                if let self, let article = $0.getArticles().first {
+                    self.article = article
+                    setCells()
+                    table.reloadData()
+                }
+                return $0.process()
+            }
             .sink { [weak self] posts in
                 guard let self, let post = posts.first(where: { $0.post.id == postID }) else { return }
                 self.posts = [post]
@@ -287,6 +312,13 @@ private extension TransactionViewController {
         
         if (!isOnchain && !posts.isEmpty) || !isExpanded {
             cells.append(.expand(isExpanded))
+        }
+        
+        if let article {
+            cells += [
+                .title("ZAPPED ARTICLE"),
+                .article(article)
+            ]
         }
         
         if !posts.isEmpty {

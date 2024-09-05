@@ -10,14 +10,14 @@ import UIKit
 extension UIButton.Configuration {
     static func longFormEventButton(image: UIImage?, title: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.plain()
-        config.image = image?.withRenderingMode(.alwaysTemplate)
+        config.image = image?.withRenderingMode(.alwaysTemplate).withTintColor(.foreground3).withRenderingMode(.alwaysOriginal)
         config.imagePadding = 4
 
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 9, bottom: 0, trailing: 9)
 
         config.attributedTitle = .init(title, attributes: .init([
             .font: UIFont.appFont(withSize: 14, weight: .regular),
-            .foregroundColor: UIColor.foreground4
+            .foregroundColor: UIColor.foreground3
         ]))
         return config
     }
@@ -56,9 +56,6 @@ class CommentZapPill: UIView, Themeable {
     func updateTheme() {
         commentButton.configuration = .longFormEventButton(image: UIImage(named: "feedComment"), title: comments.localized())
         zapButton.configuration = .longFormEventButton(image: UIImage(named: "feedZap"), title: sats.localized())
-        
-        commentButton.tintColor = .foreground4
-        zapButton.tintColor = .foreground4
         
         layer.borderColor = UIColor.foreground6.cgColor
         backgroundColor = UIColor.background

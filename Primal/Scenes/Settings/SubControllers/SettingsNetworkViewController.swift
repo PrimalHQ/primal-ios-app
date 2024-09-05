@@ -177,7 +177,7 @@ private extension SettingsNetworkViewController {
             .store(in: &cancellables)
 
         let regularConnection = SettingsNetworkStatusView(title: Connection.regular.socketURL.absoluteString)
-        Connection.regular.$isConnected.receive(on: DispatchQueue.main).sink { isConnected in
+        Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { isConnected in
             regularConnection.status = isConnected
         }
         .store(in: &cancellables)

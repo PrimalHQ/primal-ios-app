@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script>
-        
+        function updateMainContent(newContent) {
+            // Select the div with id 'main'
+            var mainDiv = document.getElementById('main');
+
+            // Create a temporary element to compare current content with the new content
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newContent;
+
+            // Compare the current content with the new content
+            if (mainDiv.innerHTML !== tempDiv.innerHTML) {
+                // If the content is different, update the div
+                mainDiv.innerHTML = newContent;
+            }
+        }
     </script>
     <style>
         body {
@@ -17,14 +30,6 @@
         #main {
             padding: 0;
             margin: 0;
-        }
-        
-        .ice, .sunrise{
-          background-color: white;
-        }
-
-        .midnight, .sunset {
-          background-color: black;
         }
         
         @font-face {

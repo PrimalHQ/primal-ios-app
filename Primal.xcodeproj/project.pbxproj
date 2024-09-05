@@ -350,6 +350,19 @@
 		B98DD8C82C5C108700E8369A /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C72C5C108700E8369A /* Article.swift */; };
 		B98DD8CA2C5CFDB800E8369A /* ArticleFeedSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */; };
 		B98DD8CC2C5D0BD200E8369A /* ArticleTopInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */; };
+		B98DD8D12C62332800E8369A /* ArticleListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8D02C62332800E8369A /* ArticleListController.swift */; };
+		B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8D22C62547300E8369A /* ArticleFeedViewController.swift */; };
+		B98DD8D52C6259B100E8369A /* ArticleFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */; };
+		B98DD8D72C62709900E8369A /* articleListSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B98DD8D62C62709900E8369A /* articleListSkeleton.json */; };
+		B98DD8D92C627B4600E8369A /* articleListSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B98DD8D82C627B4600E8369A /* articleListSkeletonLight.json */; };
+		B98DD8DB2C65055B00E8369A /* MediaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DA2C65055B00E8369A /* MediaManager.swift */; };
+		B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */; };
+		B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */; };
+		B98DD8E22C666B4B00E8369A /* PostRequestResult+FeedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E12C666B4B00E8369A /* PostRequestResult+FeedPicker.swift */; };
+		B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E32C666D5D00E8369A /* FeedMarketplaceCell.swift */; };
+		B98DD8E62C667EE800E8369A /* ArticleFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E52C667EE800E8369A /* ArticleFeedPreviewController.swift */; };
+		B98DD8E82C6682D900E8369A /* ArticleFeedPreviewFeedController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E72C6682D900E8369A /* ArticleFeedPreviewFeedController.swift */; };
+		B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
@@ -823,6 +836,19 @@
 		B98DD8C72C5C108700E8369A /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
 		B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedSelectionController.swift; sourceTree = "<group>"; };
 		B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleTopInfoView.swift; sourceTree = "<group>"; };
+		B98DD8D02C62332800E8369A /* ArticleListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleListController.swift; sourceTree = "<group>"; };
+		B98DD8D22C62547300E8369A /* ArticleFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedViewController.swift; sourceTree = "<group>"; };
+		B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedManager.swift; sourceTree = "<group>"; };
+		B98DD8D62C62709900E8369A /* articleListSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeleton.json; sourceTree = "<group>"; };
+		B98DD8D82C627B4600E8369A /* articleListSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeletonLight.json; sourceTree = "<group>"; };
+		B98DD8DA2C65055B00E8369A /* MediaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaManager.swift; sourceTree = "<group>"; };
+		B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMarketplaceController.swift; sourceTree = "<group>"; };
+		B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPickerController.swift; sourceTree = "<group>"; };
+		B98DD8E12C666B4B00E8369A /* PostRequestResult+FeedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostRequestResult+FeedPicker.swift"; sourceTree = "<group>"; };
+		B98DD8E32C666D5D00E8369A /* FeedMarketplaceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMarketplaceCell.swift; sourceTree = "<group>"; };
+		B98DD8E52C667EE800E8369A /* ArticleFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedPreviewController.swift; sourceTree = "<group>"; };
+		B98DD8E72C6682D900E8369A /* ArticleFeedPreviewFeedController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedPreviewFeedController.swift; sourceTree = "<group>"; };
+		B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownNavigationView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
@@ -1256,6 +1282,7 @@
 				93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */,
 				93F27DA92A27FB41004ADA55 /* PostingManager.swift */,
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
+				B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */,
 				939329452A66E82E00B96AAA /* LoginManager.swift */,
 				C1AF0026036532D4652C7322 /* MuteManager.swift */,
 				B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */,
@@ -1266,6 +1293,7 @@
 				B91C46222BC3D35500AC2C9B /* BookmarkManager.swift */,
 				B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */,
 				B98DD8AE2C46C58900E8369A /* HighlightManager.swift */,
+				B98DD8DA2C65055B00E8369A /* MediaManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1305,6 +1333,8 @@
 				B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */,
 				B944292B2BD5A8AA00746FBC /* postCellSkeleton.json */,
 				B94429342BD94C8B00746FBC /* postCellSkeletonLight.json */,
+				B98DD8D62C62709900E8369A /* articleListSkeleton.json */,
+				B98DD8D82C627B4600E8369A /* articleListSkeletonLight.json */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -1964,6 +1994,29 @@
 			path = Highlight;
 			sourceTree = "<group>";
 		};
+		B98DD8CF2C62331300E8369A /* ArticleList */ = {
+			isa = PBXGroup;
+			children = (
+				B98DD8D02C62332800E8369A /* ArticleListController.swift */,
+				B98DD8D22C62547300E8369A /* ArticleFeedViewController.swift */,
+			);
+			path = ArticleList;
+			sourceTree = "<group>";
+		};
+		B98DD8DC2C66619400E8369A /* FeedPicker */ = {
+			isa = PBXGroup;
+			children = (
+				B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */,
+				B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */,
+				B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */,
+				B98DD8E52C667EE800E8369A /* ArticleFeedPreviewController.swift */,
+				B98DD8E72C6682D900E8369A /* ArticleFeedPreviewFeedController.swift */,
+				B98DD8E12C666B4B00E8369A /* PostRequestResult+FeedPicker.swift */,
+				B98DD8E32C666D5D00E8369A /* FeedMarketplaceCell.swift */,
+			);
+			path = FeedPicker;
+			sourceTree = "<group>";
+		};
 		B99E037F2BF75FDE006CCECB /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1978,12 +2031,14 @@
 		B99E038A2C0567FA006CCECB /* Reads */ = {
 			isa = PBXGroup;
 			children = (
+				B98DD8DC2C66619400E8369A /* FeedPicker */,
 				B98DD8B02C493D5A00E8369A /* Logic */,
 				B99E038D2C05755C006CCECB /* Views */,
 				9ED415F52A40FDEC00892235 /* Search */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
 				B98DD8B32C4949D900E8369A /* Highlight */,
 				B99E03902C060BBC006CCECB /* LongForm */,
+				B98DD8CF2C62331300E8369A /* ArticleList */,
 				B99E038B2C05682B006CCECB /* ReadsViewController.swift */,
 			);
 			path = Reads;
@@ -2006,6 +2061,7 @@
 				B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */,
 				B98DD8C52C59118E00E8369A /* ArticleSelectionMenuView.swift */,
 				B98DD8CB2C5D0BD200E8369A /* ArticleTopInfoView.swift */,
+				B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2020,7 +2076,6 @@
 				B99E03962C061D67006CCECB /* longForm.html */,
 				B99E03A32C09D095006CCECB /* markdown.css */,
 				B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */,
-				B98DD8C92C5CFDB800E8369A /* ArticleFeedSelectionController.swift */,
 			);
 			path = LongForm;
 			sourceTree = "<group>";
@@ -2350,6 +2405,7 @@
 				9E40D6EE2A0D22D4008AE854 /* loadingSpinner.json in Resources */,
 				9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */,
 				B9CE4DBE2B715DB80060A1B8 /* notificationLightning.json in Resources */,
+				B98DD8D72C62709900E8369A /* articleListSkeleton.json in Resources */,
 				B94F2BFE2AE95D790041181B /* Nacelle-UltraLight.otf in Resources */,
 				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				B944292C2BD5A8AA00746FBC /* postCellSkeleton.json in Resources */,
@@ -2370,6 +2426,7 @@
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
 				B94429202BD2836800746FBC /* zap-medium.json in Resources */,
+				B98DD8D92C627B4600E8369A /* articleListSkeletonLight.json in Resources */,
 				B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
@@ -2488,6 +2545,7 @@
 				9E4AAAAA2A12288600C962BD /* UILabel+Extra.swift in Sources */,
 				9EF4BFCA2A8BFD16003396AA /* FontSlider.swift in Sources */,
 				9393313229A3E56F003954C2 /* NostrContent.swift in Sources */,
+				B98DD8D52C6259B100E8369A /* ArticleFeedManager.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
@@ -2509,6 +2567,7 @@
 				B9F9331D2B88F72E0064B495 /* PremiumHomeViewController.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
 				B901C38D2BAB237E00C3AA69 /* OnboardingSession.swift in Sources */,
+				B98DD8D12C62332800E8369A /* ArticleListController.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
@@ -2532,6 +2591,7 @@
 				B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */,
 				9E8834B62A323C3B005DB548 /* QRCopyView.swift in Sources */,
 				9ED415FF2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift in Sources */,
+				B98DD8DB2C65055B00E8369A /* MediaManager.swift in Sources */,
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
 				9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */,
 				B90B7F272B97BA5F0074CD98 /* UploadPhotoRequest.swift in Sources */,
@@ -2561,6 +2621,7 @@
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */,
+				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
@@ -2580,6 +2641,7 @@
 				B99E03A02C07C75E006CCECB /* LongFormQuoteView.swift in Sources */,
 				B98DD8BE2C515FB200E8369A /* ArticleImageView.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
+				B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
 				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
 				B9B1ABA32B33368A00837312 /* TransactionTitleCell.swift in Sources */,
@@ -2603,12 +2665,14 @@
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
 				B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */,
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
+				B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */,
 				B9CE4DAE2B695F320060A1B8 /* WalletOnchainTierPickController.swift in Sources */,
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
 				B94F2BCD2AD868770041181B /* WalletTransferSummaryController.swift in Sources */,
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
+				B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */,
 				B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */,
 				B9F9331F2B8904570064B495 /* CheckNip05Manager.swift in Sources */,
 				9E9F2F9229F6AB8A00A9CDF3 /* UIView+Extra.swift in Sources */,
@@ -2662,6 +2726,7 @@
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
+				B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
 				B90032952BD2742A00ADD2E5 /* NoteRepostsViewController.swift in Sources */,
@@ -2696,6 +2761,7 @@
 				B94F2BDD2ADDC6320041181B /* WalletInAppPurchaseController.swift in Sources */,
 				B90032912BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift in Sources */,
 				9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */,
+				B98DD8E82C6682D900E8369A /* ArticleFeedPreviewFeedController.swift in Sources */,
 				93B7FE842A0ABEE6005AE313 /* Bootstrap.swift in Sources */,
 				B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */,
 				9E8834C62A377A93005DB548 /* SocketRequest.swift in Sources */,
@@ -2739,6 +2805,7 @@
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
 				B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */,
+				B98DD8E22C666B4B00E8369A /* PostRequestResult+FeedPicker.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
@@ -2746,6 +2813,7 @@
 				933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */,
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
 				B94429312BD8206200746FBC /* ZapPillView.swift in Sources */,
+				B98DD8E62C667EE800E8369A /* ArticleFeedPreviewController.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeProfileView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
 				9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */,
@@ -2957,7 +3025,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.23;
+				MARKETING_VERSION = 2.0.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3003,7 +3071,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.23;
+				MARKETING_VERSION = 2.0.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

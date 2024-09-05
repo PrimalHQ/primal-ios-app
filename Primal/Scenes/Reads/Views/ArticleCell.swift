@@ -25,7 +25,7 @@ class ArticleCell: UITableViewCell, Themeable {
     let commentLabel = UILabel()
     let zapIcon = UIImageView(image: UIImage(named: "longFormZapIcon"))
     let zapView = UserGalleryView()
-    let contentImageView = UIImageView().constrainToSize(width: 100)
+    let contentImageView = UIImageView().constrainToSize(width: 100, height: 72)
     let border = UIView().constrainToSize(height: 1)
     let bottomSpacer = SpacerView(height: 12)
     
@@ -55,7 +55,7 @@ class ArticleCell: UITableViewCell, Themeable {
             .paragraphStyle: paragraphStyle,
             .font: UIFont.appFont(withSize: 32 / 1.4176, weight: .heavy),
             .foregroundColor: UIColor.foreground,
-            .kern: -0.58 / 1.4176
+//            .kern: -0.58 / 1.4176
         ])
         
         if let words = content.words {
@@ -65,42 +65,29 @@ class ArticleCell: UITableViewCell, Themeable {
             durationLabel.isHidden = true
         }
         
-        NSLayoutConstraint.deactivate(contentImageView.constraints)
-        let height = contentImageView.heightAnchor.constraint(equalToConstant: 72)
-        height.priority = .defaultLow
-        NSLayoutConstraint.activate([
-            contentImageView.heightAnchor.constraint(lessThanOrEqualToConstant: 120),
-            contentImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 36),
-            contentImageView.widthAnchor.constraint(equalToConstant: 100),
-            height
-        ])
-        
         let imageURL: URL? = {
-            if let image = content.image { return URL(string: image) }
+            if let image = content.image { return MediaManager.getCachedURL(image, size: .medium) }
             return content.user.profileImage.url(for: .medium)
         }()
         
         if let imageURL {
             contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage")) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let value):
-                    let image = value.image
-                    
-                    let imageAspectRatio = image.size.width / image.size.height
-                                        
-                    let aspectC = contentImageView.widthAnchor.constraint(equalTo: contentImageView.heightAnchor, multiplier: imageAspectRatio)
-                    aspectC.priority = .defaultHigh
-                    aspectC.isActive = true
-                    
-                    contentImageView.kf.setImage(with: imageURL, options: [
-                        .scaleFactor(UIScreen.main.scale),
-                        .cacheOriginalImage,
-                        .processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100 / imageAspectRatio)))
-                    ])
-                case .failure(let error):
-                    print(error) // Handle the error if needed
+                guard let self, case let .success(image) = result else { return }
+                
+                let aspect = image.image.size.width / image.image.size.height
+                
+                let newSize: CGSize
+                if aspect > 100 / 72 {
+                    newSize = CGSize(width: aspect * 72, height: 72)
+                } else {
+                    newSize = CGSize(width: 100, height: 100 / aspect)
                 }
+                
+                contentImageView.kf.setImage(with: imageURL, options: [
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage,
+                    .processor(DownsamplingImageProcessor(size: newSize))
+                ])
             }
         } else {
             contentImageView.kf.cancelDownloadTask()
@@ -143,6 +130,8 @@ class ArticleCell: UITableViewCell, Themeable {
         contentImageView.layer.borderColor = UIColor.background3.cgColor
         
         titleLabel.textColor = .foreground
+        
+        contentView.backgroundColor = .background
     }
     
     func updateMenu(content: Article) {
@@ -178,7 +167,9 @@ private extension ArticleCell {
         
         let firstRow = UIStackView([avatar, nameLabel, dot, timeLabel, UIView(), threeDotsButton])
         nameLabel.setContentHuggingPriority(.required, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         firstRow.alignment = .center
         firstRow.spacing = 4
         firstRow.setCustomSpacing(8, after: avatar)

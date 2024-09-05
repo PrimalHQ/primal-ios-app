@@ -104,12 +104,19 @@ class ArticleWebView: WKWebView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func loadMarkdown(_ content: String) {
+    var isFirstTime = true
+    func updateContent(_ content: String) {
+        loadMarkdown(content)
+        
+//        evaluateJavaScript("updateMainContent(\"\(content)\")")
+//        calculateSize()
+    }
+    
+    private func loadMarkdown(_ content: String) {
         let htmlContent = Self.htmlMarkdown
             .replacingOccurrences(of: "{{ CONTENT }}", with: content)
             .replacingOccurrences(of: "{{ THEME }}", with: "\(Theme.current.shortTitle) \(FontSizeSelection.current.name)")
         
-        print(htmlContent)
         loadHTMLString(htmlContent, baseURL: Bundle.main.bundleURL)
         
         calculateSize()
@@ -174,7 +181,7 @@ private extension ArticleWebView {
             self?.evaluateJavaScript("document.getElementById('main').clientHeight", completionHandler: { result, error in
                 guard let self, let height = result as? CGFloat else { return }
                 
-                self.heightConstraint?.constant = height + 10
+                self.heightConstraint?.constant = height + 15
             })
         })
     }

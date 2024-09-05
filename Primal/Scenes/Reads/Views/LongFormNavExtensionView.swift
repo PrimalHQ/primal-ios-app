@@ -17,6 +17,7 @@ extension UIButton.Configuration {
             .font: UIFont.appFont(withSize: 14, weight: .semibold),
             .foregroundColor: UIColor.white
         ]))
+        config.contentInsets = NSDirectionalEdgeInsets(top: 7, leading: 14, bottom: 7, trailing: 14)
         return config
     }
 }
@@ -26,7 +27,7 @@ class LongFormNavExtensionView: UIView, Themeable {
     let secondaryLabel = UILabel()
     let profileIcon = FLAnimatedImageView(image: UIImage(named: "profile"))
     let border = SpacerView(height: 1)
-    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 36)
+    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)
     
     init(_ user: ParsedUser) {
         super.init(frame: .zero)

@@ -10,7 +10,7 @@ import SwiftUI
 
 extension UIColor {
     static var highlight: UIColor {
-        Theme.current.isDarkTheme ? .init(rgb: 0x3D4933) : .init(rgb: 0xE8F3E8)
+        Theme.current.isDarkTheme ? .init(rgb: 0x2E3726) : .init(rgb: 0xE8F3E8)
     }
     
     convenience init(rgb: UInt) {

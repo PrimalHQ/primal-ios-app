@@ -143,14 +143,20 @@ extension MainNavigationController: UINavigationControllerDelegate {
             }
         }
         
-        if let longForm = toVC as? ArticleViewController, let listVC = fromVC as? ArticleCellController ?? fromVC.findInChildren() {
+        if let longForm = toVC as? ArticleViewController {
             if operation == .pop { return nil }
-            return ArticleTransition(listVC: listVC, longFormController: longForm, presenting: true)
+            if let listVC = fromVC as? ArticleCellController {
+                return ArticleTransition(listVCs: [listVC], longFormController: longForm, presenting: true)
+            }
+            return ArticleTransition(listVCs: fromVC.findAllChildren(), longFormController: longForm, presenting: true)
         }
         
-        if let listVC = toVC as? ArticleCellController ?? toVC.findInChildren(), let article = fromVC as? ArticleViewController {
+        if let article = fromVC as? ArticleViewController {
             if operation == .push { return nil }
-            return ArticleTransition(listVC: listVC, longFormController: article, presenting: false)
+            if let listVC = toVC as? ArticleCellController {
+                return ArticleTransition(listVCs: [listVC], longFormController: article, presenting: false)
+            }
+            return ArticleTransition(listVCs: toVC.findAllChildren(), longFormController: article, presenting: false)
         }
         
         return nil

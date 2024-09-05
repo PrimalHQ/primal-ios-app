@@ -170,6 +170,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
             if let articleCell = cell as? ArticleCell {
                 articleCell.setUp(articles[indexPath.row])
                 articleCell.bottomSpacer.isHidden = false
+                articleCell.contentView.backgroundColor = .background2
             }
             return cell
         }

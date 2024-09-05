@@ -23,7 +23,7 @@ extension UIButton.Configuration {
     }
 }
 
-final class HomeFeedViewController: PostFeedViewController {
+final class HomeFeedViewController: UIViewController, Themeable {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
@@ -32,17 +32,6 @@ final class HomeFeedViewController: PostFeedViewController {
     lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
         self?.navigationController?.fadeTo(SearchViewController())
     }))
-    
-    var onLoad: (() -> ())? {
-        didSet {
-            if !posts.isEmpty, let onLoad {
-                DispatchQueue.main.async {
-                    onLoad()
-                    self.onLoad = nil
-                }
-            }
-        }
-    }
     
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()

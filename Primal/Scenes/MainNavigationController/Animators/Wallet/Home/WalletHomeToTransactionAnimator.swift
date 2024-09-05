@@ -75,10 +75,6 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
                 if infoCell.messageLabel.text?.isEmpty == false {
                     cell?.messageLabel.animateTransitionTo(infoCell.messageLabel, duration: 18 / 30, in: container)
                 }
-                
-                UIView.animate(withDuration: 2 / 30, delay: 15 / 30) {
-                    infoCell.messageLabel.alpha = 1
-                }
             }
             
             if let amountCell {
@@ -115,21 +111,16 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
             }
         } else {
             if let cell {
-                infoCell?.avatar.animateTransitionTo(cell.profileImage, duration: 18 / 30, in: container)
+                infoCell?.avatar.animateTransitionTo(cell.profileImage, duration: 14 / 30, in: container)
                 
                 if cell.nameLabel.text == infoCell?.mainLabel.text {
-                    infoCell?.mainLabel.animateTransitionTo(cell.nameLabel, duration: 18 / 30, in: container)
+                    infoCell?.mainLabel.animateTransitionTo(cell.nameLabel, duration: 14 / 30, in: container)
                 }
                 
-                amountCell?.label.animateTransitionTo(cell.amountLabel, duration: 18 / 30, in: container)
+                amountCell?.label.animateTransitionTo(cell.amountLabel, duration: 14 / 30, in: container)
                 
                 if infoCell?.messageLabel.text?.isEmpty == false {
-                    let label = infoCell?.messageLabel.animateTransitionTo(cell.messageLabel, duration: 18 / 30, in: container)
-                    
-                    UIView.animate(withDuration: 2 / 30, delay: 15 / 30) {
-                        label?.alpha = 0
-                        cell.messageLabel.alpha = 1
-                    }
+                    infoCell?.messageLabel.animateTransitionTo(cell.messageLabel, duration: 14 / 30, in: container)
                 }
             }
             

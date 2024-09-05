@@ -16,12 +16,14 @@ class PostTagsView: UIView {
         }
     }
     
+    var tagPressed: ((String) -> Void)?
+    
     init() {
         super.init(frame: .zero)
         
         addSubview(mainStack)
         mainStack.pinToSuperview()
-        mainStack.spacing = 4
+        mainStack.spacing = 6
         mainStack.alignment = .leading
     }
     
@@ -33,7 +35,11 @@ class PostTagsView: UIView {
         var currentRow = newRow()
         var currentWidth: CGFloat = 0
         if let first = tags.first {
-            currentRow.addArrangedSubview(PostTagView(first))
+            let tagView = PostTagView(first)
+            tagView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+                self?.tagPressed?(first)
+            }))
+            currentRow.addArrangedSubview(tagView)
             currentWidth += widthForTag(first)
         }
         
@@ -46,8 +52,12 @@ class PostTagsView: UIView {
                 currentRow = newRow()
                 currentWidth = width
             } 
-
-            currentRow.addArrangedSubview(PostTagView(tag))
+            
+            let tagView = PostTagView(tag)
+            tagView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+                self?.tagPressed?(tag)
+            }))
+            currentRow.addArrangedSubview(tagView)
         }
         
         if currentWidth > 0 {
@@ -57,7 +67,7 @@ class PostTagsView: UIView {
     
     func newRow() -> UIStackView {
         let stack = UIStackView()
-        stack.spacing = 4
+        stack.spacing = 6
         return stack
     }
     

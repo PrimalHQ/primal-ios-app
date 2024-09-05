@@ -388,7 +388,7 @@ private extension WalletManager {
             }
             .store(in: &cancellables)
 
-        Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
+        Connection.wallet.isConnectedPublisher.filter { $0 }
             .sink { [weak self] _ in
                 guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
                 

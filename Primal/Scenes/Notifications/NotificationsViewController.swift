@@ -79,7 +79,7 @@ final class NotificationsViewController: FeedViewController {
         
         setup()
         
-        Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
+        Connection.regular.isConnectedPublisher.filter { $0 }.sink { [weak self] _ in
             self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in

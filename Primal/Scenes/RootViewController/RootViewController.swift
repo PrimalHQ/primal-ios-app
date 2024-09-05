@@ -26,6 +26,8 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
+    let connectionDot = UIView().constrainToSize(8)
+    
     var didAnimate = false
     var didFinishInit = false
     
@@ -36,7 +38,7 @@ final class RootViewController: UIViewController {
         
         _ = WalletManager.instance
         
-        Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
+        Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
@@ -47,6 +49,17 @@ final class RootViewController: UIViewController {
         }.store(in: &cancellables)
         
         didFinishInit = true
+        
+        view.addSubview(connectionDot)
+        connectionDot.pinToSuperview(edges: [.trailing, .top], padding: 20)
+        connectionDot.layer.cornerRadius = 4
+        connectionDot.backgroundColor = .accent
+        connectionDot.layer.zPosition = 900
+        
+        Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { [weak self] isConnected in
+            self?.connectionDot.backgroundColor = isConnected ? .green : .red
+        }
+        .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {

@@ -9,6 +9,8 @@ import Foundation
 import GenericJSON
 
 class PostRequestResult: Codable {
+    var events: [[String: JSON]] = []
+    
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []

@@ -31,7 +31,7 @@ final class BookmarkManager {
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest4($tagsToBookmark, $tagsToUnbookmark, $isReadyForFirstBookmark, Connection.regular.$isConnected)
+        Publishers.CombineLatest4($tagsToBookmark, $tagsToUnbookmark, $isReadyForFirstBookmark, Connection.regular.isConnectedPublisher)
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .filter { hexesB, hexesU, _, isConnected in
                 isConnected && !(hexesB.isEmpty && hexesU.isEmpty)

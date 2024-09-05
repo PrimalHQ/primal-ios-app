@@ -19,7 +19,7 @@ class ArticleTopInfoView: UIView, Themeable {
             .paragraphStyle: paragraphStyle,
             .font: UIFont.appFont(withSize: 32, weight: .heavy),
             .foregroundColor: UIColor.foreground,
-            .kern: -0.58
+//            .kern: -0.58 / 1.4176
         ])
     }
     

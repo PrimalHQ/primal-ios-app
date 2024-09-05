@@ -33,6 +33,11 @@ class PostReactionsCell: DefaultMainThreadCell {
             .pinToSuperview(edges: .top, padding: 20)
             .pinToSuperview(edges: .bottom, padding: 16)
             .pinToSuperview(edges: .horizontal, padding: 20)
+        
+        tagsView.tagPressed = { [weak self] tag in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, .articleTag(tag))
+        }
     }
     
     override func update(_ parsedContent: ParsedContent) {        

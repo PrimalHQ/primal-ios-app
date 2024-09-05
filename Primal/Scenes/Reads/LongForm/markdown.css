@@ -5,8 +5,9 @@
   --subtile-devider: #444444;
   --accent-links: #f800c1;
   --background-input: #222222;
-  --highlight: #3D4933;
+  --highlight: #2E3726;
   --highlight-selected: #516440;
+  background-color: black;
 }
 
 .midnight {
@@ -16,8 +17,9 @@
   --subtile-devider: #444444;
   --accent-links: #2394EF;
   --background-input: #222222;
-  --highlight: #3D4933;
+  --highlight: #2E3726;
   --highlight-selected: #516440;
+  background-color: black;
 }
 
 .sunrise {
@@ -29,6 +31,7 @@
   --background-input: #e5e5e5;
   --highlight: #E8F3E8;
   --highlight-selected: #A3D0A2;
+  background-color: white;
 }
 
 .ice {
@@ -40,6 +43,7 @@
   --background-input: #e5e5e5;
   --highlight: #E8F3E8;
   --highlight-selected: #A3D0A2;
+  background-color: white;
 }
 
 .small {
@@ -344,6 +348,7 @@ blockquote {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 20px;
+  margin-inline: 0;
   border-left: 4px solid var(--blockquote-border);
 }
 
@@ -361,15 +366,29 @@ pre, code, mark {
 }
 
 code {
+  display: block;
   color: var(--text-color);
   font-family: "Fira Mono";
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
   line-height: var(--p-line-height);
+  max-width: 100%;
+  overflow-x: scroll;
 }
 
 del {
   color: inherit;
+}
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+tbody {
+  display: table;
+  width: 100%;
 }
 
 th {

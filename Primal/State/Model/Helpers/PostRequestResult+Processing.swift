@@ -218,7 +218,7 @@ extension PostRequestResult: MetadataCoding {
                     let metadata = try? decodedMetadata(from: String(address)),
                     let id = metadata.identifier,
                     let mention = self.mentions.first(where: {
-                        $0.kind == NostrKind.longForm.rawValue && $0.tags.contains(["d", id])
+                        ($0.kind == NostrKind.longForm.rawValue || $0.kind == NostrKind.shortenedArticle.rawValue) && $0.tags.contains(["d", id])
                     })
                 else { return }
                 

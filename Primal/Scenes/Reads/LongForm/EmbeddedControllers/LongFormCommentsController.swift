@@ -16,13 +16,15 @@ class LongFormCommentsController: FeedViewController {
     
     var viewHeight: AnyPublisher<CGFloat, Never> {
         $cellHeight
-            .map { $0.reduce(0, +) + 400 }
+            .map { $0.reduce(0, +) + 100 }
             .eraseToAnyPublisher()
     }
     
     lazy var newCommentVC = NewPostViewController(replyToPost: parsedContent?.post) { [weak self] in
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-            self?.reload()
+        for seconds in 1...3 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(seconds)) {
+                self?.reload()
+            }
         }
     }
     
@@ -32,6 +34,7 @@ class LongFormCommentsController: FeedViewController {
         self.content = content
         super.init()
         
+        table.register(GenericEmptyTableCell.self, forCellReuseIdentifier: "empty")
         table.register(PostCommentsTitleCell.self, forCellReuseIdentifier: "title")
         table.isScrollEnabled = false
         DispatchQueue.main.async {
@@ -42,6 +45,8 @@ class LongFormCommentsController: FeedViewController {
         cellHeight = posts.map { _ in 200 }
         
         navigationBorder.removeFromSuperview()
+        
+        animateInserts = false
         
         reload()
     }
@@ -61,7 +66,7 @@ class LongFormCommentsController: FeedViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return 1
+            return posts.isEmpty ? 2 : 1
         }
         return super.tableView(tableView, numberOfRowsInSection: section)
     }
@@ -70,8 +75,14 @@ class LongFormCommentsController: FeedViewController {
         if indexPath.section == 1 {
             let cell = super.tableView(tableView, cellForRowAt: indexPath)
             DispatchQueue.main.async {
-                self.cellHeight[indexPath.row] = cell.contentView.frame.height
+                self.cellHeight[safe: indexPath.row] = cell.contentView.frame.height
             }
+            return cell
+        }
+        
+        guard indexPath.row == 0 else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+            (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
             return cell
         }
         
@@ -112,5 +123,37 @@ extension LongFormCommentsController: PostCommentsTitleCellDelegate {
     func postCommentPressed() {
         newCommentVC.replyToPost = parsedContent?.post
         present(newCommentVC, animated: true)
+    }
+}
+
+class GenericEmptyTableCell: UITableViewCell, Themeable {
+    var text = "" {
+        didSet {
+            label.text = text
+            updateTheme()
+        }
+    }
+    
+    private let label = UILabel()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        selectionStyle = .none
+        
+        contentView.addSubview(label)
+        label.pinToSuperview(edges: .vertical, padding: 100).pinToSuperview(edges: .horizontal, padding: 60)
+        
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .appFont(withSize: 14, weight: .regular)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        label.textColor = .foreground2
     }
 }

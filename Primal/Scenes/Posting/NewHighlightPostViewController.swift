@@ -64,10 +64,9 @@ private extension NewHighlightPostViewController {
         if manager.isUploadingImages {
             return
         }
-        
 
         let highlightText: String = {
-            guard let noteRef = bech32_note_id(highlight.event.id) else { return ""}
+            guard let noteRef = highlight.event.getNevent() else { return "" }
             return "\nnostr:\(noteRef)"
         }()
         
@@ -95,11 +94,7 @@ private extension NewHighlightPostViewController {
             }
         }
         
-        if let replyToPost {
-            PostingManager.instance.sendReplyEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, post: replyToPost, callback)
-        } else {
-            PostingManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, callback)
-        }
+        PostingManager.instance.sendPostHighlightEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, highlight: highlight.event, article: article, callback)
     }
     
     @objc func galleryButtonPressed() {
@@ -120,7 +115,7 @@ private extension NewHighlightPostViewController {
         let highlightLabel = UILabel()
         highlightLabel.attributedText = NSAttributedString(string: highlight.content, attributes: [
             .foregroundColor: UIColor.foreground,
-            .backgroundColor: UIColor.init(rgb: 0x3D4933),
+            .backgroundColor: UIColor.highlight,
             .font: UIFont.appFont(withSize: 16, weight: .regular),
             .paragraphStyle: {
                 let newParagraph = NSMutableParagraphStyle()

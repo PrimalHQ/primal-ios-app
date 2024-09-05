@@ -17,7 +17,7 @@ struct PostInfo {
 extension PrimalFeedPost {
     var universalID: String {
         guard
-            kind == NostrKind.longForm.rawValue,
+            kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue,
             let tagId = tags.first(where: { $0.first == "d" })?[safe: 1]
         else { return id }
         

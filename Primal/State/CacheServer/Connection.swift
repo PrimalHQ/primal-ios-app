@@ -83,7 +83,7 @@ final class Connection {
         self.socketURL = socketURL
         self.connect()
         
-        $isConnected.dropFirst().sink { isConnected in
+        isConnectedPublisher.dropFirst().sink { isConnected in
             print("CONNECTION IS CONNECTED \(self === Connection.regular ? "REG" : "WALL") = \(isConnected)")
         }
         .store(in: &cancellables)
@@ -104,7 +104,15 @@ final class Connection {
     
     var messageReceived = PassthroughSubject<Void, Never>()
 
-    @Published var isConnected: Bool = false
+    let isConnectedPublisher = CurrentValueSubject<Bool, Never>(false)
+    
+    private(set) var isConnected: Bool = false {
+        didSet {
+            if oldValue != isConnected {
+                isConnectedPublisher.send(isConnected)
+            }
+        }
+    }
     
     private func connect() {
         disconnect()
@@ -119,6 +127,7 @@ final class Connection {
                 isConnected = true
                 messageReceived.send(())
             case .message(let message):
+                isConnected = true
                 switch message {
                 case .string(let string):
                     guard let json: JSON = string.decode() else { return }

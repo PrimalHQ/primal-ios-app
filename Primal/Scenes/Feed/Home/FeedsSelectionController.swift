@@ -77,7 +77,7 @@ private extension FeedsSelectionController {
         let stack = UIStackView(arrangedSubviews: [pullBar, SpacerView(height: 42), scrollView, SpacerView(height: 42)])
         
         view.addSubview(stack)
-        stack.pinToSuperview(edges: .vertical, padding: 16, safeArea: true).pinToSuperview(edges: .horizontal, padding: 32)
+        stack.pinToSuperview(edges: .vertical, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
         stack.axis = .vertical
         stack.distribution = .equalSpacing
         stack.alignment = .center

@@ -22,6 +22,8 @@ enum PostCellEvent {
     case repostedProfile
     case article
     
+    case articleTag(String)
+    
     case payInvoice
     
     case zapDetails
