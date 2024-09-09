@@ -7,9 +7,11 @@
 
 import Combine
 import UIKit
+import Lottie
 
-final class ProfileTabSelectionView: UIView {
+final class ProfileTabSelectionView: UIView, Themeable {
     private(set) var buttons: [ProfileTabSelectionButton] = []
+    private(set) var loadingViews: [LottieAnimationView] = []
     private let selectionIndicator = ThemeableView().constrainToSize(height: 4).setTheme { $0.backgroundColor = .accent }
     
     @Published private(set) var selectedTab = 0
@@ -29,6 +31,25 @@ final class ProfileTabSelectionView: UIView {
         setup()
     }
     
+    var isLoading = false {
+        didSet {
+            if isLoading == oldValue { return }
+            loadingViews.forEach {
+                if isLoading {
+                    $0.isHidden = false
+                    $0.play()
+                } else {
+                    $0.stop()
+                    $0.isHidden = true
+                }
+            }
+            
+            buttons.forEach {
+                $0.infoLabel.alpha = isLoading ? 0.01 : 1
+            }
+        }
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -36,6 +57,12 @@ final class ProfileTabSelectionView: UIView {
     func set(_ tab: Int) {
         guard selectedTab != tab else { return }
         selectedTab = tab
+    }
+    
+    func updateTheme() {
+        loadingViews.forEach {
+            $0.animation = Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation
+        }
     }
 }
 
@@ -46,6 +73,17 @@ private extension ProfileTabSelectionView {
         stack.pinToSuperview(edges: [.horizontal, .top], padding: 8).pinToSuperview(edges: .bottom, padding: 16)
         stack.distribution = .fillEqually
         stack.spacing = 10
+        
+        for button in buttons {
+            let animationView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation)
+            
+            addSubview(animationView)
+            animationView.constrainToSize(width: 190 / 3, height: 80 / 3).centerToView(button.infoLabel)
+            
+            loadingViews.append(animationView)
+            animationView.isHidden = true
+            animationView.loopMode = .loop
+        }
         
         selectionIndicator.layer.cornerRadius = 2
         
@@ -73,8 +111,8 @@ private extension ProfileTabSelectionView {
 
 final class ProfileTabSelectionButton: MyButton, Themeable {
     
-    private let titleLabel = UILabel()
-    private let infoLabel = UILabel()
+    let titleLabel = UILabel()
+    let infoLabel = UILabel()
     
     var text: String {
         get { infoLabel.text ?? "" }

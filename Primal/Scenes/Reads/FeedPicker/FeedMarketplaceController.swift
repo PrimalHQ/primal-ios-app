@@ -20,11 +20,15 @@ final class FeedMarketplaceController: UIViewController {
         }
     }
     
-    init() {
+    let type: PrimalFeedType
+    init(type: PrimalFeedType) {
+        self.type = type
         super.init(nibName: nil, bundle: nil)
         setup()
         
-        SocketRequest(name: "get_featured_dvm_feeds", payload: ["kind": "reads"]).publisher()
+        let kind = type == .article ? "reads" : "notes"
+        
+        SocketRequest(name: "get_featured_dvm_feeds", payload: ["kind": .string(kind)]).publisher()
             .receive(on: DispatchQueue.main)
             .map { $0.feeds() }
             .assign(to: \.feeds, onWeak: self)
@@ -109,11 +113,11 @@ extension FeedMarketplaceController: UITableViewDelegate {
             let pubkey = feed.pubkey
         else { return }
         
-        let readsFeed = ReadsFeed(
+        let readsFeed = PrimalFeed(
             name: feed.name,
             spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"reads\"}",
             description: feed.about
         )
-        show(ArticleFeedPreviewController(feed: readsFeed, feedInfo: feed), sender: nil)
+        show(ArticleFeedPreviewController(feed: readsFeed, type: type, feedInfo: feed), sender: nil)
     }
 }

@@ -92,3 +92,73 @@ class DropdownNavigationView: UIView, Themeable {
         title = newTitle
     }
 }
+
+protocol DropdownNavigationViewGestureController: UIViewController {
+    var pageVC: UIPageViewController { get }
+    var navTitleView: DropdownNavigationView { get }
+    
+    func feedNameLeftOfCurrentFeed() -> String?
+    func feedNameRightOfCurrentFeed() -> String?
+}
+
+class DropdownNavigationViewGesture: UIPanGestureRecognizer {
+    weak var vc: DropdownNavigationViewGestureController?
+    
+    var oldTransition: (left: Bool, String)?
+    
+    init(vc: DropdownNavigationViewGestureController) {
+        self.vc = vc
+        super.init(target: nil, action: nil)
+        self.addTarget(self, action: #selector(execute))
+        delegate = self
+    }
+
+    @objc private func execute() {
+        guard let pageVC = vc?.pageVC, let navTitleView = vc?.navTitleView else { return }
+        
+        if let scroll: UIScrollView = pageVC.view.findAllSubviews().first, scroll.contentOffset.x == scroll.frame.width {
+            return
+        }
+        
+        let x = translation(in: view).x
+        let left = x > 0
+        
+        guard let transitionFeedName = left ? vc?.feedNameLeftOfCurrentFeed() : vc?.feedNameRightOfCurrentFeed() else { return }
+        
+        if let oldTransition, oldTransition.left == left && oldTransition.1 == transitionFeedName {
+            // Do Nothing
+        } else {
+            self.oldTransition = (left, transitionFeedName)
+            navTitleView.startTransition(left: left, newTitle: transitionFeedName)
+        }
+        
+        switch state {
+        case .possible, .began, .changed:
+            navTitleView.updateTransition(percent: abs(x) / pageVC.view.frame.width)
+        case .ended, .cancelled, .failed:
+            let velocity = velocity(in: view).x
+            
+            let halfWidth = pageVC.view.frame.width / 2
+            
+            if (velocity > 300 && x > 0) || (velocity < -300 && x < 0) || (velocity < 200 && x < -halfWidth) || (velocity > -200 && x > halfWidth) {
+                navTitleView.completeTransitionAnimated(newTitle: transitionFeedName)
+            } else {
+                navTitleView.cancelTransition()
+            }
+        @unknown default:
+            break
+        }
+    }
+}
+
+extension DropdownNavigationViewGesture: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let pan = gestureRecognizer as? UIPanGestureRecognizer, abs(pan.translation(in: view).y) >= 0.01 {
+            return false
+        }
+        
+        return true
+    }
+}

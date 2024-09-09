@@ -9,7 +9,7 @@ import UIKit
 
 class ArticleFeedViewController: ArticleListController {
     let manager: ArticleFeedManager
-    init(feed: ReadsFeed) {
+    init(feed: PrimalFeed) {
         manager = .init(feed: feed)
         
         super.init(nibName: nil, bundle: nil)

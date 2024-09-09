@@ -12,13 +12,15 @@ import Combine
 final class ArticleFeedPreviewController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
     
-    let feed: ReadsFeed
+    let feed: PrimalFeed
+    let type: PrimalFeedType
     let info: FeedFromMarket
     
     let addButton = UIButton().constrainToSize(height: 52)
     
-    init(feed: ReadsFeed, feedInfo: FeedFromMarket) {
+    init(feed: PrimalFeed, type: PrimalFeedType, feedInfo: FeedFromMarket) {
         self.feed = feed
+        self.type = type
         info = feedInfo
         super.init(nibName: nil, bundle: nil)
         setup()
@@ -45,8 +47,14 @@ private extension ArticleFeedPreviewController {
         title.setContentCompressionResistancePriority(.required, for: .vertical)
         title.textAlignment = .center
         
-        let articleVC = ArticleFeedPreviewFeedController(feed: feed, feedInfo: info)
-        articleVC.willMove(toParent: self)
+        let previewFeed: UIViewController
+        switch type {
+        case .article:
+            previewFeed = ArticleFeedPreviewFeedController(feed: feed, feedInfo: info)
+        case .note:
+            previewFeed = NoteFeedPreviewController(feed: feed, feedInfo: info)
+        }
+        previewFeed.willMove(toParent: self)
         
         addButton.layer.cornerRadius = 26
         addButton.titleLabel?.font = .appFont(withSize: 18, weight: .semibold)
@@ -59,15 +67,15 @@ private extension ArticleFeedPreviewController {
         let stack = UIStackView(axis: .vertical, [
             pullBarParent, SpacerView(height: 20, priority: .required),
             title, SpacerView(height: 14, priority: .required),
-            articleVC.view,
+            previewFeed.view,
             addButtonParent
         ])
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, safeArea: true).pinToSuperview(edges: .horizontal)
         
-        addChild(articleVC)
-        articleVC.didMove(toParent: self)
+        addChild(previewFeed)
+        previewFeed.didMove(toParent: self)
         
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
@@ -83,20 +91,24 @@ private extension ArticleFeedPreviewController {
         addButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            if ReadsFeed.all.contains(where: { $0.spec == self.feed.spec }) {
-                ReadsFeed.all.removeAll(where: { $0.spec == self.feed.spec })
+            var all = PrimalFeed.getAllFeeds(type)
+            
+            if all.contains(where: { $0.spec == self.feed.spec }) {
+                all.removeAll(where: { $0.spec == self.feed.spec })
             } else {
-                ReadsFeed.all.append(feed)
+                all.append(feed)
                 
                 navigationController?.popToRootViewController(animated: true)
             }
+            
+            PrimalFeed.setAllFeeds(all, type: type)
             updateButton()
         }), for: .touchUpInside)
         updateButton()
     }
     
     func updateButton() {
-        if ReadsFeed.all.contains(where: { $0.spec == feed.spec }) {
+        if PrimalFeed.getAllFeeds(type).contains(where: { $0.spec == feed.spec }) {
             addButton.setTitle("Remove Feed", for: .normal)
         } else {
             addButton.setTitle("Add Feed", for: .normal)

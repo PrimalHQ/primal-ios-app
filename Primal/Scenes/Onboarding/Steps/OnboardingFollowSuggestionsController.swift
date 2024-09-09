@@ -139,7 +139,7 @@ private extension OnboardingFollowSuggestionsController {
                     let home = container.child as? HomeFeedViewController
                 else { return }
                 
-                home.feed.refresh()
+                home.firstFeedVC?.feed.refresh()
             }
         }, errorHandler: { [weak self] in
             self?.state = .followFailed

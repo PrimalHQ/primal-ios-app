@@ -11,11 +11,11 @@ import Foundation
 class ArticleFeedManager {
     @Published var articles: [Article] = []
     
-    let feed: ReadsFeed
+    let feed: PrimalFeed
     var paginationInfo: PrimalPagination?
     
     var cancellables: Set<AnyCancellable> = []
-    init(feed: ReadsFeed) {
+    init(feed: PrimalFeed) {
         self.feed = feed
         
         load()

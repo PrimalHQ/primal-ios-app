@@ -1,14 +1,14 @@
 //
-//  PostLoadingCell.swift
+//  NotificationLoadingCell.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 21.4.24..
+//  Created by Pavle Stevanović on 9.9.24..
 //
 
 import UIKit
 import Lottie
 
-class PostLoadingCell: UITableViewCell {
+class NotificationLoadingCell: UITableViewCell {
     let animationView = LottieAnimationView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -18,9 +18,9 @@ class PostLoadingCell: UITableViewCell {
         addSubview(animationView)
         animationView.pinToSuperview()
         
-        animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 375 / 137).isActive = true
+        animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 1125 / 417).isActive = true
         
-        animationView.animation = Theme.current.isDarkTheme ? AnimationType.postCellSkeleton.animation : AnimationType.postCellSkeletonLight.animation
+        animationView.animation = Theme.current.isDarkTheme ? AnimationType.notificationSkeleton.animation : AnimationType.notificationSkeletonLight.animation
         animationView.loopMode = .loop
     }
     

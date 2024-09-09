@@ -181,12 +181,20 @@ final class RootViewController: UIViewController {
 }
 
 protocol AnimatableFirstViewController: UIViewController {
-    var table: UITableView { get }
+    var tableView: UITableView? { get }
     var onLoad: (() -> ())? { get set }
 }
 
-extension HomeFeedViewController: AnimatableFirstViewController { }
+extension HomeFeedViewController: AnimatableFirstViewController {
+    var tableView: UITableView? { firstFeedVC?.table }
+    var onLoad: (() -> ())? {
+        get { firstFeedVC?.onLoad }
+        set { firstFeedVC?.onLoad = newValue }
+    }
+}
 extension WalletHomeViewController: AnimatableFirstViewController {
+    var tableView: UITableView? { table }
+    
     var onLoad: (() -> ())? {
         get { nil }
         set {
@@ -218,7 +226,7 @@ private extension RootViewController {
             return
         }
         
-        firstController.table.alpha = 0.01
+        firstController.tableView?.alpha = 0.01
         firstController.onLoad = {
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(.easeInTiming)
@@ -236,14 +244,14 @@ private extension RootViewController {
             CATransaction.commit()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
-                firstController.table.alpha = 1
-                firstController.table.transform = .init(translationX: 0, y: 800)
+                firstController.tableView?.alpha = 1
+                firstController.tableView?.transform = .init(translationX: 0, y: 800)
                     
                 CATransaction.begin()
                 CATransaction.setAnimationTimingFunction(.postsEaseInOut)
 
                 UIView.animate(withDuration: 0.3) {
-                    firstController.table.transform = .identity
+                    firstController.tableView?.transform = .identity
                 }
                 
                 CATransaction.commit()

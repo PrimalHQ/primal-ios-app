@@ -9,7 +9,7 @@ import UIKit
 
 class ArticleFeedPreviewFeedController: ArticleFeedViewController {
     let info: FeedFromMarket
-    init(feed: ReadsFeed, feedInfo: FeedFromMarket) {
+    init(feed: PrimalFeed, feedInfo: FeedFromMarket) {
         info = feedInfo
         super.init(feed: feed)
         table.register(FeedMarketplaceCell.self, forCellReuseIdentifier: "infoCell")

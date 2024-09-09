@@ -28,50 +28,13 @@ final class ReadsViewController: UIViewController, Themeable {
         
         setup()
         
-        let first = ReadsFeed.allActiveFeeds.first ?? ReadsFeed.all.first ?? .init(name: "Nostr Reads", spec: "{\"kind\":\"reads\",\"scope\":\"follows\"}")
+        let first = PrimalFeed.getActiveFeeds(.article).first ?? PrimalFeed.getAllFeeds(.article).first ?? .defaultReadsFeed
         setFeed(first)
         
         pageVC.dataSource = self
         pageVC.delegate = self
         
-        let panGesture = BindablePanGestureRecognizer { [weak self] gesture in
-            guard let self else { return }
-            
-            if let scroll: UIScrollView = pageVC.view.findAllSubviews().first, scroll.contentOffset.x == scroll.frame.width {
-                return
-            }
-            
-            let x = gesture.translation(in: view).x
-            let left = x > 0
-            
-            guard let transitionFeed = left ? feedToLeftOfCurrentFeed() : feedToRightOfCurrentFeed() else { return }
-            
-            if let oldTransition, oldTransition.left == left && oldTransition.1 == transitionFeed.name {
-                // Do Nothing
-            } else {
-                self.oldTransition = (left, transitionFeed.name)
-                navTitleView.startTransition(left: left, newTitle: transitionFeed.name)
-            }
-            
-            switch gesture.state {
-            case .possible, .began, .changed:
-                navTitleView.updateTransition(percent: abs(x) / view.frame.width)
-            case .ended, .cancelled, .failed:
-                let velocity = gesture.velocity(in: view).x
-                
-                let halfWidth = view.frame.width / 2
-                
-                if (velocity > 300 && x > 0) || (velocity < -300 && x < 0) || (velocity < 200 && x < -halfWidth) || (velocity > -200 && x > halfWidth) {
-                    navTitleView.completeTransitionAnimated(newTitle: transitionFeed.name)
-                } else {
-                    navTitleView.cancelTransition()
-                }
-            @unknown default:
-                break
-            }
-        }
-        panGesture.delegate = self
-        view.addGestureRecognizer(panGesture)
+        view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,44 +50,50 @@ final class ReadsViewController: UIViewController, Themeable {
         navTitleView.updateTheme()
         
         border.backgroundColor = .background3
+        
+        pageVC.children.forEach {
+            ($0 as? Themeable)?.updateTheme()
+            let views: [Themeable] = $0.view.findAllSubviews()
+            for view in views { view.updateTheme() }
+        }
     }
     
-    var currentFeed: ReadsFeed? {
+    var currentFeed: PrimalFeed? {
         didSet {
             cachedFeedToLeft = nil
             cachedFeedToRight = nil
         }
     }
-    private var cachedFeedToLeft: ReadsFeed?
-    private var cachedFeedToRight: ReadsFeed?
-    func setFeed(_ feed: ReadsFeed) {
+    private var cachedFeedToLeft: PrimalFeed?
+    private var cachedFeedToRight: PrimalFeed?
+    func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
         pageVC.setViewControllers([ArticleFeedViewController(feed: feed)], direction: .forward, animated: false)
     }
     
-    func feedToLeftOfCurrentFeed() -> ReadsFeed? {
+    func feedToLeftOfCurrentFeed() -> PrimalFeed? {
         if let cachedFeedToLeft { return cachedFeedToLeft }
         guard let currentFeed else { return nil }
         cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
         return cachedFeedToLeft
     }
-    func feedToLeftOfFeed(_ feed: ReadsFeed) -> ReadsFeed? {
-        let allFeeds = ReadsFeed.allActiveFeeds
+    func feedToLeftOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
+        let allFeeds = PrimalFeed.getActiveFeeds(.article)
         
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
         
         return allFeeds[safe: (allFeeds.count + index - 1) % allFeeds.count]
     }
     
-    func feedToRightOfCurrentFeed() -> ReadsFeed? {
+    func feedToRightOfCurrentFeed() -> PrimalFeed? {
         if let cachedFeedToRight { return cachedFeedToRight }
         guard let currentFeed else { return nil }
         cachedFeedToRight = feedToRightOfFeed(currentFeed)
         return cachedFeedToRight
     }
-    func feedToRightOfFeed(_ feed: ReadsFeed) -> ReadsFeed? {
-        let allFeeds = ReadsFeed.allActiveFeeds
+    func feedToRightOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
+        let allFeeds = PrimalFeed.getActiveFeeds(.article)
         
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
         
@@ -160,7 +129,7 @@ extension ReadsViewController: UIPageViewControllerDelegate {
             return
         }
         
-        let allFeeds = ReadsFeed.allActiveFeeds
+        let allFeeds = PrimalFeed.getActiveFeeds(.article)
         
         guard
             let articleFeed = pageViewController.viewControllers?.first as? ArticleFeedViewController,
@@ -190,7 +159,7 @@ private extension ReadsViewController {
         
         navTitleView.button.addAction(.init(handler: { [weak self] _ in
             guard let currentFeed = self?.currentFeed else { return }
-            self?.present(FeedPickerController(currentFeed: currentFeed) { feed in
+            self?.present(FeedPickerController(currentFeed: currentFeed, type: .article) { feed in
                 self?.setFeed(feed)
             }, animated: true)
         }), for: .touchUpInside)
@@ -200,17 +169,12 @@ private extension ReadsViewController {
     }
 }
 
-extension ReadsViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
+extension ReadsViewController: DropdownNavigationViewGestureController {
+    func feedNameLeftOfCurrentFeed() -> String? {
+        feedToLeftOfCurrentFeed()?.name
+    }
     
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let pan = gestureRecognizer as? UIPanGestureRecognizer {
-            let trans = pan.translation(in: view)
-            if abs(trans.y) >= 0.01 {
-                return false
-            }
-        }
-        
-        return true
+    func feedNameRightOfCurrentFeed() -> String? {
+        feedToRightOfCurrentFeed()?.name
     }
 }

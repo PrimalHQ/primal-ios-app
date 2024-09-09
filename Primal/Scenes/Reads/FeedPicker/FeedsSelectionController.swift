@@ -21,7 +21,7 @@ extension UIButton.Configuration {
     }
 }
 
-extension ReadsFeed {
+extension PrimalFeed {
     var isFromBackend: Bool {
         get { feedkind == "primal" }
     }
@@ -31,9 +31,20 @@ extension ReadsFeed {
     }
 }
 
-extension ReadsFeed {
-    static func setServerFeeds(_ feeds: [ReadsFeed]) {
-        var allFeeds = all
+enum PrimalFeedType {
+    case note, article
+    
+    var subkey: String {
+        switch self {
+        case .note:     return "user-home-feeds"
+        case .article:  return "user-reads-feeds"
+        }
+    }
+}
+
+extension PrimalFeed {
+    static func setServerFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType) {
+        var allFeeds = getAllFeeds(type)
         
         allFeeds.removeAll(where: { feed in
             feed.isFromBackend && !feeds.contains(where: { $0.spec == feed.spec })
@@ -43,20 +54,25 @@ extension ReadsFeed {
             allFeeds.append(feed)
         }
         
-        setAllFeeds(feeds)
+        setAllFeeds(allFeeds, type: type)
     }
     
-    static var lastTimeFetched: Date?
+    static var lastTimeFeedsFetched: [PrimalFeedType: Date] = [:]
     
-    static func setAllFeeds(_ feeds: [ReadsFeed], notifyBackend: Bool = false)  {
+    static func setAllFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType, notifyBackend: Bool = false)  {
         let encodedToString = feeds.encodeToString()
-        UserDefaults.standard.setValue(encodedToString, forKey: allReadsKey)
+        switch type {
+        case .article:
+            UserDefaults.standard.setValue(encodedToString, forKey: allReadsKey)
+        case .note:
+            UserDefaults.standard.setValue(encodedToString, forKey: allNotesKey)
+        }
         if notifyBackend {
             guard
-                let readsFeedSettings: JSON = encodedToString?.decode(),
+                let feedSettings: JSON = encodedToString?.decode(),
                 let contentString = JSON(dictionaryLiteral:
-                    ("subkey", "user-reads-feeds"),
-                    ("settings", readsFeedSettings)
+                    ("subkey", .string(type.subkey)),
+                    ("settings", feedSettings)
                 ).encodeToString(),
                 let ev = NostrObject.create(content: contentString, kind: 30078)?.toJSON()
             else { return }
@@ -68,62 +84,68 @@ extension ReadsFeed {
     }
     
     private static var allReadsKey: String { IdentityManager.instance.userHexPubkey + "allReadsFeedsKey" }
-    static var all: [ReadsFeed] {
-        get {
-            UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
-        }
-        set {
-            setAllFeeds(newValue, notifyBackend: true)
+    private static var allNotesKey: String { IdentityManager.instance.userHexPubkey + "allNotesFeedsKey" }
+    static func getAllFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
+        switch type {
+        case .note:
+            return UserDefaults.standard.string(forKey: allNotesKey)?.decode() ?? []
+        case .article:
+            return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
         }
     }
     
-    static var allActiveFeeds: [ReadsFeed] {
-        all.filter({ $0.isEnabled })
+    static func getActiveFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
+        getAllFeeds(type).filter { $0.isEnabled }
     }
+    
+    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kind\":\"reads\",\"scope\":\"follows\"}")
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kind\":\"notes\",\"id\":\"latest\"}")
 }
 
-final class ArticleFeedsSelectionController: UIViewController {
+final class FeedsSelectionController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
     
     let table = UITableView()
     
-    var callback: (ReadsFeed) -> Void
+    var callback: (PrimalFeed) -> Void
     
-    var feeds = ReadsFeed.allActiveFeeds
+    lazy var feeds = PrimalFeed.getActiveFeeds(type)
     
     let addFeedButton = UIButton(configuration: .accent18("Add Feed"))
     let editButton = UIButton(configuration: .accent18("Edit"))
     let doneButton = UIButton(configuration: .accent18("Done"))
     
-    var currentFeed: ReadsFeed
-    init(currentFeed: ReadsFeed, _ callback: @escaping (ReadsFeed) -> Void) {
+    var currentFeed: PrimalFeed
+    let type: PrimalFeedType
+    init(currentFeed: PrimalFeed, type: PrimalFeedType, _ callback: @escaping (PrimalFeed) -> Void) {
         self.callback = callback
         self.currentFeed = currentFeed
+        self.type = type
         super.init(nibName: nil, bundle: nil)
         setup()
         
-        if let lastFetch = ReadsFeed.lastTimeFetched, abs(lastFetch.timeIntervalSinceNow) < 300 {
+        if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 300 {
             // Do nothing
             print("NOTHING")
-        } else if let ev = NostrObject.create(content: "{\"subkey\":\"user-reads-feeds\"}", kind: 30078)?.toJSON() {
+        } else if let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() {
             SocketRequest(name: "get_app_subsettings", payload: ["event_from_user": ev]).publisher()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] result in
                     let feeds = result.readFeeds
                     
                     guard let self, !feeds.isEmpty else { return }
-                    ReadsFeed.setAllFeeds(feeds)
-                    ReadsFeed.lastTimeFetched = Date()
+                    PrimalFeed.setAllFeeds(feeds, type: type)
+                    PrimalFeed.lastTimeFeedsFetched[type] = Date()
                     updateTable()
                     
-                    SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": "user-reads-feeds"]).publisher()
+                    SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": .string(type.subkey)]).publisher()
                         .receive(on: DispatchQueue.main)
                         .sink { [weak self] result in
                             let feeds = result.readFeeds
                             
                             if feeds.isEmpty { return }
                             
-                            ReadsFeed.setServerFeeds(feeds)
+                            PrimalFeed.setServerFeeds(feeds, type: type)
                             self?.updateTable()
                         }
                         .store(in: &cancellables)
@@ -144,6 +166,8 @@ final class ArticleFeedsSelectionController: UIViewController {
                 table.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
             }
         }
+        
+        table.reloadData()
     }
     
     required init?(coder: NSCoder) {
@@ -151,7 +175,7 @@ final class ArticleFeedsSelectionController: UIViewController {
     }
 }
 
-private extension ArticleFeedsSelectionController {
+private extension FeedsSelectionController {
     func updateTable() {
         if isEditing {
             startEditing()
@@ -168,7 +192,7 @@ private extension ArticleFeedsSelectionController {
         isEditing = true
         table.dragDelegate = self
         
-        updateFeeds(feeds, ReadsFeed.all)
+        updateFeeds(feeds, PrimalFeed.getAllFeeds(type))
     }
     
     func endEditing() {
@@ -179,10 +203,10 @@ private extension ArticleFeedsSelectionController {
         isEditing = false
         table.dragDelegate = nil
         
-        updateFeeds(feeds, ReadsFeed.allActiveFeeds)
+        updateFeeds(feeds, PrimalFeed.getActiveFeeds(type))
     }
     
-    func updateFeeds(_ oldValue: [ReadsFeed], _ newValue: [ReadsFeed]) {
+    func updateFeeds(_ oldValue: [PrimalFeed], _ newValue: [PrimalFeed]) {
         if table.window == nil {
             feeds = newValue
             return
@@ -215,7 +239,12 @@ private extension ArticleFeedsSelectionController {
         pullBar.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
         
         let title = UILabel()
-        title.text = "Reads Feeds"
+        switch type {
+        case .note:
+            title.text = "Home Feeds"
+        case .article:
+            title.text = "Reads Feeds"
+        }
         title.font = .appFont(withSize: 20, weight: .bold)
         title.textColor = .foreground
         title.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -249,7 +278,8 @@ private extension ArticleFeedsSelectionController {
         pullBar.layer.cornerRadius = 2.5
         
         addFeedButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(FeedMarketplaceController(), sender: nil)
+            guard let self else { return }
+            show(FeedMarketplaceController(type: type), sender: nil)
         }), for: .touchUpInside)
         
         editButton.addAction(.init(handler: { [weak self] _ in self?.startEditing() }), for: .touchUpInside)
@@ -259,7 +289,7 @@ private extension ArticleFeedsSelectionController {
     }
 }
 
-extension ArticleFeedsSelectionController: UITableViewDragDelegate {
+extension FeedsSelectionController: UITableViewDragDelegate {
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = feeds[indexPath.row]
@@ -276,11 +306,11 @@ extension ArticleFeedsSelectionController: UITableViewDragDelegate {
             feeds.append(feed)
         }
         
-        ReadsFeed.setAllFeeds(feeds, notifyBackend: true)
+        PrimalFeed.setAllFeeds(feeds, type: type, notifyBackend: true)
     }
 }
 
-extension ArticleFeedsSelectionController: ArticleFeedSelectionCellDelegate {
+extension FeedsSelectionController: ArticleFeedSelectionCellDelegate {
     func switchToggledInCell(_ cell: ArticleFeedSelectionCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
@@ -298,18 +328,18 @@ extension ArticleFeedsSelectionController: ArticleFeedSelectionCellDelegate {
             alert.addAction(.init(title: "Remove", style: .destructive, handler: { [weak self] _ in
                 guard let self else { return }
                 feeds.remove(at: indexPath.row)
-                ReadsFeed.setAllFeeds(feeds, notifyBackend: true)
+                PrimalFeed.setAllFeeds(feeds, type: type, notifyBackend: true)
                 table.reloadData()
             }))
             present(alert, animated: true)
             return
         }
-        ReadsFeed.setAllFeeds(feeds, notifyBackend: true)
+        PrimalFeed.setAllFeeds(feeds, type: type, notifyBackend: true)
         table.reloadData()
     }
 }
 
-extension ArticleFeedsSelectionController: UITableViewDataSource {
+extension FeedsSelectionController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { feeds.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -322,7 +352,7 @@ extension ArticleFeedsSelectionController: UITableViewDataSource {
     }
 }
 
-extension ArticleFeedsSelectionController: UITableViewDelegate {
+extension FeedsSelectionController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isEditing { return }
         
@@ -378,7 +408,7 @@ class ArticleFeedSelectionCell: UITableViewCell {
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .vertical, padding: 16).centerToSuperview()
         let leading = mainStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32)
-        leading.priority = .defaultHigh
+        leading.priority = .required
         leading.isActive = true
         
         backgroundColorView.backgroundColor = .background3
@@ -407,7 +437,7 @@ class ArticleFeedSelectionCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup(_ feed: ReadsFeed, selected: Bool, editing: Bool, delegate: ArticleFeedSelectionCellDelegate) {
+    func setup(_ feed: PrimalFeed, selected: Bool, editing: Bool, delegate: ArticleFeedSelectionCellDelegate) {
         self.delegate = delegate
         
         titleLabel.text = feed.name

@@ -63,7 +63,7 @@ class Highlight {
     }
 }
 
-struct ReadsFeed: Codable {
+struct PrimalFeed: Codable {
     var name: String
     var spec: String
     var description: String?
@@ -72,7 +72,7 @@ struct ReadsFeed: Codable {
 }
 
 extension PostRequestResult {
-    var readFeeds: [ReadsFeed] {
+    var readFeeds: [PrimalFeed] {
         guard let event = events.first(where: {
             Int($0["kind"]?.doubleValue ?? 0) == NostrKind.feedsSettings.rawValue
         }) else { return [] }

@@ -10,17 +10,6 @@ import UIKit
 class PostFeedViewController: FeedViewController {
     let feed: FeedManager
     
-    var onLoad: (() -> ())? {
-        didSet {
-            if !posts.isEmpty, let onLoad {
-                DispatchQueue.main.async {
-                    onLoad()
-                    self.onLoad = nil
-                }
-            }
-        }
-    }
-    
     init(feed: FeedManager) {
         self.feed = feed
         super.init()

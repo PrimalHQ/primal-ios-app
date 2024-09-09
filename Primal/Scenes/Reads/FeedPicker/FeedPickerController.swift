@@ -8,8 +8,8 @@
 import UIKit
 
 class FeedPickerController: UINavigationController {
-    init(currentFeed: ReadsFeed, callback: @escaping (ReadsFeed) -> Void) {
-        super.init(rootViewController: ArticleFeedsSelectionController(currentFeed: currentFeed, callback))
+    init(currentFeed: PrimalFeed, type: PrimalFeedType, callback: @escaping (PrimalFeed) -> Void) {
+        super.init(rootViewController: FeedsSelectionController(currentFeed: currentFeed, type: type, callback))
         setNavigationBarHidden(true, animated: false)
         
         overrideUserInterfaceStyle = Theme.current.userInterfaceStyle

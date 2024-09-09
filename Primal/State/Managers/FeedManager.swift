@@ -31,6 +31,7 @@ final class FeedManager {
     @Published var newPosts: (Int, [ParsedUser]) = (0, [])
     
     @Published var currentFeed: PrimalSettingsFeed?
+    @Published var newFeed: PrimalFeed?
     var profilePubkey: String?
     var didReachEnd = false
     
@@ -49,8 +50,10 @@ final class FeedManager {
     var addFuturePostsDirectly: () -> Bool = { true }
     
     init(loadLocalHomeFeed: Bool) {
+        newFeed = PrimalFeed.getActiveFeeds(.note).first ?? .defaultNotesFeed
+        
         initSubscriptions()
-        initHomeFeedPublishersAndObservers()
+        refresh()
         
         if loadLocalHomeFeed {
             loadLocally()
@@ -59,6 +62,12 @@ final class FeedManager {
     
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
+        initSubscriptions()
+        refresh()
+    }
+    
+    init(newFeed: PrimalFeed) {
+        self.newFeed = newFeed
         initSubscriptions()
         refresh()
     }
@@ -377,9 +386,26 @@ private extension FeedManager {
         if let currentFeed {
             return generateFeedPageRequest(currentFeed)
         }
+        if let newFeed {
+            return generateNewFeedPageRequest(newFeed)
+        }
         
         currentFeed = .latest
         return generateFeedPageRequest(.latest)
+    }
+    
+    func generateNewFeedPageRequest(_ feed: PrimalFeed) -> (String, JSON) {
+        var payload: [String: JSON] = [
+            "spec": .string(feed.spec),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "limit": .number(Double(40))
+        ]
+        
+        if let until: Double = paginationInfo?.since {
+            payload["until"] = .number(until.rounded())
+        }
+        
+        return ("mega_feed_directive", .object(payload))
     }
     
     func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> (String, JSON) {
