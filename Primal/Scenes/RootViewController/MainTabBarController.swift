@@ -347,7 +347,12 @@ private extension MainTabBarController {
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
             tableViews.forEach {
                 if $0.indexPathsForVisibleRows?.isEmpty == false {
-                    $0.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: true)
+                    for section in 0...3 {
+                        if $0.numberOfRows(inSection: section) > 0 {
+                            $0.scrollToRow(at: .init(row: 0, section: section), at: .top, animated: true)
+                            return
+                        }
+                    }
                 }
             }
             return
