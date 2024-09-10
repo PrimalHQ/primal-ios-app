@@ -121,7 +121,7 @@ final class ZapInfoView: MyButton, Themeable {
         super.init(frame: .zero)
         
         let stack = UIStackView([
-            emojiLabel, SpacerView(width: 16, priority: .required),
+//            emojiLabel, SpacerView(width: 16, priority: .required),
             messageLabel, SpacerView(width: 17, priority: .required), UIView(),
             amountLabel, SpacerView(width: 12, priority: .required), arrowImageView
         ])

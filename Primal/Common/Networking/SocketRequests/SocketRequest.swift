@@ -63,6 +63,7 @@ extension PostRequestResult {
             if !allRelays.isEmpty {
                 relayData = allRelays
             }
+            return
         case .zapReceipt:
             guard 
                 let id = payload["id"]?.stringValue,
@@ -76,6 +77,20 @@ extension PostRequestResult {
             
             zapReceipts[id] = zapContent
             return
+        case .handlerInfo:
+            print(payload)
+            events.append(payload)
+            return
+//        case .shortenedArticle:
+//            let longFormEvent = NostrContent(jsonData: payload)
+//
+//            longFormPosts.append(.init(
+//                title: longFormEvent.tags.first(where: { $0.first == "title" })?[safe: 1],
+//                image: longFormEvent.tags.first(where: { $0.first == "image" })?[safe: 1],
+//                summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
+//                event: longFormEvent
+//            ))               
+//            return
         default: break
         }
         
@@ -139,13 +154,13 @@ extension PostRequestResult {
             }
             
             if noteStatus.liked {
-                LikeManager.instance.userLikes.insert(noteStatus.event_id)
+                PostingManager.instance.userLikes.insert(noteStatus.event_id)
             }
             if noteStatus.replied {
-                PostManager.instance.userReplied.insert(noteStatus.event_id)
+                PostingManager.instance.userReplied.insert(noteStatus.event_id)
             }
             if noteStatus.reposted {
-                PostManager.instance.userReposts.insert(noteStatus.event_id)
+                PostingManager.instance.userReposts.insert(noteStatus.event_id)
             }
             if noteStatus.zapped {
                 WalletManager.instance.setZapUnknown(noteStatus.event_id)
@@ -156,13 +171,26 @@ extension PostRequestResult {
                 return
             }
             
-            mentions.append(NostrContent(json: contentJSON))
+            let nostrContent = NostrContent(json: contentJSON)
+            
+            mentions.append(nostrContent)
+            
+            if nostrContent.kind == NostrKind.longForm.rawValue {
+                longFormPosts.append(.init(
+                    title: nostrContent.tags.first(where: { $0.first == "title" })?[safe: 1],
+                    image: nostrContent.tags.first(where: { $0.first == "image" })?[safe: 1],
+                    summary: nostrContent.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                    event: nostrContent
+                ))
+            }
+            
         case .mediaMetadata:
             guard let metadata: MediaMetadata = contentString.decode() else {
                 print("Error decoding metadata string to json")
                 return
             }
             
+            MediaManager.add(metadata)
             mediaMetadata.append(metadata)
         case .userScore:
             guard let info: [String: Int] = contentString.decode() else { return }
@@ -265,8 +293,40 @@ extension PostRequestResult {
                 return
             }
             postZaps.append(zap)
+        case .longFormMetadata:
+            guard let json: JSON = contentString.decode(), let objectValue = json.objectValue else {
+                print("Error decoding longFormMetadata")
+                return
+            }
+            
+            if let eventId = objectValue["event_id"]?.stringValue, let words = objectValue["words"]?.doubleValue {
+                longFormWordCount[eventId] = Int(words)
+            } else {
+                print("Error decoding longFormMetadata")
+            }
+        case .longForm, .shortenedArticle:
+            let longFormEvent = NostrContent(jsonData: payload)
+
+            longFormPosts.append(.init(
+                title: longFormEvent.tags.first(where: { $0.first == "title" })?[safe: 1],
+                image: longFormEvent.tags.first(where: { $0.first == "image" })?[safe: 1],
+                summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                event: longFormEvent
+            ))
+        case .eventBroadcastResponse:
+            guard 
+                let json: JSON = contentString.decode(),
+                let response = json.arrayValue?.first?.objectValue?["responses"]?.arrayValue?.first?.arrayValue,
+                let statusArrayString = response.dropFirst().first?.stringValue,
+                let statusArray: JSON = statusArrayString.decode(),
+                let status = statusArray.arrayValue?.first?.stringValue
+            else { return }
+            
+            eventBroadcastSuccessful = eventBroadcastSuccessful || status == "OK"
+        case .highlight:
+            highlights.append(NostrContent(json: .object(payload)))
         default:
-            print("Unhandled response \(payload)")
+            events.append(payload)
         }
     }
 }

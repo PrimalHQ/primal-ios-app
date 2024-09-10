@@ -23,6 +23,7 @@ final class FeedManager {
         
     let newParsedPosts: PassthroughSubject<[ParsedContent], Never> = .init()
     @Published var parsedPosts: [ParsedContent] = []
+    @Published var parsedLongForm: [Article] = []
     var paginationInfo: PrimalPagination?
     
     @Published var newAddedPosts = 0
@@ -30,13 +31,12 @@ final class FeedManager {
     @Published var newPosts: (Int, [ParsedUser]) = (0, [])
     
     @Published var currentFeed: PrimalSettingsFeed?
+    @Published var newFeed: PrimalFeed?
     var profilePubkey: String?
     var didReachEnd = false
     
     var lastRefreshDate: Date = .distantPast
     var blockFuturePosts: Bool { lastRefreshDate.timeIntervalSinceNow > -10 }
-    
-    let refreshCellMenuEmitter: PassthroughSubject<Int, Never> = .init()
     
     // this is a map, matches post id of the repost with the original already added post in the post list
     var alreadyAddedReposts: [String: ParsedContent] = [:]
@@ -50,8 +50,10 @@ final class FeedManager {
     var addFuturePostsDirectly: () -> Bool = { true }
     
     init(loadLocalHomeFeed: Bool) {
+        newFeed = PrimalFeed.getActiveFeeds(.note).first ?? .defaultNotesFeed
+        
         initSubscriptions()
-        initHomeFeedPublishersAndObservers()
+        refresh()
         
         if loadLocalHomeFeed {
             loadLocally()
@@ -60,6 +62,12 @@ final class FeedManager {
     
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
+        initSubscriptions()
+        refresh()
+    }
+    
+    init(newFeed: PrimalFeed) {
+        self.newFeed = newFeed
         initSubscriptions()
         refresh()
     }
@@ -112,6 +120,7 @@ final class FeedManager {
         newAddedPosts = 0
         alreadyAddedReposts = [:]
         parsedPosts.removeAll()
+        parsedLongForm.removeAll()
         paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
@@ -170,18 +179,10 @@ private extension FeedManager {
             }
             .store(in: &cancellables)
         
-        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
-            guard let self, let index = parsedPosts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
-            var zaps = parsedPosts[index].zaps
-            let zapIndex = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
-            zaps.insert(zap, at: zapIndex)
-            parsedPosts[index].zaps = zaps
-            refreshCellMenuEmitter.send(index)
-        }
-        .store(in: &cancellables)
-        
         postsEmitter.sink { [weak self] result in
             guard let self else { return }
+            
+            self.parsedLongForm += result.getArticles()
             
             var sorted = result.process()
             
@@ -228,7 +229,7 @@ private extension FeedManager {
     func initHomeFeedPublishersAndObservers() {
         Publishers.Zip3(
             IdentityManager.instance.$didFinishInit.filter({ $0 }).first(),
-            Connection.regular.$isConnected.filter({ $0 }).first(),
+            Connection.regular.isConnectedPublisher.filter({ $0 }).first(),
             IdentityManager.instance.$userSettings.compactMap { $0?.feeds?.first }
         )
         .sink { [weak self] _, _, feed in
@@ -284,7 +285,7 @@ private extension FeedManager {
         
         guard
             let directive = currentFeed?.hex,
-            !directive.hasPrefix("search;"),
+            !directive.hasPrefix("search;"), !directive.hasPrefix("bookmarks;"),
             let paginationInfo,
             paginationInfo.order_by == "created_at",
             let until = paginationInfo.until
@@ -385,9 +386,26 @@ private extension FeedManager {
         if let currentFeed {
             return generateFeedPageRequest(currentFeed)
         }
+        if let newFeed {
+            return generateNewFeedPageRequest(newFeed)
+        }
         
         currentFeed = .latest
         return generateFeedPageRequest(.latest)
+    }
+    
+    func generateNewFeedPageRequest(_ feed: PrimalFeed) -> (String, JSON) {
+        var payload: [String: JSON] = [
+            "spec": .string(feed.spec),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "limit": .number(Double(40))
+        ]
+        
+        if let until: Double = paginationInfo?.since {
+            payload["until"] = .number(until.rounded())
+        }
+        
+        return ("mega_feed_directive", .object(payload))
     }
     
     func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> (String, JSON) {

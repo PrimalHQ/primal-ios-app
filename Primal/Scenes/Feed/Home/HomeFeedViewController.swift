@@ -8,55 +8,43 @@
 import Combine
 import UIKit
 
-final class HomeFeedViewController: PostFeedViewController {
-    let feedButton = UIButton()
+extension UIButton.Configuration {
+    static func navChevronButton(title: String) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = .init(title, attributes: AttributeContainer([
+            .font: UIFont.appFont(withSize: 20, weight: .bold),
+            .foregroundColor: UIColor.foreground
+        ]))
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 18, bottom: 0, trailing: 0)
+        config.image = UIImage(named: "navChevron")?.withTintColor(.foreground).withRenderingMode(.alwaysOriginal)
+        config.imagePadding = 8
+        config.imagePlacement = .trailing
+        return config
+    }
+}
 
+final class HomeFeedViewController: UIViewController, Themeable {
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
-    var onLoad: (() -> ())? {
-        didSet {
-            if !posts.isEmpty, let onLoad {
-                DispatchQueue.main.async {
-                    onLoad()
-                    self.onLoad = nil
-                }
-            }
-        }
-    }
+    lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    let newPostsViewParent = UIView()
-    let newPostsView = NewPostsButton()
+    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
+        self?.navigationController?.fadeTo(SearchViewController())
+    }))
     
-    func updatePosts(old: Int, new: Int, users: [ParsedUser]) {
-        if new != 0 {
-            newPostsView.setCount(new, users: users)
-        }
-        
-        if new == 0 {
-            UIView.animate(withDuration: 0.3) {
-                self.newPostsView.alpha = 0
-            } completion: { finished in
-                if finished {
-                    self.newPostsViewParent.isHidden = true
-                }
-            }
-        } else if old == 0 {
-            newPostsViewParent.isHidden = false
-            newPostsView.transform = .init(translationX: 0, y: -30)
-            UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
-                self.newPostsView.alpha = 1
-                self.newPostsView.transform = .identity
-            }
-        }
-    }
+    let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    weak var firstFeedVC: ShortFormFeedController?
     
     init() {
-        super.init(feed: FeedManager(loadLocalHomeFeed: true))
-        feed.addFuturePostsDirectly = { [weak self] in
-            guard let self else { return true }
-            return self.table.contentOffset.y > 300
-        }
+        currentFeed = PrimalFeed.getActiveFeeds(.note).first ?? .defaultNotesFeed
+        super.init(nibName: nil, bundle: nil)
+        let vc = ShortFormFeedController(feed: FeedManager(newFeed: currentFeed))
+        firstFeedVC = vc
+        pageVC.setViewControllers([vc], direction: .forward, animated: false)
     }
     
     required init?(coder: NSCoder) {
@@ -66,14 +54,26 @@ final class HomeFeedViewController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Latest"
+        navTitleView.title = "Latest"
+        navigationItem.titleView = navTitleView
+        let searchParent = UIView()
+        searchParent.addSubview(searchButton)
+        searchButton.pinToSuperview(edges: [.vertical, .leading]).pinToSuperview(edges: .trailing, padding: -12)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchParent)
+        searchButton.imageView?.transform = .init(translationX: 12, y: 0)
+        navTitleView.button.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
+                self?.setFeed(feed)
+                self?.pageVC.setViewControllers([ShortFormFeedController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
+            }), animated: true)
+        }), for: .touchUpInside)
         
-        loadingSpinner.transform = .init(translationX: 0, y: -70)
-        
-        feedButton.constrainToSize(44)
-        feedButton.addTarget(self, action: #selector(openFeedSelection), for: .touchUpInside)
-        feedButton.setImage(UIImage(named: "feedPicker")?.scalePreservingAspectRatio(targetSize: .init(width: 22, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: feedButton)
+        pageVC.willMove(toParent: self)
+        view.addSubview(pageVC.view)
+        addChild(pageVC)
+        pageVC.didMove(toParent: self)
+        pageVC.view.pinToSuperview()
         
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
         view.addSubview(postButtonParent)
@@ -81,30 +81,11 @@ final class HomeFeedViewController: PostFeedViewController {
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
         postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         
-        view.addSubview(newPostsViewParent)
-        newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
-        
-        newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
-        newPostsView.alpha = 0
-        newPostsViewParent.isHidden = true
-        
-        newPostsView.addAction(.init(handler: { [weak self] _ in
-            guard let self, !self.posts.isEmpty else { return }
-            feed.addAllFuturePosts()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
-                self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
-            }
-        }), for: .touchDown)
-        
-        refreshControl.addAction(.init(handler: { [weak self] _ in
-            self?.feed.refresh()
-        }), for: .valueChanged)
+        pageVC.dataSource = self
+        pageVC.delegate = self
+        view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
         
         updateTheme()
-     
-        setupPublishers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -116,109 +97,118 @@ final class HomeFeedViewController: PostFeedViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        loadingSpinner.play()
-    }
-    
-    @objc func openFeedSelection() {
-        present(FeedsSelectionController(feed: feed), animated: true)
     }
     
     @objc func postPressed() {
         present(NewPostViewController(), animated: true)
     }
     
-    override func updateTheme() {               
-        super.updateTheme()
+    func updateTheme() {
+        searchButton.tintColor = .foreground3
         
-        feedButton.backgroundColor = .background
-        feedButton.tintColor = .foreground3
-    }
-    
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
-        guard indexPath.section == postSection else { return }
+        updateTitle()
         
-        feed.didShowPost(indexPath.row)
-    }
-    
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        super.scrollViewDidScroll(scrollView)
-        
-        if scrollView.contentOffset.y < 100 {
-            feed.didShowPost(0)
+        pageVC.children.forEach {
+            ($0 as? Themeable)?.updateTheme()
+            let views: [Themeable] = $0.view.findAllSubviews()
+            for view in views { view.updateTheme() }
         }
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(transform)
+    func updateTitle() {
+        navTitleView.title = currentFeed.name
+        navTitleView.updateTheme()
+    }
+    
+    var currentFeed: PrimalFeed {
+        didSet {
+            cachedFeedToLeft = nil
+            cachedFeedToRight = nil
+        }
+    }
+    private var cachedFeedToLeft: PrimalFeed?
+    private var cachedFeedToRight: PrimalFeed?
+    func setFeed(_ feed: PrimalFeed) {
+        currentFeed = feed
+        navTitleView.title = feed.name
+//        pageVC.setViewControllers([ShortFormFeedController(feed: .init(feed: feed))], direction: .forward, animated: false)
+    }
+    
+    func feedToLeftOfCurrentFeed() -> PrimalFeed? {
+        if let cachedFeedToLeft { return cachedFeedToLeft }
+        cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
+        return cachedFeedToLeft
+    }
+    func feedToLeftOfFeed(_ feed: PrimalFeed?) -> PrimalFeed? {
+        let allFeeds = PrimalFeed.getActiveFeeds(.note)
         
-        let percent = abs(transform / barsMaxTransform)
-        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
-
-        postButton.alpha = 1 - percent
-        postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-        postButtonParent.transform = .init(translationX: 0, y: -transform)
+        guard let index = allFeeds.firstIndex(where: { $0.spec == feed?.spec }) else { return nil }
         
-        newPostsViewParent.transform = .init(translationX: 0, y: transform)
-        newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
+        return allFeeds[safe: (allFeeds.count + index - 1) % allFeeds.count]
+    }
+    
+    func feedToRightOfCurrentFeed() -> PrimalFeed? {
+        if let cachedFeedToRight { return cachedFeedToRight }
+        cachedFeedToRight = feedToRightOfFeed(currentFeed)
+        return cachedFeedToRight
+    }
+    func feedToRightOfFeed(_ feed: PrimalFeed?) -> PrimalFeed? {
+        let allFeeds = PrimalFeed.getActiveFeeds(.note)
+        
+        guard let index = allFeeds.firstIndex(where: { $0.spec == feed?.spec }) else { return nil }
+        
+        return allFeeds[safe: (index + 1) % allFeeds.count]
     }
 }
 
-private extension HomeFeedViewController {
-    func setupPublishers() {
-        feed.$newPosts.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] old, new in
-            self?.updatePosts(old: old.0, new: new.0, users: new.1)
+extension HomeFeedViewController: UIPageViewControllerDataSource {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard
+            let articleFeed = viewController as? ShortFormFeedController,
+            let newFeed = feedToLeftOfFeed(articleFeed.feed.newFeed)
+        else { return nil }
+        
+        return ShortFormFeedController(feed: .init(newFeed: newFeed))
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard
+            let articleFeed = viewController as? ShortFormFeedController,
+            let newFeed = feedToRightOfFeed(articleFeed.feed.newFeed)
+        else { return nil }
+        
+        return ShortFormFeedController(feed: .init(newFeed: newFeed))
+    }
+}
+
+extension HomeFeedViewController: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        guard completed else {
+            navTitleView.cancelTransition()
+            return
         }
-        .store(in: &cancellables)
         
-        feed.newParsedPosts
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] newPosts in
-                if self?.refreshControl.isRefreshing == false && self?.loadingSpinner.isHidden == true {
-                    self?.posts += newPosts
-                } else {
-                    self?.posts = []
-                    self?.posts = newPosts
-                }
-                
-                DispatchQueue.main.async {
-                    self?.onLoad?()
-                    self?.onLoad = nil
-                }
-            }
-            .store(in: &cancellables)
+        let allFeeds = PrimalFeed.getActiveFeeds(.note)
         
-        feed.$parsedPosts
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in
-                if !posts.isEmpty {
-                    if posts.first?.post.id != self?.posts.first?.post.id || (self?.posts.count ?? 0) > posts.count {
-                        self?.posts = posts
-                    }
-                }
-                
-                if posts.isEmpty {
-                    if self?.refreshControl.isRefreshing == false {
-                        self?.posts = []
-                        self?.loadingSpinner.isHidden = false
-                        self?.loadingSpinner.play()
-                    }
-                } else if self?.loadingSpinner.isHidden == false || self?.refreshControl.isRefreshing == true {
-                    self?.loadingSpinner.isHidden = true
-                    self?.loadingSpinner.stop()
-                    self?.refreshControl.endRefreshing()
-                }
-            }
-            .store(in: &cancellables)
+        guard
+            let articleFeed = pageViewController.viewControllers?.first as? ShortFormFeedController,
+            let feed = allFeeds.first(where: { $0.spec == articleFeed.feed.newFeed?.spec })
+        else { return }
         
-        feed.$currentFeed
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] feed in
-                self?.title = feed?.name ?? (HomeFeedLocalLoadingManager.isLatestFeedFirst ? "Latest" : nil)
-            }
-            .store(in: &cancellables)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+            self.navTitleView.completeTransition(newTitle: feed.name)
+        }
+        currentFeed = feed
+    }
+}
+
+extension HomeFeedViewController: DropdownNavigationViewGestureController {
+    func feedNameLeftOfCurrentFeed() -> String? {
+        feedToLeftOfCurrentFeed()?.name
+    }
+    
+    func feedNameRightOfCurrentFeed() -> String? {
+        feedToRightOfCurrentFeed()?.name
     }
 }

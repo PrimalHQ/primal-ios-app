@@ -14,12 +14,11 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class FeedViewController: UIViewController, UITableViewDataSource, Themeable, WalletSearchController {
+class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
     let table = UITableView()
-    let safeAreaSpacer = UIView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -30,10 +29,16 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     var postCellID = "cell" // Needed for updating the theme
     
+    var animateInserts = true
+    
     var postSection: Int { 0 }
-    var posts: [ParsedContent] = [] {
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
+        if indexPath.section != postSection { return nil }
+        return posts[safe: indexPath.row]
+    }
+    @Published var posts: [ParsedContent] = [] {
         didSet {
-            guard oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
+            guard animateInserts, oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
                 table.reloadData()
                 return
             }
@@ -99,9 +104,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         
         if animated {
-            animateBarsToVisible()
+            if prevTransform != 0 {
+                animateBarsToVisible()
+            }
         } else {
-            setBarsToTransform(0)
+            if prevTransform != 0 {
+                setBarsToTransform(0)
+            }
         }
     }
     
@@ -174,7 +183,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     @discardableResult
     func open(post: ParsedContent) -> FeedViewController {
         let threadVC = ThreadViewController(post: post)
-        show(threadVC, sender: nil)
+        showViewController(threadVC)
         return threadVC
     }
     
@@ -214,6 +223,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
+        open(post: post)
+    }
+    
     func updateTheme() {        
         updateCellID()
         table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
@@ -227,69 +241,113 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     private var barForegroundObserver: NSObjectProtocol?
     
-    func handleURLTap(_ url: URL, cachedUsers: [PrimalUser] = [], notes: [ParsedElement] = []) {
+    func handleURLTap(_ url: URL, from content: ParsedContent? = nil, cachedUsers: [PrimalUser] = []) {
         let urlString = url.absoluteString
-        
-        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
-            return
-        }
         
         guard let infoSub = urlString.split(separator: "//").last else { return }
         let info = String(infoSub)
         
         if urlString.hasPrefix("hashtag"), info.isHashtag {
             let feed = RegularFeedViewController(feed: FeedManager(search: info))
-            show(feed, sender: nil)
+            showViewController(feed)
             return
         }
         
         if urlString.hasPrefix("mention") {
-            let user = cachedUsers.first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
+            let user = (content?.mentionedUsers ?? cachedUsers).first(where: { $0.pubkey == info }) ?? .init(pubkey: info)
             
             let profile = ProfileViewController(profile: .init(data: user))
-            show(profile, sender: nil)
+            showViewController(profile)
             return
         }
         
         if urlString.hasPrefix("note") {
-            guard let ref = notes.first(where: { $0.text == info })?.reference else { return }
+            guard let ref = content?.notes.first(where: { $0.text == info })?.reference else { return }
             
             let thread = ThreadViewController(threadId: ref)
-            show(thread, sender: nil)
+            showViewController(thread)
+            return
+        }
+        
+        if urlString.hasPrefix("highlight") {
+            guard 
+                let highlight = content?.highlightEvents.first(where: { $0.post.id == info }),
+                let articleId = highlight.post.tags.first(where: { $0.first == "a" })?[safe: 1]
+            else { return }
+            
+            let infoArray = articleId.split(separator: ":")
+            
+            guard
+                let kind = Int(infoArray.first ?? ""),
+                let pubkey = infoArray[safe: 1],
+                let id = infoArray[safe: 2]
+            else { return }
+            
+            if let article = content?.article, article.event.kind == kind, article.event.pubkey == pubkey, article.identifier == id {
+                let articleVC = ArticleViewController(content: article)
+                showViewController(articleVC)
+            } else {
+                showViewController(LoadArticleController(kind: kind, identifier: String(id), pubkey: String(pubkey)))
+            }
+            return
+        }
+        
+        var url = url
+        if urlString.isValidURL {
+            if urlString.lowercased().hasPrefix("http://") {
+                url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
+            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+                url = .init(string: "https://" + url.absoluteString) ?? url
+            }
+            
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
             return
         }
     }
     
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
-        guard let index = table.indexPath(for: cell)?.row, let post = posts[safe: index] else { return }
-
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
+        
+        performEvent(event, withPost: post, inCell: cell)
+    }
+    
+    func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
         switch event {
         case .url(let URL):
             guard let url = URL ?? post.linkPreview?.url else { return }
-            handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
+            
+            handleURLTap(url, from: post)
         case .images(let resource):
+            guard let cell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
+            guard let cell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
-            show(ProfileViewController(profile: post.user), sender: nil)
+            showViewController(ProfileViewController(profile: post.user))
         case .post:
             open(post: post)
         case .like:
-            LikeManager.instance.sendLikeEvent(post: post.post)
+            PostingManager.instance.sendLikeEvent(post: post.post)
             
             hapticGenerator.impactOccurred()
             
-            cell.likeButton.animateTo(post.post.likes + 1, filled: true)
+            cell?.likeButton.animateTo(post.post.likes + 1, filled: true)
         case .zap:
+            guard let cell else { return }
             zapFromCell(cell, showPopup: false)
         case .longTapZap:
+            guard let cell else { return }
             zapFromCell(cell, showPopup: true)
         case .repost:
+            guard let cell else { return }
             postCellDidTapRepost(cell)
         case .reply:
+            if post.post.isArticle {
+                return
+            }
+            
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
@@ -299,7 +357,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             open(post: post.embededPost ?? post)
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
-            show(ProfileViewController(profile: profile), sender: nil)
+            showViewController(ProfileViewController(profile: profile))
+        case .article:
+            guard let article = post.article else { return }
+            showViewController(ArticleViewController(content: article))
         case .payInvoice:
             guard let invoice = post.invoice else { return }
             search(invoice.string)
@@ -315,7 +376,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            view.showToast("Copied!")
+            RootViewController.instance.showToast("Copied!")
         case .broadcast:
             break // TODO: Something?
         case .report:
@@ -323,11 +384,25 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         case .mute:
             MuteManager.instance.toggleMute(post.user.data.pubkey)
         case .bookmark:
-            BookmarkManager.instance.bookmark(post.post.id)
-            cell.updateMenu(post)
+            BookmarkManager.instance.bookmark(post)
+            cell?.updateMenu(post)
         case .unbookmark:
-            BookmarkManager.instance.unbookmark(post.post.id)
-            cell.updateMenu(post)
+            BookmarkManager.instance.unbookmark(post)
+            cell?.updateMenu(post)
+        case .articleTag(let tag):
+            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
+        }
+    }
+    
+    func showViewController(_ viewController: UIViewController) {
+        if let navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+            return
+        }
+        if let presentingViewController, let navigationController: UINavigationController = presentingViewController.findInChildren() {
+            dismiss(animated: true) {
+                navigationController.pushViewController(viewController, animated: true)
+            }
         }
     }
 }
@@ -374,12 +449,39 @@ private extension FeedViewController {
                 self.animateBarsToVisible()
             }
         }
+        
+        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard let self, let index = posts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
+            
+            var zaps = posts[index].zaps
+            if zaps.contains(where: { $0.receiptId == zap.receiptId }) { return }
+            
+            let zapIndex = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
+            
+            zaps.insert(zap, at: zapIndex)
+            posts[index].zaps = zaps
+            
+            guard
+                self.view.window != nil,
+                table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
+            else { return }
+            
+            if posts[index].zaps.count > 2, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+                cell.updateMenu(posts[index])
+            } else {
+                table.reloadData()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func zapFromCell(_ cell: PostCell, showPopup: Bool) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
+        guard 
+            let indexPath = table.indexPath(for: cell),
+            let post = postForIndexPath(indexPath)
+        else { return }
         
-        let postUser = posts[indexPath.row].user.data
+        let postUser = post.user.data
         if postUser.address == nil {
             showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
             return
@@ -408,9 +510,11 @@ private extension FeedViewController {
     }
     
     func doZapFromCell(_ cell: PostCell, amount: Int, message: String) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        let index = indexPath.row
-        let parsed = posts[index]
+        guard 
+            let indexPath = table.indexPath(for: cell),
+            let parsed = postForIndexPath(indexPath)
+        else { return }
+        
         
         let newZapAmount = parsed.post.satszapped + amount
         
@@ -443,9 +547,8 @@ private extension FeedViewController {
                 } else {
                     self?.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
                 }
-                guard self?.posts.count ?? 0 > index else { return }
                 if self?.view.window != nil {
-                    self?.table.reloadRows(at: [indexPath], with: .none)
+                    self?.table.reloadData()
                 }
             }
         }
@@ -454,10 +557,14 @@ private extension FeedViewController {
     func animateZap(_ cell: PostCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
-        view.addSubview(animView)
-        animView
-            .centerToView(cell.zapButton.iconView, axis: .vertical, offset: 2)
-            .centerToView(cell.zapButton.iconView, axis: .horizontal, offset: 62)
+        let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : (cell.zapGallery as? LargeZapGalleryView)?.zapPillButton.imageView
+        
+        if let iconToPin {
+            view.addSubview(animView)
+            animView
+                .centerToView(iconToPin, axis: .vertical, offset: 2)
+                .centerToView(iconToPin, axis: .horizontal, offset: 62)
+        }
         
         view.layoutIfNeeded()
         
@@ -485,12 +592,12 @@ extension FeedViewController: PostCellDelegate {
         let popup = PopupMenuViewController()
         
         popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
-            PostManager.instance.sendRepostEvent(nostrContent: post.toRepostNostrContent())
+            PostingManager.instance.sendRepostEvent(post: post)
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
-            guard let noteRef = bech32_note_id(post.id) else { return }
+            guard let noteRef = bech32_note_id(post.universalID) else { return }
             let new = NewPostViewController()
             new.textView.text = "\n\nnostr:\(noteRef)"
             self.present(new, animated: true)
@@ -560,12 +667,6 @@ extension FeedViewController: PostCellDelegate {
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
         
         present(FullScreenVideoPlayerController(player), animated: true) 
-    }
-}
-
-extension FeedViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        open(post: posts[indexPath.row])
     }
 }
 

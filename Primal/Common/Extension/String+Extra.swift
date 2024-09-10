@@ -79,11 +79,13 @@ extension String : Identifiable {
     }
     
     var isVideoButNotYoutubePathComponent: Bool {
-        hasSuffix(".mov") || hasSuffix(".mp4")
+        let lowercased = lowercased()
+        return lowercased.hasSuffix(".mov") || lowercased.hasSuffix(".mp4")
     }
     
     var isYoutubeVideoURL: Bool {
-        contains("youtube.com/watch?") || contains("youtu.be")
+        let lowercased = lowercased()
+        return lowercased.contains("youtube.com/watch?") || lowercased.contains("youtu.be")
     }
     
     var isHashtag: Bool {
@@ -262,5 +264,22 @@ extension String : Identifiable {
             text += "\n\(lastLine)"
         }
         return text
+    }
+    
+    func escapedHtml() -> String {
+        return self
+//        var newString = self
+//        let htmlEscapes = [
+//            "&": "&amp;",
+//            "<": "&lt;",
+//            "\"": "&quot;",
+//            "'": "&#39;"
+//        ]
+//        
+//        for (key, value) in htmlEscapes {
+//            newString = newString.replacingOccurrences(of: key, with: value)
+//        }
+//        
+//        return newString
     }
 }

@@ -25,18 +25,30 @@ extension TransactionAmountCell: TransactionPartialCell {
         guard case let .amount(value, incoming) = info else { return }
         
         let color = incoming ? UIColor.receiveMoney : .sendMoney
-        let text = NSMutableAttributedString(string: value.localized() + " ", attributes: [
-            .font: UIFont.appFont(withSize: 48, weight: .bold),
-            .foregroundColor: color
-        ])
-        text.append(.init(string: "sats", attributes: [
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: color
-        ]))
-        
         label.textColor = color
-        label.text = value.localized()
-        visibleLabel.attributedText = text
+        
+        if WalletManager.instance.isBitcoinPrimary {
+            let text = NSMutableAttributedString(string: value.localized() + " ", attributes: [
+                .font: UIFont.appFont(withSize: 48, weight: .bold),
+                .foregroundColor: color
+            ])
+            text.append(.init(string: "sats", attributes: [
+                .font: UIFont.appFont(withSize: 16, weight: .regular),
+                .foregroundColor: color
+            ]))
+            
+            label.text = value.localized()
+            visibleLabel.attributedText = text
+        } else {
+            let usdString = "$" + value.satsToUsdAmountString(.twoDecimals)
+            let text = NSAttributedString(string: usdString, attributes: [
+                .font: UIFont.appFont(withSize: 48, weight: .bold),
+                .foregroundColor: color
+            ])
+            
+            label.text = usdString
+            visibleLabel.attributedText = text
+        }
         
         backgroundColor = .background2
     }

@@ -34,7 +34,6 @@ struct ParsedZap: Equatable {
     let amountSats: Int
     let message: String
     let user: ParsedUser
-    
 }
 
 struct NoteZapsRequest {

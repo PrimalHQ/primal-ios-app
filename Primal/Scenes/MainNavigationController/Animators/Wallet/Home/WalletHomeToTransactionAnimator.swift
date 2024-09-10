@@ -69,20 +69,16 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
                 cell?.profileImage.animateTransitionTo(infoCell.avatar, duration: 18 / 30, in: container)
                 
                 if cell?.nameLabel.text == infoCell.mainLabel.text {
-                    cell?.nameLabel.animateColorTransitionTo(infoCell.mainLabel, duration: 18 / 30, in: container, forceHeight: true)
+                    cell?.nameLabel.animateTransitionTo(infoCell.mainLabel, duration: 18 / 30, in: container)
                 }
                 
                 if infoCell.messageLabel.text?.isEmpty == false {
-                    cell?.messageLabel.animateLeadingTransitionTo(infoCell.messageLabel, duration: 18 / 30, in: container, forceHeight: true)
-                }
-                
-                UIView.animate(withDuration: 2 / 30, delay: 15 / 30) {
-                    infoCell.messageLabel.alpha = 1
+                    cell?.messageLabel.animateTransitionTo(infoCell.messageLabel, duration: 18 / 30, in: container)
                 }
             }
             
             if let amountCell {
-                cell?.amountLabel.animateColorTransitionTo(amountCell.label, duration: 18 / 30, in: container)
+                cell?.amountLabel.animateTransitionTo(amountCell.label, duration: 18 / 30, in: container)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(550)) {
                     UIView.animate(withDuration: 2 / 30) {
@@ -115,21 +111,16 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
             }
         } else {
             if let cell {
-                infoCell?.avatar.animateTransitionTo(cell.profileImage, duration: 18 / 30, in: container)
+                infoCell?.avatar.animateTransitionTo(cell.profileImage, duration: 14 / 30, in: container)
                 
                 if cell.nameLabel.text == infoCell?.mainLabel.text {
-                    infoCell?.mainLabel.animateColorTransitionTo(cell.nameLabel, duration: 18 / 30, in: container, forceHeight: true)
+                    infoCell?.mainLabel.animateTransitionTo(cell.nameLabel, duration: 14 / 30, in: container)
                 }
                 
-                amountCell?.label.animateColorTransitionTo(cell.amountLabel, duration: 18 / 30, in: container)
+                amountCell?.label.animateTransitionTo(cell.amountLabel, duration: 14 / 30, in: container)
                 
                 if infoCell?.messageLabel.text?.isEmpty == false {
-                    let label = infoCell?.messageLabel.animateLeadingTransitionTo(cell.messageLabel, duration: 18 / 30, in: container, forceHeight: true)
-                    
-                    UIView.animate(withDuration: 2 / 30, delay: 15 / 30) {
-                        label?.alpha = 0
-                        cell.messageLabel.alpha = 1
-                    }
+                    infoCell?.messageLabel.animateTransitionTo(cell.messageLabel, duration: 14 / 30, in: container)
                 }
             }
             

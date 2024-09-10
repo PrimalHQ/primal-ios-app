@@ -9,6 +9,10 @@ import Foundation
 import SwiftUI
 
 extension UIColor {
+    static var highlight: UIColor {
+        Theme.current.isDarkTheme ? .init(rgb: 0x2E3726) : .init(rgb: 0xE8F3E8)
+    }
+    
     convenience init(rgb: UInt) {
         self.init(
             red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,

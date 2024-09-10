@@ -101,9 +101,7 @@ final class IdentityManager {
                 
                 switch kind {
                 case .defaultSettings:
-                    var primalSettings = PrimalSettings(json: response)
-
-                    if let settings = primalSettings {
+                    if let settings = PrimalSettings(json: response) {
                         callback(settings.content)
                     }
                 default:
@@ -374,7 +372,7 @@ final class IdentityManager {
             )
             
             guard let event = NostrObject.metadata(profile) else { return }
-            RelaysPostbox.instance.request(event, specificRelay: nil, successHandler: { res in
+            RelaysPostbox.instance.request(event, successHandler: { res in
                 continuation.resume(returning: res)
             }, errorHandler: {
                 print("IdentityManager: DeleteAccount failed to send event to Relays")
@@ -391,7 +389,7 @@ final class IdentityManager {
         
         RelaysPostbox.instance.connect(bootstrap_relays)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            RelaysPostbox.instance.request(metadata_ev, specificRelay: nil, successHandler: { _ in
+            RelaysPostbox.instance.request(metadata_ev, successHandler: { _ in
                 callback(true)
             }, errorHandler: {
                 callback(false)

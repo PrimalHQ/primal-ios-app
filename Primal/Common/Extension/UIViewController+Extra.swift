@@ -8,6 +8,16 @@
 import UIKit
 
 extension UIViewController {
+    var topSafeAreaSpacer: UIView {
+        let spacer = UIView()
+        view.insertSubview(spacer, at: 0)
+        spacer.pinToSuperview(edges: [.horizontal, .top])
+        spacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        return spacer
+    }
+}
+
+extension UIViewController {
     func showErrorMessage(title: String = "Warning", _ message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .default))
@@ -29,6 +39,7 @@ extension UIViewController {
         button.setImage(UIImage(named: "back"), for: .normal)
         button.tintColor = color
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        button.contentHorizontalAlignment = .leading
         button.constrainToSize(44)
         return UIBarButtonItem(customView: button)
     }

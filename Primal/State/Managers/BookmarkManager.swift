@@ -12,8 +12,8 @@ import UIKit
 final class BookmarkManager {
     static let instance: BookmarkManager = BookmarkManager()
     
-    @Published var hexesToBookmark: [String] = []
-    @Published var hexesToUnbookmark: Set<String> = []
+    @Published var tagsToBookmark: [Tag] = []
+    @Published var tagsToUnbookmark: Set<Tag> = []
     @Published var cachedBookmarks = DatedTagArray(created_at: -10, array: [])
     @Published var isReadyForFirstBookmark = false
     
@@ -23,15 +23,15 @@ final class BookmarkManager {
         IdentityManager.instance.$user.map { $0?.pubkey }.removeDuplicates().receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
-                hexesToBookmark = []
-                hexesToUnbookmark = []
+                tagsToBookmark = []
+                tagsToUnbookmark = []
                 cachedBookmarks = DatedTagArray(created_at: -10, array: [])
                 isReadyForFirstBookmark = false
                 fetchBookmarks()
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest4($hexesToBookmark, $hexesToUnbookmark, $isReadyForFirstBookmark, Connection.regular.$isConnected)
+        Publishers.CombineLatest4($tagsToBookmark, $tagsToUnbookmark, $isReadyForFirstBookmark, Connection.regular.isConnectedPublisher)
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .filter { hexesB, hexesU, _, isConnected in
                 isConnected && !(hexesB.isEmpty && hexesU.isEmpty)
@@ -62,43 +62,56 @@ final class BookmarkManager {
                 }
                 self.cachedBookmarks = datedBookmarks
                 
-                if self.hexesToBookmark != hexesB || self.hexesToUnbookmark != hexesU { return } // Don't update yet, another update is coming
+                if self.tagsToBookmark != hexesB || self.tagsToUnbookmark != hexesU { return } // Don't update yet, another update is coming
                 
                 var bookmarks = datedBookmarks.array
-                bookmarks.append(contentsOf: hexesB.map { self.tag($0) })
-                bookmarks = bookmarks.filter { !hexesU.contains($0.text) }
+                bookmarks.append(contentsOf: hexesB)
+                bookmarks = bookmarks.filter { !hexesU.contains($0) }
                 
-                self.hexesToBookmark = []
-                self.hexesToUnbookmark = []
+                self.tagsToBookmark = []
+                self.tagsToUnbookmark = []
                 
                 if datedBookmarks.array == bookmarks { return } // Don't update if same
                 
                 self.sendBatchEvent(bookmarks, errorHandler:  {
-                    self.hexesToBookmark.insert(contentsOf: hexesB, at: 0)
-                    self.hexesToUnbookmark = self.hexesToUnbookmark.union(hexesU)
+                    self.tagsToBookmark.insert(contentsOf: hexesB, at: 0)
+                    self.tagsToUnbookmark = self.tagsToUnbookmark.union(hexesU)
                 })
             })
             .store(in: &cancellables)
     }
     
-    func tag(_ hex: String) -> Tag { .init(type: "e", text: hex) }
+    func tag(_ content: ParsedContent) -> Tag { .init(type: content.post.referenceTagLetter, text: content.post.universalID) }
     
-    func isBookmarked(_ hex: String) -> Bool {
-        !hexesToUnbookmark.contains(hex) && (hexesToBookmark.contains(hex) || cachedBookmarks.array.contains(tag(hex)))
+    func isBookmarkedPublisher(_ content: ParsedContent) -> AnyPublisher<Bool, Never> {
+        let tag = tag(content)
+        
+        return Publishers.CombineLatest3($tagsToBookmark, $tagsToUnbookmark, $cachedBookmarks)
+            .map { toB, toUB, cached in
+                !toUB.contains(tag) && (toB.contains(tag) || cached.array.contains(tag))
+            }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
     }
     
-    func bookmark(_ hex: String) {
+    func isBookmarked(_ content: ParsedContent) -> Bool {
+        let tag = tag(content)
+        
+        return !tagsToUnbookmark.contains(tag) && (tagsToBookmark.contains(tag) || cachedBookmarks.array.contains(tag))
+    }
+    
+    func bookmark(_ content: ParsedContent) {
         if LoginManager.instance.method() != .nsec { return }
 
-        hexesToUnbookmark.remove(hex)
-        hexesToBookmark.append(hex)
+        tagsToUnbookmark.remove(tag(content))
+        tagsToBookmark.append(tag(content))
     }
     
-    func unbookmark(_ hex: String) {
+    func unbookmark(_ content: ParsedContent) {
         if LoginManager.instance.method() != .nsec { return }
         
-        hexesToBookmark.remove(object: hex)
-        hexesToUnbookmark.insert(hex)
+        tagsToBookmark.remove(object: tag(content))
+        tagsToUnbookmark.insert(tag(content))
     }
     
     func fetchBookmarks() {

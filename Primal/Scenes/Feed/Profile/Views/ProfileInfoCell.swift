@@ -79,6 +79,8 @@ class ProfileInfoCell: UITableViewCell {
         descLabel.attributedText = parsedDescription
         linkView.text = user.website.trimmingCharacters(in: .whitespaces)
         
+        infoStack.isLoading = stats == nil
+        
         zip(infoStack.buttons, [
             (stats?.note_count ?? 0).shortenedLocalized(),
             (stats?.reply_count ?? 0).shortenedLocalized(),

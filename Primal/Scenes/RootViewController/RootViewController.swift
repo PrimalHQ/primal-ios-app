@@ -26,6 +26,8 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
+    let connectionDot = UIView().constrainToSize(8)
+    
     var didAnimate = false
     var didFinishInit = false
     
@@ -36,7 +38,7 @@ final class RootViewController: UIViewController {
         
         _ = WalletManager.instance
         
-        Connection.regular.$isConnected.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
+        Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
                 IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
@@ -47,6 +49,17 @@ final class RootViewController: UIViewController {
         }.store(in: &cancellables)
         
         didFinishInit = true
+        
+        view.addSubview(connectionDot)
+        connectionDot.pinToSuperview(edges: [.trailing, .top], padding: 20)
+        connectionDot.layer.cornerRadius = 4
+        connectionDot.backgroundColor = .accent
+        connectionDot.layer.zPosition = 900
+        
+        Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { [weak self] isConnected in
+            self?.connectionDot.backgroundColor = isConnected ? .green : .red
+        }
+        .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -157,15 +170,31 @@ final class RootViewController: UIViewController {
         
         introVC = intro
     }
+    
+    func showToast(_ message: String) {
+        if let presentedViewController {
+            presentedViewController.view.showToast(message)
+        } else {
+            view.showToast(message)
+        }
+    }
 }
 
 protocol AnimatableFirstViewController: UIViewController {
-    var table: UITableView { get }
+    var tableView: UITableView? { get }
     var onLoad: (() -> ())? { get set }
 }
 
-extension HomeFeedViewController: AnimatableFirstViewController { }
+extension HomeFeedViewController: AnimatableFirstViewController {
+    var tableView: UITableView? { firstFeedVC?.table }
+    var onLoad: (() -> ())? {
+        get { firstFeedVC?.onLoad }
+        set { firstFeedVC?.onLoad = newValue }
+    }
+}
 extension WalletHomeViewController: AnimatableFirstViewController {
+    var tableView: UITableView? { table }
+    
     var onLoad: (() -> ())? {
         get { nil }
         set {
@@ -197,7 +226,7 @@ private extension RootViewController {
             return
         }
         
-        firstController.table.alpha = 0.01
+        firstController.tableView?.alpha = 0.01
         firstController.onLoad = {
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(.easeInTiming)
@@ -215,14 +244,14 @@ private extension RootViewController {
             CATransaction.commit()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
-                firstController.table.alpha = 1
-                firstController.table.transform = .init(translationX: 0, y: 800)
+                firstController.tableView?.alpha = 1
+                firstController.tableView?.transform = .init(translationX: 0, y: 800)
                     
                 CATransaction.begin()
                 CATransaction.setAnimationTimingFunction(.postsEaseInOut)
 
                 UIView.animate(withDuration: 0.3) {
-                    firstController.table.transform = .identity
+                    firstController.tableView?.transform = .identity
                 }
                 
                 CATransaction.commit()

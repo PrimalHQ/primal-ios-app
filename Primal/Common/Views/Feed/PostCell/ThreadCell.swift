@@ -96,7 +96,7 @@ final class DefaultThreadCell: ThreadCell {
         imageSpacerStack.spacing = 2
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(axis: .vertical, [nameStack, mainLabel, invoiceView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
+        let contentStack = UIStackView(axis: .vertical, [nameStack, mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [imageSpacerStack, contentStack])
         
@@ -194,7 +194,7 @@ final class FullWidthThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameStack, threeDotsButton])
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, invoiceView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
+        let contentStack = UIStackView(arrangedSubviews: [mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         

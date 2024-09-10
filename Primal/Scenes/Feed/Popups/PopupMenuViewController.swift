@@ -62,7 +62,9 @@ private extension PopupMenuViewController {
         var buttons: [UIControl] = []
         
         for action in actions {
-            let button: UIControl = (actions.count > 1) ? PopupMenuIconButton(icon: action.image, text: action.title) : LargeRoundedButton(title: action.title)
+            let button: UIControl = (actions.count > 1) ?
+                (action.image != nil ? PopupMenuIconButton(icon: action.image, text: action.title) : simpleButton(action.title))
+              : LargeRoundedButton(title: action.title)
             button.addAction(.init(handler: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
                     action.performWithSender(nil, target: nil)
@@ -95,6 +97,14 @@ private extension PopupMenuViewController {
         pullBar.constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
         pullBar.layer.cornerRadius = 2.5
+    }
+    
+    func simpleButton(_ title: String) -> UIButton {
+        let button = UIButton()
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.foreground, for: .normal)
+        button.titleLabel?.font = .appFont(withSize: 20, weight: .regular)
+        return button
     }
 }
 

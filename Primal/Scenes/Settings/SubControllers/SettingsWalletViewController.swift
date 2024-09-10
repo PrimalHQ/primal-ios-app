@@ -18,7 +18,7 @@ struct WalletSettings {
     }
 }
 
-final class SettingsWalletViewController: UIViewController, Themeable {
+final class SettingsWalletViewController: UIViewController, SettingsController, Themeable {
     let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "1 sats", showArrow: true)
     let showNotifications = SettingsInfoView(name: "Show notifications above", desc: "1 sats", showArrow: true)
     
@@ -95,34 +95,6 @@ private extension SettingsWalletViewController {
             guard let value = walletStart?.switchView.isOn else { return }
             WalletSettings.startInWallet = value
         }), for: .valueChanged)
-    }
-    
-    func descLabel(_ text: String) -> UILabel {
-        return descLabel(text, link: "", action: {})
-    }
-    
-    func descLabel(_ text: String, link: String, action: @escaping () -> Void) -> UILabel {
-        let label = ThemeableLabel().setTheme {
-            let paragraph = NSMutableParagraphStyle()
-            paragraph.lineSpacing = 6
-            let mutable = NSMutableAttributedString(string: text, attributes: [
-                .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.foreground3,
-                .paragraphStyle: paragraph
-            ])
-            mutable.append(.init(string: link, attributes: [
-                .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.accent,
-                .paragraphStyle: paragraph
-            ]))
-            $0.attributedText = mutable
-        }
-        label.numberOfLines = 0
-        label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(BindableTapGestureRecognizer(action: {
-            action()
-        }))
-        return label
     }
 }
 

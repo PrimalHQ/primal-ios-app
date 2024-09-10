@@ -88,7 +88,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
 extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        if let result = fromVC as? WalletTransferSummaryController {
+        if fromVC as? WalletTransferSummaryController != nil {
             return SlideDownAnimator(presenting: false)
         }
         
@@ -141,6 +141,22 @@ extension MainNavigationController: UINavigationControllerDelegate {
             if let spinner = fromVC as? WalletSpinnerViewController {
                 return WalletSpinnerToResultAnimator(spinner: spinner, result: result)
             }
+        }
+        
+        if let longForm = toVC as? ArticleViewController {
+            if operation == .pop { return nil }
+            if let listVC = fromVC as? ArticleCellController {
+                return ArticleTransition(listVCs: [listVC], longFormController: longForm, presenting: true)
+            }
+            return ArticleTransition(listVCs: fromVC.findAllChildren(), longFormController: longForm, presenting: true)
+        }
+        
+        if let article = fromVC as? ArticleViewController {
+            if operation == .push { return nil }
+            if let listVC = toVC as? ArticleCellController {
+                return ArticleTransition(listVCs: [listVC], longFormController: article, presenting: false)
+            }
+            return ArticleTransition(listVCs: toVC.findAllChildren(), longFormController: article, presenting: false)
         }
         
         return nil

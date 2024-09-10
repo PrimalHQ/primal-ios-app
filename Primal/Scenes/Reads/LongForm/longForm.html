@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script>
+        function updateMainContent(newContent) {
+            // Select the div with id 'main'
+            var mainDiv = document.getElementById('main');
+
+            // Create a temporary element to compare current content with the new content
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newContent;
+
+            // Compare the current content with the new content
+            if (mainDiv.innerHTML !== tempDiv.innerHTML) {
+                // If the content is different, update the div
+                mainDiv.innerHTML = newContent;
+            }
+        }
+    </script>
+    <style>
+        body {
+            width: 95vw;
+            width: 95dvw;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+        
+        #main {
+            padding: 0;
+            margin: 0;
+        }
+        
+        @font-face {
+            font-family: 'Nacelle';
+            src: url('Nacelle-Regular.otf') format('opentype');
+        }
+        
+        {{ CSS }}
+    </style>
+</head>
+<body class="{{ THEME }}">
+    <div id="main">
+        {{ CONTENT }}
+    </div>
+    <script>
+        function getSelectionCoords(atStart) {
+          const sel = window.getSelection();
+
+          // check if selection exists
+          if (!sel?.rangeCount) return null;
+
+          // get range
+          let range = sel.getRangeAt(0).cloneRange();
+          if (!range.getClientRects) return null;
+
+          // get client rect
+          range.collapse(atStart);
+          let rects = range.getClientRects();
+          if (rects.length <= 0) return null;
+
+          // return coord
+          let rect = rects[0];
+          return { x: rect.x, y: rect.y };
+        }
+
+        function onSelection() {
+          setTimeout(function() {
+            const coord = getSelectionCoords(true);
+
+            if (coord) {
+                window.webkit.messageHandlers.articleState.postMessage(JSON.stringify({
+                    x: coord.x,
+                    y: coord.y
+                }))
+            }
+          }, 50)
+        }
+        
+        function onTouchDown() {
+            window.webkit.messageHandlers.articleState.postMessage("Tap")
+        }
+
+        document.addEventListener('touchend', onSelection);
+        document.addEventListener('touchstart', onTouchDown);
+    </script>
+</body>
+</html>

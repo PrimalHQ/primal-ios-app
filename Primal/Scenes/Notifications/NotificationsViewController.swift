@@ -36,10 +36,8 @@ final class NotificationsViewController: FeedViewController {
     var tab: Tab = .all {
         didSet {
             notifications = []
-            table.reloadData()
-            loadingSpinner.isHidden = false
-            loadingSpinner.play()
             refresh()
+            table.reloadData()
         }
     }
     
@@ -79,7 +77,7 @@ final class NotificationsViewController: FeedViewController {
         
         setup()
         
-        Connection.regular.$isConnected.filter { $0 }.sink { [weak self] _ in
+        Connection.regular.isConnectedPublisher.filter { $0 }.sink { [weak self] _ in
             self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
                 "pubkey": self?.idJsonID ?? .string("")
             ])) { response in
@@ -98,7 +96,7 @@ final class NotificationsViewController: FeedViewController {
         }
         .store(in: &cancellables)
         
-        $notifications
+        $notifications.dropFirst()
             .debounce(for: 0.3, scheduler: RunLoop.main)
             .filter { [weak self] notifications in
                 self?.table.indexPathsForVisibleRows?.first?.row ?? 0 > notifications.count - 10
@@ -107,6 +105,11 @@ final class NotificationsViewController: FeedViewController {
                 self?.loadMore()
             }
             .store(in: &cancellables)
+        
+        $isLoading.sink { [weak self] _ in
+            self?.table.reloadData()
+        }
+        .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -124,9 +127,11 @@ final class NotificationsViewController: FeedViewController {
     func setup() {
         title = "Notifications"
         
-        loadingSpinner.transform = .init(translationX: 0, y: -70)
+        loadingSpinner.removeFromSuperview()
         
         updateTheme()
+        
+        table.register(NotificationLoadingCell.self, forCellReuseIdentifier: "loading")
         
         view.addSubview(tabSelectionView)
         tabSelectionView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
@@ -141,6 +146,7 @@ final class NotificationsViewController: FeedViewController {
         navigationBorder.topAnchor.constraint(equalTo: tabSelectionView.bottomAnchor).isActive = true
         
         tabSelectionView.$selectedTab
+            .dropFirst()
             .compactMap({ Tab(rawValue: $0) })
             .assign(to: \.tab, onWeak: self)
             .store(in: &cancellables)
@@ -164,12 +170,12 @@ final class NotificationsViewController: FeedViewController {
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         refresh()
-        
-        loadingSpinner.play()
     }
     
     override func updateTheme() {
         super.updateTheme()
+        
+        posts.forEach { $0.buildContentString(style: .notifications) }
         
         view.backgroundColor = .background
         tabSelectionView.backgroundColor = .background
@@ -211,11 +217,9 @@ final class NotificationsViewController: FeedViewController {
             self?.separatorIndex = newResult.count - 1
             self?.notifications = newResult + seenResult
             self?.notifications.forEach { $0.post?.buildContentString(style: .notifications) }
-            self?.table.reloadData()
             self?.isLoading = false
+            self?.table.reloadData()
             
-            self?.loadingSpinner.isHidden = true
-            self?.loadingSpinner.stop()
             self?.refreshControl.endRefreshing()
             
             if self?.notifications.isEmpty == false && tab == .all {
@@ -225,9 +229,17 @@ final class NotificationsViewController: FeedViewController {
         .store(in: &cancellables)
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { notifications.count }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        isLoading ? 2 : 1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { section == 0 ? notifications.count : 6 }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section != 0 {
+            return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         
         if let cell = cell as? NotificationCell {

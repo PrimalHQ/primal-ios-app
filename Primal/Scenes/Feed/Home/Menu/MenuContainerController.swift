@@ -29,7 +29,7 @@ extension UserDefaults {
 }
 
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = FLAnimatedImageView()
+    private let profileImage = FLAnimatedImageView().constrainToSize(52)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -106,7 +106,7 @@ final class MenuContainerController: UIViewController, Themeable {
         childLeftConstraint?.isActive = true
         coverView.isHidden = false
         mainTabBarController?.hideForMenu()
-        child.viewWillDisappear(true)
+        child.beginAppearanceTransition(false, animated: true)
     }
     
     func resetNavigationTabBar() {
@@ -122,6 +122,7 @@ final class MenuContainerController: UIViewController, Themeable {
         coverView.alpha = 0
         coverView.isHidden = true
         mainTabBarController?.showButtons()
+        child.endAppearanceTransition()
     }
     
     func updateTheme() {
@@ -247,7 +248,6 @@ private extension MenuContainerController {
         
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
-        profileImage.constrainToSize(52)
         profileImage.contentMode = .scaleAspectFill
         profileImage.layer.cornerRadius = 26
         profileImage.layer.masksToBounds = true
@@ -264,7 +264,7 @@ private extension MenuContainerController {
         menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
         menuButtonParent.addSubview(menuProfileImage)
-        menuProfileImage.constrainToSize(32).centerToSuperview()
+        menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)
@@ -432,6 +432,7 @@ private extension MenuContainerController {
         case .began:
             coverView.isHidden = false
             child.beginAppearanceTransition(false, animated: true)
+            (child as? FeedViewController)?.animateBarsToVisible()
             fallthrough
         case .changed:
             mainStack.alpha = 1

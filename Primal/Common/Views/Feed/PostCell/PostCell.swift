@@ -35,6 +35,7 @@ class PostCell: UITableViewCell {
     let mainLabel = NantesLabel()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
+    let articleView = ArticleFeedView()
     let linkPresentation = LinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
@@ -45,13 +46,17 @@ class PostCell: UITableViewCell {
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
+    let bookmarkButton = UIButton()
     
-    let zapGallery = ZapGalleryView()
+    var zapGallery: ZapGallery = SmallZapGalleryView()
     
     weak var imageAspectConstraint: NSLayoutConstraint?
-    var metadataUpdater: AnyCancellable?
+    var bookmarkUpdater: AnyCancellable?
     
     let nantesDelegate = PostCellNantesDelegate()
+    
+    // MARK: - State
+    var isShowingBookmarked = false
     
     var useShortText: Bool { false }
     
@@ -111,6 +116,13 @@ class PostCell: UITableViewCell {
             repostIndicator.isHidden = false
         } else {
             repostIndicator.isHidden = true
+        }
+        
+        if let article = content.article {
+            articleView.setUp(article)
+            articleView.isHidden = false
+        } else {
+            articleView.isHidden = true
         }
         
         if let invoice = content.invoice {
@@ -196,6 +208,12 @@ class PostCell: UITableViewCell {
                 delegate?.postCellDidTap(self, action)
             }
         })
+        
+        bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
+            .sink { [weak self] isBookmarked in
+                self?.isShowingBookmarked = isBookmarked
+                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+            }
     }
 }
 
@@ -299,6 +317,16 @@ private extension PostCell {
         zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
+        
+        articleView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+            delegate?.postCellDidTap(self, .article)
+        }))
+        
+        bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
+        }), for: .touchUpInside)
         
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)

@@ -76,13 +76,6 @@ struct NostrUserProfileInfo: Codable {
     var notes: Int32 { note_count ?? 0 }
 }
 
-enum MediaSize: String {
-    case small = "s"
-    case large = "l"
-    case medium = "m"
-    case original = "o"
-}
-
 struct MediaMetadata: Codable {
     let event_id: String
     let resources: [Resource]
@@ -128,4 +121,14 @@ struct WebPreview: Codable {
     var md_description: String?
     
     var url: String
+}
+
+struct LongFormPost: Codable {
+    var title: String?
+    var image: String?
+    var summary: String?
+    
+    var event: NostrContent
+    
+    var shortened: Bool { event.kind == NostrKind.shortenedArticle.rawValue }
 }

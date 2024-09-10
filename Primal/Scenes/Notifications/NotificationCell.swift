@@ -16,9 +16,15 @@ final class NotificationCell: PostCell {
     let iconLabel = UILabel()
     let avatarStack = AvatarView()
     let titleLabel = UILabel()
-    let auxTitleLabel = UILabel()
     let border = SpacerView(height: 1)
     let newIndicator = UIView().constrainToSize(8)
+    
+    let andOthersLabel = UILabel()
+    lazy var firstRow = UIStackView([nameLabel, andOthersLabel])
+    lazy var titleStack = UIStackView(axis: .vertical, [firstRow, titleLabel])
+    
+    let mainParent = UIView()
+    let auxParent = UIView()
     
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
@@ -55,10 +61,28 @@ final class NotificationCell: PostCell {
         avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
         titleLabel.attributedText = notification.titleText
-        auxTitleLabel.attributedText = notification.titleText
+        nameLabel.attributedText = notification.userNameText
         
-        titleLabel.isHidden = notification.users.count == 1
-        auxTitleLabel.isHidden = notification.users.count != 1
+        if notification.users.count <= 1 {
+            andOthersLabel.isHidden = true
+            auxParent.isHidden = false
+            mainParent.isHidden = true
+            if titleStack.superview != auxParent {
+                titleStack.removeFromSuperview()
+                auxParent.addSubview(titleStack)
+                titleStack.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
+            }
+        } else {
+            andOthersLabel.attributedText = notification.andOthersText
+            andOthersLabel.isHidden = false
+            auxParent.isHidden = true
+            mainParent.isHidden = false
+            if titleStack.superview != mainParent {
+                titleStack.removeFromSuperview()
+                mainParent.addSubview(titleStack)
+                titleStack.pinToSuperview()
+            }
+        }
         
         timeLabel.text = notification.mainNotification.date.timeAgoDisplay()
         
@@ -90,31 +114,32 @@ private extension NotificationCell {
         
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         
-        let auxParent = UIView()
-        auxParent.addSubview(auxTitleLabel)
-        auxTitleLabel.pinToSuperview(edges: .horizontal)
-        auxTitleLabel.centerToSuperview(axis: .vertical)
+        let firstRow = UIStackView([avatarStack, auxParent, UIView(), timeLabel])
         
-        let firstRow = UIStackView([avatarStack, auxParent, timeLabel])
-        
-        let contentStack = UIStackView(arrangedSubviews: [firstRow, titleLabel, postContentStack])
+        let contentStack = UIStackView(arrangedSubviews: [firstRow, mainParent, postContentStack])
         let mainStack = UIStackView(arrangedSubviews: [iconStack, contentStack])
+        
+        iconView.centerToView(avatarStack, axis: .vertical)
+        iconView.setContentHuggingPriority(.required, for: .vertical)
         
         avatarStack.constrainToSize(height: 32)
         
         iconView.tintColor = .init(rgb: 0x52CE0A)
         
-        titleLabel.numberOfLines = 0
+        titleStack.alignment = .leading
+        
+        titleLabel.numberOfLines = 1
         iconLabel.textAlignment = .center
         
-        timeLabel.font = .appFont(withSize: 14, weight: .regular)
+        nameLabel.setContentHuggingPriority(.required, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
         timeLabel.textColor = .foreground4
         timeLabel.setContentHuggingPriority(.required, for: .horizontal)
         
-        auxTitleLabel.adjustsFontSizeToFitWidth = true
-        auxTitleLabel.numberOfLines = 2
-        
         firstRow.spacing = 8
+        firstRow.alignment = .center
         
         contentView.addSubview(mainStack)
         mainStack
@@ -167,38 +192,25 @@ private extension NotificationCell {
 }
 
 extension GroupedNotification {
-    var titleText: NSAttributedString {
-        let string = NSMutableAttributedString()
-        if let first = users.first {
-            string.append(NSAttributedString(string: first.data.firstIdentifier, attributes: [
-                .foregroundColor: UIColor.foreground,
-                .font: UIFont.appFont(withSize: 18, weight: .bold)
-            ]))
-            
-            string.append(.init(string: " "))
-            
-            if CheckNip05Manager.instance.isVerified(first.data) {
-                let attachment = NSTextAttachment()
-                attachment.image = Theme.current.isPurpleTheme ? UIImage(named: "verifiedBadgeNotifications") : UIImage(named: "verifiedBadgeNotificationsBlue")
-                string.append(NSAttributedString(attachment: attachment))
-                string.append(.init(string: " "))
-            }
-        }
-        
-        if users.count > 1 {
-            let text = "and \(users.count - 1) other" + (users.count == 2 ? "\n" : "s\n")
-            string.append(NSAttributedString(string: text, attributes: [
-                .foregroundColor: UIColor.foreground,
-                .font: UIFont.appFont(withSize: 18, weight: .regular)
-            ]))
-        }
-        
-        string.append(NSAttributedString(string: notificationTypeText, attributes: [
+    var userNameText: NSAttributedString {
+        NSAttributedString(string: users.first?.data.firstIdentifier ?? "", attributes: [
             .foregroundColor: UIColor.foreground,
-            .font: UIFont.appFont(withSize: 18, weight: .regular)
-        ]))
-        
-        return string
+            .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .bold)
+        ])
+    }
+    
+    var andOthersText: NSAttributedString {
+        NSAttributedString(string: " and \(users.count - 1) other" + (users.count == 2 ? "\n" : "s\n"), attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        ])
+    }
+    
+    var titleText: NSAttributedString {
+        NSAttributedString(string: notificationTypeText, attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        ])
     }
     
     var iconText: NSAttributedString? {
@@ -231,8 +243,7 @@ extension GroupedNotification {
         case .NEW_USER_FOLLOWED_YOU:
             return "followed you"
         case .YOUR_POST_WAS_ZAPPED:
-            guard let sats = post?.post.satszapped.shortened() else { return "zapped your post" }
-            return "zapped your note for a total of \(sats) sats"
+            return "zapped your note"
         case .YOUR_POST_WAS_LIKED:
             return "liked your note"
         case .YOUR_POST_WAS_REPOSTED:
@@ -244,10 +255,7 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
             return "mentioned your note"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
-            guard let sats = post?.post.satszapped.shortened() else {
-                return "zapped a note you were mentioned in"
-            }
-            return "zapped a note you were mentioned in for a total of \(sats) sats"
+            return "zapped a note you were mentioned in"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:
             return "liked a note you were mentioned in"
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED:
@@ -255,10 +263,7 @@ extension GroupedNotification {
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
             return "replied to a note you were mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
-            guard let sats = post?.post.satszapped.shortened() else {
-                return "zapped a note your note was mentioned in"
-            }
-            return "zapped a note your note was mentioned in for a total of \(sats) sats"
+            return "zapped a note your note was mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
             return "liked a note your note was mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:

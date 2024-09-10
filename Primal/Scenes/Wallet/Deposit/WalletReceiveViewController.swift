@@ -55,7 +55,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     }
     private var onchainAddress: String? {
         didSet {
-            if let onchainAddress {
+            if onchainAddress != nil {
                 updateInfo()
             }
         }
@@ -278,11 +278,7 @@ private extension WalletReceiveViewController {
             WalletActionButton(text: "COPY", action: { [weak self] in
                 guard let self else { return }
                 
-                if let depositInfo, invoice == depositInfo.lnurl {
-                    UIPasteboard.general.string = depositInfo.lud16
-                } else {
-                    UIPasteboard.general.string = invoice
-                }
+                UIPasteboard.general.string = invoice
                 view.showToast("Copied!", extraPadding: 0)
             }),
             detailsButton
@@ -313,6 +309,13 @@ private extension WalletReceiveViewController {
         
         ludLabel.lineBreakMode = .byTruncatingMiddle
         ludHeightC = ludLabel.heightAnchor.constraint(equalToConstant: 58)
+        ludLabel.isUserInteractionEnabled = true
+        ludLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let text = self?.ludLabel.text else { return }
+            
+            UIPasteboard.general.string = text
+            self?.view.showToast("Copied!", extraPadding: 0)
+        }))
         
         let mainStackParent = UIView()
         mainStackParent.addSubview(mainStack)

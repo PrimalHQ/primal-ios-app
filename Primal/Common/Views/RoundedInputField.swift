@@ -35,8 +35,8 @@ final class RoundedInputField: UIView, Themeable {
         addSubview(input)
         input.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview(axis: .vertical)
         
-        constrainToSize(height: 48)
-        layer.cornerRadius = 24
+        constrainToSize(height: 40)
+        layer.cornerRadius = 20
         
         addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.input.becomeFirstResponder()

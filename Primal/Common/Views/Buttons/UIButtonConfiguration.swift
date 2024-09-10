@@ -8,6 +8,14 @@
 import UIKit
 
 extension UIButton.Configuration {
+    static func roundedIconAccent(_ image: UIImage?) -> UIButton.Configuration {
+        var configuration = UIButton.Configuration.filled()
+        configuration.cornerStyle = .capsule
+        configuration.baseBackgroundColor = .accent
+        configuration.image = image
+        return configuration
+    }
+    
     static func simpleImage(_ image: UIImage?) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.image = image

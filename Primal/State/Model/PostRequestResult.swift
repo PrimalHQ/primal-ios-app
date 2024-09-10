@@ -9,6 +9,8 @@ import Foundation
 import GenericJSON
 
 class PostRequestResult: Codable {
+    var events: [[String: JSON]] = []
+    
     var posts: [NostrContent] = []
     var mentions: [NostrContent] = []
     var reposts: [NostrRepost] = []
@@ -26,11 +28,18 @@ class PostRequestResult: Codable {
     var userFollowers: [String: Int] = [:]
     var userStats: NostrUserProfileInfo?
     
+    var longFormWordCount: [String: Int] = [:]
+    var longFormPosts: [LongFormPost] = []
+    
+    var eventBroadcastSuccessful = false
+    
     var message: String?
     var pagination: PrimalPagination?
     
     var messageArray: [String]?
     var userPubkey: String?
+    
+    var highlights: [NostrContent] = []
     
     var relayData: [String: RelayInfo] = [:]
     var relayHint: String?

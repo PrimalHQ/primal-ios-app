@@ -38,20 +38,6 @@ extension PostRequestResult: MetadataCoding {
             .compactMap({ createPrimalPost(content: $0) })
             .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
         
-        let reposts: [ParsedContent] = reposts
-            .compactMap { repost in
-                guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
-                
-                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true)
-                
-                guard let nostrUser = users[repost.pubkey] else { return post }
-                
-                post.reposted = .init(users: [createParsedUser(nostrUser)], date: repost.date, id: repost.id)
-                
-                return post
-            }
-        
-        
         let parsedUsers = getSortedUsers()
         let parsedZaps = postZaps.map { primalZapEvent in
             ParsedZap(
@@ -62,6 +48,19 @@ extension PostRequestResult: MetadataCoding {
                 user: parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
             )
         }
+        
+        let reposts: [ParsedContent] = reposts
+            .compactMap { repost -> ParsedContent? in
+                guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
+                
+                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps)
+                
+                guard let nostrUser = users[repost.pubkey] else { return post }
+                
+                post.reposted = .init(users: [createParsedUser(nostrUser)], date: repost.date, id: repost.id)
+                
+                return post
+            }
         
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
             .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps) }
@@ -132,23 +131,29 @@ extension PostRequestResult: MetadataCoding {
         }
         
         // MARK: - Finding parent note
-        for tagArray in post.tags {
-            guard
-                tagArray.count >= 4, tagArray[0] == "e", tagArray[3] == "root" || tagArray[3] == "reply",
-                let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
-            else { continue }
-            
-            p.replyingTo = parentNote
+        let findReply = { (tag: String) -> ParsedContent? in
+            for tagArray in post.tags {
+                guard
+                    tagArray.count >= 4, tagArray[3] == tag,
+                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] || $0.post.universalID == tagArray[1] })
+                else { continue }
+                
+                return parentNote
+            }
+            return nil
         }
+        
+        p.replyingTo = findReply("reply") ?? findReply("root") 
         
         if p.replyingTo == nil {
             for tagArray in post.tags {
                 guard
-                    tagArray.count >= 2, tagArray[0] == "e",
-                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] })
+                    tagArray.count >= 2, tagArray[0] == "a" || tagArray[0] == "e",
+                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] || $0.post.universalID == tagArray[1] })
                 else { continue }
                 
                 p.replyingTo = parentNote
+                break
             }
         }
         
@@ -156,12 +161,14 @@ extension PostRequestResult: MetadataCoding {
         let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
+        var highlights: [(String, ParsedContent)] = []
         
+        let tmpText = text as NSString
         if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
             postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
                     
-                let mentionText = (text as NSString).substring(with: matchRange)
+                let mentionText = tmpText.substring(with: matchRange)
                 
                 let naventString: String = {
                     if mentionText.hasPrefix("nostr:") { return mentionText }
@@ -170,7 +177,14 @@ extension PostRequestResult: MetadataCoding {
                 }()
                     
                 if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    referencedPosts.append((mentionText, mention))
+                    if mention.post.kind == NostrKind.highlight.rawValue  {
+                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                        
+                        text = text.replacingOccurrences(of: mentionText, with: content)
+                        highlights.append((content, mention))
+                    } else {
+                        referencedPosts.append((mentionText, mention))
+                    }
                 }
             }
         }
@@ -192,45 +206,38 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
-        let naddr1MentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
-        
-        if let profileMentionRegex = try? NSRegularExpression(pattern: naddr1MentionPattern, options: []) {
-            profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                guard let matchRange = match?.range else { return }
+        let articleMentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+        if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
+            articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard p.article == nil, let matchRange = match?.range else { return }
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
 
-                guard 
+                guard
                     let address = mentionText.split(separator: ":").last,
                     let metadata = try? decodedMetadata(from: String(address)),
                     let id = metadata.identifier,
                     let mention = self.mentions.first(where: {
-                        $0.kind == 30023 && $0.tags.contains(["d", id])
-                    }),
-                    let npub = mention.pubkey.hexToNpub(),
-                    let noteid = mention.id.hexToNoteId()
+                        ($0.kind == NostrKind.longForm.rawValue || $0.kind == NostrKind.shortenedArticle.rawValue) && $0.tags.contains(["d", id])
+                    })
                 else { return }
                 
-                let urlString = "https://highlighter.com/\(npub)/\(noteid)"
-                
-                guard let url = URL(string: urlString) else { return }
-                
-                otherURLs.insert(mentionText, at: 0)
                 itemsToRemove.append(mentionText)
-                
-                p.linkPreview = .init(
-                    url: url,
-                    imagesData: [],
-                    data: WebPreview(
-                        md_image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
-                        md_title: mention.tags.first(where: { $0.first == "title" })?[safe: 1],
-                        md_description: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
-                        url: urlString
-                    )
+               
+                p.article = Article(
+                    id: id,
+                    title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",
+                    image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
+                    summary: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                    words: nil,
+                    zaps: [],
+                    replies: [],
+                    stats: stats[mention.id] ?? .empty(mention.id),
+                    event: mention,
+                    user: createParsedUser(users[mention.pubkey] ?? PrimalUser(pubkey: mention.pubkey))
                 )
             }
         }
-        
         
         if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
@@ -356,11 +363,13 @@ extension PostRequestResult: MetadataCoding {
         
         let nsText = text as NSString
         
-        p.zaps = parsedZaps.filter { $0.postId == post.id }
+        p.zaps = parsedZaps.filter { $0.postId == post.id || $0.postId == post.universalID }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
         p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
+        p.highlights = highlights.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id)}
+        p.highlightEvents = highlights.map { $0.1 }
         p.text = text
         p.buildContentString()
         
@@ -408,6 +417,89 @@ extension PrimalUser {
     var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
     
     var isCurrentUser: Bool { pubkey == IdentityManager.instance.userHexPubkey }
+}
+
+extension String {
+    func splitLongFormParts(mentions: [ParsedContent]) -> [LongFormContentSegment] {
+        let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        guard let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) else { return [.text(self)] }
+        
+        var segments = [LongFormContentSegment]()
+        var prevRangeStart: Int = 0
+        let nsString = (self as NSString)
+        
+        postMentionRegex.enumerateMatches(in: self, options: [], range: NSRange(startIndex..., in: self)) { match, _, _ in
+            guard let matchRange = match?.range else { return }
+                
+            let mentionText = nsString.substring(with: matchRange)
+            
+            let naventString: String = {
+                if mentionText.hasPrefix("nostr:") { return mentionText }
+                if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
+                return "nostr:\(mentionText)"
+            }()
+                
+            if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                let prevTextRange = NSRange(location: prevRangeStart, length: matchRange.location - prevRangeStart)
+                let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)
+                if !prevText.isEmpty {
+                    segments.append(.text(prevText))
+                }
+                
+                segments.append(.post(mention))
+                prevRangeStart = matchRange.endLocation
+            }
+        }
+        
+        let finalText = dropFirst(prevRangeStart).trimmingCharacters(in: .whitespacesAndNewlines)
+        if !finalText.isEmpty {
+            segments.append(.text(finalText))
+        }
+        
+        // Now look for images
+        let allSegments = segments.flatMap {
+            switch $0 {
+            case .image, .post: return [$0]
+            case .text(let text):
+                let regexPattern = #"!\[([^\]]*)\]\(([^)]+)\)"#
+                guard let regex = try? NSRegularExpression(pattern: regexPattern, options: []) else {
+                    return [$0]
+                }
+                
+                var subSegments: [LongFormContentSegment] = []
+                
+                prevRangeStart = 0
+                let nsString = (text as NSString)
+                
+                regex.enumerateMatches(in: text, options: [], range: NSRange(startIndex..., in: text)) { match, _, _ in
+                    guard let match else { return }
+                                        
+                    if let urlRange = Range(match.range(at: 2), in: text) {
+                        let url = String(text[urlRange])
+                        
+                        let prevTextRange = NSRange(location: prevRangeStart, length: match.range.location - prevRangeStart)
+                        let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)
+                        if !prevText.isEmpty {
+                            subSegments.append(.text(prevText))
+                        }
+                        
+                        subSegments.append(.image(url))
+                        prevRangeStart = match.range.endLocation
+                    }
+                }
+                
+                let finalText = text.dropFirst(prevRangeStart).trimmingCharacters(in: .whitespacesAndNewlines)
+                if !finalText.isEmpty {
+                    subSegments.append(.text(finalText))
+                }
+                
+                return subSegments
+            }
+        }
+        
+        print(allSegments)
+        return allSegments
+    }
 }
 
 private extension String {

@@ -25,6 +25,15 @@ enum AnimationType {
     case zapGallerySkeleton
     case zapGallerySkeletonLight
     
+    case articleListSkeleton
+    case articleListSkeletonLight
+    
+    case notificationSkeleton
+    case notificationSkeletonLight
+    
+    case smallPillLoader
+    case smallPillLoaderLight
+    
     case zapMedium
     
     static var animationCache: [AnimationType: LottieAnimation] = [:]
@@ -46,6 +55,12 @@ enum AnimationType {
         case .zapGallerySkeletonLight:  return "zapGallerySkeletonLight"
         case .postCellSkeleton:         return "postCellSkeleton"
         case .postCellSkeletonLight:    return "postCellSkeletonLight"
+        case .articleListSkeleton:      return "articleListSkeleton"
+        case .articleListSkeletonLight: return "articleListSkeletonLight"
+        case .smallPillLoader:          return "smallPillLoader"
+        case .smallPillLoaderLight:     return "smallPillLoaderLight"
+        case .notificationSkeleton:     return "notificationSkeleton"
+        case .notificationSkeletonLight:return "notificationSkeletonLight"
         }
     }
     

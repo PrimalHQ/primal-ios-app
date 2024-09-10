@@ -61,6 +61,7 @@ class ZapPillView: ZapGalleryChildView {
         
         amountLabel.font = .appFont(withSize: 14, weight: .semibold)
         amountLabel.textColor = .foreground
+        amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         image.setUserImage(zap.user, size: .init(width: 22, height: 22))
         amountLabel.text = zap.amountSats.localized()
@@ -87,11 +88,16 @@ class ZapPillView: ZapGalleryChildView {
 
 class ZapPillTextView: ZapPillView {
     let label = UILabel()
+    let zapIcon = UIImageView(image: UIImage(named: "topZapGalleryIcon"))
     
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
         stack.insertArrangedSubview(label, at: 2)
+        stack.insertArrangedSubview(zapIcon, at: 1)
+        stack.setCustomSpacing(4, after: zapIcon)
+        
+        zapIcon.tintColor = .foreground
         
         label.font = .appFont(withSize: 14, weight: .regular)
         label.textColor = .foreground3

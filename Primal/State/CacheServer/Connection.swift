@@ -37,12 +37,12 @@ final class Connection {
     static let regular = Connection(socketURL: PrimalEndpointsManager.regularURL)
     static let wallet = Connection(socketURL: PrimalEndpointsManager.walletURL)
     
-    static func connect() {
+    private static func connect() {
         regular.connect()
         wallet.connect()
     }
     
-    static func disconnect() {
+    private static func disconnect() {
         regular.disconnect()
         wallet.disconnect()
     }
@@ -50,18 +50,17 @@ final class Connection {
     static func reconnect() {
         disconnect()
         
-        // There is an issue with blocked DispatchQueue, don't know what's causing it but it's fixed by creating a new dispatch queue
-        Self.dispatchQueue = DispatchQueue(label: "com.primal.connection-\(UUID().uuidString.prefix(10))")
-        
         regular.timeToReconnect = 2
         wallet.timeToReconnect = 2
+        
+        dispatchQueue = .init(label: "connection-\(UUID().uuidString.prefix(15))")
         
         connect()
     }
     
     // MARK: - Class
     
-    var socketURL: URL {
+    @Published var socketURL: URL {
         didSet {
             disconnect()
             connect()
@@ -78,17 +77,22 @@ final class Connection {
     private var continousSubHandlers: [String: (JSON) -> Void] = [:]
     
     private var timeToReconnect: Int = 1
-    private var attemptReconnection = true
     
     init(socketURL: URL) {
         socket = WebSocket(socketURL)
         self.socketURL = socketURL
         self.connect()
         
-        $isConnected.dropFirst().sink { isConnected in
+        isConnectedPublisher.dropFirst().sink { isConnected in
             print("CONNECTION IS CONNECTED \(self === Connection.regular ? "REG" : "WALL") = \(isConnected)")
         }
         .store(in: &cancellables)
+        
+        messageReceived
+            .debounce(for: 10, scheduler: RunLoop.main)
+            .map { _ in false }
+            .assign(to: \.isConnected, onWeak: self)
+            .store(in: &cancellables)
     }
     
     deinit {
@@ -97,8 +101,18 @@ final class Connection {
     
     var cancellables: Set<AnyCancellable> = []
     var socketResponse: AnyCancellable?
+    
+    var messageReceived = PassthroughSubject<Void, Never>()
 
-    @Published var isConnected: Bool = false
+    let isConnectedPublisher = CurrentValueSubject<Bool, Never>(false)
+    
+    private(set) var isConnected: Bool = false {
+        didSet {
+            if oldValue != isConnected {
+                isConnectedPublisher.send(isConnected)
+            }
+        }
+    }
     
     private func connect() {
         disconnect()
@@ -111,7 +125,9 @@ final class Connection {
             switch event {
             case .connected:
                 isConnected = true
+                messageReceived.send(())
             case .message(let message):
+                isConnected = true
                 switch message {
                 case .string(let string):
                     guard let json: JSON = string.decode() else { return }
@@ -121,6 +137,7 @@ final class Connection {
                 @unknown default:
                     return
                 }
+                messageReceived.send(())
             case .disconnected(_, _):
                 isConnected = false
             case .error(_):
@@ -128,12 +145,11 @@ final class Connection {
             }
         }
         
-        attemptReconnection = true
         socket.connect()
     }
     
     private func disconnect() {
-        attemptReconnection = false
+        socketResponse = nil
         socket.disconnect()
         isConnected =  false
     }
@@ -245,28 +261,20 @@ final class Connection {
     }
     
     var isReconnecting = false
-    var countReconnectAttempts = 0
     private func autoReconnect() {
-        if isConnected || !attemptReconnection {
+        if isConnected {
             timeToReconnect = 1
-            countReconnectAttempts = 0
             return
         }
         
         if isReconnecting { return }
         
-        countReconnectAttempts += 1
         isReconnecting = true
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             self.isReconnecting = false
         }
         
-        if countReconnectAttempts < 4 {
-            connect()
-        } else {
-            countReconnectAttempts = 0
-            Connection.reconnect()
-        }
+        connect()
         
         timeToReconnect = min(timeToReconnect * 2, 30) + 1
         PrimalEndpointsManager.instance.checkIfNecessary()

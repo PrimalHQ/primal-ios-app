@@ -101,14 +101,15 @@ private extension OnboardingFollowSuggestionsController {
             })
             .store(in: &cancellables)
         
-        Connection.regular.$isConnected.filter { $0 }.first().sink { connected in            
+        Connection.regular.isConnectedPublisher.filter { $0 }.first().sink { connected in
             IdentityManager.instance.requestUserProfile()
             IdentityManager.instance.requestUserSettings()
             IdentityManager.instance.requestUserContactsAndRelays()
 
             MuteManager.instance.requestMuteList()
         }.store(in: &cancellables)
-        Connection.connect()
+        
+        Connection.reconnect()
     }
 
     func updateView() {
@@ -138,7 +139,7 @@ private extension OnboardingFollowSuggestionsController {
                     let home = container.child as? HomeFeedViewController
                 else { return }
                 
-                home.feed.refresh()
+                home.firstFeedVC?.feed.refresh()
             }
         }, errorHandler: { [weak self] in
             self?.state = .followFailed

@@ -85,6 +85,7 @@ final class WalletManager {
     @Published var didJustCreateWallet = false
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
+    @Published var isBitcoinPrimary = true
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
     let animatingZap = CurrentValueSubject<ParsedZap?, Never>(nil)
@@ -292,8 +293,9 @@ final class WalletManager {
 
 private extension WalletManager {
     func setupPublishers() {
-        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey
-            .removeDuplicates()
+        // Necessary to getLoginInfo so that userPubkey is properly set
+        _ = ICloudKeychainManager.instance.getLoginInfo()
+        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
         let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
         
         let complexPublisher = Publishers.Merge(pubkeyPublisher.first(), onlyPubkey.debounce(for: 1, scheduler: RunLoop.main)).removeDuplicates()
@@ -386,7 +388,7 @@ private extension WalletManager {
             }
             .store(in: &cancellables)
 
-        Connection.wallet.$isConnected.removeDuplicates().filter { $0 }
+        Connection.wallet.isConnectedPublisher.filter { $0 }
             .sink { [weak self] _ in
                 guard let event = NostrObject.wallet("{\"subwallet\":1}") else { return }
                 

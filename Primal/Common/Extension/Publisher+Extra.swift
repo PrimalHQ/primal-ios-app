@@ -34,7 +34,7 @@ extension Publisher {
     }
     
     func waitForConnection(_ connection: Connection) -> AnyPublisher<Output, Failure> {
-        return connection.$isConnected
+        return connection.isConnectedPublisher
             .filter { $0 }
             .first()
             .flatMap { _ in self }

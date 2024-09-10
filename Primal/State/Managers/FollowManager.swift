@@ -18,7 +18,7 @@ final class FollowManager {
     var cancellables: Set<AnyCancellable> = []
     
     private init() {
-        Publishers.CombineLatest3($pubkeysToFollow, $pubkeysToUnfollow, Connection.regular.$isConnected)
+        Publishers.CombineLatest3($pubkeysToFollow, $pubkeysToUnfollow, Connection.regular.isConnectedPublisher)
             .debounce(for: .seconds(2), scheduler: RunLoop.main)
             .sink { [weak self] pubkeysF, pubkeysUF, isConnected in
                 if pubkeysF.isEmpty && pubkeysUF.isEmpty { return }

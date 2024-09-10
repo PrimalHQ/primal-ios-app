@@ -13,7 +13,6 @@ class NewFeedCell: PostCell {
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
-    let bookmarkButton = UIButton()
     
     override var useShortText: Bool { true }
     
@@ -21,7 +20,6 @@ class NewFeedCell: PostCell {
     lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
     
     // MARK: - State
-    var isShowingBookmarked = false
     var lastContentId: String?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -64,9 +62,6 @@ class NewFeedCell: PostCell {
             zapGallery.isHidden = false
             zapGallery.zaps = content.zaps
         }
-        
-        isShowingBookmarked = content.postInfo.isBookmarked
-        bookmarkButton.setImage(UIImage(named: isShowingBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
     }
 }
 
@@ -107,7 +102,7 @@ private extension NewFeedCell {
     
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, mainImages, linkPresentation, postPreview, zapGallery, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapGallery, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
@@ -122,21 +117,14 @@ private extension NewFeedCell {
         bottomButtonStack
             .pin(to: buttonStackStandIn, edges: .leading, padding: -8)
             .pin(to: buttonStackStandIn, edges: .trailing, padding: 16)
-            .centerToView(buttonStackStandIn)
+            .centerToView(buttonStackStandIn, axis: .vertical)
         
         bottomButtonStack.distribution = .fillEqually
-        
         
         contentView.addSubview(bookmarkButton)
         bookmarkButton
             .pin(to: buttonStackStandIn, edges: .trailing, padding: -2)
             .centerToView(buttonStackStandIn, axis: .vertical)
-        
-        bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
-        bookmarkButton.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
-        }), for: .touchUpInside)
     }
 }
 

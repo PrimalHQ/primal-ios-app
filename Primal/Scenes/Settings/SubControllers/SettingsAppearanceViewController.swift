@@ -155,7 +155,7 @@ extension SettingsAppearanceViewController: UITableViewDataSource {
         post.hashtags = [.init(position: 11, length: 6, text: "#Nostr", reference: "#Nostr")]
         post.buildContentString()
         
-        (cell as? FeedCell)?.update(post)
+        (cell as? PostCell)?.update(post)
         
         return cell
     }

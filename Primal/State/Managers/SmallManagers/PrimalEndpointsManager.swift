@@ -36,7 +36,7 @@ final class PrimalEndpointsManager {
     }
     
     static var regularURL: URL {
-//        URL(string: "wss://cache0.primal.net/v1") ??
+        NetworkSettings.cacheServerOverrideURL ??
         URL(string: UserDefaults.standard.endpointsLastValue?.mobile_cache_server_v1.first ?? "wss://cache.primal.net/v1") ?? URL(string: "wss://cache.primal.net/v1")!
     }
     static var walletURL: URL {
@@ -56,7 +56,11 @@ final class PrimalEndpointsManager {
     private static func updateIfNecessary() {
         guard let result = UserDefaults.standard.endpointsLastValue else { return }
         
-        if let urlString = result.mobile_cache_server_v1.first, let url = URL(string: urlString), Connection.regular.socketURL.absoluteString != url.absoluteString {
+        if  NetworkSettings.cacheServerOverrideURL == nil,
+            let urlString = result.mobile_cache_server_v1.first,
+            let url = URL(string: urlString),
+            Connection.regular.socketURL.absoluteString != url.absoluteString
+        {
             Connection.regular.socketURL = url
         }
         

@@ -17,7 +17,7 @@ extension UIViewController {
 }
 
 enum MainTab: String {
-    case home, explore, wallet, messages, notifications
+    case home, reads, wallet, messages, notifications
     
     var tabImage: UIImage? {
         UIImage(named: "tabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
@@ -30,7 +30,7 @@ enum MainTab: String {
 
 final class MainTabBarController: UIViewController, Themeable {
     lazy var home = FeedNavigationController()
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
     lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
     lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
@@ -70,7 +70,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
     var cancellables: Set<AnyCancellable> = []
     
-    private let tabs: [MainTab] = [.home, .explore, .wallet, .notifications, .messages]
+    private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .messages]
 
     var hasNewNotifications = false {
         didSet {
@@ -132,7 +132,7 @@ final class MainTabBarController: UIViewController, Themeable {
 
         updateButtons()
 
-        [home, explore, wallet, messages, notifications].forEach {
+        [home, reads, wallet, messages, notifications].forEach {
             $0.updateThemeIfThemeable()
         }
         
@@ -154,8 +154,8 @@ final class MainTabBarController: UIViewController, Themeable {
         switch tab {
         case .home:
             return home
-        case .explore:
-            return explore
+        case .reads:
+            return reads
         case .wallet:
             return wallet
         case .messages:
@@ -232,7 +232,10 @@ private extension MainTabBarController {
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         buttonStackParent.addSubview(buttonStack)
-        buttonStack.pinToSuperview().constrainToSize(height: 56)
+        buttonStack
+            .pinToSuperview(edges: [.horizontal, .top])
+            .pinToSuperview(edges: .bottom, padding: -8)
+            .constrainToSize(height: 56)
         buttonStack.distribution = .fillEqually
         
         buttonStack.addSubview(notificationIndicator)
@@ -258,12 +261,6 @@ private extension MainTabBarController {
                         RelaysPostbox.instance.reconnect()
                     }
                 }
-            }
-            .store(in: &cancellables)
-        
-        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
-            .sink { _ in
-                Connection.disconnect()
             }
             .store(in: &cancellables)
         
@@ -350,7 +347,12 @@ private extension MainTabBarController {
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
             tableViews.forEach {
                 if $0.indexPathsForVisibleRows?.isEmpty == false {
-                    $0.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: true)
+                    for section in 0...3 {
+                        if $0.numberOfRows(inSection: section) > 0 {
+                            $0.scrollToRow(at: .init(row: 0, section: section), at: .top, animated: true)
+                            return
+                        }
+                    }
                 }
             }
             return

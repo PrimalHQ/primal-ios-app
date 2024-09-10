@@ -24,13 +24,17 @@ enum NostrKind: Int {
     case channelMuteUser = 44
     
     case zapReceipt = 9735
+    case highlight = 9802
     
     case muteList = 10_000
     case bookmarks = 10_003
     
     case categoryList = 30_000
+    case longForm = 30_023
     
     case settings = 30_078
+    
+    case handlerInfo = 31_990
     
     case ack = 10_000_098
     case noteStats = 10_000_100
@@ -57,6 +61,13 @@ enum NostrKind: Int {
     case userPubkey = 10_000_138
     case relays = 10_000_139
     case relayHints = 10_000_141
+    case longFormMetadata = 10_000_144
+    case eventBroadcastResponse = 10_000_149
+    case articleFeeds = 10_000_152
+    case highlightGroups = 10_000_151
+    case feedsSettings = 10_000_155
+    
+    case shortenedArticle = 10_030_023
 }
 
 extension NostrKind {

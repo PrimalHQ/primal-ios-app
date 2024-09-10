@@ -13,6 +13,12 @@ protocol ZapGalleryViewDelegate: AnyObject {
     func mainActionForZap(_ zap: ParsedZap)
 }
 
+protocol ZapGallery: UIView {
+    var delegate: ZapGalleryViewDelegate? { get set }
+    var zaps: [ParsedZap] { get set }
+    var singleLine: Bool { get set }
+}
+
 class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
     class Delegate: NSObject, UIContextMenuInteractionDelegate {
         weak var interaction: GalleryZapPillMenuInteraction?
@@ -29,10 +35,10 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
             }
         }
     }
-    weak var galleryView: ZapGalleryView?
+    weak var galleryView: ZapGallery?
     let zap: ParsedZap
     let interactionDelegate = Delegate()
-    init(galleryView: ZapGalleryView, zap: ParsedZap) {
+    init(galleryView: SmallZapGalleryView, zap: ParsedZap) {
         self.galleryView = galleryView
         self.zap = zap
         
@@ -42,7 +48,7 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
     }
 }
 
-class ZapGalleryView: UIView {
+class SmallZapGalleryView: UIView, ZapGallery {
     let skeletonLoader = LottieAnimationView()
     let stack = UIStackView()
     let animationStack = UIStackView()
@@ -112,8 +118,6 @@ class ZapGalleryView: UIView {
             if animatingChanges {
                 // Start animating
                 animateStacks()
-            } else {
-                print("NOT ANIMATING")
             }
         }
         
@@ -123,7 +127,9 @@ class ZapGalleryView: UIView {
             
             if let first = zaps.first {
                 hStack.addArrangedSubview(zapView(first, text: true))
-                hStack.addArrangedSubview(SpacerView(width: 375, priority: .init(1)))
+                let spacer = SpacerView(width: 375, priority: .init(1))
+                hStack.addArrangedSubview(spacer)
+                hStack.setCustomSpacing(8, after: spacer)
                 stack.addArrangedSubview(hStack)
                 hStack.pinToSuperview(edges: .horizontal)
             }
@@ -250,6 +256,10 @@ class ZapGalleryView: UIView {
 
                         UIView.animate(withDuration: 3 / 30) {
                             label.alpha = 0
+                            
+                            animatingPill.zapIcon.alpha = 0
+                            animatingPill.zapIcon.isHidden = true
+                            
                             if newPill as? ZapAvatarView != nil {
                                 animatingPill.amountLabel.alpha = 0
                                 animatingPill.amountLabel.isHidden = true

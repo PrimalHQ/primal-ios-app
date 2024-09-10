@@ -115,10 +115,7 @@ private extension PopupZapSelectionViewController {
         ]))
         zapLabel.attributedText = mutable
         
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "USD"
-        usdLabel.text = formatter.string(from: Double(selectedZapAmount) * 0.0003058 as NSNumber)
+        usdLabel.text = selectedZapAmount.satsToUsdAmountString(.removeZeros) + " USD"
     }
     
     func setup() {

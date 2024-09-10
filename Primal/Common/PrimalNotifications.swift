@@ -21,6 +21,6 @@ extension Notification.Name {
     }
 }
 
-func notify(_ name: NSNotification.Name, _ object: Any?) {
+func notify(_ name: NSNotification.Name, _ object: Any? = nil) {
     NotificationCenter.default.post(name: name, object: object)
 }
