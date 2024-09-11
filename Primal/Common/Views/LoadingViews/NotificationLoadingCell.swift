@@ -16,9 +16,9 @@ class NotificationLoadingCell: UITableViewCell {
         selectionStyle = .none
         
         addSubview(animationView)
-        animationView.pinToSuperview()
-        
-        animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 1125 / 417).isActive = true
+        animationView
+            .pinToSuperview()
+            .constrainToAspect(1125 / 447)
         
         animationView.animation = Theme.current.isDarkTheme ? AnimationType.notificationSkeleton.animation : AnimationType.notificationSkeletonLight.animation
         animationView.loopMode = .loop

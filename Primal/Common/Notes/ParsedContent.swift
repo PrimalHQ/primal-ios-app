@@ -106,42 +106,76 @@ extension ParsedUser {
 }
 
 enum ParsedContentTextStyle {
-    case regular, enlarged, notifications
+    case regular, enlarged, threadChildren, notifications, embedded
     
     var maximumLineHeight: CGFloat {
         switch self {
-        case .regular:          return FontSizeSelection.current.contentLineHeight
-        case .enlarged:         return FontSizeSelection.current.contentLineHeight + 2
-        case .notifications:    return FontSizeSelection.current.contentLineHeight
+        case .regular, .threadChildren, .notifications, .embedded:
+            return FontSizeSelection.current.contentLineHeight
+        case .enlarged:
+            return FontSizeSelection.current.contentLineHeight + 2
         }
     }
     
     var fontSize: CGFloat {
         switch self {
-        case .regular:          return FontSizeSelection.current.contentFontSize
-        case .enlarged:         return FontSizeSelection.current.contentFontSize + 2
-        case .notifications:    return FontSizeSelection.current.contentFontSize
+        case .regular, .threadChildren, .notifications, .embedded:
+            return FontSizeSelection.current.contentFontSize
+        case .enlarged:
+            return FontSizeSelection.current.contentFontSize + 2
         }
     }
     
     var color: UIColor {
         switch self {
-        case .regular, .enlarged:   return .foreground
-        case .notifications:        return .foreground2
+        case .regular, .enlarged, .threadChildren, .embedded:
+            return .foreground
+        case .notifications:
+            return .foreground2
         }
     }
 }
 
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
+        let specialStyle: Bool = {
+            switch style {
+            case .enlarged, .threadChildren, .notifications, .embedded:
+                return false
+            default:
+                break
+            }
+            
+            var mainText = highlights.reversed().reduce(text, { ($0 as NSString).replacingCharacters(in: .init(location: $1.position, length: $1.length), with: "") })
+            
+            let count = mainText.count
+            
+            if count > 140 {
+                return false
+            }
+            
+            mainText.removeAll(where: { $0.isNewline })
+            
+            if count - mainText.count > 3 {
+                return false
+            }
+            
+            return true
+        }()
+        
         let fs = FontSizeSelection.current
         let paragraph = NSMutableParagraphStyle()
-        paragraph.lineSpacing = fs.contentLineSpacing
-        paragraph.maximumLineHeight = style.maximumLineHeight
+        if specialStyle {
+            paragraph.lineSpacing = 6
+            paragraph.maximumLineHeight = 26
+        } else {
+            paragraph.lineSpacing = fs.contentLineSpacing
+            paragraph.maximumLineHeight = style.maximumLineHeight
+        }
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: style.color,
-            .font: UIFont.appFont(withSize: style.fontSize, weight: .regular),
+            .font: specialStyle ? UIFont.appFont(withSize: 20, weight: .regular) : UIFont.appFont(withSize: style.fontSize, weight: .regular),
             .paragraphStyle: paragraph
         ])
         
@@ -199,6 +233,7 @@ extension ParsedContent {
             newParagraph.maximumLineHeight = 28
             
             result.addAttributes([
+                .font: UIFont.appFont(withSize: style.fontSize, weight: .regular),
                 .foregroundColor: UIColor.foreground,
                 .backgroundColor: UIColor.highlight,
                 .link: URL(string: "highlight://\(element.reference)"),

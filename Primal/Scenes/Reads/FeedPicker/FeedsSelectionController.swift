@@ -136,7 +136,7 @@ final class FeedsSelectionController: UIViewController {
                     guard let self, !feeds.isEmpty else { return }
                     PrimalFeed.setAllFeeds(feeds, type: type)
                     PrimalFeed.lastTimeFeedsFetched[type] = Date()
-                    updateTable()
+                    updateTable(animate: false)
                     
                     SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": .string(type.subkey)]).publisher()
                         .receive(on: DispatchQueue.main)
@@ -146,7 +146,7 @@ final class FeedsSelectionController: UIViewController {
                             if feeds.isEmpty { return }
                             
                             PrimalFeed.setServerFeeds(feeds, type: type)
-                            self?.updateTable()
+                            self?.updateTable(animate: false)
                         }
                         .store(in: &cancellables)
                 }
@@ -159,7 +159,7 @@ final class FeedsSelectionController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        updateTable()
+        updateTable(animate: false)
         
         DispatchQueue.main.async { [self] in
             if let index = feeds.firstIndex(where: { $0.spec == currentFeed.spec }) {
@@ -176,15 +176,15 @@ final class FeedsSelectionController: UIViewController {
 }
 
 private extension FeedsSelectionController {
-    func updateTable() {
+    func updateTable(animate: Bool) {
         if isEditing {
-            startEditing()
+            startEditing(animate: animate)
         } else {
-            endEditing()
+            endEditing(animate: animate)
         }
     }
     
-    func startEditing() {
+    func startEditing(animate: Bool = true) {
         editButton.isHidden = true
         doneButton.isHidden = false
         addFeedButton.isHidden = false
@@ -192,10 +192,10 @@ private extension FeedsSelectionController {
         isEditing = true
         table.dragDelegate = self
         
-        updateFeeds(feeds, PrimalFeed.getAllFeeds(type))
+        updateFeeds(feeds, PrimalFeed.getAllFeeds(type), animate: animate)
     }
     
-    func endEditing() {
+    func endEditing(animate: Bool = true) {
         editButton.isHidden = LoginManager.instance.method() == .nsec ? false : true
         doneButton.isHidden = true
         addFeedButton.isHidden = true
@@ -203,13 +203,17 @@ private extension FeedsSelectionController {
         isEditing = false
         table.dragDelegate = nil
         
-        updateFeeds(feeds, PrimalFeed.getActiveFeeds(type))
+        updateFeeds(feeds, PrimalFeed.getActiveFeeds(type), animate: animate)
     }
     
-    func updateFeeds(_ oldValue: [PrimalFeed], _ newValue: [PrimalFeed]) {
+    func updateFeeds(_ oldValue: [PrimalFeed], _ newValue: [PrimalFeed], animate: Bool) {
         if table.window == nil {
             feeds = newValue
             return
+        }
+        
+        if !animate {
+            table.reloadData()
         }
         
         let old = (0...oldValue.count).map { IndexPath(row: $0, section: 0) }

@@ -117,7 +117,7 @@ final class Connection {
     private func connect() {
         disconnect()
         
-        socket = WebSocket(socketURL)
+        socket = WebSocket(socketURL, session: URLSession(configuration: .default))
         
         socketResponse = socket.subject.receive(on: Self.dispatchQueue).sink { [weak self] event in
             guard let self else { return }

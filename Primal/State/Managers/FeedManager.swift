@@ -63,7 +63,7 @@ final class FeedManager {
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
         initSubscriptions()
-        refresh()
+        refresh(useHTTP: true)
     }
     
     init(newFeed: PrimalFeed) {
@@ -92,7 +92,7 @@ final class FeedManager {
     func updateTheme() {
         (newPostObjects + parsedPosts).forEach {
             $0.buildContentString()
-            $0.embededPost?.buildContentString()
+            $0.embededPost?.buildContentString(style: .embedded)
         }
     }
     
@@ -114,7 +114,7 @@ final class FeedManager {
         refresh()
     }
     
-    func refresh() {
+    func refresh(useHTTP: Bool = false) {
         lastRefreshDate = .now
         newPostObjects = []
         newAddedPosts = 0
@@ -124,20 +124,21 @@ final class FeedManager {
         paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
-        requestNewPage()
+        requestNewPage(useHTTP: useHTTP)
     }
     
-    func requestNewPage() {
+    func requestNewPage(useHTTP: Bool = false) {
         guard !isRequestingNewPage, !didReachEnd else { return }
         guard paginationInfo?.order_by == nil || paginationInfo?.order_by == "created_at" else { return }
         isRequestingNewPage = true
-        sendNewPageRequest()
+        sendNewPageRequest(useHTTP: useHTTP)
     }
             
     func requestThread(postId: String, limit: Int32 = 100) {
         parsedPosts.removeAll()
         
         SocketRequest(
+            useHTTP: true,
             name: "thread_view",
             payload: .object([
                 "event_id": .string(postId),
@@ -354,10 +355,10 @@ private extension FeedManager {
     }
     
     // MARK: - Requests
-    func sendNewPageRequest() {
+    func sendNewPageRequest(useHTTP: Bool = false) {
         let (name, payload) = generateRequestByFeedType()
         
-        SocketRequest(name: name, payload: payload).publisher()
+        SocketRequest(useHTTP: useHTTP, name: name, payload: payload).publisher()
             .sink { [weak self] result in
                 guard let self else { return }
                 

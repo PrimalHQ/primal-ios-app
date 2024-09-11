@@ -401,7 +401,7 @@ private extension ProfileViewController {
     func requestUserProfile() {
         let profile = self.profile
         
-        SocketRequest(name: "is_user_following", payload: [
+        SocketRequest(useHTTP: true, name: "is_user_following", payload: [
             "pubkey": .string(profile.data.pubkey),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
@@ -412,7 +412,7 @@ private extension ProfileViewController {
         }
         .store(in: &cancellables)
         
-        SocketRequest(name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
+        SocketRequest(useHTTP: true, name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let user = result.users.first?.value else { return }

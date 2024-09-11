@@ -247,10 +247,14 @@
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
-		B906AACD2C8F8AA40089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AACB2C8F8AA40089813F /* smallPillLoader.json */; };
-		B906AACE2C8F8AA40089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AACC2C8F8AA40089813F /* smallPillLoaderLight.json */; };
-		B906AAD12C8F8BB80089813F /* articleListSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AACF2C8F8BB80089813F /* articleListSkeleton.json */; };
-		B906AAD22C8F8BB80089813F /* articleListSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD02C8F8BB80089813F /* articleListSkeletonLight.json */; };
+		B906AAE22C91C46D0089813F /* notificationSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD42C91C46D0089813F /* notificationSkeleton.json */; };
+		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
+		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
+		B906AAEA2C91C46D0089813F /* articleListSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AADC2C91C46D0089813F /* articleListSkeletonLight.json */; };
+		B906AAEC2C91C46D0089813F /* notificationSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AADE2C91C46D0089813F /* notificationSkeletonLight.json */; };
+		B906AAEE2C91C46D0089813F /* articleListSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAE02C91C46D0089813F /* articleListSkeleton.json */; };
+		B906AAF02C91D1BE0089813F /* postCellSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAEF2C91D1BE0089813F /* postCellSkeletonLight.json */; };
+		B906AAF22C91D20A0089813F /* postCellSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAF12C91D20A0089813F /* postCellSkeleton.json */; };
 		B90B7F272B97BA5F0074CD98 /* UploadPhotoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90B7F262B97BA5F0074CD98 /* UploadPhotoRequest.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
@@ -334,12 +338,8 @@
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
-		B97DF07D2C8E4FC50041C790 /* postCellSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B97DF07B2C8E4FC50041C790 /* postCellSkeleton.json */; };
-		B97DF07E2C8E4FC50041C790 /* postCellSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B97DF07C2C8E4FC50041C790 /* postCellSkeletonLight.json */; };
 		B97DF0802C8F1C820041C790 /* NoteFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */; };
 		B97DF08B2C8F780F0041C790 /* NotificationLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF08A2C8F780F0041C790 /* NotificationLoadingCell.swift */; };
-		B97DF08D2C8F786A0041C790 /* notificationSkeleton.json in Resources */ = {isa = PBXBuildFile; fileRef = B97DF08C2C8F786A0041C790 /* notificationSkeleton.json */; };
-		B97DF08F2C8F78720041C790 /* notificationSkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B97DF08E2C8F78720041C790 /* notificationSkeletonLight.json */; };
 		B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */; };
 		B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */; };
 		B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */; };
@@ -738,10 +738,14 @@
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
-		B906AACB2C8F8AA40089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
-		B906AACC2C8F8AA40089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
-		B906AACF2C8F8BB80089813F /* articleListSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeleton.json; sourceTree = "<group>"; };
-		B906AAD02C8F8BB80089813F /* articleListSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeletonLight.json; sourceTree = "<group>"; };
+		B906AAD42C91C46D0089813F /* notificationSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationSkeleton.json; sourceTree = "<group>"; };
+		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
+		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
+		B906AADC2C91C46D0089813F /* articleListSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeletonLight.json; sourceTree = "<group>"; };
+		B906AADE2C91C46D0089813F /* notificationSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationSkeletonLight.json; sourceTree = "<group>"; };
+		B906AAE02C91C46D0089813F /* articleListSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = articleListSkeleton.json; sourceTree = "<group>"; };
+		B906AAEF2C91D1BE0089813F /* postCellSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = postCellSkeletonLight.json; sourceTree = "<group>"; };
+		B906AAF12C91D20A0089813F /* postCellSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = postCellSkeleton.json; sourceTree = "<group>"; };
 		B90B7F262B97BA5F0074CD98 /* UploadPhotoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoRequest.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
@@ -826,12 +830,8 @@
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
 		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
-		B97DF07B2C8E4FC50041C790 /* postCellSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = postCellSkeleton.json; sourceTree = "<group>"; };
-		B97DF07C2C8E4FC50041C790 /* postCellSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = postCellSkeletonLight.json; sourceTree = "<group>"; };
 		B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedPreviewController.swift; sourceTree = "<group>"; };
 		B97DF08A2C8F780F0041C790 /* NotificationLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationLoadingCell.swift; sourceTree = "<group>"; };
-		B97DF08C2C8F786A0041C790 /* notificationSkeleton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationSkeleton.json; sourceTree = "<group>"; };
-		B97DF08E2C8F78720041C790 /* notificationSkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationSkeletonLight.json; sourceTree = "<group>"; };
 		B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedView.swift; sourceTree = "<group>"; };
 		B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadArticleController.swift; sourceTree = "<group>"; };
 		B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleWebView.swift; sourceTree = "<group>"; };
@@ -1329,28 +1329,28 @@
 			isa = PBXGroup;
 			children = (
 				9E6924992A025D3400CAC54C /* iconLike.json */,
-				B944291F2BD2836800746FBC /* zap-medium.json */,
-				B94429212BD2866D00746FBC /* thread-zap-medium.json */,
 				9E0DEAF329FD35A000145E08 /* iconZap.json */,
-				9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */,
-				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
-				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
 				B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */,
-				B906AAD02C8F8BB80089813F /* articleListSkeletonLight.json */,
-				B906AACF2C8F8BB80089813F /* articleListSkeleton.json */,
-				9EB219EB2A06D2AF0037C3E5 /* splash.json */,
-				B9CE4DA82B682C840060A1B8 /* transferSuccess.json */,
-				B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */,
-				B9CE4DB82B6D101A0060A1B8 /* walletLightning.json */,
+				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
+				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
 				B9CE4DBD2B715DB80060A1B8 /* notificationLightning.json */,
+				B906AAEF2C91D1BE0089813F /* postCellSkeletonLight.json */,
+				B906AAF12C91D20A0089813F /* postCellSkeleton.json */,
+				B906AADE2C91C46D0089813F /* notificationSkeletonLight.json */,
+				B906AAD42C91C46D0089813F /* notificationSkeleton.json */,
+				B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */,
+				B906AAD92C91C46D0089813F /* smallPillLoader.json */,
+				B906AADC2C91C46D0089813F /* articleListSkeletonLight.json */,
+				B906AAE02C91C46D0089813F /* articleListSkeleton.json */,
+				9EB219EB2A06D2AF0037C3E5 /* splash.json */,
+				9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */,
+				B94429212BD2866D00746FBC /* thread-zap-medium.json */,
+				B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */,
+				B9CE4DA82B682C840060A1B8 /* transferSuccess.json */,
+				B9CE4DB82B6D101A0060A1B8 /* walletLightning.json */,
+				B944291F2BD2836800746FBC /* zap-medium.json */,
 				B94429272BD592C400746FBC /* zapGallerySkeleton.json */,
 				B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */,
-				B97DF07C2C8E4FC50041C790 /* postCellSkeletonLight.json */,
-				B97DF07B2C8E4FC50041C790 /* postCellSkeleton.json */,
-				B906AACB2C8F8AA40089813F /* smallPillLoader.json */,
-				B906AACC2C8F8AA40089813F /* smallPillLoaderLight.json */,
-				B97DF08C2C8F786A0041C790 /* notificationSkeleton.json */,
-				B97DF08E2C8F78720041C790 /* notificationSkeletonLight.json */,
 			);
 			path = Animations;
 			sourceTree = "<group>";
@@ -2425,7 +2425,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
-				B97DF08F2C8F78720041C790 /* notificationSkeletonLight.json in Resources */,
 				B99E03972C061D67006CCECB /* longForm.html in Resources */,
 				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
 				B91C46282BC6D03B00AC2C9B /* PrivacyInfo.xcprivacy in Resources */,
@@ -2436,32 +2435,33 @@
 				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
 				B9CE4DA92B682C840060A1B8 /* transferSuccess.json in Resources */,
-				B906AAD12C8F8BB80089813F /* articleListSkeleton.json in Resources */,
 				B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */,
+				B906AAEA2C91C46D0089813F /* articleListSkeletonLight.json in Resources */,
 				B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */,
+				B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */,
 				B94F2C012AE95D790041181B /* Nacelle-Thin.otf in Resources */,
 				9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */,
-				B97DF08D2C8F786A0041C790 /* notificationSkeleton.json in Resources */,
+				B906AAEE2C91C46D0089813F /* articleListSkeleton.json in Resources */,
 				9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */,
-				B97DF07D2C8E4FC50041C790 /* postCellSkeleton.json in Resources */,
 				9E69249A2A025D3400CAC54C /* iconLike.json in Resources */,
 				B9CE4DAB2B682C8B0060A1B8 /* transferFailed.json in Resources */,
-				B906AAD22C8F8BB80089813F /* articleListSkeletonLight.json in Resources */,
-				B906AACE2C8F8AA40089813F /* smallPillLoaderLight.json in Resources */,
 				B94F2BFB2AE95D790041181B /* Nacelle-Bold.otf in Resources */,
+				B906AAF02C91D1BE0089813F /* postCellSkeletonLight.json in Resources */,
 				B9CE4DC22B740A4D0060A1B8 /* loadingDots.json in Resources */,
 				B99E03A42C09D095006CCECB /* markdown.css in Resources */,
-				B906AACD2C8F8AA40089813F /* smallPillLoader.json in Resources */,
+				B906AAE22C91C46D0089813F /* notificationSkeleton.json in Resources */,
 				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
 				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
+				B906AAF22C91D20A0089813F /* postCellSkeleton.json in Resources */,
+				B906AAEC2C91C46D0089813F /* notificationSkeletonLight.json in Resources */,
 				B94429202BD2836800746FBC /* zap-medium.json in Resources */,
+				B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */,
 				B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
 				B94429282BD592C400746FBC /* zapGallerySkeleton.json in Resources */,
 				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
-				B97DF07E2C8E4FC50041C790 /* postCellSkeletonLight.json in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
 				B9CE4DB92B6D101A0060A1B8 /* walletLightning.json in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
@@ -3057,7 +3057,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.20;
+				MARKETING_VERSION = 2.0.26;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3103,7 +3103,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.20;
+				MARKETING_VERSION = 2.0.26;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -371,7 +371,7 @@ extension PostRequestResult: MetadataCoding {
         p.highlights = highlights.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id)}
         p.highlightEvents = highlights.map { $0.1 }
         p.text = text
-        p.buildContentString()
+        p.buildContentString(style: removeExtractedPost ? .regular : .embedded)
         
         return p
     }

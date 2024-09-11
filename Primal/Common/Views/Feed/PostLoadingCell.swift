@@ -16,9 +16,10 @@ class PostLoadingCell: UITableViewCell {
         selectionStyle = .none
         
         addSubview(animationView)
-        animationView.pinToSuperview()
-        
-        animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 375 / 137).isActive = true
+        animationView
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .vertical, padding: 10)
+            .constrainToAspect(1125 / 445)
         
         animationView.animation = Theme.current.isDarkTheme ? AnimationType.postCellSkeleton.animation : AnimationType.postCellSkeletonLight.animation
         animationView.loopMode = .loop
