@@ -227,32 +227,11 @@ private extension FeedsSelectionController {
     }
     
     func updateFeeds(_ oldValue: [PrimalFeed], _ newValue: [PrimalFeed], animate: Bool) {
-        if table.window == nil {
-            feeds = newValue
-            return
-        }
-        
-        if !animate {
-            table.reloadData()
-            return
-        }
-        
-        let old = (0...oldValue.count).map { IndexPath(row: $0, section: 0) }
-        table.reloadRows(at: old, with: .automatic)
-        
         feeds = newValue
         
-        if oldValue.count > newValue.count {
-            let changed = oldValue.enumerated().filter { old in !newValue.contains(where: { $0.spec == old.element.spec })}.map { IndexPath(row: $0.offset, section: 0) }
-            
-            table.deleteRows(at: changed, with: .automatic)
-        } else if oldValue.count < newValue.count {
-            let changed = newValue.enumerated().filter { new in !oldValue.contains(where: { $0.spec == new.element.spec })}.map { IndexPath(row: $0.offset, section: 0) }
-            
-            table.insertRows(at: changed, with: .automatic)
-        } else {
-            table.reloadData()
-        }
+        if table.window == nil { return }
+        
+        table.reloadData()
     }
     
     func setup() {
