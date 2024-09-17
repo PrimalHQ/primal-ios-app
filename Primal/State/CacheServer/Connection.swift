@@ -10,6 +10,7 @@ import Combine
 import NWWebSocket
 import Network
 import GenericJSON
+import Socket
 
 class ContinousConnection {
     let id: String
@@ -79,7 +80,7 @@ final class Connection {
     private var timeToReconnect: Int = 1
     
     init(socketURL: URL) {
-        socket = WebSocket(socketURL)
+        socket = WebSocket(socketURL, session: URLSession(configuration: .default))
         self.socketURL = socketURL
         self.connect()
         

@@ -214,7 +214,6 @@ private extension ChatViewController {
         textInputView.font = .appFont(withSize: 16, weight: .regular)
         textInputView.textColor = .foreground
         textInputView.delegate = inputManager
-        textInputView.returnKeyType = .send
         
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)

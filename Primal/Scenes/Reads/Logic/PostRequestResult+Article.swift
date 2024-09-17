@@ -83,11 +83,11 @@ extension PostRequestResult {
 
 extension PostRequestResult {
     func getArticles() -> [Article] {
-        let posts = process()
+        let posts = process(contentStyle: .threadChildren)
         
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
+            .map { parse(post: $0.0, user: $0.1, mentions: [], contentStyle: .embedded) }
         
         let parsedUsers = getSortedUsers()
         
@@ -145,7 +145,7 @@ extension PostRequestResult {
     }
     
     func getHighlightComments() -> [String: [ParsedContent]] {
-        return process().reduce(into: [:]) { partialResult, comment in
+        return process(contentStyle: .threadChildren).reduce(into: [:]) { partialResult, comment in
             guard let content = comment.replyingTo?.post.content else { return }
 
             partialResult[content] = partialResult[content, default: []] + [comment]

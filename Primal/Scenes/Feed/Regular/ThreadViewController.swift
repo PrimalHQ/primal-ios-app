@@ -123,6 +123,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         mainTabBarController?.showTabBarBorder = true
     }
     
+    var articleSection: Int { 0 }
     override var postSection: Int { 1 }
     
     @discardableResult
@@ -392,7 +393,9 @@ private extension ThreadViewController {
         Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
-            self.didMoveToMain = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.didMoveToMain = true
+            }
             
             if self.didPostNewComment {
                 self.didPostNewComment = false
@@ -491,8 +494,6 @@ private extension ThreadViewController {
         addPublishers()
         
         title = "Thread"
-        
-        loadingSpinner.removeFromSuperview()
         
         table.keyboardDismissMode = .interactive
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)

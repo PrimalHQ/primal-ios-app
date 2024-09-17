@@ -70,10 +70,15 @@ struct NostrUserProfileInfo: Codable {
     let note_count: Int32?
     let reply_count: Int32?
     let time_joined: Int32?
+    let long_form_note_count: Int32?
+    let media_count: Int32?
     
+    var replies: Int32 { reply_count ?? 0 }
     var follows: Int32 { follows_count ?? 0 }
     var followers: Int32 { followers_count ?? 0 }
     var notes: Int32 { note_count ?? 0 }
+    var articles: Int32 { long_form_note_count ?? 0 }
+    var media: Int32 { media_count ?? 0 }
 }
 
 struct MediaMetadata: Codable {

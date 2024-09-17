@@ -72,6 +72,10 @@ final class MenuContainerController: UIViewController, Themeable {
     
     func animateOpen() {
         open()
+        
+        // Many ViewControllers modify the navigationBar during scrolling, so we will kill all active scrolling to stop them from messing with our navigationBar
+        let scrollViews: [UIScrollView] = child.view.findAllSubviews()
+        scrollViews.forEach { $0.setContentOffset($0.contentOffset, animated: false) }
                 
         UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
             self.child.view.transform = .identity

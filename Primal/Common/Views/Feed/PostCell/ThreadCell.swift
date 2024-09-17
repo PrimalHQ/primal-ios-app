@@ -38,7 +38,6 @@ class ThreadCell: PostCell {
             topConstraint?.constant = 0
             bottomConstraint?.constant = -24
             
-            parsedContent.buildContentString(style: .threadChildren)
             mainLabel.attributedText = parsedContent.attributedText
         case .main:
             contentView.backgroundColor = .clear
@@ -56,7 +55,6 @@ class ThreadCell: PostCell {
             topConstraint?.constant = 12
             bottomConstraint?.constant = -12
             
-            parsedContent.buildContentString(style: .threadChildren)
             mainLabel.attributedText = parsedContent.attributedText
         }
     }

@@ -58,17 +58,17 @@ struct SocketRequest {
     }
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
-        if true || useHTTP {
-            return httpPublisher()
-                .replaceError(with: [])
-                .map { result in
-                    let pendingResult = PostRequestResult()
-                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
-                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
-                    return pendingResult
-                }
-                .eraseToAnyPublisher()
-        }
+//        if false && useHTTP {
+//            return httpPublisher()
+//                .replaceError(with: [])
+//                .map { result in
+//                    let pendingResult = PostRequestResult()
+//                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
+//                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
+//                    return pendingResult
+//                }
+//                .eraseToAnyPublisher()
+//        }
         
         Connection.regular.autoConnectReset()
         

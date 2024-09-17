@@ -138,9 +138,9 @@ enum ParsedContentTextStyle {
 
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
-        let specialStyle: Bool = {
+        let specialStyle: Bool = ContentDisplaySettings.hugeFonts && {
             switch style {
-            case .enlarged, .threadChildren, .notifications, .embedded:
+            case .threadChildren, .notifications, .embedded:
                 return false
             default:
                 break
@@ -165,9 +165,23 @@ extension ParsedContent {
         
         let fs = FontSizeSelection.current
         let paragraph = NSMutableParagraphStyle()
+        
+        var fontSize = style.fontSize
         if specialStyle {
-            paragraph.lineSpacing = 6
-            paragraph.maximumLineHeight = 26
+            switch FontSizeSelection.current {
+            case .small:
+                fontSize = 20
+                paragraph.maximumLineHeight = 25
+            case .standard:
+                fontSize = 21
+                paragraph.maximumLineHeight = 26
+            case .large:
+                fontSize = 24
+                paragraph.maximumLineHeight = 28
+            case .huge:
+                fontSize = 26
+                paragraph.maximumLineHeight = 30
+            }
         } else {
             paragraph.lineSpacing = fs.contentLineSpacing
             paragraph.maximumLineHeight = style.maximumLineHeight
@@ -175,8 +189,9 @@ extension ParsedContent {
         
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: style.color,
-            .font: specialStyle ? UIFont.appFont(withSize: 20, weight: .regular) : UIFont.appFont(withSize: style.fontSize, weight: .regular),
-            .paragraphStyle: paragraph
+            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
+            .paragraphStyle: paragraph,
+            .baselineOffset: specialStyle ? 4 : 0
         ])
         
         for element in httpUrls {

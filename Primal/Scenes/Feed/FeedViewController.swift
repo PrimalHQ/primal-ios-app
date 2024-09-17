@@ -25,8 +25,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
     
-    let loadingSpinner = LoadingSpinnerView()
-    
     var postCellID = "cell" // Needed for updating the theme
     
     var animateInserts = true
@@ -123,8 +121,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let delta = newPosition - prevPosition
         prevPosition = newPosition
         
-        if !scrollView.isTracking { return }
-        
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
         
@@ -132,13 +128,22 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        if velocity.y < -0.1 {
-            animateBarsToVisible()
-        } else if velocity.y > 0.1 {
-            animateBarsToInvisible()
-        } else {
-            setBarsDependingOnPosition()
-        }
+//        if velocity.y < -0.1 {
+//            animateBarsToVisible()
+//        } else if velocity.y > 0.1 {
+//            animateBarsToInvisible()
+//        } else {
+//            setBarsDependingOnPosition()
+//        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate { return }
+        setBarsDependingOnPosition()
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        setBarsDependingOnPosition()
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -433,9 +438,6 @@ private extension FeedViewController {
         navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
         table.refreshControl = refreshControl
-        
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(70)
         
         updateTheme()
         

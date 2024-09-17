@@ -100,6 +100,26 @@ extension PrimalFeed {
     
     static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kind\":\"reads\",\"scope\":\"follows\"}")
     static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kind\":\"notes\",\"id\":\"latest\"}")
+    
+    static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
+        guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {
+            return Just([]).eraseToAnyPublisher()
+        }
+        
+        return SocketRequest(name: "get_app_subsettings", payload: ["event_from_user": ev]).publisher()
+            .receive(on: DispatchQueue.main)
+            .map { result in
+                let feeds = result.readFeeds
+                
+                if feeds.isEmpty { return [] }
+                
+                PrimalFeed.setAllFeeds(feeds, type: type)
+                PrimalFeed.lastTimeFeedsFetched[type] = Date()
+                
+                return feeds
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 final class FeedsSelectionController: UIViewController {
@@ -124,35 +144,35 @@ final class FeedsSelectionController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         setup()
         
-        if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 300 {
+        if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 30 {
             // Do nothing
-            print("NOTHING")
-        } else if let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() {
-            SocketRequest(name: "get_app_subsettings", payload: ["event_from_user": ev]).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] result in
-                    let feeds = result.readFeeds
-                    
-                    guard let self, !feeds.isEmpty else { return }
-                    PrimalFeed.setAllFeeds(feeds, type: type)
-                    PrimalFeed.lastTimeFeedsFetched[type] = Date()
-                    updateTable(animate: false)
-                    
-                    SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": .string(type.subkey)]).publisher()
-                        .receive(on: DispatchQueue.main)
-                        .sink { [weak self] result in
-                            let feeds = result.readFeeds
-                            
-                            if feeds.isEmpty { return }
-                            
-                            PrimalFeed.setServerFeeds(feeds, type: type)
-                            self?.updateTable(animate: false)
-                        }
-                        .store(in: &cancellables)
-                }
-                .store(in: &cancellables)
+        } else {
+            if let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() {
+                SocketRequest(name: "get_app_subsettings", payload: ["event_from_user": ev]).publisher()
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] result in
+                        let feeds = result.readFeeds
+                        
+                        guard let self, !feeds.isEmpty else { return }
+                        PrimalFeed.setAllFeeds(feeds, type: type)
+                        PrimalFeed.lastTimeFeedsFetched[type] = Date()
+                        updateTable(animate: false)
+                        
+                        SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": .string(type.subkey)]).publisher()
+                            .receive(on: DispatchQueue.main)
+                            .sink { [weak self] result in
+                                let feeds = result.readFeeds
+                                
+                                if feeds.isEmpty { return }
+                                
+                                PrimalFeed.setServerFeeds(feeds, type: type)
+                                self?.updateTable(animate: false)
+                            }
+                            .store(in: &cancellables)
+                    }
+                    .store(in: &cancellables)
+            }
         }
-        
         
     }
     
@@ -214,6 +234,7 @@ private extension FeedsSelectionController {
         
         if !animate {
             table.reloadData()
+            return
         }
         
         let old = (0...oldValue.count).map { IndexPath(row: $0, section: 0) }

@@ -18,12 +18,12 @@ final class ProfileRefreshControl: UIRefreshControl {
     }
 }
 
-final class ProfileViewController: PostFeedViewController {
+final class ProfileViewController: PostFeedViewController, ArticleCellController {
     enum Tab: Int {
         case notes = 0
         case replies = 1
-        case following = 2
-        case followers = 3
+        case reads = 2
+        case media = 3
     }
     
     var profile: ParsedUser {
@@ -46,6 +46,14 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
+    var followedBy: [ParsedUser]? {
+        didSet {
+            if view.window != nil {
+                table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+            }
+        }
+    }
+    
     private let navigationBar = ProfileNavigationView()
     
     override var postSection: Int {
@@ -61,23 +69,13 @@ final class ProfileViewController: PostFeedViewController {
             switch tab {
             case .notes, .replies:
                 feed.withRepliesOverride = tab == .replies
-                DispatchQueue.main.async {
-                    self.loadingSpinner.isHidden = false
-                    self.loadingSpinner.play()
+            case .reads:
+                if articles.isEmpty {
+                    requestArticles()
                 }
-            case .following:
-                if following.isEmpty {
-                    requestFollowing()
-                } else {
-                    loadingSpinner.isHidden = true
-                    loadingSpinner.stop()
-                }
-            case .followers:
-                if followers.isEmpty {
-                    requestFollowers()
-                } else {
-                    loadingSpinner.isHidden = true
-                    loadingSpinner.stop()
+            case .media:
+                if media.isEmpty {
+                    requestMedia()
                 }
             }
             
@@ -92,16 +90,34 @@ final class ProfileViewController: PostFeedViewController {
         }
     }
     
-    var followers: [ParsedUser] = []
-    var following: [ParsedUser] = []
+    var articleSection: Int { 1 }
+    var articles: [Article] = [] {
+        didSet {
+            table.reloadData()
+        }
+    }
     
-    var isLoadingFollowers = false
-    var isLoadingFollowing = false
+    var media: [MediaMetadata] = [] {
+        didSet {
+            table.reloadData()
+        }
+    }
+    
+    var isLoading: Bool {
+        switch tab {
+        case .notes, .replies:  return posts.isEmpty
+        case .reads:            return articles.isEmpty
+        case .media:            return media.isEmpty
+        }
+    }
     
     let aboutTextAttributes: [NSAttributedString.Key: Any] = [
         .font: UIFont.appFont(withSize: 14, weight: .regular),
         .foregroundColor: UIColor.foreground
     ]
+    
+    var followersVC: UserListController?
+    var followingVC: UserListController?
     
     override var barsMaxTransform: CGFloat { navigationBar.maxSize }
     
@@ -134,8 +150,6 @@ final class ProfileViewController: PostFeedViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        loadingSpinner.play()
-        
         topBarHeight = 0
     }
     
@@ -152,15 +166,18 @@ final class ProfileViewController: PostFeedViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return MuteManager.instance.isMuted(profile.data.pubkey) ? 2 : 1
+            var count = 1
+            if MuteManager.instance.isMuted(profile.data.pubkey) { count += 1 }
+            if isLoading { count += 1 }
+            return count
         }
         switch tab {
         case .notes, .replies:
             return super.tableView(tableView, numberOfRowsInSection: section)
-        case .followers:
-            return followers.count
-        case .following:
-            return following.count
+        case .reads:
+            return articles.count
+        case .media:
+            return (media.count + 2) / 3 // Divide by 3 rounding up
         }
     }
     
@@ -169,24 +186,28 @@ final class ProfileViewController: PostFeedViewController {
             switch tab {
             case .notes, .replies:
                 return super.tableView(tableView, cellForRowAt: indexPath)
-            case .followers:
-                let cell = table.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
-                if let cell = cell as? ProfileFollowCell {
-                    cell.updateForUser(followers[indexPath.row])
-                    cell.delegate = self
-                }
+            case .reads:
+                let cell = table.dequeueReusableCell(withIdentifier: "article", for: indexPath)
+                (cell as? ArticleCell)?.setUp(articles[indexPath.row], delegate: self)
+                cell.contentView.backgroundColor = .background2
                 return cell
-            case .following:
-                let cell = table.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
-                if let cell = cell as? ProfileFollowCell {
-                    cell.updateForUser(following[indexPath.row])
-                    cell.delegate = self
-                }
+            case .media:
+                let cell = table.dequeueReusableCell(withIdentifier: "media", for: indexPath)
+                let index = indexPath.row * 3
+                
+                let mediaSlice = Array(media[index..<min(index + 3, media.count)])
+                (cell as? MediaTripleCell)?.setupMetadata(mediaSlice, delegate: self)
                 return cell
             }
         }
         
-        guard indexPath.row == 0 else {
+        if indexPath.row == 0 {
+            let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
+            (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: tab.rawValue, delegate: self)
+            return cell
+        }
+        
+        if indexPath.row == 1 && MuteManager.instance.isMuted(profile.data.pubkey) {
             let cell = table.dequeueReusableCell(withIdentifier: postCellID + "muted", for: indexPath)
             if let cell = cell as? MutedUserCell {
                 cell.delegate = self
@@ -195,24 +216,34 @@ final class ProfileViewController: PostFeedViewController {
             return cell
         }
         
-        let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
-        (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followsUser: followsUser, selectedTab: tab.rawValue, delegate: self)
+        if case .media = tab {
+            return tableView.dequeueReusableCell(withIdentifier: "mediaLoading", for: indexPath)
+        }
+        
+        let cell = table.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+        if let cell = cell as? SkeletonLoaderCell {
+            switch tab {
+            case .notes, .replies:
+                cell.loaderView.animations = (.postCellSkeletonLight, .postCellSkeleton)
+            case .reads:
+                cell.loaderView.animations = (.articleListSkeletonLight, .articleListSkeleton)
+            case .media: break
+            }
+        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == 1 else { return }
         switch tab {
-        case .followers:
-            guard indexPath.section == 1 else { break }
-            show(ProfileViewController(profile: followers[indexPath.row]), sender: nil)
-        case .following:
-            guard indexPath.section == 1 else { break }
-            show(ProfileViewController(profile: following[indexPath.row]), sender: nil)
-        default:
-            break
+        case .notes, .replies:
+            super.tableView(tableView, didSelectRowAt: indexPath)
+        case .reads:
+            guard let article = articles[safe: indexPath.row] else { return }
+            show(ArticleViewController(content: article), sender: nil)
+        case .media:
+            return
         }
-        guard indexPath.section == postSection else { return }
-        super.tableView(tableView, didSelectRowAt: indexPath)
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -229,76 +260,33 @@ final class ProfileViewController: PostFeedViewController {
     }
 }
 
-extension ProfileViewController: ProfileFollowCellDelegate {
-    func followButtonPressedInCell(_ cell: ProfileFollowCell) {
-        guard
-            let index = table.indexPath(for: cell)?.row,
-            let user: ParsedUser = {
-                switch tab {
-                case .followers: return followers[safe: index]
-                case .following: return following[safe: index]
-                default:         return nil
-                }
-            }()
-        else { return }
-        
-        if FollowManager.instance.isFollowing(user.data.pubkey) {
-            FollowManager.instance.sendUnfollowEvent(user.data.pubkey)
-        } else {
-            FollowManager.instance.sendFollowEvent(user.data.pubkey)
-        }
-    }
-}
-
-private extension ProfileViewController {
-    func requestFollowing() {
-        loadingSpinner.isHidden = false
-        loadingSpinner.play()
-        
-        guard !isLoadingFollowing else { return }
-        
-        isLoadingFollowing = true
-        
-        SocketRequest(name: "contact_list", payload: .object([
+private extension ProfileViewController {    
+    func requestMedia() {
+        SocketRequest(name: "feed", payload: [
+            "limit": 100,
+            "notes": "user_media_thumbnails",
             "pubkey": .string(profile.data.pubkey),
-            "extended_response": true
-        ]))
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+        ])
         .publisher()
-        .map { r in r.users.map { r.createParsedUser($0.value) } }
-        .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
+        .map { $0.mediaMetadata }
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] users in
-            guard let self else { return }
-            self.following = users
-            self.table.reloadData()
-            self.loadingSpinner.stop()
-            self.loadingSpinner.isHidden = true
-            self.isLoadingFollowing = false
-        }
+        .assign(to: \.media, onWeak: self)
         .store(in: &cancellables)
     }
     
-    func requestFollowers() {
-        loadingSpinner.isHidden = false
-        loadingSpinner.play()
-        
-        guard !isLoadingFollowers else { return }
-        
-        isLoadingFollowers = true
-        
-        SocketRequest(name: "user_followers", payload: .object(["pubkey": .string(profile.data.pubkey)])).publisher()
-            .map { r in r.users.map { r.createParsedUser($0.value) } }
-            .map { $0.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) }) }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] users in
-                guard let self else { return }
-                self.followers = users
-                self.table.reloadData()
-                self.loadingSpinner.stop()
-                self.loadingSpinner.isHidden = true
-                self.isLoadingFollowers = false
-            }
-            .store(in: &cancellables)
+    func requestArticles() {
+        SocketRequest(name: "long_form_content_feed", payload: [
+            "limit": 100,
+            "notes": "authored",
+            "pubkey": .string(profile.data.pubkey),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+        ])
+        .publisher()
+        .map { $0.getArticles() }
+        .receive(on: DispatchQueue.main)
+        .assign(to: \.articles, onWeak: self)
+        .store(in: &cancellables)
     }
     
     func setup() {
@@ -308,27 +296,26 @@ private extension ProfileViewController {
         refreshControl = ProfileRefreshControl()
         table.refreshControl = refreshControl
         
+        table.register(ArticleCell.self, forCellReuseIdentifier: "article")
+        table.register(MediaTripleCell.self, forCellReuseIdentifier: "media")
+        table.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
+        table.register(MediaLoadingCell.self, forCellReuseIdentifier: "mediaLoading")
+        
         feed.$parsedPosts.dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
                 guard let self else { return }
                 self.posts = posts
                 
-                self.loadingSpinner.isHidden = true
-                self.loadingSpinner.stop()
                 self.refreshControl.endRefreshing()
             }
             .store(in: &cancellables)
         
         $tabToBe.dropFirst().debounce(for: 0.3, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
         
-        loadingSpinner.transform = .init(translationX: 0, y: 200)
-        
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
         }), for: .valueChanged)
-        
-        table.register(ProfileFollowCell.self, forCellReuseIdentifier: "userCell")
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
@@ -412,6 +399,18 @@ private extension ProfileViewController {
         }
         .store(in: &cancellables)
         
+        SocketRequest(name: "user_profile_followed_by", payload: [
+            "pubkey": .string(profile.data.pubkey),
+            "limit": 5,
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] result in
+            self?.followedBy = result.getSortedUsers()
+        }
+        .store(in: &cancellables)
+        
         SocketRequest(useHTTP: true, name: "user_profile", payload: ["pubkey": .string(profile.data.pubkey)]).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
@@ -453,8 +452,6 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
             self?.table.reloadData()
             
             if !MuteManager.instance.isMuted(pubkey) {
-                self?.loadingSpinner.isHidden = false
-                self?.loadingSpinner.play()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                     self?.feed.refresh()
                 }
@@ -486,6 +483,20 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func followersPressed() {
+        followersVC = followersVC ?? UserListController()
+        guard let followersVC else { return }
+        followersVC.loadFollowers(profile: profile)
+        show(followersVC, sender: nil)
+    }
+    
+    func followingPressed() {
+        followingVC = followingVC ?? UserListController()
+        guard let followingVC else { return }
+        followingVC.loadFollowing(profile: profile)
+        show(followingVC, sender: nil)
+    }
+    
     func linkPressed(_ url: URL?) {
         guard let url = url ?? URL(string: profile.data.website) else { return }
         handleURLTap(url, cachedUsers: cachedUsers)
@@ -526,5 +537,27 @@ extension ProfileViewController: ProfileInfoCellDelegate {
             FollowManager.instance.sendFollowEvent(profile.data.pubkey)
             cell.updateFollowButton(true)
         }
+    }
+}
+
+extension ProfileViewController: ArticleCellDelegate {
+    func articleCellDidSelect(_ cell: ArticleCell, action: PostCellEvent) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let article = articles[safe: indexPath.row]
+        else { return }
+        
+        performEvent(action, withPost: article.asParsedContent, inCell: nil)
+    }
+}
+
+extension ProfileViewController: MediaTripleCellDelegate {
+    func cellDidSelectImage(_ cell: MediaTripleCell, imageIndex: Int) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let media = media[safe: indexPath.row * 3 + imageIndex]
+        else { return }
+        
+        showViewController(ThreadViewController(threadId: media.event_id))
     }
 }

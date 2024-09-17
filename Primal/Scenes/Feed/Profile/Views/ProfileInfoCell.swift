@@ -9,6 +9,7 @@ import Combine
 import Nantes
 import UIKit
 import GenericJSON
+import Lottie
 
 protocol ProfileInfoCellDelegate: AnyObject {
     func followPressed(in cell: ProfileInfoCell)
@@ -17,6 +18,8 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func editProfilePressed()
     func messagePressed()
     func linkPressed(_ url: URL?)
+    func followersPressed()
+    func followingPressed()
     
     func didSelectTab(_ tab: Int)
 }
@@ -36,6 +39,11 @@ class ProfileInfoCell: UITableViewCell {
     let unfollowButton = RoundedSmallButton(text: "unfollow")
     let editProfile = RoundedSmallButton(text: "edit profile")
     
+    let followingLabel = UILabel()
+    let followersLabel = UILabel()
+    let followingLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 190 / 6, height: 80 / 6)
+    let followersLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 190 / 6, height: 80 / 6)
+    
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
     let followsYou = FollowsYouView()
@@ -43,8 +51,9 @@ class ProfileInfoCell: UITableViewCell {
     let secondaryLabel = UILabel()
     let descLabel = NantesLabel()
     let linkView = UILabel()
+    let followedByView = FollowedByView()
     
-    let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "following", "followers"])
+    let infoStack = ProfileTabSelectionView(tabs: ["notes", "replies", "reads", "media"])
     
     weak var delegate: ProfileInfoCellDelegate?
     
@@ -57,7 +66,7 @@ class ProfileInfoCell: UITableViewCell {
         setup()
     }
     
-    func update(user: PrimalUser, parsedDescription: NSAttributedString, stats: NostrUserProfileInfo?, followsUser: Bool, selectedTab: Int, delegate: ProfileInfoCellDelegate?) {
+    func update(user: PrimalUser, parsedDescription: NSAttributedString, stats: NostrUserProfileInfo?, followedBy: [ParsedUser]?, followsUser: Bool, selectedTab: Int, delegate: ProfileInfoCellDelegate?) {
         self.delegate = delegate
         
         primaryLabel.text = user.firstIdentifier
@@ -79,16 +88,32 @@ class ProfileInfoCell: UITableViewCell {
         descLabel.attributedText = parsedDescription
         linkView.text = user.website.trimmingCharacters(in: .whitespaces)
         
-        infoStack.isLoading = stats == nil
-        
-        zip(infoStack.buttons, [
-            (stats?.note_count ?? 0).shortenedLocalized(),
-            (stats?.reply_count ?? 0).shortenedLocalized(),
-            (stats?.follows_count ?? 0).shortenedLocalized(),
-            (stats?.followers_count ?? 0).shortenedLocalized()
-        ]).forEach { button, text in
-            button.text = text
+        if let stats {
+            infoStack.isLoading = false
+            followersLoadingView.isHidden = true
+            followingLoadingView.isHidden = true
+            
+            followingLabel.attributedText = infoString(count: stats.follows, text: "following")
+            followersLabel.attributedText = infoString(count: stats.followers, text: "followers")
+            
+            zip(infoStack.buttons, [stats.notes, stats.replies, stats.articles, stats.media]).forEach { button, count in
+                button.text = count.shortenedLocalized()
+                button.isEnabled = count > 0
+            }
+        } else {
+            followingLabel.attributedText = infoString(text: "following")
+            followersLabel.attributedText = infoString(text: "followers")
+            
+            infoStack.isLoading = true
+            followersLoadingView.isHidden = false
+            followingLoadingView.isHidden = false
+            
+            followersLoadingView.play()
+            followingLoadingView.play()
         }
+        
+        followedByView.setUsers(followedBy)
+        followedByView.isHidden = followedBy?.isEmpty == true
         
         infoStack.set(selectedTab)
         
@@ -111,6 +136,27 @@ class ProfileInfoCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func infoString(count: Int32? = nil, text: String) -> NSAttributedString {
+        let countString: String
+        if let count {
+            countString = "\(count) "
+        } else {
+            countString = "           "
+        }
+        
+        let mutable = NSMutableAttributedString(string: countString, attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .bold),
+            .foregroundColor: UIColor.foreground
+        ])
+        
+        mutable.append(.init(string: text, attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .regular),
+            .foregroundColor: UIColor.foreground3
+        ]))
+        
+        return mutable
+    }
 }
 
 extension ProfileCellNantesDelegate: NantesLabelDelegate {
@@ -132,6 +178,10 @@ private extension ProfileInfoCell {
         primaryLabel.font = .appFont(withSize: 20, weight: .bold)
         primaryLabel.adjustsFontSizeToFitWidth = true
         
+        let followStack = UIStackView([followingLabel, followersLabel])
+        followStack.spacing = 8
+        followingLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
         followsYou.isHidden = true
         
         secondaryLabel.font = .appFont(withSize: 14, weight: .regular)
@@ -139,22 +189,31 @@ private extension ProfileInfoCell {
         descLabel.font = .appFont(withSize: 14, weight: .regular)
         descLabel.numberOfLines = 0
         
-        let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, descLabel, linkView, infoStack])
+        let mainStack = UIStackView(arrangedSubviews: [actionStack, primaryStack, secondaryLabel, followStack, descLabel, linkView, followedByView, infoStack])
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(14, after: actionStack)
         mainStack.setCustomSpacing(8, after: primaryStack)
         mainStack.setCustomSpacing(12, after: secondaryLabel)
+        mainStack.setCustomSpacing(10, after: followStack)
         mainStack.setCustomSpacing(8, after: descLabel)
-        mainStack.setCustomSpacing(16, after: infoStack)
+        mainStack.setCustomSpacing(10, after: linkView)
+        mainStack.setCustomSpacing(10, after: followedByView)
         
         infoStack.pinToSuperview(edges: .horizontal)
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 12)
-        let bot = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        let bot = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         bot.priority = .defaultHigh
         bot.isActive = true
+        
+        contentView.addSubview(followersLoadingView)
+        followersLoadingView.pin(to: followersLabel, edges: .leading).centerToView(followersLabel, axis: .vertical)
+        contentView.addSubview(followingLoadingView)
+        followingLoadingView.pin(to: followingLabel, edges: .leading).centerToView(followingLabel, axis: .vertical)
+        followersLoadingView.loopMode = .loop
+        followingLoadingView.loopMode = .loop
         
         contentView.backgroundColor = .background2
         primaryLabel.textColor = .foreground
@@ -195,6 +254,11 @@ private extension ProfileInfoCell {
             self?.delegate?.didSelectTab(tab)
         }
         .store(in: &cancellables)
+        
+        followingLabel.isUserInteractionEnabled = true
+        followingLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in self?.delegate?.followingPressed() }))
+        followersLabel.isUserInteractionEnabled = true
+        followersLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in self?.delegate?.followersPressed() }))
     }
     
     @objc func followPressed() {

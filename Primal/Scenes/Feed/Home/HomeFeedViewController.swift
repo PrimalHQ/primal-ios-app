@@ -45,6 +45,12 @@ final class HomeFeedViewController: UIViewController, Themeable {
         let vc = ShortFormFeedController(feed: FeedManager(newFeed: currentFeed))
         firstFeedVC = vc
         pageVC.setViewControllers([vc], direction: .forward, animated: false)
+        
+        if PrimalFeed.getAllFeeds(.note).isEmpty {
+            PrimalFeed.fetchPublisher(type: .note)
+                .sink(receiveValue: { _ in })
+                .store(in: &cancellables)
+        }
     }
     
     required init?(coder: NSCoder) {

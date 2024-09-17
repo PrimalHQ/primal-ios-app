@@ -36,8 +36,6 @@ final class PublicBookmarksViewController: PostFeedViewController, ArticleCellCo
         Publishers.CombineLatest(feed.$parsedPosts.dropFirst(), feed.$parsedLongForm.dropFirst())
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts, articles in
-                self?.loadingSpinner.isHidden = true
-                self?.loadingSpinner.stop()
                 self?.refreshControl.endRefreshing()
                     
                 self?.emptyView.isHidden = !posts.isEmpty || !articles.isEmpty
@@ -91,8 +89,6 @@ final class PublicBookmarksViewController: PostFeedViewController, ArticleCellCo
         super.viewDidAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        loadingSpinner.play()
     }
     
     override func updateTheme() {
@@ -102,6 +98,8 @@ final class PublicBookmarksViewController: PostFeedViewController, ArticleCellCo
     }
     
     override var postSection: Int { 1 }
+    
+    var articleSection: Int { 0 }
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2

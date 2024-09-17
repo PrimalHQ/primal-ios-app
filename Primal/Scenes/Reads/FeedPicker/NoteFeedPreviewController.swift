@@ -40,18 +40,17 @@ class NoteFeedPreviewController: ShortFormFeedController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? 1 : super.tableView(tableView, numberOfRowsInSection: section)
+        section == 0 ? max(1, super.tableView(tableView, numberOfRowsInSection: section)) : super.tableView(tableView, numberOfRowsInSection: section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 1 {
-            let cell = super.tableView(tableView, cellForRowAt: indexPath)
-            cell.isUserInteractionEnabled = false
+        if indexPath.section == 0 && indexPath.row == 0 {
+            let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
+            (cell as? FeedMarketplaceCell)?.setupSelected(info)
             return cell
         }
-        
-        let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-        (cell as? FeedMarketplaceCell)?.setupSelected(info)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.isUserInteractionEnabled = false
         return cell
     }
     

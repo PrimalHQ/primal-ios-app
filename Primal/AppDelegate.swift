@@ -17,6 +17,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .animatedAvatarsKey:    true,
             .fullScreenFeedKey:     false,
             .autoDarkModeKey:       true,
+            .hugeFontKey:           true
         ])
         
         UITableView.appearance().sectionHeaderTopPadding = 0

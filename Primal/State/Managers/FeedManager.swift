@@ -35,6 +35,8 @@ final class FeedManager {
     var profilePubkey: String?
     var didReachEnd = false
     
+    var contentStyle = ParsedContentTextStyle.regular
+    
     var lastRefreshDate: Date = .distantPast
     var blockFuturePosts: Bool { lastRefreshDate.timeIntervalSinceNow > -10 }
     
@@ -91,7 +93,7 @@ final class FeedManager {
     
     func updateTheme() {
         (newPostObjects + parsedPosts).forEach {
-            $0.buildContentString()
+            $0.buildContentString(style: contentStyle)
             $0.embededPost?.buildContentString(style: .embedded)
         }
     }
@@ -185,7 +187,7 @@ private extension FeedManager {
             
             self.parsedLongForm += result.getArticles()
             
-            var sorted = result.process()
+            var sorted = result.process(contentStyle: contentStyle)
             
             if (self.parsedPosts.count > 0 || sorted.count > 0) && self.parsedPosts.last?.post.id == sorted.first?.post.id {
                  sorted.removeFirst()
@@ -303,7 +305,7 @@ private extension FeedManager {
             .publisher()
             .receive(on: DispatchQueue.main)
             .map { [weak self] in
-                guard let self else { return $0.process() }
+                guard let self else { return $0.process(contentStyle: .regular) }
                 if let pagination = $0.pagination {
                     self.paginationInfo?.until = pagination.until
                 }
@@ -312,7 +314,7 @@ private extension FeedManager {
                     HomeFeedLocalLoadingManager.savedFeed = $0
                 }
                 
-                return $0.process()
+                return $0.process(contentStyle: contentStyle)
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
