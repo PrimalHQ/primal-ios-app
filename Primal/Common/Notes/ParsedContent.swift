@@ -150,7 +150,7 @@ extension ParsedContent {
             
             let count = mainText.count
             
-            if count > 140 {
+            if count > 21 {
                 return false
             }
             
@@ -258,7 +258,7 @@ extension ParsedContent {
         
         attributedText = result
         if result.length > 1200 {
-            attributedTextShort = result.attributedSubstring(from: .init(location: 0, length: 1000))
+            attributedTextShort = result.attributedSubstring(to: 1000)
         } else {
             attributedTextShort = result
         }

@@ -34,7 +34,7 @@ final class EditProfileViewController: UIViewController, Themeable {
     
     var textFields: [UITextField] { [displayNameInput, usernameInput, websiteInput, bitcoinInput, nip05Input] }
     
-    var accountData: Profile {
+    var accountData: NostrProfile {
         let name: String = usernameInput.text ?? profile.name
         let displayName: String = displayNameInput.text ?? profile.displayName
         let about: String = bioInput.text ?? profile.about
@@ -44,7 +44,7 @@ final class EditProfileViewController: UIViewController, Themeable {
         let lud16: String = bitcoinInput.text ?? profile.lud16
         let nip05: String = nip05Input.text ?? profile.nip05
         
-        return Profile(
+        return NostrProfile(
             name: name,
             display_name: displayName,
             about: about,
@@ -307,7 +307,7 @@ private extension EditProfileViewController {
         }
         
         let profile = self.profile
-        let data: Profile = accountData
+        let data: NostrProfile = accountData
         
         if checkedLud16 != accountData.lud16, let newLud = accountData.lud16 {
             CheckLud16Request(lud16: newLud).publisher().receive(on: DispatchQueue.main)

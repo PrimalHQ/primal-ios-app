@@ -72,6 +72,7 @@ final class FeedManager {
         self.newFeed = newFeed
         initSubscriptions()
         refresh()
+        initFuturePublishersAndObservers()
     }
     
     init(feed: PrimalSettingsFeed) {
@@ -87,6 +88,7 @@ final class FeedManager {
     }
     
     init(threadId: String) {
+        contentStyle = .threadChildren
         initSubscriptions()
         requestThread(postId: threadId)
     }
@@ -229,27 +231,7 @@ private extension FeedManager {
     }
     
     /// This method is only required for the home feed manager
-    func initHomeFeedPublishersAndObservers() {
-        Publishers.Zip3(
-            IdentityManager.instance.$didFinishInit.filter({ $0 }).first(),
-            Connection.regular.isConnectedPublisher.filter({ $0 }).first(),
-            IdentityManager.instance.$userSettings.compactMap { $0?.feeds?.first }
-        )
-        .sink { [weak self] _, _, feed in
-            guard let self else { return }
-            
-            self.currentFeed = feed
-            
-            let isLatestFirst = feed.name == "Latest"
-            
-            HomeFeedLocalLoadingManager.isLatestFeedFirst = isLatestFirst
-            
-            guard !isLatestFirst || self.parsedPosts.isEmpty else { return }
-           
-            self.refresh()
-        }
-        .store(in: &cancellables)
-        
+    func initFuturePublishersAndObservers() {
         Publishers.CombineLatest3($newAddedPosts, $newPostObjects, $parsedPosts)
             .debounce(for: 0.1, scheduler: RunLoop.main)
             .map { added, notAdded, old  in (added + notAdded.count, (notAdded + old.prefix(added)).map { $0.user }) }
@@ -284,11 +266,10 @@ private extension FeedManager {
     }
     
     func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
-        let feed = currentFeed
+        let feed = newFeed
         
         guard
-            let directive = currentFeed?.hex,
-            !directive.hasPrefix("search;"), !directive.hasPrefix("bookmarks;"),
+            let spec = newFeed?.spec,
             let paginationInfo,
             paginationInfo.order_by == "created_at",
             let until = paginationInfo.until
@@ -296,8 +277,8 @@ private extension FeedManager {
             return Just([]).eraseToAnyPublisher()
         }
         
-        return SocketRequest(name: "feed_directive", payload: .object([
-                "directive": .string(directive),
+        return SocketRequest(name: "mega_feed_directive", payload: .object([
+                "spec": .string(spec),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
                 "since": .number(until.rounded())
@@ -401,7 +382,7 @@ private extension FeedManager {
         var payload: [String: JSON] = [
             "spec": .string(feed.spec),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": .number(Double(40))
+            "limit": .number(Double(20))
         ]
         
         if let until: Double = paginationInfo?.since {

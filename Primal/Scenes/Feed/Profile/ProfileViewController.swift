@@ -97,7 +97,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
-    var media: [MediaMetadata] = [] {
+    var media: [ParsedContent] = [] {
         didSet {
             table.reloadData()
         }
@@ -196,7 +196,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
                 let index = indexPath.row * 3
                 
                 let mediaSlice = Array(media[index..<min(index + 3, media.count)])
-                (cell as? MediaTripleCell)?.setupMetadata(mediaSlice, delegate: self)
+                (cell as? MediaTripleCell)?.setupMetadata(mediaSlice.map { $0.mediaResources.first }, delegate: self)
                 return cell
             }
         }
@@ -269,7 +269,7 @@ private extension ProfileViewController {
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
-        .map { $0.mediaMetadata }
+        .map { $0.process(contentStyle: .regular) }
         .receive(on: DispatchQueue.main)
         .assign(to: \.media, onWeak: self)
         .store(in: &cancellables)
@@ -558,6 +558,6 @@ extension ProfileViewController: MediaTripleCellDelegate {
             let media = media[safe: indexPath.row * 3 + imageIndex]
         else { return }
         
-        showViewController(ThreadViewController(threadId: media.event_id))
+        showViewController(ThreadViewController(post: media))
     }
 }

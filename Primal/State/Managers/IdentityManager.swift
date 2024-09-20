@@ -358,7 +358,7 @@ final class IdentityManager {
     
     func deleteAccount() async -> [JSON] {
         return await withCheckedContinuation { continuation in
-            let profile = Profile(
+            let profile = NostrProfile(
                 name: "Deleted Account",
                 display_name: "Deleted Account",
                 about: "Deleted Account",
@@ -381,7 +381,7 @@ final class IdentityManager {
         }
     }
     
-    func updateProfile(_ data: Profile, callback: @escaping (Bool) -> Void) {
+    func updateProfile(_ data: NostrProfile, callback: @escaping (Bool) -> Void) {
         guard let metadata_ev = NostrObject.metadata(data) else {
             callback(false)
             return

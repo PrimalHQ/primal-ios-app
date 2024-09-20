@@ -80,6 +80,8 @@ struct SocketRequest {
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
                     
+                    DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
+                    
                     promise(.success(pendingResult))
                 }
             }
@@ -159,7 +161,8 @@ extension PostRequestResult {
         switch kind {
         case .metadata:
             let nostrUser = NostrContent(json: .object(payload))
-            if let user = PrimalUser(nostrUser: nostrUser) {
+            if var user = PrimalUser(nostrUser: nostrUser) {
+                user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
         case .text:

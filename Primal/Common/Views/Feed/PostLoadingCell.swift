@@ -15,7 +15,7 @@ class PostLoadingCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         
-        addSubview(animationView)
+        contentView.addSubview(animationView)
         animationView
             .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .vertical, padding: 10)
@@ -23,6 +23,8 @@ class PostLoadingCell: UITableViewCell {
         
         animationView.animation = Theme.current.isDarkTheme ? AnimationType.postCellSkeleton.animation : AnimationType.postCellSkeletonLight.animation
         animationView.loopMode = .loop
+        
+        contentView.backgroundColor = .background2
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

@@ -75,16 +75,19 @@ class MediaTripleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupMetadata(_ metadata: [MediaMetadata], delegate: MediaTripleCellDelegate) {
+    func setupMetadata(_ resources: [MediaMetadata.Resource?], delegate: MediaTripleCellDelegate) {
         self.delegate = delegate
         
         imageViews.forEach { $0.image = nil }
         
-        zip(imageViews, metadata).forEach { (imageView, metadata) in
-            guard let first = metadata.resources.first else { return }
-            
-            imageView.url = first.url
-            imageView.kf.setImage(with: first.url(for: .small))
+        zip(imageViews, resources).forEach { (imageView, resource) in
+            if let resource {
+                imageView.url = resource.url
+                imageView.kf.setImage(with: resource.url(for: .small))
+            } else {
+                imageView.kf.cancelDownloadTask()
+                imageView.image = nil
+            }
         }
     }
 }

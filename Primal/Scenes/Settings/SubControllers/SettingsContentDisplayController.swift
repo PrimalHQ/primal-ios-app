@@ -55,7 +55,7 @@ private extension SettingsContentDisplayController {
         
         let autoplay = SettingsSwitchView("Auto play videos")
         let animatedAvatars = SettingsSwitchView("Show animated avatars")
-        let hugeFont = SettingsSwitchView("Use huge font for \"tweets\"")
+        let hugeFont = SettingsSwitchView("Use huge font for short notes")
         
         let stack = UIStackView(axis: .vertical, [
             autoplay, SpacerView(height: 10),
@@ -63,7 +63,7 @@ private extension SettingsContentDisplayController {
             animatedAvatars, SpacerView(height: 10),
             descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32),
             hugeFont, SpacerView(height: 10),
-            descLabel("Display short notes of up to 140 characters using an unreasonably large font."), SpacerView(height: 32),
+            descLabel("Display short notes of up to 21 characters using an unreasonably large font."), SpacerView(height: 32),
         ])
         
         let scroll = UIScrollView()

@@ -19,6 +19,7 @@ extension UIButton.Configuration {
         config.image = UIImage(named: "navChevron")?.withTintColor(.foreground).withRenderingMode(.alwaysOriginal)
         config.imagePadding = 8
         config.imagePlacement = .trailing
+        config.titleLineBreakMode = .byTruncatingTail
         return config
     }
 }

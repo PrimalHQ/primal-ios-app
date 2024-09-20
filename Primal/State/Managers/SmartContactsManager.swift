@@ -57,6 +57,19 @@ final class SmartContactsManager {
         "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
     ] }
     
+    var cachedContacts: [String: [ParsedUser]] = [:]
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    private init() {
+//        ICloudKeychainManager.instance.$userPubkey
+//            .flatMap {
+//                
+//            }
+        
+        
+    }
+    
     func userSearchPublisher(_ text: String) -> AnyPublisher<[ParsedUser], Never> {
         switch text {
         case "":
@@ -98,26 +111,32 @@ final class SmartContactsManager {
     }
     
     func getDefaultContacts() -> [ParsedUser] {
-        let contacts = getContacts()
-        let defaults = UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] ?? []
-        
-        return defaults.filter({ defaultC in !contacts.contains(where: { defaultC.data.pubkey == $0.data.pubkey })}).map { $0.parsed }
+        return []
+//        let contacts = getContacts()
+//        let defaults = UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] ?? []
+//        
+//        return defaults.filter({ defaultC in !contacts.contains(where: { defaultC.data.pubkey == $0.data.pubkey })}).map { $0.parsed }
     }
     
     func setDefaultContacts(_ contacts: [ParsedUser]) {
-        let contacts = contacts.filter { Self.recommendedUsersNpubs.contains($0.data.pubkey) }
-        UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
+//        let contacts = contacts.filter { Self.recommendedUsersNpubs.contains($0.data.pubkey) }
+//        UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
     }
     
     func setContacts(_ contacts: [ParsedUser]) {
-        UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
+        cachedContacts[IdentityManager.instance.userHexPubkey] = contacts
+//        UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
     }
     
     func getContacts() -> [ParsedUser] {
-        (UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] ?? []).map { $0.parsed }
+        cachedContacts[IdentityManager.instance.userHexPubkey] ?? []
+        
+//        (UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] ?? []).map { $0.parsed }
     }
     
     func addContact(_ contact: ParsedUser) {
+        DatabaseManager.instance.setVisitProfile(contact.data)
+        
         if contact.isCurrentUser {
             // Can't add self as contact
             return

@@ -77,6 +77,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     convenience init(post: ParsedContent) {
         self.init(threadId: post.post.id)
+        self.mainPostZaps = post.zaps
         let copy = post.copy()
         copy.reposted = nil
         posts = [copy]
@@ -148,24 +149,16 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         return super.open(post: post)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int { isLoading ? 3 : 2 }
+    func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return articles.count
-        }
         if section == postSection {
             return super.tableView(tableView, numberOfRowsInSection: section)
         }
-        return 1
+        return min(1, articles.count)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 2 { // Loading
-            mainPostRepliesHeightArray[1] = 150
-            return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-        }
-        
         if indexPath.section == 0 { // Parent Article
             let cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
             if let articleCell = cell as? ArticleCell {

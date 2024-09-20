@@ -166,6 +166,8 @@ class ArticleLoadingCell: UITableViewCell, Themeable {
             .constrainToAspect(1125 / 480)
         
         selectionStyle = .none
+        
+        contentView.backgroundColor = .background2
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

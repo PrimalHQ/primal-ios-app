@@ -150,7 +150,7 @@ extension NostrObject {
         createNostrUpdateSettingsEvent(settings)
     }
     
-    static func metadata(_ metadata: Profile) -> NostrObject? {
+    static func metadata(_ metadata: NostrProfile) -> NostrObject? {
         createNostrMetadataEvent(metadata)
     }
     
@@ -356,7 +356,7 @@ fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsConten
     return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
 }
 
-fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
+fileprivate func createNostrMetadataEvent(_ metadata: NostrProfile) -> NostrObject? {
     guard let metadataJSONData = try? jsonEncoder.encode(metadata) else {
         print("Unable to encode tags to Data")
         return nil

@@ -192,10 +192,8 @@ private extension ShortFormFeedController {
                     if self?.refreshControl.isRefreshing == false {
                         self?.posts = []
                     }
-                } else if self?.refreshControl.isRefreshing == true {
-                    if posts.first?.post.id != self?.posts.first?.post.id || (self?.posts.count ?? 0) > posts.count {
-                        self?.posts = posts
-                    }
+                } else {
+                    self?.posts = posts
                     self?.refreshControl.endRefreshing()
                 }
             }

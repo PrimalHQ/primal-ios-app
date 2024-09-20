@@ -239,7 +239,7 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
-        let removeExtractedPost = contentStyle == .embedded
+        let removeExtractedPost = contentStyle != .embedded
         
         if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
