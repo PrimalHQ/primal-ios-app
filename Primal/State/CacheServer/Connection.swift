@@ -77,7 +77,7 @@ final class Connection {
     private var timeToReconnect: Int = 1
     
     init(socketURL: URL) {
-        socket = WebSocket(socketURL)
+        socket = WebSocket(socketURL, session: URLSession(configuration: .default))
         self.socketURL = socketURL
         self.connect()
         
@@ -107,7 +107,7 @@ final class Connection {
     private func connect() {
         disconnect()
         
-        socket = WebSocket(socketURL)
+        socket = WebSocket(socketURL, session: URLSession(configuration: .default))
         
         socketResponse = socket.subject.receive(on: Self.dispatchQueue).sink { [weak self] event in
             guard let self else { return }
