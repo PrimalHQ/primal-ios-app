@@ -170,14 +170,7 @@ private extension ShortFormFeedController {
         
         feed.newParsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newPosts in
-                if self?.refreshControl.isRefreshing == false {
-                    self?.posts += newPosts
-                } else {
-                    self?.posts = []
-                    self?.posts = newPosts
-                }
-                
+            .sink { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.onLoad?()
                     self?.onLoad = nil

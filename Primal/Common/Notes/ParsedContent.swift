@@ -146,21 +146,13 @@ extension ParsedContent {
                 break
             }
             
-            var mainText = highlights.reversed().reduce(text, { ($0 as NSString).replacingCharacters(in: .init(location: $1.position, length: $1.length), with: "") })
+            let mainText = highlights.reversed().reduce(text, { ($0 as NSString).replacingCharacters(in: .init(location: $1.position, length: $1.length), with: "") })
             
-            let count = mainText.count
-            
-            if count > 21 {
+            if mainText.count > 42 {
                 return false
             }
             
-            mainText.removeAll(where: { $0.isNewline })
-            
-            if count - mainText.count > 3 {
-                return false
-            }
-            
-            return true
+            return !mainText.contains(where: { $0.isNewline })
         }()
         
         let fs = FontSizeSelection.current

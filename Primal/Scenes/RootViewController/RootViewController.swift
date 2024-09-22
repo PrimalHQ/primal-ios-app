@@ -55,6 +55,7 @@ final class RootViewController: UIViewController {
         connectionDot.layer.cornerRadius = 4
         connectionDot.backgroundColor = .accent
         connectionDot.layer.zPosition = 900
+        connectionDot.isHidden = !DevModeSettings.enableDevMode
         
         Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { [weak self] isConnected in
             self?.connectionDot.backgroundColor = isConnected ? .green : .red

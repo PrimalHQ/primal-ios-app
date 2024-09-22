@@ -35,8 +35,8 @@ class ProfileInfoCell: UITableViewCell {
     let qrButton = CircleIconButton(icon: UIImage(named: "profileQR"))
     let zapButton = CircleIconButton(icon: UIImage(named: "profileZap"))
     let messageButton = CircleIconButton(icon: UIImage(named: "profileMessage"))
-    let followButton = BrightSmallButton(title: "follow")
-    let unfollowButton = RoundedSmallButton(text: "unfollow")
+    let followButton = BrightSmallButton(title: "follow").constrainToSize(width: 100)
+    let unfollowButton = RoundedSmallButton(text: "unfollow").constrainToSize(width: 100)
     let editProfile = RoundedSmallButton(text: "edit profile")
     
     let followingLabel = UILabel()
@@ -140,7 +140,7 @@ class ProfileInfoCell: UITableViewCell {
     func infoString(count: Int32? = nil, text: String) -> NSAttributedString {
         let countString: String
         if let count {
-            countString = "\(count) "
+            countString = "\(count.localized()) "
         } else {
             countString = "           "
         }

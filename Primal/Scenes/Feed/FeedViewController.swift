@@ -41,15 +41,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return
             }
             
-            let isAddingAtEnd = oldValue.first?.post.id == posts.first?.post.id
+            if oldValue.first?.post.id == posts.first?.post.id {
+                // Adding at the end
+                table.reloadData()
+                return
+            }
             
-            let indexes: [IndexPath] = {
-                if isAddingAtEnd {
-                    return (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
-                }
-                return (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
-            }()
-            
+            // Adding at the start
+            let indexes: [IndexPath] =  (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
             table.insertRows(at: indexes, with: .none)
         }
     }
@@ -120,6 +119,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         prevPosition = newPosition
+        
+        // System sometimes updates table contentOffset without moving the cells
+        // so if delta is larger than 50 we ignore it
+        if abs(delta) > 50 { return }
+        
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform

@@ -386,8 +386,9 @@ extension FeedsSelectionController: UITableViewDataSource {
                 .font: UIFont.appFont(withSize: 18, weight: .regular),
                 .foregroundColor: UIColor.accent
             ])
-            content.directionalLayoutMargins = .init(top: 14, leading: 32, bottom: 34, trailing: 32)
+            content.directionalLayoutMargins = .init(top: 14, leading: 32, bottom: 65, trailing: 32)
             cell.contentConfiguration = content
+            cell.contentView.backgroundColor = .background
             cell.selectionStyle = .none
             return cell
         }
