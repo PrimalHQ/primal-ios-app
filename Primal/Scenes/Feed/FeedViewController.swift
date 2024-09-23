@@ -236,13 +236,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
     
     func handleURLTap(_ url: URL, cachedUsers: [PrimalUser] = [], notes: [ParsedElement] = []) {
         let urlString = url.absoluteString
-        
-        if urlString.isValidURL && urlString.lowercased().hasPrefix("http") {
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
-            return
-        }
-        
+                
         guard let infoSub = urlString.split(separator: "//").last else { return }
         let info = String(infoSub)
         
@@ -267,6 +261,19 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
             show(thread, sender: nil)
             return
         }
+        
+        var url = url
+        if urlString.isValidURL {
+            if urlString.lowercased().hasPrefix("http://") {
+                url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
+            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+                url = .init(string: "https://" + url.absoluteString) ?? url
+            }
+            
+            let safari = SFSafariViewController(url: url)
+            present(safari, animated: true)
+            return
+        }
     }
     
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
@@ -279,12 +286,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, Themeable, Wa
         switch event {
         case .url(let URL):
             guard var url = URL ?? post.linkPreview?.url else { return }
-            
-            if url.absoluteString.lowercased().hasPrefix("http://") {
-                url = .init(string: "https://" + url.absoluteString.dropFirst(7)) ?? url
-            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
-                url = .init(string: "https://" + url.absoluteString) ?? url
-            }
             
             handleURLTap(url, cachedUsers: post.mentionedUsers, notes: post.notes)
         case .images(let resource):
