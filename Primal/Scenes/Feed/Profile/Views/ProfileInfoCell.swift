@@ -137,7 +137,7 @@ class ProfileInfoCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func infoString(count: Int32? = nil, text: String) -> NSAttributedString {
+    func infoString(count: Int? = nil, text: String) -> NSAttributedString {
         let countString: String
         if let count {
             countString = "\(count.localized()) "

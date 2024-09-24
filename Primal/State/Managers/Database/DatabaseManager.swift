@@ -145,18 +145,18 @@ private extension DatabaseManager {
                 t.foreignKey(["profilePubkey"], references: Profile.databaseTableName, onDelete: .cascade)
             }
             
-            try db.create(table: ProfileCounts.databaseTableName) { t in
+            try db.create(table: ProfileCount.databaseTableName) { t in
                 t.primaryKey("profilePubkey", .text, onConflict: .replace)
                 t.foreignKey(["profilePubkey"], references: Profile.databaseTableName, onDelete: .cascade)
                 
-                t.column("follows", .integer).notNull()
-                t.column("followers", .integer).notNull()
-                t.column("replies", .integer).notNull()
-                t.column("notes", .integer).notNull()
-                t.column("articles", .integer).notNull()
-                t.column("media", .integer).notNull()
+                t.column("follows", .integer)
+                t.column("followers", .integer)
+                t.column("replies", .integer)
+                t.column("notes", .integer)
+                t.column("articles", .integer)
+                t.column("media", .integer)
                 
-                t.column("timeJoined", .integer).notNull()
+                t.column("timeJoined", .integer)
             }
             
             try db.create(table: MediaResource.databaseTableName) { t in

@@ -81,6 +81,8 @@ struct SocketRequest {
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))
                 }

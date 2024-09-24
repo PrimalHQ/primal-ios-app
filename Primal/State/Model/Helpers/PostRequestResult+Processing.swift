@@ -12,7 +12,7 @@ import NostrSDK
 
 extension PostRequestResult: MetadataCoding {
     func getSortedUsers() -> [ParsedUser] {
-        users.map { createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+        users.map { createParsedUser($0.value) }.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) } )
     }
     
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
@@ -29,8 +29,7 @@ extension PostRequestResult: MetadataCoding {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        likes: userScore[user.pubkey],
-        followers: userFollowers[user.pubkey]
+        followers: userFollowers[user.pubkey] ?? userScore[user.pubkey]
     )}
     
     func process(contentStyle: ParsedContentTextStyle) -> [ParsedContent] {

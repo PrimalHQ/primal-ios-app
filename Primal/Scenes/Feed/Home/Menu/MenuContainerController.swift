@@ -12,20 +12,8 @@ import UIKit
 import Kingfisher
 import FLAnimatedImage
 
-private extension String {
+extension String { // TODO: Remove in 2025
     static let cachedUsersDefaultsKey = "cachedUsersDefaultsKey"
-}
-
-extension UserDefaults {
-    var cachedUserImageURLs: [String: String] {
-        get { string(forKey: .cachedUsersDefaultsKey)?.decode() ?? [:] }
-        set { setValue(newValue.encodeToString(), forKey: .cachedUsersDefaultsKey) }
-    }
-    
-    var currentUserImageURLCache: String? {
-        get { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] }
-        set { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] = newValue }
-    }
 }
 
 final class MenuContainerController: UIViewController, Themeable {
@@ -308,19 +296,12 @@ private extension MenuContainerController {
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
         
-        if let userImageURL = UserDefaults.standard.currentUserImageURLCache {
-            updateForImageURL(userImageURL)
-        }
-        
 //        BookmarkManager.instance.$cachedBookmarks.map({ !$0.array.isEmpty })
 //            .receive(on: DispatchQueue.main)
 //            .assign(to: \.isEnabled, on: bookmarks)
 //            .store(in: &cancellables)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
-            if let url = user.profileImage.url(for: .small)?.absoluteString {
-                UserDefaults.standard.currentUserImageURLCache = url
-            }
             self?.update(user)
         }
         .store(in: &cancellables)
@@ -332,11 +313,6 @@ private extension MenuContainerController {
             self.followingLabel.text = stats.follows.localized()
         }
         .store(in: &cancellables)
-    }
-    
-    func updateForImageURL(_ imageURL: String) {
-        profileImage.kf.setImage(with: URL(string: imageURL))
-        menuProfileImage.kf.setImage(with: URL(string: imageURL))
     }
     
     func update(_ user: ParsedUser) {

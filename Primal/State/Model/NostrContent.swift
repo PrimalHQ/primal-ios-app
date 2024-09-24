@@ -65,20 +65,20 @@ struct NostrContentStats: Codable {
 }
 
 struct NostrUserProfileInfo: Codable {
-    let follows_count: Int32?
-    let followers_count: Int32?
-    let note_count: Int32?
-    let reply_count: Int32?
-    let time_joined: Int32?
-    let long_form_note_count: Int32?
-    let media_count: Int32?
+    let follows_count: Int?
+    let followers_count: Int?
+    let note_count: Int?
+    let reply_count: Int?
+    let time_joined: Int?
+    let long_form_note_count: Int?
+    let media_count: Int?
     
-    var replies: Int32 { reply_count ?? 0 }
-    var follows: Int32 { follows_count ?? 0 }
-    var followers: Int32 { followers_count ?? 0 }
-    var notes: Int32 { note_count ?? 0 }
-    var articles: Int32 { long_form_note_count ?? 0 }
-    var media: Int32 { media_count ?? 0 }
+    var replies: Int { reply_count ?? 0 }
+    var follows: Int { follows_count ?? 0 }
+    var followers: Int { followers_count ?? 0 }
+    var notes: Int { note_count ?? 0 }
+    var articles: Int { long_form_note_count ?? 0 }
+    var media: Int { media_count ?? 0 }
 }
 
 struct MediaMetadata: Codable {

@@ -7,24 +7,24 @@
 
 import GRDB
 
-struct ProfileCounts: Identifiable, Equatable {
+struct ProfileCount: Identifiable, Equatable {
     var id: String { profilePubkey }
     
     var profilePubkey: String
     
-    var follows: Int
-    var followers: Int
-    var replies: Int
-    var notes: Int
-    var articles: Int
-    var media: Int
+    var follows: Int?
+    var followers: Int?
+    var replies: Int?
+    var notes: Int?
+    var articles: Int?
+    var media: Int?
     
-    var timeJoined: Int
+    var timeJoined: Int?
 }
 
-extension ProfileCounts: Codable, FetchableRecord, MutablePersistableRecord {
+extension ProfileCount: Codable, FetchableRecord, MutablePersistableRecord {
     // Define database columns from CodingKeys
-    fileprivate enum Columns {
+    enum Columns {
         static let profilePubkey = Column(CodingKeys.profilePubkey)
         static let follows = Column(CodingKeys.follows)
         static let replies = Column(CodingKeys.replies)
@@ -34,19 +34,29 @@ extension ProfileCounts: Codable, FetchableRecord, MutablePersistableRecord {
         static let media = Column(CodingKeys.media)
         static let timeJoined = Column(CodingKeys.timeJoined)
     }
+    
+    static let profile = belongsTo(Profile.self)
+    
+    
+    init(row: Row) {
+        // Use default values if columns are NULL
+        profilePubkey = row[Columns.profilePubkey] ?? ""
+        follows = row[Columns.follows]
+        followers = row[Columns.followers]
+        replies = row[Columns.replies]
+        notes = row[Columns.notes]
+        articles = row[Columns.articles]
+        media = row[Columns.media]
+        timeJoined = row[Columns.timeJoined]
+    }
 }
 
-extension DerivableRequest<ProfileCounts> {
-    /// A request of players ordered by name.
-    ///
-    /// For example:
-    ///
-    ///     let profiles: [Player] = try dbWriter.read { db in
-    ///         try Player.all().orderedByName().fetchAll(db)
-    ///     }
+extension DerivableRequest<ProfileCount> {
     func orderedByFollowers() -> Self {
-        // Sort by name in a localized case insensitive fashion
-        // See https://github.com/groue/GRDB.swift/blob/master/README.md#string-comparison
-        order(ProfileCounts.Columns.followers.collating(.localizedCaseInsensitiveCompare))
+        order(ProfileCount.Columns.followers).reversed()
+    }
+    
+    func filterPubkeys(_ pubkeys: [String]) -> Self {
+        filter(pubkeys.contains(ProfileCount.Columns.profilePubkey))
     }
 }

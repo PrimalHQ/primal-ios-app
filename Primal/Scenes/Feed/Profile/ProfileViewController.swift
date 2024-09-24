@@ -5,6 +5,7 @@
 //  Created by Pavle D Stevanović on 8.6.23..
 //
 
+import Combine
 import UIKit
 import SwiftUI
 import GenericJSON
@@ -36,23 +37,9 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
-    var userStats: NostrUserProfileInfo?
-    
-    var followsUser = false {
-        didSet {
-            if view.window != nil {
-                table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
-            }
-        }
-    }
-    
-    var followedBy: [ParsedUser]? {
-        didSet {
-            if view.window != nil {
-                table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
-            }
-        }
-    }
+    @Published var userStats: NostrUserProfileInfo?
+    @Published var followsUser = false
+    @Published var followedBy: [ParsedUser]?
     
     private let navigationBar = ProfileNavigationView()
     
@@ -339,6 +326,15 @@ private extension ProfileViewController {
         profileOverlay2.constrainToSize(0.6 * 80)
         navigationBar.profilePicOverlayBig = profileOverlay1
         navigationBar.profilePicOverlaySmall = profileOverlay2
+        
+        Publishers.Merge3($userStats.map { _ in true }, $followsUser, $followedBy.map { _ in true })
+            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                if self?.view.window != nil {
+                    self?.table.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func parseDescription() {
@@ -388,6 +384,21 @@ private extension ProfileViewController {
     func requestUserProfile() {
         let profile = self.profile
         
+        DatabaseManager.instance.getProfilePublisher(profile.data.pubkey)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in } receiveValue: { [weak self] user in
+                self?.profile = user
+            }
+            .store(in: &cancellables)
+        
+        DatabaseManager.instance.getProfileStatsPublisher(profile.data.pubkey)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in } receiveValue: { [weak self] stats in
+                guard let stats else { return }
+                self?.userStats = stats.info
+            }
+            .store(in: &cancellables)
+        
         SocketRequest(useHTTP: true, name: "is_user_following", payload: [
             "pubkey": .string(profile.data.pubkey),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
@@ -420,7 +431,9 @@ private extension ProfileViewController {
                 let parsed = result.createParsedUser(user)
                 self?.profile = parsed
                 
-                SmartContactsManager.instance.addContact(parsed)
+                if let stats = result.userStats, stats.note_count != nil {
+                    DatabaseManager.instance.saveProfileStats(profile.data.pubkey, stats: stats)
+                }
             }
             .store(in: &cancellables)
     }

@@ -423,6 +423,7 @@
 		B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */; };
 		B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290542B4C46890069C87F /* SmartContactsManager.swift */; };
 		B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */; };
+		B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
 		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
 		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
@@ -925,6 +926,7 @@
 		B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberKeyboardView.swift; sourceTree = "<group>"; };
 		B9B290542B4C46890069C87F /* SmartContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContactsManager.swift; sourceTree = "<group>"; };
 		B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
+		B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+ProfileCounts.swift"; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
 		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
@@ -1910,6 +1912,7 @@
 			children = (
 				B906AB062C99F4300089813F /* DatabaseManager.swift */,
 				B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */,
+				B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -2591,6 +2594,7 @@
 				9E9F2F9529F6AB8A00A9CDF3 /* String+Extra.swift in Sources */,
 				9E55F28A2A1FA6DE00D5D523 /* SettingsMainViewController.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
+				B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */,
 				B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */,
 				B906AB102C9B472C0089813F /* MediaResource.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
@@ -3148,7 +3152,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.42;
+				MARKETING_VERSION = 2.0.43;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3194,7 +3198,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.42;
+				MARKETING_VERSION = 2.0.43;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

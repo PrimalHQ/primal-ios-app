@@ -9,7 +9,7 @@ import Foundation
 import GRDB
 
 struct ProfileLastVisit: Identifiable, Equatable {
-    var id: String { profilePubkey}
+    var id: String { profilePubkey }
     
     var profilePubkey: String
     var userPubkey: String
@@ -27,20 +27,18 @@ extension ProfileLastVisit: Codable, FetchableRecord, MutablePersistableRecord {
 
 extension ProfileLastVisit {
     static let profile = belongsTo(Profile.self)
-    var profile: QueryInterfaceRequest<Profile> {
-        request(for: ProfileLastVisit.profile)
-    }
 }
 
-extension DerivableRequest<Profile> {
-    /// A request of players ordered by name.
-    ///
-    /// For example:
-    ///
-    ///     let profiles: [Player] = try dbWriter.read { db in
-    ///         try Player.all().orderedByName().fetchAll(db)
-    ///     }
-    func current() -> Self {
-        self
+struct ProfileLastVisitInfo: Decodable, FetchableRecord {
+    var profile: Profile
+    var profileLastVisit: ProfileLastVisit
+    var profileCount: ProfileCount
+}
+
+extension ProfileLastVisit {
+    static func lastVisitedProfilePubkeysRequest() -> QueryInterfaceRequest<ProfileLastVisit> {
+        ProfileLastVisit
+            .order(ProfileLastVisit.Columns.lastVisit).reversed()
+            .limit(10)
     }
 }

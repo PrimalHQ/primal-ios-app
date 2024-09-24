@@ -32,13 +32,11 @@ final class ParsedElement: Equatable {
 final class ParsedUser {
     var data: PrimalUser
     var profileImage: MediaMetadata.Resource
-    var likes: Int?
     var followers: Int?
     
-    init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, likes: Int? = nil, followers: Int? = nil) {
+    init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, followers: Int? = nil) {
         self.data = data
         self.profileImage = profileImage ?? .init(url: data.picture, variants: [])
-        self.likes = likes
         self.followers = followers
     }
     

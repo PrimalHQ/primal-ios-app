@@ -38,9 +38,9 @@ final class RootViewController: UIViewController {
         
         _ = WalletManager.instance
         
+        IdentityManager.instance.requestUserProfile()
         Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
-                IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
                 IdentityManager.instance.requestUserContactsAndRelays()
 

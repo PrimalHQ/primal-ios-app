@@ -8,6 +8,72 @@
 import GRDB
 import Combine
 
+extension DatabaseManager {
+    func saveProfiles(_ profiles: [PrimalUser]) {
+        if profiles.isEmpty { return }
+        
+        let profiles = profiles.map { $0.toProfile() }
+        
+        performUpdates { db in
+            for var profile in profiles {
+                try profile.save(db)
+            }
+        }
+    }
+    
+    func setVisitProfile(_ profile: PrimalUser) {
+        var profileVisit = ProfileLastVisit(profilePubkey: profile.pubkey, userPubkey: IdentityManager.instance.userHexPubkey, lastVisit: .now)
+        performUpdates { db in
+            try profileVisit.save(db)
+        }
+    }
+    
+    func lastVisitedProfilePubkeysPublisher() -> AnyPublisher<[String], any Error> {
+        ValueObservation.tracking { db in
+            try ProfileLastVisit.lastVisitedProfilePubkeysRequest().fetchAll(db)
+        }
+        .publisher(in: dbWriter)
+        .map { $0.map { $0.profilePubkey } }
+        .eraseToAnyPublisher()
+    }
+    
+    func getProfilePublisher(_ pubkey: String) -> AnyPublisher<ParsedUser, any Error> {
+        ValueObservation.tracking { db in
+            try Profile.all().filterPubkeys([pubkey]).fetchOne(db)
+        }
+        .publisher(in: dbWriter)
+        .map { profile in
+            if let profile {
+                return ParsedUser(profile: profile)
+            }
+            return ParsedUser(data: .init(pubkey: pubkey), profileImage: nil)
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func getProfilesPublisher(_ pubkeys: [String]) -> AnyPublisher<[ParsedUser], any Error> {
+        ValueObservation.tracking { db in
+            try Profile.all().filterPubkeys(pubkeys).including(optional: Profile.profileCount).fetchAll(db)
+        }
+        .publisher(in: dbWriter)
+        .map { $0.map({ ParsedUser(profile: $0) }) }
+        .eraseToAnyPublisher()
+    }
+    
+    func searchProfilesPublisher(_ search: String) -> AnyPublisher<[ParsedUser], any Error> {
+        ValueObservation.tracking { db in
+            try Profile.all()
+                .searchUsers(search)
+                .including(optional: Profile.profileCount.orderedByFollowers())
+                .limit(20)
+                .fetchAll(db)
+        }
+        .publisher(in: dbWriter)
+        .map { $0.map({ ParsedUser(profile: $0) }) }
+        .eraseToAnyPublisher()
+    }
+}
+
 extension PrimalUser {
     func toProfile() -> Profile {
         Profile(
@@ -28,29 +94,8 @@ extension PrimalUser {
     }
 }
 
-extension DatabaseManager {
-    func saveProfiles(_ profiles: [PrimalUser]) {
-        let profiles = profiles.map { $0.toProfile() }
-        performUpdates { db in
-            for var profile in profiles {
-                try profile.save(db)
-            }
-        }
-    }
-    
-    func setVisitProfile(_ profile: PrimalUser) {
-        var profileVisit = ProfileLastVisit(profilePubkey: profile.pubkey, userPubkey: IdentityManager.instance.userHexPubkey, lastVisit: .now)
-        performUpdates { db in
-            try profileVisit.save(db)
-        }
-    }
-    
-    func lastVisitedProfilesPublisher() -> AnyPublisher<[Profile], any Error> {
-
-        ValueObservation.tracking { db in
-            try Profile.fetchAll(db)
-        }
-        .publisher(in: dbWriter)
-        .eraseToAnyPublisher()
+extension ParsedUser {
+    convenience init(profile: Profile) {
+        self.init(data: profile.primalUser, followers: profile.profileCount?.followers)
     }
 }
