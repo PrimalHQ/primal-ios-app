@@ -38,9 +38,9 @@ final class RootViewController: UIViewController {
         
         _ = WalletManager.instance
         
+        IdentityManager.instance.requestUserProfile()
         Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
             if connected {
-                IdentityManager.instance.requestUserProfile()
                 IdentityManager.instance.requestUserSettings()
                 IdentityManager.instance.requestUserContactsAndRelays()
 
@@ -55,6 +55,7 @@ final class RootViewController: UIViewController {
         connectionDot.layer.cornerRadius = 4
         connectionDot.backgroundColor = .accent
         connectionDot.layer.zPosition = 900
+        connectionDot.isHidden = !DevModeSettings.enableDevMode
         
         Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { [weak self] isConnected in
             self?.connectionDot.backgroundColor = isConnected ? .green : .red

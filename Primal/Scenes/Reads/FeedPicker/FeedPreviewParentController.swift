@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 import Combine
 
-final class ArticleFeedPreviewController: UIViewController {
+final class FeedPreviewParentController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
     
     let feed: PrimalFeed
@@ -31,7 +31,7 @@ final class ArticleFeedPreviewController: UIViewController {
     }
 }
 
-private extension ArticleFeedPreviewController {
+private extension FeedPreviewParentController {
     func setup() {
         view.backgroundColor = .background
         
@@ -101,7 +101,7 @@ private extension ArticleFeedPreviewController {
                 navigationController?.popToRootViewController(animated: true)
             }
             
-            PrimalFeed.setAllFeeds(all, type: type)
+            PrimalFeed.setAllFeeds(all, type: type, notifyBackend: true)
             updateButton()
         }), for: .touchUpInside)
         updateButton()

@@ -245,7 +245,7 @@ private extension TransactionViewController {
                     setCells()
                     table.reloadData()
                 }
-                return $0.process()
+                return $0.process(contentStyle: .regular)
             }
             .sink { [weak self] posts in
                 guard let self, let post = posts.first(where: { $0.post.id == postID }) else { return }
@@ -263,7 +263,6 @@ private extension TransactionViewController {
         stack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         stack.isLayoutMarginsRelativeArrangement = true
 
-        loadingSpinner.isHidden = true
         refreshControl.removeFromSuperview()
     }
     

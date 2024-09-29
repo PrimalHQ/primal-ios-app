@@ -118,6 +118,6 @@ extension FeedMarketplaceController: UITableViewDelegate {
             spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"reads\"}",
             description: feed.about
         )
-        show(ArticleFeedPreviewController(feed: readsFeed, type: type, feedInfo: feed), sender: nil)
+        show(FeedPreviewParentController(feed: readsFeed, type: type, feedInfo: feed), sender: nil)
     }
 }

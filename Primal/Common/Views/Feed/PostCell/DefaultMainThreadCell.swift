@@ -17,6 +17,8 @@ class DefaultMainThreadCell: ThreadCell {
     let likesLabel = UILabel()
     let repostsLabel = UILabel()
     
+    let contentBotSpacer = SpacerView(height: 12)
+    
     lazy var infoRow = UIStackView([repliesLabel, zapsLabel, likesLabel, repostsLabel, UIView()])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -58,6 +60,8 @@ class DefaultMainThreadCell: ThreadCell {
         cachedIsBookmarked = parsedContent.postInfo.isBookmarked
         
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
+        
+        contentBotSpacer.isHidden = !mainLabel.isHidden && mainImages.isHidden && linkPresentation.isHidden && postPreview.isHidden && articleView.isHidden && invoiceView.isHidden
         
         if let zaps {
             if zaps.isEmpty {
@@ -137,7 +141,7 @@ class DefaultMainThreadCell: ThreadCell {
         zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
-        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview])
+        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, contentBotSpacer])
         let mainStack = UIStackView(axis: .vertical, [horizontalProfileStack, contentStack, descStack])
         contentView.addSubview(mainStack)
         
@@ -146,6 +150,8 @@ class DefaultMainThreadCell: ThreadCell {
 
         topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
         topConstraint?.isActive = true
+        
+        contentBotSpacer.isHidden = true
             
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         bottomC.priority = .defaultLow
@@ -155,9 +161,10 @@ class DefaultMainThreadCell: ThreadCell {
         horizontalProfileStack.spacing = 8
         
         contentStack.spacing = 8
+        contentStack.setCustomSpacing(0, after: textViewParent)
         
         mainStack.spacing = 12
-        mainStack.setCustomSpacing(20, after: contentStack)
+        mainStack.setCustomSpacing(0, after: contentStack)
         
         textViewParent.addSubview(selectionTextView)
         selectionTextView

@@ -283,3 +283,26 @@ extension String : Identifiable {
 //        return newString
     }
 }
+
+extension NSAttributedString {
+    /// Creates a substring of the attributed string from the start to the given index, preserving attributes.
+    /// - Parameter length: The number of characters to include in the substring.
+    /// - Returns: A new NSAttributedString that contains the first `length` characters and their attributes.
+    func attributedSubstring(to length: Int) -> NSAttributedString {
+        // Ensure the length doesn't exceed the string's length
+        let maxLength = min(self.length, length)
+        
+        // Create an empty mutable attributed string
+        let attributedSubstring = NSMutableAttributedString(string: String(string.prefix(maxLength)))
+        
+        // Enumerate through the attributes and apply them to the new attributed string
+        self.enumerateAttributes(in: NSRange(location: 0, length: maxLength), options: []) { attributes, range, _ in
+            // Adjust the range to ensure it doesn't exceed the max length
+            let adjustedRange = NSRange(location: range.location, length: min(maxLength - range.location, range.length))
+            // Add attributes to the new attributed string
+            attributedSubstring.addAttributes(attributes, range: adjustedRange)
+        }
+        
+        return attributedSubstring
+    }
+}

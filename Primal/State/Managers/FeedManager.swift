@@ -35,6 +35,8 @@ final class FeedManager {
     var profilePubkey: String?
     var didReachEnd = false
     
+    var contentStyle = ParsedContentTextStyle.regular
+    
     var lastRefreshDate: Date = .distantPast
     var blockFuturePosts: Bool { lastRefreshDate.timeIntervalSinceNow > -10 }
     
@@ -63,13 +65,14 @@ final class FeedManager {
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
         initSubscriptions()
-        refresh()
+        refresh(useHTTP: true)
     }
     
     init(newFeed: PrimalFeed) {
         self.newFeed = newFeed
         initSubscriptions()
         refresh()
+        initFuturePublishersAndObservers()
     }
     
     init(feed: PrimalSettingsFeed) {
@@ -85,14 +88,15 @@ final class FeedManager {
     }
     
     init(threadId: String) {
+        contentStyle = .threadChildren
         initSubscriptions()
         requestThread(postId: threadId)
     }
     
     func updateTheme() {
         (newPostObjects + parsedPosts).forEach {
-            $0.buildContentString()
-            $0.embededPost?.buildContentString()
+            $0.buildContentString(style: contentStyle)
+            $0.embededPost?.buildContentString(style: .embedded)
         }
     }
     
@@ -114,7 +118,7 @@ final class FeedManager {
         refresh()
     }
     
-    func refresh() {
+    func refresh(useHTTP: Bool = false) {
         lastRefreshDate = .now
         newPostObjects = []
         newAddedPosts = 0
@@ -124,20 +128,21 @@ final class FeedManager {
         paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
-        requestNewPage()
+        requestNewPage(useHTTP: useHTTP)
     }
     
-    func requestNewPage() {
+    func requestNewPage(useHTTP: Bool = false) {
         guard !isRequestingNewPage, !didReachEnd else { return }
         guard paginationInfo?.order_by == nil || paginationInfo?.order_by == "created_at" else { return }
         isRequestingNewPage = true
-        sendNewPageRequest()
+        sendNewPageRequest(useHTTP: useHTTP)
     }
             
     func requestThread(postId: String, limit: Int32 = 100) {
         parsedPosts.removeAll()
         
         SocketRequest(
+            useHTTP: true,
             name: "thread_view",
             payload: .object([
                 "event_id": .string(postId),
@@ -184,7 +189,7 @@ private extension FeedManager {
             
             self.parsedLongForm += result.getArticles()
             
-            var sorted = result.process()
+            var sorted = result.process(contentStyle: contentStyle)
             
             if (self.parsedPosts.count > 0 || sorted.count > 0) && self.parsedPosts.last?.post.id == sorted.first?.post.id {
                  sorted.removeFirst()
@@ -226,27 +231,7 @@ private extension FeedManager {
     }
     
     /// This method is only required for the home feed manager
-    func initHomeFeedPublishersAndObservers() {
-        Publishers.Zip3(
-            IdentityManager.instance.$didFinishInit.filter({ $0 }).first(),
-            Connection.regular.isConnectedPublisher.filter({ $0 }).first(),
-            IdentityManager.instance.$userSettings.compactMap { $0?.feeds?.first }
-        )
-        .sink { [weak self] _, _, feed in
-            guard let self else { return }
-            
-            self.currentFeed = feed
-            
-            let isLatestFirst = feed.name == "Latest"
-            
-            HomeFeedLocalLoadingManager.isLatestFeedFirst = isLatestFirst
-            
-            guard !isLatestFirst || self.parsedPosts.isEmpty else { return }
-           
-            self.refresh()
-        }
-        .store(in: &cancellables)
-        
+    func initFuturePublishersAndObservers() {
         Publishers.CombineLatest3($newAddedPosts, $newPostObjects, $parsedPosts)
             .debounce(for: 0.1, scheduler: RunLoop.main)
             .map { added, notAdded, old  in (added + notAdded.count, (notAdded + old.prefix(added)).map { $0.user }) }
@@ -281,11 +266,10 @@ private extension FeedManager {
     }
     
     func futurePostsPublisher() -> AnyPublisher<[ParsedContent], Never> {
-        let feed = currentFeed
+        let feed = newFeed
         
         guard
-            let directive = currentFeed?.hex,
-            !directive.hasPrefix("search;"), !directive.hasPrefix("bookmarks;"),
+            let spec = newFeed?.spec,
             let paginationInfo,
             paginationInfo.order_by == "created_at",
             let until = paginationInfo.until
@@ -293,8 +277,8 @@ private extension FeedManager {
             return Just([]).eraseToAnyPublisher()
         }
         
-        return SocketRequest(name: "feed_directive", payload: .object([
-                "directive": .string(directive),
+        return SocketRequest(name: "mega_feed_directive", payload: .object([
+                "spec": .string(spec),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
                 "since": .number(until.rounded())
@@ -302,7 +286,7 @@ private extension FeedManager {
             .publisher()
             .receive(on: DispatchQueue.main)
             .map { [weak self] in
-                guard let self else { return $0.process() }
+                guard let self else { return $0.process(contentStyle: .regular) }
                 if let pagination = $0.pagination {
                     self.paginationInfo?.until = pagination.until
                 }
@@ -311,7 +295,7 @@ private extension FeedManager {
                     HomeFeedLocalLoadingManager.savedFeed = $0
                 }
                 
-                return $0.process()
+                return $0.process(contentStyle: contentStyle)
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
@@ -354,10 +338,10 @@ private extension FeedManager {
     }
     
     // MARK: - Requests
-    func sendNewPageRequest() {
+    func sendNewPageRequest(useHTTP: Bool = false) {
         let (name, payload) = generateRequestByFeedType()
         
-        SocketRequest(name: name, payload: payload).publisher()
+        SocketRequest(useHTTP: useHTTP, name: name, payload: payload).publisher()
             .sink { [weak self] result in
                 guard let self else { return }
                 
@@ -398,7 +382,7 @@ private extension FeedManager {
         var payload: [String: JSON] = [
             "spec": .string(feed.spec),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": .number(Double(40))
+            "limit": .number(Double(20))
         ]
         
         if let until: Double = paginationInfo?.since {

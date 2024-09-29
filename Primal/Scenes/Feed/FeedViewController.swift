@@ -25,8 +25,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
     
-    let loadingSpinner = LoadingSpinnerView()
-    
     var postCellID = "cell" // Needed for updating the theme
     
     var animateInserts = true
@@ -43,15 +41,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return
             }
             
-            let isAddingAtEnd = oldValue.first?.post.id == posts.first?.post.id
+            if oldValue.first?.post.id == posts.first?.post.id {
+                // Adding at the end
+                table.reloadData()
+                return
+            }
             
-            let indexes: [IndexPath] = {
-                if isAddingAtEnd {
-                    return (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
-                }
-                return (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
-            }()
-            
+            // Adding at the start
+            let indexes: [IndexPath] =  (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
             table.insertRows(at: indexes, with: .none)
         }
     }
@@ -123,7 +120,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let delta = newPosition - prevPosition
         prevPosition = newPosition
         
-        if !scrollView.isTracking { return }
+        // System sometimes updates table contentOffset without moving the cells
+        // so if delta is larger than 50 we ignore it
+        if abs(delta) > 50 { return }
+        
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
@@ -132,13 +132,22 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        if velocity.y < -0.1 {
-            animateBarsToVisible()
-        } else if velocity.y > 0.1 {
-            animateBarsToInvisible()
-        } else {
-            setBarsDependingOnPosition()
-        }
+//        if velocity.y < -0.1 {
+//            animateBarsToVisible()
+//        } else if velocity.y > 0.1 {
+//            animateBarsToInvisible()
+//        } else {
+//            setBarsDependingOnPosition()
+//        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate { return }
+        setBarsDependingOnPosition()
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        setBarsDependingOnPosition()
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -433,9 +442,6 @@ private extension FeedViewController {
         navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
         table.refreshControl = refreshControl
-        
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(70)
         
         updateTheme()
         

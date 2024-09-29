@@ -51,6 +51,8 @@ final class NotificationsViewController: FeedViewController {
     
     var tabSelectionView = TabSelectionView(tabs: ["ALL", "ZAPS", "REPLIES", "MENTIONS"])
     
+    let skeletonLoaderView = SkeletonLoaderView(animation: .notificationSkeletonLight, darkMode: .notificationSkeleton)
+    
     @Published var isLoading = false
     @Published var didReachEnd = false
     
@@ -106,10 +108,19 @@ final class NotificationsViewController: FeedViewController {
             }
             .store(in: &cancellables)
         
-        $isLoading.sink { [weak self] _ in
-            self?.table.reloadData()
-        }
-        .store(in: &cancellables)
+        Publishers.CombineLatest($isLoading, $posts.map { $0.isEmpty })
+            .map { $0 && $1 }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] shouldShowSkeleton in
+                self?.skeletonLoaderView.isHidden = !shouldShowSkeleton
+                if shouldShowSkeleton {
+                    self?.skeletonLoaderView.play()
+                } else {
+                    self?.skeletonLoaderView.pause()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {
@@ -127,23 +138,19 @@ final class NotificationsViewController: FeedViewController {
     func setup() {
         title = "Notifications"
         
-        loadingSpinner.removeFromSuperview()
-        
         updateTheme()
-        
-        table.register(NotificationLoadingCell.self, forCellReuseIdentifier: "loading")
         
         view.addSubview(tabSelectionView)
         tabSelectionView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        
-//        let spacer = UIView()
-//        stack.insertArrangedSubview(spacer, at: 0)
-//        spacer.heightAnchor.constraint(equalTo: self.tabSelectionView.heightAnchor).isActive = true
         
         navigationBorder.removeFromSuperview()
         view.addSubview(navigationBorder)
         navigationBorder.pin(to: tabSelectionView, edges: .horizontal)
         navigationBorder.topAnchor.constraint(equalTo: tabSelectionView.bottomAnchor).isActive = true
+        
+        view.addSubview(skeletonLoaderView)
+        skeletonLoaderView.pinToSuperview(edges: .horizontal)
+        skeletonLoaderView.topAnchor.constraint(equalTo: navigationBorder.bottomAnchor, constant: 15).isActive = true
         
         tabSelectionView.$selectedTab
             .dropFirst()
@@ -229,17 +236,9 @@ final class NotificationsViewController: FeedViewController {
         .store(in: &cancellables)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        isLoading ? 2 : 1
-    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { section == 0 ? notifications.count : 6 }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section != 0 {
-            return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-        }
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
         
         if let cell = cell as? NotificationCell {
@@ -363,7 +362,7 @@ extension Array where Element == GroupedNotification {
 
 extension PostRequestResult {
     func getParsedNotifications() -> [GroupedNotification] {
-        let posts = process()
+        let posts = process(contentStyle: .regular)
         
         return notifications.sorted(by: { $0.date > $1.date }).map { notif in
             var parsedUsers: [ParsedUser] = []

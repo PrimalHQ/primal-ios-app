@@ -77,6 +77,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     convenience init(post: ParsedContent) {
         self.init(threadId: post.post.id)
+        self.mainPostZaps = post.zaps
         let copy = post.copy()
         copy.reposted = nil
         posts = [copy]
@@ -123,6 +124,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         mainTabBarController?.showTabBarBorder = true
     }
     
+    var articleSection: Int { 0 }
     override var postSection: Int { 1 }
     
     @discardableResult
@@ -147,24 +149,16 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         return super.open(post: post)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int { isLoading ? 3 : 2 }
+    func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return articles.count
-        }
         if section == postSection {
             return super.tableView(tableView, numberOfRowsInSection: section)
         }
-        return 1
+        return min(1, articles.count)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 2 { // Loading
-            mainPostRepliesHeightArray[1] = 150
-            return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-        }
-        
         if indexPath.section == 0 { // Parent Article
             let cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
             if let articleCell = cell as? ArticleCell {
@@ -392,7 +386,9 @@ private extension ThreadViewController {
         Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
             guard let self, $0 && $1 && !didMoveToMain else { return }
             
-            self.didMoveToMain = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.didMoveToMain = true
+            }
             
             if self.didPostNewComment {
                 self.didPostNewComment = false
@@ -491,8 +487,6 @@ private extension ThreadViewController {
         addPublishers()
         
         title = "Thread"
-        
-        loadingSpinner.removeFromSuperview()
         
         table.keyboardDismissMode = .interactive
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)

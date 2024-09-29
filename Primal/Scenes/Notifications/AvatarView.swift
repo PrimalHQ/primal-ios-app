@@ -13,8 +13,22 @@ final class AvatarView: UIView {
     let extraView = UIView()
     let extraLabel = UILabel()
     
-    init() {
+    let size: CGFloat
+    let spacing: CGFloat
+    
+    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, bordered: Bool = false) {
+        self.size = size
+        self.spacing = spacing
         super.init(frame: .zero)
+        transform = reversed ? .init(rotationAngle: .pi) : .identity
+        
+        if bordered {
+            avatarViews.forEach {
+                $0.layer.borderWidth = 1
+                $0.layer.borderColor = UIColor.background.cgColor
+            }
+        }
+        
         setup()
     }
     
@@ -28,9 +42,9 @@ final class AvatarView: UIView {
         zip(avatarViews, images).forEach { view, url in
             view.isHidden = false
             view.kf.setImage(with: url, placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: CGSize(width: 32, height: 32))),
+                .processor(DownsamplingImageProcessor(size: CGSize(width: size, height: size))),
                 .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
+                .cacheOriginalImage,
             ])
         }
         
@@ -56,12 +70,13 @@ private extension AvatarView {
         }
         
         stack.arrangedSubviews.forEach {
-            $0.constrainToSize(32)
-            $0.layer.cornerRadius = 16
+            $0.constrainToSize(size)
+            $0.layer.cornerRadius = size / 2
             $0.layer.masksToBounds = true
+            $0.transform = transform
         }
         
-        stack.spacing = 4
+        stack.spacing = spacing
         
         extraView.addSubview(extraLabel)
         extraLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 2)
@@ -76,6 +91,6 @@ private extension AvatarView {
         addSubview(stack)
         stack.pinToSuperview()
         
-        constrainToSize(height: 32)
+        constrainToSize(height: size)
     }
 }

@@ -15,13 +15,16 @@ class PostLoadingCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         
-        addSubview(animationView)
-        animationView.pinToSuperview()
-        
-        animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 375 / 137).isActive = true
+        contentView.addSubview(animationView)
+        animationView
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .vertical, padding: 10)
+            .constrainToAspect(1125 / 445)
         
         animationView.animation = Theme.current.isDarkTheme ? AnimationType.postCellSkeleton.animation : AnimationType.postCellSkeletonLight.animation
         animationView.loopMode = .loop
+        
+        contentView.backgroundColor = .background2
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

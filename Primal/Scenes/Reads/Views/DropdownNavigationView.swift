@@ -27,8 +27,10 @@ class DropdownNavigationView: UIView, Themeable {
         addSubview(button)
         button.pinToSuperview(edges: .vertical).centerToSuperview()
         let leadingC = button.leadingAnchor.constraint(equalTo: leadingAnchor)
-        leadingC.priority = .defaultLow
+        leadingC.priority = .required
         leadingC.isActive = true
+        
+        button.widthAnchor.constraint(lessThanOrEqualToConstant: UIScreen.main.bounds.width - 135).isActive = true
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -52,6 +54,7 @@ class DropdownNavigationView: UIView, Themeable {
         let transButton = UIButton(configuration: .navChevronButton(title: newTitle))
         view.addSubview(transButton)
         transButton.pinToSuperview(edges: .vertical).centerToView(button)
+        transButton.widthAnchor.constraint(lessThanOrEqualToConstant: UIScreen.main.bounds.width - 135).isActive = true
         if newTitle.count > title.count {
             let leadingC = transButton.leadingAnchor.constraint(equalTo: leadingAnchor)
             leadingC.priority = .defaultHigh

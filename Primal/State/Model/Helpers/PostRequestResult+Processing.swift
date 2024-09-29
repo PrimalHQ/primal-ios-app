@@ -12,7 +12,7 @@ import NostrSDK
 
 extension PostRequestResult: MetadataCoding {
     func getSortedUsers() -> [ParsedUser] {
-        users.map { createParsedUser($0.value) }.sorted(by: { ($0.likes ?? 0) > ($1.likes ?? 0) } )
+        users.map { createParsedUser($0.value) }.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) } )
     }
     
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
@@ -29,14 +29,13 @@ extension PostRequestResult: MetadataCoding {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        likes: userScore[user.pubkey],
-        followers: userFollowers[user.pubkey]
+        followers: userFollowers[user.pubkey] ?? userScore[user.pubkey]
     )}
     
-    func process() -> [ParsedContent] {
+    func process(contentStyle: ParsedContentTextStyle) -> [ParsedContent] {
         let mentions: [ParsedContent] = mentions
             .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
+            .map { parse(post: $0.0, user: $0.1, mentions: [], contentStyle: .embedded) }
         
         let parsedUsers = getSortedUsers()
         let parsedZaps = postZaps.map { primalZapEvent in
@@ -53,7 +52,7 @@ extension PostRequestResult: MetadataCoding {
             .compactMap { repost -> ParsedContent? in
                 guard let (primalPost, user) = createPrimalPost(content: repost.post) else { return nil }
                 
-                let post = parse(post: primalPost, user: user, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps)
+                let post = parse(post: primalPost, user: user, mentions: mentions, contentStyle: contentStyle, parsedZaps: parsedZaps)
                 
                 guard let nostrUser = users[repost.pubkey] else { return post }
                 
@@ -63,7 +62,7 @@ extension PostRequestResult: MetadataCoding {
             }
         
         let normalPosts = posts.compactMap { createPrimalPost(content: $0) }
-            .map { parse(post: $0.0, user: $0.1, mentions: mentions, removeExtractedPost: true, parsedZaps: parsedZaps) }
+            .map { parse(post: $0.0, user: $0.1, mentions: mentions, contentStyle: contentStyle, parsedZaps: parsedZaps) }
         
         if order.isEmpty {
             return normalPosts
@@ -79,7 +78,7 @@ extension PostRequestResult: MetadataCoding {
         post: PrimalFeedPost,
         user: ParsedUser,
         mentions: [ParsedContent],
-        removeExtractedPost: Bool,
+        contentStyle: ParsedContentTextStyle,
         parsedZaps: [ParsedZap] = []
     ) -> ParsedContent {
         let p = ParsedContent(post: post, user: user)
@@ -239,6 +238,8 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
+        let removeExtractedPost = contentStyle != .embedded
+        
         if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
             itemsToRemove.append(mentionText)
@@ -371,7 +372,7 @@ extension PostRequestResult: MetadataCoding {
         p.highlights = highlights.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id)}
         p.highlightEvents = highlights.map { $0.1 }
         p.text = text
-        p.buildContentString()
+        p.buildContentString(style: contentStyle)
         
         return p
     }

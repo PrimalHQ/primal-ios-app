@@ -11,7 +11,21 @@ extension NSNotification.Name {
 }
 
 final class MuteManager {
-    private init() {}
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    private init() {
+        let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
+        let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
+        
+        let complexPublisher = Publishers.Merge(pubkeyPublisher.first(), onlyPubkey.debounce(for: 1, scheduler: RunLoop.main)).removeDuplicates()
+        
+        complexPublisher
+            .sink(receiveValue: { [weak self] pubkey in
+                self?.muteList = []
+            })
+            .store(in: &cancellables)
+    }
     private(set) var muteList: Set<String> = []
 
     static let instance = MuteManager()
@@ -53,7 +67,9 @@ final class MuteManager {
                     let nostrContent = NostrContent(json: nostrContentJson)
 
                     for tag in nostrContent.tags {
-                        self.muteList.insert(tag[1])
+                        if let pubkey = tag[safe: 1] {
+                            self.muteList.insert(pubkey)
+                        }
                     }
                 case .categoryList, .mediaMetadata, .userScore, .metadata:
                     // Ignore apps who don't use default NIP standard for mute lists

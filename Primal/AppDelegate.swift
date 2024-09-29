@@ -17,12 +17,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .animatedAvatarsKey:    true,
             .fullScreenFeedKey:     false,
             .autoDarkModeKey:       true,
+            .hugeFontKey:           true,
         ])
+        
+        UserDefaults.standard.removeObject(forKey: .smartContactListKey)
+        UserDefaults.standard.removeObject(forKey: .smartContactDefaultListKey)
+        UserDefaults.standard.removeObject(forKey: .cachedUsersDefaultsKey)
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
         PrimalEndpointsManager.instance.checkIfNecessary()
         
+        _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
         return true

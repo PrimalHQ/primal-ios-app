@@ -43,7 +43,7 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
             .cacheOriginalImage
         ])
         
-        if let count = user.likes {
+        if let count = user.followers {
             followersLabel.text = Int32(count).shortened()
             followStack.isHidden = false
         } else {

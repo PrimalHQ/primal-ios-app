@@ -168,6 +168,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let created_at: Double
     let sig: String
     let deleted: Bool?
+    var rawData: String?
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
@@ -328,8 +329,8 @@ extension PrimalUser {
         )
     }()
     
-    var profileData: Profile {
-        Profile(
+    var profileData: NostrProfile {
+        NostrProfile(
             name: name,
             display_name: displayName,
             about: about,

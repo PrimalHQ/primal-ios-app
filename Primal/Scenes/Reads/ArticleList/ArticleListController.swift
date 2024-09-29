@@ -163,12 +163,11 @@ class ArticleLoadingCell: UITableViewCell, Themeable {
             .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .top, padding: 10)
             .pinToSuperview(edges: .bottom, padding: -10)
-        
-        let aspectC = animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 1125 / 375)
-        aspectC.priority = .defaultHigh
-        aspectC.isActive = true
+            .constrainToAspect(1125 / 480)
         
         selectionStyle = .none
+        
+        contentView.backgroundColor = .background2
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

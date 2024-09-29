@@ -272,6 +272,8 @@ private extension PostCell {
             guard let self else { return }
             self.delegate?.postCellDidTap(self, .post)
         }
+        mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        mainLabel.adjustsFontSizeToFitWidth = true
         
         mainImages.imageDelegate = self
         

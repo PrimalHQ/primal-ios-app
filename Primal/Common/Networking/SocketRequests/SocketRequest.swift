@@ -10,19 +10,79 @@ import Foundation
 import GenericJSON
 
 struct SocketRequest {
+    let url: URL = URL(string: "https://cache2.primal.net/api/")!
+    
+    var useHTTP = false
     let name: String
     let payload: JSON?
     
-    private let pendingResult: PostRequestResult = .init()
+    var body: JSON {
+        if let payload {
+            return [.string(name), payload]
+        }
+        return [.string(name)]
+    }
+    
+    func httpPublisher() -> AnyPublisher<[JSON], Error> {
+        Future { promise in
+            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+            
+            if let requestBody = try? JSONEncoder().encode(body) {
+                request.httpMethod = "POST"
+                request.httpBody = requestBody
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+
+            URLSession(configuration: .default).dataTask(with: request) { data, response, error in
+                guard let data else {
+                    promise(.failure(error ?? RequestError.noData))
+                    return
+                }
+                
+                let decoder = JSONDecoder()
+
+                do {
+                    let responseData = try decoder.decode([JSON].self, from: data)
+                    promise(.success(responseData))
+                } catch {
+                    if let errorData = try? decoder.decode(RequestErrorResponse.self, from: data) {
+                        promise(.failure(errorData.error))
+                    } else {
+                        promise(.failure(error))
+                    }
+                }
+            }
+            .resume()
+        }
+        .eraseToAnyPublisher()
+    }
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
+//        if false && useHTTP {
+//            return httpPublisher()
+//                .replaceError(with: [])
+//                .map { result in
+//                    let pendingResult = PostRequestResult()
+//                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
+//                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
+//                    return pendingResult
+//                }
+//                .eraseToAnyPublisher()
+//        }
+        
         Connection.regular.autoConnectReset()
         
         return Deferred {
-            Future { promise in                
+            Future { promise in
                 Connection.regular.requestCache(name: name, payload: payload) { result in
+                    let pendingResult = PostRequestResult()
+                    
                     result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
+                    
+                    DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))
                 }
@@ -103,7 +163,8 @@ extension PostRequestResult {
         switch kind {
         case .metadata:
             let nostrUser = NostrContent(json: .object(payload))
-            if let user = PrimalUser(nostrUser: nostrUser) {
+            if var user = PrimalUser(nostrUser: nostrUser) {
+                user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
         case .text:

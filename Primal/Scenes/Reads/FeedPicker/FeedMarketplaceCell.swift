@@ -54,7 +54,10 @@ class FeedMarketplaceCell: UITableViewCell {
     func setup(_ feed: FeedFromMarket) {
         titleLabel.text = feed.name
         subtitleLabel.text = feed.about
-        feedImageView.kf.setImage(with: URL(string: feed.picture ?? ""), options: [
+        
+        let defaultImage = UIImage(named: "dvmDefault")?.withTintColor(.foreground6).withRenderingMode(.alwaysOriginal)
+        
+        feedImageView.kf.setImage(with: URL(string: feed.picture ?? feed.image ?? ""), placeholder: defaultImage, options: [
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage,
             .processor(ResizingImageProcessor(referenceSize: .init(width: 40, height: 40)))

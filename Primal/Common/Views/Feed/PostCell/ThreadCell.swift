@@ -37,6 +37,8 @@ class ThreadCell: PostCell {
             bottomBorder.backgroundColor = .clear
             topConstraint?.constant = 0
             bottomConstraint?.constant = -24
+            
+            mainLabel.attributedText = parsedContent.attributedText
         case .main:
             contentView.backgroundColor = .clear
             bottomBorder.backgroundColor = .background3
@@ -52,6 +54,8 @@ class ThreadCell: PostCell {
             bottomBorder.backgroundColor = .background3
             topConstraint?.constant = 12
             bottomConstraint?.constant = -12
+            
+            mainLabel.attributedText = parsedContent.attributedText
         }
     }
 }

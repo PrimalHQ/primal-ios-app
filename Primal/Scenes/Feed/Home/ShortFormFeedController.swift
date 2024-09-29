@@ -54,10 +54,6 @@ class ShortFormFeedController: PostFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        DispatchQueue.main.async {
-            self.loadingSpinner.removeFromSuperview()
-        }
-        
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
         newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
@@ -86,8 +82,6 @@ class ShortFormFeedController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        loadingSpinner.play()
     }
     
     func updatePosts(old: Int, new: Int, users: [ParsedUser]) {
@@ -176,14 +170,7 @@ private extension ShortFormFeedController {
         
         feed.newParsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newPosts in
-                if self?.refreshControl.isRefreshing == false && self?.loadingSpinner.isHidden == true {
-                    self?.posts += newPosts
-                } else {
-                    self?.posts = []
-                    self?.posts = newPosts
-                }
-                
+            .sink { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.onLoad?()
                     self?.onLoad = nil
@@ -193,22 +180,13 @@ private extension ShortFormFeedController {
         
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in
-                if !posts.isEmpty {
-                    if posts.first?.post.id != self?.posts.first?.post.id || (self?.posts.count ?? 0) > posts.count {
-                        self?.posts = posts
-                    }
-                }
-                
+            .sink { [weak self] posts in                
                 if posts.isEmpty {
                     if self?.refreshControl.isRefreshing == false {
                         self?.posts = []
-                        self?.loadingSpinner.isHidden = false
-                        self?.loadingSpinner.play()
                     }
-                } else if self?.loadingSpinner.isHidden == false || self?.refreshControl.isRefreshing == true {
-                    self?.loadingSpinner.isHidden = true
-                    self?.loadingSpinner.stop()
+                } else {
+                    self?.posts = posts
                     self?.refreshControl.endRefreshing()
                 }
             }

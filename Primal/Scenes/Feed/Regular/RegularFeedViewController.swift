@@ -30,13 +30,8 @@ final class RegularFeedViewController: PostFeedViewController {
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
             .sink { [weak self] posts in
-                if posts.isEmpty {
-                    self?.loadingSpinner.isHidden = false
-                    self?.loadingSpinner.play()
-                } else {
+                if !posts.isEmpty {
                     self?.posts = posts
-                    self?.loadingSpinner.isHidden = true
-                    self?.loadingSpinner.stop()
                     self?.refreshControl.endRefreshing()
                 }
             }
@@ -59,8 +54,6 @@ final class RegularFeedViewController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        
-        loadingSpinner.play()
     }
     
     override func updateTheme() {

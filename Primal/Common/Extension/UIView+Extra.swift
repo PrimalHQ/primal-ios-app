@@ -91,6 +91,15 @@ extension UIView {
     }
     
     @discardableResult
+    func constrainToAspect(_ aspect: CGFloat, priority: UILayoutPriority = .defaultHigh) -> Self {
+        translatesAutoresizingMaskIntoConstraints = false
+        let aspectC = widthAnchor.constraint(equalTo: heightAnchor, multiplier: aspect)
+        aspectC.priority = priority
+        aspectC.isActive = true
+        return self
+    }
+    
+    @discardableResult
     func pin(to view: UIView, edges: Edge.Set = .all, padding: CGFloat = 0, safeArea: Bool = false) -> Self {
         translatesAutoresizingMaskIntoConstraints = false
         

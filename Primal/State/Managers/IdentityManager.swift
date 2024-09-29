@@ -71,6 +71,21 @@ final class IdentityManager {
     var cancellables: Set<AnyCancellable> = []
 
     func requestUserProfile() {
+        DatabaseManager.instance.getProfilePublisher(userHexPubkey).first()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in }) { [weak self] user in
+                self?.parsedUser = user
+            }
+            .store(in: &cancellables)
+        
+        DatabaseManager.instance.getProfileStatsPublisher(userHexPubkey).first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stats in
+                guard let self, let stats else { return }
+                userStats = stats.info
+            }
+            .store(in: &cancellables)
+        
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(userHexPubkey)]).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
@@ -358,7 +373,7 @@ final class IdentityManager {
     
     func deleteAccount() async -> [JSON] {
         return await withCheckedContinuation { continuation in
-            let profile = Profile(
+            let profile = NostrProfile(
                 name: "Deleted Account",
                 display_name: "Deleted Account",
                 about: "Deleted Account",
@@ -381,7 +396,7 @@ final class IdentityManager {
         }
     }
     
-    func updateProfile(_ data: Profile, callback: @escaping (Bool) -> Void) {
+    func updateProfile(_ data: NostrProfile, callback: @escaping (Bool) -> Void) {
         guard let metadata_ev = NostrObject.metadata(data) else {
             callback(false)
             return

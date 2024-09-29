@@ -10,6 +10,7 @@ import UIKit
 protocol ArticleCellController: UIViewController {
     var articles: [Article] { get }
     var table: UITableView { get }
+    var articleSection: Int { get }
 }
 
 class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
@@ -25,7 +26,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         guard let listVC = listVCs.first(where: { vc in
             guard
                 let index = vc.articles.firstIndex(where: { $0.event.id == longFormController.content.event.id }),
-                let contentCell = vc.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
+                let contentCell = vc.table.cellForRow(at: .init(row: index, section: vc.articleSection)) as? ArticleCell
             else { return false }
             
             let point = contentCell.contentView.convert(CGPoint.zero, to: longFormController.view)
@@ -71,7 +72,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         
         var contentCell: ArticleCell?
         if let index = listVC.articles.firstIndex(where: { $0.event.id == lfController.content.event.id }) {
-            contentCell = listVC.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
+            contentCell = listVC.table.cellForRow(at: .init(row: index, section: listVC.articleSection)) as? ArticleCell
         }
         
         let topInfoView = lfController.topInfoView
@@ -82,7 +83,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             contentCell?.titleLabel.animateTransitionTo(topInfoView.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.nameLabel.animateTransitionTo(lfController.navExtension.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             
-            if topInfoView.imageView.isHidden, lfController.content.image != nil, let image = contentCell?.contentImageView.image {
+            if topInfoView.imageView.isHidden, lfController.content.image?.isEmpty == false, let image = contentCell?.contentImageView.image {
                 topInfoView.imageView.image = image
                 topInfoView.imageView.isHidden = false
                 let hC = topInfoView.imageView.widthAnchor.constraint(equalTo: topInfoView.imageView.heightAnchor, multiplier: image.size.width / image.size.height)
