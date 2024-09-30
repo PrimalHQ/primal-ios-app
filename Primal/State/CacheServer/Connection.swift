@@ -133,8 +133,15 @@ final class Connection {
                 case .string(let string):
                     guard let json: JSON = string.decode() else { return }
                     processMessage(json)
-                case .data(let data):
-                    print("RECEIVED HEX DATA")
+                case .data(var data):
+                    do {
+                        data.removeFirst(2) // REMOVE HEADER
+                        let decompressedData = try (data as NSData).decompressed(using: .zlib) as Data
+                        let json: JSON = try JSONDecoder().decode(JSON.self, from: decompressedData)
+                        processBulkMessage(json)
+                    } catch {
+                        print("HEX DATA ERROR: \(error)")
+                    }
                 @unknown default:
                     return
                 }
@@ -147,6 +154,15 @@ final class Connection {
         }
         
         socket.connect()
+        
+        DispatchQueue.main.async {
+            SocketRequest(name: "set_primal_protocol", payload: ["compression": "zlib"])
+                .publisher()
+                .sink(receiveValue: { result in
+                    print(result)
+                })
+                .store(in: &self.cancellables)
+        }
     }
     
     private func disconnect() {
@@ -232,10 +248,25 @@ final class Connection {
         }
     }
     
+    private func processBulkMessage(_ json: JSON) {
+        guard
+            let subId = json.arrayValue?[safe: 1]?.stringValue,
+            let arrayOfMessages = json.arrayValue?[safe: 2]?.arrayValue,
+            let handler = subHandlers[subId]
+        else {
+            print("error getting subId or array of bulk")
+            return
+        }
+        
+        handler(arrayOfMessages)
+        responseBuffer[subId] = nil
+        subHandlers[subId] = nil
+    }
+    
     private func processMessage(_ json: JSON) {
         guard
-            let subId = json.arrayValue?[1].stringValue,
-            let type = json.arrayValue?[0]
+            let subId = json.arrayValue?[safe: 1]?.stringValue,
+            let type = json.arrayValue?.first
         else {
             print("error getting subId and/or type")
             return
@@ -248,7 +279,9 @@ final class Connection {
             responseBuffer[subId] = nil
             subHandlers[subId] = nil
         } else {
-            responseBuffer[subId]?.append(json)
+            if let interestingJSON = json.arrayValue?[safe: 2] {
+                responseBuffer[subId]?.append(interestingJSON)
+            }
             continousSubHandlers[subId]?(json)
         }
     }

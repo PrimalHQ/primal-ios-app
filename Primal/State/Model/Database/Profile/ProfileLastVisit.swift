@@ -36,9 +36,10 @@ struct ProfileLastVisitInfo: Decodable, FetchableRecord {
 }
 
 extension ProfileLastVisit {
-    static func lastVisitedProfilePubkeysRequest() -> QueryInterfaceRequest<ProfileLastVisit> {
+    static func lastVisitedProfilePubkeysRequest(_ pubkey: String) -> QueryInterfaceRequest<ProfileLastVisit> {
         ProfileLastVisit
             .order(ProfileLastVisit.Columns.lastVisit).reversed()
+            .filter(ProfileLastVisit.Columns.profilePubkey == pubkey)
             .limit(10)
     }
 }

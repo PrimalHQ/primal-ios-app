@@ -15,7 +15,7 @@ final class SearchHeaderView: MyButton, Themeable {
         super.init(frame: .zero)
         
         constrainToSize(height: 32)
-        let width = widthAnchor.constraint(equalToConstant: 235)
+        let width = widthAnchor.constraint(equalToConstant: 255)
         width.priority = .defaultHigh
         width.isActive = true
         
@@ -26,12 +26,12 @@ final class SearchHeaderView: MyButton, Themeable {
         stack.spacing = 8
         
         addSubview(stack)
-        stack.centerToSuperview()
+        stack.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 12)
         
         icon.setContentHuggingPriority(.required, for: .horizontal)
         
         label.text = "search nostr"
-        label.font = .appFont(withSize: 16, weight: .medium)
+        label.font = .appFont(withSize: 16, weight: .regular)
     }
     
     required init?(coder: NSCoder) {

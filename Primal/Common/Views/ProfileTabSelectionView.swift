@@ -54,8 +54,12 @@ final class ProfileTabSelectionView: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func set(_ tab: Int) {
+    func set(_ tab: Int, animated: Bool = true) {
         guard selectedTab != tab else { return }
+        if !animated {
+            setTab(tab, animated: false)
+            layoutSubviews()
+        }
         selectedTab = tab
     }
     

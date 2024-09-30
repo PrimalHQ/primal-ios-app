@@ -14,11 +14,11 @@ final class FeedPreviewParentController: UIViewController {
     
     let feed: PrimalFeed
     let type: PrimalFeedType
-    let info: FeedFromMarket
+    let info: ParsedFeedFromMarket
     
     let addButton = UIButton().constrainToSize(height: 52)
     
-    init(feed: PrimalFeed, type: PrimalFeedType, feedInfo: FeedFromMarket) {
+    init(feed: PrimalFeed, type: PrimalFeedType, feedInfo: ParsedFeedFromMarket) {
         self.feed = feed
         self.type = type
         info = feedInfo

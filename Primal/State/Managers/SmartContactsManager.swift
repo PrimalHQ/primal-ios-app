@@ -51,7 +51,7 @@ final class SmartContactsManager {
     private init() {
         ICloudKeychainManager.instance.$userPubkey
             .flatMap { pubkey in
-                DatabaseManager.instance.lastVisitedProfilePubkeysPublisher()
+                DatabaseManager.instance.lastVisitedProfilePubkeysPublisher(pubkey)
             }
             .receive(on: DispatchQueue.main)
             .sink { completion in

@@ -275,11 +275,6 @@ private extension EditProfileViewController {
                 return
             }
             
-//            guard let username = self.usernameInput.text, !username.isEmpty else {
-//                self.usernameInput.becomeFirstResponder()
-//                return
-//            }
-            
             self.updateAccount()
         }), for: .touchUpInside)
         
@@ -331,6 +326,26 @@ private extension EditProfileViewController {
             return
         }
         
+        let newProfile = PrimalUser(
+            id: profile.id,
+            pubkey: profile.pubkey,
+            npub: profile.npub,
+            name: data.name ?? profile.name,
+            about: data.about ?? profile.about,
+            picture: data.picture ?? profile.picture,
+            nip05: data.nip05 ?? profile.nip05,
+            banner: data.banner ?? profile.banner,
+            displayName: data.display_name ?? profile.displayName,
+            location: profile.location,
+            lud06: data.lud06 ?? profile.lud06,
+            lud16: data.lud16 ?? profile.lud16,
+            website: data.website ?? profile.website,
+            tags: profile.tags,
+            created_at: profile.created_at,
+            sig: profile.sig,
+            deleted: profile.deleted ?? false
+        )
+        
         IdentityManager.instance.updateProfile(data) { [weak self] in
             guard $0 else {
                 self?.nextButton.isEnabled = true
@@ -338,27 +353,13 @@ private extension EditProfileViewController {
                 return
             }
             
+            DatabaseManager.instance.saveProfiles([newProfile])
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                IdentityManager.instance.requestUserProfile()
+            }
+            
             if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
-                
-                let newProfile = PrimalUser(
-                    id: profile.id,
-                    pubkey: profile.pubkey,
-                    npub: profile.npub,
-                    name: data.name ?? profile.name,
-                    about: data.about ?? profile.about,
-                    picture: data.picture ?? profile.picture,
-                    nip05: data.nip05 ?? profile.nip05,
-                    banner: data.banner ?? profile.banner,
-                    displayName: data.display_name ?? profile.displayName,
-                    location: profile.location,
-                    lud06: data.lud06 ?? profile.lud06,
-                    lud16: data.lud16 ?? profile.lud16,
-                    website: data.website ?? profile.website,
-                    tags: profile.tags,
-                    created_at: profile.created_at,
-                    sig: profile.sig,
-                    deleted: profile.deleted ?? false
-                )
                 
                 profileVC.profile = .init(data: newProfile)
             }

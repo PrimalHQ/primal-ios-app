@@ -14,7 +14,9 @@ class SkeletonLoaderCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(loaderView)
-        loaderView.pinToSuperview()
+        loaderView
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .vertical, padding: 10)
         
         selectionStyle = .none
     }

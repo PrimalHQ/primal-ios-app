@@ -13,7 +13,7 @@ class FeedMarketplaceCell: UITableViewCell {
     let titleLabel = UILabel()
     let subtitleLabel = UILabel()
     
-    let freePaidView = FreePaidInfoView()
+    let freePaidView = FreePaidInfoView().constrainToSize(width: 40)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -77,7 +77,7 @@ class FeedMarketplaceCell: UITableViewCell {
 
 class FreePaidInfoView: UIView {
     enum State {
-        case free, paid
+        case free, paid, sub
     }
     
     var state = State.free {
@@ -96,7 +96,7 @@ class FreePaidInfoView: UIView {
         
         label.font = .appFont(withSize: 10, weight: .bold)
         
-        constrainToSize(width: 40, height: 18)
+        constrainToSize(height: 18)
         layer.cornerRadius = 9
         
         update()
@@ -114,6 +114,10 @@ class FreePaidInfoView: UIView {
             label.text = "PAID"
             label.textColor = .white
             backgroundColor = UIColor(rgb: 0xFC6337)
+        case .sub:
+            label.text = "PAID"
+            label.textColor = .white
+            backgroundColor = .accent
         }
     }
 }

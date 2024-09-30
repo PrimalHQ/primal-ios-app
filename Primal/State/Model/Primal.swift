@@ -264,13 +264,13 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.tags = nostrPost.tags
         self.content = nostrPost.content
         self.sig = nostrPost.sig
-        self.likes = nostrPostStats.likes
-        self.mentions = nostrPostStats.mentions
-        self.replies = nostrPostStats.replies
-        self.zaps = nostrPostStats.zaps
-        self.satszapped = nostrPostStats.satszapped
-        self.score24h = nostrPostStats.score24h
-        self.reposts = nostrPostStats.reposts
+        self.likes = nostrPostStats.likes ?? 0
+        self.mentions = nostrPostStats.mentions ?? 0
+        self.replies = nostrPostStats.replies ?? 0
+        self.zaps = nostrPostStats.zaps ?? 0
+        self.satszapped = nostrPostStats.satszapped ?? 0
+        self.score24h = nostrPostStats.score24h ?? 0
+        self.reposts = nostrPostStats.reposts ?? 0
     }
     
     init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int, mentions: Int, replies: Int, zaps: Int, satszapped: Int, score24h: Int, reposts: Int) {

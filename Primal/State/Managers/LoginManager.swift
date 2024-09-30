@@ -120,27 +120,30 @@ extension LoginManager {
             return hex_encode(decoded.data)
         }
         
-        let missing = allPubkeys.filter { pubkey in !loadedProfiles.contains(where: { $0.data.pubkey == pubkey })}
-        
-        if missing.isEmpty { return }
-        
-        let payload: [String: JSON] = [
-            "pubkeys": .array(allPubkeys.map { .string($0) })
-        ]
-        
-        SocketRequest(name: "user_infos", payload: .object(payload)).publisher()
+        DatabaseManager.instance.getProfilesPublisher(allPubkeys)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] res in
+            .sink(receiveCompletion: { _ in }) { [weak self] users in
                 guard let self else { return }
-                let parsedUsers = res.getSortedUsers()
+                loadedProfiles = users
                 
-                for user in parsedUsers {
-                    if let index = loadedProfiles.firstIndex(where: { $0.data.pubkey == user.data.pubkey }) {
-                        loadedProfiles[index] = user
-                    } else {
-                        loadedProfiles.append(user)
+                let missing = allPubkeys.filter { pubkey in !self.loadedProfiles.contains(where: { $0.data.pubkey == pubkey })}
+        
+                if missing.isEmpty { return }
+        
+                let payload: [String: JSON] = [
+                    "pubkeys": .array(allPubkeys.map { .string($0) })
+                ]
+        
+                SocketRequest(name: "user_infos", payload: .object(payload)).publisher()
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] res in
+                        guard let self else { return }
+                        
+                        let allProfiles = res.getSortedUsers() + loadedProfiles
+                        
+                        loadedProfiles = allPubkeys.compactMap { pubkey in allProfiles.first(where: { $0.data.pubkey == pubkey })}
                     }
-                }
+                    .store(in: &cancellables)
             }
             .store(in: &cancellables)
     }

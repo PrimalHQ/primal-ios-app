@@ -115,7 +115,7 @@ class ProfileInfoCell: UITableViewCell {
         followedByView.setUsers(followedBy)
         followedByView.isHidden = followedBy?.isEmpty == true
         
-        infoStack.set(selectedTab)
+        infoStack.set(selectedTab, animated: false)
         
         editProfile.isHidden = !user.isCurrentUser
         zapButton.isHidden = user.isCurrentUser

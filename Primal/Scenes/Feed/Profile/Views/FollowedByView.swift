@@ -9,7 +9,7 @@ import UIKit
 import Lottie
 
 class FollowedByView: UIView {
-    let images = AvatarView(size: 28, spacing: -8, reversed: true, bordered: true)
+    let images = AvatarView(size: 28, spacing: -8, reversed: true, borderColor: .background)
     let label = UILabel()
     
     let imagesLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 65, height: 28)

@@ -20,6 +20,7 @@ protocol AppTheme {
     var background2: UIColor { get }
     var background3: UIColor { get }
     var background4: UIColor { get }
+    var background5: UIColor { get }
     
     var foreground: UIColor { get }
     var foreground2: UIColor { get }

@@ -247,6 +247,7 @@ private extension ChatViewController {
         
         textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
         textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        textHeightConstraint?.priority = .defaultHigh
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
         
         inputContentMaxHeightConstraint?.priority = .defaultHigh

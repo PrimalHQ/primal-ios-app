@@ -23,6 +23,8 @@ class FeedButton: MyButton {
     init() {
         super.init(frame: .zero)
         setup()
+        
+        iconView.contentMode = .center
     }
     
     required init?(coder: NSCoder) {
@@ -38,7 +40,7 @@ class FeedButton: MyButton {
         
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         
-        titleLabel.font = .appFont(withSize: 16, weight: .regular)
+        titleLabel.font = .appFont(withSize: 14, weight: .regular)
     }
         
     func set(_ count: Int, filled: Bool) {

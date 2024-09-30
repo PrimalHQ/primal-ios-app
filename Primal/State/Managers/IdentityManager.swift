@@ -120,7 +120,7 @@ final class IdentityManager {
                         callback(settings.content)
                     }
                 default:
-                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
+                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind)) \(response)")
                 }
             }
         }

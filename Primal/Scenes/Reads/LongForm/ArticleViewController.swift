@@ -370,7 +370,7 @@ private extension ArticleViewController {
         topInfoView.zapEmbededController.posts = [parsedContent]
         infoVC.posts = [parsedContent]
         
-        commentZapPill.sats = content.stats.satszapped
+        commentZapPill.sats = content.stats.satszapped ?? 0
         
         guard contentStack.arrangedSubviews.isEmpty else { return } // Temporary until we build a solution that will update current webviews
         

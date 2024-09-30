@@ -14,6 +14,7 @@ extension UIColor {
     static var background2: UIColor { Theme.current.background2 }
     static var background3: UIColor { Theme.current.background3 }
     static var background4: UIColor { Theme.current.background4 }
+    static var background5: UIColor { Theme.current.background5 }
     
     static var foreground: UIColor { Theme.current.foreground }
     static var foreground2: UIColor { Theme.current.foreground2 }

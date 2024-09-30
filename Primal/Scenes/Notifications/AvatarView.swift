@@ -16,19 +16,24 @@ final class AvatarView: UIView {
     let size: CGFloat
     let spacing: CGFloat
     
-    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, bordered: Bool = false) {
+    func setBorderColor(_ borderColor: UIColor? = nil) {
+        avatarViews.forEach {
+            if let borderColor {
+                $0.layer.borderWidth = 1
+                $0.layer.borderColor = borderColor.cgColor
+            } else {
+                $0.layer.borderWidth = 0
+            }
+        }
+    }
+    
+    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, borderColor: UIColor? = nil) {
         self.size = size
         self.spacing = spacing
         super.init(frame: .zero)
         transform = reversed ? .init(rotationAngle: .pi) : .identity
         
-        if bordered {
-            avatarViews.forEach {
-                $0.layer.borderWidth = 1
-                $0.layer.borderColor = UIColor.background.cgColor
-            }
-        }
-        
+        setBorderColor(borderColor)
         setup()
     }
     

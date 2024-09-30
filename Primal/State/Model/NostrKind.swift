@@ -66,6 +66,8 @@ enum NostrKind: Int {
     case articleFeeds = 10_000_152
     case highlightGroups = 10_000_151
     case feedsSettings = 10_000_155
+    case dvmFollowActions = 10_000_156
+    case dvmFeedMetadata = 10_000_159
     
     case shortenedArticle = 10_030_023
 }

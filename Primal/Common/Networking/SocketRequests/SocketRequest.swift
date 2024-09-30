@@ -77,8 +77,8 @@ struct SocketRequest {
                 Connection.regular.requestCache(name: name, payload: payload) { result in
                     let pendingResult = PostRequestResult()
                     
-                    result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
-                    result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
+                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
+                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)

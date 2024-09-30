@@ -16,6 +16,10 @@ extension UIButton.Configuration {
         return configuration
     }
     
+    static func simpleImage(_ name: String) -> UIButton.Configuration {
+        simpleImage(UIImage(named: name))
+    }
+    
     static func simpleImage(_ image: UIImage?) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.image = image

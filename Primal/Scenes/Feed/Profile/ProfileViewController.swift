@@ -190,7 +190,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         
         if indexPath.row == 0 {
             let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
-            (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: tab.rawValue, delegate: self)
+            (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: tabToBe.rawValue, delegate: self)
             return cell
         }
         
@@ -298,7 +298,7 @@ private extension ProfileViewController {
             }
             .store(in: &cancellables)
         
-        $tabToBe.dropFirst().debounce(for: 0.3, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
+        $tabToBe.dropFirst().debounce(for: 0.2, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()

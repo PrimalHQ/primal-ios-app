@@ -30,10 +30,6 @@ final class HomeFeedViewController: UIViewController, Themeable {
     
     lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
-        self?.navigationController?.fadeTo(SearchViewController())
-    }))
-    
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     
     var cancellables: Set<AnyCancellable> = []
@@ -63,11 +59,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
         
         navTitleView.title = "Latest"
         navigationItem.titleView = navTitleView
-        let searchParent = UIView()
-        searchParent.addSubview(searchButton)
-        searchButton.pinToSuperview(edges: [.vertical, .leading]).pinToSuperview(edges: .trailing, padding: -12)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchParent)
-        searchButton.imageView?.transform = .init(translationX: 12, y: 0)
+        
         navTitleView.button.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
@@ -112,8 +104,6 @@ final class HomeFeedViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        searchButton.tintColor = .foreground3
-        
         updateTitle()
         
         pageVC.children.forEach {

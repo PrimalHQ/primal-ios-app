@@ -18,6 +18,7 @@ final class IceWave: AppTheme {
     let background2: UIColor = .init(rgb: 0xFFFFFF)
     let background3: UIColor = .init(rgb: 0xE5E5E5)
     let background4: UIColor = .init(rgb: 0xF5F5F5)
+    let background5: UIColor = .init(rgb: 0xEEEEEE)
     
     let foreground: UIColor = .init(rgb: 0x111111)
     let foreground2: UIColor = .init(rgb: 0x111111)

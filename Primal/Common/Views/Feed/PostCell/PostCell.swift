@@ -212,7 +212,7 @@ class PostCell: UITableViewCell {
         bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
             .sink { [weak self] isBookmarked in
                 self?.isShowingBookmarked = isBookmarked
-                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark"), for: .normal)
             }
     }
 }

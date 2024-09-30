@@ -17,10 +17,6 @@ final class ReadsViewController: UIViewController, Themeable {
     let border = UIView().constrainToSize(height: 1)
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
-        self?.navigationController?.fadeTo(SearchViewController())
-    }))
-    
     var oldTransition: (left: Bool, String)?
     
     override func viewDidLoad() {
@@ -45,7 +41,6 @@ final class ReadsViewController: UIViewController, Themeable {
     
     func updateTheme() {
         view.backgroundColor = .background
-        searchButton.tintColor = .foreground3
         
         navTitleView.updateTheme()
         
@@ -146,7 +141,6 @@ extension ReadsViewController: UIPageViewControllerDelegate {
 private extension ReadsViewController {
     func setup() {
         updateTheme()
-        navigationItem.rightBarButtonItem = .init(customView: searchButton)
         navigationItem.titleView = navTitleView
         
         pageVC.willMove(toParent: self)
@@ -165,7 +159,7 @@ private extension ReadsViewController {
         }), for: .touchUpInside)
         
         view.addSubview(border)
-        border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 6, safeArea: true)
+        border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
     }
 }
 

@@ -58,45 +58,12 @@ final class NotificationsViewController: FeedViewController {
     
     var until = Date()
     
-    var newNotifications: Int = 0 {
-        didSet {
-            let main: MainTabBarController? = RootViewController.instance.findInChildren()
-            
-            main?.hasNewNotifications = newNotifications > 0
-        }
-    }
-    
-    var continousConnection: ContinousConnection? {
-        didSet {
-            oldValue?.end()
-        }
-    }
-    
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
     
     override init() {
         super.init()
         
         setup()
-        
-        Connection.regular.isConnectedPublisher.filter { $0 }.sink { [weak self] _ in
-            self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
-                "pubkey": self?.idJsonID ?? .string("")
-            ])) { response in
-                guard let resDict = response.arrayValue?.last?.objectValue else { return }
-                
-                var sum: Double = 0
-                for type in NotificationType.allCases {
-                    let key = String(type.rawValue)
-                    sum += resDict[key]?.doubleValue ?? 0
-                }
-                
-                DispatchQueue.main.async {
-                    self?.newNotifications = Int(sum)
-                }
-            }
-        }
-        .store(in: &cancellables)
         
         $notifications.dropFirst()
             .debounce(for: 0.3, scheduler: RunLoop.main)
@@ -125,10 +92,6 @@ final class NotificationsViewController: FeedViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        continousConnection?.end()
     }
     
     override var barsMaxTransform: CGFloat {
@@ -184,6 +147,8 @@ final class NotificationsViewController: FeedViewController {
         
         posts.forEach { $0.buildContentString(style: .notifications) }
         
+        navigationItem.leftBarButtonItem = customBackButton
+        
         view.backgroundColor = .background
         tabSelectionView.backgroundColor = .background
         
@@ -199,7 +164,7 @@ final class NotificationsViewController: FeedViewController {
         let tab = self.tab
         let payload = JSON.object([
             "pubkey": idJsonID,
-            "limit": .number(max(Double(newNotifications + 20), 100)),
+            "limit": .number(100),
             "type_group": .string(tab.apiName)
         ])
         

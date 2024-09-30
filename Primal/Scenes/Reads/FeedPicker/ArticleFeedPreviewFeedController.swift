@@ -8,11 +8,11 @@
 import UIKit
 
 class ArticleFeedPreviewFeedController: ArticleFeedViewController {
-    let info: FeedFromMarket
-    init(feed: PrimalFeed, feedInfo: FeedFromMarket) {
+    let info: ParsedFeedFromMarket
+    init(feed: PrimalFeed, feedInfo: ParsedFeedFromMarket) {
         info = feedInfo
         super.init(feed: feed)
-        table.register(FeedMarketplaceCell.self, forCellReuseIdentifier: "infoCell")
+        table.register(FeedPreviewCell.self, forCellReuseIdentifier: "infoCell")
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .zero
         
@@ -41,7 +41,7 @@ class ArticleFeedPreviewFeedController: ArticleFeedViewController {
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-        (cell as? FeedMarketplaceCell)?.setupSelected(info)
+        (cell as? FeedPreviewCell)?.setup(info)
         return cell
     }
     

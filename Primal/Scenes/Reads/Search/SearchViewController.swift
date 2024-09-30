@@ -177,7 +177,7 @@ final class SearchInputHeaderView: UIView, Themeable {
         super.init(frame: .zero)
         
         constrainToSize(height: 32)
-        let width = widthAnchor.constraint(equalToConstant: 235)
+        let width = widthAnchor.constraint(equalToConstant: 255)
         width.priority = .defaultHigh
         width.isActive = true
         

@@ -97,7 +97,7 @@ class ArticleCell: UITableViewCell, Themeable {
         timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
         avatar.setUserImage(content.user)
         nameLabel.text = content.user.data.firstIdentifier
-        commentLabel.text = "\(content.stats.replies) comments"
+        commentLabel.text = "\(content.stats.replies ?? 0) comments"
         
         if content.zaps.isEmpty {
             zapIcon.isHidden = true

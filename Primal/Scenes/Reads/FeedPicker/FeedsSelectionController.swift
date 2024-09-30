@@ -40,6 +40,13 @@ enum PrimalFeedType {
         case .article:  return "user-reads-feeds"
         }
     }
+    
+    var kind: String {
+        switch self {
+        case .note:     return "notes"
+        case .article:  return "reads"
+        }
+    }
 }
 
 extension PrimalFeed {

@@ -28,20 +28,18 @@ extension DatabaseManager {
         }
     }
     
-    func lastVisitedProfilePubkeysPublisher() -> AnyPublisher<[String], any Error> {
-        ValueObservation.tracking { db in
-            try ProfileLastVisit.lastVisitedProfilePubkeysRequest().fetchAll(db)
+    func lastVisitedProfilePubkeysPublisher(_ pubkey: String) -> AnyPublisher<[String], any Error> {
+        dbWriter.readPublisher  { db in
+            try ProfileLastVisit.lastVisitedProfilePubkeysRequest(pubkey).fetchAll(db)
         }
-        .publisher(in: dbWriter)
         .map { $0.map { $0.profilePubkey } }
         .eraseToAnyPublisher()
     }
     
     func getProfilePublisher(_ pubkey: String) -> AnyPublisher<ParsedUser, any Error> {
-        ValueObservation.tracking { db in
+        dbWriter.readPublisher { db in
             try Profile.all().filterPubkeys([pubkey]).fetchOne(db)
         }
-        .publisher(in: dbWriter)
         .map { profile in
             if let profile {
                 return ParsedUser(profile: profile)
@@ -52,23 +50,21 @@ extension DatabaseManager {
     }
     
     func getProfilesPublisher(_ pubkeys: [String]) -> AnyPublisher<[ParsedUser], any Error> {
-        ValueObservation.tracking { db in
+        dbWriter.readPublisher { db in
             try Profile.all().filterPubkeys(pubkeys).including(optional: Profile.profileCount).fetchAll(db)
         }
-        .publisher(in: dbWriter)
         .map { $0.map({ ParsedUser(profile: $0) }) }
         .eraseToAnyPublisher()
     }
     
     func searchProfilesPublisher(_ search: String) -> AnyPublisher<[ParsedUser], any Error> {
-        ValueObservation.tracking { db in
+        dbWriter.readPublisher { db in
             try Profile.all()
                 .searchUsers(search)
                 .including(optional: Profile.profileCount.orderedByFollowers())
                 .limit(20)
                 .fetchAll(db)
         }
-        .publisher(in: dbWriter)
         .map { $0.map({ ParsedUser(profile: $0) }) }
         .eraseToAnyPublisher()
     }

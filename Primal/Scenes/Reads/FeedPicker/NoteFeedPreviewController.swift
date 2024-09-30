@@ -8,11 +8,14 @@
 import UIKit
 
 class NoteFeedPreviewController: ShortFormFeedController {
-    let info: FeedFromMarket
-    init(feed: PrimalFeed, feedInfo: FeedFromMarket) {
+    var contentInset: UIEdgeInsets { .zero }
+    var disableInteraction: Bool { true }
+    
+    let info: ParsedFeedFromMarket
+    init(feed: PrimalFeed, feedInfo: ParsedFeedFromMarket) {
         info = feedInfo
         super.init(feed: .init(newFeed: feed))
-        table.register(FeedMarketplaceCell.self, forCellReuseIdentifier: "infoCell")
+        table.register(FeedPreviewCell.self, forCellReuseIdentifier: "infoCell")
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .zero
         
@@ -30,7 +33,7 @@ class NoteFeedPreviewController: ShortFormFeedController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         DispatchQueue.main.async {
-            self.table.contentInset = .zero
+            self.table.contentInset = self.contentInset
         }
     }
     
@@ -46,16 +49,18 @@ class NoteFeedPreviewController: ShortFormFeedController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 && indexPath.row == 0 {
             let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-            (cell as? FeedMarketplaceCell)?.setupSelected(info)
+            (cell as? FeedPreviewCell)?.setup(info)
             return cell
         }
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        cell.isUserInteractionEnabled = false
+        cell.isUserInteractionEnabled = !disableInteraction
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        return
+        if disableInteraction { return }
+        
+        super.tableView(tableView, didSelectRowAt: indexPath)
 //        guard let presentingViewController, let nav: UINavigationController = presentingViewController.findInChildren() else {
 //            super.tableView(tableView, didSelectRowAt: indexPath)
 //            return

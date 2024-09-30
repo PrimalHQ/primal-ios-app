@@ -17,16 +17,6 @@ extension UINavigationController {
     }
 }
 
-final class FeedNavigationController: MainNavigationController {
-    init() {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController()))
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 class MainNavigationController: UINavigationController, Themeable, UIGestureRecognizerDelegate {
     var isTransparent: Bool = false {
         didSet {

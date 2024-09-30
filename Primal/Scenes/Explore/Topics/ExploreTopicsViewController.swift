@@ -1,14 +1,14 @@
 //
-//  ExploreViewController.swift
+//  ExploreTopicsViewController.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 16.5.23..
+//  Created by Pavle Stevanović on 24.9.24..
 //
 
 import UIKit
 import Combine
 
-final class ExploreViewController: UIViewController, Themeable {
+final class ExploreTopicsViewController: UIViewController, Themeable {
     var hashtags: [PopularHashtag] = [] {
         didSet {
             collectionView.reloadData()
@@ -16,7 +16,6 @@ final class ExploreViewController: UIViewController, Themeable {
     }
     let collectionLayout = CollectionViewCenteredFlowLayout()
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
-    let searchView = SearchHeaderView()
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -57,22 +56,20 @@ final class ExploreViewController: UIViewController, Themeable {
     
     func updateTheme() {
         collectionView.backgroundColor = .background2
-        
-        searchView.updateTheme()
     }
 }
 
-private extension ExploreViewController {
+private extension ExploreTopicsViewController {
     func setup() {
-        navigationItem.titleView = searchView
-        searchView.addTarget(self, action: #selector(searchTapped), for: .touchDown)
-        
         view.addSubview(collectionView)
-        collectionView.pinToSuperview(safeArea: true)
+        collectionView.pinToSuperview()
         
+        collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(HashtagCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.contentInset = .init(top: 157, left: 0, bottom: 80, right: 0)
+        collectionView.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         
         updateTheme()
     }
@@ -82,7 +79,7 @@ private extension ExploreViewController {
     }
 }
 
-extension ExploreViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension ExploreTopicsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let text = "#" + hashtags[indexPath.item].title
         let feed = RegularFeedViewController(feed: FeedManager(search: text))

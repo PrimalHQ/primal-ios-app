@@ -27,10 +27,20 @@ final class MenuContainerController: UIViewController, Themeable {
     private let coverView = UIView()
     private let menuProfileImage = FLAnimatedImageView()
     
+    private let notificationButton = UIButton()
+    private let notificationImage = UIImageView(image: UIImage(named: "navBarIcon-notifications"))
+    private let notificationIndicator = NotificationsIndicator()
+    
     private let profileImageButton = UIButton()
     private let followingDescLabel = UILabel()
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
+    
+    var hasNewNotifications = false {
+        didSet {
+            notificationIndicator.isHidden = !hasNewNotifications
+        }
+    }
     
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
@@ -124,7 +134,10 @@ final class MenuContainerController: UIViewController, Themeable {
         
         nameLabel.textColor = .foreground
         
-        profileImageButton.backgroundColor = .background
+        profileImageButton.backgroundColor = .background.withAlphaComponent(0.01)
+        notificationButton.backgroundColor = .background.withAlphaComponent(0.01)
+        
+        notificationImage.tintColor = .foreground3
         
         coverView.backgroundColor = .background.withAlphaComponent(0.5)
         
@@ -259,6 +272,16 @@ private extension MenuContainerController {
         menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
+        let notificationParent = UIView()
+        notificationParent.addSubview(notificationButton)
+        notificationButton.constrainToSize(44).pinToSuperview()
+        notificationParent.addSubview(notificationImage)
+        notificationImage.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
+        notificationParent.addSubview(notificationIndicator)
+        notificationIndicator.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: .trailing, padding: -2)
+        notificationIndicator.isHidden = true
+        child.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: notificationParent)
+        
         view.addSubview(coverView)
         coverView.pin(to: child.view)
         coverView.isHidden = true
@@ -296,6 +319,7 @@ private extension MenuContainerController {
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
         
+        notificationButton.addAction(.init(handler: { [weak self] _ in self?.show(NotificationsViewController(), sender: nil) }), for: .touchUpInside)
 //        BookmarkManager.instance.$cachedBookmarks.map({ !$0.array.isEmpty })
 //            .receive(on: DispatchQueue.main)
 //            .assign(to: \.isEnabled, on: bookmarks)
