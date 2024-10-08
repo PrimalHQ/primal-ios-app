@@ -9,7 +9,7 @@ import FLAnimatedImage
 import UIKit
 
 protocol ProfileFollowCellDelegate: AnyObject {
-    func followButtonPressedInCell(_ cell: ProfileFollowCell)
+    func followButtonPressedInCell(_ cell: UITableViewCell)
 }
 
 final class ProfileFollowCell: UITableViewCell, Themeable {

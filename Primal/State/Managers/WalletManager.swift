@@ -60,6 +60,7 @@ enum WalletError: Error {
     
     var message: String {
         switch self {
+        
         case .noLud:
             return "Your account doesn't have lud6 or lud16 set up."
         case .serverError(let message):
@@ -283,10 +284,20 @@ final class WalletManager {
         do {
             zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
             addZap(post.post.id, amount: sats)
-            try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
+            try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: post))
         } catch {
             removeZap(post.post.id, amount: sats)
             throw error
+        }
+    }
+    
+    func zap(object: ZappableReferenceObject, sats: Int, note: String) async throws {
+        do {
+            if let universalID = object.reference?.universalID {
+                zapEvent.send(.init(receiptId: UUID().uuidString, postId: universalID, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
+                addZap(universalID, amount: sats)
+            }
+            try await send(user: object.userToZap.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: object))
         }
     }
 }

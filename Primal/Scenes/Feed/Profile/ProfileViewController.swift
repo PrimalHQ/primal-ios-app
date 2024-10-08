@@ -183,7 +183,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
                 let index = indexPath.row * 3
                 
                 let mediaSlice = Array(media[index..<min(index + 3, media.count)])
-                (cell as? MediaTripleCell)?.setupMetadata(mediaSlice.map { $0.mediaResources.first }, delegate: self)
+                (cell as? MediaTripleCell)?.setupMetadata(mediaSlice, delegate: self)
                 return cell
             }
         }

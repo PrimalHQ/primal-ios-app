@@ -56,10 +56,10 @@ class NewFeedCell: PostCell {
         super.updateMenu(content)
         
         if content.zaps.isEmpty {
-            zapGallery.isHidden = true
+            zapGallery.superview?.isHidden = true
             zapGallery.zaps = []
         } else {
-            zapGallery.isHidden = false
+            zapGallery.superview?.isHidden = false
             zapGallery.zaps = content.zaps
         }
     }
@@ -70,7 +70,7 @@ private extension NewFeedCell {
         textStack.axis = .vertical
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         
-        mainLabel.numberOfLines = 20
+        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)
@@ -82,6 +82,9 @@ private extension NewFeedCell {
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         zapGallery.singleLine = true
+        let zapGalleryParent = UIView()
+        zapGalleryParent.addSubview(zapGallery)
+        zapGallery.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 4)
         
         contentView.addSubview(mainStack)
     
@@ -102,10 +105,11 @@ private extension NewFeedCell {
     
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapGallery, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapGalleryParent, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
+        mainStack.setCustomSpacing(8, after: repostIndicator)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
         
         contentStack.spacing = 8

@@ -28,7 +28,7 @@ extension ArticleCell: TransactionPartialCell {
     }
 }
 
-final class TransactionViewController: FeedViewController {
+final class TransactionViewController: NoteViewController {
     enum CellType {
         case amount(Int, incoming: Bool)
         case title(String)

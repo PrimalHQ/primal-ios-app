@@ -114,7 +114,7 @@ extension UserListController: UITableViewDelegate {
 }
 
 extension UserListController: ProfileFollowCellDelegate {
-    func followButtonPressedInCell(_ cell: ProfileFollowCell) {
+    func followButtonPressedInCell(_ cell: UITableViewCell) {
         guard
             let index = table.indexPath(for: cell)?.row,
             let user: ParsedUser = users[safe: index]

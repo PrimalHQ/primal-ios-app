@@ -132,9 +132,8 @@ private extension PostPreviewView {
         
         verifiedBadge.constrainToSize(FontSizeSelection.current.contentFontSize)
         
-        mainLabel.numberOfLines = 0
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        mainLabel.numberOfLines = 10
+        mainLabel.numberOfLines = 6
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         

@@ -8,8 +8,16 @@
 import Combine
 import UIKit
 
+protocol ZapableEntity {
+    var zappingName: String { get }
+}
+
+extension PrimalUser: ZapableEntity {
+    var zappingName: String { firstIdentifier }
+}
+
 final class PopupZapSelectionViewController: UIViewController {
-    let userToZap: PrimalUser
+    let entityToZap: ZapableEntity
     
     private var zapOptions: [PrimalZapListSettings] = [] {
         didSet {
@@ -58,8 +66,8 @@ final class PopupZapSelectionViewController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(userToZap: PrimalUser, _ callback: @escaping (Int, String) -> Void) {
-        self.userToZap = userToZap
+    init(entityToZap: ZapableEntity, _ callback: @escaping (Int, String) -> Void) {
+        self.entityToZap = entityToZap
         super.init(nibName: nil, bundle: nil)
         
         setup()
@@ -101,7 +109,7 @@ private extension PopupZapSelectionViewController {
         
         guard let selectedZapAmount = zapOptions[safe: selectedOptionIndex]?.amount else { return }
         
-        let mutable = NSMutableAttributedString(string: "ZAP \(userToZap.firstIdentifier.uppercased()) ", attributes: [
+        let mutable = NSMutableAttributedString(string: "ZAP \(entityToZap.zappingName.uppercased()) ", attributes: [
             .font: UIFont.appFont(withSize: 20, weight: .bold),
             .foregroundColor: UIColor.foreground3
         ])

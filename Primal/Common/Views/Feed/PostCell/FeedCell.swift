@@ -34,7 +34,7 @@ class FeedCell: PostCell {
         textStack.axis = .vertical
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         
-        mainLabel.numberOfLines = 20
+        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)
@@ -101,49 +101,3 @@ private extension DefaultFeedCell {
         horizontalStack.spacing = 12
     }
 }
-
-// MARK: - FullWidthFeedCell
-
-final class FullWidthFeedCell: FeedCell {
-    lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
-    lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        parentSetup()
-        setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func update(_ parsedContent: ParsedContent) {
-        super.update(parsedContent)
-        
-        nameSuperStack.alignment = parsedContent.replyingTo != nil ? .top : .center
-        
-        threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
-    }
-}
-
-private extension FullWidthFeedCell {
-    func setup() {
-        let buttonStackStandIn = UIView()
-        let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, mainImages, linkPresentation, postPreview, buttonStackStandIn
-        ])
-    
-        mainStack.addArrangedSubview(contentStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
-        
-        contentStack.spacing = 8
-        nameReplyStack.spacing = 4
-        nameSuperStack.spacing = 8
-        
-        buttonStackStandIn.constrainToSize(height: 24)
-        contentView.addSubview(bottomButtonStack)
-        bottomButtonStack.pin(to: buttonStackStandIn, edges: .horizontal, padding: -8).centerToView(buttonStackStandIn)
-    }
-}
-

@@ -14,7 +14,7 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
+class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
@@ -190,7 +190,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     
     @discardableResult
-    func open(post: ParsedContent) -> FeedViewController {
+    func open(post: ParsedContent) -> NoteViewController {
         let threadVC = ThreadViewController(post: post)
         showViewController(threadVC)
         return threadVC
@@ -239,7 +239,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func updateTheme() {        
         updateCellID()
-        table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
+        table.register(NewFeedCell.self, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
         view.backgroundColor = .background2
@@ -338,7 +338,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         case .post:
             open(post: post)
         case .like:
-            PostingManager.instance.sendLikeEvent(post: post.post)
+            PostingManager.instance.sendLikeEvent(referenceEvent: post.post)
             
             hapticGenerator.impactOccurred()
             
@@ -416,7 +416,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 }
 
-private extension FeedViewController {
+private extension NoteViewController {
     func updateCellID() {
         postCellID += "1"
     }
@@ -505,7 +505,7 @@ private extension FeedViewController {
         }
         
         if showPopup {
-            let popup = PopupZapSelectionViewController(userToZap: postUser) { self.doZapFromCell(cell, amount: $0, message: $1) }
+            let popup = PopupZapSelectionViewController(entityToZap: postUser) { self.doZapFromCell(cell, amount: $0, message: $1) }
             present(popup, animated: true)
             return
         }
@@ -591,7 +591,7 @@ private extension FeedViewController {
     }
 }
 
-extension FeedViewController: PostCellDelegate {
+extension NoteViewController: PostCellDelegate {
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         let post = posts[indexPath.row].post
@@ -676,7 +676,7 @@ extension FeedViewController: PostCellDelegate {
     }
 }
 
-extension FeedViewController: ZapGalleryViewDelegate {
+extension NoteViewController: ZapGalleryViewDelegate {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
         let profileVC = ProfileViewController(profile: zap.user)
         var items: [UIAction] = [

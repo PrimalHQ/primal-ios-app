@@ -10,10 +10,6 @@ import Foundation
 import GenericJSON
 import UIKit
 
-enum ProfileTab {
-    case notes, replies, zaps
-}
-
 final class FeedManager {
     private var cancellables: Set<AnyCancellable> = []
     

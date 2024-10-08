@@ -138,7 +138,6 @@ extension PostRequestResult {
             zapReceipts[id] = zapContent
             return
         case .handlerInfo:
-            print(payload)
             events.append(payload)
             return
 //        case .shortenedArticle:
@@ -386,6 +385,14 @@ extension PostRequestResult {
             eventBroadcastSuccessful = eventBroadcastSuccessful || status == "OK"
         case .highlight:
             highlights.append(NostrContent(json: .object(payload)))
+        case .primalName:
+            guard let dic: [String: String] = contentString.decode() else {
+                print("Error decoding primalName")
+                return
+            }
+//            DispatchQueue.main.async {
+                // TODO: Do something
+//            }
         default:
             events.append(payload)
         }

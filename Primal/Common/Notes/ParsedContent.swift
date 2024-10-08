@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import LinkPresentation
 import NostrSDK
+import GenericJSON
 
 final class ParsedElement: Equatable {
     static func == (lhs: ParsedElement, rhs: ParsedElement) -> Bool {
@@ -33,6 +34,7 @@ final class ParsedUser {
     var data: PrimalUser
     var profileImage: MediaMetadata.Resource
     var followers: Int?
+    var extraInfo: JSON?
     
     init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, followers: Int? = nil) {
         self.data = data
@@ -136,6 +138,15 @@ enum ParsedContentTextStyle {
 
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
+        attributedText = contentStringForText(text: text, style: style)
+        if attributedText.length > 1200 {
+            attributedTextShort = attributedText.attributedSubstring(from: .init(location: 0, length: 1000))
+        } else {
+            attributedTextShort = attributedText
+        }
+    }
+    
+    func contentStringForText(text: String, style: ParsedContentTextStyle = .regular) -> NSAttributedString {
         let specialStyle: Bool = ContentDisplaySettings.hugeFonts && {
             switch style {
             case .threadChildren, .notifications, .embedded:
@@ -146,7 +157,7 @@ extension ParsedContent {
             
             let mainText = highlights.reversed().reduce(text, { ($0 as NSString).replacingCharacters(in: .init(location: $1.position, length: $1.length), with: "") })
             
-            if mainText.count > 42 {
+            if mainText.count > 21 {
                 return false
             }
             
@@ -184,7 +195,7 @@ extension ParsedContent {
             .baselineOffset: specialStyle ? 4 : 0
         ])
         
-        for element in httpUrls {
+        for element in httpUrls where element.position + element.length <= result.length {
             guard let url = URL(string: element.text) else { continue }
             result.addAttributes([
                 .foregroundColor: UIColor.accent,
@@ -192,7 +203,7 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for element in notes {
+        for element in notes where element.position + element.length <= result.length {
             guard let url = URL(string: "note://\(element.text)") else {
                 result.addAttributes([
                     .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
@@ -205,7 +216,7 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for element in mentions {
+        for element in mentions where element.position + element.length <= result.length {
             guard let url = URL(string: "mention://\(element.reference)") else {
                 result.addAttributes([
                     .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
@@ -218,7 +229,7 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for element in hashtags {
+        for element in hashtags where element.position + element.length <= result.length {
             guard let url = URL(string: "hashtag://\(element.text)") else {
                 result.addAttributes([
                     .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
@@ -231,7 +242,7 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for element in highlights {
+        for element in highlights where element.position + element.length <= result.length {
             let newParagraph = NSMutableParagraphStyle()
             newParagraph.lineSpacing = 0
             newParagraph.minimumLineHeight = 28
@@ -245,13 +256,8 @@ extension ParsedContent {
                 .paragraphStyle: newParagraph
             ], range: .init(location: element.position, length: element.length))
         }
-        
-        attributedText = result
-        if result.length > 1200 {
-            attributedTextShort = result.attributedSubstring(to: 1000)
-        } else {
-            attributedTextShort = result
-        }
+     
+        return result
     }
     
     func noteId() -> String {

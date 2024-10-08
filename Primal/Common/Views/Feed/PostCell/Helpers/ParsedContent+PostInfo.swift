@@ -14,21 +14,6 @@ struct PostInfo {
     var isZapped: Bool
 }
 
-extension PrimalFeedPost {
-    var universalID: String {
-        guard
-            kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue,
-            let tagId = tags.first(where: { $0.first == "d" })?[safe: 1]
-        else { return id }
-        
-        return "\(NostrKind.longForm.rawValue):\(pubkey):\(tagId)"
-    }
-    
-    var referenceTagLetter: String {
-        kind == NostrKind.longForm.rawValue ? "a" : "e"
-    }
-}
-
 extension ParsedContent {
     var postInfo: PostInfo {
         .init(

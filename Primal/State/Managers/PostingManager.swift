@@ -8,6 +8,56 @@
 import Combine
 import Foundation
 
+protocol PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? { get }
+    var referencePubkey: String { get }
+}
+
+extension ParsedFeedFromMarket: PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? {
+        guard let id = data.id, let pubkey = data.pubkey else {
+            return nil
+        }
+        return ("a", "31990:\(pubkey):\(id)")
+    }
+    
+    var referencePubkey: String { data.pubkey ?? "" }
+}
+
+extension PrimalFeedPost: PostingReferenceObject {
+    var referencePubkey: String { pubkey }
+       
+    var universalID: String {
+        guard
+            kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue,
+            let tagId = tags.first(where: { $0.first == "d" })?[safe: 1]
+        else { return id }
+        
+        return "\(NostrKind.longForm.rawValue):\(pubkey):\(tagId)"
+    }
+    
+    var reference: (tagLetter: String, universalID: String)? { (referenceTagLetter, universalID) }
+    
+    var referenceTagLetter: String {
+        kind == NostrKind.longForm.rawValue ? "a" : "e"
+    }
+}
+
+extension Article: PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? {
+        guard
+            event.kind == NostrKind.longForm.rawValue || event.kind == NostrKind.shortenedArticle.rawValue,
+            let tagId = event.tags.first(where: { $0.first == "d" })?[safe: 1]
+        else { return nil }
+        
+        return ("a", "\(NostrKind.longForm.rawValue):\(event.pubkey):\(tagId)")
+    }
+    
+    var referenceTagLetter: String { "a" }
+    
+    var referencePubkey: String { event.pubkey }    
+}
+
 final class PostingManager {
     private init() {}
     
@@ -23,26 +73,33 @@ final class PostingManager {
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
-    var lastPostedEvent: NostrObject?
+    func hasLiked(_ reference: PostingReferenceObject) -> Bool {
+        guard let id = reference.reference?.universalID else { return false }
+        return userLikes.contains(id)
+    }
     
-    func sendLikeEvent(post: PrimalFeedPost) {
+    var lastPostedEvent: NostrObject?
+        
+    func sendLikeEvent(referenceEvent: PostingReferenceObject) {
         if LoginManager.instance.method() != .nsec { return }
+        
+        guard let universalID = referenceEvent.reference?.universalID else { return }
 
-        guard !hasLiked(post.id) else {
+        guard !hasLiked(referenceEvent) else {
             return
         }
                 
-        guard let ev = NostrObject.like(post: post) else {
+        guard let ev = NostrObject.like(reference: referenceEvent) else {
             print("Error creating nostr like event")
             return
         }
                 
-        userLikes.insert(post.id)
+        userLikes.insert(universalID)
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
-            self.userLikes.remove(ev.id)
+            self.userLikes.remove(universalID)
         })
     }
     

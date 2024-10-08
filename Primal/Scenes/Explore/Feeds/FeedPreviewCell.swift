@@ -24,6 +24,8 @@ class FeedPreviewCell: UITableViewCell, Themeable {
     
     let avatarView = AvatarView(size: 20, spacing: -6)
     
+    weak var delegate: FeedMarketplaceCellDelegate?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -55,11 +57,23 @@ class FeedPreviewCell: UITableViewCell, Themeable {
         subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
         subtitleLabel.numberOfLines = 0
         titleLabel.numberOfLines = 0
+        
+        likeButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.likeButtonPressedInFeedCell(self)
+        }), for: .touchUpInside)
+        
+        zapButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.zapButtonPressedInFeedCell(self)
+        }), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(_ parsed: ParsedFeedFromMarket) {
+    func setup(_ parsed: ParsedFeedFromMarket, delegate: FeedMarketplaceCellDelegate) {
+        self.delegate = delegate
+        
         let feed = parsed.data
         
         titleLabel.text = feed.name
@@ -116,6 +130,9 @@ class CreatedByPrimalView: UIView, Themeable {
         addSubview(stack)
         stack.pinToSuperview()
         
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        icon.setContentHuggingPriority(.required, for: .horizontal)
+        
         updateTheme()
     }
     
@@ -132,4 +149,10 @@ class CreatedByPrimalView: UIView, Themeable {
         ]))
         label.attributedText = text
     }
+}
+
+extension FeedPreviewCell: AnimatingLikingView, AnimatingZappingView {
+    var zapIconToPin: UIView? { zapButton.iconView }
+    
+    var animatingZappingButton: FeedZapButton? { zapButton }
 }

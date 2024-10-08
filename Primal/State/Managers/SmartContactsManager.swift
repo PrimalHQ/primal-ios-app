@@ -105,6 +105,7 @@ final class SmartContactsManager {
     
     func addContact(_ contact: ParsedUser) {
         if contact.data.pubkey == IdentityManager.instance.userHexPubkey { return }
+        if MuteManager.instance.isMuted(contact.data.pubkey) { return }
         
         DatabaseManager.instance.setVisitProfile(contact.data)
     }

@@ -41,7 +41,7 @@ class ArticleFeedPreviewFeedController: ArticleFeedViewController {
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-        (cell as? FeedPreviewCell)?.setup(info)
+        (cell as? FeedPreviewCell)?.setup(info, delegate: self)
         return cell
     }
     
@@ -57,4 +57,10 @@ class ArticleFeedPreviewFeedController: ArticleFeedViewController {
             nav.pushViewController(longForm, animated: true)
         }
     }
+}
+
+extension ArticleFeedPreviewFeedController: FeedMarketplaceCellController {
+    func feedForCell(_ cell: UITableViewCell) -> ParsedFeedFromMarket? { info }
+    
+    func reloadViewAfterZap() { table.reloadData() }
 }

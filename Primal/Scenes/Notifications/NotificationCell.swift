@@ -96,7 +96,7 @@ final class NotificationCell: PostCell {
         
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
-        mainLabel.numberOfLines = parsedContent.user.isCurrentUser ? 6 : 20
+        mainLabel.numberOfLines = parsedContent.user.isCurrentUser ? 6 : 12
         
         layoutSubviews()
         
@@ -166,7 +166,7 @@ private extension NotificationCell {
         iconStack.constrainToSize(width: 38)
         
         textStack.axis = .vertical
-        mainLabel.numberOfLines = 20
+        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         

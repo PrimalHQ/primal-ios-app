@@ -16,7 +16,7 @@ class FeedButton: MyButton {
     var normalIcon: UIImage? { nil }
     
     var filledColor: UIColor { normalColor }
-    var normalColor: UIColor { .foreground4 }
+    var normalColor: UIColor { .foreground5 }
     
     var bigMode = false
     
@@ -91,7 +91,7 @@ class AnimatedFeedButton: FeedButton {
         super.setup()
         addSubview(animView)
         
-        animView.constrainToSize(31)
+        animView.constrainToSize(31 * 16 / 18)
         animView.centerToView(iconView)
         animView.isHidden = true
     }

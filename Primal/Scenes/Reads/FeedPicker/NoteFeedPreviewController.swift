@@ -49,7 +49,7 @@ class NoteFeedPreviewController: ShortFormFeedController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 && indexPath.row == 0 {
             let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-            (cell as? FeedPreviewCell)?.setup(info)
+            (cell as? FeedPreviewCell)?.setup(info, delegate: self)
             return cell
         }
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
@@ -61,16 +61,11 @@ class NoteFeedPreviewController: ShortFormFeedController {
         if disableInteraction { return }
         
         super.tableView(tableView, didSelectRowAt: indexPath)
-//        guard let presentingViewController, let nav: UINavigationController = presentingViewController.findInChildren() else {
-//            super.tableView(tableView, didSelectRowAt: indexPath)
-//            return
-//        }
-//        
-//        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
-//        let thread = ThreadViewController(post: post)
-//        dismiss(animated: true) {
-//            nav.pushViewController(thread, animated: true)
-//        }
     }
 }
 
+extension NoteFeedPreviewController: FeedMarketplaceCellController {
+    func feedForCell(_ cell: UITableViewCell) -> ParsedFeedFromMarket? { info }
+    
+    func reloadViewAfterZap() { table.reloadData() }
+}

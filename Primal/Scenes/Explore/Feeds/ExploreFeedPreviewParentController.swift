@@ -50,6 +50,12 @@ class ExploreNoteFeedPreviewController: NoteFeedPreviewController {
         
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        table.backgroundColor = .background
+    }
 }
 
 class ExploreArticleFeedPreviewFeedController: ArticleFeedPreviewFeedController {
@@ -58,6 +64,12 @@ class ExploreArticleFeedPreviewFeedController: ArticleFeedPreviewFeedController 
         
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .init(top: 106, left: 0, bottom: 60, right: 0)
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        table.backgroundColor = .background
     }
 }
 
@@ -94,10 +106,13 @@ private extension ExploreFeedPreviewParentController {
         view.backgroundColor = .background
         let addParent = UIView()
         addParent.addSubview(addButton)
-        addButton.pinToSuperview(edges: [.trailing, .vertical])
-        let leftC = addButton.leadingAnchor.constraint(equalTo: addParent.leadingAnchor)
-        leftC.priority = .defaultHigh
-        leftC.isActive = true
+        addButton.pinToSuperview(edges: [.trailing]).centerToSuperview(axis: .vertical).constrainToSize(height: 36)
+        [addButton.leadingAnchor.constraint(equalTo: addParent.leadingAnchor), addButton.bottomAnchor.constraint(equalTo: addParent.bottomAnchor)]
+            .forEach { c in
+                c.priority = .defaultHigh
+                c.isActive = true
+            }
+        
         navigationItem.rightBarButtonItem = .init(customView: addParent)
         
         let previewFeed: UIViewController

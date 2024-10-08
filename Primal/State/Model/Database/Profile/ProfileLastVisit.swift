@@ -39,7 +39,7 @@ extension ProfileLastVisit {
     static func lastVisitedProfilePubkeysRequest(_ pubkey: String) -> QueryInterfaceRequest<ProfileLastVisit> {
         ProfileLastVisit
             .order(ProfileLastVisit.Columns.lastVisit).reversed()
-            .filter(ProfileLastVisit.Columns.profilePubkey == pubkey)
+            .filter(ProfileLastVisit.Columns.userPubkey == pubkey)
             .limit(10)
     }
 }

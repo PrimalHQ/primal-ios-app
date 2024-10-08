@@ -9,19 +9,6 @@ import Combine
 import UIKit
 import SafariServices
 
-extension FeedDesign {
-    var threadCellClass: AnyClass {
-        switch self {
-        case .standard:
-            return DefaultThreadCell.self
-        case .fullWidth:
-            return FullWidthThreadCell.self
-        }
-    }
-    
-    var threadMainCellClass: AnyClass { DefaultMainThreadCell.self }
-}
-
 final class ThreadViewController: PostFeedViewController, ArticleCellController {
     let id: String
     
@@ -128,7 +115,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override var postSection: Int { 1 }
     
     @discardableResult
-    override func open(post: ParsedContent) -> FeedViewController {
+    override func open(post: ParsedContent) -> NoteViewController {
         guard post.post.id != id else { return self }
         
         guard let index = posts.firstIndex(where: { $0.post == post.post }) else {
@@ -219,8 +206,8 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         navigationItem.leftBarButtonItem = customBackButton
         
-        table.register(FeedDesign.current.threadCellClass, forCellReuseIdentifier: postCellID)
-        table.register(FeedDesign.current.threadMainCellClass, forCellReuseIdentifier: postCellID + "main")
+        table.register(FullWidthThreadCell.self, forCellReuseIdentifier: postCellID)
+        table.register(DefaultMainThreadCell.self, forCellReuseIdentifier: postCellID + "main")
         table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         
         textInputView.tintColor = .accent

@@ -21,6 +21,8 @@ class FeedExploreCell: UITableViewCell, Themeable {
     
     let avatarView = AvatarView(size: 20, spacing: -6)
     
+    weak var delegate: FeedMarketplaceCellDelegate?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -53,11 +55,23 @@ class FeedExploreCell: UITableViewCell, Themeable {
         titleLabel.font = .appFont(withSize: 16, weight: .bold)
         subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
         subtitleLabel.numberOfLines = 1
+        
+        likeButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.likeButtonPressedInFeedCell(self)
+        }), for: .touchUpInside)
+        
+        zapButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.zapButtonPressedInFeedCell(self)
+        }), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(_ parsed: ParsedFeedFromMarket) {
+    func setup(_ parsed: ParsedFeedFromMarket, delegate: FeedMarketplaceCellDelegate) {
+        self.delegate = delegate
+        
         let feed = parsed.data
         
         titleLabel.text = feed.name
@@ -95,4 +109,10 @@ class FeedExploreCell: UITableViewCell, Themeable {
         subtitleLabel.textColor = .foreground2
         titleLabel.textColor = .foreground
     }
+}
+
+extension FeedExploreCell: AnimatingZappingView, AnimatingLikingView {
+    var zapIconToPin: UIView? { zapButton.iconView }
+    
+    var animatingZappingButton: FeedZapButton? { zapButton }
 }

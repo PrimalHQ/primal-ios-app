@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class LongFormCommentsController: FeedViewController {
+class LongFormCommentsController: NoteViewController {
     let content: Article
     var parsedContent: ParsedContent?
     

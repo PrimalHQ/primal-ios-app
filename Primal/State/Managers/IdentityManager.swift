@@ -15,7 +15,9 @@ let APP_NAME = "Primal-iOS App"
 
 final class IdentityManager {
     private init() {
-        $userRelays.sink { info in
+        $userRelays
+        .receive(on: DispatchQueue.main)
+        .sink { info in
             RelaysPostbox.instance.disconnect()
             
             guard let info else {
@@ -217,6 +219,7 @@ final class IdentityManager {
     // Never just requestRelays as some clients might not support NIP-65
     private func requestRelays(callback: (() -> Void)? = nil) {
         SocketRequest(name: "get_user_relays", payload: .object(["pubkey": .string(userHexPubkey)])).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { result in
                 if !result.relayData.isEmpty {
                     self.userRelays = result.relayData
@@ -242,20 +245,22 @@ final class IdentityManager {
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
+                let response = response.objectValue
+                
                 switch kind {
                 case .contacts:
-                    self.followListContentString = response.arrayValue?[2].objectValue?["content"]?.stringValue ?? self.followListContentString
+                    self.followListContentString = response?["content"]?.stringValue ?? self.followListContentString
                     
                     var tags: Set<String>?
-                    if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
+                    if let isEmpty = response?["tags"]?.arrayValue?.isEmpty {
                         if isEmpty {
                             tags = []
                         } else {
-                            if let isInnerEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+                            if let isInnerEmpty = response?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
                                 if isInnerEmpty {
                                     tags = []
                                 } else {
-                                    let res = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                                    let res = response?["tags"]?.arrayValue?.map {
                                         $0.arrayValue?[safe: 1]?.stringValue ?? ""
                                     }
                                     
@@ -267,7 +272,7 @@ final class IdentityManager {
                         }
                     }
                     if let contacts = tags {
-                        let c = DatedSet(created_at: Int(response.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), set: contacts)
+                        let c = DatedSet(created_at: Int(response?["created_at"]?.doubleValue ?? -1), set: contacts)
                         if self.userContacts.created_at <= c.created_at {
                             self.userContacts = c
                             callback?()

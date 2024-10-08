@@ -25,7 +25,7 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         
         cellID = "cell" + UUID().uuidString.prefix(10)
-        previewTable.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: cellID)
+        previewTable.register(NewFeedCell.self, forCellReuseIdentifier: cellID)
         previewTable.reloadData()
 
         themeExplanation.toggle.setOn(ContentDisplaySettings.autoDarkMode, animated: false)

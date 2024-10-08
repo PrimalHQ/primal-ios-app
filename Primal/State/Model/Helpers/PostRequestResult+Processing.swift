@@ -12,7 +12,11 @@ import NostrSDK
 
 extension PostRequestResult: MetadataCoding {
     func getSortedUsers() -> [ParsedUser] {
-        users.map { createParsedUser($0.value) }.sorted(by: { ($0.followers ?? 0) > ($1.followers ?? 0) } )
+        users.map { createParsedUser($0.value) }.sorted(by: {
+            ($0.followers ?? 0) != ($1.followers ?? 0) ? 
+                ($0.followers ?? 0) > ($1.followers ?? 0) :
+                ($0.data.firstIdentifier > $1.data.firstIdentifier)
+        } )
     }
     
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {

@@ -36,6 +36,7 @@ struct FeedFollowActions: Codable {
 
 struct ParsedFeedFromMarket {
     let data: FeedFromMarket
+    let user: ParsedUser
     let metadata: FeedMetadata?
     let followActions: FeedFollowActions?
     let stats: NostrContentStats?
@@ -69,6 +70,7 @@ extension PostRequestResult {
                 
                 return ParsedFeedFromMarket(
                     data: feed,
+                    user: createParsedUser(users[feed.pubkey ?? ""] ?? .init(pubkey: feed.pubkey ?? "")), 
                     metadata: metadata.first(where: { $0.event_id == eventId }),
                     followActions: followAction,
                     stats: stats[eventId ?? ""],

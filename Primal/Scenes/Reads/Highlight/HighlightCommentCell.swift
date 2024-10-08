@@ -37,7 +37,7 @@ class HighlightCommentCell: PostCell {
 
 private extension HighlightCommentCell {
     func setup() {
-        mainLabel.numberOfLines = 20
+        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)

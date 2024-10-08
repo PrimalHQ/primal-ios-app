@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class HighlightCommentsController: FeedViewController {
+class HighlightCommentsController: NoteViewController {
     
     @Published private var cellHeight: [CGFloat] = []
     

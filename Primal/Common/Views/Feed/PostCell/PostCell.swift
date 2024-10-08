@@ -273,7 +273,6 @@ private extension PostCell {
             self.delegate?.postCellDidTap(self, .post)
         }
         mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        mainLabel.adjustsFontSizeToFitWidth = true
         
         mainImages.imageDelegate = self
         
@@ -324,6 +323,7 @@ private extension PostCell {
             delegate?.postCellDidTap(self, .article)
         }))
         
+        bookmarkButton.tintColor = .foreground5
         bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
         bookmarkButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

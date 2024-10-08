@@ -23,6 +23,7 @@ final class MuteManager {
         complexPublisher
             .sink(receiveValue: { [weak self] pubkey in
                 self?.muteList = []
+                self?.requestMuteList()
             })
             .store(in: &cancellables)
     }
@@ -59,12 +60,7 @@ final class MuteManager {
 
                 switch kind {
                 case .muteList:
-                    guard let nostrContentJson = response.arrayValue?[2] else {
-                        print("MuteManager: requestMuteList: Got unexpected json response: \(response)")
-                        return
-                    }
-
-                    let nostrContent = NostrContent(json: nostrContentJson)
+                    let nostrContent = NostrContent(json: response)
 
                     for tag in nostrContent.tags {
                         if let pubkey = tag[safe: 1] {

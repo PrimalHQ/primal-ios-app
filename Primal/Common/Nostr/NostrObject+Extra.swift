@@ -81,8 +81,8 @@ extension NostrObject {
         createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
-    static func like(post: PrimalFeedPost) -> NostrObject? {
-        createNostrLikeEvent(post: post)
+    static func like(reference: PostingReferenceObject) -> NostrObject? {
+        createNostrLikeEvent(reference: reference)
     }
     
     static func post(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
@@ -223,15 +223,14 @@ extension NostrObject {
         createNostrObject(content: content, kind: 10_000_300)
     }
     
-    static func zapWallet(_ note: String, sats: Int, post: ParsedContent) -> NostrObject? {
+    static func zapWallet(_ note: String, sats: Int, reference: ZappableReferenceObject) -> NostrObject? {
         var tags: [[String]] = [
-            ["p", post.user.data.pubkey],
-            ["e", post.post.id],
+            ["p", reference.referencePubkey],
             ["amount", "\(sats)000"]
         ]
         
-        if post.post.kind == NostrKind.longForm.rawValue || post.post.kind == NostrKind.shortenedArticle.rawValue {
-            tags.insert(["a", post.post.universalID], at: 0)
+        if let (tagLetter, universalID) = reference.reference {
+            tags.append([tagLetter, universalID])
         }
         
         var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
@@ -271,8 +270,9 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
     return NostrObject(id: id, sig: sig, tags: tags, pubkey: pubkey, created_at: createdAt, kind: kind, content: content)
 }
 
-fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
-    createNostrObject(content: "+", kind: 7, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
+fileprivate func createNostrLikeEvent(reference: PostingReferenceObject) -> NostrObject? {
+    guard let (tagLetter, universalID) = reference.reference else { return nil }
+    return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey]])
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LongFormEmbeddedPostController<T: PostCell>: FeedViewController {
+class LongFormEmbeddedPostController<T: PostCell>: NoteViewController {
     override var barsMaxTransform: CGFloat { 0 }
     
     var heightConstraint: NSLayoutConstraint?

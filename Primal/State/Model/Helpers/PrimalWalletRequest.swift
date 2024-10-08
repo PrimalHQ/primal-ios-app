@@ -147,8 +147,13 @@ struct PrimalWalletRequest {
         return Deferred {
             Future { promise in
                 Connection.wallet.requestWallet(type.requestContent) { result in
-                    result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
-                    result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.handleMessage($0) }
+                    
+                    if case .isUser = type {
+                        print(result)
+                    }
+                    
+                    result.compactMap { $0.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
+                    result.compactMap { $0.stringValue } .forEach { pendingResult.handleMessage($0) }
                     
                     promise(.success(pendingResult))
                 }

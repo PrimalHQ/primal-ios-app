@@ -18,7 +18,17 @@ protocol ImageMenuHandler: AnyObject {
 
 extension ImageMenuHandler {
     var imageMenuActions: [UIAction] {
-        [
+        if url.isVideoURL {
+            return [
+                UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
+                    guard let self else { return }
+                    UIPasteboard.general.string = url
+                    viewController.view?.showToast("Copied!", extraPadding: 0)
+                }
+            ]
+        }
+        
+        return [
             UIAction(title: "Save Image", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)

@@ -10,6 +10,7 @@ import Kingfisher
 import Combine
 
 final class ExploreFeedsViewController: UIViewController, Themeable {
+    
     var cancellables: Set<AnyCancellable> = []
     
     let table = UITableView()
@@ -61,7 +62,7 @@ private extension ExploreFeedsViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = .init(top: 157, left: 0, bottom: 80, right: 0)
+        table.contentInset = .init(top: 169, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         
         view.addSubview(table)
@@ -76,7 +77,7 @@ extension ExploreFeedsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        (cell as? FeedExploreCell)?.setup(feeds[indexPath.row])
+        (cell as? FeedExploreCell)?.setup(feeds[indexPath.row], delegate: self)
         return cell
     }
 }
@@ -101,5 +102,16 @@ extension ExploreFeedsViewController: UITableViewDelegate {
         )
         
         show(ExploreFeedPreviewParentController(feed: readsFeed, type: kind, feedInfo: parsed), sender: nil)
+    }
+}
+
+extension ExploreFeedsViewController: FeedMarketplaceCellController {
+    func feedForCell(_ cell: UITableViewCell) -> ParsedFeedFromMarket? {
+        guard let indexPath = table.indexPath(for: cell) else { return nil }
+        return feeds[safe: indexPath.row]
+    }
+    
+    func reloadViewAfterZap() {
+        table.reloadData()
     }
 }

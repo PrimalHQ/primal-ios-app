@@ -22,11 +22,11 @@ final class RepostedIndicatorView: MyButton {
         stack.alignment = .center
         stack.spacing = 4
         
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        nameLabel.font = .appFont(withSize: 14, weight: .regular)
         nameLabel.textColor = .foreground3
         nameLabel.lineBreakMode = .byTruncatingMiddle
         
-        repostedLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        repostedLabel.font = .appFont(withSize: 14, weight: .regular)
         repostedLabel.text = "reposted"
         repostedLabel.textColor = .foreground3
         

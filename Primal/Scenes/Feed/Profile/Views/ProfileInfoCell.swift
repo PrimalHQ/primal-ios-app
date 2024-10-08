@@ -76,7 +76,7 @@ class ProfileInfoCell: UITableViewCell {
         
         if CheckNip05Manager.instance.isVerified(user) {
             checkboxIcon.isHidden = false
-            checkboxIcon.tintColor = .accent
+            checkboxIcon.tintColor = user.nip05.hasSuffix("@primal.net") ? .accent : .foreground3
             
             secondaryLabel.isHidden = false
             secondaryLabel.text = user.parsedNip

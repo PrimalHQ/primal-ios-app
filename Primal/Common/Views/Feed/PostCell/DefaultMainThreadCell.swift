@@ -29,8 +29,6 @@ class DefaultMainThreadCell: ThreadCell {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    var cachedIsBookmarked = false { didSet { setBookmarkButton() } }
-    
     override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition) {
         self.update(parsedContent, zaps: [])
     }
@@ -56,8 +54,6 @@ class DefaultMainThreadCell: ThreadCell {
         
         repostsLabel.attributedText = infoString(post.reposts, "Repost", "Reposts")
         repostsLabel.isHidden = post.reposts <= 0
-        
-        cachedIsBookmarked = parsedContent.postInfo.isBookmarked
         
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
         
@@ -88,10 +84,6 @@ class DefaultMainThreadCell: ThreadCell {
                 self?.isShowingBookmarked = isBookmarked
                 self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarksBigFilled" : "feedBookmarksBig"), for: .normal)
             } 
-    }
-    
-    func setBookmarkButton() {
-        bookmarkButton.setImage(cachedIsBookmarked ? UIImage(named: "feedBookmarksBigFilled") : UIImage(named: "feedBookmarksBig"), for: .normal)
     }
     
     func infoString(_ count: Int, _ singleTitle: String, _ pluralTitle: String) -> NSAttributedString {
@@ -183,12 +175,6 @@ class DefaultMainThreadCell: ThreadCell {
         }
         
         bottomButtonStack.addArrangedSubview(bookmarkButton)
-        
-        bookmarkButton.tintColor = .foreground4
-        bookmarkButton.addAction(.init(handler: { [unowned self] _ in
-            delegate?.postCellDidTap(self, cachedIsBookmarked ? .unbookmark : .bookmark)
-            cachedIsBookmarked.toggle()
-        }), for: .touchUpInside)
         
         zapsLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
