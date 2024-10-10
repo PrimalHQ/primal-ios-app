@@ -80,7 +80,7 @@ final class IdentityManager {
             }
             .store(in: &cancellables)
         
-        DatabaseManager.instance.getProfileStatsPublisher(userHexPubkey).first()
+        DatabaseManager.instance.getProfileStatsPublisher(userHexPubkey)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] stats in
                 guard let self, let stats else { return }
@@ -324,7 +324,9 @@ final class IdentityManager {
                 "sig": .string(ev.sig),
                 "tags": .array([])
             ])
-        ])) { _ in }
+        ])) { result in
+            print(result)
+        }
     }
     
     func updateNotifications(_ notifications: PrimalSettingsNotifications) {

@@ -34,6 +34,21 @@ extension UIViewController {
     
     var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
     
+    var customSearchButton: UIBarButtonItem {
+        let view = UIView().constrainToSize(44)
+        let icon = UIImageView(image: UIImage(named: "navSearch"))
+        icon.tintColor = .foreground3
+        view.addSubview(icon)
+        icon.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
+        let button = UIButton()
+        view.addSubview(button)
+        button.pinToSuperview()
+        button.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.fadeTo(SearchViewController())
+        }), for: .touchUpInside)
+        return .init(customView: view)
+    }
+    
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)

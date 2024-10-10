@@ -8,29 +8,27 @@
 import Foundation
 import Combine
 
-private extension String {
+extension String {
     static let checkedNipsKey = "checkedNipsKey"
-}
-
-private extension UserDefaults {
-    var checkedNips: [String: String] {
-        get { string(forKey: .checkedNipsKey)?.decode() ?? [:] }
-        set { set(newValue.encodeToString(), forKey: .checkedNipsKey)}
-    }
 }
 
 class CheckNip05Manager {
     static let instance = CheckNip05Manager()
     
-    var checkedNips: [String: String] = UserDefaults.standard.checkedNips {
-        didSet {
-            UserDefaults.standard.checkedNips = checkedNips
-        }
-    }
+    var checkedNips: [String: String] = [:]
     
     var dontCheckAgain: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []
+    
+    init() {
+        DatabaseManager.instance.getCheckedNips()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] checkedNips in
+                self?.checkedNips = checkedNips
+            }
+            .store(in: &cancellables)
+    }
     
     func isVerified(_ user: PrimalUser) -> Bool {
         guard !user.nip05.isEmpty else { return false }
@@ -52,6 +50,7 @@ class CheckNip05Manager {
         guard let name = segments.first, let domain = segments.dropFirst().first else { return }
         
         CheckNip05Request(domain: String(domain), name: String(name)).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 if self?.checkedNips[nip] == nil {
                     self?.dontCheckAgain.insert(nip)
@@ -59,10 +58,15 @@ class CheckNip05Manager {
             } receiveValue: { [weak self] json in
                 guard let names = json.objectValue?["names"]?.objectValue else { return }
                 
+                var result: [String: String] = [:]
+                
                 for (key, value) in names {
                     guard let pubkey = value.stringValue else { continue }
                     self?.checkedNips["\(key)@\(domain)"] = pubkey
+                    result["\(key)@\(domain)"] = pubkey
                 }
+                
+                DatabaseManager.instance.saveCheckedNips05(result)
             }
             .store(in: &cancellables)
     }

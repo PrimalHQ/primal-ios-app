@@ -37,9 +37,10 @@ extension PostRequestResult: MetadataCoding {
     )}
     
     func process(contentStyle: ParsedContentTextStyle) -> [ParsedContent] {
-        let mentions: [ParsedContent] = mentions
-            .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], contentStyle: .embedded) }
+        let parsedMentions = mentions.compactMap { createPrimalPost(content: $0) }
+        
+        let secondLevelMentions: [ParsedContent] = parsedMentions.map { parse(post: $0.0, user: $0.1, mentions: [], contentStyle: .embedded) }
+        let mentions: [ParsedContent] = parsedMentions.map { parse(post: $0.0, user: $0.1, mentions: secondLevelMentions, contentStyle: .embedded) }
         
         let parsedUsers = getSortedUsers()
         let parsedZaps = postZaps.map { primalZapEvent in
@@ -185,9 +186,15 @@ extension PostRequestResult: MetadataCoding {
                         
                         text = text.replacingOccurrences(of: mentionText, with: content)
                         highlights.append((content, mention))
-                    } else {
+                    } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
+                    } else {
+                        p.customEvent = mention
+                        text = text.replacingOccurrences(of: mentionText, with: "")
                     }
+                } else {
+                    itemsToRemove.append(mentionText)
+                    p.notFound = .note
                 }
             }
         }
@@ -201,10 +208,25 @@ extension PostRequestResult: MetadataCoding {
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
                 
+                if referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }) { return } // Already slated for removal
+                
                 let naventString: String = "nostr:\(mentionText)"
-                    
-                if !referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }), let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    referencedPosts.append((mentionText, mention))
+                
+                if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+                    if mention.post.kind == NostrKind.highlight.rawValue  {
+                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                        
+                        text = text.replacingOccurrences(of: mentionText, with: content)
+                        highlights.append((content, mention))
+                    } else if mention.post.kind == post.kind {
+                        referencedPosts.append((mentionText, mention))
+                    } else {
+                        p.customEvent = mention
+                        text = text.replacingOccurrences(of: mentionText, with: "")
+                    }
+                } else {
+                    itemsToRemove.append(mentionText)
+                    p.notFound = .note
                 }
             }
         }
@@ -215,6 +237,8 @@ extension PostRequestResult: MetadataCoding {
                 guard p.article == nil, let matchRange = match?.range else { return }
                     
                 let mentionText = (text as NSString).substring(with: matchRange)
+                
+                itemsToRemove.append(mentionText)
 
                 guard
                     let address = mentionText.split(separator: ":").last,
@@ -223,9 +247,10 @@ extension PostRequestResult: MetadataCoding {
                     let mention = self.mentions.first(where: {
                         ($0.kind == NostrKind.longForm.rawValue || $0.kind == NostrKind.shortenedArticle.rawValue) && $0.tags.contains(["d", id])
                     })
-                else { return }
-                
-                itemsToRemove.append(mentionText)
+                else {
+                    p.notFound = .article
+                    return
+                }
                
                 p.article = Article(
                     id: id,
@@ -242,14 +267,12 @@ extension PostRequestResult: MetadataCoding {
             }
         }
         
-        let removeExtractedPost = contentStyle != .embedded
-        
-        if removeExtractedPost && referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
+        if referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
             p.embededPost = mention
             itemsToRemove.append(mentionText)
         }
         
-        if removeExtractedPost, referencedPosts.isEmpty {
+        if referencedPosts.isEmpty {
             let flatTags = post.tags.flatMap { $0 }
             for mention in mentions {
                 if flatTags.contains(mention.post.id) {
@@ -354,9 +377,10 @@ extension PostRequestResult: MetadataCoding {
                         }
                     }
                     return pubkey
-                }(),
-                let user = users[pubkey]
+                }()
             else { continue }
+            
+            let user = users[pubkey] ?? .init(pubkey: pubkey)
             
             let mention = user.atIdentifier
             text = text.replacingOccurrences(of: item, with: mention)

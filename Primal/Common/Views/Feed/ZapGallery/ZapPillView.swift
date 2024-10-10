@@ -28,7 +28,7 @@ class ZapAvatarView: ZapGalleryChildView {
         image.layer.cornerRadius = 11
         image.layer.masksToBounds = true
         
-        image.setUserImage(zap.user, size: .init(width: 22, height: 22))
+        image.setUserImage(zap.user, size: .init(width: 22, height: 22), disableAnimated: true)
         
         let imageBackground = UIView().constrainToSize(24)
         imageBackground.layer.cornerRadius = 12

@@ -154,8 +154,7 @@ final class NotificationFeedViewController: NoteViewController {
         
         Publishers.CombineLatest(
             SocketRequest(name: "get_notifications", payload: payload).publisher(),
-            Just(PostRequestResult())
-//            SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": idJsonID])).publisher()
+            SocketRequest(name: "get_notifications_seen", payload: .object(["pubkey": idJsonID])).publisher()
         )
         .map { [weak self] newResult, seenResult -> ([GroupedNotification], [GroupedNotification]) in
             let lastSeen = seenResult.timestamps.first ?? .init(timeIntervalSince1970: 0)
@@ -175,6 +174,9 @@ final class NotificationFeedViewController: NoteViewController {
             self?.notifications = newResult + seenResult
             self?.notifications.forEach { $0.post?.buildContentString(style: .notifications) }
             self?.isLoading = false
+            
+            if self?.view.window == nil { return }
+            
             self?.table.reloadData()
             
             self?.refreshControl.endRefreshing()

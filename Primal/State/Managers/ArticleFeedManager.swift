@@ -28,7 +28,7 @@ class ArticleFeedManager {
         SocketRequest(name: "mega_feed_directive", payload: .object([
                 "spec": .string(feed.spec),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                "limit": .number(Double(40)),
+                "limit": .number(Double(20)),
 //                "until": .number(until.rounded())
             ]))
             .publisher()

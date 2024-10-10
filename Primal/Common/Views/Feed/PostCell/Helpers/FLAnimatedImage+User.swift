@@ -10,10 +10,11 @@ import FLAnimatedImage
 import Kingfisher
 
 extension FLAnimatedImageView {
-    func setUserImage(_ user: ParsedUser, feed: Bool = true, size: CGSize? = nil) {
+    func setUserImage(_ user: ParsedUser, feed: Bool = true, size: CGSize? = nil, disableAnimated: Bool = false) {
         tag = tag + 1
         
         guard
+            !disableAnimated,
             !feed || ContentDisplaySettings.animatedAvatars,
             user.data.picture.hasSuffix("gif"),
             let url = user.profileImage.url(for: .small)

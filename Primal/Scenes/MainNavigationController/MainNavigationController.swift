@@ -39,7 +39,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         
         delegate = self
         
-        updateTheme()
+        updateAppearance()
     }
     
     func updateTheme() {

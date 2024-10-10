@@ -48,10 +48,9 @@ extension DatabaseManager {
     }
     
     func getProfileStatsPublisher(_ pubkey: String) -> AnyPublisher<ProfileCount?, Never> {
-        ValueObservation.tracking { db in
+        dbWriter.readPublisher { db in
             try ProfileCount.all().filterPubkeys([pubkey]).fetchOne(db)
         }
-        .publisher(in: dbWriter)
         .replaceError(with: nil)
         .eraseToAnyPublisher()
     }

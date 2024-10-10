@@ -159,6 +159,12 @@ private extension DatabaseManager {
                 t.column("timeJoined", .integer)
             }
             
+            try db.create(table: ProfileNip05Check.databaseTableName) { t in
+                t.primaryKey("nip05", .text, onConflict: .replace)
+                t.column("pubkey", .text).notNull()
+                t.column("lastChecked", .date).notNull()
+            }
+            
             try db.create(table: MediaResource.databaseTableName) { t in
                 t.primaryKey("url", .text, onConflict: .replace)
                 t.column("variants", .text).notNull()

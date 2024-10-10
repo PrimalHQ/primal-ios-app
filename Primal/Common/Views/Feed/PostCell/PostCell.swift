@@ -42,6 +42,7 @@ class PostCell: UITableViewCell {
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
     let postPreview = PostPreviewView()
+    let infoView = SimpleInfoView()
     let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
@@ -104,7 +105,7 @@ class PostCell: UITableViewCell {
             replyingToView.isHidden = true
         }
         
-        if let embeded = content.embededPost {
+        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
             postPreview.update(embeded)
             postPreview.isHidden = false
         } else {
@@ -134,6 +135,26 @@ class PostCell: UITableViewCell {
         
         imageAspectConstraint?.isActive = false
         imageAspectConstraint = nil
+        
+        if let customEvent = content.customEvent {
+            infoView.isHidden = false
+            infoView.set(
+                kind: .file,
+                text: customEvent.post.tags.first(where: { $0.first == "alt" })?[safe: 1] ??
+                        (customEvent.post.content.isEmpty ? "Unknown reference" : customEvent.post.content)
+            )
+        } else {
+            switch content.notFound {
+            case nil:
+                infoView.isHidden = true
+            case .note:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned note not found.")
+            case .article:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned article not found.")
+            }
+        }
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0

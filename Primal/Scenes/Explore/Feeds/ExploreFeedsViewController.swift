@@ -43,7 +43,7 @@ final class ExploreFeedsViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        table.backgroundColor = .background
+        table.backgroundColor = .background2
         table.reloadData()
     }
 }
@@ -54,8 +54,6 @@ private extension ExploreFeedsViewController {
     }
     
     func setup() {
-        view.backgroundColor = .background
-        
         table.showsVerticalScrollIndicator = false
         table.register(FeedExploreCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self

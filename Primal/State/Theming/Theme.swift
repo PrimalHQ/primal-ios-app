@@ -87,13 +87,13 @@ enum FontSizeSelection: Int {
     var contentLineHeight: CGFloat {
         switch self {
         case .small:
-            return 19
+            return 16
         case .standard:
-            return 19
+            return 18
         case .large:
-            return 21
+            return 20
         case .huge:
-            return 23
+            return 22
         }
     }
     
@@ -102,13 +102,13 @@ enum FontSizeSelection: Int {
     var avatarSize: CGFloat {
         switch self {
         case .small:
-            return 30
-        case .standard:
-            return 32
-        case .large:
             return 34
-        case .huge:
+        case .standard:
             return 36
+        case .large:
+            return 38
+        case .huge:
+            return 40
         }
     }
     

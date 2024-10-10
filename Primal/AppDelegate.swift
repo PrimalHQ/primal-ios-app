@@ -23,6 +23,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         UserDefaults.standard.removeObject(forKey: .smartContactListKey)
         UserDefaults.standard.removeObject(forKey: .smartContactDefaultListKey)
         UserDefaults.standard.removeObject(forKey: .cachedUsersDefaultsKey)
+        UserDefaults.standard.removeObject(forKey: .checkedNipsKey)
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         

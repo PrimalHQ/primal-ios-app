@@ -33,7 +33,7 @@ final class RepostedIndicatorView: MyButton {
         repostedImageView.tintColor = .foreground3
         
         addSubview(stack)
-        stack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -7)
+        stack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -6)
     }
     
     func update(users: [ParsedUser]) {

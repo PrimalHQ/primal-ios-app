@@ -42,6 +42,8 @@ final class ReadsViewController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
         
+        navigationItem.rightBarButtonItem = customSearchButton
+        
         navTitleView.updateTheme()
         
         border.backgroundColor = .background3

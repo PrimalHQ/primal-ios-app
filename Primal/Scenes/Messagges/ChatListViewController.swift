@@ -102,9 +102,6 @@ private extension ChatListViewController {
         loadingSpinner.play()
         
         manager.$newMessagesCount.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] oldCount, count in
-            guard let main: MainTabBarController = RootViewController.instance.findInChildren() else { return }
-            main.hasNewMessages = count > 0
-            
             guard oldCount != count, let self, self.view.window != nil, self.navigationController?.topViewController == self.parent else { return }
             
             self.getAllChats()

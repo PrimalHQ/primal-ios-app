@@ -1,15 +1,15 @@
 //
-//  PostPreviewView.swift
+//  PostPreviewPostPreviewView.swift
 //  Primal
 //
-//  Created by Pavle D Stevanović on 30.5.23..
+//  Created by Pavle Stevanović on 10.10.24..
 //
 
 import UIKit
 import Kingfisher
 import Nantes
 
-final class PostPreviewView: UIView {
+final class PostPreviewPostPreviewView: UIView {
     let profileImageView = UIImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -20,7 +20,6 @@ final class PostPreviewView: UIView {
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let linkPreview = LinkPreview()
-    let postPreview = PostPreviewPostPreviewView()
     let infoView = SimpleInfoView()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -93,13 +92,6 @@ final class PostPreviewView: UIView {
             invoiceView.isHidden = true
         }
         
-        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
-            postPreview.update(embeded)
-            postPreview.isHidden = false
-        } else {
-            postPreview.isHidden = true
-        }
-        
         mainLabel.attributedText = content.attributedText
         layoutSubviews()
         
@@ -127,7 +119,7 @@ final class PostPreviewView: UIView {
     }
 }
 
-private extension PostPreviewView {
+private extension PostPreviewPostPreviewView {
     func setup() {
         backgroundColor = .background4
         layer.cornerRadius = 8
@@ -184,7 +176,7 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, postPreview, linkPreview, infoView
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview, infoView
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)

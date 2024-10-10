@@ -47,7 +47,7 @@ class UserAvatarView: UIView {
         image.layer.cornerRadius = 11
         image.layer.masksToBounds = true
         
-        image.setUserImage(user, size: .init(width: 22, height: 22))
+        image.setUserImage(user, size: .init(width: 22, height: 22), disableAnimated: true)
         
         let imageBackground = UIView().constrainToSize(24)
         imageBackground.layer.cornerRadius = 12

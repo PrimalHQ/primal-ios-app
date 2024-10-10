@@ -39,9 +39,4 @@ final class NotificationsViewController: PrimalPageController {
         }), for: .touchUpInside)
         navigationItem.rightBarButtonItem = .init(customView: button)
     }
-    
-    override func updateTheme() {
-        super.updateTheme()
-        navigationItem.leftBarButtonItem = customBackButton
-    }
 }

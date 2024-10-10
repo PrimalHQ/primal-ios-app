@@ -67,6 +67,8 @@ final class MessagesViewController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
         
+        navigationItem.leftBarButtonItem = customBackButton
+        
         updateButtonFonts()
         
         selectionIndicator.backgroundColor = .accent

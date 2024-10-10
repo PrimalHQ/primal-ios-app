@@ -1,5 +1,5 @@
 //
-//  NewFeedCell.swift
+//  PostFeedCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 17.5.24..
@@ -8,11 +8,13 @@
 import UIKit
 import Kingfisher
 
-class NewFeedCell: PostCell {
+class PostFeedCell: PostCell {
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
+    
+    let repostedByOverlayButton = UIButton()
     
     override var useShortText: Bool { true }
     
@@ -40,6 +42,8 @@ class NewFeedCell: PostCell {
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
         
+        mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreview == nil && parsedContent.embededPost == nil) ? 12 : 6
+        
         layoutSubviews()
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
@@ -50,6 +54,8 @@ class NewFeedCell: PostCell {
         nameSuperStack.alignment = parsedContent.replyingTo != nil ? .top : .center
         
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
+        
+        repostedByOverlayButton.isHidden = parsedContent.reposted == nil
     }
     
     override func updateMenu(_ content: ParsedContent) {
@@ -65,12 +71,11 @@ class NewFeedCell: PostCell {
     }
 }
 
-private extension NewFeedCell {
+private extension PostFeedCell {
     func setup() {
         textStack.axis = .vertical
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         
-        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)
@@ -93,7 +98,10 @@ private extension NewFeedCell {
         bottomC.isActive = true
         
         contentView.addSubview(threeDotsButton)
-        threeDotsButton.pinToSuperview(edges: [.top, .trailing]).constrainToSize(44)
+        threeDotsButton
+            .constrainToSize(44)
+            .pinToSuperview(edges: .top, padding: 2)
+            .pinToSuperview(edges: .trailing)
         
         nameStack.addArrangedSubview(threeDotsSpacer)
         
@@ -105,7 +113,7 @@ private extension NewFeedCell {
     
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapGalleryParent, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, infoView, zapGalleryParent, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
@@ -129,6 +137,17 @@ private extension NewFeedCell {
         bookmarkButton
             .pin(to: buttonStackStandIn, edges: .trailing, padding: -2)
             .centerToView(buttonStackStandIn, axis: .vertical)
+        
+        contentView.addSubview(repostedByOverlayButton)
+        repostedByOverlayButton
+            .constrainToSize(width: 100)
+            .pin(to: repostIndicator, edges: .leading)
+            .pin(to: repostIndicator, edges: .top, padding: -11)
+            .pin(to: repostIndicator, edges: .bottom, padding: -5)
+        repostedByOverlayButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, .repostedProfile)
+        }), for: .touchUpInside)
     }
 }
 

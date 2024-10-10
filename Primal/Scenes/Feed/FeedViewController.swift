@@ -239,7 +239,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func updateTheme() {        
         updateCellID()
-        table.register(NewFeedCell.self, forCellReuseIdentifier: postCellID)
+        table.register(PostFeedCell.self, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
         view.backgroundColor = .background2
@@ -271,9 +271,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         if urlString.hasPrefix("note") {
-            guard let ref = content?.notes.first(where: { $0.text == info })?.reference else { return }
-            
-            let thread = ThreadViewController(threadId: ref)
+            let thread = ThreadViewController(threadId: info)
             showViewController(thread)
             return
         }

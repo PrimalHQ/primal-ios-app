@@ -73,65 +73,6 @@ extension ThreadCell {
     }
 }
 
-// MARK: - DefaultThreadCell
-
-final class DefaultThreadCell: ThreadCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        parentSetup()
-        setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setup() {
-        nameStack.addArrangedSubview(threeDotsButton)
-        
-        parentIndicator
-            .pinToSuperview(edges: .top)
-            .pinToSuperview(edges: .bottom, padding: -24)
-        
-        profileImageView.constrainToSize(FontSizeSelection.current.avatarSize)
-        profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
-            
-        let imageSpacerStack = UIStackView(axis: .vertical, [profileImageView, contentSpacer, UIView()])
-        imageSpacerStack.spacing = 2
-        
-        let actionButtonStandin = UIView()
-        let contentStack = UIStackView(axis: .vertical, [nameStack, mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
-        
-        let horizontalContentStack = UIStackView(arrangedSubviews: [imageSpacerStack, contentStack])
-        
-        let mainStack = UIStackView(axis: .vertical, [repostIndicator, horizontalContentStack])
-        contentView.addSubview(mainStack)
-        
-        mainStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
-    
-        topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
-        topConstraint?.isActive = true
-        
-        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
-        bottomC.priority = .defaultHigh
-        bottomC.isActive = true
-        bottomConstraint = bottomC
-        
-        actionButtonStandin.constrainToSize(height: 18)
-        contentView.addSubview(bottomButtonStack)
-        bottomButtonStack
-            .centerToView(actionButtonStandin)
-            .pin(to: actionButtonStandin, edges: .horizontal, padding: -7)
-        
-        horizontalContentStack.spacing = 8
-        contentStack.spacing = 8
-        
-        mainStack.spacing = 6
-        mainStack.setCustomSpacing(7, after: repostIndicator)
-    }
-}
-
 class ProfilePreviewView: UIView {
     let pubkey: String
     let viewController: ProfileViewController
@@ -153,6 +94,9 @@ class HashtagPreviewView: UIView {
         self.hashtag = hashtag
         viewController = RegularFeedViewController(feed: .init(search: hashtag))
         super.init(frame: .zero)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
+            self.viewController.table.contentInset = .zero
+        }
         addSubview(viewController.view)
         viewController.view.pinToSuperview()
     }
@@ -160,21 +104,9 @@ class HashtagPreviewView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-struct HashtagView: UIViewControllerRepresentable {
-    var hashtag: String
-    
-    func makeUIViewController(context: Context) -> RegularFeedViewController {
-        RegularFeedViewController(feed: FeedManager(search: hashtag))
-    }
-    
-    func updateUIViewController(_ uiViewController: RegularFeedViewController, context: Context) {
-        
-    }
-}
+// MARK: - PostThreadCell
 
-// MARK: - FullWidthThreadCell
-
-final class FullWidthThreadCell: ThreadCell {
+final class PostThreadCell: ThreadCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         parentSetup()
@@ -198,7 +130,7 @@ final class FullWidthThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameStack, threeDotsButton])
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, SpacerView(height: 0), actionButtonStandin])
+        let contentStack = UIStackView(arrangedSubviews: [mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, infoView, SpacerView(height: 0), actionButtonStandin])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         

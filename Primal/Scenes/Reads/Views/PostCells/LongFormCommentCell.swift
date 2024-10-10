@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class LongFormCommentCell: NewFeedCell {
+final class LongFormCommentCell: PostFeedCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()

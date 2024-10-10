@@ -27,18 +27,16 @@ final class MenuContainerController: UIViewController, Themeable {
     private let coverView = UIView()
     private let menuProfileImage = FLAnimatedImageView()
     
-    private let notificationButton = UIButton()
-    private let notificationImage = UIImageView(image: UIImage(named: "navBarIcon-notifications"))
-    private let notificationIndicator = NotificationsIndicator()
+    private let notificationIndicator = NumberedNotificationIndicator()
     
     private let profileImageButton = UIButton()
     private let followingDescLabel = UILabel()
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
     
-    var hasNewNotifications = false {
+    var newMessageCount = 0 {
         didSet {
-            notificationIndicator.isHidden = !hasNewNotifications
+            notificationIndicator.number = newMessageCount
         }
     }
     
@@ -55,11 +53,15 @@ final class MenuContainerController: UIViewController, Themeable {
     init(child: UIViewController) {
         self.child = child
         super.init(nibName: nil, bundle: nil)
-        setup()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -79,6 +81,7 @@ final class MenuContainerController: UIViewController, Themeable {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
             self.mainStack.transform = .identity
+            self.notificationIndicator.transform = .identity
             self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: self.view.frame.width - 68, y: 0)
             
             self.coverView.alpha = 1
@@ -93,6 +96,7 @@ final class MenuContainerController: UIViewController, Themeable {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
             self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
+            self.notificationIndicator.transform = CGAffineTransform(translationX: -300, y: 0)
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
@@ -127,6 +131,7 @@ final class MenuContainerController: UIViewController, Themeable {
         child.endAppearanceTransition()
     }
     
+    var updateForChild = false
     func updateTheme() {
         view.backgroundColor = .background
         
@@ -135,9 +140,6 @@ final class MenuContainerController: UIViewController, Themeable {
         nameLabel.textColor = .foreground
         
         profileImageButton.backgroundColor = .background.withAlphaComponent(0.01)
-        notificationButton.backgroundColor = .background.withAlphaComponent(0.01)
-        
-        notificationImage.tintColor = .foreground3
         
         coverView.backgroundColor = .background.withAlphaComponent(0.5)
         
@@ -147,13 +149,16 @@ final class MenuContainerController: UIViewController, Themeable {
         }
         [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
         
-        child.updateThemeIfThemeable()
+        if updateForChild {
+            child.updateThemeIfThemeable()
+        }
     }
 }
 
 private extension MenuContainerController {
     func setup() {
         updateTheme()
+        updateForChild = true
         
         let profileImageRow = UIStackView([profileImage, UIView()])
         
@@ -163,12 +168,13 @@ private extension MenuContainerController {
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
         let profile = MenuItemButton(title: "PROFILE")
+        let premium = MenuItemButton(title: "PREMIUM")
+        let messages = MenuItemButton(title: "MESSAGES")
         let bookmarks = MenuItemButton(title: "BOOKMARKS")
         let settings = MenuItemButton(title: "SETTINGS")
-        let premium = MenuItemButton(title: "PREMIUM")
         let signOut = MenuItemButton(title: "SIGN OUT")
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, bookmarks, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, messages, bookmarks, settings, signOut])
         [
             profileImageRow, SpacerView(height: 15), titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
@@ -190,6 +196,9 @@ private extension MenuContainerController {
         mainStack.setCustomSpacing(10, after: domainLabel)
         mainStack.setCustomSpacing(40, after: followStack)
         mainStack.alpha = 0
+        
+        view.addSubview(notificationIndicator)
+        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pin(to: messages, edges: .leading, padding: 116)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -272,16 +281,6 @@ private extension MenuContainerController {
         menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
-        let notificationParent = UIView()
-        notificationParent.addSubview(notificationButton)
-        notificationButton.constrainToSize(44).pinToSuperview()
-        notificationParent.addSubview(notificationImage)
-        notificationImage.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
-        notificationParent.addSubview(notificationIndicator)
-        notificationIndicator.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: .trailing, padding: -2)
-        notificationIndicator.isHidden = true
-        child.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: notificationParent)
-        
         view.addSubview(coverView)
         coverView.pin(to: child.view)
         coverView.isHidden = true
@@ -302,28 +301,17 @@ private extension MenuContainerController {
             self?.present(PopupAccountSwitchingController(), animated: true)
         }), for: .touchUpInside)
         
-        barcodeButton.addAction(.init(handler: { [weak self] _ in
-            self?.qrCodePressed()
-        }), for: .touchUpInside)
+        barcodeButton.addAction(.init(handler: { [unowned self] _ in showViewController(ProfileQRController()) }), for: .touchUpInside)
+        messages.addAction(.init(handler: { [unowned self] _ in showViewController(MessagesViewController()) }), for: .touchUpInside)
+        bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
+        premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumHomeViewController()) }), for: .touchUpInside)
+        
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
-        bookmarks.addAction(.init(handler: { [unowned self] _ in
-            show(PublicBookmarksViewController(), sender: nil)
-            resetNavigationTabBar()
-        }), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
-        premium.addAction(.init(handler: { [weak self] _ in
-            self?.premiumPressed()
-        }), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
         profileImage.isUserInteractionEnabled = true
-        
-        notificationButton.addAction(.init(handler: { [weak self] _ in self?.show(NotificationsViewController(), sender: nil) }), for: .touchUpInside)
-//        BookmarkManager.instance.$cachedBookmarks.map({ !$0.array.isEmpty })
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isEnabled, on: bookmarks)
-//            .store(in: &cancellables)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             self?.update(user)
@@ -366,28 +354,20 @@ private extension MenuContainerController {
     }
     
     // MARK: - Objc methods
-    
-    func premiumPressed() {
-        show(PremiumHomeViewController(), sender: nil)
-        resetNavigationTabBar()
-    }
-    
-    func qrCodePressed() {
-        show(ProfileQRController(), sender: nil)
-        resetNavigationTabBar()
-    }
-    
     @objc func profilePressed() {
         guard let profile = IdentityManager.instance.parsedUser else {
             IdentityManager.instance.requestUserProfile()
             return
         }
-        show(ProfileViewController(profile: profile), sender: nil)
-        resetNavigationTabBar()
+        showViewController(ProfileViewController(profile: profile))
     }
     
     @objc func settingsButtonPressed() {
-        show(SettingsMainViewController(), sender: nil)
+        showViewController(SettingsMainViewController())
+    }
+    
+    func showViewController(_ viewController: UIViewController) {
+        show(viewController, sender: nil)
         resetNavigationTabBar()
     }
     
@@ -443,9 +423,11 @@ private extension MenuContainerController {
             let translation = sender.translation(in: self.view)
             
             let percent = (translation.x / 300).clamp(0, 1)
+            let xTrans = (1 - percent) * -300
             
             coverView.alpha = percent
-            mainStack.transform = .init(translationX: (1 - percent) * -300, y: 0)
+            mainStack.transform = .init(translationX: xTrans, y: 0)
+            notificationIndicator.transform = .init(translationX: xTrans, y: 0)
             [child.view, navigationController?.navigationBar, coverView].forEach {
                 $0?.transform = CGAffineTransform(translationX: max(0, translation.x), y: 0)
             }

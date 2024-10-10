@@ -206,7 +206,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         navigationItem.leftBarButtonItem = customBackButton
         
-        table.register(FullWidthThreadCell.self, forCellReuseIdentifier: postCellID)
+        table.register(PostThreadCell.self, forCellReuseIdentifier: postCellID)
         table.register(DefaultMainThreadCell.self, forCellReuseIdentifier: postCellID + "main")
         table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         

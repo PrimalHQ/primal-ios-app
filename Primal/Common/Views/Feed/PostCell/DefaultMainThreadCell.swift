@@ -57,7 +57,7 @@ class DefaultMainThreadCell: ThreadCell {
         
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
         
-        contentBotSpacer.isHidden = !mainLabel.isHidden && mainImages.isHidden && linkPresentation.isHidden && postPreview.isHidden && articleView.isHidden && invoiceView.isHidden
+        contentBotSpacer.isHidden = !mainLabel.isHidden && mainImages.isHidden && linkPresentation.isHidden && postPreview.isHidden && articleView.isHidden && invoiceView.isHidden && infoView.isHidden
         
         if let zaps {
             if zaps.isEmpty {
@@ -133,7 +133,7 @@ class DefaultMainThreadCell: ThreadCell {
         zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
-        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, contentBotSpacer])
+        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, infoView, contentBotSpacer])
         let mainStack = UIStackView(axis: .vertical, [horizontalProfileStack, contentStack, descStack])
         contentView.addSubview(mainStack)
         

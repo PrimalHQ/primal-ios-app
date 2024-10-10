@@ -204,7 +204,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     }
     
     init(pubkey: String) {
-        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "", deleted: false)
+        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "unknown", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "", deleted: false)
     }
     
     init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String, deleted: Bool) {

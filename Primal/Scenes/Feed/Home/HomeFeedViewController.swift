@@ -84,7 +84,9 @@ final class HomeFeedViewController: UIViewController, Themeable {
         pageVC.delegate = self
         view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
         
-        updateTheme()
+        navigationItem.rightBarButtonItem = customSearchButton
+        updateTitle()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,6 +107,8 @@ final class HomeFeedViewController: UIViewController, Themeable {
     
     func updateTheme() {
         updateTitle()
+        
+        navigationItem.rightBarButtonItem = customSearchButton
         
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()

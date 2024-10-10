@@ -12,7 +12,7 @@ import LinkPresentation
 import NostrSDK
 import GenericJSON
 
-final class ParsedElement: Equatable {
+class ParsedElement: Equatable {
     static func == (lhs: ParsedElement, rhs: ParsedElement) -> Bool {
         lhs.position == rhs.position && lhs.length == rhs.length && lhs.text == rhs.text
     }
@@ -52,6 +52,10 @@ extension PrimalFeedPost {
     var isArticle: Bool { kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue }
 }
 
+enum NotFoundContent {
+    case note, article
+}
+
 final class ParsedContent {
     var post: PrimalFeedPost
     let user: ParsedUser
@@ -87,6 +91,10 @@ final class ParsedContent {
     var mentionedUsers: [PrimalUser] = []
     
     var replyingTo: ParsedContent?
+    
+    var notFound: NotFoundContent?
+    
+    var customEvent: ParsedContent?
 }
 
 struct ParsedRepost {
@@ -204,7 +212,7 @@ extension ParsedContent {
         }
         
         for element in notes where element.position + element.length <= result.length {
-            guard let url = URL(string: "note://\(element.text)") else {
+            guard let url = URL(string: "note://\(element.reference)") else {
                 result.addAttributes([
                     .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
                 ], range: .init(location: element.position, length: element.length))
@@ -255,6 +263,10 @@ extension ParsedContent {
                 .link: URL(string: "highlight://\(element.reference)"),
                 .paragraphStyle: newParagraph
             ], range: .init(location: element.position, length: element.length))
+        }
+        
+        for (index, element) in notes.reversed().enumerated() where element.position + element.length <= result.length {
+            result.replaceCharacters(in: .init(location: element.position, length: element.length), with: "Mentioned Note \(index + 1)")
         }
      
         return result
