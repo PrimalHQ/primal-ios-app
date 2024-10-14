@@ -9,10 +9,11 @@ import UIKit
 import Kingfisher
 
 final class AvatarView: UIView {
-    let avatarViews = (1...6).map { _ in UIImageView() }
+    lazy var avatarViews = (1...maxAvatarCount).map { _ in UIImageView() }
     let extraView = UIView()
     let extraLabel = UILabel()
     
+    let maxAvatarCount: Int
     let size: CGFloat
     let spacing: CGFloat
     
@@ -27,9 +28,10 @@ final class AvatarView: UIView {
         }
     }
     
-    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, borderColor: UIColor? = nil) {
+    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, borderColor: UIColor? = nil, maxAvatarCount: Int = 6) {
         self.size = size
         self.spacing = spacing
+        self.maxAvatarCount = maxAvatarCount
         super.init(frame: .zero)
         transform = reversed ? .init(rotationAngle: .pi) : .identity
         
@@ -59,9 +61,15 @@ final class AvatarView: UIView {
         }
         
         let imagesCount = images.count.clamp(1, avatarViews.count)
-        extraView.isHidden = imagesCount >= userCount
-        let extraCount = min(userCount - imagesCount, 99)
-        extraLabel.text = "+\(extraCount)"
+        
+        if imagesCount >= userCount {
+            extraView.isHidden = true
+        } else {
+            let extraCount = min(userCount - imagesCount + 1, 99)
+            extraView.isHidden = false
+            extraLabel.text = "+\(extraCount)"
+            avatarViews.last?.isHidden = true
+        }
     }
 }
 

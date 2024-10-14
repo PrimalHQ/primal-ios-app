@@ -292,6 +292,15 @@
 		B91C46252BC44BA000AC2C9B /* RelayHintManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */; };
 		B91C46272BC6866A00AC2C9B /* PublicBookmarksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91C46262BC6866A00AC2C9B /* PublicBookmarksViewController.swift */; };
 		B91C46282BC6D03B00AC2C9B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */; };
+		B91E56E12CB97D8800C14809 /* AdvancedSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */; };
+		B91E56E32CB97DE600C14809 /* AdvancedSearchHomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */; };
+		B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */; };
+		B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E72CB9843A00C14809 /* AdvancedSearchMenuItemView.swift */; };
+		B91E56EA2CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E92CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift */; };
+		B91E56ED2CB9965200C14809 /* AdvancedSearchTimePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56EC2CB9965200C14809 /* AdvancedSearchTimePickerController.swift */; };
+		B91E56EF2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56EE2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift */; };
+		B91E56F12CBD69B100C14809 /* AdvancedSearchUserPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56F02CBD69B100C14809 /* AdvancedSearchUserPickerController.swift */; };
+		B91E56F32CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56F22CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -819,6 +828,15 @@
 		B91C46222BC3D35500AC2C9B /* BookmarkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkManager.swift; sourceTree = "<group>"; };
 		B91C46242BC44BA000AC2C9B /* RelayHintManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayHintManager.swift; sourceTree = "<group>"; };
 		B91C46262BC6866A00AC2C9B /* PublicBookmarksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicBookmarksViewController.swift; sourceTree = "<group>"; };
+		B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchController.swift; sourceTree = "<group>"; };
+		B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchHomeController.swift; sourceTree = "<group>"; };
+		B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchManager.swift; sourceTree = "<group>"; };
+		B91E56E72CB9843A00C14809 /* AdvancedSearchMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchMenuItemView.swift; sourceTree = "<group>"; };
+		B91E56E92CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchEnumPickerController.swift; sourceTree = "<group>"; };
+		B91E56EC2CB9965200C14809 /* AdvancedSearchTimePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchTimePickerController.swift; sourceTree = "<group>"; };
+		B91E56EE2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchTimeRangeController.swift; sourceTree = "<group>"; };
+		B91E56F02CBD69B100C14809 /* AdvancedSearchUserPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchUserPickerController.swift; sourceTree = "<group>"; };
+		B91E56F22CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPickerCollectionViewCell.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -1706,6 +1724,7 @@
 				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
+				B91E56DF2CB97D7000C14809 /* AdvancedSearch */,
 				B99E038A2C0567FA006CCECB /* Reads */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				B9F9331B2B88F6C40064B495 /* Premium */,
@@ -1987,6 +2006,38 @@
 				B91BB9632B3E10C3003F6B2A /* WalletKeyboardTabController.swift */,
 			);
 			path = TabbedSend;
+			sourceTree = "<group>";
+		};
+		B91E56DF2CB97D7000C14809 /* AdvancedSearch */ = {
+			isa = PBXGroup;
+			children = (
+				B91E56E62CB9843000C14809 /* Views */,
+				B91E56EB2CB9962500C14809 /* Subcontrollers */,
+				B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */,
+				B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */,
+				B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */,
+			);
+			path = AdvancedSearch;
+			sourceTree = "<group>";
+		};
+		B91E56E62CB9843000C14809 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B91E56E72CB9843A00C14809 /* AdvancedSearchMenuItemView.swift */,
+				B91E56F22CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B91E56EB2CB9962500C14809 /* Subcontrollers */ = {
+			isa = PBXGroup;
+			children = (
+				B91E56E92CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift */,
+				B91E56EC2CB9965200C14809 /* AdvancedSearchTimePickerController.swift */,
+				B91E56EE2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift */,
+				B91E56F02CBD69B100C14809 /* AdvancedSearchUserPickerController.swift */,
+			);
+			path = Subcontrollers;
 			sourceTree = "<group>";
 		};
 		B9318F632B62ADC20044B6AA /* InputControllers */ = {
@@ -2767,6 +2818,7 @@
 				9E8834C22A33BE24005DB548 /* ToastMessageView.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
+				B91E56EA2CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* MainNavigationController.swift in Sources */,
 				9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */,
 				B944292A2BD5A82600746FBC /* PostLoadingCell.swift in Sources */,
@@ -2794,6 +2846,7 @@
 				B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
+				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
@@ -2844,8 +2897,10 @@
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
+				B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */,
 				9EF4BFC42A8BE9C5003396AA /* IceWave.swift in Sources */,
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
+				B91E56EF2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift in Sources */,
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				B914CD6F2AA24BD300CD0BD1 /* UnmuteUserCell.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */,
@@ -2865,6 +2920,7 @@
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */,
+				B91E56F32CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift in Sources */,
 				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
@@ -2989,6 +3045,7 @@
 				B90032822BCFD6E100ADD2E5 /* DefaultMainThreadCell.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
+				B91E56F12CBD69B100C14809 /* AdvancedSearchUserPickerController.swift in Sources */,
 				B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */,
@@ -2996,6 +3053,7 @@
 				9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */,
 				B99E039E2C07C714006CCECB /* LongFormNavExtensionView.swift in Sources */,
 				9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */,
+				B91E56ED2CB9965200C14809 /* AdvancedSearchTimePickerController.swift in Sources */,
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
 				B99E03A22C08E8F3006CCECB /* LongFormCommentsController.swift in Sources */,
@@ -3011,6 +3069,7 @@
 				B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */,
 				B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */,
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
+				B91E56E12CB97D8800C14809 /* AdvancedSearchController.swift in Sources */,
 				B9CE4DBC2B7154AE0060A1B8 /* TransactionNotificationView.swift in Sources */,
 				B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */,
 				93CACAFF29F525B6003BBCE5 /* bech32_util.c in Sources */,
@@ -3060,6 +3119,7 @@
 				B9B9E5722CB571810065DD7C /* MenuImageView.swift in Sources */,
 				93CACB1B29F7D23A003BBCE5 /* Bech32.swift in Sources */,
 				9E6B38CB29F9487F00144073 /* Request.swift in Sources */,
+				B91E56E32CB97DE600C14809 /* AdvancedSearchHomeController.swift in Sources */,
 				B906AB072C99F4300089813F /* DatabaseManager.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
@@ -3292,7 +3352,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.62;
+				MARKETING_VERSION = 2.0.64;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3338,7 +3398,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.62;
+				MARKETING_VERSION = 2.0.64;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

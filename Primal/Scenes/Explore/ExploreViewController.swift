@@ -61,7 +61,9 @@ private extension ExploreViewController {
     func setup() {
         navigationItem.titleView = searchView
         searchView.addTarget(self, action: #selector(searchTapped), for: .touchDown)
-        configButton.addTarget(self, action: #selector(searchTapped), for: .touchDown)
+        configButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(AdvancedSearchController(), animated: true)
+        }), for: .touchUpInside)
     }
     
     @objc func searchTapped() {
