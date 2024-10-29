@@ -174,6 +174,20 @@ private extension DatabaseManager {
                 t.primaryKey("url", .text, onConflict: .replace)
                 t.column("image", .text).notNull()
             }
+            
+            try db.create(table: NoteDraft.databaseTableName) { t in
+                t.column("replyingTo", .text).notNull()
+                t.column("userPubkey", .text).notNull()
+                
+                t.column("preparedEvent", .text)
+                
+                t.column("text", .text).notNull()
+                t.column("uploadedAssets", .text)
+                t.column("taggedUsers", .text)
+                
+                t.primaryKey(["replyingTo", "userPubkey"], onConflict: .replace)
+                t.foreignKey(["userPubkey"], references: Profile.databaseTableName)
+            }
         }
         
         // Migrations for future application versions will be inserted here:

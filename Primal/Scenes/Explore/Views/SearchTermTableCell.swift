@@ -40,7 +40,6 @@ final class SearchTermTableCell: UITableViewCell, Themeable {
         
         termLabel.font = .appFont(withSize: 16, weight: .bold)
         titleLabel.font = .appFont(withSize: 14, weight: .regular)
-        titleLabel.text = "search nostr"
         
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 32).pinToSuperview(edges: .vertical, padding: 12)

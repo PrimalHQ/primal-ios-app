@@ -53,7 +53,7 @@ final class ExploreViewController: PrimalPageController {
         
         searchView.updateTheme()
         
-        configButton.tintColor = .foreground3
+        configButton.tintColor = .foreground
     }
 }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NoteFeedPreviewController: ShortFormFeedController {
+class NoteFeedPreviewController: NoteFeedViewController {
     var contentInset: UIEdgeInsets { .zero }
     var disableInteraction: Bool { true }
     

@@ -8,9 +8,10 @@
 import UIKit
 import Kingfisher
 import Nantes
+import FLAnimatedImage
 
 final class PostPreviewPostPreviewView: UIView {
-    let profileImageView = UIImageView()
+    let profileImageView = FLAnimatedImageView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let secondaryIdentifierLabel = UILabel()
@@ -51,11 +52,7 @@ final class PostPreviewPostPreviewView: UIView {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 28, height: 28))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        profileImageView.setUserImage(content.user, size: .init(width: 24, height: 24))
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
@@ -181,6 +178,7 @@ private extension PostPreviewPostPreviewView {
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)
         mainStack.setCustomSpacing(6, after: mainImages)
+        mainStack.setCustomSpacing(6, after: linkPreview)
         addSubview(mainStack)
         
         mainStack

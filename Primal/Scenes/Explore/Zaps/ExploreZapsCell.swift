@@ -9,7 +9,7 @@ import UIKit
 import FLAnimatedImage
 
 final class ExploreZapsCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView()
+    let avatar = FLAnimatedImageView().constrainToSize(36)
     let name = UILabel()
     let dotLabel = UILabel()
     let timeLabel = UILabel()
@@ -19,7 +19,7 @@ final class ExploreZapsCell: UITableViewCell, Themeable {
         
     let background = UIView()
     let firstRowBackground = UIView()
-    let firstRowImage = FLAnimatedImageView().constrainToSize(28)
+    let firstRowImage = FLAnimatedImageView().constrainToSize(36)
     let zapIcon = UIImageView(image: UIImage(named: "topZapGalleryIcon"))
     let zapAmount = UILabel()
     let zapText = UILabel()
@@ -37,9 +37,11 @@ final class ExploreZapsCell: UITableViewCell, Themeable {
     
     func updateForZap(_ parsedZap: ParsedFeedZap) {
         let zap = parsedZap.zap
-        let user = zap.user.data
+        firstRowImage.setUserImage(zap.user)
+        zapAmount.text = zap.amountSats.localized()
+        zapText.text = zap.message
         
-        name.text = user.firstIdentifier
+        let zappedUser = parsedZap.zappedObject.userToZap
         
         if let time = parsedZap.zappedObject.referenceTime {
             timeLabel.text = Date(timeIntervalSince1970: TimeInterval(time)).timeAgoDisplay()
@@ -49,16 +51,10 @@ final class ExploreZapsCell: UITableViewCell, Themeable {
             timeLabel.isHidden = true
             dotLabel.isHidden = true
         }
-        
-        firstRowImage.setUserImage(zap.user)
-        
+        avatar.setUserImage(zappedUser, feed: true, size: CGSize(width: 36, height: 36))
+        name.text = zappedUser.data.firstIdentifier
         desc.text = parsedZap.zappedObject.description
         desc.isHidden = desc.text?.isEmpty != false
-        
-        avatar.setUserImage(parsedZap.zappedObject.userToZap, feed: true, size: CGSize(width: 64, height: 64))
-        
-        zapAmount.text = zap.amountSats.localized()
-        zapText.text = zap.message
         
         updateTheme()
     }
@@ -89,16 +85,16 @@ private extension ExploreZapsCell {
         
         firstRowImage.contentMode = .scaleAspectFill
         firstRowImage.clipsToBounds = true
-        firstRowImage.layer.cornerRadius = 14
+        firstRowImage.layer.cornerRadius = 18
         
-        zapAmount.font = .appFont(withSize: 14, weight: .heavy)
+        zapAmount.font = .appFont(withSize: 16, weight: .heavy)
         
-        zapText.font = .appFont(withSize: 14, weight: .regular)
+        zapText.font = .appFont(withSize: 16, weight: .regular)
         zapText.lineBreakMode = .byTruncatingTail
         
         firstRowBackground.addSubview(firstRow)
         firstRow.pinToSuperview(edges: [.leading, .vertical], padding: 1).pinToSuperview(edges: .trailing, padding: 20)
-        firstRowBackground.layer.cornerRadius = 15
+        firstRowBackground.layer.cornerRadius = 19
         
         let nameRow = UIStackView([name, dotLabel, timeLabel])
         nameRow.alignment = .center
@@ -114,22 +110,21 @@ private extension ExploreZapsCell {
         mainStack.spacing = 8
         
         contentView.addSubview(background)
-        background.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom, padding: 12).pinToSuperview(edges: .top)
+        background.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom, padding: 16).pinToSuperview(edges: .top)
         
         background.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 8).pinToSuperview(edges: .bottom, padding: 12)
         
         background.layer.cornerRadius = 8
         
-        avatar.constrainToSize(28)
         avatar.contentMode = .scaleAspectFill
-        avatar.layer.cornerRadius = 14
+        avatar.layer.cornerRadius = 18
         avatar.layer.masksToBounds = true
         
-        name.font = .appFont(withSize: 14, weight: .bold)
-        timeLabel.font = .appFont(withSize: 14, weight: .regular)
-        dotLabel.font = .appFont(withSize: 14, weight: .regular)
-        desc.font = .appFont(withSize: 14, weight: .regular)
+        name.font = .appFont(withSize: 16, weight: .bold)
+        timeLabel.font = .appFont(withSize: 16, weight: .regular)
+        dotLabel.font = .appFont(withSize: 16, weight: .regular)
+        desc.font = .appFont(withSize: 15, weight: .regular)
         desc.numberOfLines = 2
         desc.lineBreakMode = .byTruncatingTail
         

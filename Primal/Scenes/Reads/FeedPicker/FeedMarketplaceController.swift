@@ -118,7 +118,9 @@ extension FeedMarketplaceController: UITableViewDelegate {
         let readsFeed = PrimalFeed(
             name: feed.name,
             spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(type.kind)\"}",
-            description: feed.about
+            description: feed.about ?? "",
+            feedkind: "dvm",
+            enabled: true
         )
         show(FeedPreviewParentController(feed: readsFeed, type: type, feedInfo: parsed), sender: nil)
     }

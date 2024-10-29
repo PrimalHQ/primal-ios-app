@@ -107,6 +107,20 @@ final class SmartContactsManager {
         if contact.data.pubkey == IdentityManager.instance.userHexPubkey { return }
         if MuteManager.instance.isMuted(contact.data.pubkey) { return }
         
-        DatabaseManager.instance.setVisitProfile(contact.data)
+        var cached = cachedContactPubkeys[IdentityManager.instance.userHexPubkey, default: []]
+        cached.removeAll(where: { $0 == contact.data.pubkey })
+        cached.insert(contact.data.pubkey, at: 0)
+        cachedContactPubkeys[IdentityManager.instance.userHexPubkey] = cached
+        
+        DatabaseManager.instance.setVisitProfiles([contact.data])
+    }
+    
+    func addContacts(_ contacts: [ParsedUser]) {
+        let contacts = contacts.map { $0.data }
+            .filter({ $0.pubkey != IdentityManager.instance.userHexPubkey && !MuteManager.instance.isMuted($0.pubkey) })
+        
+        if contacts.isEmpty { return }
+        
+        DatabaseManager.instance.setVisitProfiles(contacts)
     }
 }

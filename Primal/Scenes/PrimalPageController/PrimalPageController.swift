@@ -14,12 +14,12 @@ class PrimalPageController: UIViewController, Themeable {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     
     private let tabs: [(name: String, initialize: () -> UIViewController)]
     
     private var viewControllers: [String: UIViewController] = [:]
-    @Published private var currentTab = 0
+    @Published private(set) var currentTab = 0
     
     init(tabs: [(String, () -> UIViewController)]) {
         self.tabs = tabs

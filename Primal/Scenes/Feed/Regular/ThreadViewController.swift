@@ -11,6 +11,11 @@ import SafariServices
 
 final class ThreadViewController: PostFeedViewController, ArticleCellController {
     let id: String
+    var mainObject: PrimalFeedPost? {
+        didSet {
+            inputManager.replyingTo = mainObject
+        }
+    }
     
     var didPostNewComment = false
         
@@ -26,6 +31,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
     private let inputBackground = UIView()
+    private let keyboardSizer = KeyboardSizingView()
     
     var articles: [Article] = [] {
         didSet {
@@ -39,9 +45,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         }
     }
     
-    private let postButtonText = "Reply"
-    
-    private lazy var postButton = SmallPostButton(title: postButtonText)
+    private lazy var postButton = SmallPostButton(title: "Reply")
     private let buttonStack = UIStackView()
     private let replyingToLabel = UILabel()
     
@@ -49,7 +53,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     private let usersTableView = UITableView()
     private var inputContentMaxHeightConstraint: NSLayoutConstraint?
     
-    private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView)
+    private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView, replyId: id, replyingTo: mainObject, defaultPostTitle: "Reply")
     
     var mainPostZaps: [ParsedZap]? { didSet { table.reloadData() } }
     
@@ -66,6 +70,8 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         self.init(threadId: post.post.id)
         self.mainPostZaps = post.zaps
         let copy = post.copy()
+        mainObject = copy.post
+        inputManager.replyingTo = mainObject
         copy.reposted = nil
         posts = [copy]
         
@@ -85,6 +91,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     var bottomBarHeight: CGFloat = 150
+    var keyboardCancellable: AnyCancellable?
     override var barsMaxTransform: CGFloat { bottomBarHeight }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -103,12 +110,32 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         mainTabBarController?.showTabBarBorder = false
         
         bottomBarHeight = 116 + view.safeAreaInsets.bottom
+        
+        // We should only update while the view is visible, otherwise table cells get fucked up unexplainably
+        keyboardCancellable = keyboardSizer.updateHeightCancellable()
+        
+        (navigationController as? MainNavigationController)?.backGestureDelegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         mainTabBarController?.showTabBarBorder = true
+        
+        if let nav = navigationController {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) { [self] in
+                if nav.viewControllers.contains(where: { $0 == self }) {
+                    return // the controller is still in the nav stack so data will not be lost
+                }
+                inputManager.askToSave(nav)
+            }
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        keyboardCancellable = nil
     }
     
     var articleSection: Int { 0 }
@@ -204,7 +231,12 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override func updateTheme() {
         super.updateTheme()
         
-        navigationItem.leftBarButtonItem = customBackButton
+        let back = backButtonWithColorNoAction(.foreground)
+        navigationItem.leftBarButtonItem = .init(customView: back)
+        back.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            inputManager.askToSaveThenDismiss(self)
+        }), for: .touchUpInside)
         
         table.register(PostThreadCell.self, forCellReuseIdentifier: postCellID)
         table.register(DefaultMainThreadCell.self, forCellReuseIdentifier: postCellID + "main")
@@ -255,30 +287,38 @@ private extension ThreadViewController {
             return
         }
         
-        textInputView.resignFirstResponder()
-        textInputView.isEditable = false
-        textInputLoadingIndicator.isHidden = false
-        textInputLoadingIndicator.play()
-        
-        PostingManager.instance.sendReplyEvent(text, mentionedPubkeys: inputManager.mentionedUsersPubkeys, post: posts[mainPositionInThread].post) { [weak self] success in
+        inputManager.post { [weak self] success, event in
+            guard success, let event, let self else {
+                return
+            }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+            SocketRequest(name: "events", payload: [
+                "event_ids": [.string(event.id)],
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+                "extended_response": true
+            ])
+            .publisher()
+            .map { $0.process(contentStyle: .threadChildren).first }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] post in
                 guard let self else { return }
                 
-                self.textInputView.isEditable = true
-                self.textInputLoadingIndicator.isHidden = true
-                self.textInputLoadingIndicator.stop()
+                didPostNewComment = true
+                didMoveToMain = false
+
+                guard let post else {
+                    feed.requestThread(postId: self.id)
+                    return
+                }
                 
-                if success {
-                    self.textInputView.text = ""
-                    self.placeholderLabel.isHidden = false
-                    self.didPostNewComment = true
-                    self.didMoveToMain = false
-                    self.feed.requestThread(postId: self.id)
+                if feed.parsedPosts.count > mainPositionInThread + 1 {
+                    feed.parsedPosts.insert(post, at: mainPositionInThread + 1)
                 } else {
-                    self.textInputView.becomeFirstResponder()
+                    feed.parsedPosts.append(post)
                 }
             }
+            .store(in: &cancellables)
+
         }
     }
     
@@ -306,6 +346,7 @@ private extension ThreadViewController {
                 isLoading = false
             }
             
+            self.mainObject = mainPost.post
             self.posts = []
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
@@ -344,29 +385,16 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(
-            Publishers.keyboardState,
-            $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
-        )
-        .sink { [weak self] (keyboardState, contentSize) in
+        $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
+        .sink { [weak self] contentSize in
             let topBarHeight: CGFloat = (self?.topBarHeight ?? 100) + 12
             
             guard let self, posts.count - mainPositionInThread < 6 else {
-                switch keyboardState {
-                case .hidden:
-                    self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: 150, right: 0)
-                case .shown(let height):
-                    self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: height, right: 0)
-                }
+                self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: 150, right: 0)
                 return
             }
-            switch keyboardState {
-            case .hidden:
-                let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - topBarHeight - contentSize)
-                self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
-            case .shown(let height):
-                self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: height + 300, right: 0)
-            }
+            let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - topBarHeight - contentSize)
+            self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
         }
         .store(in: &cancellables)
         
@@ -395,13 +423,19 @@ private extension ThreadViewController {
         })
         .store(in: &cancellables)
         
+        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEditing, textView in
+                self?.placeholderLabel.isHidden = isEditing || !textView.text.isEmpty
+            }
+            .store(in: &cancellables)
+        
         inputManager.$isEditing.receive(on: DispatchQueue.main).sink { [weak self] isEditing in
             guard let self = self else { return }
             let images = self.inputManager.media
             let users = self.inputManager.users
             
             self.textHeightConstraint?.isActive = !isEditing
-            self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             
             let isImageHidden = !isEditing ||   images.isEmpty || !users.isEmpty
             
@@ -416,9 +450,11 @@ private extension ThreadViewController {
                 self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                if self.mainPositionInThread < self.posts.count {
-                    self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
+            if isEditing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    if self.mainPositionInThread < self.posts.count {
+                        self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
+                    }
                 }
             }
         }
@@ -437,37 +473,38 @@ private extension ThreadViewController {
         }
         .store(in: &cancellables)
         
-        inputManager.$media.receive(on: DispatchQueue.main).sink { [weak self] images in
-            self?.imagesCollectionView.imageResources = images
-            self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
-            self?.postButton.setTitle(self?.inputManager.isUploadingImages == true ? "Uploading..." : self?.postButtonText, for: .normal)
+        inputManager.$media.assign(to: \.imageResources, onWeak: imagesCollectionView).store(in: &cancellables)
+        inputManager.$postButtonEnabledState.assign(to: \.isEnabled, on: postButton).store(in: &cancellables)
+        inputManager.$postButtonTitle.sink { [postButton] title in
+            postButton.setTitle(title, for: .normal)
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$media, inputManager.$isEmpty).receive(on: DispatchQueue.main).sink { [weak self] images, isEmpty in
-            guard let self else { return }
-            let isUploading: Bool = {
-                for image in images {
-                    if case .uploading = image.state {
-                        return true
-                    }
-                }
-                return false
-            }()
-            let hasImages = !images.isEmpty
-            self.postButton.isEnabled = !isUploading && (!isEmpty || hasImages)
-        }
-        .store(in: &cancellables)
-        
-        Publishers.CombineLatest(inputManager.$users, inputManager.$media)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] users, images in
+        inputManager.$isPosting
+            .sink { [weak self] isPosting in
                 guard let self else { return }
-                let isHidden = images.isEmpty || !users.isEmpty
-                self.imagesCollectionView.isHidden = isHidden
-                self.imagesCollectionView.alpha = isHidden ? 0 : 1
+                if isPosting {
+                    textInputLoadingIndicator.isHidden = false
+                    textInputLoadingIndicator.play()
+                } else {
+                    textInputLoadingIndicator.pause()
+                    textInputLoadingIndicator.isHidden = true
+                }
             }
             .store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            inputManager.$users.map({ $0.isEmpty }).removeDuplicates(),
+            inputManager.$media.map({ $0.isEmpty }).removeDuplicates()
+        ).receive(on: DispatchQueue.main).sink { [weak self] isUsersEmpty, imagesIsEmpty in
+            guard let self else { return }            
+            let isHidden = imagesIsEmpty || !isUsersEmpty
+            
+            inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
+            imagesCollectionView.isHidden = isHidden
+            imagesCollectionView.alpha = isHidden ? 0 : 1
+        }
+        .store(in: &cancellables)
     }
     
     func setup() {
@@ -475,14 +512,17 @@ private extension ThreadViewController {
         
         title = "Thread"
         
-        table.keyboardDismissMode = .interactive
+        table.keyboardDismissMode = .onDrag
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
         table.register(ArticleCell.self, forCellReuseIdentifier: "article")
         
+        view.insertSubview(keyboardSizer, at: 0)
+        keyboardSizer.pinToSuperview(edges: [.bottom, .horizontal])
+        
         view.addSubview(inputParent)
         inputParent.pinToSuperview(edges: .horizontal)
-        inputParent.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
+        inputParent.bottomAnchor.constraint(lessThanOrEqualTo: keyboardSizer.topAnchor).isActive = true
         let botC = inputParent.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
         botC.priority = .defaultHigh
         botC.isActive = true
@@ -513,7 +553,6 @@ private extension ThreadViewController {
         
         textParent.addSubview(textInputLoadingIndicator)
         textInputLoadingIndicator.centerToView(textInputView)
-        textInputLoadingIndicator.isHidden = true
         
         contentStack
             .pinToSuperview(edges: [.top, .horizontal])
@@ -526,7 +565,7 @@ private extension ThreadViewController {
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
             .pinToSuperview(edges: .top, padding: 2.5)
-            .pinToSuperview(edges: .bottom, padding: -2.5)
+            .pinToSuperview(edges: .bottom, padding: -5.5)
         
         inputStack
             .pinToSuperview(edges: .horizontal, padding: 20)
@@ -589,6 +628,7 @@ private extension ThreadViewController {
         
         textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 39).isActive = true
         textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 39)
+        textHeightConstraint?.priority = .defaultHigh
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
         inputContentMaxHeightConstraint?.priority = .init(500)
         
@@ -621,8 +661,34 @@ private extension ThreadViewController {
     }
 }
 
+// Back gesture
 extension ThreadViewController: UIGestureRecognizerDelegate {
+    var askToSaveIsNecessary: Bool {
+        let draft = inputManager.currentDraft
+        
+        if let oldDraft = inputManager.oldDraft {
+            if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
+                return false
+            }
+        } else if textInputView.text.isEmpty == true {
+            return false
+        }
+        
+        return true
+    }
+    
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        textInputView.isFirstResponder
+        if navigationController?.topViewController != self { return true }
+        
+        if askToSaveIsNecessary {
+            inputManager.askToSave(self) { [weak self] dialog in
+                if !dialog {
+                    self?.backButtonPressed()
+                }
+            }
+            return false
+        }
+        
+        return true
     }
 }

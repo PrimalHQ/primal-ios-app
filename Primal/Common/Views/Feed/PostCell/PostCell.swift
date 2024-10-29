@@ -20,7 +20,7 @@ protocol PostCellDelegate: AnyObject, ZapGalleryViewDelegate {
 class PostCell: UITableViewCell {
     weak var delegate: PostCellDelegate? {
         didSet {
-            zapGallery.delegate = delegate
+            zapGallery?.delegate = delegate
         }
     }
     
@@ -49,7 +49,7 @@ class PostCell: UITableViewCell {
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     let bookmarkButton = UIButton()
     
-    var zapGallery: ZapGallery = SmallZapGalleryView()
+    var zapGallery: ZapGallery?
     
     weak var imageAspectConstraint: NSLayoutConstraint?
     var bookmarkUpdater: AnyCancellable?
@@ -336,7 +336,7 @@ private extension PostCell {
             delegate?.postCellDidTap(self, .payInvoice)
         }), for: .touchUpInside)
         
-        zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        zapGallery?.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
         

@@ -10,8 +10,6 @@ import UIKit
 import Kingfisher
 
 class NewPostViewController: UIViewController {
-    let postButtonText = "Post"
-    
     let textView = UITextView()
     let imageView = UIImageView(image: UIImage(named: "Profile"))
     
@@ -23,9 +21,9 @@ class NewPostViewController: UIViewController {
     let atButton = UIButton()
     lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
     
-    lazy var postButton = SmallPostButton(title: postButtonText)
+    lazy var postButton = SmallPostButton(title: "Post")
     
-    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
+    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: replyToPost?.universalID, replyingTo: replyToPost)
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -42,13 +40,6 @@ class NewPostViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        textView.becomeFirstResponder()
-        textView.selectedRange = .init(location: 0, length: 0)
     }
 }
 
@@ -70,29 +61,13 @@ private extension NewPostViewController {
             return
         }
         
-        postButton.isEnabled = false
-        postButton.setTitle(" " + postButtonText + " ", for: .normal)
-        
-        let callback: (Bool) -> Void = { [weak self] success in
+        let onPost = self.onPost
+        manager.post { success, _ in
             if success {
-                self?.postButton.setTitle("Posted", for: .normal)
-                self?.onPost?()
-                self?.dismiss(animated: true) {
-                    self?.postButton.setTitle(self?.postButtonText, for: .normal)
-                    self?.manager.media = []
-                    self?.textView.text = ""
-                }
-            } else {
-                self?.postButton.setTitle(self?.postButtonText, for: .normal)
-                self?.postButton.isEnabled = true
+                onPost?()
             }
         }
-        
-        if let replyToPost {
-            PostingManager.instance.sendReplyEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, post: replyToPost, callback)
-        } else {
-            PostingManager.instance.sendPostEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, callback)
-        }
+        dismiss(animated: true)
     }
     
     @objc func galleryButtonPressed() {
@@ -108,6 +83,7 @@ private extension NewPostViewController {
     }
     
     func setup() {
+        presentationController?.delegate = self
         view.backgroundColor = .background2
         
         let cancel = CancelButton()
@@ -165,7 +141,19 @@ private extension NewPostViewController {
             textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
         ])
         
-        cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        cancel.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            if manager.isPosting {
+                manager.askToDeleteDraft(self) { [weak self] delete in
+                    if !delete {
+                        self?.dismiss(animated: true)
+                    }
+                }
+                return
+            }
+            
+            manager.askToSaveThenDismiss(self)
+        }), for: .touchUpInside)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
@@ -176,7 +164,7 @@ private extension NewPostViewController {
         setupBindings()
     }
     
-    func setupBindings() {
+    func setupBindings() {        
         IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
@@ -204,29 +192,33 @@ private extension NewPostViewController {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest3(manager.$users, manager.$media, manager.$isEmpty)
-            .debounce(for: 0.1, scheduler: RunLoop.main).sink { [weak self] users, images, isEmpty in
-                guard let self else { return }
-                let isUploadingImages: Bool = {
-                    for image in images {
-                        if case .uploading = image.state {
-                            return true
-                        }
-                    }
-                    return false
-                }()
-                self.postButton.isEnabled = (!isEmpty || !images.isEmpty) && !isUploadingImages && self.postButton.title(for: .normal) == self.postButtonText
-            }
-            .store(in: &cancellables)
-                
-        Publishers.CombineLatest(manager.$users, manager.$media).receive(on: DispatchQueue.main).sink { [weak self] users, images in
+        manager.$postButtonEnabledState.assign(to: \.isEnabled, on: postButton).store(in: &cancellables)
+        manager.$postButtonTitle.sink { [postButton] title in
+            postButton.setTitle(title, for: .normal)
+        }
+        .store(in: &cancellables)
+        
+        manager.$isPosting.map({ !$0 }).assign(to: \.isUserInteractionEnabled, on: bottomStack).store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            manager.$users.map({ $0.isEmpty }).removeDuplicates(),
+            manager.$media
+        ).receive(on: DispatchQueue.main).sink { [weak self] isUsersEmpty, images in
             guard let self else { return }
             self.imagesCollectionView.imageResources = images
             
-            self.imagesCollectionView.isHidden = images.isEmpty || !users.isEmpty
-            
-            self.postButton.setTitle(self.manager.isUploadingImages ? "Uploading..." : self.postButtonText, for: .normal)
+            self.imagesCollectionView.isHidden = images.isEmpty || !isUsersEmpty
         }
         .store(in: &cancellables)
+    }
+}
+
+extension NewPostViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {
+        manager.askToSaveThenDismiss(self)
+    }
+    
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+        false
     }
 }

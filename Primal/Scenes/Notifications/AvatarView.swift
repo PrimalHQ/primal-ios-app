@@ -65,7 +65,7 @@ final class AvatarView: UIView {
         if imagesCount >= userCount {
             extraView.isHidden = true
         } else {
-            let extraCount = min(userCount - imagesCount + 1, 99)
+            let extraCount = min(userCount - imagesCount, 99)
             extraView.isHidden = false
             extraLabel.text = "+\(extraCount)"
             avatarViews.last?.isHidden = true

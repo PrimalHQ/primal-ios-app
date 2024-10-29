@@ -50,24 +50,39 @@ private extension ExploreMediaController {
         table.pinToSuperview()
         table.contentInsetAdjustmentBehavior = .never
         table.register(MediaTripleCell.self, forCellReuseIdentifier: "cell")
+        table.register(MediaLoadingCell.self, forCellReuseIdentifier: "loading")
         table.dataSource = self
         table.separatorStyle = .none
         
         table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
-        
     }
 }
 
 extension ExploreMediaController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { (notes.count + 2) / 3 }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if notes.isEmpty {
+            return 1
+        }
+        return (notes.count + 2) / 3
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if notes.isEmpty {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+            (cell as? Themeable)?.updateTheme()
+            return cell
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? MediaTripleCell {
             let index = indexPath.row * 3
             let mediaSlice = Array(notes[index..<min(index + 3, notes.count)])
             cell.setupMetadata(mediaSlice, delegate: self)
+            
+            if index >= notes.count - 20 {
+                feedManager.requestNewPage()
+            }
         }
         return cell
     }

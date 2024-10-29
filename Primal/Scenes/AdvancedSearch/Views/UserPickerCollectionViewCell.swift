@@ -35,6 +35,6 @@ class UserPickerCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func setupWithUser(_ user: ParsedUser) {
-        image.setUserImage(user)
+        image.setUserImage(user, size: .init(width: 36, height: 36), disableAnimated: true)
     }
 }

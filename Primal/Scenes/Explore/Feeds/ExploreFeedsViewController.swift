@@ -14,10 +14,15 @@ final class ExploreFeedsViewController: UIViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
     let table = UITableView()
+    let loadingView = SkeletonLoaderView(aspect: 343 / 120)
     
     var feeds: [ParsedFeedFromMarket] = [] {
         didSet {
             table.reloadData()
+            loadingView.isHidden = !feeds.isEmpty
+            if !feeds.isEmpty {
+                loadingView.pause()
+            }
         }
     }
     
@@ -44,13 +49,23 @@ final class ExploreFeedsViewController: UIViewController, Themeable {
     
     func updateTheme() {
         table.backgroundColor = .background2
-        table.reloadData()
+        
+        updateTable()
     }
 }
 
 private extension ExploreFeedsViewController {
     func updateTable() {
         table.reloadData()
+        
+        DispatchQueue.main.async { [self] in
+            loadingView.isHidden = !feeds.isEmpty
+            if feeds.isEmpty {
+                loadingView.play()
+            } else {
+                loadingView.pause()
+            }
+        }
     }
     
     func setup() {
@@ -66,7 +81,8 @@ private extension ExploreFeedsViewController {
         view.addSubview(table)
         table.pinToSuperview()
         
-        updateTheme()
+        view.addSubview(loadingView)
+        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 60, safeArea: true)
     }
 }
 
@@ -96,7 +112,8 @@ extension ExploreFeedsViewController: UITableViewDelegate {
         let readsFeed = PrimalFeed(
             name: feed.name,
             spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(kind.kind)\"}",
-            description: feed.about
+            description: feed.about ?? "",
+            feedkind: "dvm"
         )
         
         show(ExploreFeedPreviewParentController(feed: readsFeed, type: kind, feedInfo: parsed), sender: nil)

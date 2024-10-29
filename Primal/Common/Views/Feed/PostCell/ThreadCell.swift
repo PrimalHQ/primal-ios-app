@@ -89,10 +89,12 @@ class ProfilePreviewView: UIView {
 
 class HashtagPreviewView: UIView {
     let hashtag: String
-    let viewController: RegularFeedViewController
+    let viewController: SearchNoteFeedController
     init(hashtag: String) {
         self.hashtag = hashtag
-        viewController = RegularFeedViewController(feed: .init(search: hashtag))
+        let advancedSearchManager = AdvancedSearchManager()
+        advancedSearchManager.includeWordsText = hashtag
+        viewController = SearchNoteFeedController(feed: .init(newFeed: advancedSearchManager.feed))
         super.init(frame: .zero)
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
             self.viewController.table.contentInset = .zero
@@ -143,10 +145,8 @@ final class PostThreadCell: ThreadCell {
         topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
         topConstraint?.isActive = true
         
-        let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
-        bottomC.priority = .defaultLow
-        bottomC.isActive = true
-        bottomConstraint = bottomC
+        bottomConstraint = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        bottomConstraint?.isActive = true
         
         actionButtonStandin.constrainToSize(height: 18)
         contentView.addSubview(bottomButtonStack)

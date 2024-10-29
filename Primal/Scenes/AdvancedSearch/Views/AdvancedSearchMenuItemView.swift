@@ -10,7 +10,7 @@ import UIKit
 class AdvancedSearchMenuItemView: MyButton {
     private let titleLabel = UILabel()
     fileprivate let valueLabel = UILabel()
-    private let chevron = UIImageView(image: UIImage(named: "chevron"))
+    private let chevron = UIImageView(image: UIImage(named: "advancedSearchChevron"))
     
     override var isPressed: Bool {
         didSet {
@@ -33,9 +33,14 @@ class AdvancedSearchMenuItemView: MyButton {
             $0.textColor = .foreground3
         }
         
-        let stack = UIStackView([titleLabel, UIView(), valueLabel, SpacerView(width: 12), chevron])
+        chevron.tintColor = .foreground3
+        
+        let stack = UIStackView([titleLabel, UIView(), valueLabel, chevron])
         addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 17)
+        stack.pinToSuperview(edges: .horizontal, padding: 8).pinToSuperview(edges: .vertical, padding: 17)
+        stack.alignment = .center
+        
+        stack.spacing = 12
         
         chevron.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
@@ -65,5 +70,20 @@ class AdvancedSearchUsersMenuItemView: AdvancedSearchMenuItemView {
         value = ""
         userView.isHidden = false
         userView.setImages(users.compactMap { $0.profileImage.url(for: .small) }, userCount: users.count)
+    }
+}
+
+class AdvancedSearchAccentMenuItemView: AdvancedSearchMenuItemView {
+    var accentValue: String? {
+        set {
+            if let newValue {
+                value = newValue
+                valueLabel.textColor = .accent
+            } else {
+                value = "None"
+                valueLabel.textColor = .foreground3
+            }
+        }
+        get { value }
     }
 }

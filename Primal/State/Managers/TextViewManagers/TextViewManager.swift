@@ -11,13 +11,24 @@ import UIKit
 
 struct PostingAsset {
     let id = UUID().uuidString
-    var resource: ImagePickerResult
+    var resource: ImagePickerResult?
     var state = State.uploading(0)
     
     enum State {
         case uploaded(String)
         case failed
         case uploading(CGFloat)
+    }
+}
+
+extension PostingAsset.State {
+    var url: String? {
+        switch self {
+        case .uploaded(let url):
+            return url
+        default:
+            return nil
+        }
     }
 }
 
@@ -78,10 +89,11 @@ class TextViewManager: NSObject, UITextViewDelegate {
         let postingImage = media[postingIndex]
         
         if case .uploaded = postingImage.state { return }
+        guard let resource = postingImage.resource else { return }
         
         media[postingIndex].state = .uploading(0)
         
-        let upload = UploadAssetRequest(asset: postingImage.resource)
+        let upload = UploadAssetRequest(asset: resource)
         
         upload.$progress.removeDuplicates().receive(on: DispatchQueue.main)
             .sink { [weak self] progress in

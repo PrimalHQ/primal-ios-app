@@ -59,13 +59,41 @@ extension Article: PostingReferenceObject {
 }
 
 final class PostingManager {
-    private init() {}
+    private init() {
+        ICloudKeychainManager.instance.$userPubkey
+            .flatMap { DatabaseManager.instance.getCompletedDrafts(userPubkey: $0) }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.draftsToPost, onWeak: self)
+            .store(in: &cancellables)
+        
+        Publishers.CombineLatest(Connection.regular.isConnectedPublisher, $draftsToPost)
+            .filter { $0.0 }
+            .receive(on: DispatchQueue.main)
+            .sink { _, drafts in
+                for draft in drafts {
+                    self.postDraft(draft)
+                }
+            }
+            .store(in: &cancellables)
+        
+        var notifiedEvs: Set<String> = []
+        postedEvent.sink { obj in
+            if notifiedEvs.contains(obj.id) { return }
+            notifiedEvs.insert(obj.id)
+            RootViewController.instance.showToast("Note Published")
+        }
+        .store(in: &cancellables)
+    }
     
     static let instance: PostingManager = PostingManager()
     
     @Published var userReposts: Set<String> = []
     @Published var userReplied: Set<String> = []
     @Published var userLikes: Set<String> = []
+    
+    @Published var draftsToPost: [NoteDraft] = []
+    
+    let postedEvent = PassthroughSubject<NostrObject, Never>()
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -162,11 +190,11 @@ final class PostingManager {
         })
     }
     
-    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool) -> Void) {
+    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool, NostrObject?) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
         guard var ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
+            callback(false, nil)
             return
         }
         
@@ -178,12 +206,12 @@ final class PostingManager {
         userReplied.insert(post.universalID)
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
+            callback(true, ev)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             self.userReplied.remove(post.universalID)
-            callback(false)
+            callback(false, nil)
         })
     }
     
@@ -228,6 +256,18 @@ final class PostingManager {
         return ev
     }
     
+    func sendEvent(_ ev: NostrObject, _ callback: @escaping (Bool) -> Void) {
+        if LoginManager.instance.method() != .nsec { return }
+        
+        RelaysPostbox.instance.request(ev, successHandler: { _ in
+            callback(true)
+            
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
+        }, errorHandler: {
+            callback(false)
+        })
+    }
+    
     func deleteHighlightEvents(_ highlights: [Highlight], _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
@@ -243,5 +283,39 @@ final class PostingManager {
         }, errorHandler: {
             callback(false)
         })
+    }
+    
+    func postDraft(_ draft: NoteDraft) {
+        postDraftRecursively(draft)
+    }
+}
+
+private extension PostingManager {
+    func postDraftRecursively(_ draft: NoteDraft, retries: Int = 5) {
+        if retries == 0 {
+            RootViewController.instance.showToast("Couldn't publish your note")
+            
+            draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
+            var draft = draft
+            draft.preparedEvent = nil
+            DatabaseManager.instance.saveDraft(draft)
+            return
+        }
+        
+        guard let ev = draft.preparedEvent else { return }
+        
+        sendEvent(ev) { completed in
+            if completed {
+                self.draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
+                
+                DatabaseManager.instance.deleteDraft(draft)
+                
+                self.postedEvent.send(ev)
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+                    self.postDraftRecursively(draft, retries: retries - 1)
+                }
+            }
+        }
     }
 }

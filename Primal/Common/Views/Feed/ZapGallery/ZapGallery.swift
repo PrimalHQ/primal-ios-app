@@ -49,7 +49,7 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
 }
 
 class SmallZapGalleryView: UIView, ZapGallery {
-    let skeletonLoader = LottieAnimationView()
+    let skeletonLoader = GenericLoadingView()
     let stack = UIStackView()
     let animationStack = UIStackView()
     
@@ -72,12 +72,10 @@ class SmallZapGalleryView: UIView, ZapGallery {
         animationStack.isUserInteractionEnabled = false
         
         addSubview(skeletonLoader)
-        skeletonLoader.animation = Theme.current.isDarkTheme ? AnimationType.zapGallerySkeleton.animation : AnimationType.zapGallerySkeletonLight.animation
-        skeletonLoader.loopMode = .loop
         skeletonLoader
-            .constrainToSize(width: 375, height: 66.66)
-            .pinToSuperview(edges: .leading, padding: -10)
-            .pinToSuperview(edges: .top, padding: -6)
+            .constrainToSize(width: 30, height: 24)
+            .pinToSuperview(edges: [.leading, .top])
+        skeletonLoader.layer.cornerRadius = 12
         
         clipsToBounds = true
     }
@@ -165,7 +163,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
         var currentWidth: CGFloat = 0
         for zap in zaps.dropFirst() {
             let view = zapView(zap, text: false)
-            view.layoutIfNeeded()
             
             currentWidth += view.width() + 6
             

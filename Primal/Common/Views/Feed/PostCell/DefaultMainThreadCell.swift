@@ -10,7 +10,7 @@ import UIKit
 class DefaultMainThreadCell: ThreadCell {
     let selectionTextView = MainThreadCellTextView()
     
-    var zapGalleryHeightConstraint: NSLayoutConstraint?
+//    var zapGalleryHeightConstraint: NSLayoutConstraint?
     
     let repliesLabel = UILabel()
     let zapsLabel = UILabel()
@@ -23,6 +23,9 @@ class DefaultMainThreadCell: ThreadCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        zapGallery = SmallZapGalleryView()
+        
         parentSetup()
         setup()
     }
@@ -61,18 +64,18 @@ class DefaultMainThreadCell: ThreadCell {
         
         if let zaps {
             if zaps.isEmpty {
-                zapGallery.isHidden = true
+                zapGallery?.isHidden = true
             } else {
-                zapGallery.isHidden = false
-                zapGallery.zaps = zaps
+                zapGallery?.isHidden = false
+                zapGallery?.zaps = zaps
                 
-                zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
+//                zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
             }
         } else {
-            zapGallery.isHidden = post.zaps == 0
-            zapGallery.zaps = []
+            zapGallery?.isHidden = post.zaps == 0
+            zapGallery?.zaps = []
             
-            zapGalleryHeightConstraint?.constant = post.zaps < 4 ? 24 : 56
+//            zapGalleryHeightConstraint?.constant = post.zaps < 4 ? 24 : 56
         }
     }
     
@@ -123,14 +126,14 @@ class DefaultMainThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameVStack, threeDotsButton])
         horizontalProfileStack.alignment = .center
         
-        let descStack = UIStackView(axis: .vertical, [zapGallery, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
+        let descStack = UIStackView(axis: .vertical, [zapGallery!, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
         descStack.spacing = 8
-        descStack.setCustomSpacing(20, after: zapGallery)
+        descStack.setCustomSpacing(20, after: zapGallery!)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)
         infoRow.spacing = 12
         
-        zapGalleryHeightConstraint = zapGallery.heightAnchor.constraint(equalToConstant: 24)
-        zapGalleryHeightConstraint?.isActive = true
+//        zapGalleryHeightConstraint = zapGallery.heightAnchor.constraint(equalToConstant: 24)
+//        zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
         let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, infoView, contentBotSpacer])

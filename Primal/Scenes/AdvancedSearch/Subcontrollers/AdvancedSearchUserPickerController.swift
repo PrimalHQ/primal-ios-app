@@ -19,6 +19,7 @@ final class AdvancedSearchUserPickerController: UIViewController, Themeable {
     let applyButton = UIButton.largeRoundedButton(title: "Apply")
     
     @Published var pickedUsers: [ParsedUser]
+    @Published var searchResult: [ParsedUser] = []
     
     @Published var userSearchText: String = ""
     
@@ -52,24 +53,8 @@ final class AdvancedSearchUserPickerController: UIViewController, Themeable {
         setup()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.transform = .identity
-        
-        searchView.inputField.becomeFirstResponder()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
     func updateTheme() {
         userTable.reloadData()
-        searchView.updateTheme()
         
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background4
@@ -93,13 +78,14 @@ private extension AdvancedSearchUserPickerController {
         view.addSubview(stack)
         stack.axis = .vertical
         stack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom)
-        applyButton.pin(to: view, edges: .bottom, padding: 20, safeArea: true)
+        applyButton.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -20).isActive = true
         
         userTable.register(UserInfoTableCell.self, forCellReuseIdentifier: "userCell")
         userTable.separatorStyle = .none
         userTable.delegate = self
         userTable.dataSource = self
         userTable.backgroundColor = .background4
+        userTable.keyboardDismissMode = .onDrag
 
         pickedCollectionView.register(UserPickerCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         pickedCollectionView.dataSource = self
@@ -127,11 +113,13 @@ private extension AdvancedSearchUserPickerController {
         anyoneView.layer.borderColor = UIColor.foreground6.cgColor
         anyoneView.layer.borderWidth = 1
         
+        searchView.inputField.clearButtonMode = .always
         searchView.inputField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         applyButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             navigationController?.popViewController(animated: true)
-            callback(self.pickedUsers)
+            
+            callback(pickedUsers)
         }), for: .touchUpInside)
         
         updateTheme()
@@ -146,41 +134,24 @@ private extension AdvancedSearchUserPickerController {
                 return SmartContactsManager.instance.userSearchPublisher($0)
             }
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] users in
-                self?.users = users
-            })
+            .assign(to: \.searchResult, onWeak: self)
             .store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            $pickedUsers.map { $0.map { $0.data.pubkey } },
+            $searchResult
+        )
+        .map({ pickedPubkeys, result in
+            result.filter { !pickedPubkeys.contains($0.data.pubkey) }
+        })
+        .assign(to: \.users, onWeak: self)
+        .store(in: &cancellables)
         
         if let applyButtonSuperview = applyButton.superview {
             $pickedUsers.map({ _ in false }).assign(to: \.isHidden, on: applyButtonSuperview).store(in: &cancellables)
         }
         $pickedUsers.map({ !$0.isEmpty }).assign(to: \.isHidden, on: anyoneView).store(in: &cancellables)
         $pickedUsers.sink(receiveValue: { [weak self] _ in self?.pickedCollectionView.reloadData() }).store(in: &cancellables)
-    }
-    
-    func doSearch() {
-        if userSearchText.isEmpty { return }
-        
-        if userSearchText.hasPrefix("npub1") && userSearchText.count == 63 {
-            notify(.primalProfileLink, userSearchText)
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        
-        if userSearchText.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
-            notify(.primalNoteLink, text)
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        
-        if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
-            present(SFSafariViewController(url: url), animated: true)
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        
-        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-        show(feed, sender: nil)
     }
     
     @objc func textFieldDidChange() {
@@ -203,7 +174,12 @@ extension AdvancedSearchUserPickerController: UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let user = users[safe: indexPath.row] else { return }
         pickedUsers.removeAll(where: { user.data.pubkey == $0.data.pubkey })
-        pickedUsers.insert(user, at: 0)
+        pickedUsers.append(user)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+            self.pickedCollectionView.scrollToItem(at: IndexPath(item: self.pickedUsers.count - 1, section: 0), at: .right, animated: true)
+        }
+        
+        SmartContactsManager.instance.addContact(user)
     }
 }
 
@@ -223,36 +199,41 @@ extension AdvancedSearchUserPickerController: UICollectionViewDelegate {
     }
 }
 
-final class SearchInputView: UIView, Themeable {
+final class SearchInputView: UIView {
     let inputField = UITextField()
-    let icon = UIImageView(image: UIImage(named: "searchIconSmall"))
+    let icon = UIImageView()
     
-    init() {
+    init(icon: UIImage? = nil, placeholder: String? = nil) {
+        self.icon.image = icon ?? UIImage(named: "searchIconSmall")?.withRenderingMode(.alwaysTemplate)
         super.init(frame: .zero)
         
         constrainToSize(height: 36)
         layer.cornerRadius = 18
         
-        let stack = UIStackView(arrangedSubviews: [icon, inputField])
+        let stack = UIStackView(arrangedSubviews: [self.icon, inputField])
         stack.alignment = .center
         stack.spacing = 8
         
         addSubview(stack)
         stack.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 12)
         
-        icon.setContentHuggingPriority(.required, for: .horizontal)
+        self.icon.setContentHuggingPriority(.required, for: .horizontal)
         
         inputField.font = .appFont(withSize: 16, weight: .medium)
         inputField.autocorrectionType = .no
+        if let placeholder {
+            inputField.attributedPlaceholder = .init(string: placeholder, attributes: [
+                .font: UIFont.appFont(withSize: 16, weight: .medium),
+                .foregroundColor: UIColor.foreground4
+            ])
+        }
+        
+        backgroundColor = .background3
+        inputField.textColor = .foreground
+        self.icon.tintColor = .foreground4
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func updateTheme() {
-        backgroundColor = .background3
-        inputField.textColor = .foreground
-        icon.tintColor = .foreground
     }
 }

@@ -11,6 +11,7 @@ import FLAnimatedImage
 import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
+    func tappedSearch()
     func tappedAddUserFeed()
     func tappedShareProfile()
     func tappedReportUser()
@@ -22,6 +23,7 @@ class ProfileNavigationView: UIView, Themeable {
     let bannerParent = UIView()
     let bannerViewBig = UIImageView()
     let backButton = UIButton()
+    let searchButton = UIButton()
     let menuButton = UIButton()
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
@@ -211,9 +213,14 @@ private extension ProfileNavigationView {
         backButton.pinToSuperview(edges: .leading, padding: 12).pinToSuperview(edges: .top, padding: 44)
         backButton.setImage(UIImage(named: "roundBack"), for: .normal)
         
-        addSubview(menuButton)
-        menuButton.pinToSuperview(edges: .trailing, padding: 12).pinToSuperview(edges: .top, padding: 44)
+        let topStack = UIStackView(arrangedSubviews: [searchButton, menuButton])
+        topStack.spacing = 12
+        
+        addSubview(topStack)
+        topStack.pinToSuperview(edges: .trailing, padding: 12).pinToSuperview(edges: .top, padding: 44)
+        
         menuButton.setImage(UIImage(named: "roundThreeDots"), for: .normal)
+        searchButton.setImage(UIImage(named: "roundSearch"), for: .normal)
         
         titleStack.spacing = 4
         titleStack.alignment = .center
@@ -229,6 +236,10 @@ private extension ProfileNavigationView {
         heightConstraint.isActive = true
         
         updateTheme()
+        
+        searchButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.tappedSearch()
+        }), for: .touchUpInside)
     }
     
     func updateMenuButton(isMuted: Bool) {

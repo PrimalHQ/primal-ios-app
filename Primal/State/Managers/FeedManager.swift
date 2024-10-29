@@ -26,7 +26,6 @@ final class FeedManager {
     @Published var newPostObjects: [ParsedContent] = []
     @Published var newPosts: (Int, [ParsedUser]) = (0, [])
     
-    @Published var currentFeed: PrimalSettingsFeed?
     @Published var newFeed: PrimalFeed?
     var profilePubkey: String?
     var didReachEnd = false
@@ -71,18 +70,6 @@ final class FeedManager {
         initFuturePublishersAndObservers()
     }
     
-    init(feed: PrimalSettingsFeed) {
-        currentFeed = feed
-        initSubscriptions()
-        refresh()
-    }
-    
-    init(search: String) {
-        currentFeed = .init(name: "Search: \(search)", hex: "search;\(search)")
-        initSubscriptions()
-        refresh()
-    }
-    
     init(threadId: String) {
         contentStyle = .threadChildren
         initSubscriptions()
@@ -107,11 +94,6 @@ final class FeedManager {
             newPostObjects = []
         }
         newAddedPosts = 0
-    }
-    
-    func setCurrentFeed(_ feed: PrimalSettingsFeed) {
-        currentFeed = feed
-        refresh()
     }
     
     func refresh(useHTTP: Bool = false) {
@@ -351,7 +333,7 @@ private extension FeedManager {
                 } else {
                     self.paginationInfo = pagination
                     
-                    if self.currentFeed?.name == "Latest" {
+                    if self.newFeed?.name == "Latest" {
                         HomeFeedLocalLoadingManager.savedFeed = result
                     }
                 }
@@ -363,15 +345,10 @@ private extension FeedManager {
         if let profilePubkey {
             return generateProfileFeedRequest(profilePubkey)
         }
-        if let currentFeed {
-            return generateFeedPageRequest(currentFeed)
-        }
         if let newFeed {
             return generateNewFeedPageRequest(newFeed)
         }
-        
-        currentFeed = .latest
-        return generateFeedPageRequest(.latest)
+        return ("", .string(""))
     }
     
     func generateNewFeedPageRequest(_ feed: PrimalFeed) -> (String, JSON) {
@@ -386,24 +363,6 @@ private extension FeedManager {
         }
         
         return ("mega_feed_directive", .object(payload))
-    }
-    
-    func generateFeedPageRequest(_ feed: PrimalSettingsFeed) -> (String, JSON) {
-        var payload: [String: JSON] = [
-            "directive": .string(feed.hex),
-            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": 40
-        ]
-        
-        if let until: Double = paginationInfo?.since {
-            payload["until"] = .number(until.rounded())
-        }
-        
-        if feed.includeReplies == true {
-            payload["include_replies"] = .bool(feed.includeReplies ?? false)
-        }
-        
-        return ("feed_directive", .object(payload))
     }
     
     func generateProfileFeedRequest(_ profileId: String) -> (String, JSON) {

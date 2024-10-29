@@ -13,17 +13,17 @@ class LongFormZapsPostCell: PostCell {
         
         let largeGallery = LargeZapGalleryView()
         zapGallery = largeGallery
-        zapGallery.frame = contentView.bounds
+        largeGallery.frame = contentView.bounds
         
         largeGallery.zapPillButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             delegate?.postCellDidTap(self, .longTapZap)
         }), for: .touchUpInside)
         
-        contentView.addSubview(zapGallery)
-        zapGallery.pinToSuperview()
+        contentView.addSubview(zapGallery!)
+        zapGallery!.pinToSuperview()
         
-        zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        zapGallery!.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
         
@@ -35,10 +35,10 @@ class LongFormZapsPostCell: PostCell {
     }
     
     override func update(_ content: ParsedContent) {
-        zapGallery.zaps = content.zaps
+        zapGallery!.zaps = content.zaps
     }
     
     override func updateMenu(_ content: ParsedContent) {
-        zapGallery.zaps = content.zaps
+        zapGallery!.zaps = content.zaps
     }
 }

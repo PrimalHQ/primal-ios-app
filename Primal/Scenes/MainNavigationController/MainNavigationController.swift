@@ -28,6 +28,8 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         viewControllers.last?.preferredStatusBarStyle ?? super.preferredStatusBarStyle
     }
     
+    weak var backGestureDelegate: UIGestureRecognizerDelegate?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,7 +73,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return viewControllers.count > 1
+        return viewControllers.count > 1 && (backGestureDelegate?.gestureRecognizerShouldBegin?(gestureRecognizer) ?? true)
     }
 }
 

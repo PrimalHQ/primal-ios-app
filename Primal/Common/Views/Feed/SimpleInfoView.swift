@@ -24,7 +24,8 @@ class SimpleInfoView: UIView, Themeable {
         
         layer.cornerRadius = 8
         
-        label.numberOfLines = 0
+        label.numberOfLines = 3
+        label.lineBreakMode = .byTruncatingTail
         label.font = .appFont(withSize: 16, weight: .regular)
         
         icon.setContentHuggingPriority(.required, for: .horizontal)

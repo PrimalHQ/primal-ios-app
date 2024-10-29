@@ -9,7 +9,6 @@ import Combine
 import Nantes
 import UIKit
 import GenericJSON
-import Lottie
 
 protocol ProfileInfoCellDelegate: AnyObject {
     func followPressed(in cell: ProfileInfoCell)
@@ -41,8 +40,8 @@ class ProfileInfoCell: UITableViewCell {
     
     let followingLabel = UILabel()
     let followersLabel = UILabel()
-    let followingLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 190 / 6, height: 80 / 6)
-    let followersLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 190 / 6, height: 80 / 6)
+    let followingLoadingView = GenericLoadingView().constrainToSize(width: 30, height: 13)
+    let followersLoadingView = GenericLoadingView().constrainToSize(width: 30, height: 13)
     
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
@@ -212,8 +211,6 @@ private extension ProfileInfoCell {
         followersLoadingView.pin(to: followersLabel, edges: .leading).centerToView(followersLabel, axis: .vertical)
         contentView.addSubview(followingLoadingView)
         followingLoadingView.pin(to: followingLabel, edges: .leading).centerToView(followingLabel, axis: .vertical)
-        followersLoadingView.loopMode = .loop
-        followingLoadingView.loopMode = .loop
         
         contentView.backgroundColor = .background2
         primaryLabel.textColor = .foreground
@@ -235,6 +232,10 @@ private extension ProfileInfoCell {
         
         followButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
         unfollowButton.addTarget(self, action: #selector(followPressed), for: .touchUpInside)
+        
+        followedByView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.followersPressed()
+        }))
         
         qrButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.qrPressed()

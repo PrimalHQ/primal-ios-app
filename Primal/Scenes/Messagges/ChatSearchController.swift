@@ -130,8 +130,12 @@ private extension ChatSearchController {
 
 extension ChatSearchController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-        show(feed, sender: nil)
+        guard let first = users.first else { return false }
+        show(ChatViewController(user: first, chatManager: manager), sender: nil)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.navigationController?.viewControllers.remove(object: self)
+        }
         return true
     }
 }

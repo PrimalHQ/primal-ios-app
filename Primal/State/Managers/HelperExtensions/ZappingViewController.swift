@@ -35,7 +35,7 @@ extension ParsedContent: ZappableReferenceObject {
     
     var userToZap: ParsedUser { user }
     
-    var description: String { post.content }
+    var description: String { text }
     
     var referenceTime: Double? { post.created_at }
 }

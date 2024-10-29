@@ -97,6 +97,37 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
+    static func post(_ draft: NoteDraft, replyingToObject: PrimalFeedPost?) -> NostrObject? {
+        var allTags: [[String]] = []
+
+        /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
+        /// with clients that support replies but have not been updated to understand tag markers.
+        ///
+        /// https://github.com/nostr-protocol/nips/blob/master/10.md
+        ///
+        /// The tag to the root of the reply chain goes first.
+        /// The tag to the reply event being responded to goes last.
+        
+        if let post = replyingToObject {
+            if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
+                allTags.append(root)
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
+            } else {
+                // For top level replies (those replying directly to the root event), only the "root" marker should be used.
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
+            }
+            
+            allTags.append(["p", post.pubkey])
+        }
+        
+        let mentionedPubkeys = draft.taggedUsers.map { $0.userPubkey }
+        allTags += mentionedPubkeys.map { ["p", $0] }
+        
+        allTags += draft.text.extractHashtags().map({ ["t", $0] })
+
+        return createNostrObject(content: draft.text, kind: 1, tags: allTags)
+    }
+    
     static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
         var allTags: [[String]] = []
 

@@ -42,6 +42,10 @@ class MediaLoadingCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
+        updateTheme()
+    }
+    
+    func updateTheme() {
         views.forEach { $0.backgroundColor = .background4 }
     }
 }

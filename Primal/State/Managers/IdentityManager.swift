@@ -168,18 +168,6 @@ final class IdentityManager {
                     fallthrough
                 case .defaultSettings:
                     guard var settings = PrimalSettings(json: response) else { return }
-                    
-                    // Ensure Latest feed *always* exists
-                    let latestFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies != true }) ?? false
-                    if !latestFeedExists {
-                        settings.content.feeds?.insert(.latest, at: 0)
-                    }
-                    
-                    let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
-                    if !latestWithRepliesFeedExists {
-                        settings.content.feeds?.insert(.latestWithReplies, at: 1)
-                    }
-                    
                     // There were breaking changes to how settings work over the time
                     // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
                     if settings.content.isBorked() {
@@ -334,47 +322,6 @@ final class IdentityManager {
 
         guard var settings = userSettings else { return }
         settings.notifications = notifications
-        updateSettings(settings)
-    }
-    
-    func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        let count = feeds.filter({ $0.name.hasPrefix("Latest") }).count
-        if count > 2 {
-            print(count)
-        }
-        
-        guard var settings = userSettings else { return }
-        settings.feeds = feeds
-        updateSettings(settings)
-    }
-    
-    func addFeedToList(feed: PrimalSettingsFeed) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard
-            var settings = userSettings,
-            let feeds = settings.feeds,
-            !feeds.isEmpty
-        else { return }
-        
-        settings.feeds?.append(feed)
-        
-        updateSettings(settings)
-    }
-    
-    func removeFeedFromList(hex: String) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard
-            var settings = userSettings,
-            let feeds = settings.feeds,
-            !feeds.isEmpty
-        else { return }
-        
-        settings.feeds?.removeAll(where: { $0.hex == hex })
-        
         updateSettings(settings)
     }
     

@@ -26,6 +26,9 @@ extension UIViewController {
     
     @objc func backButtonPressed() {
         if let navigationController {
+            let textViews: [UITextField] = self.view.findAllSubviews()
+            textViews.forEach { $0.resignFirstResponder() }
+            
             navigationController.popViewController(animated: true)
         } else {
             dismiss(animated: true)
@@ -34,29 +37,34 @@ extension UIViewController {
     
     var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
     
-    var customSearchButton: UIBarButtonItem {
+    func customSearchButton(scope: SearchScope = .global, type: SearchType = .notes) -> UIBarButtonItem {
         let view = UIView().constrainToSize(44)
         let icon = UIImageView(image: UIImage(named: "navSearch"))
-        icon.tintColor = .foreground3
+        icon.tintColor = .foreground
         view.addSubview(icon)
         icon.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
         let button = UIButton()
         view.addSubview(button)
         button.pinToSuperview()
         button.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.fadeTo(SearchViewController())
+            self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
         }), for: .touchUpInside)
         return .init(customView: view)
     }
     
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
+        let button = backButtonWithColorNoAction(color)
+        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+        return UIBarButtonItem(customView: button)
+    }
+    
+    func backButtonWithColorNoAction(_ color: UIColor) -> UIButton {
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)
         button.tintColor = color
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.contentHorizontalAlignment = .leading
         button.constrainToSize(44)
-        return UIBarButtonItem(customView: button)
+        return button
     }
     
     func backButtonWithImage(_ image: UIImage?) -> UIBarButtonItem {

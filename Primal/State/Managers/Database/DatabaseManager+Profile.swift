@@ -21,10 +21,12 @@ extension DatabaseManager {
         }
     }
     
-    func setVisitProfile(_ profile: PrimalUser) {
-        var profileVisit = ProfileLastVisit(profilePubkey: profile.pubkey, userPubkey: IdentityManager.instance.userHexPubkey, lastVisit: .now)
+    func setVisitProfiles(_ profiles: [PrimalUser]) {
         performUpdates { db in
-            try profileVisit.save(db)
+            for profile in profiles {
+                var profileVisit = ProfileLastVisit(profilePubkey: profile.pubkey, userPubkey: IdentityManager.instance.userHexPubkey, lastVisit: .now)
+                try profileVisit.save(db)
+            }
         }
     }
     

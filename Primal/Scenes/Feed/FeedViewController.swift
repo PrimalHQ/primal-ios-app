@@ -257,7 +257,9 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let info = String(infoSub)
         
         if urlString.hasPrefix("hashtag"), info.isHashtag {
-            let feed = RegularFeedViewController(feed: FeedManager(search: info))
+            let advancedSearch = AdvancedSearchManager()
+            advancedSearch.includeWordsText = info
+            let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearch.feed))
             showViewController(feed)
             return
         }
@@ -448,8 +450,8 @@ private extension NoteViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
                 
-                if let menu = self.parent as? MenuContainerController, menu.isOpen { return }
-                
+                if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
+                    
                 self.animateBarsToVisible()
             }
         }

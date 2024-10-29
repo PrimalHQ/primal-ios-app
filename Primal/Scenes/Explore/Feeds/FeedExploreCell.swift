@@ -29,7 +29,7 @@ class FeedExploreCell: UITableViewCell, Themeable {
         selectionStyle = .none
         
         contentView.addSubview(background)
-        background.pinToSuperview(edges: .vertical, padding: 6).pinToSuperview(edges: .horizontal, padding: 16)
+        background.pinToSuperview(edges: .top, padding: 6).pinToSuperview(edges: .bottom, padding: 10).pinToSuperview(edges: .horizontal, padding: 16)
         background.layer.cornerRadius = 8
         
         let titleStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
@@ -104,7 +104,6 @@ class FeedExploreCell: UITableViewCell, Themeable {
     func updateTheme() {
         avatarView.setBorderColor(.background5)
         background.backgroundColor = .background5
-        contentView.backgroundColor = .background
         
         subtitleLabel.textColor = .foreground2
         titleLabel.textColor = .foreground

@@ -25,10 +25,6 @@ extension PrimalFeed {
     var isFromBackend: Bool {
         get { feedkind == "primal" }
     }
-    var isEnabled: Bool {
-        get { enabled ?? true }
-        set { enabled = newValue }
-    }
 }
 
 enum PrimalFeedType {
@@ -90,6 +86,12 @@ extension PrimalFeed {
         }
     }
     
+    static func addFeed(_ feed: PrimalFeed, type: PrimalFeedType, notifyBackend: Bool = true) {
+        var feeds = getAllFeeds(type)
+        feeds.append(feed)
+        setAllFeeds(feeds, type: type, notifyBackend: notifyBackend)
+    }
+    
     private static var allReadsKey: String { IdentityManager.instance.userHexPubkey + "allReadsFeedsKey" }
     private static var allNotesKey: String { IdentityManager.instance.userHexPubkey + "allNotesFeedsKey" }
     static func getAllFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
@@ -102,7 +104,7 @@ extension PrimalFeed {
     }
     
     static func getActiveFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
-        getAllFeeds(type).filter { $0.isEnabled }
+        getAllFeeds(type).filter { $0.enabled }
     }
     
     static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kind\":\"reads\",\"scope\":\"follows\"}")
@@ -358,9 +360,9 @@ extension FeedsSelectionController: FeedSelectionCellDelegate {
         let feed = feeds[indexPath.row]
         
         if cell.enableSwitch.isOn {
-            feeds[indexPath.row].isEnabled = true
+            feeds[indexPath.row].enabled = true
         } else if feed.isFromBackend {
-            feeds[indexPath.row].isEnabled = false
+            feeds[indexPath.row].enabled = false
         } else {
             let alert = UIAlertController(title: "Remove ‘\(feed.name)’ from your feed list?", message: nil, preferredStyle: .alert)
             alert.addAction(.init(title: "Cancel", style: .cancel, handler: { _ in
@@ -513,7 +515,7 @@ class FeedSelectionCell: UITableViewCell {
         backgroundColorView.isHidden = selected && !editing
         
         if editing && feed.isFromBackend {
-            enableSwitch.isOn = feed.isEnabled
+            enableSwitch.isOn = feed.enabled
         } else {
             enableSwitch.isOn = true
         }

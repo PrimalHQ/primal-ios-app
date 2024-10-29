@@ -11,8 +11,6 @@ class HighlightCommentCell: PostCell {
     lazy var mainStack = UIStackView([profileImageView])
     
     // MARK: - State
-    var lastContentId: String?
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -21,11 +19,6 @@ class HighlightCommentCell: PostCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
-        if parsedContent.post.id != lastContentId {
-            zapGallery.zaps = []
-            lastContentId = parsedContent.post.id
-        }
-        
         super.update(parsedContent)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
@@ -41,8 +34,6 @@ private extension HighlightCommentCell {
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)
-        
-        zapGallery.singleLine = true
         
         mainStack.axis = .horizontal
         mainStack.alignment = .top

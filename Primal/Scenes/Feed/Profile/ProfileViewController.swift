@@ -208,15 +208,6 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
         
         let cell = table.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-        if let cell = cell as? SkeletonLoaderCell {
-            switch tab {
-            case .notes, .replies:
-                cell.loaderView.animations = (.postCellSkeletonLight, .postCellSkeleton)
-            case .reads:
-                cell.loaderView.animations = (.articleListSkeletonLight, .articleListSkeleton)
-            case .media: break
-            }
-        }
         return cell
     }
     
@@ -458,6 +449,10 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         
     }
     
+    func tappedSearch() {
+        present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
+    }
+    
     func tappedMuteUser() {
         let pubkey = profile.data.pubkey
         MuteManager.instance.toggleMute(pubkey) { [weak self] in
@@ -472,11 +467,51 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         }
     }
     
+    var advancedSearchManager: AdvancedSearchManager {
+        let advancedSearchManager = AdvancedSearchManager()
+        advancedSearchManager.postedBy = [profile]
+        switch tabToBe {
+        case .notes:
+            break
+        case .replies:
+            advancedSearchManager.searchType = .noteReplies
+        case .reads:
+            advancedSearchManager.searchType = .reads
+        case .media:
+            advancedSearchManager.searchType = .images
+        }
+        return advancedSearchManager
+    }
+    
+    var advancedSearchManagerFeed: PrimalFeed {
+        let name = "\(profile.data.firstIdentifier)'s feed"
+        var description = "Notes by \(profile.data.firstIdentifier)"
+        
+        switch tabToBe {
+        case .replies, .media:
+            description = tabToBe == .replies ? "Replies by \(profile.data.firstIdentifier)" : "Media by \(profile.data.firstIdentifier)"
+            fallthrough
+        case .notes:
+            var feed = advancedSearchManager.feed
+            feed.name = name
+            feed.description = description
+            return feed
+        case .reads:
+            var feed = advancedSearchManager.feed
+            feed.name = name
+            feed.description = "Articles by \(profile.data.firstIdentifier)"
+            return feed
+        }
+    }
+    
     func tappedAddUserFeed() {
         hapticGenerator.impactOccurred()
-        IdentityManager.instance.addFeedToList(feed: .init(name: "\(profile.data.firstIdentifier)'s feed", hex: profile.data.pubkey))
-        view.showUndoToast("\(profile.data.firstIdentifier)'s feed added to the list of feeds") { [self] in
-            IdentityManager.instance.removeFeedFromList(hex: profile.data.pubkey)
+        
+        switch tabToBe {
+        case .replies, .media, .notes:
+            PrimalFeed.addFeed(advancedSearchManagerFeed, type: .note)
+        case .reads:
+            PrimalFeed.addFeed(advancedSearchManagerFeed, type: .article)
         }
     }
     

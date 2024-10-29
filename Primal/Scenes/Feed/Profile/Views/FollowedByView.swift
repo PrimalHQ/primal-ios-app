@@ -6,14 +6,15 @@
 //
 
 import UIKit
-import Lottie
 
 class FollowedByView: UIView {
     let images = AvatarView(size: 28, spacing: -8, reversed: true, borderColor: .background)
     let label = UILabel()
     
-    let imagesLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 65, height: 28)
-    let labelLoadingView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation).constrainToSize(width: 65, height: 28)
+    let imagesLoadingView = GenericLoadingView().constrainToSize(width: 60, height: 28)
+    let labelLoadingView = GenericLoadingView().constrainToSize(width: 130, height: 28)
+    
+    lazy var loadingStack = UIStackView([imagesLoadingView, labelLoadingView])
     
     init() {
         super.init(frame: .zero)
@@ -28,19 +29,11 @@ class FollowedByView: UIView {
         label.textColor = .foreground4
         label.numberOfLines = 2
         
-        addSubview(imagesLoadingView)
-        addSubview(labelLoadingView)
-        
-        imagesLoadingView.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading, padding: 31)
-        labelLoadingView.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading, padding: 160)
-        
-        imagesLoadingView.transform = .init(scaleX: 2, y: 1)
-        labelLoadingView.transform = .init(scaleX: 2, y: 1)
-        
-        imagesLoadingView.isHidden = true
-        labelLoadingView.isHidden = true
-        imagesLoadingView.loopMode = .loop
-        labelLoadingView.loopMode = .loop
+        addSubview(loadingStack)
+        loadingStack.pinToSuperview(edges: [.leading, .top])
+        loadingStack.spacing = 6
+    
+        loadingStack.isHidden = true
         
         constrainToSize(height: 28)
     }
@@ -54,15 +47,13 @@ class FollowedByView: UIView {
             images.isHidden = true
             label.text = ""
             
-            imagesLoadingView.isHidden = false
-            labelLoadingView.isHidden = false
+            loadingStack.isHidden = false
             imagesLoadingView.play()
             labelLoadingView.play()
             return
         }
         images.isHidden = false
-        imagesLoadingView.isHidden = true
-        labelLoadingView.isHidden = true
+        loadingStack.isHidden = true
         
         images.setImages(users.reversed().compactMap { $0.profileImage.url(for: .small) }, userCount: users.count)
         label.text = "Followed by " + users.dropFirst().reduce(users.first?.data.firstIdentifier ?? "", { $0 + ", \($1.data.firstIdentifier)" })

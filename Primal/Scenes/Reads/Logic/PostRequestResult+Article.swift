@@ -66,9 +66,9 @@ class Highlight {
 struct PrimalFeed: Codable {
     var name: String
     var spec: String
-    var description: String?
-    var feedkind: String?
-    var enabled: Bool?
+    var description: String = ""
+    var feedkind: String = ""
+    var enabled: Bool = true
 }
 
 extension PostRequestResult {

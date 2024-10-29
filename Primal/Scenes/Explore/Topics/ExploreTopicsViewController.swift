@@ -68,29 +68,37 @@ private extension ExploreTopicsViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(HashtagCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(HashtagLoadingCollectionViewCell.self, forCellWithReuseIdentifier: "loading")
         collectionView.contentInset = .init(top: 157, left: 0, bottom: 80, right: 0)
         collectionView.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         
         updateTheme()
     }
-    
-    @objc func searchTapped() {
-        navigationController?.fadeTo(SearchViewController())
-    }
 }
 
 extension ExploreTopicsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if hashtags.isEmpty { return }
+        
         let text = "#" + hashtags[indexPath.item].title
-        let feed = RegularFeedViewController(feed: FeedManager(search: text))
+        let advancedSearchManager = AdvancedSearchManager()
+        advancedSearchManager.includeWordsText = text
+        let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearchManager.feed))
         show(feed, sender: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        hashtags.count
+        if hashtags.isEmpty { return 50 }
+        return hashtags.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if hashtags.isEmpty {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "loading", for: indexPath)
+            (cell as? Themeable)?.updateTheme()
+            return cell
+        }
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
         if let cell = cell as? HashtagCollectionViewCell {
             cell.label.text = hashtags[indexPath.item].title
@@ -100,6 +108,18 @@ extension ExploreTopicsViewController: UICollectionViewDataSource, UICollectionV
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if hashtags.isEmpty {
+            let mod = indexPath.row % 5
+            
+            if mod == 0 || mod == 2 {
+                return .init(width: 88, height: 36)
+            }
+            if mod == 1 {
+                return .init(width: 143, height: 36)
+            }
+            return .init(width: 155, height: 36)
+        }
+        
         let text = hashtags[indexPath.item].title as NSString
         
         let textWidth = text.size(withAttributes: [.font : UIFont.appFont(withSize: 18, weight: .medium)]).width

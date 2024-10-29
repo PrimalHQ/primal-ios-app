@@ -31,15 +31,6 @@ struct PrimalNoteStatus: Codable, Hashable {
     let zapped: Bool
 }
 
-struct PrimalSettingsFeed: Codable, Hashable {
-    var name: String
-    let hex: String
-    var includeReplies: Bool?
-    
-    static var latest: PrimalSettingsFeed { .init(name: "Latest", hex: IdentityManager.instance.userHexPubkey) }
-    static var latestWithReplies: PrimalSettingsFeed { .init(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true) }
-}
-
 struct PrimalZapDefaultSettings: Codable, Hashable {
     var amount: Int
     var message: String
@@ -54,7 +45,6 @@ struct PrimalZapListSettings: Codable, Hashable {
 struct PrimalSettingsContent: Codable, Hashable {
     var description: String? = "Sync app settings"
     var theme: String?
-    var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
     var zapDefault: PrimalZapDefaultSettings?
     var zapConfig: [PrimalZapListSettings]?
@@ -66,10 +56,6 @@ struct PrimalSettingsContent: Codable, Hashable {
         
         if self.theme == nil {
             self.theme = settings.theme
-        }
-        
-        if self.feeds == nil {
-            self.feeds = settings.feeds
         }
         
         if self.notifications == nil {
@@ -86,8 +72,7 @@ struct PrimalSettingsContent: Codable, Hashable {
     }
     
     func isBorked() -> Bool {
-        return self.feeds == nil
-            || self.theme == nil
+        return self.theme == nil
             || self.notifications == nil
             || self.zapDefault == nil
             || self.zapConfig?.isEmpty != false

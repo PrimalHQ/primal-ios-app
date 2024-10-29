@@ -1,5 +1,5 @@
 //
-//  ShortFormFeedController.swift
+//  HomeFeedChildController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 5.9.24..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ShortFormFeedController: PostFeedViewController {
+class HomeFeedChildController: PostFeedViewController {
     var onLoad: (() -> ())? {
         didSet {
             if !posts.isEmpty, let onLoad {
@@ -161,7 +161,7 @@ class ShortFormFeedController: PostFeedViewController {
     }
 }
 
-private extension ShortFormFeedController {
+private extension HomeFeedChildController {
     func setupPublishers() {
         feed.$newPosts.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] old, new in
             self?.updatePosts(old: old.0, new: new.0, users: new.1)

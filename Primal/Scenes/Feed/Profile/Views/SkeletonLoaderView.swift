@@ -9,7 +9,7 @@ import UIKit
 import Lottie
 
 class SkeletonLoaderCell: UITableViewCell {
-    let loaderView = SkeletonLoaderView(animation: .postCellSkeletonLight, darkMode: .postCellSkeleton)
+    let loaderView = SkeletonLoaderView(aspect: 343 / 128)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,20 +25,20 @@ class SkeletonLoaderCell: UITableViewCell {
 }
 
 class SkeletonLoaderView: UIView, Themeable {
-    var animations: (light: AnimationType, dark: AnimationType) { didSet { updateAnimation() } }
-    
     var repeatCount: Int { didSet { updateViewCount() } }
+    let aspect: CGFloat
     
     private let vStack = UIStackView(axis: .vertical, [])
-    private var animationViews: [LottieAnimationView] = []
+    private var animationViews: [GenericLoadingView] = []
     
-    init(animation: AnimationType, darkMode: AnimationType? = nil, repeatCount: Int = 5) {
-        animations = (animation, darkMode ?? animation)
+    init(aspect: CGFloat, repeatCount: Int = 5) {
         self.repeatCount = repeatCount
+        self.aspect = aspect
         super.init(frame: .zero)
         
         addSubview(vStack)
-        vStack.pinToSuperview()
+        vStack.pinToSuperview(padding: 16)
+        vStack.spacing = 32
         updateViewCount()
     }
     
@@ -52,24 +52,6 @@ class SkeletonLoaderView: UIView, Themeable {
         animationViews.forEach { $0.pause() }
     }
     
-    func updateTheme() {
-        updateAnimation()
-    }
-    
-    func updateAnimation() {
-        let (light, dark) = animations
-        let animationType = Theme.current.isDarkTheme ? dark : light
-        
-        guard let animation = animationType.animation else { return }
-        for animView in animationViews {
-            animView.animation = animation
-            animView.constraints.forEach { $0.isActive = false }
-            animView.constrainToAspect(animation.size.width / animation.size.height)
-        }
-        
-        play()
-    }
-    
     func updateViewCount() {
         while animationViews.count > repeatCount {
             animationViews.popLast()?.removeFromSuperview()
@@ -78,14 +60,14 @@ class SkeletonLoaderView: UIView, Themeable {
         guard animationViews.count < repeatCount else { return }
         
         for _ in animationViews.count..<repeatCount {
-            let animView = LottieAnimationView(frame: .zero)
-            animView.loopMode = .loop
-            animView.translatesAutoresizingMaskIntoConstraints = false
+            let animView = GenericLoadingView().constrainToAspect(aspect)
             animationViews.append(animView)
             vStack.addArrangedSubview(animView)
         }
-        
-        updateAnimation()
+    }
+    
+    func updateTheme() {
+//        animationViews.forEach { $0.updateTheme() }
     }
 }
 

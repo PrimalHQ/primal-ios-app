@@ -46,7 +46,9 @@ final class PostingImageCollectionView: UICollectionView {
 
 extension PostingImageCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let image = imageResources[indexPath.item].resource.thumbnailImage
+        guard let image = imageResources[indexPath.item].resource?.thumbnailImage else {
+            return .init(width: height, height: height)
+        }
         
         return .init(width: image.size.width / image.size.height * height, height: height)
     }
@@ -67,7 +69,27 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            cell.imageView.image = r.resource.thumbnailImage
+            if let image = r.resource?.thumbnailImage {
+                cell.imageView.image = image
+            } else {
+                cell.imageView.image = nil
+                if case .uploaded(let url) = r.state {
+                    if url.isVideoURL {
+                        Connection.regular.requestCache(name: "get_media_metadata", payload: ["urls": [.string(url)]]) { result in
+                            guard 
+                                let resource: MediaMetadata = result.first?.objectValue?["content"]?.stringValue?.decode(),
+                                let thumbnail = resource.thumbnails?.first?.value
+                            else { return }
+                            
+                            DispatchQueue.main.async {
+                                cell.imageView.kf.setImage(with: URL(string: thumbnail))
+                            }
+                        }
+                    } else {
+                        cell.imageView.kf.setImage(with: URL(string: url))
+                    }
+                }
+            }
             cell.delegate = self
             
             switch r.state {

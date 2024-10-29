@@ -148,10 +148,6 @@ private extension SettingsMainViewController {
         }), for: .touchUpInside)
     }
     
-    @objc func feedsPressed() {
-        navigationController?.pushViewController(SettingsFeedViewController(), animated: true)
-    }
-    
     @objc func keysPressed() {
         navigationController?.pushViewController(SettingsNsecViewController(), animated: true)
     }

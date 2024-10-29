@@ -106,8 +106,10 @@ class MediaTripleCell: UITableViewCell {
         
         for (index, imageView) in imageViews.enumerated() {
             if let content = resources[safe: index] {
+                imageView.backgroundColor = .background4
                 imageView.setImage(content.mediaResources, thumbnails: content.videoThumbnails)
             } else {
+                imageView.backgroundColor = .clear
                 imageView.removeImage()
             }
         }

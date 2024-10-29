@@ -15,10 +15,15 @@ class ExploreZapsViewController: UIViewController, Themeable {
     private var zaps: [ParsedFeedZap] = [] {
         didSet {
             table.reloadData()
+            loadingView.isHidden = !zaps.isEmpty
+            if !zaps.isEmpty {
+                loadingView.pause()
+            }
         }
     }
     
     private let table = UITableView()
+    private let loadingView = SkeletonLoaderView(aspect: 343 / 112)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,13 +39,22 @@ class ExploreZapsViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        table.reloadData()
+        updateTheme()
         
         feedManager.refresh()
     }
     
     func updateTheme() {
         table.reloadData()
+        
+        DispatchQueue.main.async { [self] in
+            loadingView.isHidden = !zaps.isEmpty
+            if zaps.isEmpty {
+                loadingView.play()
+            } else {
+                loadingView.pause()
+            }
+        }
     }
 }
 
@@ -56,6 +70,9 @@ private extension ExploreZapsViewController {
         
         table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
+        
+        view.addSubview(loadingView)
+        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 60, safeArea: true)
     }
 }
 

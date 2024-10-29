@@ -17,6 +17,7 @@ class LongFormEmbeddedPostCell: PostFeedCell {
         contentView.insertSubview(cardView, at: 0)
         cardView.pinToSuperview(edges: .vertical, padding: 5).pinToSuperview(edges: .horizontal, padding: 20)
 
+        mainStack.insetsLayoutMarginsFromSafeArea = false
         mainStack.isLayoutMarginsRelativeArrangement = true
         mainStack.layoutMargins = .init(top: 5, left: 20, bottom: 5, right: 20)
         

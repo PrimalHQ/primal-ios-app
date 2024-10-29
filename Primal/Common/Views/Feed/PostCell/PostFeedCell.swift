@@ -33,7 +33,7 @@ class PostFeedCell: PostCell {
     
     override func update(_ parsedContent: ParsedContent) {
         if parsedContent.post.id != lastContentId {
-            zapGallery.zaps = []
+            zapGallery?.zaps = []
             lastContentId = parsedContent.post.id
         }
         
@@ -62,11 +62,11 @@ class PostFeedCell: PostCell {
         super.updateMenu(content)
         
         if content.zaps.isEmpty {
-            zapGallery.superview?.isHidden = true
-            zapGallery.zaps = []
+            zapGallery?.superview?.isHidden = true
+            zapGallery?.zaps = []
         } else {
-            zapGallery.superview?.isHidden = false
-            zapGallery.zaps = content.zaps
+            zapGallery?.superview?.isHidden = false
+            zapGallery?.zaps = content.zaps
         }
     }
 }
@@ -86,10 +86,11 @@ private extension PostFeedCell {
         seeMoreLabel.textColor = .accent
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-        zapGallery.singleLine = true
+        zapGallery = SmallZapGalleryView()
+        zapGallery?.singleLine = true
         let zapGalleryParent = UIView()
-        zapGalleryParent.addSubview(zapGallery)
-        zapGallery.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 4)
+        zapGalleryParent.addSubview(zapGallery!)
+        zapGallery?.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 4)
         
         contentView.addSubview(mainStack)
     

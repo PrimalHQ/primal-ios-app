@@ -31,12 +31,11 @@ final class NotificationsViewController: PrimalPageController {
         title = "Notifications"
         
         updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
         
-        let button = UIButton()
-        button.setImage(.init(named: "settingsIcon"), for: .normal)
-        button.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsNotificationsViewController(), sender: nil)
-        }), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = .init(customView: button)
+        navigationItem.rightBarButtonItem = customSearchButton(scope: .myNotifications)
     }
 }

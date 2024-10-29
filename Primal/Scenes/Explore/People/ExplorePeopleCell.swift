@@ -10,7 +10,7 @@ import FLAnimatedImage
 import Kingfisher
 
 final class ExplorePeopleCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView()
+    let avatar = FLAnimatedImageView().constrainToSize(64)
     
     let name = UILabel()
     let subname = UILabel()
@@ -20,6 +20,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
     let followDesc = UILabel()
     
     let action = ExplorePeopleCellButton()
+    let checkbox = VerifiedView().constrainToSize(18)
     
     let background = UIView()
     
@@ -41,8 +42,11 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         if CheckNip05Manager.instance.isVerified(user.data) {
             subname.text = user.data.parsedNip
             subname.isHidden = user.data.parsedNip.isEmpty
+            checkbox.isHidden = false
+            checkbox.isExtraVerified = user.data.nip05.hasSuffix("@primal.net")
         } else {
             subname.isHidden = true
+            checkbox.isHidden = true
         }
         
         desc.isHidden = user.data.about.isEmpty
@@ -77,7 +81,10 @@ private extension ExplorePeopleCell {
     func setup() {
         selectionStyle = .none
         
-        let mainVStack = UIStackView(axis: .vertical, [name, subname, desc])
+        let nameRow = UIStackView([name, checkbox, UIView()])
+        nameRow.setCustomSpacing(4, after: name)
+        nameRow.alignment = .center
+        let mainVStack = UIStackView(axis: .vertical, [nameRow, subname, desc])
         mainVStack.setCustomSpacing(4, after: name)
         mainVStack.setCustomSpacing(8, after: subname)
         
@@ -91,7 +98,7 @@ private extension ExplorePeopleCell {
         secondRow.alignment = .center
         
         contentView.addSubview(background)
-        background.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom, padding: 12).pinToSuperview(edges: .top)
+        background.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom, padding: 16).pinToSuperview(edges: .top)
         
         background.addSubview(firstRow)
         firstRow.pinToSuperview(edges: [.horizontal, .top], padding: 12)
@@ -109,18 +116,17 @@ private extension ExplorePeopleCell {
         
         background.layer.cornerRadius = 8
         
-        avatar.constrainToSize(64)
         avatar.contentMode = .scaleAspectFill
         avatar.layer.cornerRadius = 32
         avatar.layer.masksToBounds = true
         
         name.font = .appFont(withSize: 18, weight: .semibold)
         subname.font = .appFont(withSize: 14, weight: .regular)
-        desc.font = .appFont(withSize: 13, weight: .regular)
+        desc.font = .appFont(withSize: 14, weight: .regular)
         desc.numberOfLines = 2
         
-        followCount.font = .appFont(withSize: 12, weight: .bold)
-        followDesc.font = .appFont(withSize: 12, weight: .regular)
+        followCount.font = .appFont(withSize: 14, weight: .bold)
+        followDesc.font = .appFont(withSize: 14, weight: .regular)
         
         followDesc.text = "Followers"
         

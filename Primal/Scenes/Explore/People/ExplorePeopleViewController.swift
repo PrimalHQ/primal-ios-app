@@ -15,8 +15,14 @@ class ExplorePeopleViewController: UIViewController, Themeable {
     private var users: [ParsedUser] = [] {
         didSet {
             table.reloadData()
+            loadingView.isHidden = !users.isEmpty
+            if !users.isEmpty {
+                loadingView.pause()
+            }
         }
     }
+    
+    let loadingView = SkeletonLoaderView(aspect: 343 / 134)
     
     private let table = UITableView()
     
@@ -34,13 +40,20 @@ class ExplorePeopleViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        table.reloadData()
-        
         feedManager.refresh()
+        
+        updateTheme()
     }
     
     func updateTheme() {
         table.reloadData()
+        
+        DispatchQueue.main.async { [self] in
+            loadingView.isHidden = !users.isEmpty
+            if users.isEmpty {
+                loadingView.play()
+            }
+        }
     }
 }
 
@@ -57,6 +70,8 @@ private extension ExplorePeopleViewController {
         table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         
+        view.addSubview(loadingView)
+        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 60, safeArea: true)
     }
 }
 

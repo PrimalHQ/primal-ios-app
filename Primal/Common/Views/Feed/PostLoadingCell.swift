@@ -6,10 +6,9 @@
 //
 
 import UIKit
-import Lottie
 
-class PostLoadingCell: UITableViewCell {
-    let animationView = LottieAnimationView()
+class PostLoadingCell: UITableViewCell, Themeable {
+    let animationView = GenericLoadingView().constrainToAspect(343 / 128)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -17,14 +16,10 @@ class PostLoadingCell: UITableViewCell {
         
         contentView.addSubview(animationView)
         animationView
-            .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .vertical, padding: 10)
-            .constrainToAspect(1125 / 445)
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .vertical, padding: 16)
         
-        animationView.animation = Theme.current.isDarkTheme ? AnimationType.postCellSkeleton.animation : AnimationType.postCellSkeletonLight.animation
-        animationView.loopMode = .loop
-        
-        contentView.backgroundColor = .background2
+        updateTheme()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -33,5 +28,9 @@ class PostLoadingCell: UITableViewCell {
         super.layoutSubviews()
         
         animationView.play()
+    }
+    
+    func updateTheme() {
+        contentView.backgroundColor = .background2
     }
 }

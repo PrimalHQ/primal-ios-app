@@ -25,11 +25,9 @@ class NewHighlightPostViewController: UIViewController {
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
+    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: highlight.event.id, replyingTo: PrimalFeedPost(nostrPost: highlight.event, nostrPostStats: .empty(highlight.event.id)))
     
     private var cancellables: Set<AnyCancellable> = []
-    
-    var replyToPost: PrimalFeedPost?
     
     var onPost: (() -> Void)?
     

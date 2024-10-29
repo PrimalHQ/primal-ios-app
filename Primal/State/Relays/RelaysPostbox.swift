@@ -60,12 +60,7 @@ final class RelaysPostbox {
             .publisher()
             .sink { res in
                 if res.eventBroadcastSuccessful {
-                    DispatchQueue.main.async {
-                        if didSucceed != true {
-                            didSucceed = true
-                            successHandler?([])
-                        }
-                    }
+                    resultHandler(result: [], relay: "")
                 }
             }
             .store(in: &cancellables)

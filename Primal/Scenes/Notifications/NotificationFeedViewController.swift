@@ -49,7 +49,7 @@ final class NotificationFeedViewController: NoteViewController {
     }
     var separatorIndex: Int = -1
     
-    let skeletonLoaderView = SkeletonLoaderView(animation: .notificationSkeletonLight, darkMode: .notificationSkeleton)
+    let skeletonLoaderView = SkeletonLoaderView(aspect: 343 / 116)
     
     @Published var isLoading = false
     @Published var didReachEnd = false
@@ -148,8 +148,9 @@ final class NotificationFeedViewController: NoteViewController {
         let tab = self.tab
         let payload = JSON.object([
             "pubkey": idJsonID,
-            "limit": .number(100),
-            "type_group": .string(tab.apiName)
+            "limit": .number(20),
+            "type_group": .string(tab.apiName),
+            "user_pubkey": idJsonID,
         ])
         
         Publishers.CombineLatest(
@@ -321,7 +322,8 @@ extension PostRequestResult {
         
         return notifications.sorted(by: { $0.date > $1.date }).map { notif in
             var parsedUsers: [ParsedUser] = []
-            if let userId = notif.data.mainUserId, let user = users[userId] {
+            if let userId = notif.data.mainUserId {
+                let user = users[userId] ?? .init(pubkey: userId)
                 parsedUsers.append(createParsedUser(user))
             }
             

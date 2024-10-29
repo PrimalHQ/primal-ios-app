@@ -16,6 +16,8 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
     
+    let configButton = UIButton(configuration: .simpleImage("searchConfig"))
+    
     @Published var userSearchText: String = ""
     
     var textSearch: String?
@@ -27,6 +29,16 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
             userTable.reloadData()
         }
     }
+    
+    let scope: SearchScope
+    let searchType: SearchType
+    init(scope: SearchScope = .global, type: SearchType = .notes) {
+        self.scope = scope
+        searchType = type
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,12 +69,26 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
         view.backgroundColor = .background
         navigationExtender.backgroundColor = .background
         navigationBorder.backgroundColor = .background3
+        
+        configButton.tintColor = .foreground
     }
 }
 
 private extension SearchViewController {
+    var advancedSearchManager: AdvancedSearchManager {
+        let advancedSearch = AdvancedSearchManager()
+        advancedSearch.searchScope = scope
+        advancedSearch.searchType = searchType
+        let text = userSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !text.isEmpty {
+            advancedSearch.includeWordsText = "\"\(text)\""
+        }
+        return advancedSearch
+    }
+    
     func setup() {
         navigationItem.titleView = searchView
+        navigationItem.rightBarButtonItem = .init(customView: configButton)
         updateTheme()
         setBindings()
         
@@ -79,6 +105,11 @@ private extension SearchViewController {
         
         searchView.inputField.delegate = self
         searchView.inputField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        
+        configButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
+        }), for: .touchUpInside)
     }
     
     func setBindings() {
@@ -121,8 +152,14 @@ private extension SearchViewController {
             return
         }
         
-        let feed = RegularFeedViewController(feed: FeedManager(search: userSearchText))
-        show(feed, sender: nil)
+        switch searchType {
+        case .reads:
+            let articleFeed = SearchArticleFeedController(feed: advancedSearchManager.feed)
+            show(articleFeed, sender: nil)
+        default:
+            let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearchManager.feed))
+            show(feed, sender: nil)
+        }
     }
     
     @objc func textFieldDidChange() {
@@ -147,6 +184,17 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "search", for: indexPath)
             if let cell = cell as? SearchTermTableCell {
                 cell.termLabel.text = userSearchText.isEmpty ? "Enter text to search" : userSearchText
+                switch searchType {
+                case .reads:
+                    cell.titleLabel.text = "Search reads"
+                default:
+                    switch scope {
+                    case .myNotifications:
+                        cell.titleLabel.text = "Search notifications"
+                    default:
+                        cell.titleLabel.text = "Search notes"
+                    }
+                }
                 cell.updateTheme()
             }
             return cell
