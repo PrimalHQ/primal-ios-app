@@ -10,6 +10,13 @@ import UIKit
 import FLAnimatedImage
 import StoreKit
 
+extension PremiumState {
+    var isExpired: Bool {
+        guard let expires_on else { return false }
+        return Date(timeIntervalSince1970: expires_on).timeIntervalSinceNow < 0
+    }
+}
+
 class PremiumHomeViewController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []
@@ -28,6 +35,14 @@ class PremiumHomeViewController: UIViewController {
         
         setup()
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if navigationController == nil {
+            PremiumViewController.isNewPremiumUser = false
+        }
+    }
 }
 
 private extension PremiumHomeViewController {
@@ -38,20 +53,32 @@ private extension PremiumHomeViewController {
         
         let renewLabel = UILabel()
         renewLabel.numberOfLines = 0
-        renewLabel.attributedText = renewString()
+        renewLabel.attributedText = actionLabelString()
         renewLabel.isUserInteractionEnabled = true
-        renewLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: {
-            
-//            if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
-//                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-//            }
-
-            if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        renewLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self else { return }
+            switch self.extraLabelAction {
+            case .cancel:
+                if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
                 }
+            case .support:
+                break
+            case .nothing:
+                return
             }
         }))
+        
+        let action = LargeRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
+        action.addAction(.init(handler: { [unowned self] _ in
+            if state.isExpired == true {
+                show(PremiumBuySubscriptionController(pickedName: state.name, state: .buySubscription), sender: nil)
+                return
+            }
+            show(PremiumManageController(state: state), sender: nil)
+        }), for: .touchUpInside)
         
         let mainStack = UIStackView(axis: .vertical, [
             UIView(),
@@ -69,7 +96,8 @@ private extension PremiumHomeViewController {
             .pinToSuperview(edges: .horizontal, padding: 24)
             .centerToSuperview(axis: .vertical)
         
-        
+        view.addSubview(action)
+        action.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
     }
     
     func userStackView() -> UIView? {
@@ -88,31 +116,69 @@ private extension PremiumHomeViewController {
         nameStack.alignment = .center
         nameStack.spacing = 6
         
+        let titleView = PremiumUserTitleView(title: state.cohort_1, subtitle: state.cohort_2)
         let userStack = UIStackView(axis: .vertical, [
             image, SpacerView(height: 16),
             nameStack, SpacerView(height: 20),
-            PremiumUserTitleView()
+            titleView
         ])
+        
+        if state.isExpired {
+            titleView.alpha = 0.4
+        } else if state.cohort_2.lowercased() == "free" {
+            let label = UILabel("Hey there! You are an early Primal user who interacted with our team, so we gave you 6 months of Primal Premium for free. ♥️🫂", color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            let labelParent = UIView()
+            labelParent.addSubview(label)
+            label.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 15)
+            userStack.addArrangedSubview(SpacerView(height: 12))
+            userStack.addArrangedSubview(labelParent)
+        }
+        
         userStack.alignment = .center
         
         return userStack
     }
     
-    func renewString() -> NSAttributedString {
+    enum ExtraLabelAction { case cancel, nothing, support }
+    var extraLabelAction: ExtraLabelAction {
+        if PremiumViewController.isNewPremiumUser {
+            return .cancel
+        }
+        if state.isExpired {
+            return .nothing
+        }
+        return .support
+    }
+    
+    func actionLabelString() -> NSAttributedString {
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 6
         paragraph.alignment = .center
         
-        let mutable = NSMutableAttributedString(string: "Your subscription will renew automatically.\nIf you wish to stop it, you can ", attributes: [
+        let strings: (String, String?) = {
+            if PremiumViewController.isNewPremiumUser {
+                return ("Your subscription will renew automatically.\nIf you wish to stop it, you can ", "cancel now.")
+            }
+            if state.isExpired {
+                return ("Your Primal Premium subscription has expired.\nYou can renew it below:", nil)
+            }
+            return ("Are you enjoying Primal?\nIf so, see how you can ", "support us.")
+        }()
+        
+        let mutable = NSMutableAttributedString(string: strings.0, attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .regular),
             .foregroundColor: UIColor.foreground3,
             .paragraphStyle: paragraph
         ])
-        mutable.append(.init(string: "cancel now.", attributes: [
-            .font: UIFont.appFont(withSize: 14, weight: .regular),
-            .foregroundColor: UIColor.accent,
-            .paragraphStyle: paragraph
-        ]))
+        if let accent = strings.1 {
+            mutable.append(.init(string: accent, attributes: [
+                .font: UIFont.appFont(withSize: 14, weight: .regular),
+                .foregroundColor: UIColor.accent,
+                .paragraphStyle: paragraph
+            ]))
+        }
         return mutable
     }
 }
@@ -169,20 +235,30 @@ class PremiumHomeTableView: UIView {
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = .none
         dateFormatter.dateStyle = .long
-        let expireDate = Date(timeIntervalSince1970: state.expires_on)
         
         if state.recurring, let renews_on = state.renews_on {
             let renewDate = Date(timeIntervalSince1970: renews_on)
             if renewDate.timeIntervalSinceNow < 30 * 24 * 3600 {
                 endRow = .init(title: "Renews on")
                 endRow.infoLabel.text = dateFormatter.string(from: renewDate)
-            } else {
+            } else if let expires_on = state.expires_on {
+                let expireDate = Date(timeIntervalSince1970: expires_on)
                 endRow = .init(title: "Expires on")
                 endRow.infoLabel.text = dateFormatter.string(from: expireDate)
+            } else {
+                endRow = .init(title: "Status")
+                endRow.infoLabel.text = "UNKNOWN"
             }
         } else {
-            endRow = .init(title: expireDate.timeIntervalSinceNow > 0 ? "Expires on" : "Expired on")
-            endRow.infoLabel.text = dateFormatter.string(from: expireDate)
+            if let expires_on = state.expires_on {
+                let expireDate = Date(timeIntervalSince1970: expires_on)
+                endRow = .init(title: expireDate.timeIntervalSinceNow > 0 ? "Expires on" : "Status")
+                endRow.infoLabel.text = expireDate.timeIntervalSinceNow > 0 ? dateFormatter.string(from: expireDate) : "EXPIRED"
+            } else {
+                endRow = .init(title: "Status")
+                endRow.infoLabel.text = "UNKNOWN"
+            }
+            
         }
         tableStack.addArrangedSubview(endRow)
         

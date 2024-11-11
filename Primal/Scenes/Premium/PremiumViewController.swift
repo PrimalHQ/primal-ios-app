@@ -12,6 +12,15 @@ import StoreKit
 final class PremiumViewController: UIPageViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
+    static var isNewPremiumUser = false
+    
+    init() {
+        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
+        WalletManager.instance.refreshPremiumState()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = customBackButton
@@ -22,7 +31,12 @@ final class PremiumViewController: UIPageViewController, Themeable {
                 guard let self else { return }
                 
                 if let state {
-                    title = "Premium"
+                    if state.isExpired {
+                        title = "Premium Expired"
+                    } else {
+                        title = "Premium"
+                    }
+                    
                     setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
                 } else {
                     setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)

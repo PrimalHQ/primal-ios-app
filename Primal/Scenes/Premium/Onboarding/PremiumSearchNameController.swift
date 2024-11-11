@@ -105,7 +105,7 @@ private extension PremiumSearchNameController {
                         unavailableLabel.isHidden = false
                         return
                     }
-                    self?.show(PremiumCompleteSignupController(pickedName: name), sender: nil)
+                    self?.show(PremiumBuySubscriptionController(pickedName: name, state: .onboardingFinish), sender: nil)
                 }
             }
         }), for: .touchUpInside)

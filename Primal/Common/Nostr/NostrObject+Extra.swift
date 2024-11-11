@@ -143,13 +143,16 @@ extension NostrObject {
         return createNostrObject(content: content, kind: 1, tags: allTags)
     }
     
-    static func purchasePrimalPremium(pickedName: String, transaction: SKPaymentTransaction) -> NostrObject? {
-        guard let encodedTransaction = transaction.encodeToString() else { return nil }
+    static func purchasePrimalPremium(pickedName: String, transaction: Transaction, verification: String) -> NostrObject? {
+        guard let encodedTransaction: JSON = String(data: transaction.jsonRepresentation, encoding: .utf8)?.decode() else { return nil }
         
         let json: [String: JSON] = [
             "name": .string(pickedName),
             "receiver_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "ios_subscription": .string(encodedTransaction)
+            "ios_subscription": .object([
+                "transaction": encodedTransaction,
+                "jwsVerification": .string(verification)
+            ])
         ]
         
         guard let content = json.encodeToString() else { return nil }

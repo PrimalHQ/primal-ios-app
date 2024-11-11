@@ -174,7 +174,7 @@ private extension MenuContainerController {
         let settings = MenuItemButton(title: "SETTINGS")
         let signOut = MenuItemButton(title: "SIGN OUT")
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, messages, bookmarks, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, settings, signOut])
         [
             profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton

@@ -18,7 +18,7 @@ extension UIViewController {
 }
 
 extension UIViewController {
-    func showErrorMessage(title: String = "Warning", _ message: String) {
+    func showErrorMessage(title: String = "Warning", _ message: String? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .default))
         present(alert, animated: true)

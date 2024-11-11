@@ -83,7 +83,7 @@ struct PremiumState: Codable {
     var cohort_1: String
     var cohort_2: String
     var recurring: Bool
-    var expires_on: Double
+    var expires_on: Double?
     var renews_on: Double?
 }
 

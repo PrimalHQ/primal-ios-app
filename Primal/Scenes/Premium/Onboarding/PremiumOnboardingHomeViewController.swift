@@ -88,7 +88,7 @@ private extension PremiumOnboardingHomeViewController {
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
-            .pinToSuperview(edges: .top, padding: 0, safeArea: true)
+            .pinToSuperview(edges: .top, padding: 72)
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
         midStack.alignment = .center
@@ -108,11 +108,11 @@ private extension PremiumOnboardingHomeViewController {
         }), for: .touchUpInside)
         
         InAppPurchaseManager.shared.fetchPremiumSubscriptions { products in
-            if let monthly = products.first(where: { $0.productIdentifier == InAppPurchaseManager.monthlyPremiumId }) {
-                princeInfoView.monthlyPriceLabel.text = monthly.localizedPrice
+            if let monthly = products.first(where: { $0.id == InAppPurchaseManager.monthlyPremiumId }) {
+                princeInfoView.monthlyPriceLabel.text = monthly.displayPrice
             }
-            if let yearly = products.first(where: { $0.productIdentifier == InAppPurchaseManager.yearlyPremiumId }) {
-                princeInfoView.yearlyPriceLabel.text = yearly.localizedPrice
+            if let yearly = products.first(where: { $0.id == InAppPurchaseManager.yearlyPremiumId }) {
+                princeInfoView.yearlyPriceLabel.text = yearly.displayPrice
             }
         }
     }

@@ -25,7 +25,36 @@ enum IAPHandlerAlertType {
 
 final class InAppPurchaseManager: NSObject {
     static let shared = InAppPurchaseManager()
-    private override init() { }
+    private override init() {
+        
+        let transactions = Transaction.all
+        
+        print(transactions)
+    
+        
+        Task { @MainActor in
+            
+            for await transaction in Transaction.currentEntitlements {
+                print(transaction)
+            }
+            
+            print("END")
+            
+            for await result in Transaction.updates {
+                switch result {
+                case .verified(let transaction):
+                    print(transaction)
+                    break
+                    // Deliver the purchased content
+                case .unverified(let transaction, let error):
+                    print(transaction)
+                    print(error)
+                    break
+                    // Handle the error
+                }
+            }
+        }
+    }
     
     static let monthlyPremiumId = "monthlyPremium"
     static let yearlyPremiumId = "yearlyPremium"
@@ -59,19 +88,73 @@ final class InAppPurchaseManager: NSObject {
         productID = product.productIdentifier
     }
     
-    func fetchAvailableProducts(completion: @escaping (([SKProduct])->Void)){
+    func purchase(product: Product, completion: @escaping ((Product.PurchaseResult?) -> Void)) {
+        guard canMakePurchases() else {
+            completion(nil)
+            return
+        }
+       
+        Task { @MainActor in
+            do {
+                let result = try await product.purchase()
+                
+                completion(result)
+
+                switch result {
+                case .success(let verification):
+                    switch verification {
+                    case .verified(let transaction):
+                        // Handle successful purchase
+                        await transaction.finish()
+                        print("Purchase successful: \(transaction.id)")
+                    case .unverified(_, let error):
+                        print("Purchase error: \(error)")
+                    }
+                case .userCancelled:
+                    print("User cancelled the purchase.")
+                case .pending:
+                    print("Transaction pending.")
+                @unknown default:
+                    break
+                }
+            } catch {
+                print("Purchasing error \(error)")
+            }
+        }
+    }
+    
+    func fetchWalletProducts(completion: @escaping (([SKProduct])->Void)){
         fetchProductCompletion = completion
                 
         productsRequest = SKProductsRequest(productIdentifiers: productIds)
         productsRequest.delegate = self
         productsRequest.start()
+        
+//        let productIds = productIds
+//        Task { @MainActor in
+//            do {
+//                let products = try await Product.products(for: productIds)
+//                for product in products {
+//                    print("Product: \(product.displayName), Price: \(product.displayPrice)")
+//                }
+//            } catch {
+//                print("Failed to fetch products: \(error)")
+//            }
+//        }
     }
     
-    func fetchPremiumSubscriptions(completion: @escaping (([SKProduct])->Void)) {
-        fetchProductCompletion = completion
-        productsRequest = SKProductsRequest(productIdentifiers: [Self.monthlyPremiumId, Self.yearlyPremiumId])
-        productsRequest.delegate = self
-        productsRequest.start()
+    func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product])->Void)) {
+        let productIds = [Self.monthlyPremiumId, Self.yearlyPremiumId]
+        
+        Task { @MainActor in
+            do {
+                let products = try await Product.products(for: productIds)
+                completion(products)
+            } catch {
+                completion([])
+                print("Failed to fetch products: \(error)")
+            }
+        }
     }
     
     func checkSubscriptionStatus() async -> Bool {
@@ -116,70 +199,5 @@ extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionO
                 break
             }
         }
-    }
-}
-
-extension SKPaymentTransaction {
-    func encodeToString() -> String? {
-        guard let productIdentifier = payment.productIdentifier as String?,
-              let transactionIdentifier = transactionIdentifier,
-              let transactionDate = transactionDate else {
-            return nil
-        }
-        
-        // Convert the transaction state to a string
-        let encodedTransactionState: String
-        switch transactionState {
-        case .purchased: encodedTransactionState = "purchased"
-        case .failed: encodedTransactionState = "failed"
-        case .restored: encodedTransactionState = "restored"
-        case .deferred: encodedTransactionState = "deferred"
-        case .purchasing: encodedTransactionState = "purchasing"
-        @unknown default: encodedTransactionState = "unknown"
-        }
-
-        // Error details
-        let errorDescription = error?.localizedDescription
-
-        // Original transaction info for restored purchases
-        let originalTransactionIdentifier = original?.transactionIdentifier
-        let originalTransactionDate = original?.transactionDate?.timeIntervalSince1970
-        
-        // Additional payment details
-        let quantity = payment.quantity
-        let applicationUsername = payment.applicationUsername
-        let requestData = payment.requestData?.base64EncodedString() // Base64 encode requestData if present
-
-        // Create a dictionary with all transaction details
-        var transactionInfo: [String: JSON] = [
-            "productIdentifier": .string(productIdentifier),
-            "transactionIdentifier": .string(transactionIdentifier),
-            "transactionDate": .number(transactionDate.timeIntervalSince1970),
-            "transactionState": .string(encodedTransactionState),
-            "quantity": .number(Double(quantity))
-        ]
-        
-        // Conditionally add optional fields if available
-        if let errorDescription = errorDescription {
-            transactionInfo["errorDescription"] = .string(errorDescription)
-        }
-        
-        if let originalTransactionIdentifier = originalTransactionIdentifier {
-            transactionInfo["originalTransactionIdentifier"] = .string(originalTransactionIdentifier)
-        }
-        
-        if let originalTransactionDate = originalTransactionDate {
-            transactionInfo["originalTransactionDate"] = .number(originalTransactionDate)
-        }
-
-        if let applicationUsername = applicationUsername {
-            transactionInfo["applicationUsername"] = .string(applicationUsername)
-        }
-        
-        if let requestData = requestData {
-            transactionInfo["requestData"] = .string(requestData)
-        }
-        
-        return transactionInfo.encodeToString()
     }
 }
