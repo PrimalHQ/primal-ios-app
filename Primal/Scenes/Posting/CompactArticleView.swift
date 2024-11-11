@@ -7,6 +7,7 @@
 
 import UIKit
 import FLAnimatedImage
+import Kingfisher
 
 class CompactArticleView: UIView, Themeable {
     let avatar = FLAnimatedImageView().constrainToSize(20)
@@ -42,7 +43,15 @@ class CompactArticleView: UIView, Themeable {
         }()
         
         if let imageURL {
-            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage"))
+            contentImageView.kf.setImage(
+                with: imageURL,
+                placeholder: UIImage(named: "longFormPlaceholderImage"),
+                options: [
+                    .scaleFactor(3),
+                    .processor(DownsamplingImageProcessor(size: .init(width: 88, height: 48))),
+                    .cacheOriginalImage
+                ]
+            )
         } else {
             contentImageView.kf.cancelDownloadTask()
             contentImageView.image = UIImage(named: "longFormPlaceholderImage")

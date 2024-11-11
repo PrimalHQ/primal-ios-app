@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 enum RoundingStyle {
-    case twoDecimals, removeZeros
+    case twoDecimals, threeDecimals, removeZeros
 }
 
 class LargeBalanceConversionView: UIStackView, Themeable {

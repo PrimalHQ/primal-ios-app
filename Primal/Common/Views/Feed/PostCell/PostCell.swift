@@ -12,17 +12,15 @@ import LinkPresentation
 import FLAnimatedImage
 import Nantes
 
-protocol PostCellDelegate: AnyObject, ZapGalleryViewDelegate {
+protocol PostCellDelegate: AnyObject {
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent)
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
+    func mainActionForZap(_ zap: ParsedZap)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
-    weak var delegate: PostCellDelegate? {
-        didSet {
-            zapGallery?.delegate = delegate
-        }
-    }
+    weak var delegate: PostCellDelegate?
     
     let bottomBorder = UIView()
     let threeDotsButton = UIButton()
@@ -41,6 +39,7 @@ class PostCell: UITableViewCell {
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
+    let zapPreview = ZapPreviewView()
     let postPreview = PostPreviewView()
     let infoView = SimpleInfoView()
     let repostIndicator = RepostedIndicatorView()
@@ -110,6 +109,13 @@ class PostCell: UITableViewCell {
             postPreview.isHidden = false
         } else {
             postPreview.isHidden = true
+        }
+        
+        if let zap = content.embeddedZap {
+            zapPreview.updateForZap(zap)
+            zapPreview.isHidden = false
+        } else {
+            zapPreview.isHidden = true
         }
         
         if let reposted = content.reposted?.users {
@@ -277,7 +283,8 @@ private extension PostCell {
         nameStack.alignment = .center
         nameStack.spacing = 4
         
-        bottomButtonStack.distribution = .equalSpacing
+        bottomButtonStack.distribution = .fillEqually
+        bottomButtonStack.spacing = 12
         
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.masksToBounds = true
@@ -346,6 +353,7 @@ private extension PostCell {
         
         bookmarkButton.tintColor = .foreground5
         bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkButton.contentHorizontalAlignment = .trailing
         bookmarkButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
@@ -356,7 +364,10 @@ private extension PostCell {
             repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
             replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
             
-            let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
+            let tap = BindableTapGestureRecognizer { [weak self] in
+                guard let self else { return }
+                delegate?.postCellDidTap(self, .zap)
+            }
             let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
             tap.require(toFail: long)
             zapButton.addGestureRecognizer(tap)
@@ -364,10 +375,6 @@ private extension PostCell {
         } else {
             ([likeButton, repostButton, replyButton, zapButton] as [UIControl]).forEach { $0.addDisabledNSecWarning(RootViewController.instance) }
         }
-    }
-    
-    @objc func zapTapped() {
-        delegate?.postCellDidTap(self, .zap)
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
@@ -409,5 +416,19 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
         delegate?.postCellDidTap(self, .like)
+    }
+}
+
+extension PostCell: ZapGalleryViewDelegate {
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
+        delegate?.menuConfigurationForZap(zap)
+    }
+    
+    func mainActionForZap(_ zap: ParsedZap) {
+        delegate?.mainActionForZap(zap)
+    }
+    
+    func zapTapped(_ zap: ParsedZap) {
+        delegate?.postCellDidTap(self, .zapDetails)
     }
 }

@@ -151,10 +151,8 @@ final class TransactionViewController: NoteViewController {
     }
     
     var firstTimeAnimating = true
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.section == postSection else { return }
-        
-        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
         guard firstTimeAnimating else { return }
         firstTimeAnimating = false
@@ -293,9 +291,9 @@ private extension TransactionViewController {
                 .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
             ]
             
-            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).twoDecimalPoints()))
+            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).nDecimalPoints(n: 2)))
             if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
-                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).twoDecimalPoints()))
+                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).nDecimalPoints(n: 2)))
             }
             if let feeString = transaction.total_fee_btc, let feeBtc = Double(feeString) {
                 let fee = Int((feeBtc * .BTC_TO_SAT).rounded())

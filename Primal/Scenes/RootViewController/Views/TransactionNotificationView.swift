@@ -87,7 +87,7 @@ final class TransactionNotificationView: UIView {
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
             
-            let usdString = "$\(abs(usdAmount).twoDecimalPoints())"
+            let usdString = "$\(abs(usdAmount).nDecimalPoints(n: 2))"
             
             amountLabel.text = usdString
             currencyLabel.text = "USD"

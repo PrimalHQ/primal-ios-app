@@ -8,6 +8,7 @@
 import UIKit
 
 final class ThemeableLabel: UILabel, Themeable {
+    @discardableResult
     func setTheme(_ theme: @escaping (ThemeableLabel) -> ()) -> Self {
         self.theme = theme
         return self
@@ -21,6 +22,15 @@ final class ThemeableLabel: UILabel, Themeable {
     
     func updateTheme() {
         theme(self)
+    }
+    
+    convenience init(_ text: String? = nil, textColor: (() -> UIColor)? = nil, font: UIFont) {
+        self.init(frame: .zero)
+        self.text = text
+        self.font = font
+        if let textColor {
+            setTheme { $0.textColor = textColor() }
+        }
     }
 }
 

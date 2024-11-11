@@ -30,13 +30,7 @@ final class ExploreFeedsViewController: UIViewController, Themeable {
         super.init(nibName: nil, bundle: nil)
         setup()
         
-        SocketRequest(name: "get_featured_dvm_feeds", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)])
-            .publisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] result in                
-                self?.feeds = result.feeds()
-            })
-            .store(in: &cancellables)
+        refresh()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -51,6 +45,17 @@ final class ExploreFeedsViewController: UIViewController, Themeable {
         table.backgroundColor = .background2
         
         updateTable()
+    }
+    
+    func refresh() {
+        SocketRequest(name: "get_featured_dvm_feeds", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)])
+            .publisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] result in
+                self?.feeds = result.feeds()
+                self?.table.refreshControl?.endRefreshing()
+            })
+            .store(in: &cancellables)
     }
 }
 
@@ -77,6 +82,9 @@ private extension ExploreFeedsViewController {
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .init(top: 169, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
+        table.refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
+            self?.refresh()
+        }))
         
         view.addSubview(table)
         table.pinToSuperview()
@@ -109,9 +117,11 @@ extension ExploreFeedsViewController: UITableViewDelegate {
         
         let kind: PrimalFeedType = parsed.metadata?.kind == "notes" ? .note : .article
         
+        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(kind.kind)\"}"
+        
         let readsFeed = PrimalFeed(
             name: feed.name,
-            spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(kind.kind)\"}",
+            spec: spec,
             description: feed.about ?? "",
             feedkind: "dvm"
         )

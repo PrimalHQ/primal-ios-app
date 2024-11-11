@@ -197,7 +197,7 @@ private extension ArticleCell {
         nameLabel.font = .appFont(withSize: 15, weight: .regular)
         timeLabel.font = .appFont(withSize: 15, weight: .regular)
         
-        titleLabel.font = .appFont(withSize: 22, weight: .heavy)
+        titleLabel.font = .appFont(withSize: 16, weight: .heavy)
         durationLabel.font = .appFont(withSize: 15, weight: .regular)
         commentLabel.font = .appFont(withSize: 15, weight: .regular)
         

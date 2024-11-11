@@ -25,6 +25,7 @@ class DefaultMainThreadCell: ThreadCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         zapGallery = SmallZapGalleryView()
+        zapGallery?.delegate = self
         
         parentSetup()
         setup()
@@ -136,7 +137,7 @@ class DefaultMainThreadCell: ThreadCell {
 //        zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
-        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, infoView, contentBotSpacer])
+        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, zapPreview, infoView, contentBotSpacer])
         let mainStack = UIStackView(axis: .vertical, [horizontalProfileStack, contentStack, descStack])
         contentView.addSubview(mainStack)
         
@@ -178,6 +179,12 @@ class DefaultMainThreadCell: ThreadCell {
         }
         
         bottomButtonStack.addArrangedSubview(bookmarkButton)
+        bookmarkButton.constrainToSize(width: 36)
+        bookmarkButton.contentHorizontalAlignment = .center
+        bottomButtonStack.distribution = .fill
+        bottomButtonStack.arrangedSubviews.dropFirst().dropLast().forEach { view in
+            view.widthAnchor.constraint(equalTo: replyButton.widthAnchor).isActive = true
+        }
         
         zapsLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)

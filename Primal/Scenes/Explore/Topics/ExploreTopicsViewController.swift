@@ -40,12 +40,6 @@ final class ExploreTopicsViewController: UIViewController, Themeable {
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         
-        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                self?.hashtags  = result.popularHashtags
-            }
-            .store(in: &cancellables)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -56,6 +50,16 @@ final class ExploreTopicsViewController: UIViewController, Themeable {
     
     func updateTheme() {
         collectionView.backgroundColor = .background2
+    }
+    
+    func refresh() {
+        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                self?.hashtags  = result.popularHashtags
+                self?.collectionView.refreshControl?.endRefreshing()
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -71,6 +75,9 @@ private extension ExploreTopicsViewController {
         collectionView.register(HashtagLoadingCollectionViewCell.self, forCellWithReuseIdentifier: "loading")
         collectionView.contentInset = .init(top: 157, left: 0, bottom: 80, right: 0)
         collectionView.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
+        collectionView.refreshControl = .init(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
+            self?.refresh()
+        }))
         
         updateTheme()
     }

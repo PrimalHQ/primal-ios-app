@@ -54,11 +54,36 @@ final class PublicBookmarksViewController: PrimalPageController {
     }
 }
 
+class EmptyTableViewCell: UITableViewCell {
+    let view = EmptyTableView()
+    
+    var refreshCallback: (() -> ())?
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(view)
+        view.pinToSuperview().constrainToSize(height: 400)
+        
+        view.refresh.addAction(.init(handler: { [weak self] _ in
+            self?.refreshCallback?()
+        }), for: .touchUpInside)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class EmptyTableView: UIView, Themeable {
     let label = UILabel()
     let refresh = UIButton()
     
-    init(title: String) {
+    convenience init(title: String) {
+        self.init()
+        label.text = title        
+    }
+    
+    init() {
         super.init(frame: .zero)
         
         let stack = UIStackView(axis: .vertical, [label, refresh])
@@ -69,7 +94,6 @@ class EmptyTableView: UIView, Themeable {
         stack.spacing = 18
     
         label.font = .appFont(withSize: 15, weight: .regular)
-        label.text = title
         
         refresh.titleLabel?.font = .appFont(withSize: 15, weight: .bold)
         refresh.setTitle("REFRESH", for: .normal)

@@ -367,7 +367,7 @@ private extension WalletSendViewController {
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    let summary = WalletTransferSummaryController(.success(amount: amount, address: destination.address))
+                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: destination.address))
                     navigationController?.pushViewController(summary, animated: true)
                     
                     summary.view.isUserInteractionEnabled = false

@@ -71,6 +71,7 @@ enum NostrKind: Int {
     case explorePeopleInfo = 10_000_157
     case primalName = 10_000_158
     case dvmFeedMetadata = 10_000_159
+    case premiumState = 10_000_603
     
     case shortenedArticle = 10_030_023
 }

@@ -14,6 +14,13 @@ import Lottie
 import Kingfisher
 import StoreKit
 
+extension PostCell {
+    var currentVideoCells: [VideoCell] {
+        [mainImages.currentVideoCell(), postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
+            .compactMap { $0 }
+    }
+}
+
 class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
@@ -83,16 +90,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         hapticGenerator.prepare()
         heavy.prepare()
         
-        guard
-            ContentDisplaySettings.autoPlayVideos,
-            let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url,
-            let index = posts.firstIndex(where: { post in  post.mediaResources.contains(where: { $0.url == playingRN }) }),
-            table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
-        else { return }
-        
-        DispatchQueue.main.async {
-            VideoPlaybackManager.instance.currentlyPlaying?.play()
-        }
+        playVideoOnScroll()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -115,7 +113,33 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevTransform: CGFloat = 0
+    
+    func playVideoOnScroll() {
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
+        
+        let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
+
+        let firstPlayableCell: VideoCell? = allVideoCells.first(where: { cell in
+            let bounds = cell.contentView.convert(cell.contentView.bounds, to: nil)
+            
+            return bounds.midY > 20 && bounds.midY < view.frame.height
+        })
+        
+        let lastPlayer = firstPlayableCell?.player
+        
+        DispatchQueue.main.async {
+            allVideoCells.forEach {
+                if $0.player?.url != lastPlayer?.url {
+                    $0.player?.pause()
+                }
+            }
+            lastPlayer?.play()
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        playVideoOnScroll()
+        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         prevPosition = newPosition
@@ -129,16 +153,6 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
         
         setBarsToTransform(newTransform)
-    }
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-//        if velocity.y < -0.1 {
-//            animateBarsToVisible()
-//        } else if velocity.y > 0.1 {
-//            animateBarsToInvisible()
-//        } else {
-//            setBarsDependingOnPosition()
-//        }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -221,15 +235,6 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard ContentDisplaySettings.autoPlayVideos, let postCell = cell as? PostCell else { return }
-        
-        DispatchQueue.main.async {
-            guard let videoCell = postCell.mainImages.currentVideoCell() ?? postCell.postPreview.mainImages.currentVideoCell() else { return }
-            videoCell.player?.play()
-        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -433,7 +438,7 @@ private extension NoteViewController {
         table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
 
         DispatchQueue.main.async {
-            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
+            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
             self.table.contentInset = .init(top: self.barsMaxTransform, left: 0, bottom: 90, right: 0)
             self.table.contentOffset = .init(x: 0, y: -self.barsMaxTransform)
         }
@@ -456,8 +461,11 @@ private extension NoteViewController {
             }
         }
         
-        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
-            guard let self, let index = posts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
+        WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard
+                let self, 
+                let index = posts.firstIndex(where: { $0.post.id == zap.postId })
+            else { return }
             
             var zaps = posts[index].zaps
             if zaps.contains(where: { $0.receiptId == zap.receiptId }) { return }
@@ -472,7 +480,7 @@ private extension NoteViewController {
                 table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
             else { return }
             
-            if posts[index].zaps.count > 2, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
                 cell.updateMenu(posts[index])
             } else {
                 table.reloadData()
@@ -563,20 +571,18 @@ private extension NoteViewController {
     func animateZap(_ cell: PostCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
-        let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : (cell.zapGallery as? LargeZapGalleryView)?.zapPillButton.imageView
+        heavy.impactOccurred()
         
-        if let iconToPin {
-            view.addSubview(animView)
-            animView
-                .centerToView(iconToPin, axis: .vertical, offset: 2)
-                .centerToView(iconToPin, axis: .horizontal, offset: 62)
-        }
+        guard let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : nil else { return }
         
         view.layoutIfNeeded()
         
         cell.zapButton.animateTo(amount, filled: true)
         
-        heavy.impactOccurred()
+        view.addSubview(animView)
+        animView
+            .centerToView(iconToPin, axis: .vertical, offset: 2)
+            .centerToView(iconToPin, axis: .horizontal, offset: 62)
         
         animView.alpha = 1
         animView.play()
@@ -662,7 +668,7 @@ extension NoteViewController: PostCellDelegate {
         
         if let videoCell = cell.mainImages.currentVideoCell(), videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
             videoCell.player?.play()
-            videoCell.player?.isMuted = false
+            VideoPlaybackManager.instance.isMuted = false
             return
         }
         
@@ -674,9 +680,7 @@ extension NoteViewController: PostCellDelegate {
         
         present(FullScreenVideoPlayerController(player), animated: true) 
     }
-}
-
-extension NoteViewController: ZapGalleryViewDelegate {
+    
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
         let profileVC = ProfileViewController(profile: zap.user)
         var items: [UIAction] = [

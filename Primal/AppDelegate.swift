@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFAudio
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,8 +25,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         UserDefaults.standard.removeObject(forKey: .smartContactDefaultListKey)
         UserDefaults.standard.removeObject(forKey: .cachedUsersDefaultsKey)
         UserDefaults.standard.removeObject(forKey: .checkedNipsKey)
+        UserDefaults.standard.removeObject(forKey: "isLatestFeedFirstKey")
         
         UITableView.appearance().sectionHeaderTopPadding = 0
+        
+        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
         
         PrimalEndpointsManager.instance.checkIfNecessary()
         

@@ -21,6 +21,10 @@ protocol FeedMarketplaceCellController: FeedMarketplaceCellDelegate, ZappingView
 }
 
 extension ParsedFeedFromMarket: ZapableEntity {
+    var avatarURL: String {
+        data.image ?? data.picture ?? ""
+    }
+    
     var zappingName: String { data.name }
 }
 

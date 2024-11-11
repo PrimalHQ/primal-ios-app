@@ -32,7 +32,10 @@ class ExploreZapsViewController: UIViewController, Themeable {
         
         feedManager.$zaps
             .receive(on: DispatchQueue.main)
-            .assign(to: \.zaps, onWeak: self)
+            .sink(receiveValue: { [weak self] zaps in
+                self?.zaps = zaps
+                self?.table.refreshControl?.endRefreshing()
+            })
             .store(in: &cancellables)
     }
     
@@ -67,6 +70,9 @@ private extension ExploreZapsViewController {
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
+        table.refreshControl = .init(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
+            self?.feedManager.refresh()
+        }))
         
         table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)

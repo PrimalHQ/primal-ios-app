@@ -85,9 +85,7 @@ extension PostRequestResult {
     func getArticles() -> [Article] {
         let posts = process(contentStyle: .threadChildren)
         
-        let mentions: [ParsedContent] = mentions
-            .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], contentStyle: .embedded) }
+        let mentions: [ParsedContent] = NoteProcessor(result: self, contentStyle: .embedded).secondLevelMentions
         
         let parsedUsers = getSortedUsers()
         

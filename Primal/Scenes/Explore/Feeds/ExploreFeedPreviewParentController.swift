@@ -23,15 +23,7 @@ extension UIButton.Configuration {
     }
     
     static func capsule14Grey(_ text: String) -> UIButton.Configuration {
-        var config = UIButton.Configuration.filled()
-        config.cornerStyle = .capsule
-        config.attributedTitle = .init(text, attributes: .init([
-            .font: UIFont.appFont(withSize: 14, weight: .semibold),
-            .foregroundColor: UIColor.foreground
-        ]))
-        config.baseForegroundColor = .foreground
-        config.baseBackgroundColor = .background3
-        return config
+        capsuleBackground3(text: text, font: UIFont.appFont(withSize: 14, weight: .semibold))
     }
 }
 
@@ -95,6 +87,12 @@ final class ExploreFeedPreviewParentController: UIViewController, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateButton()
+    }
+    
     func updateTheme() {
         navigationItem.leftBarButtonItem = customBackButton
         updateButton()
@@ -135,8 +133,12 @@ private extension ExploreFeedPreviewParentController {
             
             var all = PrimalFeed.getAllFeeds(type)
             
-            if all.contains(where: { $0.spec == self.feed.spec }) {
-                all.removeAll(where: { $0.spec == self.feed.spec })
+            if let existingFeedIndex = all.firstIndex(where: { $0.spec == self.feed.spec }) {
+                if all[existingFeedIndex].isFromBackend {
+                    all[existingFeedIndex].enabled.toggle()
+                } else {
+                    all.remove(at: existingFeedIndex)
+                }
             } else {
                 all.append(feed)
             }
@@ -149,8 +151,11 @@ private extension ExploreFeedPreviewParentController {
     
     func updateButton() {
         let name = type == .article ? "reads" : "home"
-        if PrimalFeed.getAllFeeds(type).contains(where: { $0.spec == feed.spec }) {
-            addButton.configuration = .capsule14Grey("Remove from \(name) feeds")
+        let allFeeds = PrimalFeed.getAllFeeds(type)
+        if let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) {
+            addButton.configuration = allFeeds[index].isFromBackend && !allFeeds[index].enabled ?
+                .capsule14BlackWhite("Add to \(name) feeds") :
+                .capsule14Grey("Remove from \(name) feeds")
         } else {
             addButton.configuration = .capsule14BlackWhite("Add to \(name) feeds")
         }

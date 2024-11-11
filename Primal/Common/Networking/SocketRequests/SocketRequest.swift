@@ -16,6 +16,8 @@ struct SocketRequest {
     let name: String
     let payload: JSON?
     
+    var connection = Connection.regular
+    
     var body: JSON {
         if let payload {
             return [.string(name), payload]
@@ -58,27 +60,17 @@ struct SocketRequest {
     }
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
-//        if false && useHTTP {
-//            return httpPublisher()
-//                .replaceError(with: [])
-//                .map { result in
-//                    let pendingResult = PostRequestResult()
-//                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
-//                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
-//                    return pendingResult
-//                }
-//                .eraseToAnyPublisher()
-//        }
-        
-        Connection.regular.autoConnectReset()
+        connection.autoConnectReset()
         
         return Deferred {
             Future { promise in
-                Connection.regular.requestCache(name: name, payload: payload) { result in
+                connection.requestCache(name: name, payload: payload) { result in
                     let pendingResult = PostRequestResult()
                     
                     result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
                     result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
+                    
+                    pendingResult.postZaps.sort(by: { $0.amount_sats > $1.amount_sats })
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)

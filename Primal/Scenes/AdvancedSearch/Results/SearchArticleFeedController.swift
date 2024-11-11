@@ -8,7 +8,7 @@
 import UIKit
 
 class SearchArticleFeedController: ArticleFeedViewController {
-    let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 65)
+    let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 76)
     let navigationBorder = UIView().constrainToSize(height: 6)
     
     override func viewDidLoad() {

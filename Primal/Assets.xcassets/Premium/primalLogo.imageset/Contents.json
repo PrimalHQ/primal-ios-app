@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "primalLogo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

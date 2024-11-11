@@ -19,6 +19,7 @@ struct FeedFromMarket: Codable {
     var lud16: String?
     var pubkey: String?
     var subscription: Bool?
+    var primal_spec: String?
 }
 
 struct FeedMetadata: Codable {

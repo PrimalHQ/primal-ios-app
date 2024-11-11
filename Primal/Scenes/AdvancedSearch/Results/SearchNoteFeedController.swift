@@ -20,7 +20,7 @@ extension UIButton {
 }
 
 class SearchNoteFeedController: NoteFeedViewController {
-    let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 65)
+    let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 76)
     
     override func viewDidLoad() {
         super.viewDidLoad()

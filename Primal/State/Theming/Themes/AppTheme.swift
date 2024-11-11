@@ -71,4 +71,8 @@ extension AppTheme {
     }
     
     var isLightTheme: Bool { !isDarkTheme }
+    
+    var logoIcon: UIImage? {
+        isPurpleTheme ? UIImage(named: "primalLogo") : UIImage(named: "primalLogo")
+    }
 }

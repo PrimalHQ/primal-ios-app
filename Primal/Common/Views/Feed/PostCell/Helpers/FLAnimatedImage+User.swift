@@ -24,7 +24,8 @@ extension FLAnimatedImageView {
             kf.setImage(with: user.profileImage.url(for: size.width < 100 ? .small : .medium), placeholder: UIImage(named: "Profile"), options: [
                 .processor(DownsamplingImageProcessor(size: size)),
                 .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
+                .cacheOriginalImage,
+                .transition(.fade(0.2))
             ])
             return
         }

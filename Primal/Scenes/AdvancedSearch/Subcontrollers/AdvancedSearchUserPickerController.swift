@@ -221,6 +221,7 @@ final class SearchInputView: UIView {
         
         inputField.font = .appFont(withSize: 16, weight: .medium)
         inputField.autocorrectionType = .no
+        inputField.smartQuotesType = .no
         if let placeholder {
             inputField.attributedPlaceholder = .init(string: placeholder, attributes: [
                 .font: UIFont.appFont(withSize: 16, weight: .medium),

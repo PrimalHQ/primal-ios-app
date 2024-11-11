@@ -9,6 +9,17 @@ import Combine
 import UIKit
 import Kingfisher
 
+extension UIButton.Configuration {
+    static func capsuleBackground3(text: String, font: UIFont = UIFont.appFont(withSize: 14, weight: .regular)) -> UIButton.Configuration {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        config.attributedTitle = .init(text, attributes: .init([.font: font]))
+        config.baseForegroundColor = .foreground
+        config.baseBackgroundColor = .background3
+        return config
+    }
+}
+
 class NewPostViewController: UIViewController {
     let textView = UITextView()
     let imageView = UIImageView(image: UIImage(named: "Profile"))
@@ -19,7 +30,8 @@ class NewPostViewController: UIViewController {
     let imageButton = UIButton()
     let cameraButton = UIButton()
     let atButton = UIButton()
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
+    let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView(), clearButton])
     
     lazy var postButton = SmallPostButton(title: "Post")
     
@@ -40,6 +52,13 @@ class NewPostViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        textView.becomeFirstResponder()
+        textView.selectedRange = .init(location: 0, length: 0)
     }
 }
 
@@ -109,15 +128,17 @@ private extension NewPostViewController {
         imageView.contentMode = .scaleAspectFill
         
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
-        imageButton.constrainToSize(48)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
-        cameraButton.constrainToSize(48)
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
-        atButton.constrainToSize(48)
+        [imageButton, cameraButton, atButton].forEach {
+            $0.constrainToSize(48)
+            $0.tintColor = .foreground
+        }
         
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         bottomStack.spacing = 4
+        bottomStack.alignment = .center
         
         let border = SpacerView(height: 1, priority: .required)
         border.backgroundColor = .background3
@@ -158,6 +179,16 @@ private extension NewPostViewController {
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
+        clearButton.addAction(.init(handler: { [weak self] _ in
+            if self?.manager.postingText.isEmpty == true  { return }
+            
+            let alert = UIAlertController(title: "Are you sure?", message: "Clear everything?", preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "Clear", style: .destructive, handler: { _ in
+                self?.manager.reset()
+            }))
+            self?.present(alert, animated: true)
+        }), for: .touchUpInside)
         
         textView.tintColor = .accent
         

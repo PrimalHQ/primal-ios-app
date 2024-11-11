@@ -28,6 +28,11 @@ final class RootViewController: UIViewController {
     
     let connectionDot = UIView().constrainToSize(8)
     
+    let smoothScrollButton = UIView()
+    var smoothScrollingDisplayLink: CADisplayLink?
+    var smoothScrollSpeed: Int = 100
+    weak var smoothScrollingScrollView: UITableView?
+    
     var didAnimate = false
     var didFinishInit = false
     
@@ -35,6 +40,29 @@ final class RootViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         quickReset(isFirstTime: true)
         addIntro()
+        
+        view.addSubview(smoothScrollButton)
+        smoothScrollButton
+            .constrainToSize(44)
+            .pinToSuperview(edges: .trailing, padding: 16)
+            .pinToSuperview(edges: .bottom, padding: 120)
+        
+        smoothScrollButton.layer.cornerRadius = 22
+        smoothScrollButton.clipsToBounds = true
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        smoothScrollButton.insertSubview(blur, at: 0)
+        blur.pinToSuperview()
+        
+        let smoothButton = UIButton()
+        smoothButton.setImage(UIImage(systemName: "restart"), for: .normal)
+        smoothButton.tintColor = .white
+        smoothScrollButton.addSubview(smoothButton)
+        smoothButton.pinToSuperview()
+        smoothButton.addAction(.init(handler: { [weak self] _ in
+            self?.beginScrollAnimation()
+        }), for: .touchUpInside)
+        
+        smoothScrollButton.isHidden = true
         
         _ = WalletManager.instance
         
@@ -172,12 +200,63 @@ final class RootViewController: UIViewController {
         introVC = intro
     }
     
-    func showToast(_ message: String) {
+    func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         if let presentedViewController {
-            presentedViewController.view.showToast(message)
+            presentedViewController.view.showToast(message, icon: icon)
         } else {
             view.showToast(message)
         }
+    }
+    
+    func beginScrollAnimation() {
+        guard let scrollView: UITableView = view.findAllSubviews().last else { return }
+        
+        smoothScrollingDisplayLink?.invalidate()
+        smoothScrollingDisplayLink = CADisplayLink(target: self, selector: #selector(updateScroll))
+        smoothScrollingScrollView = scrollView
+        smoothScrollButton.isHidden = true
+        previousTime = nil
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [self] in
+            smoothScrollingDisplayLink?.add(to: .main, forMode: .common)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(20)) { [self] in
+            smoothScrollingDisplayLink?.invalidate()
+            smoothScrollingScrollView = nil
+            smoothScrollButton.isHidden = false
+        }
+    }
+    
+    
+    var previousTime: Date?
+    @objc func updateScroll() {
+        guard let scrollView = smoothScrollingScrollView else {
+            smoothScrollingDisplayLink?.invalidate()
+            smoothScrollingDisplayLink = nil
+            return
+        }
+        
+        let maxOffset = scrollView.contentSize.height - scrollView.bounds.height
+        let newOffset:CGFloat
+        
+        if let previousTime {
+            let delta = previousTime.timeIntervalSinceNow * CGFloat(smoothScrollSpeed)
+            
+            newOffset = scrollView.contentOffset.y - delta
+        } else {
+            newOffset = scrollView.contentOffset.y + CGFloat(smoothScrollSpeed) / 60
+        }
+        previousTime = .now
+
+        guard newOffset <= maxOffset else {
+            smoothScrollingDisplayLink?.invalidate()
+            smoothScrollingDisplayLink = nil
+            smoothScrollingScrollView = nil
+            return
+        }
+        
+        scrollView.contentOffset.y = newOffset
     }
 }
 

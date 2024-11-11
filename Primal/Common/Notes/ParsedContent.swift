@@ -86,6 +86,7 @@ final class ParsedContent {
     var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
     
     var embededPost: ParsedContent?
+    var embeddedZap: ParsedFeedZap?
     var reposted: ParsedRepost?
     
     var mentionedUsers: [PrimalUser] = []

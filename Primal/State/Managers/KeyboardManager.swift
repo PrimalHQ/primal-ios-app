@@ -63,13 +63,19 @@ class KeyboardSizingView: UIView {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func updateHeightCancellable() -> AnyCancellable {
+    func updateHeightCancellable(noAnimation: Bool = false) -> AnyCancellable {
         KeyboardManager.instance.$keyboardHeight.sink { [weak self] height in
             self?.hConstraint?.constant = height
+
+            if noAnimation {
+                return
+            }
+            
+            let animationDuration = max(KeyboardManager.instance.animationDuration, 0.15)
             
             let options = UIView.AnimationOptions(rawValue: KeyboardManager.instance.curveRawValue << 16)
-
-            UIView.animate(withDuration: KeyboardManager.instance.animationDuration, delay: 0, options: options) {
+            
+            UIView.animate(withDuration: animationDuration, delay: 0, options: options) {
                 if self?.window != nil {
                     self?.superview?.layoutIfNeeded()
                 }

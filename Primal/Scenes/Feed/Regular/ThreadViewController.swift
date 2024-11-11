@@ -289,35 +289,40 @@ private extension ThreadViewController {
         
         inputManager.post { [weak self] success, event in
             guard success, let event, let self else {
+                self?.feed.requestThread(postId: self?.id ?? "")
                 return
             }
             
-            SocketRequest(name: "events", payload: [
-                "event_ids": [.string(event.id)],
-                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                "extended_response": true
-            ])
-            .publisher()
-            .map { $0.process(contentStyle: .threadChildren).first }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] post in
-                guard let self else { return }
-                
-                didPostNewComment = true
-                didMoveToMain = false
+            SocketRequest(name: "import_events", payload: .object(["events": .array([event.toJSON()])]))
+                .publisher()
+                .flatMap { _ in
+                    SocketRequest(name: "events", payload: [
+                        "event_ids": [.string(event.id)],
+                        "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+                        "extended_response": true
+                    ])
+                    .publisher()
+                }
+                .map { $0.process(contentStyle: .threadChildren).first }
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] post in
+                    guard let self else { return }
+                    
+                    didPostNewComment = true
+                    didMoveToMain = false
 
-                guard let post else {
-                    feed.requestThread(postId: self.id)
-                    return
+                    guard let post else {
+                        feed.requestThread(postId: self.id)
+                        return
+                    }
+                    
+                    if feed.parsedPosts.count > mainPositionInThread + 1 {
+                        feed.parsedPosts.insert(post, at: mainPositionInThread + 1)
+                    } else {
+                        feed.parsedPosts.append(post)
+                    }
                 }
-                
-                if feed.parsedPosts.count > mainPositionInThread + 1 {
-                    feed.parsedPosts.insert(post, at: mainPositionInThread + 1)
-                } else {
-                    feed.parsedPosts.append(post)
-                }
-            }
-            .store(in: &cancellables)
+                .store(in: &cancellables)
 
         }
     }
@@ -580,18 +585,16 @@ private extension ThreadViewController {
         textInputView.backgroundColor = .clear
         textInputView.returnKeyType = .default
         
-        let imageButton = UIButton()
+        let imageButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
-        imageButton.constrainToSize(48)
         imageButton.addAction(.init(handler: { [unowned self] _ in
             ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
                 self?.inputManager.processSelectedAsset(result)
             }
         }), for: .touchUpInside)
         
-        let cameraButton = UIButton()
+        let cameraButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
-        cameraButton.constrainToSize(48)
         cameraButton.addAction(.init(handler: { [unowned self] _ in
             ImagePickerManager(self, mode: .camera) { [weak self] result in
                 self?.inputManager.processSelectedAsset(result)
@@ -602,14 +605,13 @@ private extension ThreadViewController {
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
-        let atButton = UIButton()
+        let atButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
         atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         
         [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
-        atButton.widthAnchor.constraint(equalTo: imageButton.widthAnchor).isActive = true
         
         buttonStack.alignment = .center
         

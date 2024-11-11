@@ -25,6 +25,7 @@ final class BrightSmallButton: MyButton, Themeable {
         
         label.text = title
         label.font = font
+        label.textAlignment = .center
         
         addSubview(label)
         label.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 26)

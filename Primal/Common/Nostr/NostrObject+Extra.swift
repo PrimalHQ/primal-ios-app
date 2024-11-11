@@ -8,6 +8,7 @@
 import Foundation
 import secp256k1
 import GenericJSON
+import StoreKit
 
 extension NostrObject {
     func toJSON() -> JSON {
@@ -97,7 +98,7 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
-    static func post(_ draft: NoteDraft, replyingToObject: PrimalFeedPost?) -> NostrObject? {
+    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?) -> NostrObject? {
         var allTags: [[String]] = []
 
         /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
@@ -125,7 +126,7 @@ extension NostrObject {
         
         allTags += draft.text.extractHashtags().map({ ["t", $0] })
 
-        return createNostrObject(content: draft.text, kind: 1, tags: allTags)
+        return createNostrObject(content: postingText, kind: 1, tags: allTags)
     }
     
     static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
@@ -140,6 +141,20 @@ extension NostrObject {
         allTags += content.extractHashtags().map({ ["t", $0] })
 
         return createNostrObject(content: content, kind: 1, tags: allTags)
+    }
+    
+    static func purchasePrimalPremium(pickedName: String, transaction: SKPaymentTransaction) -> NostrObject? {
+        guard let encodedTransaction = transaction.encodeToString() else { return nil }
+        
+        let json: [String: JSON] = [
+            "name": .string(pickedName),
+            "receiver_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "ios_subscription": .string(encodedTransaction)
+        ]
+        
+        guard let content = json.encodeToString() else { return nil }
+        
+        return createNostrObject(content: content, kind: 30078)
     }
     
     static func contacts(_ contacts: Set<String>) -> NostrObject? {

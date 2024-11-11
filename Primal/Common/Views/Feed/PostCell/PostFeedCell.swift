@@ -88,6 +88,7 @@ private extension PostFeedCell {
         
         zapGallery = SmallZapGalleryView()
         zapGallery?.singleLine = true
+        zapGallery?.delegate = self
         let zapGalleryParent = UIView()
         zapGalleryParent.addSubview(zapGallery!)
         zapGallery?.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 4)
@@ -114,7 +115,7 @@ private extension PostFeedCell {
     
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, infoView, zapGalleryParent, buttonStackStandIn
+            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, zapGalleryParent, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)
@@ -138,6 +139,7 @@ private extension PostFeedCell {
         bookmarkButton
             .pin(to: buttonStackStandIn, edges: .trailing, padding: -2)
             .centerToView(buttonStackStandIn, axis: .vertical)
+            .constrainToSize(width: 40)
         
         contentView.addSubview(repostedByOverlayButton)
         repostedByOverlayButton

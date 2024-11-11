@@ -46,8 +46,6 @@ class ArticleListController: UIViewController, ArticleCellController, UITableVie
         if view.window != nil {
             table.reloadData()
         }
-        
-        articles.forEach { $0.mentions.forEach { $0.buildContentString() }}
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { articles.isEmpty ? 5 : articles.count }

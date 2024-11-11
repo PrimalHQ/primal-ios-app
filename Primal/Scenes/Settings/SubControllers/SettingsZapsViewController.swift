@@ -170,10 +170,10 @@ final class ZapInfoView: MyButton, Themeable {
 }
 
 final class AccentUIButton: UIButton, Themeable {
-    init(title: String) {
+    init(title: String, font: UIFont = .appFont(withSize: 18, weight: .semibold)) {
         super.init(frame: .zero)
         setTitle(title, for: .normal)
-        titleLabel?.font = .appFont(withSize: 18, weight: .medium)
+        titleLabel?.font = font
         
         updateTheme()
     }

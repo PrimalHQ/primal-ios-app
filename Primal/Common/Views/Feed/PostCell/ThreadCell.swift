@@ -132,7 +132,9 @@ final class PostThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameStack, threeDotsButton])
         
         let actionButtonStandin = UIView()
-        let contentStack = UIStackView(arrangedSubviews: [mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, infoView, SpacerView(height: 0), actionButtonStandin])
+        let contentStack = UIStackView(arrangedSubviews: [
+            mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, SpacerView(height: 0), actionButtonStandin
+        ])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
         

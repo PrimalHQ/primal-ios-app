@@ -41,6 +41,7 @@ class FeedButton: MyButton {
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         
         titleLabel.font = .appFont(withSize: 14, weight: .regular)
+        backgroundColor = .background2.withAlphaComponent(0.01)
     }
         
     func set(_ count: Int, filled: Bool) {

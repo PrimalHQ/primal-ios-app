@@ -28,7 +28,7 @@ final class FeedManager {
     
     @Published var newFeed: PrimalFeed?
     var profilePubkey: String?
-    var didReachEnd = false
+    @Published var didReachEnd = false
     
     var contentStyle = ParsedContentTextStyle.regular
     
@@ -46,16 +46,7 @@ final class FeedManager {
     
     var addFuturePostsDirectly: () -> Bool = { true }
     
-    init(loadLocalHomeFeed: Bool) {
-        newFeed = PrimalFeed.getActiveFeeds(.note).first ?? .defaultNotesFeed
-        
-        initSubscriptions()
-        refresh()
-        
-        if loadLocalHomeFeed {
-            loadLocally()
-        }
-    }
+    static var lastLocallyLoadedLatestFeedUserPubkey: String?
     
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
@@ -66,8 +57,18 @@ final class FeedManager {
     init(newFeed: PrimalFeed) {
         self.newFeed = newFeed
         initSubscriptions()
-        refresh()
         initFuturePublishersAndObservers()
+        
+        if newFeed.name == "Latest" {
+            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
+            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
+            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
+                paginationInfo = loaded.pagination
+                postsEmitter.send(loaded)
+                return
+            }
+        }
+        refresh()
     }
     
     init(threadId: String) {
@@ -137,18 +138,6 @@ final class FeedManager {
 }
 
 private extension FeedManager {
-    func loadLocally() {
-        guard
-            let data = HomeFeedLocalLoadingManager.savedFeed,
-            !data.posts.isEmpty
-        else {
-            refresh()
-            return
-        }
-        paginationInfo = data.pagination
-        postsEmitter.send(data)
-    }
-    
     // MARK: - Subscriptions
     func initSubscriptions() {
         NotificationCenter.default.publisher(for: .userMuted)
@@ -170,7 +159,7 @@ private extension FeedManager {
             var sorted = result.process(contentStyle: contentStyle)
             
             if (self.parsedPosts.count > 0 || sorted.count > 0) && self.parsedPosts.last?.post.id == sorted.first?.post.id {
-                 sorted.removeFirst()
+                sorted.removeFirst()
             }
             
             if sorted.isEmpty {

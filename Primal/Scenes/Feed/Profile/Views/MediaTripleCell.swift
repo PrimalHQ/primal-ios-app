@@ -94,7 +94,10 @@ class MediaTripleCell: UITableViewCell {
         stack.spacing = 1
         stack.distribution = .fillEqually
         contentView.addSubview(stack)
-        stack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 1)
+        stack.pinToSuperview(edges: [.horizontal]).pinToSuperview(edges: .top, padding: 1)
+        let botC = stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        botC.priority = .defaultHigh
+        botC.isActive = true
     }
     
     required init?(coder: NSCoder) {

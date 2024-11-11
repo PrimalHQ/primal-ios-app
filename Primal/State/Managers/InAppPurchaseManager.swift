@@ -7,6 +7,7 @@
 
 import Foundation
 import StoreKit
+import GenericJSON
 
 enum IAPHandlerAlertType {
     case disabled
@@ -26,8 +27,12 @@ final class InAppPurchaseManager: NSObject {
     static let shared = InAppPurchaseManager()
     private override init() { }
     
+    static let monthlyPremiumId = "monthlyPremium"
+    static let yearlyPremiumId = "yearlyPremium"
+    
     //MARK: - Private
     fileprivate let productIds: Set<String> = ["MINSATS"]
+
     fileprivate var productID = ""
     fileprivate var productsRequest = SKProductsRequest()
     fileprivate var fetchProductCompletion: (([SKProduct])->Void)?
@@ -61,6 +66,24 @@ final class InAppPurchaseManager: NSObject {
         productsRequest.delegate = self
         productsRequest.start()
     }
+    
+    func fetchPremiumSubscriptions(completion: @escaping (([SKProduct])->Void)) {
+        fetchProductCompletion = completion
+        productsRequest = SKProductsRequest(productIdentifiers: [Self.monthlyPremiumId, Self.yearlyPremiumId])
+        productsRequest.delegate = self
+        productsRequest.start()
+    }
+    
+    func checkSubscriptionStatus() async -> Bool {
+        do {
+            for await transaction in Transaction.currentEntitlements {
+                return true
+            }
+        } catch {
+            print("Failed to check subscription: \(error)")
+        }
+        return false
+    }
 }
 
 extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionObserver{
@@ -93,5 +116,70 @@ extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionO
                 break
             }
         }
+    }
+}
+
+extension SKPaymentTransaction {
+    func encodeToString() -> String? {
+        guard let productIdentifier = payment.productIdentifier as String?,
+              let transactionIdentifier = transactionIdentifier,
+              let transactionDate = transactionDate else {
+            return nil
+        }
+        
+        // Convert the transaction state to a string
+        let encodedTransactionState: String
+        switch transactionState {
+        case .purchased: encodedTransactionState = "purchased"
+        case .failed: encodedTransactionState = "failed"
+        case .restored: encodedTransactionState = "restored"
+        case .deferred: encodedTransactionState = "deferred"
+        case .purchasing: encodedTransactionState = "purchasing"
+        @unknown default: encodedTransactionState = "unknown"
+        }
+
+        // Error details
+        let errorDescription = error?.localizedDescription
+
+        // Original transaction info for restored purchases
+        let originalTransactionIdentifier = original?.transactionIdentifier
+        let originalTransactionDate = original?.transactionDate?.timeIntervalSince1970
+        
+        // Additional payment details
+        let quantity = payment.quantity
+        let applicationUsername = payment.applicationUsername
+        let requestData = payment.requestData?.base64EncodedString() // Base64 encode requestData if present
+
+        // Create a dictionary with all transaction details
+        var transactionInfo: [String: JSON] = [
+            "productIdentifier": .string(productIdentifier),
+            "transactionIdentifier": .string(transactionIdentifier),
+            "transactionDate": .number(transactionDate.timeIntervalSince1970),
+            "transactionState": .string(encodedTransactionState),
+            "quantity": .number(Double(quantity))
+        ]
+        
+        // Conditionally add optional fields if available
+        if let errorDescription = errorDescription {
+            transactionInfo["errorDescription"] = .string(errorDescription)
+        }
+        
+        if let originalTransactionIdentifier = originalTransactionIdentifier {
+            transactionInfo["originalTransactionIdentifier"] = .string(originalTransactionIdentifier)
+        }
+        
+        if let originalTransactionDate = originalTransactionDate {
+            transactionInfo["originalTransactionDate"] = .number(originalTransactionDate)
+        }
+
+        if let applicationUsername = applicationUsername {
+            transactionInfo["applicationUsername"] = .string(applicationUsername)
+        }
+        
+        if let requestData = requestData {
+            transactionInfo["requestData"] = .string(requestData)
+        }
+        
+        return transactionInfo.encodeToString()
     }
 }

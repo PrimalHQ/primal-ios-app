@@ -16,6 +16,8 @@ class ZapGalleryChildView: UIView {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func width() -> CGFloat { 0 }
 }
 
 class ZapAvatarView: ZapGalleryChildView {
@@ -43,6 +45,8 @@ class ZapAvatarView: ZapGalleryChildView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func width() -> CGFloat { 22 }
 }
 
 class ZapPillView: ZapGalleryChildView {
@@ -76,7 +80,7 @@ class ZapPillView: ZapGalleryChildView {
         clipsToBounds = true
     }
     
-    func width() -> CGFloat {
+    override func width() -> CGFloat {
         41 + amountLabel.sizeThatFits(CGSize(width: 50, height: 30)).width
     }
     

@@ -43,6 +43,8 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     private let navigationBar = ProfileNavigationView()
     
+    var isLoadingArticles = false
+    
     override var postSection: Int {
         switch tab {
         case .notes, .replies: return 1
@@ -90,11 +92,21 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
-    var isLoading: Bool {
+    var isEmpty: Bool {
         switch tab {
         case .notes, .replies:  return posts.isEmpty
         case .reads:            return articles.isEmpty
         case .media:            return media.isEmpty
+        }
+    }
+    
+    var isLoading: Bool {
+        guard isEmpty else { return false }
+        
+        switch tab {
+        case .notes, .replies:  return !feed.didReachEnd
+        case .reads:            return isLoadingArticles
+        case .media:            return true
         }
     }
     
@@ -140,13 +152,6 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         topBarHeight = 0
     }
     
-    override func updateTheme() {
-        super.updateTheme()
-        
-        table.register(ProfileInfoCell.self, forCellReuseIdentifier: postCellID + "profile")
-        table.register(MutedUserCell.self, forCellReuseIdentifier: postCellID + "muted")
-    }
-    
     // MARK: - TableView
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
@@ -155,7 +160,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         if section == 0 {
             var count = 1
             if MuteManager.instance.isMuted(profile.data.pubkey) { count += 1 }
-            if isLoading { count += 1 }
+            if isEmpty { count += 1 }
             return count
         }
         switch tab {
@@ -189,13 +194,13 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
         
         if indexPath.row == 0 {
-            let cell = table.dequeueReusableCell(withIdentifier: postCellID + "profile", for: indexPath)
+            let cell = table.dequeueReusableCell(withIdentifier: "profile", for: indexPath)
             (cell as? ProfileInfoCell)?.update(user: profile.data, parsedDescription: parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: tabToBe.rawValue, delegate: self)
             return cell
         }
         
         if indexPath.row == 1 && MuteManager.instance.isMuted(profile.data.pubkey) {
-            let cell = table.dequeueReusableCell(withIdentifier: postCellID + "muted", for: indexPath)
+            let cell = table.dequeueReusableCell(withIdentifier: "muted", for: indexPath)
             if let cell = cell as? MutedUserCell {
                 cell.delegate = self
                 cell.update(user: profile.data)
@@ -207,8 +212,28 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
             return tableView.dequeueReusableCell(withIdentifier: "mediaLoading", for: indexPath)
         }
         
-        let cell = table.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-        return cell
+        if isLoading {
+            let cell = table.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+            (cell as? SkeletonLoaderCell)?.loaderView.play()
+            return cell
+        }
+        
+        let cell = table.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+        guard let emptyCell = cell as? EmptyTableViewCell else { return cell }
+        
+        switch tab {
+        case .notes, .replies, .media:
+            emptyCell.view.label.text = "\(profile.data.firstIdentifier) has no posts"
+            emptyCell.refreshCallback = { [weak self] in
+                self?.feed.refresh()
+            }
+        case .reads:
+            emptyCell.view.label.text = "\(profile.data.firstIdentifier) has no articles"
+            emptyCell.refreshCallback = { [weak self] in
+                self?.requestArticles()
+            }
+        }
+        return emptyCell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -254,6 +279,7 @@ private extension ProfileViewController {
     }
     
     func requestArticles() {
+        isLoadingArticles = true
         SocketRequest(name: "long_form_content_feed", payload: [
             "limit": 100,
             "notes": "authored",
@@ -263,7 +289,10 @@ private extension ProfileViewController {
         .publisher()
         .map { $0.getArticles() }
         .receive(on: DispatchQueue.main)
-        .assign(to: \.articles, onWeak: self)
+        .sink(receiveValue: { [weak self] articles in
+            self?.articles = articles
+            self?.isLoadingArticles = false
+        })
         .store(in: &cancellables)
     }
     
@@ -278,6 +307,9 @@ private extension ProfileViewController {
         table.register(MediaTripleCell.self, forCellReuseIdentifier: "media")
         table.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
         table.register(MediaLoadingCell.self, forCellReuseIdentifier: "mediaLoading")
+        table.register(MutedUserCell.self, forCellReuseIdentifier: "muted")
+        table.register(ProfileInfoCell.self, forCellReuseIdentifier: "profile")
+        table.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
         
         feed.$parsedPosts.dropFirst()
             .receive(on: DispatchQueue.main)
@@ -503,16 +535,16 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
             return feed
         }
     }
-    
     func tappedAddUserFeed() {
         hapticGenerator.impactOccurred()
         
-        switch tabToBe {
-        case .replies, .media, .notes:
-            PrimalFeed.addFeed(advancedSearchManagerFeed, type: .note)
-        case .reads:
-            PrimalFeed.addFeed(advancedSearchManagerFeed, type: .article)
-        }
+        PrimalFeed.addFeed(.init(
+            name: "\(profile.data.firstIdentifier)'s feed",
+            spec: "{\"id\":\"feed\",\"kind\":\"notes\",\"pubkey\":\"c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11\"}",
+            description: "Notes feed of \(profile.data.firstIdentifier)"
+        ), type: .note, notifyBackend: true)
+        
+        view.showToast("Added")
     }
     
     func tappedFollowUsersMuteList() {

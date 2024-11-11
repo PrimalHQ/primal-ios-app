@@ -126,7 +126,7 @@ final class TransactionCell: UITableViewCell, Themeable {
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
             
-            let usdString = "$\(abs(usdAmount).twoDecimalPoints())"
+            let usdString = "$\(abs(usdAmount).nDecimalPoints(n: 2))"
             
             if let oldWasBtc, oldWasBtc != showBTC {
                 UIView.transition(with: amountLabel.superview ?? amountLabel, duration: 0.3, options: .transitionCrossDissolve) {

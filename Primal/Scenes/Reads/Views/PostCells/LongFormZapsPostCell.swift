@@ -11,21 +11,18 @@ class LongFormZapsPostCell: PostCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        let largeGallery = LargeZapGalleryView()
-        zapGallery = largeGallery
-        largeGallery.frame = contentView.bounds
-        
-        largeGallery.zapPillButton.addAction(.init(handler: { [weak self] _ in
+        let largeGallery = LargeZapGalleryView(zapTapCallback: { [weak self] in
             guard let self else { return }
             delegate?.postCellDidTap(self, .longTapZap)
-        }), for: .touchUpInside)
+        })
+        zapGallery = largeGallery
+        largeGallery.delegate = self
         
-        contentView.addSubview(zapGallery!)
-        zapGallery!.pinToSuperview()
-        
-        zapGallery!.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .zapDetails)
-        }))
+        contentView.addSubview(largeGallery)
+        largeGallery.pinToSuperview(edges: [.top, .horizontal])
+        let botC = largeGallery.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        botC.priority = .defaultHigh
+        botC.isActive = true
         
         bottomBorder.removeFromSuperview()
     }

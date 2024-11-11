@@ -24,15 +24,17 @@ final class VideoCell: UICollectionViewCell {
     
     var player: VideoPlayer? {
         didSet {
-            playerView.playerLayer.player = player?.avPlayer
-            
-            muteUpdater = player?.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
+            muteUpdater = VideoPlaybackManager.instance.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
                 self?.muteButton.buttonState = isMuted ? .muted : .unmuted
             })
             
             playUpdater = player?.$isPlaying.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isPlaying in
-                self?.playIcon.isHidden = isPlaying
+                self?.playIcon.isHidden = ContentDisplaySettings.autoPlayVideos || isPlaying
                 self?.durationLabel.isHidden = isPlaying
+                
+                if isPlaying {
+                    self?.playerView.playerLayer.player = self?.player?.avPlayer
+                }
             })
         }
     }
@@ -82,9 +84,7 @@ final class VideoCell: UICollectionViewCell {
         muteButton.addAction(.init(handler: { [weak self] _ in
             guard let player = self?.player, let button = self?.muteButton else { return }
             
-            player.isMuted = !player.isMuted
-            
-            button.buttonState = player.isMuted ? .muted : .unmuted
+            VideoPlaybackManager.instance.isMuted = !VideoPlaybackManager.instance.isMuted
         }), for: .touchUpInside)
         
         contentView.backgroundColor = .background3

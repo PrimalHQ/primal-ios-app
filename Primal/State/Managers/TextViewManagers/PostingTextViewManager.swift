@@ -248,9 +248,7 @@ final class PostingTextViewManager: TextViewManager {
         
         textView.resignFirstResponder()
         
-        let message = oldDraft == nil ? "Do you want to save as draft?" : "Do you want to save changes to this draft?"
-        
-        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Save note draft?", message: nil, preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { _ in callback(false) }))
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
@@ -300,7 +298,7 @@ final class PostingTextViewManager: TextViewManager {
     func post(callback: @escaping (Bool, NostrObject?) -> Void) {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, replyingToObject: replyingTo) else {
+        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo) else {
             callback(false, nil)
             return
         }
@@ -317,6 +315,8 @@ final class PostingTextViewManager: TextViewManager {
             }
         }
     }
+    
+    var currentSearchPublisher: AnyCancellable?
 }
 
 private extension PostingTextViewManager {
@@ -398,16 +398,19 @@ private extension PostingTextViewManager {
             .store(in: &cancellables)
         
         $userSearchText
-            .flatMap {
-                if let text = $0 {
-                    return SmartContactsManager.instance.userSearchPublisher(text)
+            .sink(receiveValue: { [weak self] text in
+                guard let text else {
+                    self?.currentSearchPublisher = nil
+                    self?.users = []
+                    self?.usersTableView.reloadData()
+                    return
                 }
-                return Just([]).eraseToAnyPublisher()
-            }
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] users in
-                self?.users = users
-                self?.usersTableView.reloadData()
+                self?.currentSearchPublisher = SmartContactsManager.instance.userSearchPublisher(text)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveValue: { users in
+                        self?.users = users
+                        self?.usersTableView.reloadData()
+                    })
             })
             .store(in: &cancellables)
         
@@ -415,7 +418,7 @@ private extension PostingTextViewManager {
             .debounce(for: 0.1, scheduler: RunLoop.main)
             .sink { [weak self] images, isEmpty, oldDraft, isPosting in
                 guard let self else { return }
-//                
+                
                 if oldDraft?.preparedEvent != nil || isPosting {
                     postButtonEnabledState = false
                     postButtonTitle = "Posting..."
@@ -473,6 +476,18 @@ private extension PostingTextViewManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] draft in
                 guard let self, let draft else { return }
+                if textView.text?.isEmpty == false, let text = textView.text {
+                    let vc = (RootViewController.instance.presentedViewController ?? RootViewController.instance)
+                    let alert = UIAlertController(title: "Discard the draft and start a new note?", message: nil, preferredStyle: .alert)
+                    alert.addAction(.init(title: "Cancel", style: .cancel))
+                    alert.addAction(.init(title: "OK", style: .destructive, handler: { [weak self] _ in
+                        self?.reset()
+                        self?.textView.text = text
+                        self?.textView.selectedRange = .init(location: 0, length: 0)
+                    }))
+                    vc.show(alert, sender: nil)
+                }
+                
                 oldDraft = draft
                 
                 textView.text = draft.text

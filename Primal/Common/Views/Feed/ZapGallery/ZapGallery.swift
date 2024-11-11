@@ -11,6 +11,7 @@ import Lottie
 protocol ZapGalleryViewDelegate: AnyObject {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
     func mainActionForZap(_ zap: ParsedZap)
+    func zapTapped(_ zap: ParsedZap)
 }
 
 protocol ZapGallery: UIView {
@@ -38,7 +39,7 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
     weak var galleryView: ZapGallery?
     let zap: ParsedZap
     let interactionDelegate = Delegate()
-    init(galleryView: SmallZapGalleryView, zap: ParsedZap) {
+    init(galleryView: ZapGallery, zap: ParsedZap) {
         self.galleryView = galleryView
         self.zap = zap
         
@@ -133,7 +134,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
             }
             
             zaps.dropFirst().prefix(3).enumerated().forEach { (index, zap) in
-                let view = ZapAvatarView(zap: zap)
+                let view = zapView(zap, text: false, amount: false)
                 view.layer.zPosition = CGFloat(999 - index)
                 hStack.addArrangedSubview(view)
             }
@@ -180,9 +181,12 @@ class SmallZapGalleryView: UIView, ZapGallery {
         }
     }
     
-    func zapView(_ zap: ParsedZap, text: Bool) -> ZapPillView {
-        let view = text ? ZapPillTextView(zap: zap) : ZapPillView(zap: zap)
+    func zapView(_ zap: ParsedZap, text: Bool, amount: Bool = true) -> ZapGalleryChildView {
+        let view = text ? ZapPillTextView(zap: zap) : (amount ? ZapPillView(zap: zap) : ZapAvatarView(zap: zap))
         view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.zapTapped(zap)
+        }))
         return view
     }
     

@@ -40,7 +40,7 @@ class ZapFeedManager: BaseFeedManager {
         requestResultEmitter
             .map { result in
                 let parsedUsers = result.getSortedUsers()
-                let notes = result.process(contentStyle: .regular)
+                let notes = NoteProcessor(result: result, contentStyle: .regular).process()
                 let articles = result.getArticles()
                 
                 return result.postZaps.map { primalZapEvent in

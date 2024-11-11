@@ -176,7 +176,7 @@ private extension MenuContainerController {
         
         let buttonsStack = UIStackView(arrangedSubviews: [profile, messages, bookmarks, settings, signOut])
         [
-            profileImageRow, SpacerView(height: 15), titleStack, domainLabel, followStack,
+            profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
@@ -191,18 +191,18 @@ private extension MenuContainerController {
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
-        mainStack.setCustomSpacing(17, after: profileImage)
-        mainStack.setCustomSpacing(13, after: titleStack)
+        mainStack.setCustomSpacing(15, after: profileImageRow)
+        mainStack.setCustomSpacing(18, after: titleStack)
         mainStack.setCustomSpacing(10, after: domainLabel)
-        mainStack.setCustomSpacing(40, after: followStack)
+        mainStack.setCustomSpacing(44, after: followStack)
         mainStack.alpha = 0
         
         view.addSubview(notificationIndicator)
-        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pin(to: messages, edges: .leading, padding: 116)
+        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 138)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
-        buttonsStack.spacing = 30
+        buttonsStack.spacing = 16
         
         titleStack.alignment = .center
         titleStack.spacing = 4
@@ -304,7 +304,7 @@ private extension MenuContainerController {
         barcodeButton.addAction(.init(handler: { [unowned self] _ in showViewController(ProfileQRController()) }), for: .touchUpInside)
         messages.addAction(.init(handler: { [unowned self] _ in showViewController(MessagesViewController()) }), for: .touchUpInside)
         bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
-        premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumHomeViewController()) }), for: .touchUpInside)
+        premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
         
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
@@ -452,8 +452,11 @@ private extension MenuContainerController {
 final class MenuItemButton: UIButton, Themeable {
     init(title: String) {
         super.init(frame: .zero)
-        setTitle(title, for: .normal)
-        titleLabel?.font = .appFont(withSize: 20, weight: .semibold)
+        
+        setAttributedTitle(.init(string: title, attributes: [
+            .font: UIFont.appFont(withSize: 18.2, weight: .regular),
+            .kern: 0.2
+        ]), for: .normal)
         updateTheme()
     }
     

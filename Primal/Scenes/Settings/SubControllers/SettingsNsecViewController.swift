@@ -8,6 +8,7 @@
 import UIKit
 import Kingfisher
 import FLAnimatedImage
+import LocalAuthentication
 
 class SettingsNsecViewController: UIViewController, Themeable {
     let copyPubButton = CopyButton(title: "Copy public key")
@@ -187,6 +188,17 @@ private extension SettingsNsecViewController {
     }
     
     @objc func copySecPressed() {
+        guard isShowingNsec else {
+            authenticateWithFaceID { [weak self] success in
+                guard let self, success else { return }
+                copyNSec()
+            }
+            return
+        }
+        copyNSec()
+    }
+    
+    func copyNSec() {
         guard let sec = ICloudKeychainManager.instance.getLoginInfo()?.nVariant.nsec else {
             showErrorMessage("Unable to find your secret key")
             return
@@ -196,8 +208,60 @@ private extension SettingsNsecViewController {
     }
     
     @objc func showNsecPressed() {
+        guard isShowingNsec else {
+            authenticateWithFaceID { [weak self] success in
+                guard let self, success else { return }
+                
+                UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
+                    self.isShowingNsec.toggle()
+                }
+            }
+            return
+        }
+        
         UIView.transition(with: view, duration: 0.3, options: .transitionCrossDissolve) {
             self.isShowingNsec.toggle()
+        }
+    }
+    
+    func authenticateWithFaceID(completion: @escaping (Bool) -> Void) {
+        let context = LAContext()
+        let reason = "Authenticate to view sensitive data"
+
+        let passwordAuth = {
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate with passcode") { success, authError in
+                DispatchQueue.main.async {
+                    completion(success)
+                    if success {
+                        // Handle successful authentication
+                        print("Authenticated with passcode")
+                    } else {
+                        // Handle failed authentication
+                        print("Authentication failed")
+                    }
+                }
+            }
+        }
+        
+        var error: NSError?
+        guard context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) else {
+            passwordAuth()
+            return
+        }
+        
+        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
+            DispatchQueue.main.async {
+                guard let laError = authError as? LAError else {
+                    completion(success)
+                    return
+                }
+                switch laError.code {
+                case .authenticationFailed, .userFallback:
+                    passwordAuth()
+                default:
+                    completion(success)
+                }
+            }
         }
     }
 }

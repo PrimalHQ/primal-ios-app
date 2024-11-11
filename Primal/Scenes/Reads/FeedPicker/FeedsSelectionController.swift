@@ -162,7 +162,22 @@ final class FeedsSelectionController: UIViewController {
                     .sink { [weak self] result in
                         let feeds = result.readFeeds
                         
-                        guard let self, !feeds.isEmpty else { return }
+                        guard let self else { return }
+                        guard !feeds.isEmpty else {
+                            SocketRequest(name: "get_default_app_subsettings", payload: ["subkey": .string(type.subkey)]).publisher()
+                                .receive(on: DispatchQueue.main)
+                                .sink { [weak self] result in
+                                    let feeds = result.readFeeds
+                                    
+                                    if feeds.isEmpty { return }
+                                    
+                                    PrimalFeed.setServerFeeds(feeds, type: type)
+                                    self?.updateTable(animate: false)
+                                }
+                                .store(in: &cancellables)
+                            return
+                        }
+                        
                         PrimalFeed.setAllFeeds(feeds, type: type)
                         PrimalFeed.lastTimeFeedsFetched[type] = Date()
                         updateTable(animate: false)

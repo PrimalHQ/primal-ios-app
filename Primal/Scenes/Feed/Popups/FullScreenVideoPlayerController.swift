@@ -33,7 +33,7 @@ final class FullScreenVideoPlayerController: AVPlayerViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        video.isMuted = true
+        video.avPlayer.isMuted = VideoPlaybackManager.instance.isMuted
         
         if !ContentDisplaySettings.autoPlayVideos {
             // Video will automatically pause from AVKit so we need to inform our part of the code not to resume it

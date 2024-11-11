@@ -40,8 +40,6 @@ class ProfileInfoCell: UITableViewCell {
     
     let followingLabel = UILabel()
     let followersLabel = UILabel()
-    let followingLoadingView = GenericLoadingView().constrainToSize(width: 30, height: 13)
-    let followersLoadingView = GenericLoadingView().constrainToSize(width: 30, height: 13)
     
     let primaryLabel = UILabel()
     let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
@@ -89,8 +87,6 @@ class ProfileInfoCell: UITableViewCell {
         
         if let stats {
             infoStack.isLoading = false
-            followersLoadingView.isHidden = true
-            followingLoadingView.isHidden = true
             
             followingLabel.attributedText = infoString(count: stats.follows, text: "following")
             followersLabel.attributedText = infoString(count: stats.followers, text: "followers")
@@ -104,11 +100,6 @@ class ProfileInfoCell: UITableViewCell {
             followersLabel.attributedText = infoString(text: "followers")
             
             infoStack.isLoading = true
-            followersLoadingView.isHidden = false
-            followingLoadingView.isHidden = false
-            
-            followersLoadingView.play()
-            followingLoadingView.play()
         }
         
         followedByView.setUsers(followedBy)
@@ -125,6 +116,15 @@ class ProfileInfoCell: UITableViewCell {
         } else {
             updateFollowButton(FollowManager.instance.isFollowing(user.pubkey))
         }
+        
+        contentView.backgroundColor = .background2
+        primaryLabel.textColor = .foreground
+        secondaryLabel.textColor = .foreground3
+        descLabel.textColor = .foreground
+        descLabel.linkAttributes = [
+            .foregroundColor: UIColor.accent
+        ]
+        linkView.textColor = .accent
     }
     
     func updateFollowButton(_ isFollowing: Bool) {
@@ -137,12 +137,14 @@ class ProfileInfoCell: UITableViewCell {
     }
     
     func infoString(count: Int? = nil, text: String) -> NSAttributedString {
-        let countString: String
-        if let count {
-            countString = "\(count.localized()) "
-        } else {
-            countString = "           "
+        guard let count else {
+            return NSAttributedString(string: "   ", attributes: [
+                .font: UIFont.appFont(withSize: 14, weight: .bold),
+                .foregroundColor: UIColor.foreground
+            ])
         }
+        
+        let countString = "\(count.localized()) "
         
         let mutable = NSMutableAttributedString(string: countString, attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .bold),
@@ -207,24 +209,10 @@ private extension ProfileInfoCell {
         bot.priority = .defaultHigh
         bot.isActive = true
         
-        contentView.addSubview(followersLoadingView)
-        followersLoadingView.pin(to: followersLabel, edges: .leading).centerToView(followersLabel, axis: .vertical)
-        contentView.addSubview(followingLoadingView)
-        followingLoadingView.pin(to: followingLabel, edges: .leading).centerToView(followingLabel, axis: .vertical)
-        
-        contentView.backgroundColor = .background2
-        primaryLabel.textColor = .foreground
-        secondaryLabel.textColor = .foreground3
-        descLabel.textColor = .foreground
-        
         descLabel.enabledTextCheckingTypes = .allSystemTypes
-        descLabel.linkAttributes = [
-            .foregroundColor: UIColor.accent
-        ]
         descLabel.delegate = nantesDelegate
         
         linkView.font = .appFont(withSize: 14, weight: .regular)
-        linkView.textColor = .accent
         linkView.isUserInteractionEnabled = true
         linkView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.delegate?.linkPressed(nil)

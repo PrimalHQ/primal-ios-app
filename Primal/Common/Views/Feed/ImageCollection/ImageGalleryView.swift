@@ -165,14 +165,14 @@ extension ImageGalleryView: UICollectionViewDataSource {
             if let cell = cell as? ImageCell {
                 if noDownsampling {
                     cell.imageView.kf.setImage(with: r.url(for: .large), options: [
-                        .transition(.fade(0.1)),
+                        .transition(.fade(0.2)),
                         .scaleFactor(UIScreen.main.scale),
                         .cacheOriginalImage
                     ])
                 } else {
                     cell.imageView.kf.setImage(with: r.url(for: .large), options: [
                         .processor(DownsamplingImageProcessor(size: frame.size)),
-                        .transition(.fade(0.1)),
+                        .transition(.fade(0.2)),
                         .scaleFactor(UIScreen.main.scale),
                         .cacheOriginalImage
                     ])
@@ -186,7 +186,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let videoCell = cell as? VideoCell {
-            if videoCell.player?.avPlayer.rate ?? 0 > 0 {
+            if videoCell.player?.isPlaying == true {
                 videoCell.player?.delayedPause()
             }
         }

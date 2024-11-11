@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import UIKit
 
 protocol PostingReferenceObject {
     var reference: (tagLetter: String, universalID: String)? { get }
@@ -66,21 +67,39 @@ final class PostingManager {
             .assign(to: \.draftsToPost, onWeak: self)
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(Connection.regular.isConnectedPublisher, $draftsToPost)
-            .filter { $0.0 }
+        $draftsToPost
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { _, drafts in
-                for draft in drafts {
-                    self.postDraft(draft)
+            .sink(receiveValue: { [weak self] drafts in
+                guard let self else { return }
+                
+                if drafts.isEmpty {
+                    attemptToPostCancellable = nil
+                    return
                 }
-            }
+                
+                attemptToPostCancellable = Timer.publish(every: 15, on: .main, in: .default).autoconnect()
+                    .prepend(Date())
+                    .waitForConnection(Connection.regular)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveValue: { [weak self]  _ in
+                        for draft in drafts {
+                            self?.postDraft(draft)
+                        }
+                    })
+            })
             .store(in: &cancellables)
         
         var notifiedEvs: Set<String> = []
         postedEvent.sink { obj in
             if notifiedEvs.contains(obj.id) { return }
             notifiedEvs.insert(obj.id)
-            RootViewController.instance.showToast("Note Published")
+            
+            if !obj.tags.contains(where: { tag in tag[safe: 3] == "root" }) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                    RootViewController.instance.showToast("Note Published")
+                }
+            }
         }
         .store(in: &cancellables)
     }
@@ -92,10 +111,12 @@ final class PostingManager {
     @Published var userLikes: Set<String> = []
     
     @Published var draftsToPost: [NoteDraft] = []
+    @Published var attemptAmount: [String: Int] = [:]
     
     let postedEvent = PassthroughSubject<NostrObject, Never>()
     
     var cancellables: Set<AnyCancellable> = []
+    var attemptToPostCancellable: AnyCancellable?
     
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
@@ -259,8 +280,10 @@ final class PostingManager {
     func sendEvent(_ ev: NostrObject, _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
+        RelaysPostbox.instance.request(ev, successHandler: { [weak self] _ in
             callback(true)
+            
+            self?.postedEvent.send(ev)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
@@ -284,16 +307,16 @@ final class PostingManager {
             callback(false)
         })
     }
-    
-    func postDraft(_ draft: NoteDraft) {
-        postDraftRecursively(draft)
-    }
 }
 
 private extension PostingManager {
-    func postDraftRecursively(_ draft: NoteDraft, retries: Int = 5) {
-        if retries == 0 {
-            RootViewController.instance.showToast("Couldn't publish your note")
+    func postDraft(_ draft: NoteDraft) {
+        let numberOfTries = attemptAmount[draft.id, default: 0]
+        
+        print("\(draft.id) POST ATTEMPT \(Date())")
+        
+        if numberOfTries > 5 {
+            RootViewController.instance.showToast("Couldn't publish your note", icon: UIImage(named: "toastX"))
             
             draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
             var draft = draft
@@ -304,17 +327,18 @@ private extension PostingManager {
         
         guard let ev = draft.preparedEvent else { return }
         
+        attemptAmount[draft.id, default: 0] += 1
+        
         sendEvent(ev) { completed in
             if completed {
+                print("\(draft.id) POST ATTEMPT SUCCESS")
                 self.draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
                 
-                DatabaseManager.instance.deleteDraft(draft)
+                self.attemptAmount[draft.id] = nil
                 
-                self.postedEvent.send(ev)
+                DatabaseManager.instance.deleteDraft(draft)
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
-                    self.postDraftRecursively(draft, retries: retries - 1)
-                }
+                print("\(draft.id) POST ATTEMPT FAILED")
             }
         }
     }

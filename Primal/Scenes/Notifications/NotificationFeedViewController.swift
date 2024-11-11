@@ -318,7 +318,7 @@ extension Array where Element == GroupedNotification {
 
 extension PostRequestResult {
     func getParsedNotifications() -> [GroupedNotification] {
-        let posts = process(contentStyle: .regular)
+        let posts = NoteProcessor(result: self, contentStyle: .regular).process()
         
         return notifications.sorted(by: { $0.date > $1.date }).map { notif in
             var parsedUsers: [ParsedUser] = []

@@ -15,6 +15,7 @@ class ExploreMediaController: UIViewController, Themeable {
     private var notes: [ParsedContent] = [] {
         didSet {
             table.reloadData()
+            table.refreshControl?.endRefreshing()
         }
     }
     
@@ -29,14 +30,12 @@ class ExploreMediaController: UIViewController, Themeable {
             .receive(on: DispatchQueue.main)
             .assign(to: \.notes, onWeak: self)
             .store(in: &cancellables)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-//        table.reloadData()
         
         feedManager.refresh()
+        
+        table.refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
+            self?.feedManager.refresh()
+        }))
     }
     
     func updateTheme() {

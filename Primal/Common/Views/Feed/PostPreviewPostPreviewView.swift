@@ -21,6 +21,7 @@ final class PostPreviewPostPreviewView: UIView {
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let linkPreview = LinkPreview()
+    let zapPreview = ZapPreviewView()
     let infoView = SimpleInfoView()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -80,6 +81,13 @@ final class PostPreviewPostPreviewView: UIView {
             linkPreview.isHidden = false
         } else {
             linkPreview.isHidden = true
+        }
+        
+        if let zap = content.embeddedZap {
+            zapPreview.updateForZap(zap)
+            zapPreview.isHidden = false
+        } else {
+            zapPreview.isHidden = true
         }
         
         if let invoice = content.invoice {
@@ -173,12 +181,13 @@ private extension PostPreviewPostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview, infoView
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview, zapPreview, infoView
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)
         mainStack.setCustomSpacing(6, after: mainImages)
         mainStack.setCustomSpacing(6, after: linkPreview)
+        mainStack.setCustomSpacing(6, after: zapPreview)
         addSubview(mainStack)
         
         mainStack

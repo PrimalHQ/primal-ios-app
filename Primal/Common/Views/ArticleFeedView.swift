@@ -67,7 +67,11 @@ class ArticleFeedView: UIView, Themeable {
         timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
         avatar.setUserImage(content.user)
         nameLabel.text = content.user.data.firstIdentifier
-        commentLabel.text = "\(content.stats.replies) comments"
+        if let replies = content.stats.replies {
+            commentLabel.text = "\(replies) comments"
+        } else {
+            commentLabel.text = ""
+        }
         
         if content.zaps.isEmpty {
             zapIcon.isHidden = true

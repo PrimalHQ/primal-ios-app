@@ -77,6 +77,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         
         let topInfoView = lfController.topInfoView
         let contentViews = [lfController.contentStack, lfController.infoVC.view, lfController.commentsVC.view]
+        let navButtons = [lfController.navExtension.followButton, lfController.navExtension.unfollowButton]
         
         if presenting {
             contentCell?.avatar.animateTransitionTo(lfController.navExtension.profileIcon, duration: 16 / 30, in: container, timing: .postsEaseInOut)
@@ -101,15 +102,15 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 background.alpha = 1
             }
             
-            lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
+            navButtons.forEach { $0.transform = .init(translationX: 20, y: 0) }
             topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
-            lfController.navExtension.subscribeButton.alpha = 0
+            navButtons.forEach { $0.alpha = 0 }
             topInfoView.dateLabel.alpha = 0
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
-                self.lfController.navExtension.subscribeButton.transform = .identity
+                navButtons.forEach { $0.transform = .identity }
                 topInfoView.dateLabel.transform = .identity
-                self.lfController.navExtension.subscribeButton.alpha = 1
+                navButtons.forEach { $0.alpha = 1 }
                 topInfoView.dateLabel.alpha = 1
             }
             
@@ -173,9 +174,9 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             }
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
-                self.lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
+                navButtons.forEach { $0.transform = .init(translationX: 20, y: 0) }
                 topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
-                self.lfController.navExtension.subscribeButton.alpha = 0
+                navButtons.forEach { $0.alpha = 0 }
                 topInfoView.dateLabel.alpha = 0
             }
             

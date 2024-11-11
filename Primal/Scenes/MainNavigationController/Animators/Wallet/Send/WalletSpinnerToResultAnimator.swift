@@ -34,7 +34,7 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         ))
         container.addSubview(circle)
         switch result.state {
-        case .success, .walletActivated:
+        case .success:
             circle.backgroundColor = .receiveMoney
         case .failure:
             circle.backgroundColor = .black
@@ -54,7 +54,7 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         } completion: { _ in
             circle.removeFromSuperview()
             switch self.result.state {
-            case .success, .walletActivated:
+            case .success:
                 toView.backgroundColor = .receiveMoney
             case .failure:
                 toView.backgroundColor = .black

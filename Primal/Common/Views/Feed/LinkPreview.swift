@@ -30,6 +30,7 @@ final class LinkPreview: UIView {
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
 
     private lazy var subtitleStack = UIStackView([iconView, subtitleLabel])
     private lazy var contentStack = UIStackView(axis: .vertical, [titleLabel, subtitleStack])
@@ -61,31 +62,39 @@ private extension LinkPreview {
         let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
         let isRumble = host == "www.rumble.com" || host == "rumble.com"
         
+        NSLayoutConstraint.deactivate(largeImageConstraints + smallImageConstraints)
+        
         if isRumble || isYoutube {
             imageSize = .init(width: 343, height: 193)
-            NSLayoutConstraint.activate(largeImageConstraints)
-            NSLayoutConstraint.deactivate(smallImageConstraints)
             mainStack.axis = .vertical
             mainStack.alignment = .fill
+            playIcon.isHidden = false
             iconView.isHidden = false
             iconView.image = isRumble ? UIImage(named: "rumbleIcon") : UIImage(named: "youtubeIcon")
+            NSLayoutConstraint.activate(largeImageConstraints)
             
             contentStack.removeArrangedSubview(titleLabel)
             contentStack.addArrangedSubview(titleLabel)
             contentStack.spacing = 12
+            contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
             
+            layer.borderWidth = 0
         } else {
-            imageSize = .init(width: 100, height: 100)
-            NSLayoutConstraint.deactivate(largeImageConstraints)
-            NSLayoutConstraint.activate(smallImageConstraints)
+            imageSize = .init(width: 100, height: 90)
             mainStack.axis = .horizontal
             mainStack.alignment = .center
+            mainStack.layoutIfNeeded()
+            playIcon.isHidden = true
             iconView.isHidden = true
+            NSLayoutConstraint.activate(smallImageConstraints)
             
             contentStack.removeArrangedSubview(subtitleStack)
             contentStack.addArrangedSubview(subtitleStack)
             contentStack.spacing = 4
+            contentStack.layoutMargins = .init(top: 12, left: 16, bottom: 12, right: 16)
             
+            layer.borderWidth = 1
+            layer.borderColor = UIColor.background3.cgColor
         }
         
         if let imageString = data.data.md_image, !imageString.isEmpty {
@@ -94,7 +103,8 @@ private extension LinkPreview {
             imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
                 .scaleFactor(UIScreen.main.scale),
                 .processor(DownsamplingImageProcessor(size: imageSize)),
-                .cacheOriginalImage
+                .cacheOriginalImage,
+                .transition(.fade(0.2))
             ])
         } else {
             imageView.image = UIImage(named: "webPreviewIcon")
@@ -107,10 +117,12 @@ private extension LinkPreview {
         
         contentStack.insetsLayoutMarginsFromSafeArea = false
         contentStack.isLayoutMarginsRelativeArrangement = true
-        contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
                 
         addSubview(mainStack)
         mainStack.pinToSuperview()
+        
+        addSubview(playIcon)
+        playIcon.centerToView(imageView)
         
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
@@ -119,7 +131,7 @@ private extension LinkPreview {
         imageView.image = UIImage(named: "webPreviewIcon")
         
         smallImageConstraints = [
-            imageView.heightAnchor.constraint(equalToConstant: 100),
+            imageView.heightAnchor.constraint(equalToConstant: 90),
             imageView.widthAnchor.constraint(equalToConstant: 100)
         ]
         largeImageConstraints = [

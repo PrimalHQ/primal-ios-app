@@ -24,8 +24,6 @@ final class ExploreZapsCell: UITableViewCell, Themeable {
     let zapAmount = UILabel()
     let zapText = UILabel()
     
-    weak var delegate: ProfileFollowCellDelegate?
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -53,7 +51,7 @@ final class ExploreZapsCell: UITableViewCell, Themeable {
         }
         avatar.setUserImage(zappedUser, feed: true, size: CGSize(width: 36, height: 36))
         name.text = zappedUser.data.firstIdentifier
-        desc.text = parsedZap.zappedObject.description
+        desc.text = parsedZap.zappedObject.description.trimmingCharacters(in: .whitespacesAndNewlines)
         desc.isHidden = desc.text?.isEmpty != false
         
         updateTheme()
@@ -127,6 +125,7 @@ private extension ExploreZapsCell {
         desc.font = .appFont(withSize: 15, weight: .regular)
         desc.numberOfLines = 2
         desc.lineBreakMode = .byTruncatingTail
+        desc.setContentHuggingPriority(.required, for: .vertical)
         
         timeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)

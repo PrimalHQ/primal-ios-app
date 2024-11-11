@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 29.5.24..
 //
 
+import Combine
 import UIKit
 import FLAnimatedImage
 
@@ -27,7 +28,10 @@ class LongFormNavExtensionView: UIView, Themeable {
     let secondaryLabel = UILabel()
     let profileIcon = FLAnimatedImageView(image: UIImage(named: "profile"))
     let border = SpacerView(height: 1)
-    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)
+    
+//    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)
+    let followButton = BrightSmallButton(title: "follow", font: .appFont(withSize: 16, weight: .semibold)).constrainToSize(width: 100)
+    let unfollowButton = RoundedSmallButton(text: "following", font: .appFont(withSize: 16, weight: .semibold), horizontalPadding: 0).constrainToSize(width: 100)
     
     init(_ user: ParsedUser) {
         super.init(frame: .zero)
@@ -37,7 +41,10 @@ class LongFormNavExtensionView: UIView, Themeable {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    var followingCancellable: AnyCancellable?
+    var user: ParsedUser?
     func update(user: ParsedUser) {
+        self.user = user
         updateTheme()
         
         nameLabel.text = user.data.firstIdentifier
@@ -50,6 +57,11 @@ class LongFormNavExtensionView: UIView, Themeable {
         }
         
         profileIcon.setUserImage(user)
+        
+        followingCancellable = FollowManager.instance.isFollowingPublisher(user.data.pubkey).sink(receiveValue: { [weak self] following in
+            self?.followButton.isHidden = following
+            self?.unfollowButton.isHidden = !following
+        })
     }
     
     func updateTheme() {
@@ -58,7 +70,6 @@ class LongFormNavExtensionView: UIView, Themeable {
         secondaryLabel.textColor = .foreground5
         
         border.backgroundColor = .background3
-        subscribeButton.configuration = .accent14("Subscribe")
     }
 }
 
@@ -74,7 +85,7 @@ private extension LongFormNavExtensionView {
         nameStack.axis = .vertical
         nameStack.spacing = 4
         
-        let mainStack = UIStackView(arrangedSubviews: [profileIcon, nameStack, subscribeButton])
+        let mainStack = UIStackView(arrangedSubviews: [profileIcon, nameStack, followButton, unfollowButton])
         mainStack.alignment = .center
         mainStack.spacing = 8
         
@@ -86,5 +97,21 @@ private extension LongFormNavExtensionView {
         
         addSubview(border)
         border.pinToSuperview(edges: [.horizontal, .bottom])
+        
+        followButton.addAction(.init(handler: { [weak self] _ in
+            guard let pubkey = self?.user?.data.pubkey else { return }
+            FollowManager.instance.sendFollowEvent(pubkey)
+        }), for: .touchUpInside)
+        
+        unfollowButton.addAction(.init(handler: { [weak self] _ in
+            guard let data = self?.user?.data else { return }
+            
+            let alert = UIAlertController(title: "Unfollow \(data.firstIdentifier)?", message: "Are you sure?", preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "OK", style: .destructive) { _ in
+                FollowManager.instance.sendUnfollowEvent(data.pubkey)
+            })
+            RootViewController.instance.present(alert, animated: true)
+        }), for: .touchUpInside)
     }
 }

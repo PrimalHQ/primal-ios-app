@@ -24,6 +24,9 @@ final class MutedUserCell: UITableViewCell {
     
     func update(user: PrimalUser) {
         label.text = "\(user.firstIdentifier) is muted"
+        
+        unmute.setTitleColor(.accent, for: .normal)
+        label.textColor = .foreground2
     }
     
     required init?(coder: NSCoder) {
@@ -43,13 +46,11 @@ private extension MutedUserCell {
         stack.spacing = 16
         
         label.font = .appFont(withSize: 14, weight: .regular)
-        label.textColor = .foreground2
         
         unmute.setTitle("unmute", for: .normal)
         unmute.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.didTapUnmute()
         }), for: .touchUpInside)
         unmute.titleLabel?.font = .appFont(withSize: 16, weight: .bold)
-        unmute.setTitleColor(.accent, for: .normal)
     }
 }
