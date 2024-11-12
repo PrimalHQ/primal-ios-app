@@ -26,10 +26,10 @@ extension UIButton.Configuration {
         return configuration
     }
     
-    static func accent(_ text: String) -> UIButton.Configuration {
+    static func accent(_ text: String, font: UIFont = UIFont.appFont(withSize: 16, weight: .regular)) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([
-            .font: UIFont.appFont(withSize: 16, weight: .regular)
+            .font: font
         ]))
         configuration.baseForegroundColor = .accent
         return configuration

@@ -238,8 +238,6 @@ final class SmallBalanceConversionView: LargeBalanceConversionView {
     
     override var rowSpacing: CGFloat { 4 }
     
-    override var animate$always: Bool { false }
-    
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

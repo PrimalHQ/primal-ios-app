@@ -118,6 +118,7 @@ final class InAppPurchaseManager: NSObject {
                     break
                 }
             } catch {
+                completion(nil)
                 print("Purchasing error \(error)")
             }
         }

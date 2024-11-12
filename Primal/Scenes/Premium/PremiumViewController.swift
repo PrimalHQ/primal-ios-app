@@ -12,8 +12,6 @@ import StoreKit
 final class PremiumViewController: UIPageViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
-    static var isNewPremiumUser = false
-    
     init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         WalletManager.instance.refreshPremiumState()

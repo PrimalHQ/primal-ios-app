@@ -34,7 +34,9 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 .init(title: "Extend Your Subscription", handler: { [unowned self] _ in
                     show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
                 }),
-                .init(title: "Become a Legend", handler: { [weak self] _ in }),
+                .init(title: "Become a Legend", handler: { [weak self] _ in
+                    self?.show(PremiumBecomeLegendController(), sender: nil)
+                }),
                 .init(title: "Legendary Profile Customisation", handler: { [weak self] _ in }),
             ]), SpacerView(height: 20),
         ])

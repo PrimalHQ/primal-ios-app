@@ -316,6 +316,11 @@
 		B91E57212CDD443800C14809 /* PremiumLearnMoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E57202CDD443800C14809 /* PremiumLearnMoreController.swift */; };
 		B91E57232CDD44B100C14809 /* PremiumLearnMoreWhyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E57222CDD44B100C14809 /* PremiumLearnMoreWhyController.swift */; };
 		B91EF0AB2CE28FC900299ECF /* PremiumManageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0AA2CE28FC800299ECF /* PremiumManageController.swift */; };
+		B91EF0AE2CE3B0E200299ECF /* PremiumSupportPrimalController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0AD2CE3B0E200299ECF /* PremiumSupportPrimalController.swift */; };
+		B91EF0B02CE3BE4B00299ECF /* PremiumBecomeLegendController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0AF2CE3BE4B00299ECF /* PremiumBecomeLegendController.swift */; };
+		B91EF0B22CE3CC0B00299ECF /* PremiumLegendAmountController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0B12CE3CC0B00299ECF /* PremiumLegendAmountController.swift */; };
+		B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0B32CE3D45100299ECF /* GenericSliderView.swift */; };
+		B91EF0B62CE3DD0F00299ECF /* PremiumLegendPayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0B52CE3DD0F00299ECF /* PremiumLegendPayController.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -869,6 +874,11 @@
 		B91E57202CDD443800C14809 /* PremiumLearnMoreController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreController.swift; sourceTree = "<group>"; };
 		B91E57222CDD44B100C14809 /* PremiumLearnMoreWhyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreWhyController.swift; sourceTree = "<group>"; };
 		B91EF0AA2CE28FC800299ECF /* PremiumManageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageController.swift; sourceTree = "<group>"; };
+		B91EF0AD2CE3B0E200299ECF /* PremiumSupportPrimalController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumSupportPrimalController.swift; sourceTree = "<group>"; };
+		B91EF0AF2CE3BE4B00299ECF /* PremiumBecomeLegendController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumBecomeLegendController.swift; sourceTree = "<group>"; };
+		B91EF0B12CE3CC0B00299ECF /* PremiumLegendAmountController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLegendAmountController.swift; sourceTree = "<group>"; };
+		B91EF0B32CE3D45100299ECF /* GenericSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericSliderView.swift; sourceTree = "<group>"; };
+		B91EF0B52CE3DD0F00299ECF /* PremiumLegendPayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLegendPayController.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -2124,6 +2134,17 @@
 			path = Manage;
 			sourceTree = "<group>";
 		};
+		B91EF0AC2CE3B0CD00299ECF /* SupportPrimal */ = {
+			isa = PBXGroup;
+			children = (
+				B91EF0AD2CE3B0E200299ECF /* PremiumSupportPrimalController.swift */,
+				B91EF0AF2CE3BE4B00299ECF /* PremiumBecomeLegendController.swift */,
+				B91EF0B12CE3CC0B00299ECF /* PremiumLegendAmountController.swift */,
+				B91EF0B52CE3DD0F00299ECF /* PremiumLegendPayController.swift */,
+			);
+			path = SupportPrimal;
+			sourceTree = "<group>";
+		};
 		B9318F632B62ADC20044B6AA /* InputControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -2617,10 +2638,12 @@
 		B9F9331B2B88F6C40064B495 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
+				B91EF0AC2CE3B0CD00299ECF /* SupportPrimal */,
 				B91EF0A92CE28FBA00299ECF /* Manage */,
 				B9BCF3C12CDD7FDC0032BD0D /* Onboarding */,
 				B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */,
 				B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */,
+				B91EF0B32CE3D45100299ECF /* GenericSliderView.swift */,
 			);
 			path = Premium;
 			sourceTree = "<group>";
@@ -2976,6 +2999,7 @@
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */,
 				B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */,
+				B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */,
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
 				B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */,
 				B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */,
@@ -3078,6 +3102,7 @@
 				B9CE4DAE2B695F320060A1B8 /* WalletOnchainTierPickController.swift in Sources */,
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
 				B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */,
+				B91EF0B02CE3BE4B00299ECF /* PremiumBecomeLegendController.swift in Sources */,
 				B94F2BCD2AD868770041181B /* WalletTransferSummaryController.swift in Sources */,
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
@@ -3102,6 +3127,7 @@
 				9309D22E2A5EA7C500FD2127 /* TemporaryConnection.swift in Sources */,
 				B99E03AD2C0DFBC6006CCECB /* PostCommentsTitleCell.swift in Sources */,
 				B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */,
+				B91EF0AE2CE3B0E200299ECF /* PremiumSupportPrimalController.swift in Sources */,
 				93CACAFC29F525B6003BBCE5 /* damus.c in Sources */,
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
@@ -3218,12 +3244,14 @@
 				B94F2BD42ADC3C060041181B /* WalletReceiveDetailsController.swift in Sources */,
 				B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */,
 				B9DF0CB02C25920C009ADC7B /* ArticleTransition.swift in Sources */,
+				B91EF0B62CE3DD0F00299ECF /* PremiumLegendPayController.swift in Sources */,
 				939BDB532A352ACF00E80B2C /* Zap.swift in Sources */,
 				B906AB012C9899D30089813F /* MediaLoadingCell.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				B91E56F52CC0496E00C14809 /* AdvancedSearchFilterController.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
+				B91EF0B22CE3CC0B00299ECF /* PremiumLegendAmountController.swift in Sources */,
 				B9C6D2392CA482AA00B2EEBE /* MessagesViewController.swift in Sources */,
 				B9B9E5702CB5621B0065DD7C /* NoteFeedManager.swift in Sources */,
 				B99E03872BF76554006CCECB /* FLAnimatedImage+User.swift in Sources */,
@@ -3468,7 +3496,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.101;
+				MARKETING_VERSION = 2.0.102;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3514,7 +3542,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.101;
+				MARKETING_VERSION = 2.0.102;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

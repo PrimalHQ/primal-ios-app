@@ -113,9 +113,9 @@ private extension PremiumSearchNameController {
 }
 
 class PremiumSearchTableView: UIView {
-    let addressRow = PremiumSearchTableRowView(title: "Nostr Address")
-    let lightningRow = PremiumSearchTableRowView(title: "Lightning Address")
-    let profileRow = PremiumSearchTableRowView(title: "VIP profile")
+    let addressRow = PremiumInfoTableRowView(title: "Nostr Address")
+    let lightningRow = PremiumInfoTableRowView(title: "Lightning Address")
+    let profileRow = PremiumInfoTableRowView(title: "VIP profile")
     
     init() {
         super.init(frame: .zero)
@@ -136,7 +136,7 @@ class PremiumSearchTableView: UIView {
     }
 }
 
-class PremiumSearchTableRowView: UIStackView {
+class PremiumInfoTableRowView: UIStackView {
     let infoLabel = UILabel()
     
     init(title: String) {

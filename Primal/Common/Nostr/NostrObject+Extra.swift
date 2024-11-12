@@ -160,6 +160,22 @@ extension NostrObject {
         return createNostrObject(content: content, kind: 30078)
     }
     
+    static func purchasePrimalLegend(name: String, amount: Int) -> NostrObject? {
+        let usdString = String(Double(amount).satToUSD)
+        
+        let json: [String: JSON] = [
+            "name": .string(name),
+            "receiver_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "product_id": "legend-premium",
+            "amount_usd": .string(usdString),
+            "amount": .string(amount.satsToBitcoinString())
+        ]
+        
+        guard let content = json.encodeToString() else { return nil }
+        
+        return createNostrObject(content: content, kind: 30078)
+    }
+    
     static func contacts(_ contacts: Set<String>) -> NostrObject? {
         createNostrObject(content: IdentityManager.instance.followListContentString, kind: 3, tags: contacts.map {
             ["p", $0]

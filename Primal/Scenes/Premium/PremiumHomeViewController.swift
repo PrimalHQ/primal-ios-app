@@ -35,14 +35,6 @@ class PremiumHomeViewController: UIViewController {
         
         setup()
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if navigationController == nil {
-            PremiumViewController.isNewPremiumUser = false
-        }
-    }
 }
 
 private extension PremiumHomeViewController {
@@ -57,7 +49,7 @@ private extension PremiumHomeViewController {
         renewLabel.isUserInteractionEnabled = true
         renewLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
-            switch self.extraLabelAction {
+            switch extraLabelAction {
             case .cancel:
                 if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
                     if UIApplication.shared.canOpenURL(url) {
@@ -65,7 +57,7 @@ private extension PremiumHomeViewController {
                     }
                 }
             case .support:
-                break
+                show(PremiumSupportPrimalController(state: state), sender: nil)
             case .nothing:
                 return
             }
@@ -143,9 +135,6 @@ private extension PremiumHomeViewController {
     
     enum ExtraLabelAction { case cancel, nothing, support }
     var extraLabelAction: ExtraLabelAction {
-        if PremiumViewController.isNewPremiumUser {
-            return .cancel
-        }
         if state.isExpired {
             return .nothing
         }
@@ -158,9 +147,6 @@ private extension PremiumHomeViewController {
         paragraph.alignment = .center
         
         let strings: (String, String?) = {
-            if PremiumViewController.isNewPremiumUser {
-                return ("Your subscription will renew automatically.\nIf you wish to stop it, you can ", "cancel now.")
-            }
             if state.isExpired {
                 return ("Your Primal Premium subscription has expired.\nYou can renew it below:", nil)
             }
@@ -220,10 +206,12 @@ class PremiumUserTitleView: UIView, Themeable {
 }
 
 class PremiumHomeTableView: UIView {
-    let addressRow = PremiumSearchTableRowView(title: "Nostr Address")
-    let lightningRow = PremiumSearchTableRowView(title: "Lightning Address")
-    let profileRow = PremiumSearchTableRowView(title: "VIP profile")
-    let endRow: PremiumSearchTableRowView
+    let addressRow = PremiumEditTableRowView(title: "Nostr Address")
+    let lightningRow = PremiumEditTableRowView(title: "Lightning Address")
+    let profileRow = PremiumInfoTableRowView(title: "VIP profile")
+    let endRow: PremiumInfoTableRowView
+    
+    var updateCancellable: AnyCancellable?
     
     init(state: PremiumState) {
         let tableStack = UIStackView(axis: .vertical, [
@@ -269,12 +257,76 @@ class PremiumHomeTableView: UIView {
         backgroundColor = .background5
         layer.cornerRadius = 16
         
-        addressRow.infoLabel.text = state.nostr_address
-        lightningRow.infoLabel.text = state.lightning_address
         profileRow.infoLabel.text = state.primal_vip_profile
+        lightningRow.target = state.lightning_address
+        addressRow.target = state.nostr_address
+        
+        updateCancellable = IdentityManager.instance.$parsedUser.receive(on: DispatchQueue.main).sink { [unowned self] user in
+            guard let user else {
+                lightningRow.current = state.lightning_address
+                addressRow.current = state.nostr_address
+                return
+            }
+            lightningRow.current = user.data.lud16
+            addressRow.current = user.data.nip05
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension UIButton.Configuration {
+    static func smallApplyButton() -> UIButton.Configuration { .accent("apply", font: .appFont(withSize: 14, weight: .regular)) }
+}
+
+class PremiumEditTableRowView: UIStackView {
+    let infoLabel = UILabel()
+    let targetLabel = UILabel()
+    let applyButton = UIButton(configuration: .smallApplyButton())
+    
+    lazy var applyStack = UIStackView([targetLabel, applyButton])
+    
+    var target: String = "" { didSet { updateDisplay() } }
+    var current: String = "" { didSet { updateDisplay() } }
+    
+    init(title: String) {
+        super.init(frame: .zero)
+        let titleLabel = UILabel()
+        titleLabel.font = .appFont(withSize: 15, weight: .regular)
+        titleLabel.textColor = .foreground3
+        titleLabel.text = title
+        titleLabel.numberOfLines = 2
+//        titleLabel.constrainToSize(width: 70)
+        addArrangedSubview(titleLabel)
+        
+        let rightStack = UIStackView(axis: .vertical, [infoLabel, applyStack])
+        rightStack.spacing = 8
+        rightStack.alignment = .trailing
+        addArrangedSubview(rightStack)
+        
+        infoLabel.font = .appFont(withSize: 15, weight: .semibold)
+        infoLabel.textColor = .foreground
+        
+        targetLabel.font = .appFont(withSize: 14, weight: .regular)
+        targetLabel.textColor = .foreground3
+        
+        spacing = 8
+        isLayoutMarginsRelativeArrangement = true
+        layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+        
+        infoLabel.setContentHuggingPriority(.required, for: .horizontal)
+        infoLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        titleLabel.lineBreakMode = .byTruncatingTail
+    }
+    
+    required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func updateDisplay() {
+        infoLabel.text = current
+        targetLabel.text = target
+        applyStack.isHidden = target == current
     }
 }

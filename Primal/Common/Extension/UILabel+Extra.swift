@@ -8,11 +8,12 @@
 import UIKit
 
 extension UILabel {
-    convenience init(_ text: String, color: UIColor, font: UIFont) {
+    convenience init(_ text: String, color: UIColor, font: UIFont, multiline: Bool = false) {
         self.init(frame: .zero)
         self.text = text
         self.textColor = color
         self.font = font
+        self.numberOfLines = multiline ? 0 : 1
     }
     
     func countLabelLines() -> Int {

@@ -435,36 +435,6 @@ private extension ThreadViewController {
             }
             .store(in: &cancellables)
         
-        inputManager.$isEditing.receive(on: DispatchQueue.main).sink { [weak self] isEditing in
-            guard let self = self else { return }
-            let images = self.inputManager.media
-            let users = self.inputManager.users
-            
-            self.textHeightConstraint?.isActive = !isEditing
-            
-            let isImageHidden = !isEditing ||   images.isEmpty || !users.isEmpty
-            
-            UIView.animate(withDuration: 0.2) {
-                self.replyingToLabel.isHidden = !isEditing
-                self.replyingToLabel.alpha = isEditing ? 1 : 0
-                
-                self.buttonStack.isHidden = !isEditing
-                self.buttonStack.alpha = isEditing ? 1 : 0
-                    
-                self.imagesCollectionView.isHidden = isImageHidden
-                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
-            }
-            
-            if isEditing {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    if self.mainPositionInThread < self.posts.count {
-                        self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
-                    }
-                }
-            }
-        }
-        .store(in: &cancellables)
-        
         inputManager.$users.receive(on: DispatchQueue.main).sink { [weak self] users in
             guard let self else { return }
             self.usersTableView.isHidden = users.isEmpty
@@ -498,16 +468,42 @@ private extension ThreadViewController {
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             inputManager.$users.map({ $0.isEmpty }).removeDuplicates(),
-            inputManager.$media.map({ $0.isEmpty }).removeDuplicates()
-        ).receive(on: DispatchQueue.main).sink { [weak self] isUsersEmpty, imagesIsEmpty in
-            guard let self else { return }            
-            let isHidden = imagesIsEmpty || !isUsersEmpty
+            inputManager.$media.map({ $0.isEmpty }).removeDuplicates(),
+            inputManager.$isEditing.removeDuplicates()
+        )
+        .prepend([(true, true, false)])
+        .withPrevious()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] old, new in
+            guard let self else { return }
+            let (isUsersEmpty, imagesIsEmpty, isEditing) = new
+            let (_, _, oldIsEditing) = old
+            
+            let isImageHidden = !isEditing || imagesIsEmpty || !isUsersEmpty
             
             inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
-            imagesCollectionView.isHidden = isHidden
-            imagesCollectionView.alpha = isHidden ? 0 : 1
+            textHeightConstraint?.isActive = !isEditing
+            
+            UIView.animate(withDuration: 0.2) {
+                self.replyingToLabel.isHidden = !isEditing
+                self.replyingToLabel.alpha = isEditing ? 1 : 0
+                
+                self.buttonStack.isHidden = !isEditing
+                self.buttonStack.alpha = isEditing ? 1 : 0
+                    
+                self.imagesCollectionView.isHidden = isImageHidden
+                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
+            }
+            
+            if isEditing && !oldIsEditing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    if self.mainPositionInThread < self.posts.count {
+                        self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
+                    }
+                }
+            }
         }
         .store(in: &cancellables)
     }
@@ -565,7 +561,7 @@ private extension ThreadViewController {
         
         placeholderLabel
             .pinToSuperview(edges: .horizontal, padding: 21)
-            .centerToSuperview(axis: .vertical)
+            .pinToSuperview(edges: .top, padding: 10)
         
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
