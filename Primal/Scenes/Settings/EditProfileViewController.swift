@@ -304,7 +304,7 @@ private extension EditProfileViewController {
         let profile = self.profile
         let data: NostrProfile = accountData
         
-        if checkedLud16 != accountData.lud16, let newLud = accountData.lud16 {
+        if checkedLud16 != accountData.lud16, let newLud = accountData.lud16, !newLud.isEmpty {
             CheckLud16Request(lud16: newLud).publisher().receive(on: DispatchQueue.main)
                 .sink { [weak self] isGood in
                     if isGood {

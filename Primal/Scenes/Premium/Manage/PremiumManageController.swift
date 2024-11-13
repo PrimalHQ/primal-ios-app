@@ -19,6 +19,32 @@ class PremiumManageController: UIViewController {    let state: PremiumState
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var bottomOptions: [UIAction] = [
+            .init(title: "Manage Subscription", handler: { [weak self] _ in }),
+            .init(title: "Change your Primal name", handler: { [weak self] _ in }),
+        ]
+        
+        if state.isLegend {
+            bottomOptions.append(contentsOf: [
+                .init(title: "Legendary Profile Customisation", handler: { [weak self] _ in })
+            ])
+        } else if !state.recurring {
+            bottomOptions.append(contentsOf: [
+                .init(title: "Extend Your Subscription", handler: { [unowned self] _ in
+                    show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
+                }),
+                .init(title: "Become a Legend", handler: { [weak self] _ in
+                    self?.show(PremiumBecomeLegendController(), sender: nil)
+                }),
+            ])
+        } else {
+            bottomOptions.append(contentsOf: [
+                .init(title: "Become a Legend", handler: { [weak self] _ in
+                    self?.show(PremiumBecomeLegendController(), sender: nil)
+                }),
+            ])
+        }
+        
         let mainStack = UIStackView(axis: .vertical, [
             UILabel("Nostr Tools", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: [
@@ -28,17 +54,7 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 .init(title: "Content Backup", handler: { [weak self] _ in }),
             ]), SpacerView(height: 20),
             UILabel("Primal Account", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
-            PremiumManageTableView(options: [
-                .init(title: "Manage Subscription", handler: { [weak self] _ in }),
-                .init(title: "Change your Primal name", handler: { [weak self] _ in }),
-                .init(title: "Extend Your Subscription", handler: { [unowned self] _ in
-                    show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
-                }),
-                .init(title: "Become a Legend", handler: { [weak self] _ in
-                    self?.show(PremiumBecomeLegendController(), sender: nil)
-                }),
-                .init(title: "Legendary Profile Customisation", handler: { [weak self] _ in }),
-            ]), SpacerView(height: 20),
+            PremiumManageTableView(options: bottomOptions), SpacerView(height: 20),
         ])
         
         view.addSubview(mainStack)

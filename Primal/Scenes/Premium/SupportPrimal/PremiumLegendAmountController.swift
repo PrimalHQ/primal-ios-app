@@ -52,8 +52,8 @@ class PremiumLegendAmountController: UIViewController {
             show(PremiumLegendPayController(name: name, amount: balanceView.balance), sender: nil)
         }), for: .touchUpInside)
         
-        balanceView.balance = Int(Double(1000).usdToSAT)
         balanceView.animateBalanceChange = false
+        balanceView.balance = Int(Double(1000).usdToSAT)
     }
     
     func userStackView() -> UIView {

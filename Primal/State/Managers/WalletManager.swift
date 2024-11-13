@@ -85,6 +85,7 @@ struct PremiumState: Codable {
     var recurring: Bool
     var expires_on: Double?
     var renews_on: Double?
+    var class_id: String?
 }
 
 typealias ParsedTransaction = (WalletTransaction, ParsedUser)

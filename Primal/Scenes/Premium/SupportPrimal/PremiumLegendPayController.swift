@@ -10,13 +10,31 @@ import FLAnimatedImage
 import UIKit
 import GenericJSON
 
+private struct PremiumLegendQuote: Codable {
+    let membership_quote_id: String
+    let amount_btc: String
+    let qr_code: String
+}
+
+private struct MembershipPurchaseMonitorResponse: Codable {
+    var completed_at: String?
+    var created_at: String
+    var requester_pubkey: String
+    var receiver_pubkey: String
+    var id: String
+    var specification: String
+}
+
 class PremiumLegendPayController: UIViewController {
-    let amount: Int
+    var amount: Int
     
     var invoice: String?
     
-    
     private var cancellables: Set<AnyCancellable> = []
+    
+    var trackPayment: ContinousConnection?
+    
+    var runOnce = true
     
     init(name: String, amount: Int) {
         self.amount = amount
@@ -28,19 +46,44 @@ class PremiumLegendPayController: UIViewController {
             .publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                guard
-                    let self,
-                    let contentJson: [String: JSON] = result.events.first?["content"]?.stringValue?.decode(),
-                    let qrCode = contentJson["qr_code"]?.stringValue
-                else { return }
+                guard let self, let quote: PremiumLegendQuote = result.events.first?["content"]?.stringValue?.decode() else { return }
                 
-                invoice = qrCode
+                invoice = quote.qr_code
                 
-                qrCodeImageView.image = .createQRCode(qrCode, dimension: 231, logo: UIImage(named: "qr-btc"))
+                qrCodeImageView.image = .createQRCode(quote.qr_code, dimension: 231, logo: UIImage(named: "qr-btc"))
                 
                 UIView.animate(withDuration: 0.3) {
                     self.qrCodeImageView.superview?.alpha = 1
                 }
+                
+                Connection.wallet.isConnectedPublisher.filter { $0 }
+                    .sink { [weak self] _ in
+                        self?.trackPayment = Connection.wallet.requestCacheContinous(name: "membership_purchase_monitor", request: ["membership_quote_id": .string(quote.membership_quote_id)]) { result in
+
+                            guard let response: MembershipPurchaseMonitorResponse = result.arrayValue?.last?.objectValue?["content"]?.stringValue?.decode() else { return }
+                            
+                            DispatchQueue.main.async {
+                                guard response.completed_at != nil, self?.runOnce == true else { return }
+                                
+                                self?.runOnce = false
+                                self?.cancellables = []
+                                self?.trackPayment = nil
+                                
+                                WalletManager.instance.refreshPremiumState()
+                                
+                                self?.present(WalletTransferSummaryController(.success(title: "Success, payment received!", description: "You are now a Primal Legend")), animated: true) {
+                                    guard let navigationController = self?.navigationController else { return }
+                                    
+                                    guard let rootVC = navigationController.viewControllers.first(where: { $0 as? PremiumViewController != nil }) else {
+                                        navigationController.popToRootViewController(animated: false)
+                                        return
+                                    }
+                                    navigationController.popToViewController(rootVC, animated: false)
+                                }
+                            }
+                        }
+                    }
+                    .store(in: &cancellables)
             }
             .store(in: &cancellables)
     }
@@ -95,8 +138,8 @@ class PremiumLegendPayController: UIViewController {
             RootViewController.instance.showToast("Copied")
         }), for: .touchUpInside)
         
-        balanceView.balance = amount
         balanceView.animateBalanceChange = false
+        balanceView.balance = amount
     }
 }
 

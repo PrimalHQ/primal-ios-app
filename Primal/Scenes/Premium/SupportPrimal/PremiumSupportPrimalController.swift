@@ -62,6 +62,9 @@ class PremiumSupportPrimalController: UIViewController {
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
         
+        becomeLegend.isHidden = state.isLegend
+        buySubscription.isHidden = state.isLegend || state.recurring
+        
         rateView.actionButton.addAction(.init(handler: { _ in
             guard
                 let url = URL(string: "itms-apps://itunes.apple.com/app/id1673134518?action=write-review"),

@@ -80,7 +80,7 @@ struct SocketRequest {
                 }
             }
         }
-        .waitForConnection(.regular)
+        .waitForConnection(connection)
         .eraseToAnyPublisher()
     }
 }

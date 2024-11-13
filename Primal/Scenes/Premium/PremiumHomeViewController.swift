@@ -15,6 +15,8 @@ extension PremiumState {
         guard let expires_on else { return false }
         return Date(timeIntervalSince1970: expires_on).timeIntervalSinceNow < 0
     }
+    
+    var isLegend: Bool { class_id == "legend" }
 }
 
 class PremiumHomeViewController: UIViewController {
@@ -62,6 +64,8 @@ private extension PremiumHomeViewController {
                 return
             }
         }))
+        
+        renewLabel.isHidden = !(AppDelegate.contentSettings?.show_primal_support ?? true)
         
         let action = LargeRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
         action.addAction(.init(handler: { [unowned self] _ in
@@ -234,8 +238,8 @@ class PremiumHomeTableView: UIView {
                 endRow = .init(title: "Expires on")
                 endRow.infoLabel.text = dateFormatter.string(from: expireDate)
             } else {
-                endRow = .init(title: "Status")
-                endRow.infoLabel.text = "UNKNOWN"
+                endRow = .init(title: "Expires on")
+                endRow.infoLabel.text = "Never"
             }
         } else {
             if let expires_on = state.expires_on {
@@ -243,8 +247,8 @@ class PremiumHomeTableView: UIView {
                 endRow = .init(title: expireDate.timeIntervalSinceNow > 0 ? "Expires on" : "Status")
                 endRow.infoLabel.text = expireDate.timeIntervalSinceNow > 0 ? dateFormatter.string(from: expireDate) : "EXPIRED"
             } else {
-                endRow = .init(title: "Status")
-                endRow.infoLabel.text = "UNKNOWN"
+                endRow = .init(title: "Expires on")
+                endRow.infoLabel.text = "Never"
             }
             
         }
@@ -261,15 +265,39 @@ class PremiumHomeTableView: UIView {
         lightningRow.target = state.lightning_address
         addressRow.target = state.nostr_address
         
-        updateCancellable = IdentityManager.instance.$parsedUser.receive(on: DispatchQueue.main).sink { [unowned self] user in
-            guard let user else {
-                lightningRow.current = state.lightning_address
-                addressRow.current = state.nostr_address
-                return
+        updateCancellable = IdentityManager.instance.$parsedUser.debounce(for: 2, scheduler: RunLoop.main)
+            .prepend(IdentityManager.instance.parsedUser)
+            .receive(on: DispatchQueue.main).sink { [unowned self] user in
+                guard let user else {
+                    lightningRow.current = state.lightning_address
+                    addressRow.current = state.nostr_address
+                    return
+                }
+                lightningRow.current = user.data.lud16
+                addressRow.current = user.data.nip05
             }
-            lightningRow.current = user.data.lud16
-            addressRow.current = user.data.nip05
-        }
+        
+        addressRow.applyButton.addAction(.init(handler: { [weak self] _ in
+            guard var user = IdentityManager.instance.parsedUser?.data.profileData else { return }
+            user.nip05 = state.nostr_address
+
+            IdentityManager.instance.updateProfile(user) { _ in
+                IdentityManager.instance.requestUserProfile()
+            }
+            
+            self?.addressRow.current = state.nostr_address
+        }), for: .touchUpInside)
+        
+        lightningRow.applyButton.addAction(.init(handler: { [weak self] _ in
+            guard var user = IdentityManager.instance.parsedUser?.data.profileData else { return }
+            user.lud16 = state.lightning_address
+
+            IdentityManager.instance.updateProfile(user) { _ in
+                IdentityManager.instance.requestUserProfile()
+            }
+            
+            self?.lightningRow.current = state.lightning_address
+        }), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -278,7 +306,11 @@ class PremiumHomeTableView: UIView {
 }
 
 extension UIButton.Configuration {
-    static func smallApplyButton() -> UIButton.Configuration { .accent("apply", font: .appFont(withSize: 14, weight: .regular)) }
+    static func smallApplyButton() -> UIButton.Configuration {
+        var config = UIButton.Configuration.accent("apply", font: .appFont(withSize: 14, weight: .regular))
+        config.contentInsets = .init(top: 0, leading: 4, bottom: 0, trailing: 0)
+        return config
+    }
 }
 
 class PremiumEditTableRowView: UIStackView {
@@ -302,7 +334,7 @@ class PremiumEditTableRowView: UIStackView {
         addArrangedSubview(titleLabel)
         
         let rightStack = UIStackView(axis: .vertical, [infoLabel, applyStack])
-        rightStack.spacing = 8
+        rightStack.spacing = 4
         rightStack.alignment = .trailing
         addArrangedSubview(rightStack)
         
@@ -325,7 +357,11 @@ class PremiumEditTableRowView: UIStackView {
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateDisplay() {
-        infoLabel.text = current
+        if current.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            infoLabel.text = "[not set]"
+        } else {
+            infoLabel.text = current
+        }
         targetLabel.text = target
         applyStack.isHidden = target == current
     }
