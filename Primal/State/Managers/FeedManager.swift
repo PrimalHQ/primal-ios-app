@@ -238,7 +238,6 @@ private extension FeedManager {
         guard
             let spec = newFeed?.spec,
             let paginationInfo,
-            paginationInfo.order_by == "created_at",
             let until = paginationInfo.until
         else {
             return Just([]).eraseToAnyPublisher()

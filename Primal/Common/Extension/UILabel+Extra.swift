@@ -14,6 +14,9 @@ extension UILabel {
         self.textColor = color
         self.font = font
         self.numberOfLines = multiline ? 0 : 1
+        if multiline {
+            textAlignment = .center
+        }
     }
     
     func countLabelLines() -> Int {

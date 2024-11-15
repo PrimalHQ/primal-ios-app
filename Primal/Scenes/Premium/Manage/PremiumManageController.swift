@@ -48,8 +48,12 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         let mainStack = UIStackView(axis: .vertical, [
             UILabel("Nostr Tools", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: [
-                .init(title: "Media Management", handler: { [weak self] _ in }),
-                .init(title: "Premium Relay", handler: { [weak self] _ in }),
+                .init(title: "Media Management", handler: { [weak self] _ in
+                    self?.show(PremiumManageMediaController(), sender: nil)
+                }),
+                .init(title: "Premium Relay", handler: { [weak self] _ in
+                    self?.show(PremiumManageRelayController(), sender: nil)
+                }),
                 .init(title: "Contact List Backup", handler: { [weak self] _ in }),
                 .init(title: "Content Backup", handler: { [weak self] _ in }),
             ]), SpacerView(height: 20),
