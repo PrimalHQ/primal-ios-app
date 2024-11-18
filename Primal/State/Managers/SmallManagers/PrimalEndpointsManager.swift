@@ -43,7 +43,6 @@ final class PrimalEndpointsManager {
         URL(string: UserDefaults.standard.endpointsLastValue?.wallet_server_v1.first ?? "wss://wallet.primal.net/v1") ?? URL(string: "wss://wallet.primal.net/v1")!
     }
     static var uploadURL: URL {
-        URL(string: "wss://cache0.primal.net/m1") ??
         URL(string: UserDefaults.standard.endpointsLastValue?.upload_server_v1.first ?? "wss://uploads.primal.net/v1") ?? URL(string: "wss://uploads.primal.net/v1")!
     }
 

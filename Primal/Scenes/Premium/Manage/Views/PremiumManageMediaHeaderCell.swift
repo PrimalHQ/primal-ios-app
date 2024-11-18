@@ -40,9 +40,10 @@ class PremiumManageMediaHeaderCell: UITableViewCell {
 }
 
 class PremiumTableHeaderTitleView: UIView {
+    let label = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .semibold))
     init(title: String) {
         super.init(frame: .zero)
-        let label = UILabel(title, color: .foreground, font: .appFont(withSize: 15, weight: .semibold))
+        label.text = title
         addSubview(label)
         label.pinToSuperview(edges: .trailing, padding: 12).centerToSuperview(axis: .vertical)
         let lC = label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12)

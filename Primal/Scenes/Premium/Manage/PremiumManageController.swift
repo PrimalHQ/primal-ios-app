@@ -21,7 +21,12 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         
         var bottomOptions: [UIAction] = [
             .init(title: "Manage Subscription", handler: { [weak self] _ in }),
-            .init(title: "Change your Primal name", handler: { [weak self] _ in }),
+            .init(title: "Change your Primal name", handler: { [weak self] _ in
+                guard let nav = self?.navigationController else { return }
+                nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
+                    nav.pushViewController(PremiumManageNameController(pickedName: name), animated: true)
+                }), animated: true)
+            }),
         ]
         
         if state.isLegend {
@@ -54,8 +59,12 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 .init(title: "Premium Relay", handler: { [weak self] _ in
                     self?.show(PremiumManageRelayController(), sender: nil)
                 }),
-                .init(title: "Contact List Backup", handler: { [weak self] _ in }),
-                .init(title: "Content Backup", handler: { [weak self] _ in }),
+                .init(title: "Contact List Backup", handler: { [weak self] _ in
+                    self?.show(PremiumManageContactsController(), sender: nil)
+                }),
+                .init(title: "Content Backup", handler: { [weak self] _ in
+                    self?.show(PremiumManageContentController(), sender: nil)
+                }),
             ]), SpacerView(height: 20),
             UILabel("Primal Account", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: bottomOptions), SpacerView(height: 20),

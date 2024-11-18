@@ -115,7 +115,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var prevTransform: CGFloat = 0
     
     func playVideoOnScroll() {
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, presentedViewController == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
 

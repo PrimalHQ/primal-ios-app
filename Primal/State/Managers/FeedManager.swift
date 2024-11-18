@@ -51,7 +51,7 @@ final class FeedManager {
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
         initSubscriptions()
-        refresh(useHTTP: true)
+        refresh()
     }
     
     init(newFeed: PrimalFeed) {
@@ -97,7 +97,7 @@ final class FeedManager {
         newAddedPosts = 0
     }
     
-    func refresh(useHTTP: Bool = false) {
+    func refresh() {
         lastRefreshDate = .now
         newPostObjects = []
         newAddedPosts = 0
@@ -107,14 +107,13 @@ final class FeedManager {
         paginationInfo = nil
         isRequestingNewPage = false
         didReachEnd = false
-        requestNewPage(useHTTP: useHTTP)
+        requestNewPage()
     }
     
-    func requestNewPage(useHTTP: Bool = false) {
+    func requestNewPage() {
         guard !isRequestingNewPage, !didReachEnd else { return }
-        guard paginationInfo?.order_by == nil || paginationInfo?.order_by == "created_at" else { return }
         isRequestingNewPage = true
-        sendNewPageRequest(useHTTP: useHTTP)
+        sendNewPageRequest()
     }
             
     func requestThread(postId: String, limit: Int32 = 100) {
@@ -238,6 +237,7 @@ private extension FeedManager {
         guard
             let spec = newFeed?.spec,
             let paginationInfo,
+            paginationInfo.order_by == "created_at",
             let until = paginationInfo.until
         else {
             return Just([]).eraseToAnyPublisher()
@@ -304,10 +304,10 @@ private extension FeedManager {
     }
     
     // MARK: - Requests
-    func sendNewPageRequest(useHTTP: Bool = false) {
+    func sendNewPageRequest() {
         let (name, payload) = generateRequestByFeedType()
         
-        SocketRequest(useHTTP: useHTTP, name: name, payload: payload).publisher()
+        SocketRequest(name: name, payload: payload).publisher()
             .sink { [weak self] result in
                 guard let self else { return }
                 

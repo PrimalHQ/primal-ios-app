@@ -65,21 +65,23 @@ class PremiumSupportPrimalController: UIViewController {
         becomeLegend.isHidden = state.isLegend
         buySubscription.isHidden = state.isLegend || state.recurring
         
-        rateView.actionButton.addAction(.init(handler: { _ in
+        rateView.addGestureRecognizer(BindableTapGestureRecognizer(action: {
             guard
                 let url = URL(string: "itms-apps://itunes.apple.com/app/id1673134518?action=write-review"),
                 UIApplication.shared.canOpenURL(url)
             else { return }
                 
             UIApplication.shared.open(url, options: [:], completionHandler: nil)    
-        }), for: .touchUpInside)
-        buySubscription.actionButton.addAction(.init(handler: { [weak self] _ in
+        }))
+        buySubscription.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
             show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
-        }), for: .touchUpInside)
-        becomeLegend.actionButton.addAction(.init(handler: { [weak self] _ in
+        }))
+        becomeLegend.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.show(PremiumBecomeLegendController(), sender: nil)
-        }), for: .touchUpInside)
+        }))
+        
+        [rateView, buySubscription, becomeLegend].forEach { $0.actionButton.isUserInteractionEnabled = false }
     }
 }
 

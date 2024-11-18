@@ -27,12 +27,15 @@ final class MenuContainerController: UIViewController, Themeable {
     private let coverView = UIView()
     private let menuProfileImage = FLAnimatedImageView()
     
+    private let premiumIndicator = NumberedNotificationIndicator()
     private let notificationIndicator = NumberedNotificationIndicator()
     
     private let profileImageButton = UIButton()
     private let followingDescLabel = UILabel()
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
+    
+    lazy var viewsToTranslate = [premiumIndicator, notificationIndicator, mainStack]
     
     var newMessageCount = 0 {
         didSet {
@@ -80,8 +83,7 @@ final class MenuContainerController: UIViewController, Themeable {
         UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
-            self.mainStack.transform = .identity
-            self.notificationIndicator.transform = .identity
+            self.viewsToTranslate.forEach { $0.transform = .identity }
             self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: self.view.frame.width - 68, y: 0)
             
             self.coverView.alpha = 1
@@ -95,8 +97,7 @@ final class MenuContainerController: UIViewController, Themeable {
         UIView.animate(withDuration: 0.3, animations: {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
-            self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
-            self.notificationIndicator.transform = CGAffineTransform(translationX: -300, y: 0)
+            self.viewsToTranslate.forEach { $0.transform = CGAffineTransform(translationX: -300, y: 0) }
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
@@ -199,6 +200,9 @@ private extension MenuContainerController {
         
         view.addSubview(notificationIndicator)
         notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 138)
+        
+        view.addSubview(premiumIndicator)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 122)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -325,6 +329,14 @@ private extension MenuContainerController {
             self.followingLabel.text = stats.follows.localized()
         }
         .store(in: &cancellables)
+        
+        WalletManager.instance.$premiumState.debounce(for: 1, scheduler: RunLoop.main)
+            .map {
+                if UserDefaults.standard.currentUserLastPremiumVisit.timeIntervalSinceNow > -7*24*3600 { return 0 }
+                return ($0?.isExpired ?? true) ? 1 : 0
+            }
+            .assign(to: \.number, on: premiumIndicator)
+            .store(in: &cancellables)
     }
     
     func update(_ user: ParsedUser) {
@@ -426,8 +438,7 @@ private extension MenuContainerController {
             let xTrans = (1 - percent) * -300
             
             coverView.alpha = percent
-            mainStack.transform = .init(translationX: xTrans, y: 0)
-            notificationIndicator.transform = .init(translationX: xTrans, y: 0)
+            self.viewsToTranslate.forEach { $0.transform = .init(translationX: xTrans, y: 0) }
             [child.view, navigationController?.navigationBar, coverView].forEach {
                 $0?.transform = CGAffineTransform(translationX: max(0, translation.x), y: 0)
             }

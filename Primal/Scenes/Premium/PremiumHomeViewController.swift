@@ -139,7 +139,7 @@ private extension PremiumHomeViewController {
     
     enum ExtraLabelAction { case cancel, nothing, support }
     var extraLabelAction: ExtraLabelAction {
-        if state.isExpired {
+        if state.isExpired || state.isLegend {
             return .nothing
         }
         return .support
@@ -151,6 +151,7 @@ private extension PremiumHomeViewController {
         paragraph.alignment = .center
         
         let strings: (String, String?) = {
+            if state.isLegend { return ("", nil) }
             if state.isExpired {
                 return ("Your Primal Premium subscription has expired.\nYou can renew it below:", nil)
             }
@@ -261,7 +262,7 @@ class PremiumHomeTableView: UIView {
         backgroundColor = .background5
         layer.cornerRadius = 16
         
-        profileRow.infoLabel.text = state.primal_vip_profile
+        profileRow.infoLabel.text = state.primal_vip_profile.replacingOccurrences(of: "https://", with: "")
         lightningRow.target = state.lightning_address
         addressRow.target = state.nostr_address
         

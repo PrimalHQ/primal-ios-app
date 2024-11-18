@@ -324,7 +324,9 @@ extension PostRequestResult {
             let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
             
             if !tags.isEmpty {
-                contacts = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
+                let set = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
+                contacts = set
+                allContacts.append(set)
             }
         case .bookmarks:
             guard let tagsArray = payload["tags"]?.arrayValue else { return }

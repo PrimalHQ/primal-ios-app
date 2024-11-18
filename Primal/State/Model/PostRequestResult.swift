@@ -45,6 +45,7 @@ class PostRequestResult: Codable {
     var relayHint: String?
     
     var contacts: DatedSet?
+    var allContacts: [DatedSet] = []
     var bookmarks: DatedTagArray?
     
     var timestamps: [Date] = []

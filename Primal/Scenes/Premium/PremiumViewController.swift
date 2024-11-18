@@ -9,6 +9,36 @@ import Combine
 import UIKit
 import StoreKit
 
+private extension String {
+    static var lastVisitedPremiumKey = "lastVisitedPremiumKey1"
+}
+
+extension UserDefaults {
+    var lastVisitedPremium: [String: Date] {
+        get {
+            string(forKey: .lastVisitedPremiumKey)?.decode() ?? [:]
+        }
+        set {
+            setValue(newValue.encodeToString(), forKey: .lastVisitedPremiumKey)
+        }
+    }
+    
+    var currentUserLastPremiumVisit: Date {
+        get {
+            lastVisitedPremium[IdentityManager.instance.userHexPubkey] ?? .distantPast
+        }
+        set {
+            lastVisitedPremium[IdentityManager.instance.userHexPubkey] = newValue
+        }
+    }
+}
+
+extension PremiumState: Equatable {
+    static func == (lhs: PremiumState, rhs: PremiumState) -> Bool {
+        lhs.isExpired == rhs.isExpired && lhs.isLegend == rhs.isLegend && lhs.name == rhs.name && 
+    }
+}
+
 final class PremiumViewController: UIPageViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
@@ -35,9 +65,7 @@ final class PremiumViewController: UIPageViewController, Themeable {
                         title = "Premium"
                     }
                     
-                    setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
                 } else {
-                    setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)
                 }
                 
                 if navigationController?.topViewController == self {
@@ -54,6 +82,8 @@ final class PremiumViewController: UIPageViewController, Themeable {
         navigationController?.setNavigationBarHidden(!WalletManager.instance.hasPremium, animated: true)
 
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        
+        UserDefaults.standard.currentUserLastPremiumVisit = .now
     }
     
     func updateTheme() {

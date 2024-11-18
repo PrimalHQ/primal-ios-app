@@ -16,8 +16,8 @@ protocol PremiumManageMediaDataCellDelegate: AnyObject {
 class PremiumManageMediaDataCell: UITableViewCell {
     let mediaImageView = UIImageView()
     
-    let sizeLabel = UILabel("12.1 MB Image", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
-    let dateLabel = UILabel("12.1 MB Image", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let sizeLabel = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let dateLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
     
     private let dateFormatter = DateFormatter()
     

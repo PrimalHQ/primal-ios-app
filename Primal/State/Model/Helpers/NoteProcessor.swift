@@ -228,17 +228,16 @@ class NoteProcessor: MetadataCoding {
                         } else {
                             p.customEvent = mention
                         }
-                        text = text.replacingOccurrences(of: mentionText, with: "")
+                        itemsToRemove.append(mentionText)
                     } else if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
-                        text = text.replacingOccurrences(of: mentionText, with: content)
                         highlights.append((content, mention))
                     } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
                     } else {
                         p.customEvent = mention
-                        text = text.replacingOccurrences(of: mentionText, with: "")
+                        itemsToRemove.append(mentionText)
                     }
                 } else {
                     itemsToRemove.append(mentionText)
@@ -264,13 +263,12 @@ class NoteProcessor: MetadataCoding {
                     if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
-                        text = text.replacingOccurrences(of: mentionText, with: content)
                         highlights.append((content, mention))
                     } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
                     } else {
                         p.customEvent = mention
-                        text = text.replacingOccurrences(of: mentionText, with: "")
+                        itemsToRemove.append(mentionText)
                     }
                 } else {
                     itemsToRemove.append(mentionText)
@@ -396,6 +394,10 @@ class NoteProcessor: MetadataCoding {
         {
             otherURLs = []
             text = text.replacingOccurrences(of: onlyURL, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        for highlight in highlights {
+            text = text.replacingOccurrences(of: highlight.0, with: highlight.1.post.content.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         
         // Remove empty lines

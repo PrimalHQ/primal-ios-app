@@ -104,7 +104,10 @@ private extension PremiumOnboardingHomeViewController {
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         action.addAction(.init(handler: { [weak self] _ in
-            self?.show(PremiumSearchNameController(), sender: nil)
+            guard let nav = self?.navigationController else { return }
+            nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
+                nav.pushViewController(PremiumBuySubscriptionController(pickedName: name, state: .onboardingFinish), animated: true)
+            }), animated: true)
         }), for: .touchUpInside)
         
         InAppPurchaseManager.shared.fetchPremiumSubscriptions { products in

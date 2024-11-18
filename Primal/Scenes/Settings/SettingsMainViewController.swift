@@ -80,6 +80,7 @@ private extension SettingsMainViewController {
         let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
         let devMode = SettingsOptionButton(title: "Dev Mode")
+        devMode.isHidden = true
         let zaps = SettingsOptionButton(title: "Zaps")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")

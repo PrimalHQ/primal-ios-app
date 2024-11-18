@@ -359,7 +359,9 @@ private extension WalletManager {
             .sink(receiveValue: { [weak self] pubkey in
                 self?.reset(pubkey)
                 self?.refreshHasWallet()
-                self?.refreshPremiumState()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    self?.refreshPremiumState()
+                }
             })
             .store(in: &cancellables)
         

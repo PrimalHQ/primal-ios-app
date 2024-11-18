@@ -16,6 +16,16 @@ class PremiumSearchNameController: UIViewController {
     
     @Published var searchText = ""
     
+    let callback: (String) -> Void
+    
+    init(title: String, callback: @escaping (String) -> Void) {
+        self.callback = callback
+        super.init(nibName: nil, bundle: nil)
+        self.title = title
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,7 +46,6 @@ class PremiumSearchNameController: UIViewController {
 private extension PremiumSearchNameController {
     func setup() {
         navigationItem.leftBarButtonItem = customBackButton
-        title = "Find Primal Name"
         view.backgroundColor = .background
         
         nameInput.constrainToSize(height: 48)
@@ -105,7 +114,7 @@ private extension PremiumSearchNameController {
                         unavailableLabel.isHidden = false
                         return
                     }
-                    self?.show(PremiumBuySubscriptionController(pickedName: name, state: .onboardingFinish), sender: nil)
+                    self?.callback(name)
                 }
             }
         }), for: .touchUpInside)
