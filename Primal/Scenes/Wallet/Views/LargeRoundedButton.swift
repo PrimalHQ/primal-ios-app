@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class LargeRoundedButton: MyButton, Themeable {
+class LargeRoundedButton: MyButton, Themeable {
     private let label = UILabel()
     
     var title: String {
@@ -37,7 +37,7 @@ final class LargeRoundedButton: MyButton, Themeable {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        backgroundColor = isEnabled ? .accent2 : .background3
+        backgroundColor = isEnabled ? .accent : .background3
         label.textColor = isEnabled ? (isPressed ? .white.withAlphaComponent(0.6) : .white) : .foreground5
     }
 }

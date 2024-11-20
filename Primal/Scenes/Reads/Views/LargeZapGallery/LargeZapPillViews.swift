@@ -19,7 +19,7 @@ class LargeZapGalleryChildView: UIView {
 }
 
 class LargeZapPillView: LargeZapGalleryChildView {
-    let image = FLAnimatedImageView().constrainToSize(26)
+    let image = UserImageView(height: 26)
     let amountLabel = UILabel()
     let endSpacer = SpacerView(width: 2)
     
@@ -28,15 +28,11 @@ class LargeZapPillView: LargeZapGalleryChildView {
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 13
-        image.layer.masksToBounds = true
-        
         amountLabel.font = .appFont(withSize: 14, weight: .regular)
         amountLabel.textColor = .foreground3
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        image.setUserImage(zap.user, size: .init(width: 26, height: 26))
+        image.setUserImage(zap.user)
         amountLabel.text = zap.amountSats.localized()
         
         addSubview(stack)

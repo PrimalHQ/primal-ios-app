@@ -430,7 +430,7 @@ final class NumberedNotificationIndicator: UIView, Themeable {
         super.init(frame: .zero)
         
         addSubview(label)
-        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3)
+        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5)
         label.font = .appFont(withSize: 12, weight: .medium)
         label.textColor = .white
         label.textAlignment = .center

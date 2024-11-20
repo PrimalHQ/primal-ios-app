@@ -24,7 +24,7 @@ class PostCell: UITableViewCell {
     
     let bottomBorder = UIView()
     let threeDotsButton = UIButton()
-    let profileImageView = FLAnimatedImageView()
+    let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
     let checkbox = VerifiedView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -78,8 +78,7 @@ class PostCell: UITableViewCell {
         if CheckNip05Manager.instance.isVerified(user) {
             nipLabel.text = user.parsedNip
             nipLabel.isHidden = false
-            checkbox.isHidden = false
-            checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+            checkbox.user = user
         } else {
             nipLabel.isHidden = true
             checkbox.isHidden = true
@@ -285,10 +284,6 @@ private extension PostCell {
         
         bottomButtonStack.distribution = .fillEqually
         bottomButtonStack.spacing = 12
-        
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.layer.masksToBounds = true
-        profileImageView.isUserInteractionEnabled = true
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)

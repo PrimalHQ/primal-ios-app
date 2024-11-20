@@ -76,7 +76,7 @@ private extension OnboardingStartViewController {
         logo.centerToSuperview().pinToSuperview(edges: .vertical)
         
         let tagLabel = UILabel()
-        tagLabel.text = "The Social Bitcoin Wallet"
+        tagLabel.text = "Discover the Best of Nostr"
         tagLabel.font = .appFont(withSize: 18, weight: .regular)
         tagLabel.textColor = .white
         tagLabel.textAlignment = .center

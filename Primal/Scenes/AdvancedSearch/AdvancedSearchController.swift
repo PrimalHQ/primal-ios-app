@@ -13,6 +13,7 @@ class AdvancedSearchController: UIViewController {
     
     init(manager: AdvancedSearchManager = .init()) {
         self.manager = manager
+        manager.isFromAdvancedSearchScreen = true
         super.init(nibName: nil, bundle: nil)
     }
     

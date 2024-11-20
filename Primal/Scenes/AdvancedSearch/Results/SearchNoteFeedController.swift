@@ -22,6 +22,8 @@ extension UIButton {
 class SearchNoteFeedController: NoteFeedViewController {
     let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 76)
     
+    lazy var showPremiumCard = !WalletManager.instance.hasPremium && feed.newFeed?.isFromAdvancedSearchScreen == true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,6 +48,8 @@ class SearchNoteFeedController: NoteFeedViewController {
         navigationItem.rightBarButtonItem = .init(customView: saveButton)
         updateSaveButton()
         
+        table.register(SearchPremiumCell.self, forCellReuseIdentifier: "premiumCell")
+        
         navigationBorder.removeConstraints(navigationBorder.constraints)
         navigationBorder.constrainToSize(height: 6)
         let borderCover = ThemeableView().setTheme { $0.backgroundColor = .background }
@@ -53,11 +57,35 @@ class SearchNoteFeedController: NoteFeedViewController {
         borderCover.pinToSuperview(edges: [.top, .horizontal]).constrainToSize(height: 5)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
+    }
+    
     override func updateTheme() {
         super.updateTheme()
         
         navigationItem.leftBarButtonItem = customBackButton
         saveButton.backgroundColor = .accent
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        showPremiumCard ? 3 : 2
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        section > postSection ? (showPremiumCard ? 1 : 0) : super.tableView(tableView, numberOfRowsInSection: section)
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section > postSection {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "premiumCell", for: indexPath)
+            (cell as? SearchPremiumCell)?.delegate = self
+            return cell
+        }
+        return super.tableView(tableView, cellForRowAt: indexPath)
     }
     
     func updateSaveButton() {
@@ -70,5 +98,11 @@ class SearchNoteFeedController: NoteFeedViewController {
         } else {
             saveButton.setTitle("Save", for: .normal)
         }
+    }
+}
+
+extension SearchNoteFeedController: SearchPremiumCellDelegate {
+    func getPremiumPressed() {
+        show(PremiumViewController(), sender: nil)
     }
 }

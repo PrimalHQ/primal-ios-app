@@ -11,8 +11,8 @@ protocol PremiumManageContactsDataCellDelegate: AnyObject {
 }
 
 class PremiumManageContactsDataCell: UITableViewCell {
-    let dateLabel = UILabel("Sep 21, 2024", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
-    let followsLabel = UILabel("287", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let dateLabel = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let followsLabel = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
     
     private let dateFormatter = DateFormatter()
     

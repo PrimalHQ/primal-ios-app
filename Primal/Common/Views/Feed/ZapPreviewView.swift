@@ -9,7 +9,7 @@ import UIKit
 import FLAnimatedImage
 
 final class ZapPreviewView: UIView, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(36)
+    let avatar = UserImageView(height: 36)
     let name = UILabel()
     let dotLabel = UILabel()
     let timeLabel = UILabel()
@@ -19,7 +19,7 @@ final class ZapPreviewView: UIView, Themeable {
         
     let background = UIView()
     let firstRowBackground = UIView()
-    let firstRowImage = FLAnimatedImageView().constrainToSize(36)
+    let firstRowImage = UserImageView(height: 36)
     let zapIcon = UIImageView(image: UIImage(named: "topZapGalleryIcon"))
     let zapAmount = UILabel()
     let zapText = UILabel()
@@ -49,7 +49,7 @@ final class ZapPreviewView: UIView, Themeable {
             timeLabel.isHidden = true
             dotLabel.isHidden = true
         }
-        avatar.setUserImage(zappedUser, feed: true, size: CGSize(width: 36, height: 36))
+        avatar.setUserImage(zappedUser, feed: true)
         name.text = zappedUser.data.firstIdentifier
         desc.text = parsedZap.zappedObject.description.trimmingCharacters(in: .whitespacesAndNewlines)
         desc.isHidden = desc.text?.isEmpty != false
@@ -78,10 +78,6 @@ private extension ZapPreviewView {
         firstRow.alignment = .center
         firstRow.spacing = 8
         firstRow.setCustomSpacing(2, after: zapIcon)
-        
-        firstRowImage.contentMode = .scaleAspectFill
-        firstRowImage.clipsToBounds = true
-        firstRowImage.layer.cornerRadius = 18
         
         zapAmount.font = .appFont(withSize: 16, weight: .heavy)
         
@@ -112,10 +108,6 @@ private extension ZapPreviewView {
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 8).pinToSuperview(edges: .bottom, padding: 12)
         
         background.layer.cornerRadius = 8
-        
-        avatar.contentMode = .scaleAspectFill
-        avatar.layer.cornerRadius = 18
-        avatar.layer.masksToBounds = true
         
         name.font = .appFont(withSize: 16, weight: .bold)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)

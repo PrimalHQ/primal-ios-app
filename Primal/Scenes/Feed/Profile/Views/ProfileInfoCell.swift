@@ -42,7 +42,7 @@ class ProfileInfoCell: UITableViewCell {
     let followersLabel = UILabel()
     
     let primaryLabel = UILabel()
-    let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified")).constrainToSize(20)
+    let checkboxIcon = VerifiedView().constrainToSize(20)
     let followsYou = FollowsYouView()
     
     let secondaryLabel = UILabel()
@@ -72,8 +72,7 @@ class ProfileInfoCell: UITableViewCell {
         followsYou.isHidden = !followsUser
         
         if CheckNip05Manager.instance.isVerified(user) {
-            checkboxIcon.isHidden = false
-            checkboxIcon.tintColor = user.nip05.hasSuffix("@primal.net") ? .accent : .foreground3
+            checkboxIcon.user = user
             
             secondaryLabel.isHidden = false
             secondaryLabel.text = user.parsedNip

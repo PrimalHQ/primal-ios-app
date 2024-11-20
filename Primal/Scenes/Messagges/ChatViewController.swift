@@ -278,10 +278,7 @@ private extension ChatViewController {
         button.addAction(.init(handler: { [weak self] _ in
             self?.show(ProfileViewController(profile: user), sender: nil)
         }), for: .touchUpInside)
-        let imageView = FLAnimatedImageView(frame: .init(origin: .zero, size: .init(width: 36, height: 36))).constrainToSize(36)
-        imageView.layer.cornerRadius = 18
-        imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        let imageView = UserImageView(height: 36)
         imageView.setUserImage(user)
         let parent = UIView()
         parent.addSubview(imageView)

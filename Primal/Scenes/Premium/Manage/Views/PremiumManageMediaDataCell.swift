@@ -8,6 +8,17 @@
 import UIKit
 import Kingfisher
 
+extension UITableViewCell {
+    var mainView: UIView {
+        contentView.subviews.first ?? contentView
+    }
+    
+    func updateBackground(isLast: Bool) {
+        mainView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        mainView.layer.cornerRadius = isLast ? 12 : 0
+    }
+}
+
 protocol PremiumManageMediaDataCellDelegate: AnyObject {
     func copyButtonPressedInCell(_ cell: PremiumManageMediaDataCell)
     func deleteButtonPressedInCell(_ cell: PremiumManageMediaDataCell)
@@ -88,7 +99,11 @@ class PremiumManageMediaDataCell: UITableViewCell {
         ])
         
         let mb: Double = 1024 * 1024
-        let sizeD = Double(size) / mb
+        var sizeD = Double(size) / mb
+        
+        if sizeD > 0.001 {
+            sizeD += 0.01
+        }
         
         sizeLabel.text = "\(sizeD.localized()) MB \(isVideo ? "Video" : "Image")"
         dateLabel.text = dateFormatter.string(from: date)

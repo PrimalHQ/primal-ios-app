@@ -94,6 +94,7 @@ class PremiumManageContentController: UITableViewController {
             cell.set(title: titleForIndex(indexPath.row), count: countForIndex(indexPath.row))
             cell.delegate = self
         }
+        cell.updateBackground(isLast: 2 == indexPath.row)
         return cell
     }
 }

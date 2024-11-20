@@ -26,6 +26,12 @@ extension UIButton.Configuration {
         return configuration
     }
     
+    func noMargins() -> UIButton.Configuration {
+        var config = self
+        config.contentInsets = .zero
+        return config
+    }
+    
     static func accent(_ text: String, font: UIFont = UIFont.appFont(withSize: 16, weight: .regular)) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([

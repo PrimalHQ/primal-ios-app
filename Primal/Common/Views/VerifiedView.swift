@@ -16,9 +16,7 @@ final class VerifiedView: UIView, Themeable {
     var regularCheckState: CheckState = .transparent
     var extraCheckState: CheckState = .color({ .white })
     
-    var regularColor: UIColor? { didSet { updateImages() } }
-    
-    var isExtraVerified = false {
+    var user: PrimalUser? {
         didSet {
             updateImages()
         }
@@ -27,8 +25,7 @@ final class VerifiedView: UIView, Themeable {
     private let checkboxImage = UIImageView()
     private let checkImage = UIImageView(image: UIImage(named: "verifiedCheck"))
     
-    init(regularColor: UIColor? = nil) {
-        self.regularColor = regularColor
+    init() {
         super.init(frame: .zero)
         
         addSubview(checkboxImage)
@@ -44,6 +41,33 @@ final class VerifiedView: UIView, Themeable {
     }
     
     private func updateImages() {
+        let isExtraVerified: Bool
+        if let user {
+            if !CheckNip05Manager.instance.isVerified(user) {
+                isHidden = true
+                return
+            }
+            isHidden = false
+            
+            if let custom = LegendCustomizationManager.instance.getCustomization(pubkey: user.pubkey), custom.custom_badge {
+                switch extraCheckState {
+                case .color(let color):
+                    checkboxImage.image = custom.theme?.checkmarkBackgroundImage ?? UIImage(named: "verifiedBackground")
+                    checkImage.isHidden = false
+                    checkImage.tintColor = color()
+                case .transparent:
+                    checkboxImage.image = custom.theme?.transparentCheckmarkImage ?? UIImage(named: "purpleVerified")
+                    checkImage.isHidden = true
+                }
+                checkboxImage.tintColor = .accent
+                return
+            }
+            
+            isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        } else {
+            isExtraVerified = true
+        }
+        
         let checkState = isExtraVerified ? extraCheckState : regularCheckState
         
         switch checkState {
@@ -56,7 +80,7 @@ final class VerifiedView: UIView, Themeable {
             checkImage.isHidden = true
         }
         
-        checkboxImage.tintColor = isExtraVerified ? .accent : regularColor ?? .foreground3
+        checkboxImage.tintColor = isExtraVerified ? .accent : .foreground3
     }
     
     func updateTheme() {

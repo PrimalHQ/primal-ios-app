@@ -53,6 +53,7 @@ class PremiumManageContactsController: UITableViewController {
             cell.setData(contacts: contacts[indexPath.row])
             cell.delegate = self
         }
+        cell.updateBackground(isLast: contacts.count - 1 == indexPath.row)
         return cell
     }
 }

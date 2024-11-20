@@ -109,10 +109,7 @@ private extension PostFeedCell {
         
         mainStack.axis = .vertical
         mainStack.spacing = 14
-        
-        profileImageView.constrainToSize(FontSizeSelection.current.avatarSize)
-        profileImageView.layer.cornerRadius = FontSizeSelection.current.avatarSize / 2
-    
+            
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
             nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, zapGalleryParent, buttonStackStandIn

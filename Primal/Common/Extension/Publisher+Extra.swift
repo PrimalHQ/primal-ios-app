@@ -28,6 +28,16 @@ extension Publisher where Self.Failure == Never {
     }
 }
 
+extension Publisher where Self.Output == PostRequestResult {
+    func mapEventsOfKind<T: Codable>(_ kind: NostrKind) -> AnyPublisher<T, Self.Failure> {
+        compactMap {
+            guard let event = $0.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == kind.rawValue }) else { return nil }
+            return event["content"]?.stringValue?.decode()
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
 extension Publisher {
     func withPrevious() -> AnyPublisher<(Output, Output), Failure> {
         Publishers.Zip(self, self.dropFirst()).eraseToAnyPublisher()

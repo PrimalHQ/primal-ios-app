@@ -11,6 +11,8 @@ class SearchArticleFeedController: ArticleFeedViewController {
     let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 76)
     let navigationBorder = UIView().constrainToSize(height: 6)
     
+    lazy var showPremiumCard = !WalletManager.instance.hasPremium && manager.feed.isFromAdvancedSearchScreen == true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,6 +35,8 @@ class SearchArticleFeedController: ArticleFeedViewController {
             }
         }), for: .touchUpInside)
         
+        table.register(SearchPremiumCell.self, forCellReuseIdentifier: "premiumCell")
+        
         navigationItem.rightBarButtonItem = .init(customView: saveButton)
         updateSaveButton()
         
@@ -41,6 +45,13 @@ class SearchArticleFeedController: ArticleFeedViewController {
         let borderCover = ThemeableView().setTheme { $0.backgroundColor = .background }
         navigationBorder.addSubview(borderCover)
         borderCover.pinToSuperview(edges: [.top, .horizontal]).constrainToSize(height: 5)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     
     override func updateTheme() {
@@ -61,5 +72,28 @@ class SearchArticleFeedController: ArticleFeedViewController {
         } else {
             saveButton.setTitle("Save", for: .normal)
         }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        showPremiumCard ? 2 : 1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        section > 0 ? (showPremiumCard ? 1 : 0) : super.tableView(tableView, numberOfRowsInSection: section)
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            return super.tableView(tableView, cellForRowAt: indexPath)
+        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "premiumCell", for: indexPath)
+        (cell as? SearchPremiumCell)?.delegate = self
+        return cell        
+    }
+}
+
+extension SearchArticleFeedController: SearchPremiumCellDelegate {
+    func getPremiumPressed() {
+        show(PremiumViewController(), sender: nil)
     }
 }

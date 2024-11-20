@@ -149,6 +149,8 @@ class PremiumManageMediaController: UITableViewController {
         if indexPath.row > self.media.count - 10 {
             loadMore()
         }
+        
+        cell.updateBackground(isLast: self.media.count - 1 == indexPath.row)
             
         return cell
     }

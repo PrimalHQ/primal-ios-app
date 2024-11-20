@@ -12,14 +12,18 @@ final class TabSelectionView: UIView, Themeable {
     private var buttons: [TabSelectionButton] = []
     private let selectionIndicator = ThemeableView().constrainToSize(height: 4).setTheme { $0.backgroundColor = .accent }
     
+    private(set) lazy var stack = UIStackView(arrangedSubviews: buttons)
+
     @Published private(set) var selectedTab = 0
     
     private var cancellables: Set<AnyCancellable> = []
     
+    var distribution: UIStackView.Distribution {
+        get { stack.distribution }
+        set { stack.distribution = newValue }
+    }
     
-    let distribution: UIStackView.Distribution
     init(tabs: [String] = [], spacing: CGFloat = 16, distribution: UIStackView.Distribution = .equalSpacing) {
-        self.distribution = distribution
         super.init(frame: .zero)
         
         buttons = tabs.map { TabSelectionButton(text: $0, spacing: spacing) }
@@ -30,6 +34,8 @@ final class TabSelectionView: UIView, Themeable {
         }
             
         setup()
+        
+        stack.distribution = distribution
     }
     
     required init?(coder: NSCoder) {
@@ -47,7 +53,6 @@ final class TabSelectionView: UIView, Themeable {
 
 private extension TabSelectionView {
     func setup() {
-        let stack = UIStackView(arrangedSubviews: buttons)
         addSubview(stack)
         stack.pinToSuperview(edges: [.horizontal, .top], padding: 8).pinToSuperview(edges: .bottom)
         stack.distribution = distribution

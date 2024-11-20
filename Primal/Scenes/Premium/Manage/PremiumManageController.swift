@@ -20,7 +20,9 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         super.viewDidLoad()
         
         var bottomOptions: [UIAction] = [
-            .init(title: "Manage Subscription", handler: { [weak self] _ in }),
+            .init(title: "Manage Subscription", handler: { [weak self] _ in
+                self?.show(PremiumManageSubscriptionController(), sender: nil)
+            }),
             .init(title: "Change your Primal name", handler: { [weak self] _ in
                 guard let nav = self?.navigationController else { return }
                 nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
@@ -31,7 +33,10 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         
         if state.isLegend {
             bottomOptions.append(contentsOf: [
-                .init(title: "Legendary Profile Customisation", handler: { [weak self] _ in })
+                .init(title: "Legendary Profile Customisation", handler: { [weak self] _ in
+                    guard let self else { return }
+                    show(PremiumManageLegendController(state: state), sender: nil)
+                })
             ])
         } else if !state.recurring {
             bottomOptions.append(contentsOf: [

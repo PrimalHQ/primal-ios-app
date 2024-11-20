@@ -126,8 +126,7 @@ final class PostThreadCell: ThreadCell {
         
         contentSpacer.constrainToSize(width: 24)
         
-        profileImageView.constrainToSize(24)
-        profileImageView.layer.cornerRadius = 12
+        profileImageView.height = 24
         
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameStack, threeDotsButton])
         

@@ -111,8 +111,7 @@ class DefaultMainThreadCell: ThreadCell {
         threeDotsButton.constrainToSize(width: 22)
         threeDotsButton.transform = .init(translationX: 0, y: -4)
         
-        profileImageView.constrainToSize(42)
-        profileImageView.layer.cornerRadius = 21
+        profileImageView.height = 42
         
         separatorLabel.text = ""
         separatorLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)

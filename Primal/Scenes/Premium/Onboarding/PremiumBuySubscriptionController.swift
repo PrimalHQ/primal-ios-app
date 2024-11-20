@@ -64,15 +64,15 @@ private extension PremiumBuySubscriptionController {
         let monthlyButton = PurchasePremiumButton(title: "Get Monthly Plan")
         
         let learnMoreButton = AccentUIButton(title: "Learn about Premium", font: .appFont(withSize: 14, weight: .regular))
-        let promoCodeButton = AccentUIButton(title: "Have a promo code?", font: .appFont(withSize: 14, weight: .regular))
-        let actionStack = UIStackView([learnMoreButton, SpacerView(width: 1, color: .foreground6), promoCodeButton])
-        actionStack.constrainToSize(height: 20)
-        learnMoreButton.widthAnchor.constraint(equalTo: promoCodeButton.widthAnchor).isActive = true
+//        let promoCodeButton = AccentUIButton(title: "Have a promo code?", font: .appFont(withSize: 14, weight: .regular))
+//        let actionStack = UIStackView([learnMoreButton, SpacerView(width: 1, color: .foreground6), promoCodeButton])
+//        actionStack.constrainToSize(height: 20)
+//        learnMoreButton.widthAnchor.constraint(equalTo: promoCodeButton.widthAnchor).isActive = true
         
         let mainStack = UIStackView(axis: .vertical, [
             UIView(),
             table,
-            actionStack, SpacerView(height: 28),
+            learnMoreButton, SpacerView(height: 28),
             yearlyButton, SpacerView(height: 16),
             monthlyButton, SpacerView(height: 24),
             TermsAndConditionsView()
@@ -104,7 +104,7 @@ private extension PremiumBuySubscriptionController {
         table.profileRow.infoLabel.text = "primal.net/" + pickedName
         
         learnMoreButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(PremiumLearnMoreWhyController(), sender: nil)
+            self?.show(PremiumLearnMoreController(), sender: nil)
         }), for: .touchUpInside)
         
         InAppPurchaseManager.shared.fetchPremiumSubscriptions { [weak self] products in
@@ -199,7 +199,6 @@ private extension PremiumBuySubscriptionController {
         image.setUserImage(user, size: .init(width: 80, height: 80))
         
         let checkbox = VerifiedView().constrainToSize(24)
-        checkbox.isExtraVerified = true
         
         let nameLabel = UILabel(pickedName, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
         let nameStack = UIStackView([nameLabel, checkbox])

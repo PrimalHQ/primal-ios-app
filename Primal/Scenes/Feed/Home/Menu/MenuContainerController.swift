@@ -17,7 +17,7 @@ extension String { // TODO: Remove in 2025
 }
 
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = FLAnimatedImageView().constrainToSize(52)
+    private let profileImage = UserImageView(height: 52, glowPadding: 2)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -25,7 +25,7 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
-    private let menuProfileImage = FLAnimatedImageView()
+    private let menuProfileImage = UserImageView(height: 32, glowPadding: 1)
     
     private let premiumIndicator = NumberedNotificationIndicator()
     private let notificationIndicator = NumberedNotificationIndicator()
@@ -222,15 +222,11 @@ private extension MenuContainerController {
         let npubs = LoginManager.instance.loggedInNpubs()
 
         for npub in npubs.dropFirst().prefix(3) {
-            let avatarImage = FLAnimatedImageView().constrainToSize(24)
-            avatarImage.isUserInteractionEnabled = true
-            avatarImage.layer.cornerRadius = 12
-            avatarImage.clipsToBounds = true
-            avatarImage.contentMode = .scaleAspectFill
+            let avatarImage = UserImageView(height: 24)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
                 .sink { users in
-                    if avatarImage.image == nil, let user = users.first(where: { $0.data.npub == npub }) {
+                    if avatarImage.animatedImageView.image == nil, let user = users.first(where: { $0.data.npub == npub }) {
                         avatarImage.setUserImage(user)
                     }
                 }
@@ -266,23 +262,17 @@ private extension MenuContainerController {
         
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
-        profileImage.contentMode = .scaleAspectFill
-        profileImage.layer.cornerRadius = 26
-        profileImage.layer.masksToBounds = true
-        
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         
         let menuButtonParent = UIView()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
-        menuProfileImage.layer.cornerRadius = 16
-        menuProfileImage.layer.masksToBounds = true
-        menuProfileImage.isUserInteractionEnabled = false
-        menuProfileImage.contentMode = .scaleAspectFill
         
         menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
         menuButtonParent.addSubview(menuProfileImage)
-        menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
+        menuProfileImage.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
+        menuProfileImage.isUserInteractionEnabled = false
+        
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)
@@ -315,7 +305,6 @@ private extension MenuContainerController {
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
-        profileImage.isUserInteractionEnabled = true
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             self?.update(user)
@@ -330,7 +319,10 @@ private extension MenuContainerController {
         }
         .store(in: &cancellables)
         
-        WalletManager.instance.$premiumState.debounce(for: 1, scheduler: RunLoop.main)
+        Publishers.Merge(
+            NotificationCenter.default.publisher(for: .visitPremiumNotification).map { _ in WalletManager.instance.premiumState },
+            WalletManager.instance.$premiumState.debounce(for: 1, scheduler: RunLoop.main)
+        )
             .map {
                 if UserDefaults.standard.currentUserLastPremiumVisit.timeIntervalSinceNow > -7*24*3600 { return 0 }
                 return ($0?.isExpired ?? true) ? 1 : 0
@@ -361,8 +353,7 @@ private extension MenuContainerController {
             domainLabel.isHidden = false
         }
         
-        checkbox1.isHidden = user.nip05.isEmpty
-        checkbox1.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        checkbox1.user = user
     }
     
     // MARK: - Objc methods

@@ -100,7 +100,6 @@ private extension PremiumManageNameController {
         image.setUserImage(user, size: .init(width: 80, height: 80))
         
         let checkbox = VerifiedView().constrainToSize(24)
-        checkbox.isExtraVerified = true
         
         let nameLabel = UILabel(pickedName, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
         let nameStack = UIStackView([nameLabel, checkbox])

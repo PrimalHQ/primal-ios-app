@@ -105,9 +105,15 @@ private extension PremiumSearchNameController {
             guard let self, !self.searchText.isEmpty else { return }
             let name = self.searchText
             
+            action.isEnabled = false
+            action.title = "Searching..."
+            
             Connection.wallet.requestCache(name: "membership_name_available", payload: ["name": .string(name)]) { [weak self] result in
                 DispatchQueue.main.async {
-                    guard 
+                    action.isEnabled = true
+                    action.title = "Search"
+                    
+                    guard
                         let dicResponse: [String: Bool] = result.first?.objectValue?["content"]?.stringValue?.decode(),
                         dicResponse["available"] == true
                     else {

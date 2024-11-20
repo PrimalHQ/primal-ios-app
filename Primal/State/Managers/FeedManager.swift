@@ -112,6 +112,13 @@ final class FeedManager {
     
     func requestNewPage() {
         guard !isRequestingNewPage, !didReachEnd else { return }
+        
+        if !parsedPosts.isEmpty, !WalletManager.instance.hasPremium, newFeed?.isFromAdvancedSearchScreen == true {
+            // Disallow second of advanced search results
+            didReachEnd = true
+            return
+        }
+        
         isRequestingNewPage = true
         sendNewPageRequest()
     }
@@ -348,6 +355,7 @@ private extension FeedManager {
         
         if let until: Double = paginationInfo?.since {
             payload["until"] = .number(until.rounded())
+            payload["offset"] = 1
         }
         
         return ("mega_feed_directive", .object(payload))

@@ -18,7 +18,7 @@ class SettingsNsecViewController: UIViewController, Themeable {
         $0.setTitleColor(.accent, for: .normal)
         $0.setTitleColor(.accent, for: .highlighted)
     }
-    let pubIcon = FLAnimatedImageView(image: UIImage(named: "Profile"))
+    let pubIcon = UserImageView(height: 44)
     
     var isShowingNsec = false {
         didSet {
@@ -130,10 +130,6 @@ private extension SettingsNsecViewController {
         
         pubStack.spacing = 11
         pubStack.alignment = .center
-        pubIcon.constrainToSize(44)
-        pubIcon.layer.cornerRadius = 22
-        pubIcon.layer.masksToBounds = true
-        pubIcon.contentMode = .scaleAspectFill
         
         secStack.spacing = 24
         secStack.alignment = .center

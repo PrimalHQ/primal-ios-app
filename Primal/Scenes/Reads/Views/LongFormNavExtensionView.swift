@@ -13,7 +13,7 @@ extension UIButton.Configuration {
     static func accent14(_ text: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
-        config.baseBackgroundColor = .accent2
+        config.baseBackgroundColor = .accent
         config.attributedTitle = .init(text, attributes: .init([
             .font: UIFont.appFont(withSize: 14, weight: .semibold),
             .foregroundColor: UIColor.white
@@ -26,7 +26,7 @@ extension UIButton.Configuration {
 class LongFormNavExtensionView: UIView, Themeable {
     let nameLabel = UILabel()
     let secondaryLabel = UILabel()
-    let profileIcon = FLAnimatedImageView(image: UIImage(named: "profile"))
+    let profileIcon = UserImageView(height: 40, glowPadding: 2)
     let border = SpacerView(height: 1)
     
 //    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)
@@ -75,11 +75,6 @@ class LongFormNavExtensionView: UIView, Themeable {
 
 private extension LongFormNavExtensionView {
     func setup() {
-        profileIcon.constrainToSize(40)
-        profileIcon.contentMode = .scaleAspectFill
-        profileIcon.layer.cornerRadius = 20
-        profileIcon.layer.masksToBounds = true
-        
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
         nameStack.alignment = .leading
         nameStack.axis = .vertical

@@ -207,7 +207,7 @@ extension ParsedContent {
         for element in httpUrls where element.position + element.length <= result.length {
             guard let url = URL(string: element.text) else { continue }
             result.addAttributes([
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .link: url
             ], range: .init(location: element.position, length: element.length))
         }
@@ -215,12 +215,12 @@ extension ParsedContent {
         for element in notes where element.position + element.length <= result.length {
             guard let url = URL(string: "note://\(element.reference)") else {
                 result.addAttributes([
-                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
                 ], range: .init(location: element.position, length: element.length))
                 continue
             }
             result.addAttributes([
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .link: url
             ], range: .init(location: element.position, length: element.length))
         }
@@ -228,12 +228,12 @@ extension ParsedContent {
         for element in mentions where element.position + element.length <= result.length {
             guard let url = URL(string: "mention://\(element.reference)") else {
                 result.addAttributes([
-                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
                 ], range: .init(location: element.position, length: element.length))
                 continue
             }
             result.addAttributes([
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .link: url
             ], range: .init(location: element.position, length: element.length))
         }
@@ -241,12 +241,12 @@ extension ParsedContent {
         for element in hashtags where element.position + element.length <= result.length {
             guard let url = URL(string: "hashtag://\(element.text)") else {
                 result.addAttributes([
-                    .foregroundColor: UIColor.accent.withAlphaComponent(0.5)
+                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
                 ], range: .init(location: element.position, length: element.length))
                 continue
             }
             result.addAttributes([
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .link: url
             ], range: .init(location: element.position, length: element.length))
         }

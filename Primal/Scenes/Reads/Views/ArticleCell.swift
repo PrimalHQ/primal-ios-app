@@ -15,7 +15,7 @@ protocol ArticleCellDelegate: AnyObject {
 }
 
 class ArticleCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(22)
+    let avatar = UserImageView(height: 22)
     let nameLabel = UILabel()
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
@@ -189,10 +189,6 @@ private extension ArticleCell {
         
         let mainStack = UIStackView(axis: .vertical, [firstRow, contentStack, botStack])
         mainStack.spacing = 8
-        
-        avatar.layer.cornerRadius = 11
-        avatar.layer.masksToBounds = true
-        avatar.contentMode = .scaleAspectFill
         
         nameLabel.font = .appFont(withSize: 15, weight: .regular)
         timeLabel.font = .appFont(withSize: 15, weight: .regular)

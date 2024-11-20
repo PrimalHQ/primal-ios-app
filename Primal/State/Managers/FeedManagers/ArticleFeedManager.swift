@@ -15,6 +15,7 @@ class ArticleFeedManager: BaseFeedManager {
     @Published private var oldArticles: [Article] = []
     
     let feed: PrimalFeed    
+    let hasPremium = WalletManager.instance.hasPremium
     private var cancellables: Set<AnyCancellable> = []
     init(feed: PrimalFeed) {
         self.feed = feed
@@ -43,6 +44,20 @@ class ArticleFeedManager: BaseFeedManager {
         oldArticles = []
         
         super.refresh()
+    }
+    
+    override func requestNewPage() {
+        Self.dispatchQueue.async { [self] in
+            guard !isRequestingNewPage, !didReachEnd else { return }
+            
+            if paginationInfo != nil, !hasPremium, feed.isFromAdvancedSearchScreen {
+                didReachEnd = true
+                return
+            }
+            
+            isRequestingNewPage = true
+            sendNewPageRequest()
+        }
     }
 }
 

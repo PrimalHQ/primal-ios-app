@@ -247,14 +247,15 @@ extension NostrObject {
         createNostrChatReadEvent(pubkey)
     }
     
-    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data) -> NostrObject? {
+    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data, appVersion: String) -> NostrObject? {
         let strBase64:String = "data:image/svg+xml;base64," + data.base64EncodedString()
         
         let content: [String: JSON] = [
             "file_length":  .number(Double(fileLength)),
             "upload_id":    .string(uploadID),
             "offset":       .number(Double(offset)),
-            "data":         .string(strBase64)
+            "data":         .string(strBase64),
+            "app_version":  .string(appVersion),
         ]
         
         guard

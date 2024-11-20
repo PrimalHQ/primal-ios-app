@@ -83,7 +83,6 @@ private extension LinkPreview {
             imageSize = .init(width: 100, height: 90)
             mainStack.axis = .horizontal
             mainStack.alignment = .center
-            mainStack.layoutIfNeeded()
             playIcon.isHidden = true
             iconView.isHidden = true
             NSLayoutConstraint.activate(smallImageConstraints)

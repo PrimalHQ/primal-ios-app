@@ -39,7 +39,7 @@ class PremiumLearnMoreWhyController: UIViewController {
         stack.spacing = 10
         view.addSubview(stack)
         stack
-            .pinToSuperview(edges: .top, padding: 20, safeArea: true)
+            .pinToSuperview(edges: .top, padding: 70, safeArea: true)
             .pinToSuperview(edges: .horizontal, padding: 20)
         
         navigationItem.leftBarButtonItem = customBackButton

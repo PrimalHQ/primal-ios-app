@@ -11,8 +11,8 @@ protocol PremiumManageContentDataCellDelegate: AnyObject {
 }
 
 class PremiumManageContentDataCell: UITableViewCell {
-    let countLabel = UILabel("287", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
-    let typeLabel = UILabel("Notes", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let countLabel = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+    let typeLabel = UILabel("", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
     
     private let dateFormatter = DateFormatter()
     

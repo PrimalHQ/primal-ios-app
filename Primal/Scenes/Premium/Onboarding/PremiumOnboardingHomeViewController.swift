@@ -99,7 +99,7 @@ private extension PremiumOnboardingHomeViewController {
         action.pin(to: mainStack, edges: .horizontal)
         
         learnView.learnMoreButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(PremiumLearnMoreWhyController(), sender: nil)
+            self?.show(PremiumLearnMoreController(), sender: nil)
         }), for: .touchUpInside)
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)

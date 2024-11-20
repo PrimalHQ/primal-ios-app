@@ -10,17 +10,12 @@ import FLAnimatedImage
 
 final class LikeUserTableViewCell: UITableViewCell, Themeable {
     private let icon = UIImageView(image: UIImage(named: "feedLikeBig"))
-    private let avatarView = FLAnimatedImageView()
+    private let avatarView = UserImageView(height: 42, glowPadding: 2)
     private let nameLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        
-        avatarView.constrainToSize(42)
-        avatarView.layer.cornerRadius = 21
-        avatarView.layer.masksToBounds = true
-        avatarView.contentMode = .scaleAspectFill
         
         let mainStack = UIStackView([icon, avatarView, nameLabel])
         contentView.addSubview(mainStack)

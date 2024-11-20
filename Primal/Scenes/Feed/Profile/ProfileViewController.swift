@@ -463,7 +463,7 @@ private extension ProfileViewController {
     
     @objc func profilePicTapped() {
         guard !profile.data.picture.isEmpty else { return }
-        ImageGalleryController(current: profile.data.picture).present(from: self, imageView: navigationBar.profilePicture)
+        ImageGalleryController(current: profile.data.picture).present(from: self, imageView: navigationBar.profilePicture.animatedImageView)
     }
     @objc func bannerPicTapped() {
         guard !profile.data.banner.isEmpty else { return }

@@ -46,12 +46,7 @@ class UploadPhotoRequest {
         let requestID = UUID().uuidString
 
         guard
-            let keypair = OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo(),
-            let privkey = keypair.hexVariant.privkey
-        else { return }
-
-        guard
-            let event = NostrObject.createAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: strBase64, kind: 10000120)
+            let event = NostrObject.create(content: strBase64, kind: 10000120)
         else { return }
 
         let encoder = JSONEncoder()

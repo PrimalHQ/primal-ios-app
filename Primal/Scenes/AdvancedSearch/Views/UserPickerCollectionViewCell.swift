@@ -9,16 +9,13 @@ import UIKit
 import FLAnimatedImage
 
 class UserPickerCollectionViewCell: UICollectionViewCell {
-    let image = FLAnimatedImageView()
+    let image = UserImageView(height: 36)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         contentView.addSubview(image)
-        image.constrainToSize(36).pinToSuperview(edges: [.top, .leading])
-        image.contentMode = .scaleAspectFill
-        image.clipsToBounds = true
-        image.layer.cornerRadius = 18
+        image.pinToSuperview(edges: [.top, .leading])
         
         let xIcon = UIImageView(image: UIImage(named: "xIcon10"))
         xIcon.tintColor = .foreground2
@@ -35,6 +32,6 @@ class UserPickerCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func setupWithUser(_ user: ParsedUser) {
-        image.setUserImage(user, size: .init(width: 36, height: 36), disableAnimated: true)
+        image.setUserImage(user)
     }
 }

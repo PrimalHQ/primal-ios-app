@@ -72,13 +72,15 @@ final class IdentityManager {
     
     var cancellables: Set<AnyCancellable> = []
 
-    func requestUserProfile() {
-        DatabaseManager.instance.getProfilePublisher(userHexPubkey).first()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] user in
-                self?.parsedUser = user
-            }
-            .store(in: &cancellables)
+    func requestUserProfile(local: Bool = true) {
+        if local {
+            DatabaseManager.instance.getProfilePublisher(userHexPubkey).first()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveCompletion: { _ in }) { [weak self] user in
+                    self?.parsedUser = user
+                }
+                .store(in: &cancellables)
+        }
         
         DatabaseManager.instance.getProfileStatsPublisher(userHexPubkey)
             .receive(on: DispatchQueue.main)

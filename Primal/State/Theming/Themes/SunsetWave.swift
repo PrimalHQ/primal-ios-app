@@ -27,8 +27,8 @@ class SunsetWave: AppTheme {
     let foreground5: UIColor = .init(rgb: 0x666666)
     var foreground6: UIColor = .init(rgb: 0x444444)
     
-    let accent: UIColor = .init(rgb: 0xF800C1)
-    let accent2: UIColor = .init(rgb: 0xCA077C)
+    let accent: UIColor = .init(rgb: 0xCA077C)
+    let accent2: UIColor = .init(rgb: 0xF800C1)
     let accent3: UIColor = .init(rgb: 0xAB268E)
     
     let extraColorMenu: UIColor = .init(rgb: 0xD9D9D9)

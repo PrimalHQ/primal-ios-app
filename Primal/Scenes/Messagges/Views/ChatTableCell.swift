@@ -10,7 +10,7 @@ import Kingfisher
 import FLAnimatedImage
 
 final class ChatTableCell: UITableViewCell, Themeable {
-    let profileImageView = FLAnimatedImageView(image: UIImage(named: "Profile")).constrainToSize(52)
+    let profileImageView = UserImageView(height: 52, glowPadding: 2)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let separator = UIView().constrainToSize(width: 1)
@@ -83,9 +83,6 @@ private extension ChatTableCell {
         hStack.spacing = 12
         hStack.alignment = .top
     
-        profileImageView.layer.cornerRadius = 26
-        profileImageView.layer.masksToBounds = true
-        profileImageView.contentMode = .scaleAspectFill
         newIndicator.layer.cornerRadius = 6
         
         messageLabel.numberOfLines = 2

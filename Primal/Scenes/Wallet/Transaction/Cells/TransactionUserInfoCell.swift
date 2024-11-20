@@ -12,7 +12,7 @@ class TransactionUserInfoCell: UITableViewCell {
     let background = UIView()
     let border = UIView().constrainToSize(height: 1)
     
-    let avatar = FLAnimatedImageView()
+    let avatar = UserImageView(height: 42)
     let mainLabel = UILabel()
     let checkbox = VerifiedView()
     let subtitleLabel = UILabel()
@@ -56,8 +56,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
             mainLabel.text = user.data.firstIdentifier
             subtitleLabel.text = user.data.address
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
-            checkbox.isHidden = user.data.parsedNip.isEmpty
-            checkbox.isExtraVerified = user.data.parsedNip.hasSuffix("@primal.net")
+            checkbox.user = user.data
         } else {
             avatar.image = UIImage(named: "nonZapPayment")
             mainLabel.text = "Lightning payment"
@@ -101,11 +100,6 @@ private extension TransactionUserInfoCell {
         
         background.layer.cornerRadius = 8
         background.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-        
-        avatar.constrainToSize(42)
-        avatar.layer.cornerRadius = 21
-        avatar.layer.masksToBounds = true
-        avatar.contentMode = .scaleAspectFill
         
         mainLabel.font = .appFont(withSize: 18, weight: .bold)
         subtitleLabel.font = .appFont(withSize: 16, weight: .regular)

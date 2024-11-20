@@ -8,17 +8,19 @@
 import UIKit
 import FLAnimatedImage
 
-final class OnboardingProfileImageView: FLAnimatedImageView {
+final class OnboardingProfileImageView: UIView {
+    let imageView = UserImageView(height: 105, glowPadding: 3)
     init() {
         super.init(frame: .zero)
-        image = UIImage(named: "onboardingDefaultAvatar")
+        imageView.animatedImageView.image = UIImage(named: "onboardingDefaultAvatar")
         
-        constrainToSize(108)
+        addSubview(imageView)
+        imageView.pinToSuperview(padding: 3)
+        
         layer.cornerRadius = 54
         layer.masksToBounds = true
         layer.borderWidth = 3
         layer.borderColor = UIColor.white.cgColor
-        contentMode = .scaleAspectFill
     }
     
     required init?(coder: NSCoder) {

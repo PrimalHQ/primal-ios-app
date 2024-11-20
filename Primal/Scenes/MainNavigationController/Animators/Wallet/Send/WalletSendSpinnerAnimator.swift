@@ -43,7 +43,7 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         fixParent.addSubview(imageView)
         
         container.addSubview(fixParent)
-        sendController.profilePictureView.animateTransitionTo(spinner.spinner, duration: 12 / 30, in: fixParent, fade: true)
+        sendController.profilePictureView.animatedImageView.animateTransitionTo(spinner.spinner, duration: 12 / 30, in: fixParent, fade: true)
         
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(.easeInOutQuart)

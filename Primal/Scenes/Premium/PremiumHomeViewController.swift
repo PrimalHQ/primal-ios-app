@@ -24,6 +24,7 @@ class PremiumHomeViewController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
 
     let state: PremiumState
+    let titleView = PremiumUserTitleView()
     
     init(state: PremiumState) {
         self.state = state
@@ -67,7 +68,7 @@ private extension PremiumHomeViewController {
         
         renewLabel.isHidden = !(AppDelegate.contentSettings?.show_primal_support ?? true)
         
-        let action = LargeRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
+        let action = LegendaryRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
         action.addAction(.init(handler: { [unowned self] _ in
             if state.isExpired == true {
                 show(PremiumBuySubscriptionController(pickedName: state.name, state: .buySubscription), sender: nil)
@@ -94,25 +95,30 @@ private extension PremiumHomeViewController {
         
         view.addSubview(action)
         action.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
+        
+        if let legend = LegendCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
+            if legend.custom_badge {
+                titleView.theme = legend.theme
+            }
+        }
     }
     
     func userStackView() -> UIView? {
         guard let user = IdentityManager.instance.parsedUser else { return nil }
-        let image = FLAnimatedImageView().constrainToSize(80)
-        image.layer.cornerRadius = 40
-        image.contentMode = .scaleAspectFill
-        image.clipsToBounds = true
-        image.setUserImage(user, size: .init(width: 80, height: 80))
+        let image = UserImageView(height: 80, glowPadding: 2)
+        image.setUserImage(user)
         
         let checkbox = VerifiedView().constrainToSize(24)
-        checkbox.isExtraVerified = true
+        checkbox.user = user.data
         
         let nameLabel = UILabel(user.data.firstIdentifier, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
         let nameStack = UIStackView([nameLabel, checkbox])
         nameStack.alignment = .center
         nameStack.spacing = 6
         
-        let titleView = PremiumUserTitleView(title: state.cohort_1, subtitle: state.cohort_2)
+        titleView.titleLabel.text = state.cohort_1
+        titleView.subtitleLabel.text = state.cohort_2
+        
         let userStack = UIStackView(axis: .vertical, [
             image, SpacerView(height: 16),
             nameStack, SpacerView(height: 20),
@@ -175,14 +181,27 @@ private extension PremiumHomeViewController {
 }
 
 class PremiumUserTitleView: UIView, Themeable {
-    let titleLabel = UILabel("Primal OG", color: .white, font: .appFont(withSize: 14, weight: .bold))
-    let subtitleLabel = UILabel("Class of 2024", color: .white, font: .appFont(withSize: 14, weight: .regular))
+    let titleLabel = UILabel("", color: .white, font: .appFont(withSize: 14, weight: .bold))
+    let subtitleLabel = UILabel("", color: .white, font: .appFont(withSize: 14, weight: .regular))
     
-    init(title: String = "Primal OG", subtitle: String = "Class of 2024") {
+    var theme: LegendTheme? {
+        didSet {
+            guard let theme else {
+                gradient.isHidden = true
+                return
+            }
+            gradient.isHidden = false
+            gradient.setLegendGradient(theme)
+        }
+    }
+    
+    private var gradient = GradientView(colors: [])
+    
+    init() {
         super.init(frame: .zero)
         
-        titleLabel.text = title
-        subtitleLabel.text = subtitle
+        addSubview(gradient)
+        gradient.pinToSuperview()
         
         let subtitleParent = UIView().constrainToSize(height: 24)
         subtitleParent.layer.cornerRadius = 12
@@ -198,6 +217,7 @@ class PremiumUserTitleView: UIView, Themeable {
         stack.pinToSuperview(edges: [.vertical, .trailing], padding: 2).pinToSuperview(edges: .leading, padding: 10)
         
         layer.cornerRadius = 14
+        clipsToBounds = true
         updateTheme()
     }
     
@@ -266,9 +286,9 @@ class PremiumHomeTableView: UIView {
         lightningRow.target = state.lightning_address
         addressRow.target = state.nostr_address
         
-        updateCancellable = IdentityManager.instance.$parsedUser.debounce(for: 2, scheduler: RunLoop.main)
-            .prepend(IdentityManager.instance.parsedUser)
-            .receive(on: DispatchQueue.main).sink { [unowned self] user in
+        updateCancellable = IdentityManager.instance.$parsedUser
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] user in
                 guard let user else {
                     lightningRow.current = state.lightning_address
                     addressRow.current = state.nostr_address
@@ -279,22 +299,22 @@ class PremiumHomeTableView: UIView {
             }
         
         addressRow.applyButton.addAction(.init(handler: { [weak self] _ in
-            guard var user = IdentityManager.instance.parsedUser?.data.profileData else { return }
+            guard let user = IdentityManager.instance.parsedUser?.data.profileData else { return }
             user.nip05 = state.nostr_address
 
             IdentityManager.instance.updateProfile(user) { _ in
-                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserProfile(local: false)
             }
             
             self?.addressRow.current = state.nostr_address
         }), for: .touchUpInside)
         
         lightningRow.applyButton.addAction(.init(handler: { [weak self] _ in
-            guard var user = IdentityManager.instance.parsedUser?.data.profileData else { return }
+            guard let user = IdentityManager.instance.parsedUser?.data.profileData else { return }
             user.lud16 = state.lightning_address
 
             IdentityManager.instance.updateProfile(user) { _ in
-                IdentityManager.instance.requestUserProfile()
+                IdentityManager.instance.requestUserProfile(local: false)
             }
             
             self?.lightningRow.current = state.lightning_address
@@ -351,6 +371,7 @@ class PremiumEditTableRowView: UIStackView {
         
         infoLabel.setContentHuggingPriority(.required, for: .horizontal)
         infoLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        applyButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         titleLabel.lineBreakMode = .byTruncatingTail
     }

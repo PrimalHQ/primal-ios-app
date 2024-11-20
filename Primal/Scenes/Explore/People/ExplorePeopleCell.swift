@@ -10,7 +10,7 @@ import FLAnimatedImage
 import Kingfisher
 
 final class ExplorePeopleCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(64)
+    let avatar = UserImageView(height: 64, glowPadding: 2)
     
     let name = UILabel()
     let subname = UILabel()
@@ -42,8 +42,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         if CheckNip05Manager.instance.isVerified(user.data) {
             subname.text = user.data.parsedNip
             subname.isHidden = user.data.parsedNip.isEmpty
-            checkbox.isHidden = false
-            checkbox.isExtraVerified = user.data.nip05.hasSuffix("@primal.net")
+            checkbox.user = user.data
         } else {
             subname.isHidden = true
             checkbox.isHidden = true
@@ -58,7 +57,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         action.alpha = user.isCurrentUser ? 0.01 : 1
         action.isEnabled = !user.isCurrentUser
         
-        avatar.setUserImage(user, feed: true, size: CGSize(width: 64, height: 64))
+        avatar.setUserImage(user, feed: true)
         
         updateTheme()
     }

@@ -39,8 +39,7 @@ private extension HighlightCommentCell {
         mainStack.alignment = .top
         mainStack.spacing = 8
         
-        profileImageView.constrainToSize(30)
-        profileImageView.layer.cornerRadius = 15
+        profileImageView.height = 30
     
         let commentedLabel = UILabel()
         commentedLabel.font = .appFont(withSize: 15, weight: .regular)

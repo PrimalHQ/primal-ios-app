@@ -126,7 +126,7 @@ private extension ProfileShowQRController {
     }
     
     func update(_ user: ParsedUser) {
-        userInfo.image.setUserImage(user, feed: false, size: .init(width: 108, height: 108))
+        userInfo.image.imageView.setUserImage(user, feed: false)
         userInfo.name.text = user.data.firstIdentifier
         userInfo.address.text = user.data.lud16
         

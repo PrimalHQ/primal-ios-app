@@ -131,13 +131,13 @@ private extension SearchViewController {
         
         if userSearchText.hasPrefix("npub1") && userSearchText.count == 63 {
             notify(.primalProfileLink, userSearchText)
-            navigationController?.popViewController(animated: true)
+            navigationController?.viewControllers.removeAll(where: { $0 == self })
             return
         }
         
         if userSearchText.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
             notify(.primalNoteLink, text)
-            navigationController?.popViewController(animated: true)
+            navigationController?.viewControllers.removeAll(where: { $0 == self })
             return
         }
         
@@ -148,7 +148,7 @@ private extension SearchViewController {
         
         if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
             present(SFSafariViewController(url: url), animated: true)
-            navigationController?.popViewController(animated: true)
+            navigationController?.viewControllers.removeAll(where: { $0 == self })
             return
         }
         

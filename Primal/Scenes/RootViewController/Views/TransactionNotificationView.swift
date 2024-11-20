@@ -12,7 +12,7 @@ import AudioToolbox
 
 final class TransactionNotificationView: UIView {
     private var animationBackgroundView = UIView()
-    private let profileImage = FLAnimatedImageView().constrainToSize(44)
+    private let profileImage = UserImageView(height: 44, glowPadding: 2)
     
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
@@ -52,17 +52,17 @@ final class TransactionNotificationView: UIView {
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
             profileImage.setUserImage(transaction.1)
-            profileImage.contentMode = .scaleAspectFill
+            profileImage.animatedImageView.contentMode = .scaleAspectFill
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else if transaction.0.onchainAddress != nil {
-            profileImage.kf.cancelDownloadTask()
-            profileImage.image = UIImage(named: "onchainPayment")
-            profileImage.contentMode = .scaleAspectFit
+            profileImage.removeUserImage()
+            profileImage.animatedImageView.image = UIImage(named: "onchainPayment")
+            profileImage.animatedImageView.contentMode = .scaleAspectFit
             nameLabel.text = "Bitcoin"
         } else {
-            profileImage.kf.cancelDownloadTask()
-            profileImage.image = UIImage(named: "nonZapPayment")
-            profileImage.contentMode = .scaleAspectFit
+            profileImage.removeUserImage()
+            profileImage.animatedImageView.image = UIImage(named: "nonZapPayment")
+            profileImage.animatedImageView.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
         

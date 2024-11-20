@@ -230,7 +230,7 @@ private extension OnboardingSigninController {
                 
                 let parsed = result.createParsedUser(user)
                 
-                self.infoView.image.setUserImage(parsed)
+                self.infoView.image.imageView.setUserImage(parsed)
                 self.infoView.name.text = user.firstIdentifier
                 self.infoView.address.text = user.lud16
                 

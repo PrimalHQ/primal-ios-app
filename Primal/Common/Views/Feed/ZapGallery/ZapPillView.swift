@@ -21,16 +21,12 @@ class ZapGalleryChildView: UIView {
 }
 
 class ZapAvatarView: ZapGalleryChildView {
-    let image = FLAnimatedImageView().constrainToSize(22)
+    let image = UserImageView(height: 22)
     
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 11
-        image.layer.masksToBounds = true
-        
-        image.setUserImage(zap.user, size: .init(width: 22, height: 22), disableAnimated: true)
+        image.setUserImage(zap.user, disableAnimated: true)
         
         let imageBackground = UIView().constrainToSize(24)
         imageBackground.layer.cornerRadius = 12
@@ -50,7 +46,7 @@ class ZapAvatarView: ZapGalleryChildView {
 }
 
 class ZapPillView: ZapGalleryChildView {
-    let image = FLAnimatedImageView().constrainToSize(22)
+    let image = UserImageView(height: 22)
     let amountLabel = UILabel()
     let endSpacer = SpacerView(width: 2)
     
@@ -59,15 +55,11 @@ class ZapPillView: ZapGalleryChildView {
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 11
-        image.layer.masksToBounds = true
-        
         amountLabel.font = .appFont(withSize: 14, weight: .semibold)
         amountLabel.textColor = .foreground
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        image.setUserImage(zap.user, size: .init(width: 22, height: 22))
+        image.setUserImage(zap.user)
         amountLabel.text = zap.amountSats.localized()
         
         addSubview(stack)

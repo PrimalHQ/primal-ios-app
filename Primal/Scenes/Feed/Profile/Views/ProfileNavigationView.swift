@@ -31,7 +31,8 @@ class ProfileNavigationView: UIView, Themeable {
     var overlayView = UIView()
 
     let profilePictureParent = UIView()
-    let profilePicture = FLAnimatedImageView()
+    let profilePictureBorder = UIView()
+    let profilePicture = UserImageView(height: 74, glowPadding: 3)
     
     weak var profilePicOverlayBig: UIView?
     weak var profilePicOverlaySmall: UIView?
@@ -116,7 +117,7 @@ class ProfileNavigationView: UIView, Themeable {
         
         if size > maxSize {  // Enlarge if larger
             bringSubviewToFront(profilePictureParent)
-            profilePicture.transform = .identity
+            profilePictureBorder.transform = .identity
             profilePictureParent.transform = .identity
             overlayView.alpha = 0
             bannerViewBig.image = bannerImage
@@ -130,7 +131,7 @@ class ProfileNavigationView: UIView, Themeable {
             let scale = 0.6 + (0.4 * invertedProgress)
             
             bringSubviewToFront(profilePictureParent)
-            profilePicture.transform = .init(scaleX: scale, y: scale)
+            profilePictureBorder.transform = .init(scaleX: scale, y: scale)
             profilePictureParent.transform = .identity
             overlayView.alpha = 0
             
@@ -141,7 +142,7 @@ class ProfileNavigationView: UIView, Themeable {
             profilePicOverlaySmall?.transform = .identity
         } else {  // Translate avatar after shrinking
             sendSubviewToBack(profilePictureParent)
-            profilePicture.transform = .init(scaleX: 0.6, y: 0.6)
+            profilePictureBorder.transform = .init(scaleX: 0.6, y: 0.6)
             let yTranslation = (size == minSize ? deltaFromMax + maxSize - minSize : 0)
             let translation = CGAffineTransform.init(translationX: 0, y: yTranslation)
             profilePictureParent.transform = translation
@@ -166,8 +167,7 @@ class ProfileNavigationView: UIView, Themeable {
     }
     
     func updateTheme() {
-        profilePicture.layer.borderColor = UIColor.background2.cgColor
-        profilePicture.backgroundColor = .background2
+        profilePictureBorder.backgroundColor = .background2
         
         primaryLabel.textColor = .foreground
         
@@ -193,21 +193,18 @@ private extension ProfileNavigationView {
         bannerViewBig.contentMode = .scaleAspectFill
         bannerViewBig.layer.masksToBounds = true
         
-        profilePicture.constrainToSize(80)
-        profilePicture.layer.cornerRadius = 40
-        profilePicture.layer.borderWidth = 3
-        profilePicture.layer.masksToBounds = true
-        profilePicture.contentMode = .scaleAspectFill
-        
         checkboxIcon.constrainToSize(20)
         
-        profilePictureParent.addSubview(profilePicture)
-        profilePicture.pinToSuperview()
+        profilePictureParent.addSubview(profilePictureBorder)
+        profilePictureBorder.pinToSuperview()
+        profilePictureBorder.layer.cornerRadius = 40
+        profilePictureBorder.addSubview(profilePicture)
+        profilePicture.pinToSuperview(padding: 3)
         
         addSubview(profilePictureParent)
         profilePictureParent.pinToSuperview(edges: .leading, padding: -28).pinToSuperview(edges: .bottom, padding: -90)
         
-        profilePicture.anchorPoint = .init(x: 0, y: 1)
+        profilePictureBorder.anchorPoint = .init(x: 0, y: 1)
         
         addSubview(backButton)
         backButton.pinToSuperview(edges: .leading, padding: 12).pinToSuperview(edges: .top, padding: 44)

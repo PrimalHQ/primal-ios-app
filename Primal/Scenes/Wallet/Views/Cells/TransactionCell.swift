@@ -19,7 +19,7 @@ protocol TransactionCellDelegate: AnyObject {
 
 final class TransactionCell: UITableViewCell, Themeable {
     
-    let profileImage = FLAnimatedImageView().constrainToSize(44)
+    let profileImage = UserImageView(height: 44)
     private let timeIcon = UIImageView(image: UIImage(named: "walletTimeIcon"))
     
     let nameLabel = UILabel()
@@ -61,13 +61,11 @@ final class TransactionCell: UITableViewCell, Themeable {
             nameLabel.text = (transaction.1).data.firstIdentifier
         } else if transaction.0.onchainAddress != nil {
             oldProfileId = ""
-            profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "onchainPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = "Bitcoin"
         } else {
             oldProfileId = ""
-            profileImage.kf.cancelDownloadTask()
             profileImage.image = UIImage(named: "nonZapPayment")
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
@@ -171,10 +169,6 @@ private extension TransactionCell {
     func setup() {
         selectionStyle = .none
         layer.masksToBounds = false
-        
-        profileImage.layer.cornerRadius = 22
-        profileImage.layer.masksToBounds = true
-        profileImage.contentMode = .scaleAspectFill
                 
         let nameStack = UIStackView([nameLabel, separator, timeLabel, UIView()])
         nameStack.spacing = 8
@@ -217,7 +211,6 @@ private extension TransactionCell {
         amountLabel.font = .appFont(withSize: 18, weight: .bold)
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
         
-        profileImage.isUserInteractionEnabled = true
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
     }
     

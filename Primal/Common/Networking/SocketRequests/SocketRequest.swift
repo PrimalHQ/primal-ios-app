@@ -384,9 +384,14 @@ extension PostRequestResult {
                 print("Error decoding primalName")
                 return
             }
-//            DispatchQueue.main.async {
-                // TODO: Do something
-//            }
+        case .primalLegendInfo:
+            guard let dic: [String: LegendCustomization] = contentString.decode() else {
+                print("Error decoding primalLegendInfo")
+                return
+            }
+            Task {
+                await LegendCustomizationManager.instance.addCustomizations(dic)
+            }
         default:
             events.append(payload)
         }

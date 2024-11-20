@@ -37,10 +37,10 @@ class BaseFeedManager {
     // Accessed only from the dispatchQueue
     private var cancellables: Set<AnyCancellable> = []
     
-    private var isRequestingNewPage = false
-    private var didReachEnd = false
+    var isRequestingNewPage = false
+    var didReachEnd = false
         
-    private var paginationInfo: PrimalPagination?
+    private(set) var paginationInfo: PrimalPagination?
     
     let request: FeedManagerRequestProtocol
     init(request: FeedManagerRequestProtocol, delegate: BaseFeedManagerDelegate? = nil) {
@@ -66,21 +66,7 @@ class BaseFeedManager {
             sendNewPageRequest()
         }
     }
-}
-
-private extension BaseFeedManager {
-    // MARK: - Subscriptions
-    func initSubscriptions() {
-        NotificationCenter.default.publisher(for: .userMuted)
-            .compactMap { $0.object as? String }
-            .receive(on: DispatchQueue.main) // Emit on main
-            .sink { [weak self] pubkey in
-                self?.baseDelegate?.userMuted(pubkey: pubkey)
-            }
-            .store(in: &cancellables)
-    }
     
-    // MARK: - Requests
     func sendNewPageRequest() {
         SocketRequest(name: request.name, payload: generatePayload()).publisher()
             .receive(on: Self.dispatchQueue)
@@ -103,6 +89,21 @@ private extension BaseFeedManager {
             }
             .store(in: &cancellables)
     }
+}
+
+private extension BaseFeedManager {
+    // MARK: - Subscriptions
+    func initSubscriptions() {
+        NotificationCenter.default.publisher(for: .userMuted)
+            .compactMap { $0.object as? String }
+            .receive(on: DispatchQueue.main) // Emit on main
+            .sink { [weak self] pubkey in
+                self?.baseDelegate?.userMuted(pubkey: pubkey)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Requests
     
     func generatePayload() -> JSON {
         var payload = request.body

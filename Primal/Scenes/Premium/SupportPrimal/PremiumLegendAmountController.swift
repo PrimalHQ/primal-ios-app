@@ -65,7 +65,6 @@ class PremiumLegendAmountController: UIViewController {
         image.setUserImage(user, size: .init(width: 80, height: 80))
         
         let checkbox = VerifiedView().constrainToSize(24)
-        checkbox.isExtraVerified = true
         
         let nameLabel = UILabel(user.data.firstIdentifier, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
         let nameStack = UIStackView([nameLabel, checkbox])
@@ -74,7 +73,10 @@ class PremiumLegendAmountController: UIViewController {
         
         let avatarButton = UIButton(configuration: .accent("Customize avatar", font: .appFont(withSize: 14, weight: .regular)))
         
-        let titleView = PremiumUserTitleView(title: "Primal Legend", subtitle: "Class of 2024")
+        let titleView = PremiumUserTitleView()
+        titleView.titleLabel.text = "Primal Legend"
+        titleView.subtitleLabel.text = "Class of 2024"
+
         let userStack = UIStackView(axis: .vertical, [
             image, SpacerView(height: 16),
             nameStack, SpacerView(height: 20),

@@ -78,6 +78,7 @@ enum NostrKind: Int {
     case primalLegendInfo = 10_000_168
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
+    case premiumSubscriptionHistory = 10_000_605
     
     case shortenedArticle = 10_030_023
 }

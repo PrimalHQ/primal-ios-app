@@ -11,7 +11,7 @@ import Nantes
 import FLAnimatedImage
 
 final class PostPreviewPostPreviewView: UIView {
-    let profileImageView = FLAnimatedImageView()
+    let profileImageView = UserImageView(height: 24)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let secondaryIdentifierLabel = UILabel()
@@ -43,8 +43,7 @@ final class PostPreviewPostPreviewView: UIView {
         if CheckNip05Manager.instance.isVerified(user) {
             secondaryIdentifierLabel.text = user.parsedNip
             secondaryIdentifierLabel.isHidden = false
-            verifiedBadge.isHidden = false
-            verifiedBadge.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+            verifiedBadge.user = user
         } else {
             secondaryIdentifierLabel.isHidden = true
             verifiedBadge.isHidden = true
@@ -53,7 +52,7 @@ final class PostPreviewPostPreviewView: UIView {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.setUserImage(content.user, size: .init(width: 24, height: 24))
+        profileImageView.setUserImage(content.user)
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
@@ -145,11 +144,6 @@ private extension PostPreviewPostPreviewView {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         secondaryIdentifierLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-
-        profileImageView.constrainToSize(24)
-        profileImageView.layer.cornerRadius = 12
-        profileImageView.layer.masksToBounds = true
-        profileImageView.contentMode = .scaleAspectFill
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)

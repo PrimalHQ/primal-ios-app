@@ -49,6 +49,12 @@ struct SearchFilters: Codable {
     var maxduration: Int?
 }
 
+extension PrimalFeed {
+    var isFromAdvancedSearchScreen: Bool {
+        spec.contains(" pas:1 ")
+    }
+}
+
 class AdvancedSearchManager: ObservableObject {
     @Published var includeWordsText: String = ""
     @Published var excludeWordsText: String = ""
@@ -63,6 +69,8 @@ class AdvancedSearchManager: ObservableObject {
     
     @Published var timePosted: TimePickerOption = .anytime
     @Published var filters: SearchFilters = .init()
+    
+    @Published var isFromAdvancedSearchScreen = false
     
     var feed: PrimalFeed {
         let query = generateQueryString().replacingOccurrences(of: "\"", with: "\\\"")
@@ -110,6 +118,10 @@ class AdvancedSearchManager: ObservableObject {
             if let config {
                 string += " \(config)"
             }
+        }
+        
+        if isFromAdvancedSearchScreen {
+            string += " pas:1 "
         }
         
         return string

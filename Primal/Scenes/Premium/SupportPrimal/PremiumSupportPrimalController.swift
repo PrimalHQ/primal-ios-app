@@ -8,8 +8,8 @@
 import UIKit
 
 class PremiumSupportPrimalController: UIViewController {
-    let state: PremiumState
-    init(state: PremiumState) {
+    let state: PremiumState?
+    init(state: PremiumState?) {
         self.state = state
         super.init(nibName: nil, bundle: nil)
     }
@@ -37,7 +37,6 @@ class PremiumSupportPrimalController: UIViewController {
         )
         
         let verified = VerifiedView().constrainToSize(36)
-        verified.isExtraVerified = true
         let buySubscription = SupportPrimalInfoView(
             title: "Buy a Subscription",
             desc: "Extend your existing subscription to gain peace of mind and help fund Primal.",
@@ -62,8 +61,10 @@ class PremiumSupportPrimalController: UIViewController {
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
         
-        becomeLegend.isHidden = state.isLegend
-        buySubscription.isHidden = state.isLegend || state.recurring
+        if let state {
+            becomeLegend.isHidden = state.isLegend
+            buySubscription.isHidden = state.isLegend || state.recurring
+        }
         
         rateView.addGestureRecognizer(BindableTapGestureRecognizer(action: {
             guard
@@ -75,7 +76,15 @@ class PremiumSupportPrimalController: UIViewController {
         }))
         buySubscription.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
-            show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
+            
+            if let state {
+                show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
+            } else {
+                guard let nav = navigationController else { return }
+                nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
+                    nav.pushViewController(PremiumBuySubscriptionController(pickedName: name, state: .onboardingFinish), animated: true)
+                }), animated: true)
+            }
         }))
         becomeLegend.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.show(PremiumBecomeLegendController(), sender: nil)

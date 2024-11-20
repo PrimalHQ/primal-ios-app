@@ -112,6 +112,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         }
         
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     func updateTheme() {
@@ -333,6 +334,19 @@ private extension WalletReceiveViewController {
         
         view.addSubview(loadingIndicator)
         loadingIndicator.centerToSuperview().constrainToSize(70)
+        
+        if !WalletManager.instance.hasPremium {
+            let button = UIButton(
+                configuration: .accent("get a custom lightning address", font: .appFont(withSize: 16, weight: .regular)),
+                primaryAction: .init(handler: { [weak self]_ in
+                    self?.show(PremiumViewController(), sender: nil)
+                })
+            )
+            mainStack.addSubview(button)
+            button
+                .centerToView(ludLabel, axis: .horizontal)
+                .pin(to: ludLabel, edges: .top, padding: 50)
+        }
         
         mainStack.isHidden = true
         loadingIndicator.play()
