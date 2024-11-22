@@ -653,7 +653,7 @@ private extension ThreadViewController {
         ]))
         value.append(NSAttributedString(string: "@\(name)", attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .medium),
-            .foregroundColor: UIColor.accent
+            .foregroundColor: UIColor.accent2
         ]))
         return value
     }

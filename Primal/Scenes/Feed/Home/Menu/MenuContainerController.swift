@@ -168,12 +168,12 @@ private extension MenuContainerController {
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
-        let profile = MenuItemButton(title: "PROFILE")
-        let premium = MenuItemButton(title: "PREMIUM")
-        let messages = MenuItemButton(title: "MESSAGES")
-        let bookmarks = MenuItemButton(title: "BOOKMARKS")
-        let settings = MenuItemButton(title: "SETTINGS")
-        let signOut = MenuItemButton(title: "SIGN OUT")
+        let profile = MenuItemButton(title: "PROFILE", imageName: "menuSidebarProfile")
+        let premium = MenuItemButton(title: "PREMIUM", imageName: "menuSidebarPremium")
+        let messages = MenuItemButton(title: "MESSAGES", imageName: "menuSidebarMessages")
+        let bookmarks = MenuItemButton(title: "BOOKMARKS", imageName: "menuSidebarBookmarks")
+        let settings = MenuItemButton(title: "SETTINGS", imageName: "menuSidebarSettings")
+        let signOut = MenuItemButton(title: "SIGN OUT", imageName: "menuSidebarSignout")
         
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, settings, signOut])
         [
@@ -186,7 +186,7 @@ private extension MenuContainerController {
         
         view.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .leading, padding: 36)
+            .pinToSuperview(edges: .leading, padding: 34)
             .pinToSuperview(edges: .trailing, padding: 80)
             .pinToSuperview(edges: .top, padding: 70)
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
@@ -199,10 +199,10 @@ private extension MenuContainerController {
         mainStack.alpha = 0
         
         view.addSubview(notificationIndicator)
-        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 138)
+        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 166)
         
         view.addSubview(premiumIndicator)
-        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 122)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -452,13 +452,14 @@ private extension MenuContainerController {
 }
 
 final class MenuItemButton: UIButton, Themeable {
-    init(title: String) {
+    let title: String
+    let imageName: String
+    
+    init(title: String, imageName: String) {
+        self.title = title
+        self.imageName = imageName
         super.init(frame: .zero)
         
-        setAttributedTitle(.init(string: title, attributes: [
-            .font: UIFont.appFont(withSize: 18.2, weight: .regular),
-            .kern: 0.2
-        ]), for: .normal)
         updateTheme()
     }
     
@@ -467,8 +468,15 @@ final class MenuItemButton: UIButton, Themeable {
     }
     
     func updateTheme() {
-        setTitleColor(.foreground2, for: .normal)
-        setTitleColor(.foreground2.withAlphaComponent(0.5), for: .disabled)
-        setTitleColor(.foreground2.withAlphaComponent(0.5), for: .highlighted)
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = .init(title, attributes: .init([
+            .font: UIFont.appFont(withSize: 18.2, weight: .regular),
+            .kern: 0.2
+        ]))
+        config.image = UIImage(named: imageName)
+        config.imagePadding = 10
+        config.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
+        config.baseForegroundColor = .foreground2
+        configuration = config
     }
 }

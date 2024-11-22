@@ -181,7 +181,7 @@ final class AccentUIButton: UIButton, Themeable {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        setTitleColor(.accent, for: .normal)
-        setTitleColor(.accent.withAlphaComponent(0.5), for: .highlighted)
+        setTitleColor(.accent2, for: .normal)
+        setTitleColor(.accent2.withAlphaComponent(0.5), for: .highlighted)
     }
 }

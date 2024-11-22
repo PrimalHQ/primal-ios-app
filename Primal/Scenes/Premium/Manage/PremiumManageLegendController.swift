@@ -28,8 +28,8 @@ class PremiumManageLegendController: UIViewController {
     
     let checkboxImage = UIImageView()
     
-    @Published var isBadgeOn = false
-    @Published var isAvatarOn = false
+    @Published var isBadgeOn = true
+    @Published var isAvatarOn = true
     
     init(state: PremiumState) {
         self.state = state
@@ -42,6 +42,9 @@ class PremiumManageLegendController: UIViewController {
             
             badgeSwitch.isOn =  custom.custom_badge
             isBadgeOn = custom.custom_badge
+        } else {
+            avatarSwitch.isOn = true
+            badgeSwitch.isOn = true
         }
         
         super.init(nibName: nil, bundle: nil)

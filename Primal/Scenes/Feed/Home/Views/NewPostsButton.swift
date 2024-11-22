@@ -67,7 +67,7 @@ final class NewPostsButton: MyButton, Themeable {
         }
         
         for avatar in avatars {
-            avatar.superview?.superview?.isHidden = true
+            avatar.superview?.isHidden = true
         }
         
         guard count > 0 else { return }
@@ -76,7 +76,7 @@ final class NewPostsButton: MyButton, Themeable {
         
         zip((1...count), zip(uniqueUsers, avatars)).forEach { (_, arg1) in
             let (user, avatar) = arg1
-            avatar.superview?.superview?.isHidden = false
+            avatar.superview?.isHidden = false
             avatar.setUserImage(user)
         }
     }

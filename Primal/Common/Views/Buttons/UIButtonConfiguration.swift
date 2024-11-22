@@ -37,7 +37,7 @@ extension UIButton.Configuration {
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([
             .font: font
         ]))
-        configuration.baseForegroundColor = .accent
+        configuration.baseForegroundColor = .accent2
         return configuration
     }
     

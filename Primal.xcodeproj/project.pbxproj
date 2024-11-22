@@ -346,6 +346,7 @@
 		B91EF0EB2CED1B4B00299ECF /* PremiumLearnMoreHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EA2CED1B4B00299ECF /* PremiumLearnMoreHeaderCell.swift */; };
 		B91EF0ED2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EC2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift */; };
 		B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */; };
+		B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -929,6 +930,7 @@
 		B91EF0EA2CED1B4B00299ECF /* PremiumLearnMoreHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreHeaderCell.swift; sourceTree = "<group>"; };
 		B91EF0EC2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreDataCell.swift; sourceTree = "<group>"; };
 		B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreFAQController.swift; sourceTree = "<group>"; };
+		B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageContentFooterCell.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -2213,6 +2215,7 @@
 				B91EF0C62CEA106900299ECF /* PremiumManageContactsHeaderCell.swift */,
 				B91EF0C82CEA11CE00299ECF /* PremiumManageContactsDataCell.swift */,
 				B91EF0CC2CEA1B0900299ECF /* PremiumManageContentHeaderCell.swift */,
+				B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */,
 				B91EF0CE2CEA1B6F00299ECF /* PremiumManageContentDataCell.swift */,
 				B91EF0D42CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift */,
 				B91EF0D62CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift */,
@@ -3046,6 +3049,7 @@
 				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
 				B91EF0CD2CEA1B0900299ECF /* PremiumManageContentHeaderCell.swift in Sources */,
+				B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */,
 				B91EF0D12CEA23C300299ECF /* PremiumManageNameController.swift in Sources */,
 				B91E56EA2CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift in Sources */,
 				9ECFD3202A0138BF000D1B2F /* MainNavigationController.swift in Sources */,
@@ -3620,7 +3624,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.112;
+				MARKETING_VERSION = 2.0.118;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3666,7 +3670,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.112;
+				MARKETING_VERSION = 2.0.118;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

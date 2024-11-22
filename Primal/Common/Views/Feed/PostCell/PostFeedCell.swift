@@ -83,7 +83,7 @@ private extension PostFeedCell {
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        seeMoreLabel.textColor = .accent
+        seeMoreLabel.textColor = .accent2
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         zapGallery = SmallZapGalleryView()

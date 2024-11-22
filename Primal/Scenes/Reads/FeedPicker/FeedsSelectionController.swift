@@ -15,7 +15,7 @@ extension UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         config.attributedTitle = .init(title, attributes: .init([
             .font: UIFont.appFont(withSize: 18, weight: .regular),
-            .foregroundColor: UIColor.accent
+            .foregroundColor: UIColor.accent2
         ]))
         return config
     }
@@ -40,6 +40,13 @@ enum PrimalFeedType {
     var kind: String {
         switch self {
         case .note:     return "notes"
+        case .article:  return "reads"
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .note:     return "home"
         case .article:  return "reads"
         }
     }

@@ -225,6 +225,12 @@ private extension SettingsNsecViewController {
         let reason = "Authenticate to view sensitive data"
 
         let passwordAuth = {
+            var error: NSError?
+            guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
+                completion(true)
+                return
+            }
+            
             context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate with passcode") { success, authError in
                 DispatchQueue.main.async {
                     completion(success)

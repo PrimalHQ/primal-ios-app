@@ -93,6 +93,8 @@ class SaveFeedController: UIViewController {
             
             dismiss(animated: true) {
                 self.callback()
+                
+                RootViewController.instance.showToast("Saved to \(self.feedType.name) feeds")
             }
         }), for: .touchUpInside)
     }

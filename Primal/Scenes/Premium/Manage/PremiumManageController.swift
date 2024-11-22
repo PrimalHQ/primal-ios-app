@@ -55,6 +55,16 @@ class PremiumManageController: UIViewController {    let state: PremiumState
             ])
         }
         
+        let faqStack = UIStackView([
+        //    Question? Check FAQ
+            UILabel("Have a question?", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
+            UILabel("Check our FAQ", color: .accent2, font: .appFont(withSize: 16, weight: .regular)),
+        ])
+        faqStack.spacing = 6
+        let faqStackParent = UIView()
+        faqStackParent.addSubview(faqStack)
+        faqStack.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
+        
         let mainStack = UIStackView(axis: .vertical, [
             UILabel("Nostr Tools", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: [
@@ -73,6 +83,7 @@ class PremiumManageController: UIViewController {    let state: PremiumState
             ]), SpacerView(height: 20),
             UILabel("Primal Account", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: bottomOptions), SpacerView(height: 20),
+            faqStackParent
         ])
         
         view.addSubview(mainStack)
@@ -81,6 +92,10 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
         title = "Manage Premium"
+        
+        faqStack.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.show(PremiumLearnMoreController(startingTab: .faq), sender: nil)
+        }))
     }
 }
 

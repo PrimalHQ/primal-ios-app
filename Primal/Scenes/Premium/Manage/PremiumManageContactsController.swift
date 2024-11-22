@@ -33,7 +33,7 @@ class PremiumManageContactsController: UITableViewController {
 
         SocketRequest(name: "membership_recovery_contact_lists", payload: ["event_from_user": event.toJSON()])
             .publisher()
-            .compactMap({ $0.allContacts })
+            .compactMap({ $0.allContacts.sorted(by: { $0.created_at > $1.created_at }) })
             .receive(on: DispatchQueue.main)
             .assign(to: \.contacts, onWeak: self)
             .store(in: &cancellables)
@@ -68,7 +68,7 @@ extension PremiumManageContactsController: PremiumManageContactsDataCellDelegate
         let date = dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(set.created_at)))
         let count = set.set.count.localized()
         
-        let alert = UIAlertController(title: "Are you sure?", message: "Update your contact list based on the state from: \(date) (\(count) of follows)?", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Are you sure?", message: "Update your contact list based on the state from: \(date) (\(count) follows)?", preferredStyle: .alert)
         alert.addAction(.init(title: "Cancel", style: .cancel))
         alert.addAction(.init(title: "Update", style: .destructive, handler: { _ in
             FollowManager.instance.sendBatchFollowEvent(set.set, successHandler: {
