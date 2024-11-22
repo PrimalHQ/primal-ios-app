@@ -7,9 +7,10 @@
 
 import UIKit
 import FLAnimatedImage
+import Kingfisher
 
 class CompactArticleView: UIView, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(20)
+    let avatar = UserImageView(height: 20)
     let nameLabel = UILabel()
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
@@ -42,7 +43,15 @@ class CompactArticleView: UIView, Themeable {
         }()
         
         if let imageURL {
-            contentImageView.kf.setImage(with: imageURL, placeholder: UIImage(named: "longFormPlaceholderImage"))
+            contentImageView.kf.setImage(
+                with: imageURL,
+                placeholder: UIImage(named: "longFormPlaceholderImage"),
+                options: [
+                    .scaleFactor(3),
+                    .processor(DownsamplingImageProcessor(size: .init(width: 88, height: 48))),
+                    .cacheOriginalImage
+                ]
+            )
         } else {
             contentImageView.kf.cancelDownloadTask()
             contentImageView.image = UIImage(named: "longFormPlaceholderImage")
@@ -87,10 +96,6 @@ private extension CompactArticleView {
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 12).pinToSuperview(edges: .top, padding: 10)
-        
-        avatar.layer.cornerRadius = 10
-        avatar.layer.masksToBounds = true
-        avatar.contentMode = .scaleAspectFill
         
         nameLabel.font = .appFont(withSize: 14, weight: .bold)
         timeLabel.font = .appFont(withSize: 14, weight: .regular)

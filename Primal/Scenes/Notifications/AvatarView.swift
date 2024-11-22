@@ -9,12 +9,33 @@ import UIKit
 import Kingfisher
 
 final class AvatarView: UIView {
-    let avatarViews = (1...6).map { _ in UIImageView() }
+    lazy var avatarViews = (1...maxAvatarCount).map { _ in UIImageView() }
     let extraView = UIView()
     let extraLabel = UILabel()
     
-    init() {
+    let maxAvatarCount: Int
+    let size: CGFloat
+    let spacing: CGFloat
+    
+    func setBorderColor(_ borderColor: UIColor? = nil) {
+        avatarViews.forEach {
+            if let borderColor {
+                $0.layer.borderWidth = 1
+                $0.layer.borderColor = borderColor.cgColor
+            } else {
+                $0.layer.borderWidth = 0
+            }
+        }
+    }
+    
+    init(size: CGFloat = 32, spacing: CGFloat = 4, reversed: Bool = false, borderColor: UIColor? = nil, maxAvatarCount: Int = 6) {
+        self.size = size
+        self.spacing = spacing
+        self.maxAvatarCount = maxAvatarCount
         super.init(frame: .zero)
+        transform = reversed ? .init(rotationAngle: .pi) : .identity
+        
+        setBorderColor(borderColor)
         setup()
     }
     
@@ -28,9 +49,9 @@ final class AvatarView: UIView {
         zip(avatarViews, images).forEach { view, url in
             view.isHidden = false
             view.kf.setImage(with: url, placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: CGSize(width: 32, height: 32))),
+                .processor(DownsamplingImageProcessor(size: CGSize(width: size, height: size))),
                 .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
+                .cacheOriginalImage,
             ])
         }
         
@@ -40,9 +61,15 @@ final class AvatarView: UIView {
         }
         
         let imagesCount = images.count.clamp(1, avatarViews.count)
-        extraView.isHidden = imagesCount >= userCount
-        let extraCount = min(userCount - imagesCount, 99)
-        extraLabel.text = "+\(extraCount)"
+        
+        if imagesCount >= userCount {
+            extraView.isHidden = true
+        } else {
+            let extraCount = min(userCount - imagesCount, 99)
+            extraView.isHidden = false
+            extraLabel.text = "+\(extraCount)"
+            avatarViews.last?.isHidden = true
+        }
     }
 }
 
@@ -56,12 +83,13 @@ private extension AvatarView {
         }
         
         stack.arrangedSubviews.forEach {
-            $0.constrainToSize(32)
-            $0.layer.cornerRadius = 16
+            $0.constrainToSize(size)
+            $0.layer.cornerRadius = size / 2
             $0.layer.masksToBounds = true
+            $0.transform = transform
         }
         
-        stack.spacing = 4
+        stack.spacing = spacing
         
         extraView.addSubview(extraLabel)
         extraLabel.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 2)
@@ -76,6 +104,6 @@ private extension AvatarView {
         addSubview(stack)
         stack.pinToSuperview()
         
-        constrainToSize(height: 32)
+        constrainToSize(height: size)
     }
 }

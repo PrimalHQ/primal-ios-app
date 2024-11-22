@@ -60,6 +60,7 @@ enum WalletError: Error {
     
     var message: String {
         switch self {
+        
         case .noLud:
             return "Your account doesn't have lud6 or lud16 set up."
         case .serverError(let message):
@@ -68,6 +69,23 @@ enum WalletError: Error {
             return "We were not able to send sats to your wallet. Please contact us at support@primal.net and we will assist you."
         }
     }
+}
+
+struct PremiumState: Codable {
+    var pubkey: String
+    var tier: String
+    var name:  String
+    var nostr_address: String
+    var lightning_address: String
+    var primal_vip_profile: String
+    var used_storage: Double
+    var max_storage: Double
+    var cohort_1: String
+    var cohort_2: String
+    var recurring: Bool
+    var expires_on: Double?
+    var renews_on: Double?
+    var class_id: String?
 }
 
 typealias ParsedTransaction = (WalletTransaction, ParsedUser)
@@ -86,6 +104,12 @@ final class WalletManager {
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
     @Published var isBitcoinPrimary = true
+    
+    @Published var premiumState: PremiumState?
+    var hasPremium: Bool { premiumState != nil }
+    var hasPremiumPublisher: AnyPublisher<Bool, Never> {
+        $premiumState.map { $0 != nil }.eraseToAnyPublisher()
+    }
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
     let animatingZap = CurrentValueSubject<ParsedZap?, Never>(nil)
@@ -118,6 +142,7 @@ final class WalletManager {
         parsedTransactions = oldTransactions
         userZapped = [:]
         isLoadingWallet = oldTransactions.isEmpty
+        premiumState = nil
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
@@ -182,6 +207,26 @@ final class WalletManager {
             .sink { [weak self] val in
                 self?.isLoadingWallet = false
                 self?.userHasWallet = val.kycLevel == KYCLevel.email || val.kycLevel == KYCLevel.idDocument
+            }
+            .store(in: &cancellables)
+    }
+    
+    func refreshPremiumState() {
+        guard let event = NostrObject.create(content: "", kind: 30078) else { return }
+        
+        SocketRequest(name: "membership_status", payload: ["event_from_user": event.toJSON()], connection: .wallet)
+            .publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard
+                    let state: PremiumState = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.premiumState.rawValue })?["content"]?.stringValue?.decode()
+                else {
+                    print("FAILED")
+                    return
+                }
+                
+                
+                self?.premiumState = state
             }
             .store(in: &cancellables)
     }
@@ -283,10 +328,20 @@ final class WalletManager {
         do {
             zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
             addZap(post.post.id, amount: sats)
-            try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, post: post))
+            try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: post))
         } catch {
             removeZap(post.post.id, amount: sats)
             throw error
+        }
+    }
+    
+    func zap(object: ZappableReferenceObject, sats: Int, note: String) async throws {
+        do {
+            if let universalID = object.reference?.universalID {
+                zapEvent.send(.init(receiptId: UUID().uuidString, postId: universalID, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
+                addZap(universalID, amount: sats)
+            }
+            try await send(user: object.userToZap.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: object))
         }
     }
 }
@@ -304,6 +359,9 @@ private extension WalletManager {
             .sink(receiveValue: { [weak self] pubkey in
                 self?.reset(pubkey)
                 self?.refreshHasWallet()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    self?.refreshPremiumState()
+                }
             })
             .store(in: &cancellables)
         

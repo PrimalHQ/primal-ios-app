@@ -19,6 +19,7 @@ extension UIButton.Configuration {
         config.image = UIImage(named: "navChevron")?.withTintColor(.foreground).withRenderingMode(.alwaysOriginal)
         config.imagePadding = 8
         config.imagePlacement = .trailing
+        config.titleLineBreakMode = .byTruncatingTail
         return config
     }
 }
@@ -29,22 +30,24 @@ final class HomeFeedViewController: UIViewController, Themeable {
     
     lazy var navTitleView = DropdownNavigationView(title: "Latest")
     
-    lazy var searchButton = UIButton(configuration: .simpleImage(UIImage(named: "navSearch")), primaryAction: .init(handler: { [weak self] _ in
-        self?.navigationController?.fadeTo(SearchViewController())
-    }))
-    
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     
     var cancellables: Set<AnyCancellable> = []
     
-    weak var firstFeedVC: ShortFormFeedController?
+    weak var firstFeedVC: HomeFeedChildController?
     
     init() {
         currentFeed = PrimalFeed.getActiveFeeds(.note).first ?? .defaultNotesFeed
         super.init(nibName: nil, bundle: nil)
-        let vc = ShortFormFeedController(feed: FeedManager(newFeed: currentFeed))
+        let vc = HomeFeedChildController(feed: FeedManager(newFeed: currentFeed))
         firstFeedVC = vc
         pageVC.setViewControllers([vc], direction: .forward, animated: false)
+        
+        if PrimalFeed.getAllFeeds(.note).isEmpty {
+            PrimalFeed.fetchPublisher(type: .note)
+                .sink(receiveValue: { _ in })
+                .store(in: &cancellables)
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -56,16 +59,12 @@ final class HomeFeedViewController: UIViewController, Themeable {
         
         navTitleView.title = "Latest"
         navigationItem.titleView = navTitleView
-        let searchParent = UIView()
-        searchParent.addSubview(searchButton)
-        searchButton.pinToSuperview(edges: [.vertical, .leading]).pinToSuperview(edges: .trailing, padding: -12)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchParent)
-        searchButton.imageView?.transform = .init(translationX: 12, y: 0)
+        
         navTitleView.button.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
                 self?.setFeed(feed)
-                self?.pageVC.setViewControllers([ShortFormFeedController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
+                self?.pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
             }), animated: true)
         }), for: .touchUpInside)
         
@@ -85,7 +84,9 @@ final class HomeFeedViewController: UIViewController, Themeable {
         pageVC.delegate = self
         view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
         
-        updateTheme()
+        navigationItem.rightBarButtonItem = customSearchButton()
+        updateTitle()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,9 +106,9 @@ final class HomeFeedViewController: UIViewController, Themeable {
     }
     
     func updateTheme() {
-        searchButton.tintColor = .foreground3
-        
         updateTitle()
+        
+        navigationItem.rightBarButtonItem = customSearchButton()
         
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()
@@ -132,7 +133,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
-//        pageVC.setViewControllers([ShortFormFeedController(feed: .init(feed: feed))], direction: .forward, animated: false)
+//        pageVC.setViewControllers([HomeFeedChildController(feed: .init(feed: feed))], direction: .forward, animated: false)
     }
     
     func feedToLeftOfCurrentFeed() -> PrimalFeed? {
@@ -165,20 +166,20 @@ final class HomeFeedViewController: UIViewController, Themeable {
 extension HomeFeedViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard
-            let articleFeed = viewController as? ShortFormFeedController,
+            let articleFeed = viewController as? HomeFeedChildController,
             let newFeed = feedToLeftOfFeed(articleFeed.feed.newFeed)
         else { return nil }
         
-        return ShortFormFeedController(feed: .init(newFeed: newFeed))
+        return HomeFeedChildController(feed: .init(newFeed: newFeed))
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard
-            let articleFeed = viewController as? ShortFormFeedController,
+            let articleFeed = viewController as? HomeFeedChildController,
             let newFeed = feedToRightOfFeed(articleFeed.feed.newFeed)
         else { return nil }
         
-        return ShortFormFeedController(feed: .init(newFeed: newFeed))
+        return HomeFeedChildController(feed: .init(newFeed: newFeed))
     }
 }
 
@@ -192,7 +193,7 @@ extension HomeFeedViewController: UIPageViewControllerDelegate {
         let allFeeds = PrimalFeed.getActiveFeeds(.note)
         
         guard
-            let articleFeed = pageViewController.viewControllers?.first as? ShortFormFeedController,
+            let articleFeed = pageViewController.viewControllers?.first as? HomeFeedChildController,
             let feed = allFeeds.first(where: { $0.spec == articleFeed.feed.newFeed?.spec })
         else { return }
         

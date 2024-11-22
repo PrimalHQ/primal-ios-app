@@ -51,7 +51,7 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
         }
         
         if isPresenting {
-            userCell?.profileIcon.animateTransitionTo(sendController.profilePictureView, duration: 18 / 30, in: container)
+            userCell?.profileIcon.animatedImageView.animateTransitionTo(sendController.profilePictureView.animatedImageView, duration: 18 / 30, in: container)
             userCell?.nameLabel.animateTransitionTo(sendController.nameLabel, duration: 18 / 30, in: container)
             userCell?.secondaryLabel.animateTransitionTo(sendController.nipLabel, duration: 18 / 30, in: container)
             
@@ -75,7 +75,7 @@ final class UserListToSendAnimator: NSObject, UIViewControllerAnimatedTransition
                 transitionContext.completeTransition(success)
             }
         } else {
-            sendController.profilePictureView.animateTransitionTo(userCell?.profileIcon, duration: 18 / 30, in: container)
+            sendController.profilePictureView.animatedImageView.animateTransitionTo(userCell?.profileIcon.animatedImageView, duration: 18 / 30, in: container)
             sendController.nameLabel.animateTransitionTo(userCell?.nameLabel, duration: 18 / 30, in: container)
             sendController.nipLabel.animateTransitionTo(userCell?.secondaryLabel, duration: 18 / 30, in: container)
             

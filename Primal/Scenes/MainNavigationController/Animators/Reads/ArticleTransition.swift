@@ -10,6 +10,7 @@ import UIKit
 protocol ArticleCellController: UIViewController {
     var articles: [Article] { get }
     var table: UITableView { get }
+    var articleSection: Int { get }
 }
 
 class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
@@ -25,7 +26,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         guard let listVC = listVCs.first(where: { vc in
             guard
                 let index = vc.articles.firstIndex(where: { $0.event.id == longFormController.content.event.id }),
-                let contentCell = vc.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
+                let contentCell = vc.table.cellForRow(at: .init(row: index, section: vc.articleSection)) as? ArticleCell
             else { return false }
             
             let point = contentCell.contentView.convert(CGPoint.zero, to: longFormController.view)
@@ -71,18 +72,19 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         
         var contentCell: ArticleCell?
         if let index = listVC.articles.firstIndex(where: { $0.event.id == lfController.content.event.id }) {
-            contentCell = listVC.table.cellForRow(at: .init(row: index, section: 0)) as? ArticleCell
+            contentCell = listVC.table.cellForRow(at: .init(row: index, section: listVC.articleSection)) as? ArticleCell
         }
         
         let topInfoView = lfController.topInfoView
         let contentViews = [lfController.contentStack, lfController.infoVC.view, lfController.commentsVC.view]
+        let navButtons = [lfController.navExtension.followButton, lfController.navExtension.unfollowButton]
         
         if presenting {
-            contentCell?.avatar.animateTransitionTo(lfController.navExtension.profileIcon, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+            contentCell?.avatar.animatedImageView.animateTransitionTo(lfController.navExtension.profileIcon.animatedImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.titleLabel.animateTransitionTo(topInfoView.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.nameLabel.animateTransitionTo(lfController.navExtension.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             
-            if topInfoView.imageView.isHidden, lfController.content.image != nil, let image = contentCell?.contentImageView.image {
+            if topInfoView.imageView.isHidden, lfController.content.image?.isEmpty == false, let image = contentCell?.contentImageView.image {
                 topInfoView.imageView.image = image
                 topInfoView.imageView.isHidden = false
                 let hC = topInfoView.imageView.widthAnchor.constraint(equalTo: topInfoView.imageView.heightAnchor, multiplier: image.size.width / image.size.height)
@@ -100,15 +102,15 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
                 background.alpha = 1
             }
             
-            lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
+            navButtons.forEach { $0.transform = .init(translationX: 20, y: 0) }
             topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
-            lfController.navExtension.subscribeButton.alpha = 0
+            navButtons.forEach { $0.alpha = 0 }
             topInfoView.dateLabel.alpha = 0
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
-                self.lfController.navExtension.subscribeButton.transform = .identity
+                navButtons.forEach { $0.transform = .identity }
                 topInfoView.dateLabel.transform = .identity
-                self.lfController.navExtension.subscribeButton.alpha = 1
+                navButtons.forEach { $0.alpha = 1 }
                 topInfoView.dateLabel.alpha = 1
             }
             
@@ -158,7 +160,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             }
         } else {
             if let contentCell {
-                lfController.navExtension.profileIcon.animateTransitionTo(contentCell.avatar, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+                lfController.navExtension.profileIcon.animatedImageView.animateTransitionTo(contentCell.avatar.animatedImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 topInfoView.titleLabel.animateTransitionTo(contentCell.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 lfController.navExtension.nameLabel.animateTransitionTo(contentCell.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 if !topInfoView.imageView.isHidden {
@@ -172,9 +174,9 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             }
             
             UIView.animate(withDuration: 4 / 30, delay: 12 / 30) {
-                self.lfController.navExtension.subscribeButton.transform = .init(translationX: 20, y: 0)
+                navButtons.forEach { $0.transform = .init(translationX: 20, y: 0) }
                 topInfoView.dateLabel.transform = .init(translationX: 0, y: 20)
-                self.lfController.navExtension.subscribeButton.alpha = 0
+                navButtons.forEach { $0.alpha = 0 }
                 topInfoView.dateLabel.alpha = 0
             }
             

@@ -20,39 +20,82 @@ struct UserToken {
     var user: PrimalUser
 }
 
+extension NoteDraft {
+    var isPosting: Bool { preparedEvent != nil }
+}
+
 final class PostingTextViewManager: TextViewManager {
     @Published var userSearchText: String?
-    
     @Published var users: [ParsedUser] = []
+    @Published var isPosting: Bool = false
+    
+    @Published var postButtonEnabledState = true
+    @Published var postButtonTitle: String
+    
+    @Published var oldDraft: NoteDraft?
+    
+    let defaultPostButtonTitle: String
     
     var tokens: [UserToken] {
-        guard let string = textView.attributedText else { return [] }
-        
-        let entireRange = NSRange(location: 0, length: string.length)
-        
-        var tokens: [UserToken] = []
-        string.enumerateAttribute(.link, in: entireRange) { (value, linkRange, stop) in
-            guard let user = value as? PrimalUser else { return }
+        get {
+            guard let string = textView.attributedText else { return [] }
             
-            tokens.append(.init(range: linkRange, text: string.attributedSubstring(from: linkRange).string, user: user))
+            let entireRange = NSRange(location: 0, length: string.length)
+            
+            var tokens: [UserToken] = []
+            string.enumerateAttribute(.link, in: entireRange) { (value, linkRange, stop) in
+                guard let user = value as? PrimalUser else { return }
+                
+                tokens.append(.init(range: linkRange, text: string.attributedSubstring(from: linkRange).string, user: user))
+            }
+            return tokens
         }
-        return tokens
+        set {
+            let mutable = NSMutableAttributedString(string: textView.text ?? "", attributes: [
+                .font: UIFont.appFont(withSize: 18, weight: .regular),
+                .foregroundColor: UIColor.foreground
+            ])
+            
+            for token in newValue {
+                mutable.addAttributes([
+                    .foregroundColor: UIColor.accent,
+                    .link: token.user
+                ], range: token.range)
+            }
+            textView.attributedText = mutable
+        }
     }
     
-    @Published var currentlyEditingToken: EditingToken?
+    @Published private var currentlyEditingToken: EditingToken?
+    
     let returnPressed = PassthroughSubject<Void, Never>()
+    
+    let usersTableView: UITableView
+    var usersHeightConstraint: NSLayoutConstraint!
+    let replyId: String?
+    var replyingTo: PrimalFeedPost? {
+        didSet {
+            findDraft()
+        }
+    }
     
     private var tagRegex: NSRegularExpression! { try! NSRegularExpression(pattern: "@([^\\s\\K]+)") }
     
     private var cancellables: Set<AnyCancellable> = []
     
-    let usersTableView: UITableView
-    var usersHeightConstraint: NSLayoutConstraint!
-    init(textView: UITextView, usersTable: UITableView) {
+    init(textView: UITextView, usersTable: UITableView, replyId: String?, replyingTo: PrimalFeedPost?, defaultPostTitle: String = "Post") {
         usersTableView = usersTable
+        self.replyingTo = replyingTo
+        self.replyId = replyId
+        defaultPostButtonTitle = defaultPostTitle
+        postButtonTitle = defaultPostTitle
         super.init(textView: textView)
         connectPublishers()
         setup()
+        
+        if replyId == nil {
+            findDraft()
+        }
     }
     
     func replaceEditingTokenWithUser(_ user: ParsedUser) {
@@ -173,6 +216,107 @@ final class PostingTextViewManager: TextViewManager {
             .foregroundColor: UIColor.foreground
         ]), at: range.location)
     }
+    
+    var currentDraft: NoteDraft {
+        NoteDraft(
+            replyingTo: replyingTo?.universalID ?? "",
+            userPubkey: IdentityManager.instance.userHexPubkey,
+            text: textView.text ?? "",
+            uploadedAssets: media.compactMap { $0.state.url },
+            taggedUsers: tokens.map({ token in
+                    .init(
+                        range: .init(location: token.range.location, length: token.range.length),
+                        text: token.text,
+                        userPubkey: token.user.pubkey
+                    )
+            })
+        )
+    }
+    
+    func askToSave(_ vc: UIViewController, callback: @escaping (Bool) -> Void = { _ in }) {        
+        let draft = currentDraft
+        
+        if let oldDraft {
+            if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
+                callback(false)
+                return
+            }
+        } else if textView.text.isEmpty == true {
+            callback(false)
+            return
+        }
+        
+        textView.resignFirstResponder()
+        
+        let alert = UIAlertController(title: "Save note draft?", message: nil, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { _ in callback(false) }))
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
+            DatabaseManager.instance.saveDraft(draft)
+            self?.oldDraft = draft
+            callback(true)
+        }))
+        
+        vc.present(alert, animated: true, completion: nil)
+    }
+    
+    func askToSaveThenDismiss(_ vc: UIViewController) {
+        askToSave(vc) { [weak vc] _ in
+            vc?.backButtonPressed()
+        }
+    }
+    
+    func askToDeleteDraft(_ vc: UIViewController, callback: @escaping (Bool) -> Void) {
+        let alert = UIAlertController(title: "Do you want to start a new draft?", message: "Old draft will probably be posted.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { _ in callback(false) }))
+        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
+            guard let self else { return }
+            deleteDraft()
+            reset()
+            // TODO: Cancel posting
+            callback(true)
+        }))
+        
+        vc.present(alert, animated: true, completion: nil)
+    }
+    
+    func deleteDraft() {
+        DatabaseManager.instance.deleteDraft(replyingTo: replyingTo?.universalID)
+    }
+    
+    func reset() {
+        oldDraft = nil
+        isPosting = false
+        postButtonTitle = defaultPostButtonTitle
+        postButtonEnabledState = true
+        
+        textView.text = ""
+        media = []
+    }
+    
+    func post(callback: @escaping (Bool, NostrObject?) -> Void) {
+        var draft = currentDraft
+        
+        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo) else {
+            callback(false, nil)
+            return
+        }
+        
+        isPosting = true
+        draft.preparedEvent = ev
+        oldDraft = draft
+        DatabaseManager.instance.saveDraft(draft)
+        
+        PostingManager.instance.sendEvent(ev) { success in
+            callback(success, ev)
+            if success {
+                DatabaseManager.instance.deleteDraft(draft)
+            }
+        }
+    }
+    
+    var currentSearchPublisher: AnyCancellable?
 }
 
 private extension PostingTextViewManager {
@@ -254,18 +398,59 @@ private extension PostingTextViewManager {
             .store(in: &cancellables)
         
         $userSearchText
-            .flatMap {
-                if let text = $0 {
-                    return SmartContactsManager.instance.userSearchPublisher(text)
+            .sink(receiveValue: { [weak self] text in
+                guard let text else {
+                    self?.currentSearchPublisher = nil
+                    self?.users = []
+                    self?.usersTableView.reloadData()
+                    return
                 }
-                return Just([]).eraseToAnyPublisher()
-            }
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] users in
-                self?.users = users
-                self?.usersTableView.reloadData()
+                self?.currentSearchPublisher = SmartContactsManager.instance.userSearchPublisher(text)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveValue: { users in
+                        self?.users = users
+                        self?.usersTableView.reloadData()
+                    })
             })
             .store(in: &cancellables)
+        
+        Publishers.CombineLatest4($media, $isEmpty.removeDuplicates(), $oldDraft, $isPosting)
+            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink { [weak self] images, isEmpty, oldDraft, isPosting in
+                guard let self else { return }
+                
+                if oldDraft?.preparedEvent != nil || isPosting {
+                    postButtonEnabledState = false
+                    postButtonTitle = "Posting..."
+                    return
+                }
+                
+                let isUploadingImages: Bool = {
+                    for image in images {
+                        if case .uploading = image.state {
+                            return true
+                        }
+                    }
+                    return false
+                }()
+                
+                postButtonEnabledState = (!isEmpty || !images.isEmpty) && !isUploadingImages
+                postButtonTitle = isUploadingImages ? "Uploading..." : defaultPostButtonTitle
+            }
+            .store(in: &cancellables)
+
+        $isPosting.sink { [weak self] isPosting in
+            guard let self else { return }
+            textView.isEditable = !isPosting
+        }
+        .store(in: &cancellables)
+        
+        PostingManager.instance.postedEvent.sink { [weak self] obj in
+            guard let self, obj.id == oldDraft?.preparedEvent?.id else { return }
+            // Successfully posted from the background
+            reset()
+        }
+        .store(in: &cancellables)
     }
     
     func setup() {
@@ -284,6 +469,44 @@ private extension PostingTextViewManager {
         usersHeightConstraint = usersTableView.heightAnchor.constraint(equalToConstant: 60)
         usersHeightConstraint.priority = .defaultHigh
         usersHeightConstraint.isActive = true
+    }
+    
+    func findDraft() {
+        DatabaseManager.instance.findDraft(replyingTo: replyId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] draft in
+                guard let self, let draft else { return }
+                if textView.text?.isEmpty == false, let text = textView.text {
+                    let vc = (RootViewController.instance.presentedViewController ?? RootViewController.instance)
+                    let alert = UIAlertController(title: "Discard the draft and start a new note?", message: nil, preferredStyle: .alert)
+                    alert.addAction(.init(title: "Cancel", style: .cancel))
+                    alert.addAction(.init(title: "OK", style: .destructive, handler: { [weak self] _ in
+                        self?.reset()
+                        self?.textView.text = text
+                        self?.textView.selectedRange = .init(location: 0, length: 0)
+                    }))
+                    vc.show(alert, sender: nil)
+                }
+                
+                oldDraft = draft
+                
+                textView.text = draft.text
+                isEmpty = draft.text.isEmpty
+                isPosting = draft.isPosting
+                
+                tokens = draft.taggedUsers.map({ token in
+                    .init(
+                        range: .init(location: token.range.location, length: token.range.length),
+                        text: token.text,
+                        user: .init(pubkey: token.userPubkey)
+                    )
+                })
+                
+                media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) }
+                
+                didChangeEvent.send(textView)
+            }
+            .store(in: &cancellables)
     }
 }
 

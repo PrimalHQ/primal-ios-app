@@ -207,9 +207,6 @@ private extension SettingsNetworkViewController {
         }), for: .valueChanged)
         
         let stack = UIStackView(axis: .vertical, [
-            enhancedPrivacySwitch, SpacerView(height: 10),
-            descLabel("When enabled, your IP address will be visible to the caching service, but not to relays. Your content will be published to your specified relays using the caching service as a proxy."), SpacerView(height: 24),
-            SettingsBorder(), SpacerView(height: 24),
             titleLabel("CACHING SERVICE"), SpacerView(height: 16),
             regularConnectionParent, SpacerView(height: 20),
             SettingsTitleView(title: "SWITCH CACHING SERVICE"), SpacerView(height: 8),
@@ -220,7 +217,10 @@ private extension SettingsNetworkViewController {
             relayStackParent, SpacerView(height: 20),
             SettingsTitleView(title: "ADD A RELAY"), SpacerView(height: 8),
             relayInput, SpacerView(height: 16),
-            restoreRelaysButton, SpacerView(height: 20)
+            restoreRelaysButton, SpacerView(height: 24),
+            SettingsBorder(), SpacerView(height: 24),
+            enhancedPrivacySwitch, SpacerView(height: 10),
+            descLabel("When enabled, your IP address will be visible to the caching service, but not to relays. Your content will be published to your specified relays using the caching service as a proxy."), SpacerView(height: 24),
         ])
         
         let scroll = UIScrollView()

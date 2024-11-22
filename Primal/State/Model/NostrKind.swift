@@ -23,6 +23,7 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case zapIntention = 9041
     case zapReceipt = 9735
     case highlight = 9802
     
@@ -63,16 +64,28 @@ enum NostrKind: Int {
     case relayHints = 10_000_141
     case longFormMetadata = 10_000_144
     case eventBroadcastResponse = 10_000_149
-    case articleFeeds = 10_000_152
     case highlightGroups = 10_000_151
+    case articleFeeds = 10_000_152
     case feedsSettings = 10_000_155
+    case dvmFollowActions = 10_000_156
+    case explorePeopleInfo = 10_000_157
+    case primalName = 10_000_158
+    case dvmFeedMetadata = 10_000_159
+    case primalContentSettings = 10_000_162
+    case userMediaStats = 10_000_163
+    case userMediaData = 10_000_164
+    case eventKindCounts = 10_000_166
+    case primalLegendInfo = 10_000_168
+    case premiumLegendPurchase = 10_000_601
+    case premiumState = 10_000_603
+    case premiumSubscriptionHistory = 10_000_605
     
     case shortenedArticle = 10_030_023
 }
 
 extension NostrKind {
     static func fromGenericJSON(_ json: JSON) -> NostrKind? {
-        guard let kind = json.arrayValue?.last?.objectValue?["kind"]?.doubleValue else { return nil }
+        guard let kind = json.objectValue?["kind"]?.doubleValue else { return nil }
         return NostrKind(rawValue: Int(kind))
     }
 }

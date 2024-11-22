@@ -13,7 +13,7 @@ protocol FollowProfileCellDelegate: AnyObject {
 }
 
 final class FollowProfileCell: UITableViewCell {
-    let profileImage = FLAnimatedImageView()
+    let profileImage = UserImageView(height: 44)
     let nameLabel = UILabel()
     let secondaryLabel = UILabel()
     let followButton = FollowButton(backgroundColor: .init(rgb: 0xE5E5E5))
@@ -48,10 +48,6 @@ private extension FollowProfileCell {
         
         vStack.axis = .vertical
         vStack.spacing = 4
-        
-        profileImage.constrainToSize(44).layer.cornerRadius = 22
-        profileImage.contentMode = .scaleAspectFill
-        profileImage.clipsToBounds = true
         
         nameLabel.textColor = .black
         nameLabel.font = .appFont(withSize: 14, weight: .bold)

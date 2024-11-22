@@ -34,7 +34,7 @@ final class EditProfileViewController: UIViewController, Themeable {
     
     var textFields: [UITextField] { [displayNameInput, usernameInput, websiteInput, bitcoinInput, nip05Input] }
     
-    var accountData: Profile {
+    var accountData: NostrProfile {
         let name: String = usernameInput.text ?? profile.name
         let displayName: String = displayNameInput.text ?? profile.displayName
         let about: String = bioInput.text ?? profile.about
@@ -44,7 +44,7 @@ final class EditProfileViewController: UIViewController, Themeable {
         let lud16: String = bitcoinInput.text ?? profile.lud16
         let nip05: String = nip05Input.text ?? profile.nip05
         
-        return Profile(
+        return NostrProfile(
             name: name,
             display_name: displayName,
             about: about,
@@ -275,11 +275,6 @@ private extension EditProfileViewController {
                 return
             }
             
-//            guard let username = self.usernameInput.text, !username.isEmpty else {
-//                self.usernameInput.becomeFirstResponder()
-//                return
-//            }
-            
             self.updateAccount()
         }), for: .touchUpInside)
         
@@ -307,9 +302,9 @@ private extension EditProfileViewController {
         }
         
         let profile = self.profile
-        let data: Profile = accountData
+        let data: NostrProfile = accountData
         
-        if checkedLud16 != accountData.lud16, let newLud = accountData.lud16 {
+        if checkedLud16 != accountData.lud16, let newLud = accountData.lud16, !newLud.isEmpty {
             CheckLud16Request(lud16: newLud).publisher().receive(on: DispatchQueue.main)
                 .sink { [weak self] isGood in
                     if isGood {
@@ -331,6 +326,26 @@ private extension EditProfileViewController {
             return
         }
         
+        let newProfile = PrimalUser(
+            id: profile.id,
+            pubkey: profile.pubkey,
+            npub: profile.npub,
+            name: data.name ?? profile.name,
+            about: data.about ?? profile.about,
+            picture: data.picture ?? profile.picture,
+            nip05: data.nip05 ?? profile.nip05,
+            banner: data.banner ?? profile.banner,
+            displayName: data.display_name ?? profile.displayName,
+            location: profile.location,
+            lud06: data.lud06 ?? profile.lud06,
+            lud16: data.lud16 ?? profile.lud16,
+            website: data.website ?? profile.website,
+            tags: profile.tags,
+            created_at: profile.created_at,
+            sig: profile.sig,
+            deleted: profile.deleted ?? false
+        )
+        
         IdentityManager.instance.updateProfile(data) { [weak self] in
             guard $0 else {
                 self?.nextButton.isEnabled = true
@@ -338,27 +353,13 @@ private extension EditProfileViewController {
                 return
             }
             
+            DatabaseManager.instance.saveProfiles([newProfile])
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                IdentityManager.instance.requestUserProfile()
+            }
+            
             if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
-                
-                let newProfile = PrimalUser(
-                    id: profile.id,
-                    pubkey: profile.pubkey,
-                    npub: profile.npub,
-                    name: data.name ?? profile.name,
-                    about: data.about ?? profile.about,
-                    picture: data.picture ?? profile.picture,
-                    nip05: data.nip05 ?? profile.nip05,
-                    banner: data.banner ?? profile.banner,
-                    displayName: data.display_name ?? profile.displayName,
-                    location: profile.location,
-                    lud06: data.lud06 ?? profile.lud06,
-                    lud16: data.lud16 ?? profile.lud16,
-                    website: data.website ?? profile.website,
-                    tags: profile.tags,
-                    created_at: profile.created_at,
-                    sig: profile.sig,
-                    deleted: profile.deleted ?? false
-                )
                 
                 profileVC.profile = .init(data: newProfile)
             }

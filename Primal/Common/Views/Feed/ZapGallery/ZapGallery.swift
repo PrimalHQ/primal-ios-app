@@ -11,6 +11,7 @@ import Lottie
 protocol ZapGalleryViewDelegate: AnyObject {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
     func mainActionForZap(_ zap: ParsedZap)
+    func zapTapped(_ zap: ParsedZap)
 }
 
 protocol ZapGallery: UIView {
@@ -38,7 +39,7 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
     weak var galleryView: ZapGallery?
     let zap: ParsedZap
     let interactionDelegate = Delegate()
-    init(galleryView: SmallZapGalleryView, zap: ParsedZap) {
+    init(galleryView: ZapGallery, zap: ParsedZap) {
         self.galleryView = galleryView
         self.zap = zap
         
@@ -49,7 +50,7 @@ class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
 }
 
 class SmallZapGalleryView: UIView, ZapGallery {
-    let skeletonLoader = LottieAnimationView()
+    let skeletonLoader = GenericLoadingView()
     let stack = UIStackView()
     let animationStack = UIStackView()
     
@@ -72,12 +73,10 @@ class SmallZapGalleryView: UIView, ZapGallery {
         animationStack.isUserInteractionEnabled = false
         
         addSubview(skeletonLoader)
-        skeletonLoader.animation = Theme.current.isDarkTheme ? AnimationType.zapGallerySkeleton.animation : AnimationType.zapGallerySkeletonLight.animation
-        skeletonLoader.loopMode = .loop
         skeletonLoader
-            .constrainToSize(width: 375, height: 66.66)
-            .pinToSuperview(edges: .leading, padding: -10)
-            .pinToSuperview(edges: .top, padding: -6)
+            .constrainToSize(width: 30, height: 24)
+            .pinToSuperview(edges: [.leading, .top])
+        skeletonLoader.layer.cornerRadius = 12
         
         clipsToBounds = true
     }
@@ -135,7 +134,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
             }
             
             zaps.dropFirst().prefix(3).enumerated().forEach { (index, zap) in
-                let view = ZapAvatarView(zap: zap)
+                let view = zapView(zap, text: false, amount: false)
                 view.layer.zPosition = CGFloat(999 - index)
                 hStack.addArrangedSubview(view)
             }
@@ -165,7 +164,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
         var currentWidth: CGFloat = 0
         for zap in zaps.dropFirst() {
             let view = zapView(zap, text: false)
-            view.layoutIfNeeded()
             
             currentWidth += view.width() + 6
             
@@ -183,9 +181,12 @@ class SmallZapGalleryView: UIView, ZapGallery {
         }
     }
     
-    func zapView(_ zap: ParsedZap, text: Bool) -> ZapPillView {
-        let view = text ? ZapPillTextView(zap: zap) : ZapPillView(zap: zap)
+    func zapView(_ zap: ParsedZap, text: Bool, amount: Bool = true) -> ZapGalleryChildView {
+        let view = text ? ZapPillTextView(zap: zap) : (amount ? ZapPillView(zap: zap) : ZapAvatarView(zap: zap))
         view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.zapTapped(zap)
+        }))
         return view
     }
     

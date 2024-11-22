@@ -27,10 +27,17 @@ final class LinkPreview: UIView {
     }
     
     private let imageView = UIImageView()
+    private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let textLabel = UILabel()
-    private weak var imageAspectConstraint: NSLayoutConstraint?
+    private let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
+
+    private lazy var subtitleStack = UIStackView([iconView, subtitleLabel])
+    private lazy var contentStack = UIStackView(axis: .vertical, [titleLabel, subtitleStack])
+    private lazy var mainStack = UIStackView([imageView, contentStack])
+    
+    private var smallImageConstraints: [NSLayoutConstraint] = []
+    private var largeImageConstraints: [NSLayoutConstraint] = []
     
     init() {
         super.init(frame: .zero)
@@ -44,80 +51,108 @@ final class LinkPreview: UIView {
 
 private extension LinkPreview {
     func set(data: LinkMetadata) {
-        if let imageString = data.data.md_image, !imageString.isEmpty {
-            let metadata = data.imagesData.first(where: { $0.url == imageString })
-            imageView.image = nil
-            imageView.kf.setImage(with: metadata?.url(for: .large) ?? URL(string: imageString))
-            imageView.isHidden = false
-            
-            let aspectMultiplier: CGFloat = {
-                guard let variant = metadata?.variants.first else {
-                    if let image = imageView.image {
-                        return image.size.width / image.size.height
-                    }
-                    return 16 / 10
-                }
-                
-                return CGFloat(variant.width) / CGFloat(variant.height)
-            }()
-            
-            self.imageAspectConstraint?.isActive = false
-            let aspect = self.imageView.widthAnchor.constraint(equalTo: self.imageView.heightAnchor, multiplier: aspectMultiplier)
-            self.imageAspectConstraint = aspect
-            
-            aspect.priority = .defaultHigh
-            aspect.isActive = true
-        } else {
-            imageView.isHidden = true
-        }
-        
         titleLabel.text = data.data.md_title
         titleLabel.isHidden = data.data.md_title?.isEmpty != false
         
-        textLabel.text = data.data.md_description
-        textLabel.isHidden = data.data.md_description?.isEmpty != false
+        let host = data.url.host()
+        subtitleLabel.text = host
         
-        subtitleLabel.text = data.url.host()
+        let imageSize: CGSize
+        
+        let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
+        let isRumble = host == "www.rumble.com" || host == "rumble.com"
+        
+        NSLayoutConstraint.deactivate(largeImageConstraints + smallImageConstraints)
+        
+        if isRumble || isYoutube {
+            imageSize = .init(width: 343, height: 193)
+            mainStack.axis = .vertical
+            mainStack.alignment = .fill
+            playIcon.isHidden = false
+            iconView.isHidden = false
+            iconView.image = isRumble ? UIImage(named: "rumbleIcon") : UIImage(named: "youtubeIcon")
+            NSLayoutConstraint.activate(largeImageConstraints)
+            
+            contentStack.removeArrangedSubview(titleLabel)
+            contentStack.addArrangedSubview(titleLabel)
+            contentStack.spacing = 12
+            contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+            
+            layer.borderWidth = 0
+        } else {
+            imageSize = .init(width: 100, height: 90)
+            mainStack.axis = .horizontal
+            mainStack.alignment = .center
+            playIcon.isHidden = true
+            iconView.isHidden = true
+            NSLayoutConstraint.activate(smallImageConstraints)
+            
+            contentStack.removeArrangedSubview(subtitleStack)
+            contentStack.addArrangedSubview(subtitleStack)
+            contentStack.spacing = 4
+            contentStack.layoutMargins = .init(top: 12, left: 16, bottom: 12, right: 16)
+            
+            layer.borderWidth = 1
+            layer.borderColor = UIColor.background3.cgColor
+        }
+        
+        if let imageString = data.data.md_image, !imageString.isEmpty {
+            let metadata = data.imagesData.first(where: { $0.url == imageString })
+            imageView.image = nil
+            imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
+                .scaleFactor(UIScreen.main.scale),
+                .processor(DownsamplingImageProcessor(size: imageSize)),
+                .cacheOriginalImage,
+                .transition(.fade(0.2))
+            ])
+        } else {
+            imageView.image = UIImage(named: "webPreviewIcon")
+        }
     }
     
     func setup() {
-        let backgroundView = UIView()
-        let mainStack = UIStackView(arrangedSubviews: [imageView, backgroundView])
-        mainStack.axis = .vertical
+        subtitleStack.alignment = .center
+        subtitleStack.spacing = 7
+        
+        contentStack.insetsLayoutMarginsFromSafeArea = false
+        contentStack.isLayoutMarginsRelativeArrangement = true
+                
         addSubview(mainStack)
         mainStack.pinToSuperview()
-                
-        let contentStack = UIStackView(axis: .vertical, [subtitleLabel, titleLabel, textLabel])
         
-        backgroundView.addSubview(contentStack)
-        contentStack.pinToSuperview(padding: 12)
-        
-        contentStack.spacing = 4
-        contentStack.setCustomSpacing(6, after: subtitleLabel)
-        
-        backgroundView.backgroundColor = .background3
+        addSubview(playIcon)
+        playIcon.centerToView(imageView)
         
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
+        imageView.tintColor = .foreground5
         imageView.backgroundColor = .background3
+        imageView.image = UIImage(named: "webPreviewIcon")
         
-        imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
+        smallImageConstraints = [
+            imageView.heightAnchor.constraint(equalToConstant: 90),
+            imageView.widthAnchor.constraint(equalToConstant: 100)
+        ]
+        largeImageConstraints = [
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 16 / 9)
+        ]
         
+        backgroundColor = .background5
         layer.cornerRadius = 8
         layer.masksToBounds = true
         layer.borderWidth = 1
         layer.borderColor = UIColor.background3.withAlphaComponent(0.4).cgColor
         
-        subtitleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        iconView.setContentHuggingPriority(.required, for: .horizontal)
+        iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        subtitleLabel.font = .appFont(withSize: 15, weight: .regular)
         subtitleLabel.textColor = .foreground4
         
-        titleLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .semibold)
+        titleLabel.font = .appFont(withSize: 16, weight: .regular)
         titleLabel.textColor = .foreground
-        titleLabel.numberOfLines = 4
-        
-        textLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        textLabel.textColor = .foreground4
-        textLabel.numberOfLines = 4
+        titleLabel.numberOfLines = 2
+        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         addInteraction(UIContextMenuInteraction(delegate: self))
     }

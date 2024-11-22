@@ -11,7 +11,7 @@ import Lottie
 
 final class ProfileTabSelectionView: UIView, Themeable {
     private(set) var buttons: [ProfileTabSelectionButton] = []
-    private(set) var loadingViews: [LottieAnimationView] = []
+    private(set) var loadingViews: [GenericLoadingView] = []
     private let selectionIndicator = ThemeableView().constrainToSize(height: 4).setTheme { $0.backgroundColor = .accent }
     
     @Published private(set) var selectedTab = 0
@@ -54,15 +54,17 @@ final class ProfileTabSelectionView: UIView, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func set(_ tab: Int) {
+    func set(_ tab: Int, animated: Bool = true) {
         guard selectedTab != tab else { return }
+        if !animated {
+            setTab(tab, animated: false)
+            layoutSubviews()
+        }
         selectedTab = tab
     }
     
     func updateTheme() {
-        loadingViews.forEach {
-            $0.animation = Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation
-        }
+        
     }
 }
 
@@ -75,14 +77,13 @@ private extension ProfileTabSelectionView {
         stack.spacing = 10
         
         for button in buttons {
-            let animationView = LottieAnimationView(animation: Theme.current.isDarkTheme ? AnimationType.smallPillLoader.animation : AnimationType.smallPillLoaderLight.animation)
+            let animationView = GenericLoadingView()
             
             addSubview(animationView)
             animationView.constrainToSize(width: 190 / 3, height: 80 / 3).centerToView(button.infoLabel)
             
             loadingViews.append(animationView)
             animationView.isHidden = true
-            animationView.loopMode = .loop
         }
         
         selectionIndicator.layer.cornerRadius = 2

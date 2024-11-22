@@ -9,10 +9,10 @@ import FLAnimatedImage
 import UIKit
 
 final class NewPostsButton: MyButton, Themeable {
-    private let avatars: [FLAnimatedImageView] = (0..<3).map { _ in FLAnimatedImageView(image: UIImage(named: "Profile")) }
+    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, glowPadding: 2) }
     private let label = UILabel()
     
-    lazy var avatarStack = UIStackView(avatars)
+    lazy var avatarStack = UIStackView()
     lazy var stack = UIStackView([avatarStack, label])
     
     override var isPressed: Bool {
@@ -27,14 +27,21 @@ final class NewPostsButton: MyButton, Themeable {
         backgroundColor = .accent
         layer.cornerRadius = 20
         
-        avatars.forEach {
-            $0.constrainToSize(32)
-            $0.layer.cornerRadius = 16
-            $0.layer.masksToBounds = true
-            $0.layer.borderWidth = 2
-            $0.layer.borderColor = UIColor.white.cgColor
-            $0.backgroundColor = .init(rgb: 0xAAAAAA)
-            $0.contentMode = .scaleAspectFill
+        avatars.forEach { avatar in
+            let parent = UIView()
+            let background = UIView()
+            background.backgroundColor = .init(rgb: 0xAAAAAA)
+            parent.addSubview(background)
+            background.pinToSuperview(padding: 2)
+            
+            parent.addSubview(avatar)
+            avatar.centerToSuperview()
+            
+            background.layer.cornerRadius = 14
+            parent.layer.cornerRadius = 16
+            parent.backgroundColor = .white
+            
+            avatarStack.addArrangedSubview(parent.constrainToSize(32))
         }
         
         avatarStack.alignment = .center
@@ -60,7 +67,7 @@ final class NewPostsButton: MyButton, Themeable {
         }
         
         for avatar in avatars {
-            avatar.isHidden = true
+            avatar.superview?.superview?.isHidden = true
         }
         
         guard count > 0 else { return }
@@ -69,7 +76,7 @@ final class NewPostsButton: MyButton, Themeable {
         
         zip((1...count), zip(uniqueUsers, avatars)).forEach { (_, arg1) in
             let (user, avatar) = arg1
-            avatar.isHidden = false
+            avatar.superview?.superview?.isHidden = false
             avatar.setUserImage(user)
         }
     }

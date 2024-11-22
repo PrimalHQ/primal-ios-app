@@ -10,13 +10,14 @@ import UIKit
 final class RoundedSmallButton: MyButton, Themeable {
     private let label = UILabel()
     
-    init(text: String) {
+    init(text: String, font: UIFont = .appFont(withSize: 16, weight: .semibold), horizontalPadding: CGFloat = 16) {
         super.init(frame: .zero)
         
         addSubview(label)
-        label.centerToSuperview(axis: .vertical).pinToSuperview(edges: .horizontal, padding: 16)
-        label.font = .appFont(withSize: 16, weight: .semibold)
+        label.centerToSuperview(axis: .vertical).pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+        label.font = font
         label.text = text
+        label.textAlignment = .center
         
         constrainToSize(height: 36)
         layer.cornerRadius = 18

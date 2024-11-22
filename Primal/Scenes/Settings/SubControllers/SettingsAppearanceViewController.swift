@@ -25,7 +25,7 @@ class SettingsAppearanceViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         
         cellID = "cell" + UUID().uuidString.prefix(10)
-        previewTable.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: cellID)
+        previewTable.register(PostFeedCell.self, forCellReuseIdentifier: cellID)
         previewTable.reloadData()
 
         themeExplanation.toggle.setOn(ContentDisplaySettings.autoDarkMode, animated: false)
@@ -151,7 +151,7 @@ extension SettingsAppearanceViewController: UITableViewDataSource {
                 deleted: false
             ))
         )
-        post.text = "Welcome to #Nostr! A magical place where you can speak freely and truly own your account, content, and followers. ✨"
+        post.text = "Welcome to #Nostr! A magical place where you can speak freely, choose your feeds, get zapped for your awesome posts, and truly own your account, content and followers."
         post.hashtags = [.init(position: 11, length: 6, text: "#Nostr", reference: "#Nostr")]
         post.buildContentString()
         
@@ -159,6 +159,4 @@ extension SettingsAppearanceViewController: UITableViewDataSource {
         
         return cell
     }
-    
-    
 }

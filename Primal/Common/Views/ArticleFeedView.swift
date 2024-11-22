@@ -10,7 +10,7 @@ import FLAnimatedImage
 import Kingfisher
 
 class ArticleFeedView: UIView, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(20)
+    let avatar = UserImageView(height: 20)
     let nameLabel = UILabel()
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
@@ -67,7 +67,11 @@ class ArticleFeedView: UIView, Themeable {
         timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
         avatar.setUserImage(content.user)
         nameLabel.text = content.user.data.firstIdentifier
-        commentLabel.text = "\(content.stats.replies) comments"
+        if let replies = content.stats.replies {
+            commentLabel.text = "\(replies) comments"
+        } else {
+            commentLabel.text = ""
+        }
         
         if content.zaps.isEmpty {
             zapIcon.isHidden = true
@@ -124,10 +128,6 @@ private extension ArticleFeedView {
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 12).pinToSuperview(edges: .top, padding: 10)
-        
-        avatar.layer.cornerRadius = 10
-        avatar.layer.masksToBounds = true
-        avatar.contentMode = .scaleAspectFill
         
         nameLabel.font = .appFont(withSize: 14, weight: .bold)
         timeLabel.font = .appFont(withSize: 14, weight: .regular)

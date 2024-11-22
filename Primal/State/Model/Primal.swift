@@ -31,15 +31,6 @@ struct PrimalNoteStatus: Codable, Hashable {
     let zapped: Bool
 }
 
-struct PrimalSettingsFeed: Codable, Hashable {
-    var name: String
-    let hex: String
-    var includeReplies: Bool?
-    
-    static var latest: PrimalSettingsFeed { .init(name: "Latest", hex: IdentityManager.instance.userHexPubkey) }
-    static var latestWithReplies: PrimalSettingsFeed { .init(name: "Latest with Replies", hex: IdentityManager.instance.userHexPubkey, includeReplies: true) }
-}
-
 struct PrimalZapDefaultSettings: Codable, Hashable {
     var amount: Int
     var message: String
@@ -54,7 +45,6 @@ struct PrimalZapListSettings: Codable, Hashable {
 struct PrimalSettingsContent: Codable, Hashable {
     var description: String? = "Sync app settings"
     var theme: String?
-    var feeds: [PrimalSettingsFeed]?
     var notifications: PrimalSettingsNotifications?
     var zapDefault: PrimalZapDefaultSettings?
     var zapConfig: [PrimalZapListSettings]?
@@ -66,10 +56,6 @@ struct PrimalSettingsContent: Codable, Hashable {
         
         if self.theme == nil {
             self.theme = settings.theme
-        }
-        
-        if self.feeds == nil {
-            self.feeds = settings.feeds
         }
         
         if self.notifications == nil {
@@ -86,8 +72,7 @@ struct PrimalSettingsContent: Codable, Hashable {
     }
     
     func isBorked() -> Bool {
-        return self.feeds == nil
-            || self.theme == nil
+        return self.theme == nil
             || self.notifications == nil
             || self.zapDefault == nil
             || self.zapConfig?.isEmpty != false
@@ -131,7 +116,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     let tags: [[String]]
     
     init?(json: JSON) {
-        guard var settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.arrayValue?[2].objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+        guard var settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
             print("Error decoding PrimalSettingsContent to json")
             return nil
         }
@@ -168,6 +153,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let created_at: Double
     let sig: String
     let deleted: Bool?
+    var rawData: String?
     
     init?(nostrUser: NostrContent?, nostrPost: NostrContent? = nil) {
         guard let userMeta: JSON = try? JSONDecoder().decode(JSON.self, from: (nostrUser?.content ?? "{}").data(using: .utf8)!) else {
@@ -203,7 +189,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     }
     
     init(pubkey: String) {
-        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "", deleted: false)
+        self.init(id: "", pubkey: pubkey, npub: bech32_pubkey(pubkey) ?? "", name: "unknown", about: "", picture: "", nip05: "", banner: "", displayName: "", location: "", lud06: "", lud16: "", website: "", tags: [], created_at: 0, sig: "", deleted: false)
     }
     
     init(id: String, pubkey: String, npub: String, name: String, about: String, picture: String, nip05: String, banner: String, displayName: String, location: String, lud06: String, lud16: String, website: String, tags: [[String]], created_at: Double, sig: String, deleted: Bool) {
@@ -263,13 +249,13 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.tags = nostrPost.tags
         self.content = nostrPost.content
         self.sig = nostrPost.sig
-        self.likes = nostrPostStats.likes
-        self.mentions = nostrPostStats.mentions
-        self.replies = nostrPostStats.replies
-        self.zaps = nostrPostStats.zaps
-        self.satszapped = nostrPostStats.satszapped
-        self.score24h = nostrPostStats.score24h
-        self.reposts = nostrPostStats.reposts
+        self.likes = nostrPostStats.likes ?? 0
+        self.mentions = nostrPostStats.mentions ?? 0
+        self.replies = nostrPostStats.replies ?? 0
+        self.zaps = nostrPostStats.zaps ?? 0
+        self.satszapped = nostrPostStats.satszapped ?? 0
+        self.score24h = nostrPostStats.score24h ?? 0
+        self.reposts = nostrPostStats.reposts ?? 0
     }
     
     init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int, mentions: Int, replies: Int, zaps: Int, satszapped: Int, score24h: Int, reposts: Int) {
@@ -328,8 +314,8 @@ extension PrimalUser {
         )
     }()
     
-    var profileData: Profile {
-        Profile(
+    var profileData: NostrProfile {
+        NostrProfile(
             name: name,
             display_name: displayName,
             about: about,

@@ -52,7 +52,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         table.dataSource = self
         table.separatorStyle = .none
         table.register(SettingsToggleCell.self, forCellReuseIdentifier: "cell")
-        table.register(SettingsFeedHeaderView.self, forHeaderFooterViewReuseIdentifier: "header")
+        table.register(SettingsHeaderView.self, forHeaderFooterViewReuseIdentifier: "header")
         
         IdentityManager.instance.$userSettings.receive(on: DispatchQueue.main).sink { [weak self] settings in
             self?.notifications = settings?.notifications
@@ -113,7 +113,7 @@ extension SettingsNotificationsViewController: UITableViewDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
-        if let header = view as? SettingsFeedHeaderView {
+        if let header = view as? SettingsHeaderView {
             header.label.text = tableData[section].text
             header.updateTheme()
         }

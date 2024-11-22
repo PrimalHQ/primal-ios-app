@@ -12,24 +12,12 @@ import UIKit
 import Kingfisher
 import FLAnimatedImage
 
-private extension String {
+extension String { // TODO: Remove in 2025
     static let cachedUsersDefaultsKey = "cachedUsersDefaultsKey"
 }
 
-extension UserDefaults {
-    var cachedUserImageURLs: [String: String] {
-        get { string(forKey: .cachedUsersDefaultsKey)?.decode() ?? [:] }
-        set { setValue(newValue.encodeToString(), forKey: .cachedUsersDefaultsKey) }
-    }
-    
-    var currentUserImageURLCache: String? {
-        get { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] }
-        set { cachedUserImageURLs[IdentityManager.instance.userHexPubkey] = newValue }
-    }
-}
-
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = FLAnimatedImageView().constrainToSize(52)
+    private let profileImage = UserImageView(height: 52, glowPadding: 2)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -37,12 +25,23 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
-    private let menuProfileImage = FLAnimatedImageView()
+    private let menuProfileImage = UserImageView(height: 32, glowPadding: 1)
+    
+    private let premiumIndicator = NumberedNotificationIndicator()
+    private let notificationIndicator = NumberedNotificationIndicator()
     
     private let profileImageButton = UIButton()
     private let followingDescLabel = UILabel()
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
+    
+    lazy var viewsToTranslate = [premiumIndicator, notificationIndicator, mainStack]
+    
+    var newMessageCount = 0 {
+        didSet {
+            notificationIndicator.number = newMessageCount
+        }
+    }
     
     override var navigationItem: UINavigationItem {
         get { child.navigationItem }
@@ -57,11 +56,15 @@ final class MenuContainerController: UIViewController, Themeable {
     init(child: UIViewController) {
         self.child = child
         super.init(nibName: nil, bundle: nil)
-        setup()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,11 +75,15 @@ final class MenuContainerController: UIViewController, Themeable {
     
     func animateOpen() {
         open()
+        
+        // Many ViewControllers modify the navigationBar during scrolling, so we will kill all active scrolling to stop them from messing with our navigationBar
+        let scrollViews: [UIScrollView] = child.view.findAllSubviews()
+        scrollViews.forEach { $0.setContentOffset($0.contentOffset, animated: false) }
                 
         UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
-            self.mainStack.transform = .identity
+            self.viewsToTranslate.forEach { $0.transform = .identity }
             self.navigationController?.navigationBar.transform = CGAffineTransform(translationX: self.view.frame.width - 68, y: 0)
             
             self.coverView.alpha = 1
@@ -90,7 +97,7 @@ final class MenuContainerController: UIViewController, Themeable {
         UIView.animate(withDuration: 0.3, animations: {
             self.child.view.transform = .identity
             self.coverView.transform = .identity
-            self.mainStack.transform = CGAffineTransform(translationX: -300, y: 0)
+            self.viewsToTranslate.forEach { $0.transform = CGAffineTransform(translationX: -300, y: 0) }
             self.navigationController?.navigationBar.transform = .identity
             
             self.view.layoutIfNeeded()
@@ -125,6 +132,7 @@ final class MenuContainerController: UIViewController, Themeable {
         child.endAppearanceTransition()
     }
     
+    var updateForChild = false
     func updateTheme() {
         view.backgroundColor = .background
         
@@ -132,7 +140,7 @@ final class MenuContainerController: UIViewController, Themeable {
         
         nameLabel.textColor = .foreground
         
-        profileImageButton.backgroundColor = .background
+        profileImageButton.backgroundColor = .background.withAlphaComponent(0.01)
         
         coverView.backgroundColor = .background.withAlphaComponent(0.5)
         
@@ -142,13 +150,16 @@ final class MenuContainerController: UIViewController, Themeable {
         }
         [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
         
-        child.updateThemeIfThemeable()
+        if updateForChild {
+            child.updateThemeIfThemeable()
+        }
     }
 }
 
 private extension MenuContainerController {
     func setup() {
         updateTheme()
+        updateForChild = true
         
         let profileImageRow = UIStackView([profileImage, UIView()])
         
@@ -158,14 +169,15 @@ private extension MenuContainerController {
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
         let profile = MenuItemButton(title: "PROFILE")
+        let premium = MenuItemButton(title: "PREMIUM")
+        let messages = MenuItemButton(title: "MESSAGES")
         let bookmarks = MenuItemButton(title: "BOOKMARKS")
         let settings = MenuItemButton(title: "SETTINGS")
-        let premium = MenuItemButton(title: "PREMIUM")
         let signOut = MenuItemButton(title: "SIGN OUT")
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, bookmarks, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, settings, signOut])
         [
-            profileImageRow, SpacerView(height: 15), titleStack, domainLabel, followStack,
+            profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
@@ -180,15 +192,21 @@ private extension MenuContainerController {
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
-        mainStack.setCustomSpacing(17, after: profileImage)
-        mainStack.setCustomSpacing(13, after: titleStack)
+        mainStack.setCustomSpacing(15, after: profileImageRow)
+        mainStack.setCustomSpacing(18, after: titleStack)
         mainStack.setCustomSpacing(10, after: domainLabel)
-        mainStack.setCustomSpacing(40, after: followStack)
+        mainStack.setCustomSpacing(44, after: followStack)
         mainStack.alpha = 0
+        
+        view.addSubview(notificationIndicator)
+        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 138)
+        
+        view.addSubview(premiumIndicator)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 122)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
-        buttonsStack.spacing = 30
+        buttonsStack.spacing = 16
         
         titleStack.alignment = .center
         titleStack.spacing = 4
@@ -204,15 +222,11 @@ private extension MenuContainerController {
         let npubs = LoginManager.instance.loggedInNpubs()
 
         for npub in npubs.dropFirst().prefix(3) {
-            let avatarImage = FLAnimatedImageView().constrainToSize(24)
-            avatarImage.isUserInteractionEnabled = true
-            avatarImage.layer.cornerRadius = 12
-            avatarImage.clipsToBounds = true
-            avatarImage.contentMode = .scaleAspectFill
+            let avatarImage = UserImageView(height: 24)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
                 .sink { users in
-                    if avatarImage.image == nil, let user = users.first(where: { $0.data.npub == npub }) {
+                    if avatarImage.animatedImageView.image == nil, let user = users.first(where: { $0.data.npub == npub }) {
                         avatarImage.setUserImage(user)
                     }
                 }
@@ -248,23 +262,17 @@ private extension MenuContainerController {
         
         childLeftConstraint = child.view.leadingAnchor.constraint(equalTo: view.trailingAnchor, constant: -68)
         
-        profileImage.contentMode = .scaleAspectFill
-        profileImage.layer.cornerRadius = 26
-        profileImage.layer.masksToBounds = true
-        
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         
         let menuButtonParent = UIView()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
-        menuProfileImage.layer.cornerRadius = 16
-        menuProfileImage.layer.masksToBounds = true
-        menuProfileImage.isUserInteractionEnabled = false
-        menuProfileImage.contentMode = .scaleAspectFill
         
         menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
         menuButtonParent.addSubview(menuProfileImage)
-        menuProfileImage.constrainToSize(32).centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
+        menuProfileImage.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
+        menuProfileImage.isUserInteractionEnabled = false
+        
         child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)
@@ -287,36 +295,18 @@ private extension MenuContainerController {
             self?.present(PopupAccountSwitchingController(), animated: true)
         }), for: .touchUpInside)
         
-        barcodeButton.addAction(.init(handler: { [weak self] _ in
-            self?.qrCodePressed()
-        }), for: .touchUpInside)
+        barcodeButton.addAction(.init(handler: { [unowned self] _ in showViewController(ProfileQRController()) }), for: .touchUpInside)
+        messages.addAction(.init(handler: { [unowned self] _ in showViewController(MessagesViewController()) }), for: .touchUpInside)
+        bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
+        premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
+        
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
-        bookmarks.addAction(.init(handler: { [unowned self] _ in
-            show(PublicBookmarksViewController(), sender: nil)
-            resetNavigationTabBar()
-        }), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
-        premium.addAction(.init(handler: { [weak self] _ in
-            self?.premiumPressed()
-        }), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
-        profileImage.isUserInteractionEnabled = true
-        
-        if let userImageURL = UserDefaults.standard.currentUserImageURLCache {
-            updateForImageURL(userImageURL)
-        }
-        
-//        BookmarkManager.instance.$cachedBookmarks.map({ !$0.array.isEmpty })
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isEnabled, on: bookmarks)
-//            .store(in: &cancellables)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
-            if let url = user.profileImage.url(for: .small)?.absoluteString {
-                UserDefaults.standard.currentUserImageURLCache = url
-            }
             self?.update(user)
         }
         .store(in: &cancellables)
@@ -328,11 +318,17 @@ private extension MenuContainerController {
             self.followingLabel.text = stats.follows.localized()
         }
         .store(in: &cancellables)
-    }
-    
-    func updateForImageURL(_ imageURL: String) {
-        profileImage.kf.setImage(with: URL(string: imageURL))
-        menuProfileImage.kf.setImage(with: URL(string: imageURL))
+        
+        Publishers.Merge(
+            NotificationCenter.default.publisher(for: .visitPremiumNotification).map { _ in WalletManager.instance.premiumState },
+            WalletManager.instance.$premiumState.debounce(for: 1, scheduler: RunLoop.main)
+        )
+            .map {
+                if UserDefaults.standard.currentUserLastPremiumVisit.timeIntervalSinceNow > -7*24*3600 { return 0 }
+                return ($0?.isExpired ?? true) ? 1 : 0
+            }
+            .assign(to: \.number, on: premiumIndicator)
+            .store(in: &cancellables)
     }
     
     func update(_ user: ParsedUser) {
@@ -357,33 +353,24 @@ private extension MenuContainerController {
             domainLabel.isHidden = false
         }
         
-        checkbox1.isHidden = user.nip05.isEmpty
-        checkbox1.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+        checkbox1.user = user
     }
     
     // MARK: - Objc methods
-    
-    func premiumPressed() {
-        show(PremiumHomeViewController(), sender: nil)
-        resetNavigationTabBar()
-    }
-    
-    func qrCodePressed() {
-        show(ProfileQRController(), sender: nil)
-        resetNavigationTabBar()
-    }
-    
     @objc func profilePressed() {
         guard let profile = IdentityManager.instance.parsedUser else {
             IdentityManager.instance.requestUserProfile()
             return
         }
-        show(ProfileViewController(profile: profile), sender: nil)
-        resetNavigationTabBar()
+        showViewController(ProfileViewController(profile: profile))
     }
     
     @objc func settingsButtonPressed() {
-        show(SettingsMainViewController(), sender: nil)
+        showViewController(SettingsMainViewController())
+    }
+    
+    func showViewController(_ viewController: UIViewController) {
+        show(viewController, sender: nil)
         resetNavigationTabBar()
     }
     
@@ -432,16 +419,17 @@ private extension MenuContainerController {
         case .began:
             coverView.isHidden = false
             child.beginAppearanceTransition(false, animated: true)
-            (child as? FeedViewController)?.animateBarsToVisible()
+            (child as? NoteViewController)?.animateBarsToVisible()
             fallthrough
         case .changed:
             mainStack.alpha = 1
             let translation = sender.translation(in: self.view)
             
             let percent = (translation.x / 300).clamp(0, 1)
+            let xTrans = (1 - percent) * -300
             
             coverView.alpha = percent
-            mainStack.transform = .init(translationX: (1 - percent) * -300, y: 0)
+            self.viewsToTranslate.forEach { $0.transform = .init(translationX: xTrans, y: 0) }
             [child.view, navigationController?.navigationBar, coverView].forEach {
                 $0?.transform = CGAffineTransform(translationX: max(0, translation.x), y: 0)
             }
@@ -466,8 +454,11 @@ private extension MenuContainerController {
 final class MenuItemButton: UIButton, Themeable {
     init(title: String) {
         super.init(frame: .zero)
-        setTitle(title, for: .normal)
-        titleLabel?.font = .appFont(withSize: 20, weight: .semibold)
+        
+        setAttributedTitle(.init(string: title, attributes: [
+            .font: UIFont.appFont(withSize: 18.2, weight: .regular),
+            .kern: 0.2
+        ]), for: .normal)
         updateTheme()
     }
     

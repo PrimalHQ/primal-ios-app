@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostFeedViewController: FeedViewController {
+class PostFeedViewController: NoteViewController {
     let feed: FeedManager
     
     init(feed: FeedManager) {

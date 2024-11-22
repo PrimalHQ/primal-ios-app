@@ -46,6 +46,10 @@ extension String : Identifiable {
         return UUID().uuidString
     }
     
+    var isAlphanumeric: Bool {
+        !isEmpty && rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) == nil
+    }
+    
     var isValidURL: Bool {
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else { return false }
         

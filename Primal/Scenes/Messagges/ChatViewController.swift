@@ -42,7 +42,7 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
     private let inputParent = UIView()
     private let inputBackground = UIView()
     private let bottomBarSpacer = UIView()
-    private let loadingSpinner = LoadingSpinnerView().constrainToSize(70)
+//    private let loadingSpinner = LoadingSpinnerView().constrainToSize(70)
     
     private lazy var postButton = ChatSendButton()
     private let buttonStack = UIStackView()
@@ -85,8 +85,8 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
         
         chatManager.getChatMessages(pubkey: user.data.pubkey) { [weak self] result in
             self?.messages = result
-            self?.loadingSpinner.stop()
-            self?.loadingSpinner.isHidden = true
+//            self?.loadingSpinner.stop()
+//            self?.loadingSpinner.isHidden = true
         }
         
         addPublishers()
@@ -143,9 +143,9 @@ private extension ChatViewController {
         view.addSubview(stack)
         stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
         
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview()
-        loadingSpinner.play()
+//        view.addSubview(loadingSpinner)
+//        loadingSpinner.centerToSuperview()
+//        loadingSpinner.play()
         
         table.transform = .init(scaleX: -1, y: 1).rotated(by: .pi)
         table.keyboardDismissMode = .interactive
@@ -214,7 +214,6 @@ private extension ChatViewController {
         textInputView.font = .appFont(withSize: 16, weight: .regular)
         textInputView.textColor = .foreground
         textInputView.delegate = inputManager
-        textInputView.returnKeyType = .send
         
         let imageButton = UIButton()
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
@@ -248,6 +247,7 @@ private extension ChatViewController {
         
         textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 35).isActive = true
         textHeightConstraint = textInputView.heightAnchor.constraint(equalToConstant: 35)
+        textHeightConstraint?.priority = .defaultHigh
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
         
         inputContentMaxHeightConstraint?.priority = .defaultHigh
@@ -278,10 +278,7 @@ private extension ChatViewController {
         button.addAction(.init(handler: { [weak self] _ in
             self?.show(ProfileViewController(profile: user), sender: nil)
         }), for: .touchUpInside)
-        let imageView = FLAnimatedImageView(frame: .init(origin: .zero, size: .init(width: 36, height: 36))).constrainToSize(36)
-        imageView.layer.cornerRadius = 18
-        imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        let imageView = UserImageView(height: 36)
         imageView.setUserImage(user)
         let parent = UIView()
         parent.addSubview(imageView)

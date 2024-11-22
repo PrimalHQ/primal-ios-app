@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 enum RoundingStyle {
-    case twoDecimals, removeZeros
+    case twoDecimals, threeDecimals, removeZeros
 }
 
 class LargeBalanceConversionView: UIStackView, Themeable {
@@ -35,6 +35,12 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     
     var isSettingFirstTime = true
     
+    var animateBalanceChange = true {
+        didSet {
+            largeCurrencyLabel.text = animateBalanceChange ? (isBitcoinPrimary ? "sats" : "USD") : (isBitcoinPrimary ? "BTC" : "USD")
+        }
+    }
+    
     init(showWalletBalance: Bool = true, showSecondaryRow: Bool = false) {
         super.init(frame: .zero)
         setup()
@@ -59,8 +65,6 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     var labelOffset: CGFloat { 8 }
     
     var rowSpacing: CGFloat { 6 }
-    
-    var animate$always: Bool { true }
     
     func updateTheme() {
         large$Label.textColor = .foreground4
@@ -294,9 +298,20 @@ private extension LargeBalanceConversionView {
     }
     
     func updateLabels(_ isBitcoinPrimary: Bool, _ balance: Int) {
-        let complexAnimation = isBitcoinPrimary == self.isBitcoinPrimary
-        
         let usdAmount = balance.satsToUsdAmountString(roundingStyle)
+        
+        guard animateBalanceChange else {
+            if isBitcoinPrimary {
+                largeAmountLabel.text = balance.satsToBitcoinString()
+                smallAmountLabel.text = "$\(usdAmount) USD"
+            } else {
+                largeAmountLabel.text = usdAmount
+                smallAmountLabel.text = "\(balance.satsToBitcoinString()) BTC"
+            }
+            return
+        }
+        
+        let complexAnimation = isBitcoinPrimary == self.isBitcoinPrimary
         
         if isBitcoinPrimary {
             setLargeLabel(balance.localized(), complexAnimation: complexAnimation)
@@ -355,6 +370,12 @@ private extension LargeBalanceConversionView {
     }
     
     @objc func tapped() {
+        guard animateBalanceChange else {
+            animateSwap()
+            animateBalanceChange = false
+            return
+        }
+        
         if secondaryRow.isHidden {
             isBitcoinPrimary.toggle()
         } else {

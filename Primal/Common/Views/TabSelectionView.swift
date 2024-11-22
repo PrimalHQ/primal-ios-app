@@ -12,14 +12,21 @@ final class TabSelectionView: UIView, Themeable {
     private var buttons: [TabSelectionButton] = []
     private let selectionIndicator = ThemeableView().constrainToSize(height: 4).setTheme { $0.backgroundColor = .accent }
     
+    private(set) lazy var stack = UIStackView(arrangedSubviews: buttons)
+
     @Published private(set) var selectedTab = 0
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(tabs: [String] = []) {
+    var distribution: UIStackView.Distribution {
+        get { stack.distribution }
+        set { stack.distribution = newValue }
+    }
+    
+    init(tabs: [String] = [], spacing: CGFloat = 16, distribution: UIStackView.Distribution = .equalSpacing) {
         super.init(frame: .zero)
         
-        buttons = tabs.map { TabSelectionButton(text: $0) }
+        buttons = tabs.map { TabSelectionButton(text: $0, spacing: spacing) }
         for (index, button) in buttons.enumerated() {
             button.addAction(.init(handler: { [weak self] _ in
                 self?.selectedTab = index
@@ -27,6 +34,8 @@ final class TabSelectionView: UIView, Themeable {
         }
             
         setup()
+        
+        stack.distribution = distribution
     }
     
     required init?(coder: NSCoder) {
@@ -44,10 +53,9 @@ final class TabSelectionView: UIView, Themeable {
 
 private extension TabSelectionView {
     func setup() {
-        let stack = UIStackView(arrangedSubviews: buttons)
         addSubview(stack)
         stack.pinToSuperview(edges: [.horizontal, .top], padding: 8).pinToSuperview(edges: .bottom)
-        stack.distribution = .equalSpacing
+        stack.distribution = distribution
         
         selectionIndicator.layer.cornerRadius = 2
         
@@ -84,7 +92,7 @@ private extension TabSelectionView {
 final class TabSelectionButton: MyButton {
     var label = UILabel()
     
-    init(text: String) {
+    init(text: String, spacing: CGFloat) {
         super.init(frame: .zero)
         
         label.text = text
@@ -94,7 +102,7 @@ final class TabSelectionButton: MyButton {
         label
             .pinToSuperview(edges: .top, padding: 14)
             .pinToSuperview(edges: .bottom, padding: 20)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: spacing)
         
         label.widthAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
     }

@@ -10,9 +10,18 @@ import Lottie
 
 final class WalletTransferSummaryController: UIViewController {
     enum State {
-        case success(amount: Int, address: String)
         case failure(navTitle: String, title: String, message: String)
-        case walletActivated(newAddress: String)
+        case success(title: String, description: String)
+        
+        static func paymentSuccess(amount: Int, address: String) -> State {
+            .success(title: "Success, payment sent!", description: "\(amount.localized()) sats sent to \(address).")
+        }
+        static func walletActivated(newAddress: String) -> State {
+            .success(
+                title: "Your wallet has been activated.\nYour new Nostr lightning address is:",
+                description: newAddress
+            )
+        }
     }
     
     var state: State
@@ -51,6 +60,9 @@ private extension WalletTransferSummaryController {
         navTitle.centerToSuperview()
         
         let title = UILabel()
+        title.numberOfLines = 0
+        title.textAlignment = .center
+        
         let subtitle = UILabel()
         let close = UIButton().constrainToSize(width: 152, height: 56)
         
@@ -86,15 +98,12 @@ private extension WalletTransferSummaryController {
         }), for: .touchUpInside)
         
         switch state {
-        case .walletActivated(let newAddress):
+        case .success(let titleText, let subtitleText):
             animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
-            title.text = "Your wallet has been activated.\nYour new Nostr lightning address is:"
-            title.numberOfLines = 0
-            title.textAlignment = .center
-                        
-            subtitle.text = newAddress
+            title.text = titleText
+            subtitle.text = subtitleText
             
             close.setTitleColor(.white, for: .normal)
             [title, subtitle, navTitle].forEach {
@@ -103,22 +112,6 @@ private extension WalletTransferSummaryController {
             
             title.font = .appFont(withSize: 20, weight: .regular)
             subtitle.font = .appFont(withSize: 20, weight: .semibold)
-            
-            close.backgroundColor = UIColor(rgb: 0x0E8A40)
-            
-            view.backgroundColor = .receiveMoney
-        case .success(amount: let amount, address: let address):
-            animationView.animation = AnimationType.transferSuccess.animation
-            
-            navTitle.text = "Success"
-            title.text = "Success, payment sent!"
-            
-            subtitle.text = "\(amount.localized()) sats sent to \(address)."
-            
-            close.setTitleColor(.white, for: .normal)
-            [title, subtitle, navTitle].forEach {
-                $0.textColor = .white
-            }
             
             close.backgroundColor = UIColor(rgb: 0x0E8A40)
             

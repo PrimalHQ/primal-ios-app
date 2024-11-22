@@ -8,6 +8,7 @@
 import Foundation
 import secp256k1
 import GenericJSON
+import StoreKit
 
 extension NostrObject {
     func toJSON() -> JSON {
@@ -81,8 +82,8 @@ extension NostrObject {
         createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
-    static func like(post: PrimalFeedPost) -> NostrObject? {
-        createNostrLikeEvent(post: post)
+    static func like(reference: PostingReferenceObject) -> NostrObject? {
+        createNostrLikeEvent(reference: reference)
     }
     
     static func post(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
@@ -97,6 +98,37 @@ extension NostrObject {
         createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
     }
     
+    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?) -> NostrObject? {
+        var allTags: [[String]] = []
+
+        /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
+        /// with clients that support replies but have not been updated to understand tag markers.
+        ///
+        /// https://github.com/nostr-protocol/nips/blob/master/10.md
+        ///
+        /// The tag to the root of the reply chain goes first.
+        /// The tag to the reply event being responded to goes last.
+        
+        if let post = replyingToObject {
+            if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
+                allTags.append(root)
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
+            } else {
+                // For top level replies (those replying directly to the root event), only the "root" marker should be used.
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
+            }
+            
+            allTags.append(["p", post.pubkey])
+        }
+        
+        let mentionedPubkeys = draft.taggedUsers.map { $0.userPubkey }
+        allTags += mentionedPubkeys.map { ["p", $0] }
+        
+        allTags += draft.text.extractHashtags().map({ ["t", $0] })
+
+        return createNostrObject(content: postingText, kind: 1, tags: allTags)
+    }
+    
     static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
         var allTags: [[String]] = []
 
@@ -109,6 +141,39 @@ extension NostrObject {
         allTags += content.extractHashtags().map({ ["t", $0] })
 
         return createNostrObject(content: content, kind: 1, tags: allTags)
+    }
+    
+    static func purchasePrimalPremium(pickedName: String, transaction: Transaction, verification: String) -> NostrObject? {
+        guard let encodedTransaction: JSON = String(data: transaction.jsonRepresentation, encoding: .utf8)?.decode() else { return nil }
+        
+        let json: [String: JSON] = [
+            "name": .string(pickedName),
+            "receiver_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "ios_subscription": .object([
+                "transaction": encodedTransaction,
+                "jwsVerification": .string(verification)
+            ])
+        ]
+        
+        guard let content = json.encodeToString() else { return nil }
+        
+        return createNostrObject(content: content, kind: 30078)
+    }
+    
+    static func purchasePrimalLegend(name: String, amount: Int) -> NostrObject? {
+        let usdString = String(Double(amount).satToUSD)
+        
+        let json: [String: JSON] = [
+            "name": .string(name),
+            "receiver_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "product_id": "legend-premium",
+            "amount_usd": .string(usdString),
+            "amount": .string(amount.satsToBitcoinString())
+        ]
+        
+        guard let content = json.encodeToString() else { return nil }
+        
+        return createNostrObject(content: content, kind: 30078)
     }
     
     static func contacts(_ contacts: Set<String>) -> NostrObject? {
@@ -150,7 +215,7 @@ extension NostrObject {
         createNostrUpdateSettingsEvent(settings)
     }
     
-    static func metadata(_ metadata: Profile) -> NostrObject? {
+    static func metadata(_ metadata: NostrProfile) -> NostrObject? {
         createNostrMetadataEvent(metadata)
     }
     
@@ -182,14 +247,15 @@ extension NostrObject {
         createNostrChatReadEvent(pubkey)
     }
     
-    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data) -> NostrObject? {
+    static func uploadChunk(fileLength: Int, uploadID: String, offset: Int, data: Data, appVersion: String) -> NostrObject? {
         let strBase64:String = "data:image/svg+xml;base64," + data.base64EncodedString()
         
         let content: [String: JSON] = [
             "file_length":  .number(Double(fileLength)),
             "upload_id":    .string(uploadID),
             "offset":       .number(Double(offset)),
-            "data":         .string(strBase64)
+            "data":         .string(strBase64),
+            "app_version":  .string(appVersion),
         ]
         
         guard
@@ -223,15 +289,14 @@ extension NostrObject {
         createNostrObject(content: content, kind: 10_000_300)
     }
     
-    static func zapWallet(_ note: String, sats: Int, post: ParsedContent) -> NostrObject? {
+    static func zapWallet(_ note: String, sats: Int, reference: ZappableReferenceObject) -> NostrObject? {
         var tags: [[String]] = [
-            ["p", post.user.data.pubkey],
-            ["e", post.post.id],
+            ["p", reference.referencePubkey],
             ["amount", "\(sats)000"]
         ]
         
-        if post.post.kind == NostrKind.longForm.rawValue || post.post.kind == NostrKind.shortenedArticle.rawValue {
-            tags.insert(["a", post.post.universalID], at: 0)
+        if let (tagLetter, universalID) = reference.reference {
+            tags.append([tagLetter, universalID])
         }
         
         var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
@@ -271,8 +336,9 @@ fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, conte
     return NostrObject(id: id, sig: sig, tags: tags, pubkey: pubkey, created_at: createdAt, kind: kind, content: content)
 }
 
-fileprivate func createNostrLikeEvent(post: PrimalFeedPost) -> NostrObject? {
-    createNostrObject(content: "+", kind: 7, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
+fileprivate func createNostrLikeEvent(reference: PostingReferenceObject) -> NostrObject? {
+    guard let (tagLetter, universalID) = reference.reference else { return nil }
+    return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey]])
 }
 
 fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
@@ -356,7 +422,7 @@ fileprivate func createNostrUpdateSettingsEvent(_ settings: PrimalSettingsConten
     return createNostrObject(content: settingsJSONString, kind: 30078, tags: tags)
 }
 
-fileprivate func createNostrMetadataEvent(_ metadata: Profile) -> NostrObject? {
+fileprivate func createNostrMetadataEvent(_ metadata: NostrProfile) -> NostrObject? {
     guard let metadataJSONData = try? jsonEncoder.encode(metadata) else {
         print("Unable to encode tags to Data")
         return nil

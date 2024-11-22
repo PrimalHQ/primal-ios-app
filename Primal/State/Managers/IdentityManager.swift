@@ -15,7 +15,9 @@ let APP_NAME = "Primal-iOS App"
 
 final class IdentityManager {
     private init() {
-        $userRelays.sink { info in
+        $userRelays
+        .receive(on: DispatchQueue.main)
+        .sink { info in
             RelaysPostbox.instance.disconnect()
             
             guard let info else {
@@ -70,7 +72,24 @@ final class IdentityManager {
     
     var cancellables: Set<AnyCancellable> = []
 
-    func requestUserProfile() {
+    func requestUserProfile(local: Bool = true) {
+        if local {
+            DatabaseManager.instance.getProfilePublisher(userHexPubkey).first()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveCompletion: { _ in }) { [weak self] user in
+                    self?.parsedUser = user
+                }
+                .store(in: &cancellables)
+        }
+        
+        DatabaseManager.instance.getProfileStatsPublisher(userHexPubkey)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stats in
+                guard let self, let stats else { return }
+                userStats = stats.info
+            }
+            .store(in: &cancellables)
+        
         SocketRequest(name: "user_profile", payload: ["pubkey": .string(userHexPubkey)]).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
@@ -105,7 +124,7 @@ final class IdentityManager {
                         callback(settings.content)
                     }
                 default:
-                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
+                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind)) \(response)")
                 }
             }
         }
@@ -151,18 +170,6 @@ final class IdentityManager {
                     fallthrough
                 case .defaultSettings:
                     guard var settings = PrimalSettings(json: response) else { return }
-                    
-                    // Ensure Latest feed *always* exists
-                    let latestFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies != true }) ?? false
-                    if !latestFeedExists {
-                        settings.content.feeds?.insert(.latest, at: 0)
-                    }
-                    
-                    let latestWithRepliesFeedExists = settings.content.feeds?.contains(where: { $0.hex == IdentityManager.instance.userHexPubkey && $0.includeReplies == true }) ?? false
-                    if !latestWithRepliesFeedExists {
-                        settings.content.feeds?.insert(.latestWithReplies, at: 1)
-                    }
-                    
                     // There were breaking changes to how settings work over the time
                     // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
                     if settings.content.isBorked() {
@@ -202,6 +209,7 @@ final class IdentityManager {
     // Never just requestRelays as some clients might not support NIP-65
     private func requestRelays(callback: (() -> Void)? = nil) {
         SocketRequest(name: "get_user_relays", payload: .object(["pubkey": .string(userHexPubkey)])).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { result in
                 if !result.relayData.isEmpty {
                     self.userRelays = result.relayData
@@ -227,20 +235,22 @@ final class IdentityManager {
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
                 
+                let response = response.objectValue
+                
                 switch kind {
                 case .contacts:
-                    self.followListContentString = response.arrayValue?[2].objectValue?["content"]?.stringValue ?? self.followListContentString
+                    self.followListContentString = response?["content"]?.stringValue ?? self.followListContentString
                     
                     var tags: Set<String>?
-                    if let isEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.isEmpty {
+                    if let isEmpty = response?["tags"]?.arrayValue?.isEmpty {
                         if isEmpty {
                             tags = []
                         } else {
-                            if let isInnerEmpty = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
+                            if let isInnerEmpty = response?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
                                 if isInnerEmpty {
                                     tags = []
                                 } else {
-                                    let res = response.arrayValue?[2].objectValue?["tags"]?.arrayValue?.map {
+                                    let res = response?["tags"]?.arrayValue?.map {
                                         $0.arrayValue?[safe: 1]?.stringValue ?? ""
                                     }
                                     
@@ -252,7 +262,7 @@ final class IdentityManager {
                         }
                     }
                     if let contacts = tags {
-                        let c = DatedSet(created_at: Int(response.arrayValue?[2].objectValue?["created_at"]?.doubleValue ?? -1), set: contacts)
+                        let c = DatedSet(created_at: Int(response?["created_at"]?.doubleValue ?? -1), set: contacts)
                         if self.userContacts.created_at <= c.created_at {
                             self.userContacts = c
                             callback?()
@@ -304,7 +314,9 @@ final class IdentityManager {
                 "sig": .string(ev.sig),
                 "tags": .array([])
             ])
-        ])) { _ in }
+        ])) { result in
+            print(result)
+        }
     }
     
     func updateNotifications(_ notifications: PrimalSettingsNotifications) {
@@ -315,50 +327,9 @@ final class IdentityManager {
         updateSettings(settings)
     }
     
-    func updateFeeds(_ feeds: [PrimalSettingsFeed]) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        let count = feeds.filter({ $0.name.hasPrefix("Latest") }).count
-        if count > 2 {
-            print(count)
-        }
-        
-        guard var settings = userSettings else { return }
-        settings.feeds = feeds
-        updateSettings(settings)
-    }
-    
-    func addFeedToList(feed: PrimalSettingsFeed) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard
-            var settings = userSettings,
-            let feeds = settings.feeds,
-            !feeds.isEmpty
-        else { return }
-        
-        settings.feeds?.append(feed)
-        
-        updateSettings(settings)
-    }
-    
-    func removeFeedFromList(hex: String) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard
-            var settings = userSettings,
-            let feeds = settings.feeds,
-            !feeds.isEmpty
-        else { return }
-        
-        settings.feeds?.removeAll(where: { $0.hex == hex })
-        
-        updateSettings(settings)
-    }
-    
     func deleteAccount() async -> [JSON] {
         return await withCheckedContinuation { continuation in
-            let profile = Profile(
+            let profile = NostrProfile(
                 name: "Deleted Account",
                 display_name: "Deleted Account",
                 about: "Deleted Account",
@@ -381,7 +352,7 @@ final class IdentityManager {
         }
     }
     
-    func updateProfile(_ data: Profile, callback: @escaping (Bool) -> Void) {
+    func updateProfile(_ data: NostrProfile, callback: @escaping (Bool) -> Void) {
         guard let metadata_ev = NostrObject.metadata(data) else {
             callback(false)
             return

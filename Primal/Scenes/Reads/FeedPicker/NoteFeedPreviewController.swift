@@ -7,12 +7,15 @@
 
 import UIKit
 
-class NoteFeedPreviewController: ShortFormFeedController {
-    let info: FeedFromMarket
-    init(feed: PrimalFeed, feedInfo: FeedFromMarket) {
+class NoteFeedPreviewController: NoteFeedViewController {
+    var contentInset: UIEdgeInsets { .zero }
+    var disableInteraction: Bool { true }
+    
+    let info: ParsedFeedFromMarket
+    init(feed: PrimalFeed, feedInfo: ParsedFeedFromMarket) {
         info = feedInfo
         super.init(feed: .init(newFeed: feed))
-        table.register(FeedMarketplaceCell.self, forCellReuseIdentifier: "infoCell")
+        table.register(FeedPreviewCell.self, forCellReuseIdentifier: "infoCell")
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .zero
         
@@ -30,7 +33,7 @@ class NoteFeedPreviewController: ShortFormFeedController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         DispatchQueue.main.async {
-            self.table.contentInset = .zero
+            self.table.contentInset = self.contentInset
         }
     }
     
@@ -40,33 +43,29 @@ class NoteFeedPreviewController: ShortFormFeedController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? 1 : super.tableView(tableView, numberOfRowsInSection: section)
+        section == 0 ? max(1, super.tableView(tableView, numberOfRowsInSection: section)) : super.tableView(tableView, numberOfRowsInSection: section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 1 {
-            let cell = super.tableView(tableView, cellForRowAt: indexPath)
-            cell.isUserInteractionEnabled = false
+        if indexPath.section == 0 && indexPath.row == 0 {
+            let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
+            (cell as? FeedPreviewCell)?.setup(info, delegate: self)
             return cell
         }
-        
-        let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-        (cell as? FeedMarketplaceCell)?.setupSelected(info)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        cell.isUserInteractionEnabled = !disableInteraction
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        return
-//        guard let presentingViewController, let nav: UINavigationController = presentingViewController.findInChildren() else {
-//            super.tableView(tableView, didSelectRowAt: indexPath)
-//            return
-//        }
-//        
-//        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
-//        let thread = ThreadViewController(post: post)
-//        dismiss(animated: true) {
-//            nav.pushViewController(thread, animated: true)
-//        }
+        if disableInteraction { return }
+        
+        super.tableView(tableView, didSelectRowAt: indexPath)
     }
 }
 
+extension NoteFeedPreviewController: FeedMarketplaceCellController {
+    func feedForCell(_ cell: UITableViewCell) -> ParsedFeedFromMarket? { info }
+    
+    func reloadViewAfterZap() { table.reloadData() }
+}

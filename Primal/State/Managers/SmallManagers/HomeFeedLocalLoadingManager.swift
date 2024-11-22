@@ -25,18 +25,12 @@ private extension UserDefaults {
 }
 
 class HomeFeedLocalLoadingManager {
-    static var isLatestFeedFirst: Bool {
-        get { UserDefaults.standard.bool(forKey: "isLatestFeedFirstKey") }
-        set { UserDefaults.standard.setValue(newValue, forKey: "isLatestFeedFirstKey") }
-    }
-    
     static var savedFeed: PostRequestResult? {
         get {
             let ud = UserDefaults.standard
             
             guard
                 ud.homeFeedNpub == IdentityManager.instance.userHexPubkey,
-                isLatestFeedFirst,
                 let date = ud.homeFeedSaveDate, date.timeIntervalSinceNow > -48 * 60 * 60
             else { return nil }
             return ud.homeFeedResultString?.decode()

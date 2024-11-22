@@ -14,11 +14,11 @@ protocol LargeZapGalleryDelegate: AnyObject {
 }
 
 extension UIButton.Configuration {
-    static func zapPillButton() -> UIButton.Configuration {
+    static func zapPillButton(_ title: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         config.baseBackgroundColor = .foreground
-        config.attributedTitle = .init("Be the first to zap this article!", attributes: .init([
+        config.attributedTitle = .init(title, attributes: .init([
             .font: UIFont.appFont(withSize: 14, weight: .bold),
             .foregroundColor: UIColor.background2
         ]))
@@ -32,13 +32,22 @@ class LargeZapGalleryView: UIView, ZapGallery {
     let stack = UIStackView()
     let animationStack = UIStackView()
     
-    let zapPillButton = UIButton(configuration: .zapPillButton()).constrainToSize(height: 28)
+    var zapPillTapCallback: () -> ()
+    
+    private func zapPillButton(title: String) -> UIButton {
+        let button = UIButton(configuration: .zapPillButton(title)).constrainToSize(height: 28)
+        button.addAction(.init(handler: { [weak self] _ in
+            self?.zapPillTapCallback()
+        }), for: .touchUpInside)
+        return button
+    }
     
     weak var delegate: ZapGalleryViewDelegate?
     
     var singleLine: Bool = false
     
-    init() {
+    init(zapTapCallback: @escaping () -> ()) {
+        zapPillTapCallback = zapTapCallback
         super.init(frame: .zero)
         [animationStack, stack].forEach {
             $0.axis = .vertical
@@ -91,14 +100,16 @@ class LargeZapGalleryView: UIView, ZapGallery {
             stack.addArrangedSubview(hStack)
             
             if zaps.count == 1 {
+                stack.addArrangedSubview(zapPillButton(title: "Zap"))
                 return
             }
         } else {
-            stack.addArrangedSubview(zapPillButton)
+            stack.addArrangedSubview(zapPillButton(title: "Be the first to zap this article!"))
             return
         }
         
         let hStack = UIStackView()
+        
         hStack.spacing = 6
         var currentWidth: CGFloat = 0
         for zap in zaps.dropFirst() {
@@ -107,25 +118,24 @@ class LargeZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 110 > frame.width {
-                let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(28)
-                hStack.addArrangedSubview(image)
-//                hStack.addArrangedSubview(zapPillButton)
-                stack.addArrangedSubview(hStack)
-                return
+            if currentWidth + 60 > max(300, frame.width) {
+                break
             }
             
             hStack.addArrangedSubview(view)
         }
         
-        if !hStack.arrangedSubviews.isEmpty {
-            stack.addArrangedSubview(hStack)
-        }
+        hStack.addArrangedSubview(zapPillButton(title: "Zap"))
+        hStack.alignment = .center
+        stack.addArrangedSubview(hStack)
     }
     
     func zapView(_ zap: ParsedZap, text: Bool) -> LargeZapPillView {
         let view = text ? LargeZapPillTextView(zap: zap) : LargeZapPillView(zap: zap)
-//        view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
+        view.addInteraction(GalleryZapPillMenuInteraction(galleryView: self, zap: zap))
+        view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.zapTapped(zap)
+        }))
         return view
     }
     
@@ -136,8 +146,6 @@ class LargeZapGalleryView: UIView, ZapGallery {
     func animateStacks() {
         layoutIfNeeded()
         animationStack.layoutIfNeeded()
-        
-        print("ANIMATING")
         
         var zapAnimations: [String: () -> ()] = [:]
 

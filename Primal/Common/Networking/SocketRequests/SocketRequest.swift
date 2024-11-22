@@ -10,25 +10,77 @@ import Foundation
 import GenericJSON
 
 struct SocketRequest {
+    let url: URL = URL(string: "https://cache2.primal.net/api/")!
+    
+    var useHTTP = false
     let name: String
     let payload: JSON?
     
-    private let pendingResult: PostRequestResult = .init()
+    var connection = Connection.regular
+    
+    var body: JSON {
+        if let payload {
+            return [.string(name), payload]
+        }
+        return [.string(name)]
+    }
+    
+    func httpPublisher() -> AnyPublisher<[JSON], Error> {
+        Future { promise in
+            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+            
+            if let requestBody = try? JSONEncoder().encode(body) {
+                request.httpMethod = "POST"
+                request.httpBody = requestBody
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+
+            URLSession(configuration: .default).dataTask(with: request) { data, response, error in
+                guard let data else {
+                    promise(.failure(error ?? RequestError.noData))
+                    return
+                }
+                
+                let decoder = JSONDecoder()
+
+                do {
+                    let responseData = try decoder.decode([JSON].self, from: data)
+                    promise(.success(responseData))
+                } catch {
+                    if let errorData = try? decoder.decode(RequestErrorResponse.self, from: data) {
+                        promise(.failure(errorData.error))
+                    } else {
+                        promise(.failure(error))
+                    }
+                }
+            }
+            .resume()
+        }
+        .eraseToAnyPublisher()
+    }
     
     func publisher() -> AnyPublisher<PostRequestResult, Never> {
-        Connection.regular.autoConnectReset()
+        connection.autoConnectReset()
         
         return Deferred {
-            Future { promise in                
-                Connection.regular.requestCache(name: name, payload: payload) { result in
-                    result.compactMap { $0.arrayValue?.last?.objectValue } .forEach { pendingResult.handlePostEvent($0) }
-                    result.compactMap { $0.arrayValue?.last?.stringValue } .forEach { pendingResult.message = $0 }
+            Future { promise in
+                connection.requestCache(name: name, payload: payload) { result in
+                    let pendingResult = PostRequestResult()
+                    
+                    result.compactMap { $0.objectValue } .forEach { pendingResult.handlePostEvent($0) }
+                    result.compactMap { $0.stringValue } .forEach { pendingResult.message = $0 }
+                    
+                    pendingResult.postZaps.sort(by: { $0.amount_sats > $1.amount_sats })
+                    
+                    DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
+                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))
                 }
             }
         }
-        .waitForConnection(.regular)
+        .waitForConnection(connection)
         .eraseToAnyPublisher()
     }
 }
@@ -78,7 +130,6 @@ extension PostRequestResult {
             zapReceipts[id] = zapContent
             return
         case .handlerInfo:
-            print(payload)
             events.append(payload)
             return
 //        case .shortenedArticle:
@@ -103,7 +154,8 @@ extension PostRequestResult {
         switch kind {
         case .metadata:
             let nostrUser = NostrContent(json: .object(payload))
-            if let user = PrimalUser(nostrUser: nostrUser) {
+            if var user = PrimalUser(nostrUser: nostrUser) {
+                user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
         case .text:
@@ -272,7 +324,9 @@ extension PostRequestResult {
             let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
             
             if !tags.isEmpty {
-                contacts = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
+                let set = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)
+                contacts = set
+                allContacts.append(set)
             }
         case .bookmarks:
             guard let tagsArray = payload["tags"]?.arrayValue else { return }
@@ -325,6 +379,19 @@ extension PostRequestResult {
             eventBroadcastSuccessful = eventBroadcastSuccessful || status == "OK"
         case .highlight:
             highlights.append(NostrContent(json: .object(payload)))
+        case .primalName:
+            guard let dic: [String: String] = contentString.decode() else {
+                print("Error decoding primalName")
+                return
+            }
+        case .primalLegendInfo:
+            guard let dic: [String: LegendCustomization] = contentString.decode() else {
+                print("Error decoding primalLegendInfo")
+                return
+            }
+            Task {
+                await LegendCustomizationManager.instance.addCustomizations(dic)
+            }
         default:
             events.append(payload)
         }

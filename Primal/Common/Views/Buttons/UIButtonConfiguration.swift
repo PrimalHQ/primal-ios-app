@@ -16,16 +16,26 @@ extension UIButton.Configuration {
         return configuration
     }
     
+    static func simpleImage(_ name: String) -> UIButton.Configuration {
+        simpleImage(UIImage(named: name))
+    }
+    
     static func simpleImage(_ image: UIImage?) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.image = image
         return configuration
     }
     
-    static func accent(_ text: String) -> UIButton.Configuration {
+    func noMargins() -> UIButton.Configuration {
+        var config = self
+        config.contentInsets = .zero
+        return config
+    }
+    
+    static func accent(_ text: String, font: UIFont = UIFont.appFont(withSize: 16, weight: .regular)) -> UIButton.Configuration {
         var configuration = UIButton.Configuration.borderless()
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([
-            .font: UIFont.appFont(withSize: 16, weight: .regular)
+            .font: font
         ]))
         configuration.baseForegroundColor = .accent
         return configuration

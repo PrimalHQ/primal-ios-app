@@ -16,13 +16,15 @@ class FeedButton: MyButton {
     var normalIcon: UIImage? { nil }
     
     var filledColor: UIColor { normalColor }
-    var normalColor: UIColor { .foreground4 }
+    var normalColor: UIColor { .foreground5 }
     
     var bigMode = false
     
     init() {
         super.init(frame: .zero)
         setup()
+        
+        iconView.contentMode = .center
     }
     
     required init?(coder: NSCoder) {
@@ -38,7 +40,8 @@ class FeedButton: MyButton {
         
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         
-        titleLabel.font = .appFont(withSize: 16, weight: .regular)
+        titleLabel.font = .appFont(withSize: 14, weight: .regular)
+        backgroundColor = .background2.withAlphaComponent(0.01)
     }
         
     func set(_ count: Int, filled: Bool) {
@@ -89,7 +92,7 @@ class AnimatedFeedButton: FeedButton {
         super.setup()
         addSubview(animView)
         
-        animView.constrainToSize(31)
+        animView.constrainToSize(31 * 16 / 18)
         animView.centerToView(iconView)
         animView.isHidden = true
     }

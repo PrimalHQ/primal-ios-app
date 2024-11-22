@@ -14,7 +14,7 @@ final class FeedMarketplaceController: UIViewController {
     
     let table = UITableView()
     
-    var feeds: [FeedFromMarket] = [] {
+    var feeds: [ParsedFeedFromMarket] = [] {
         didSet {
             table.reloadData()
         }
@@ -100,24 +100,30 @@ extension FeedMarketplaceController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        (cell as? FeedMarketplaceCell)?.setup(feeds[indexPath.row])
+        (cell as? FeedMarketplaceCell)?.setup(feeds[indexPath.row].data)
         return cell
     }
 }
 
 extension FeedMarketplaceController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let parsed = feeds[safe: indexPath.row] else { return }
+        let feed = parsed.data
+        
         guard
-            let feed = feeds[safe: indexPath.row],
             let id = feed.id,
             let pubkey = feed.pubkey
         else { return }
         
+        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(type.kind)\"}"
+        
         let readsFeed = PrimalFeed(
             name: feed.name,
-            spec: "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"reads\"}",
-            description: feed.about
+            spec: spec,
+            description: feed.about ?? "",
+            feedkind: "dvm",
+            enabled: true
         )
-        show(ArticleFeedPreviewController(feed: readsFeed, type: type, feedInfo: feed), sender: nil)
+        show(FeedPreviewParentController(feed: readsFeed, type: type, feedInfo: parsed), sender: nil)
     }
 }

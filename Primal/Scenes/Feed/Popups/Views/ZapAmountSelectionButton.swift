@@ -44,19 +44,20 @@ final class ZapAmountSelectionButton: MyButton, Themeable {
         super.init(frame: .zero)
         
         emojiLabel.text = emoji
-        emojiLabel.font = .appFont(withSize: 28, weight: .heavy)
+        emojiLabel.font = .appFont(withSize: 20, weight: .black)
         
         label.text = title
-        label.font = .appFont(withSize: 20, weight: .semibold)
+        label.font = .appFont(withSize: 18, weight: .semibold)
         label.textColor = .white
         
         addSubview(borderView)
         borderView.pinToSuperview()
         borderView.addSubview(backgroundView)
         backgroundView.pinToSuperview(padding: 1)
-        backgroundView.layer.cornerRadius = 7
+        backgroundView.layer.cornerRadius = 43
         
-        layer.cornerRadius = 8
+        constrainToSize(88)
+        layer.cornerRadius = 44
         layer.masksToBounds = true
         
         let stack = UIStackView(arrangedSubviews: [emojiLabel, label])
