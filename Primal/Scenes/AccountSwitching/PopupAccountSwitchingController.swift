@@ -174,7 +174,7 @@ final class AccountEditingView: UIView {
     init(npub: String) {
         super.init(frame: .zero)
         
-        let imageView = FLAnimatedImageView().constrainToSize(36)
+        let imageView = UserImageView(height: 36)
         let nameLabel = UILabel()
         let subLabel = UILabel()
         
@@ -228,14 +228,10 @@ final class AccountSwitchingView: UIView {
     init(npub: String) {
         super.init(frame: .zero)
         
-        let imageView = FLAnimatedImageView().constrainToSize(36)
+        let imageView = UserImageView(height: 36)
         let nameLabel = UILabel()
         let subLabel = UILabel()
         let check = UIImageView(image: UIImage(named: "accountSwitchCheck"))
-        
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 18
-        imageView.clipsToBounds = true
         
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         nameLabel.textColor = .foreground

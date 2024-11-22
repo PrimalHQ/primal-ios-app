@@ -144,7 +144,7 @@ private extension OnboardingPreviewController {
     func createAccount() {
         RelaysPostbox.instance.connect(session.defaultRelays)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let profile = Profile(
+            let profile = NostrProfile(
                 name: self.profile.username,
                 display_name: self.profile.displayname,
                 about: self.profile.bio,

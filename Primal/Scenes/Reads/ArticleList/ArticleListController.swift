@@ -46,8 +46,6 @@ class ArticleListController: UIViewController, ArticleCellController, UITableVie
         if view.window != nil {
             table.reloadData()
         }
-        
-        articles.forEach { $0.mentions.forEach { $0.buildContentString() }}
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { articles.isEmpty ? 5 : articles.count }
@@ -55,7 +53,7 @@ class ArticleListController: UIViewController, ArticleCellController, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let article = articles[safe: indexPath.row] else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-            (cell as? ArticleLoadingCell)?.updateTheme()
+            (cell as? PostLoadingCell)?.updateTheme()
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -87,7 +85,7 @@ private extension ArticleListController {
         table.delegate = self
         table.separatorStyle = .none
         table.register(ArticleCell.self, forCellReuseIdentifier: "cell")
-        table.register(ArticleLoadingCell.self, forCellReuseIdentifier: "loading")
+        table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         
         NotificationCenter.default.publisher(for: .userMuted)
             .compactMap { $0.object as? String }
@@ -149,32 +147,5 @@ extension Article {
     
     var asParsedContent: ParsedContent {
         .init(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
-    }
-}
-
-class ArticleLoadingCell: UITableViewCell, Themeable {
-    let animationView = LottieAnimationView()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        contentView.addSubview(animationView)
-        animationView
-            .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, padding: 10)
-            .pinToSuperview(edges: .bottom, padding: -10)
-        
-        let aspectC = animationView.widthAnchor.constraint(equalTo: animationView.heightAnchor, multiplier: 1125 / 375)
-        aspectC.priority = .defaultHigh
-        aspectC.isActive = true
-        
-        selectionStyle = .none
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    func updateTheme() {
-        animationView.animation = Theme.current.isDarkTheme ? AnimationType.articleListSkeleton.animation : AnimationType.articleListSkeletonLight.animation
-        animationView.play(toProgress: 1, loopMode: .loop)
     }
 }

@@ -15,6 +15,8 @@ final class FollowManager {
     @Published var pubkeysToFollow: Set<String> = []
     @Published var pubkeysToUnfollow: Set<String> = []
     
+    let followChanged = PassthroughSubject<(String, Bool), Never>()
+    
     var cancellables: Set<AnyCancellable> = []
     
     private init() {
@@ -52,11 +54,21 @@ final class FollowManager {
         !pubkeysToUnfollow.contains(pubkey) && (pubkeysToFollow.contains(pubkey) || IdentityManager.instance.userContacts.set.contains(pubkey))
     }
     
+    func isFollowingPublisher(_ pubkey: String) -> AnyPublisher<Bool, Never> {
+        followChanged
+            .compactMap { $0.0 == pubkey ? $0.1 : nil }
+            .prepend(isFollowing(pubkey))
+            .eraseToAnyPublisher()
+    }
+    
     func sendFollowEvent(_ pubkey: String) {
         if LoginManager.instance.method() != .nsec { return }
 
         pubkeysToUnfollow.remove(pubkey)
         pubkeysToFollow.insert(pubkey)
+        
+        followChanged.send((pubkey, true))
+        
     }
     
     func sendUnfollowEvent(_ pubkey: String) {
@@ -64,6 +76,8 @@ final class FollowManager {
         
         pubkeysToFollow.remove(pubkey)
         pubkeysToUnfollow.insert(pubkey)
+        
+        followChanged.send((pubkey, false))
     }
     
     func sendBatchFollowEvent(_ pubkeys: Set<String>, successHandler: (() -> Void)? = nil, errorHandler: (() -> Void)? = nil) {

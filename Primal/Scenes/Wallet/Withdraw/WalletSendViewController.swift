@@ -71,7 +71,7 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     let destination: Destination
     
-    let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+    let profilePictureView = UserImageView(height: 88)
     let nameLabel = UILabel()
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()
@@ -147,7 +147,7 @@ private extension WalletSendViewController {
         
         sendButton.setTitle("Send", for: .normal)
         sendButton.titleLabel?.font = .appFont(withSize: 18, weight: .medium)
-        sendButton.backgroundColor = .accent2
+        sendButton.backgroundColor = .accent
         sendButton.setTitleColor(.white, for: .normal)
         sendButton.setTitleColor(.white.withAlphaComponent(0.6), for: .highlighted)
         sendButton.constrainToSize(height: 58)
@@ -237,15 +237,10 @@ private extension WalletSendViewController {
         
         stack.alignment = .center
         
-        profilePictureView.contentMode = .scaleAspectFill
-        profilePictureView.layer.masksToBounds = true
-        profilePictureView.layer.cornerRadius = 44
-        
         if let user = destination.user {
             profilePictureView.setUserImage(user)
             messageInput.placeholderText = "message for \(user.data.firstIdentifier)"
             
-            profilePictureView.isUserInteractionEnabled = true
             profilePictureView.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
                 self?.show(ProfileViewController(profile: user), sender: nil)
             })
@@ -367,7 +362,7 @@ private extension WalletSendViewController {
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    let summary = WalletTransferSummaryController(.success(amount: amount, address: destination.address))
+                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: destination.address))
                     navigationController?.pushViewController(summary, animated: true)
                     
                     summary.view.isUserInteractionEnabled = false

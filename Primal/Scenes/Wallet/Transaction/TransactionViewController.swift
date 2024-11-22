@@ -28,7 +28,7 @@ extension ArticleCell: TransactionPartialCell {
     }
 }
 
-final class TransactionViewController: FeedViewController {
+final class TransactionViewController: NoteViewController {
     enum CellType {
         case amount(Int, incoming: Bool)
         case title(String)
@@ -151,10 +151,8 @@ final class TransactionViewController: FeedViewController {
     }
     
     var firstTimeAnimating = true
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.section == postSection else { return }
-        
-        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
         guard firstTimeAnimating else { return }
         firstTimeAnimating = false
@@ -245,7 +243,7 @@ private extension TransactionViewController {
                     setCells()
                     table.reloadData()
                 }
-                return $0.process()
+                return $0.process(contentStyle: .regular)
             }
             .sink { [weak self] posts in
                 guard let self, let post = posts.first(where: { $0.post.id == postID }) else { return }
@@ -263,7 +261,6 @@ private extension TransactionViewController {
         stack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         stack.isLayoutMarginsRelativeArrangement = true
 
-        loadingSpinner.isHidden = true
         refreshControl.removeFromSuperview()
     }
     
@@ -294,9 +291,9 @@ private extension TransactionViewController {
                 .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
             ]
             
-            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).twoDecimalPoints()))
+            cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).nDecimalPoints(n: 2)))
             if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
-                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).twoDecimalPoints()))
+                cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).nDecimalPoints(n: 2)))
             }
             if let feeString = transaction.total_fee_btc, let feeBtc = Double(feeString) {
                 let fee = Int((feeBtc * .BTC_TO_SAT).rounded())

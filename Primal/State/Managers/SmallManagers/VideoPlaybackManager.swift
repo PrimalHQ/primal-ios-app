@@ -11,12 +11,24 @@ import AVFoundation
 final class VideoPlaybackManager {
     static let instance = VideoPlaybackManager()
     
+    @Published var isMuted = true {
+        didSet {
+            if isMuted {
+                try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+            } else {
+                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            }
+            currentlyPlaying?.avPlayer.isMuted = isMuted
+        }
+    }
+    
     var currentlyPlaying: VideoPlayer? {
         didSet {
             if oldValue !== currentlyPlaying {
                 oldValue?.pause()
             }
             
+            currentlyPlaying?.avPlayer.isMuted = isMuted
             currentlyPlaying?.avPlayer.play()
         }
     }
@@ -25,47 +37,42 @@ final class VideoPlaybackManager {
 class VideoPlayer {
     let url: String
     
-    let avPlayer: AVPlayer
+    var didInitPlayer = false
+    
     private var looper: AVPlayerLooper?
-    
-    @Published var isMuted = true {
-        didSet {
-            if isMuted {
-                try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
-            } else {
-                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            }
-            avPlayer.isMuted = isMuted
-        }
-    }
-    
-    @Published var isPlaying = false
-    
-    var shouldPause = false
-    
-    init(url: String, isMuted: Bool = true) {
-        self.url = url
-        self.isMuted = isMuted
-        
+    lazy var avPlayer: AVPlayer = {
         let queuePlayer = AVQueuePlayer()
         
         if let url = URL(string: url) {
             let item = AVPlayerItem(url: url)
             looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
         }
-        avPlayer = queuePlayer
-        avPlayer.isMuted = isMuted
+        didInitPlayer = true
+        return queuePlayer
+    }()
+    
+    @Published var isPlaying = false
+    
+    var shouldPause = false
+    
+    init(url: String) {
+        self.url = url
+        
+        if ContentDisplaySettings.autoPlayVideos {
+            _ = avPlayer // Force init
+        }
     }
     
     func play() {
         shouldPause = false
         isPlaying = true
         
-        if isMuted {
-            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
-        } else {
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-        }
+//        avPlayer.isMuted = isMuted
+//        if isMuted {
+//            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+//        } else {
+//            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+//        }
         
         VideoPlaybackManager.instance.currentlyPlaying = self
     }

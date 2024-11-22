@@ -8,9 +8,10 @@
 import UIKit
 import Kingfisher
 import Nantes
+import FLAnimatedImage
 
 final class PostPreviewView: UIView {
-    let profileImageView = UIImageView()
+    let profileImageView = UserImageView(height: 24)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let secondaryIdentifierLabel = UILabel()
@@ -20,6 +21,9 @@ final class PostPreviewView: UIView {
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let linkPreview = LinkPreview()
+    let zapPreview = ZapPreviewView()
+    let postPreview = PostPreviewPostPreviewView()
+    let infoView = SimpleInfoView()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
     
@@ -40,8 +44,7 @@ final class PostPreviewView: UIView {
         if CheckNip05Manager.instance.isVerified(user) {
             secondaryIdentifierLabel.text = user.parsedNip
             secondaryIdentifierLabel.isHidden = false
-            verifiedBadge.isHidden = false
-            verifiedBadge.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+            verifiedBadge.user = user
         } else {
             secondaryIdentifierLabel.isHidden = true
             verifiedBadge.isHidden = true
@@ -50,11 +53,7 @@ final class PostPreviewView: UIView {
         let date = Date(timeIntervalSince1970: TimeInterval(content.post.created_at))
         timeLabel.text = date.timeAgoDisplay()
         
-        profileImageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 28, height: 28))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        profileImageView.setUserImage(content.user)
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
@@ -91,10 +90,44 @@ final class PostPreviewView: UIView {
             invoiceView.isHidden = true
         }
         
+        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
+            postPreview.update(embeded)
+            postPreview.isHidden = false
+        } else {
+            postPreview.isHidden = true
+        }
+        
+        if let zap = content.embeddedZap {
+            zapPreview.updateForZap(zap)
+            zapPreview.isHidden = false
+        } else {
+            zapPreview.isHidden = true
+        }
+        
         mainLabel.attributedText = content.attributedText
         layoutSubviews()
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
+        
+        if let customEvent = content.customEvent {
+            infoView.isHidden = false
+            infoView.set(
+                kind: .file,
+                text: customEvent.post.tags.first(where: { $0.first == "alt" })?[safe: 1] ??
+                        (customEvent.post.content.isEmpty ? "Unknown reference" : customEvent.post.content)
+            )
+        } else {
+            switch content.notFound {
+            case nil:
+                infoView.isHidden = true
+            case .note:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned note not found.")
+            case .article:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned article not found.")
+            }
+        }
     }
 }
 
@@ -119,11 +152,6 @@ private extension PostPreviewView {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         secondaryIdentifierLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-
-        profileImageView.constrainToSize(24)
-        profileImageView.layer.cornerRadius = 12
-        profileImageView.layer.masksToBounds = true
-        profileImageView.contentMode = .scaleAspectFill
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
@@ -132,9 +160,8 @@ private extension PostPreviewView {
         
         verifiedBadge.constrainToSize(FontSizeSelection.current.contentFontSize)
         
-        mainLabel.numberOfLines = 0
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        mainLabel.numberOfLines = 10
+        mainLabel.numberOfLines = 6
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         
@@ -156,11 +183,14 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, postPreview, zapPreview, linkPreview, infoView
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)
         mainStack.setCustomSpacing(6, after: mainImages)
+        mainStack.setCustomSpacing(6, after: postPreview)
+        mainStack.setCustomSpacing(6, after: linkPreview)
+        mainStack.setCustomSpacing(6, after: zapPreview)
         addSubview(mainStack)
         
         mainStack

@@ -10,24 +10,28 @@ import UIKit
 class DefaultMainThreadCell: ThreadCell {
     let selectionTextView = MainThreadCellTextView()
     
-    var zapGalleryHeightConstraint: NSLayoutConstraint?
+//    var zapGalleryHeightConstraint: NSLayoutConstraint?
     
     let repliesLabel = UILabel()
     let zapsLabel = UILabel()
     let likesLabel = UILabel()
     let repostsLabel = UILabel()
     
+    let contentBotSpacer = SpacerView(height: 12)
+    
     lazy var infoRow = UIStackView([repliesLabel, zapsLabel, likesLabel, repostsLabel, UIView()])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        zapGallery = SmallZapGalleryView()
+        zapGallery?.delegate = self
+        
         parentSetup()
         setup()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    var cachedIsBookmarked = false { didSet { setBookmarkButton() } }
     
     override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition) {
         self.update(parsedContent, zaps: [])
@@ -55,24 +59,24 @@ class DefaultMainThreadCell: ThreadCell {
         repostsLabel.attributedText = infoString(post.reposts, "Repost", "Reposts")
         repostsLabel.isHidden = post.reposts <= 0
         
-        cachedIsBookmarked = parsedContent.postInfo.isBookmarked
-        
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
+        
+        contentBotSpacer.isHidden = !mainLabel.isHidden && mainImages.isHidden && linkPresentation.isHidden && postPreview.isHidden && articleView.isHidden && invoiceView.isHidden && infoView.isHidden
         
         if let zaps {
             if zaps.isEmpty {
-                zapGallery.isHidden = true
+                zapGallery?.isHidden = true
             } else {
-                zapGallery.isHidden = false
-                zapGallery.zaps = zaps
+                zapGallery?.isHidden = false
+                zapGallery?.zaps = zaps
                 
-                zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
+//                zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
             }
         } else {
-            zapGallery.isHidden = post.zaps == 0
-            zapGallery.zaps = []
+            zapGallery?.isHidden = post.zaps == 0
+            zapGallery?.zaps = []
             
-            zapGalleryHeightConstraint?.constant = post.zaps < 4 ? 24 : 56
+//            zapGalleryHeightConstraint?.constant = post.zaps < 4 ? 24 : 56
         }
     }
     
@@ -84,10 +88,6 @@ class DefaultMainThreadCell: ThreadCell {
                 self?.isShowingBookmarked = isBookmarked
                 self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarksBigFilled" : "feedBookmarksBig"), for: .normal)
             } 
-    }
-    
-    func setBookmarkButton() {
-        bookmarkButton.setImage(cachedIsBookmarked ? UIImage(named: "feedBookmarksBigFilled") : UIImage(named: "feedBookmarksBig"), for: .normal)
     }
     
     func infoString(_ count: Int, _ singleTitle: String, _ pluralTitle: String) -> NSAttributedString {
@@ -111,8 +111,7 @@ class DefaultMainThreadCell: ThreadCell {
         threeDotsButton.constrainToSize(width: 22)
         threeDotsButton.transform = .init(translationX: 0, y: -4)
         
-        profileImageView.constrainToSize(42)
-        profileImageView.layer.cornerRadius = 21
+        profileImageView.height = 42
         
         separatorLabel.text = ""
         separatorLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -127,17 +126,17 @@ class DefaultMainThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameVStack, threeDotsButton])
         horizontalProfileStack.alignment = .center
         
-        let descStack = UIStackView(axis: .vertical, [zapGallery, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
+        let descStack = UIStackView(axis: .vertical, [zapGallery!, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
         descStack.spacing = 8
-        descStack.setCustomSpacing(20, after: zapGallery)
+        descStack.setCustomSpacing(20, after: zapGallery!)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)
         infoRow.spacing = 12
         
-        zapGalleryHeightConstraint = zapGallery.heightAnchor.constraint(equalToConstant: 24)
-        zapGalleryHeightConstraint?.isActive = true
+//        zapGalleryHeightConstraint = zapGallery.heightAnchor.constraint(equalToConstant: 24)
+//        zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
-        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview])
+        let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, zapPreview, infoView, contentBotSpacer])
         let mainStack = UIStackView(axis: .vertical, [horizontalProfileStack, contentStack, descStack])
         contentView.addSubview(mainStack)
         
@@ -146,6 +145,8 @@ class DefaultMainThreadCell: ThreadCell {
 
         topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
         topConstraint?.isActive = true
+        
+        contentBotSpacer.isHidden = true
             
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         bottomC.priority = .defaultLow
@@ -155,9 +156,10 @@ class DefaultMainThreadCell: ThreadCell {
         horizontalProfileStack.spacing = 8
         
         contentStack.spacing = 8
+        contentStack.setCustomSpacing(0, after: textViewParent)
         
         mainStack.spacing = 12
-        mainStack.setCustomSpacing(20, after: contentStack)
+        mainStack.setCustomSpacing(0, after: contentStack)
         
         textViewParent.addSubview(selectionTextView)
         selectionTextView
@@ -176,12 +178,12 @@ class DefaultMainThreadCell: ThreadCell {
         }
         
         bottomButtonStack.addArrangedSubview(bookmarkButton)
-        
-        bookmarkButton.tintColor = .foreground4
-        bookmarkButton.addAction(.init(handler: { [unowned self] _ in
-            delegate?.postCellDidTap(self, cachedIsBookmarked ? .unbookmark : .bookmark)
-            cachedIsBookmarked.toggle()
-        }), for: .touchUpInside)
+        bookmarkButton.constrainToSize(width: 36)
+        bookmarkButton.contentHorizontalAlignment = .center
+        bottomButtonStack.distribution = .fill
+        bottomButtonStack.arrangedSubviews.dropFirst().dropLast().forEach { view in
+            view.widthAnchor.constraint(equalTo: replyButton.widthAnchor).isActive = true
+        }
         
         zapsLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)

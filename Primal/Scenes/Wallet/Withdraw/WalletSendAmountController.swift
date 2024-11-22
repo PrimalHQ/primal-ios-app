@@ -53,7 +53,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
-    let profilePictureView = FLAnimatedImageView().constrainToSize(88)
+    let profilePictureView = UserImageView(height: 88)
     let nameLabel = UILabel()
     let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
     lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
@@ -155,14 +155,9 @@ private extension WalletSendAmountController {
         input.animateReversed = false
         input.isSettingFirstTime = false
         
-        profilePictureView.contentMode = .scaleAspectFill
-        profilePictureView.layer.masksToBounds = true
-        profilePictureView.layer.cornerRadius = 44
-        
         if let user = destination.user {
             profilePictureView.setUserImage(user)
             
-            profilePictureView.isUserInteractionEnabled = true
             profilePictureView.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
                 self?.show(ProfileViewController(profile: user), sender: nil)
             })

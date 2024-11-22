@@ -79,13 +79,14 @@ private extension SettingsMainViewController {
         let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Accounts")
         let notifications = SettingsOptionButton(title: "Notifications")
-        let feeds = SettingsOptionButton(title: "Feeds")
+        let devMode = SettingsOptionButton(title: "Dev Mode")
+        devMode.isHidden = true
         let zaps = SettingsOptionButton(title: "Zaps")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, notifications, feeds, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -111,13 +112,14 @@ private extension SettingsMainViewController {
         }
         
         guard LoginManager.instance.method() == .nsec else {
-            [keys, feeds, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
+            [keys, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
             return
         }
         
         keys.addTarget(self, action: #selector(keysPressed), for: .touchUpInside)
-        feeds.addTarget(self, action: #selector(feedsPressed), for: .touchUpInside)
 
+        devMode.addAction(.init(handler: { [weak self] _ in self?.show(SettingsDevModeController(), sender: nil) }), for: .touchUpInside)
+        
         wallet.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsWalletViewController(), animated: true)
         }), for: .touchUpInside)
@@ -145,10 +147,6 @@ private extension SettingsMainViewController {
         zaps.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
         }), for: .touchUpInside)
-    }
-    
-    @objc func feedsPressed() {
-        navigationController?.pushViewController(SettingsFeedViewController(), animated: true)
     }
     
     @objc func keysPressed() {

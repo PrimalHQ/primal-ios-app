@@ -66,9 +66,9 @@ class Highlight {
 struct PrimalFeed: Codable {
     var name: String
     var spec: String
-    var description: String?
-    var feedkind: String?
-    var enabled: Bool?
+    var description: String = ""
+    var feedkind: String = ""
+    var enabled: Bool = true
 }
 
 extension PostRequestResult {
@@ -83,11 +83,9 @@ extension PostRequestResult {
 
 extension PostRequestResult {
     func getArticles() -> [Article] {
-        let posts = process()
+        let posts = process(contentStyle: .threadChildren)
         
-        let mentions: [ParsedContent] = mentions
-            .compactMap({ createPrimalPost(content: $0) })
-            .map { parse(post: $0.0, user: $0.1, mentions: [], removeExtractedPost: false) }
+        let mentions: [ParsedContent] = NoteProcessor(result: self, contentStyle: .embedded).secondLevelMentions
         
         let parsedUsers = getSortedUsers()
         
@@ -145,7 +143,7 @@ extension PostRequestResult {
     }
     
     func getHighlightComments() -> [String: [ParsedContent]] {
-        return process().reduce(into: [:]) { partialResult, comment in
+        return process(contentStyle: .threadChildren).reduce(into: [:]) { partialResult, comment in
             guard let content = comment.replyingTo?.post.content else { return }
 
             partialResult[content] = partialResult[content, default: []] + [comment]

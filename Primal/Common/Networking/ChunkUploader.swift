@@ -23,6 +23,7 @@ class ChunkUploader {
     let startingOffset: Int
     let uploadId: String
     let fileLength: Int
+    let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
     @Published private(set) var progress: CGFloat = 0
     @Published private(set) var completed = false
@@ -50,7 +51,7 @@ class ChunkUploader {
         var offset = startingOffset
         
         for (index, chunk) in chunks.enumerated() {
-            guard let event = NostrObject.uploadChunk(fileLength: fileLength, uploadID: uploadId, offset: offset, data: chunk) else {
+            guard let event = NostrObject.uploadChunk(fileLength: fileLength, uploadID: uploadId, offset: offset, data: chunk, appVersion: appVersion ?? "") else {
                 throw UploadError.unableToProcess
             }
             

@@ -23,23 +23,8 @@ enum KeyboardState {
 /// Publisher to read keyboard changes.
 extension Publishers {
     static var keyboardState: AnyPublisher<KeyboardState, Never> {
-        Publishers.Merge(
-            Just(.hidden),
-            Publishers.Merge(
-                NotificationCenter.default
-                    .publisher(for: UIResponder.keyboardDidShowNotification)
-                    .map { notification in
-                        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-                            return .shown(height: keyboardFrame.cgRectValue.height)
-                        }
-                        return .shown(height: 360)
-                    },
-                
-                NotificationCenter.default
-                    .publisher(for: UIResponder.keyboardDidHideNotification)
-                    .map { _ in .hidden }
-            )
-        )
-        .eraseToAnyPublisher()
+        KeyboardManager.instance.$keyboardHeight
+            .map { $0 < 1 ? .hidden : .shown(height: $0) }
+            .eraseToAnyPublisher()
     }
 }

@@ -136,7 +136,7 @@ private extension WalletInAppPurchaseController {
             countryCode = storefront.countryCode
         }
         
-        InAppPurchaseManager.shared.fetchAvailableProducts { [weak self] products in
+        InAppPurchaseManager.shared.fetchWalletProducts { [weak self] products in
             products.forEach { product in
                 guard let self = self else { return }
                 self.product = product

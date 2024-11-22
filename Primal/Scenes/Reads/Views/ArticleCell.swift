@@ -15,7 +15,7 @@ protocol ArticleCellDelegate: AnyObject {
 }
 
 class ArticleCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView().constrainToSize(22)
+    let avatar = UserImageView(height: 22)
     let nameLabel = UILabel()
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
@@ -95,9 +95,9 @@ class ArticleCell: UITableViewCell, Themeable {
         }
         
         timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
-        avatar.setUserImage(content.user)
+        avatar.setUserImage(content.user, disableAnimated: true)
         nameLabel.text = content.user.data.firstIdentifier
-        commentLabel.text = "\(content.stats.replies) comments"
+        commentLabel.text = "\(content.stats.replies ?? 0) comments"
         
         if content.zaps.isEmpty {
             zapIcon.isHidden = true
@@ -190,14 +190,10 @@ private extension ArticleCell {
         let mainStack = UIStackView(axis: .vertical, [firstRow, contentStack, botStack])
         mainStack.spacing = 8
         
-        avatar.layer.cornerRadius = 11
-        avatar.layer.masksToBounds = true
-        avatar.contentMode = .scaleAspectFill
-        
         nameLabel.font = .appFont(withSize: 15, weight: .regular)
         timeLabel.font = .appFont(withSize: 15, weight: .regular)
         
-        titleLabel.font = .appFont(withSize: 22, weight: .heavy)
+        titleLabel.font = .appFont(withSize: 16, weight: .heavy)
         durationLabel.font = .appFont(withSize: 15, weight: .regular)
         commentLabel.font = .appFont(withSize: 15, weight: .regular)
         

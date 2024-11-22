@@ -14,7 +14,14 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
+extension PostCell {
+    var currentVideoCells: [VideoCell] {
+        [mainImages.currentVideoCell(), postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
+            .compactMap { $0 }
+    }
+}
+
+class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
@@ -24,8 +31,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
-    
-    let loadingSpinner = LoadingSpinnerView()
     
     var postCellID = "cell" // Needed for updating the theme
     
@@ -43,15 +48,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return
             }
             
-            let isAddingAtEnd = oldValue.first?.post.id == posts.first?.post.id
+            if oldValue.first?.post.id == posts.first?.post.id {
+                // Adding at the end
+                table.reloadData()
+                return
+            }
             
-            let indexes: [IndexPath] = {
-                if isAddingAtEnd {
-                    return (oldValue.count..<posts.count).map { IndexPath(row: $0, section: postSection) }
-                }
-                return (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
-            }()
-            
+            // Adding at the start
+            let indexes: [IndexPath] =  (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
             table.insertRows(at: indexes, with: .none)
         }
     }
@@ -86,16 +90,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         hapticGenerator.prepare()
         heavy.prepare()
         
-        guard
-            ContentDisplaySettings.autoPlayVideos,
-            let playingRN = VideoPlaybackManager.instance.currentlyPlaying?.url,
-            let index = posts.firstIndex(where: { post in  post.mediaResources.contains(where: { $0.url == playingRN }) }),
-            table.indexPathsForVisibleRows?.contains(where: { $0.section == postSection && $0.row == index }) == true
-        else { return }
-        
-        DispatchQueue.main.async {
-            VideoPlaybackManager.instance.currentlyPlaying?.play()
-        }
+        playVideoOnScroll()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -118,12 +113,41 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevTransform: CGFloat = 0
+    
+    func playVideoOnScroll() {
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, presentedViewController == nil else { return }
+        
+        let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
+
+        let firstPlayableCell: VideoCell? = allVideoCells.first(where: { cell in
+            let bounds = cell.contentView.convert(cell.contentView.bounds, to: nil)
+            
+            return bounds.midY > 20 && bounds.midY < view.frame.height
+        })
+        
+        let lastPlayer = firstPlayableCell?.player
+        
+        DispatchQueue.main.async {
+            allVideoCells.forEach {
+                if $0.player?.url != lastPlayer?.url {
+                    $0.player?.pause()
+                }
+            }
+            lastPlayer?.play()
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        playVideoOnScroll()
+        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         prevPosition = newPosition
         
-        if !scrollView.isTracking { return }
+        // System sometimes updates table contentOffset without moving the cells
+        // so if delta is larger than 50 we ignore it
+        if abs(delta) > 50 { return }
+        
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
@@ -131,14 +155,13 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         setBarsToTransform(newTransform)
     }
     
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        if velocity.y < -0.1 {
-            animateBarsToVisible()
-        } else if velocity.y > 0.1 {
-            animateBarsToInvisible()
-        } else {
-            setBarsDependingOnPosition()
-        }
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if decelerate { return }
+        setBarsDependingOnPosition()
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        setBarsDependingOnPosition()
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -181,7 +204,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     
     @discardableResult
-    func open(post: ParsedContent) -> FeedViewController {
+    func open(post: ParsedContent) -> NoteViewController {
         let threadVC = ThreadViewController(post: post)
         showViewController(threadVC)
         return threadVC
@@ -214,15 +237,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return cell
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard ContentDisplaySettings.autoPlayVideos, let postCell = cell as? PostCell else { return }
-        
-        DispatchQueue.main.async {
-            guard let videoCell = postCell.mainImages.currentVideoCell() ?? postCell.postPreview.mainImages.currentVideoCell() else { return }
-            videoCell.player?.play()
-        }
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
         open(post: post)
@@ -230,7 +244,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func updateTheme() {        
         updateCellID()
-        table.register(FeedDesign.current.feedCellClass, forCellReuseIdentifier: postCellID)
+        table.register(PostFeedCell.self, forCellReuseIdentifier: postCellID)
         table.reloadData()
         
         view.backgroundColor = .background2
@@ -248,7 +262,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let info = String(infoSub)
         
         if urlString.hasPrefix("hashtag"), info.isHashtag {
-            let feed = RegularFeedViewController(feed: FeedManager(search: info))
+            let advancedSearch = AdvancedSearchManager()
+            advancedSearch.includeWordsText = info
+            let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearch.feed))
             showViewController(feed)
             return
         }
@@ -262,9 +278,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
         
         if urlString.hasPrefix("note") {
-            guard let ref = content?.notes.first(where: { $0.text == info })?.reference else { return }
-            
-            let thread = ThreadViewController(threadId: ref)
+            let thread = ThreadViewController(threadId: info)
             showViewController(thread)
             return
         }
@@ -329,7 +343,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         case .post:
             open(post: post)
         case .like:
-            PostingManager.instance.sendLikeEvent(post: post.post)
+            PostingManager.instance.sendLikeEvent(referenceEvent: post.post)
             
             hapticGenerator.impactOccurred()
             
@@ -407,7 +421,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 }
 
-private extension FeedViewController {
+private extension NoteViewController {
     func updateCellID() {
         postCellID += "1"
     }
@@ -424,7 +438,7 @@ private extension FeedViewController {
         table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
 
         DispatchQueue.main.async {
-            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
+            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
             self.table.contentInset = .init(top: self.barsMaxTransform, left: 0, bottom: 90, right: 0)
             self.table.contentOffset = .init(x: 0, y: -self.barsMaxTransform)
         }
@@ -434,9 +448,6 @@ private extension FeedViewController {
         
         table.refreshControl = refreshControl
         
-        view.addSubview(loadingSpinner)
-        loadingSpinner.centerToSuperview().constrainToSize(70)
-        
         updateTheme()
         
         barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
@@ -444,14 +455,17 @@ private extension FeedViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
                 
-                if let menu = self.parent as? MenuContainerController, menu.isOpen { return }
-                
+                if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
+                    
                 self.animateBarsToVisible()
             }
         }
         
-        WalletManager.instance.zapEvent.debounce(for: 0.6, scheduler: RunLoop.main).sink { [weak self] zap in
-            guard let self, let index = posts.firstIndex(where: { $0.post.id == zap.postId }) else { return }
+        WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard
+                let self, 
+                let index = posts.firstIndex(where: { $0.post.id == zap.postId })
+            else { return }
             
             var zaps = posts[index].zaps
             if zaps.contains(where: { $0.receiptId == zap.receiptId }) { return }
@@ -466,7 +480,7 @@ private extension FeedViewController {
                 table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
             else { return }
             
-            if posts[index].zaps.count > 2, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
+            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
                 cell.updateMenu(posts[index])
             } else {
                 table.reloadData()
@@ -499,7 +513,7 @@ private extension FeedViewController {
         }
         
         if showPopup {
-            let popup = PopupZapSelectionViewController(userToZap: postUser) { self.doZapFromCell(cell, amount: $0, message: $1) }
+            let popup = PopupZapSelectionViewController(entityToZap: postUser) { self.doZapFromCell(cell, amount: $0, message: $1) }
             present(popup, animated: true)
             return
         }
@@ -557,20 +571,18 @@ private extension FeedViewController {
     func animateZap(_ cell: PostCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
-        let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : (cell.zapGallery as? LargeZapGalleryView)?.zapPillButton.imageView
+        heavy.impactOccurred()
         
-        if let iconToPin {
-            view.addSubview(animView)
-            animView
-                .centerToView(iconToPin, axis: .vertical, offset: 2)
-                .centerToView(iconToPin, axis: .horizontal, offset: 62)
-        }
+        guard let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : nil else { return }
         
         view.layoutIfNeeded()
         
         cell.zapButton.animateTo(amount, filled: true)
         
-        heavy.impactOccurred()
+        view.addSubview(animView)
+        animView
+            .centerToView(iconToPin, axis: .vertical, offset: 2)
+            .centerToView(iconToPin, axis: .horizontal, offset: 62)
         
         animView.alpha = 1
         animView.play()
@@ -585,7 +597,7 @@ private extension FeedViewController {
     }
 }
 
-extension FeedViewController: PostCellDelegate {
+extension NoteViewController: PostCellDelegate {
     func postCellDidTapRepost(_ cell: PostCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         let post = posts[indexPath.row].post
@@ -656,7 +668,7 @@ extension FeedViewController: PostCellDelegate {
         
         if let videoCell = cell.mainImages.currentVideoCell(), videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
             videoCell.player?.play()
-            videoCell.player?.isMuted = false
+            VideoPlaybackManager.instance.isMuted = false
             return
         }
         
@@ -668,9 +680,7 @@ extension FeedViewController: PostCellDelegate {
         
         present(FullScreenVideoPlayerController(player), animated: true) 
     }
-}
-
-extension FeedViewController: ZapGalleryViewDelegate {
+    
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
         let profileVC = ProfileViewController(profile: zap.user)
         var items: [UIAction] = [

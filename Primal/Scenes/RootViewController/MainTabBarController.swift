@@ -17,30 +17,29 @@ extension UIViewController {
 }
 
 enum MainTab: String {
-    case home, reads, wallet, messages, notifications
+    case home, reads, wallet, notifications, explore
     
     var tabImage: UIImage? {
-        UIImage(named: "tabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
+        UIImage(named: "tabIcon-\(rawValue)")
     }
     
     var selectedTabImage: UIImage? {
-        UIImage(named: "selectedTabIcon-\(rawValue)")?.scalePreservingAspectRatio(size: 20).withRenderingMode(.alwaysTemplate)
+        UIImage(named: "selectedTabIcon-\(rawValue)")
     }
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = FeedNavigationController()
+    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController()))
     lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
     lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
-    lazy var messages = MainNavigationController(rootViewController: MenuContainerController(child: ChatListViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
+    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
 
     lazy var buttons = tabs.map { _ in UIButton() }
-
+    
     let notificationIndicator = NotificationsIndicator()
-    let messagesIndicator = NotificationsIndicator()
     
     private let buttonStackParent = UIView()
     private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
@@ -70,17 +69,28 @@ final class MainTabBarController: UIViewController, Themeable {
 
     var cancellables: Set<AnyCancellable> = []
     
-    private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .messages]
-
-    var hasNewNotifications = false {
+    private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
+    
+    var continousConnection: ContinousConnection? {
         didSet {
-            notificationIndicator.isHidden = !hasNewNotifications
+            oldValue?.end()
         }
     }
     
-    var hasNewMessages = false {
+    let chatManager = ChatManager()
+    var newMessageCount = 0 {
         didSet {
-            messagesIndicator.isHidden = !hasNewMessages
+            for tab in tabs {
+                (navForTab(tab).viewControllers.first as? MenuContainerController)?.newMessageCount = newMessageCount
+            }
+        }
+    }
+    
+    var newNotifications: Int = 0 {
+        didSet {
+            if newNotifications == oldValue { return }
+            
+            notificationIndicator.isHidden = newNotifications < 1
         }
     }
 
@@ -103,11 +113,20 @@ final class MainTabBarController: UIViewController, Themeable {
     init() {
         super.init(nibName: nil, bundle: nil)
         setup()
+        
+        chatManager.updateChatCount()
+        chatManager.$newMessagesCount.removeDuplicates().receive(on: DispatchQueue.main)
+            .sink { [weak self] newMessages in
+                self?.newMessageCount = newMessages
+            }
+            .store(in: &cancellables)
+    }
+    
+    deinit {
+        continousConnection?.end()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func hideForMenu() {
         UIView.animate(withDuration: 0.3) {
@@ -125,15 +144,16 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
 
+    var updateChildren = false
     func updateTheme() {
         view.backgroundColor = .background
-        safeAreaSpacer.backgroundColor = .background
-        buttonStackParent.backgroundColor = .background
 
         updateButtons()
 
-        [home, reads, wallet, messages, notifications].forEach {
-            $0.updateThemeIfThemeable()
+        if updateChildren {
+            [home, reads, wallet, notifications, explore].forEach {
+                $0.updateThemeIfThemeable()
+            }
         }
         
         navigationBorder.backgroundColor = .background3
@@ -158,10 +178,10 @@ final class MainTabBarController: UIViewController, Themeable {
             return reads
         case .wallet:
             return wallet
-        case .messages:
-            return messages
         case .notifications:
             return notifications
+        case .explore:
+            return explore
         }
     }
     
@@ -177,6 +197,9 @@ final class MainTabBarController: UIViewController, Themeable {
         
         if nav == currentTab { return }
         
+        nav.beginAppearanceTransition(true, animated: true)
+        currentTab.beginAppearanceTransition(false, animated: true)
+        
         nav.willMove(toParent: self)
         addChild(nav) // Add child VC
         vcParentView.addSubview(nav.view)
@@ -187,16 +210,16 @@ final class MainTabBarController: UIViewController, Themeable {
         
         nav.view.alpha = 0
         
-        currentTab.view.transform = .init(translationX: 0, y: 50) // No idea why we need to set it to 50 offset, such is life
-        
         UIView.animate(withDuration: 5 / 30, delay: 0, options: [.curveEaseIn]) {
             currentTab.view.alpha = 0
-            currentTab.view.transform = .init(translationX: 0, y: 90)
+            currentTab.view.transform = .init(translationX: 0, y: 40)
         } completion: { _ in
             currentTab.willMove(toParent: nil)
             currentTab.removeFromParent()
             currentTab.view.removeFromSuperview()
             currentTab.didMove(toParent: nil)
+            
+            currentTab.endAppearanceTransition()
             
             currentTab.view.alpha = 1
             currentTab.view.transform = .identity
@@ -204,6 +227,8 @@ final class MainTabBarController: UIViewController, Themeable {
         
         UIView.animate(withDuration: 5 / 30, delay: 3 / 30, options: [.curveEaseOut]) {
             nav.view.alpha = 1
+        } completion: { _ in
+            nav.endAppearanceTransition()
         }
     }
     
@@ -215,7 +240,10 @@ final class MainTabBarController: UIViewController, Themeable {
 
 private extension MainTabBarController {
     func setup() {
+        IdentityManager.instance.requestUserProfile()
+        
         updateTheme()
+        updateChildren = true
         
         view.addSubview(vcParentView)
         vcParentView.pinToSuperview()
@@ -230,7 +258,11 @@ private extension MainTabBarController {
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-
+        
+        let background = ThemeableView().setTheme { $0.backgroundColor = .background }
+        buttonStackParent.addSubview(background)
+        background.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -100)
+        
         buttonStackParent.addSubview(buttonStack)
         buttonStack
             .pinToSuperview(edges: [.horizontal, .top])
@@ -239,18 +271,14 @@ private extension MainTabBarController {
         buttonStack.distribution = .fillEqually
         
         buttonStack.addSubview(notificationIndicator)
-        buttonStack.addSubview(messagesIndicator)
+        
         if let imageView = buttons.dropLast().last?.imageView {
-            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
-        }
-        if let imageView = buttons.last?.imageView {
-            messagesIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -6)
+            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
         }
         notificationIndicator.isHidden = true
-        messagesIndicator.isHidden = true
 
         vStack.axis = .vertical
-
+        
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()
             .sink { _ in
@@ -287,6 +315,25 @@ private extension MainTabBarController {
             }
             .store(in: &cancellables)
         
+        Connection.regular.isConnectedPublisher.filter { $0 }.receive(on: DispatchQueue.main).sink { [weak self] _ in
+            self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
+                "pubkey": .string(IdentityManager.instance.userHexPubkey)
+            ])) { response in
+                guard let resDict = response.arrayValue?.last?.objectValue else { return }
+                
+                var sum: Double = 0
+                for type in NotificationType.allCases {
+                    let key = String(type.rawValue)
+                    sum += resDict[key]?.doubleValue ?? 0
+                }
+                
+                DispatchQueue.main.async {
+                    self?.newNotifications = Int(sum)
+                }
+            }
+        }
+        .store(in: &cancellables)
+        
         updateButtons()
         addCircleWalletButton()
         
@@ -303,18 +350,18 @@ private extension MainTabBarController {
     }
     
     func addCircleWalletButton() {
-        vStack.insertSubview(circleBorderView, at: 0)
+        buttonStackParent.insertSubview(circleBorderView, at: 0)
         circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
         circleBorderView.layer.borderWidth = 1
         circleBorderView.layer.cornerRadius = 32
         
         let frontCover = ThemeableView().constrainToSize(62).setTheme { $0.backgroundColor = .background }
         frontCover.layer.cornerRadius = 31
-        vStack.addSubview(frontCover)
+        buttonStackParent.addSubview(frontCover)
         frontCover.pinToSuperview(edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
         
         circleWalletButton.layer.cornerRadius = 26
-        vStack.addSubview(circleWalletButton)
+        buttonStackParent.addSubview(circleWalletButton)
         circleWalletButton.pinToSuperview(edges: .top, padding: -1).centerToSuperview(axis: .horizontal)
         
         circleWalletButton.addAction(.init(handler: { [weak self] _ in
@@ -366,6 +413,56 @@ private extension MainTabBarController {
                 $0.setContentOffset(.zero, animated: true)
             }
         }
+    }
+}
+
+final class NumberedNotificationIndicator: UIView, Themeable {
+    var number: Int {
+        didSet {
+            update()
+        }
+    }
+    
+    private let label = UILabel()
+    
+    init(number: Int = 0) {
+        self.number = number
+        super.init(frame: .zero)
+        
+        addSubview(label)
+        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5)
+        label.font = .appFont(withSize: 12, weight: .medium)
+        label.textColor = .white
+        label.textAlignment = .center
+
+        constrainToSize(height: 16)
+        widthAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
+        layer.cornerRadius = 8
+        
+        updateTheme()
+        update()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    private func update() {
+        if number <= 0 {
+            isHidden = true
+            return
+        }
+        
+        isHidden = false
+        
+        if number > 99 {
+            label.text = "99+"
+            return
+        }
+        
+        label.text = "\(number)"
+    }
+    
+    func updateTheme() {
+        backgroundColor = .accent
     }
 }
 

@@ -13,7 +13,7 @@ class FeedMarketplaceCell: UITableViewCell {
     let titleLabel = UILabel()
     let subtitleLabel = UILabel()
     
-    let freePaidView = FreePaidInfoView()
+    let freePaidView = FreePaidInfoView().constrainToSize(width: 40)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -54,7 +54,10 @@ class FeedMarketplaceCell: UITableViewCell {
     func setup(_ feed: FeedFromMarket) {
         titleLabel.text = feed.name
         subtitleLabel.text = feed.about
-        feedImageView.kf.setImage(with: URL(string: feed.picture ?? ""), options: [
+        
+        let defaultImage = UIImage(named: "dvmDefault")?.withTintColor(.foreground6).withRenderingMode(.alwaysOriginal)
+        
+        feedImageView.kf.setImage(with: URL(string: feed.picture ?? feed.image ?? ""), placeholder: defaultImage, options: [
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage,
             .processor(ResizingImageProcessor(referenceSize: .init(width: 40, height: 40)))
@@ -74,7 +77,7 @@ class FeedMarketplaceCell: UITableViewCell {
 
 class FreePaidInfoView: UIView {
     enum State {
-        case free, paid
+        case free, paid, sub
     }
     
     var state = State.free {
@@ -93,7 +96,7 @@ class FreePaidInfoView: UIView {
         
         label.font = .appFont(withSize: 10, weight: .bold)
         
-        constrainToSize(width: 40, height: 18)
+        constrainToSize(height: 18)
         layer.cornerRadius = 9
         
         update()
@@ -111,6 +114,10 @@ class FreePaidInfoView: UIView {
             label.text = "PAID"
             label.textColor = .white
             backgroundColor = UIColor(rgb: 0xFC6337)
+        case .sub:
+            label.text = "PAID"
+            label.textColor = .white
+            backgroundColor = .accent
         }
     }
 }

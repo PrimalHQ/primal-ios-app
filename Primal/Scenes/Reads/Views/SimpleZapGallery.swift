@@ -38,7 +38,7 @@ class UserGalleryView: UIView {
 }
 
 class UserAvatarView: UIView {
-    let image = FLAnimatedImageView().constrainToSize(22)
+    let image = UserImageView(height: 22)
     
     init(user: ParsedUser) {
         super.init(frame: .zero)
@@ -47,7 +47,7 @@ class UserAvatarView: UIView {
         image.layer.cornerRadius = 11
         image.layer.masksToBounds = true
         
-        image.setUserImage(user, size: .init(width: 22, height: 22))
+        image.setUserImage(user, disableAnimated: true)
         
         let imageBackground = UIView().constrainToSize(24)
         imageBackground.layer.cornerRadius = 12

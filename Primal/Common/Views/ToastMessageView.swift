@@ -8,11 +8,11 @@
 import UIKit
 
 extension UIView {
-    func showToast(_ text: String, durationSeconds: Int = 3, extraPadding: CGFloat = 90) {
-        let view = ToastMessageView(text: text)
+    func showToast(_ text: String, icon: UIImage? = UIImage(named: "toastCheckmark"), durationSeconds: Int = 3, extraPadding: CGFloat = 90) {
+        let view = ToastMessageView(text: text, image: icon)
         addSubview(view)
         
-        view.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .bottom, padding: 18 + extraPadding)
+        view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 18 + extraPadding)
         
         view.alpha = 0
         view.transform = .init(translationX: 0, y: 50)
@@ -34,23 +34,29 @@ extension UIView {
 }
 
 class ToastMessageView: UIView {
-    init(text: String) {
+    init(text: String, image: UIImage? = UIImage(named: "toastCheckmark")) {
         super.init(frame: .zero)
+        
+        let theme = Theme.inverse
+        
+        let icon = UIImageView(image: image)
+        icon.tintColor = theme.foreground
         
         let label = UILabel()
         label.text = text
-        label.textColor = .foreground
-        label.font = .appFont(withSize: 18, weight: .regular)
-        label.textAlignment = .center
+        label.textColor = theme.foreground
+        label.font = .appFont(withSize: 16, weight: .semibold)
         label.numberOfLines = 0
         
-        addSubview(label)
-        label.pinToSuperview(padding: 16)
+        let stack = UIStackView([icon, label])
+        stack.alignment = .center
+        stack.spacing = 9
         
-        backgroundColor = .background3
-        layer.cornerRadius = 8
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.foreground.withAlphaComponent(0.1).cgColor
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 12)
+        
+        backgroundColor = theme.background
+        layer.cornerRadius = 22
     }
     
     required init?(coder: NSCoder) {

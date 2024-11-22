@@ -7,6 +7,7 @@
 
 import Foundation
 import StoreKit
+import GenericJSON
 
 enum IAPHandlerAlertType {
     case disabled
@@ -24,10 +25,43 @@ enum IAPHandlerAlertType {
 
 final class InAppPurchaseManager: NSObject {
     static let shared = InAppPurchaseManager()
-    private override init() { }
+    private override init() {
+        
+        let transactions = Transaction.all
+        
+        print(transactions)
+    
+        
+        Task { @MainActor in
+            
+            for await transaction in Transaction.currentEntitlements {
+                print(transaction)
+            }
+            
+            print("END")
+            
+            for await result in Transaction.updates {
+                switch result {
+                case .verified(let transaction):
+                    print(transaction)
+                    break
+                    // Deliver the purchased content
+                case .unverified(let transaction, let error):
+                    print(transaction)
+                    print(error)
+                    break
+                    // Handle the error
+                }
+            }
+        }
+    }
+    
+    static let monthlyPremiumId = "monthlyPremium"
+    static let yearlyPremiumId = "yearlyPremium"
     
     //MARK: - Private
     fileprivate let productIds: Set<String> = ["MINSATS"]
+
     fileprivate var productID = ""
     fileprivate var productsRequest = SKProductsRequest()
     fileprivate var fetchProductCompletion: (([SKProduct])->Void)?
@@ -54,12 +88,85 @@ final class InAppPurchaseManager: NSObject {
         productID = product.productIdentifier
     }
     
-    func fetchAvailableProducts(completion: @escaping (([SKProduct])->Void)){
+    func purchase(product: Product, completion: @escaping ((Product.PurchaseResult?) -> Void)) {
+        guard canMakePurchases() else {
+            completion(nil)
+            return
+        }
+       
+        Task { @MainActor in
+            do {
+                let result = try await product.purchase()
+                
+                completion(result)
+
+                switch result {
+                case .success(let verification):
+                    switch verification {
+                    case .verified(let transaction):
+                        // Handle successful purchase
+                        await transaction.finish()
+                        print("Purchase successful: \(transaction.id)")
+                    case .unverified(_, let error):
+                        print("Purchase error: \(error)")
+                    }
+                case .userCancelled:
+                    print("User cancelled the purchase.")
+                case .pending:
+                    print("Transaction pending.")
+                @unknown default:
+                    break
+                }
+            } catch {
+                completion(nil)
+                print("Purchasing error \(error)")
+            }
+        }
+    }
+    
+    func fetchWalletProducts(completion: @escaping (([SKProduct])->Void)){
         fetchProductCompletion = completion
                 
         productsRequest = SKProductsRequest(productIdentifiers: productIds)
         productsRequest.delegate = self
         productsRequest.start()
+        
+//        let productIds = productIds
+//        Task { @MainActor in
+//            do {
+//                let products = try await Product.products(for: productIds)
+//                for product in products {
+//                    print("Product: \(product.displayName), Price: \(product.displayPrice)")
+//                }
+//            } catch {
+//                print("Failed to fetch products: \(error)")
+//            }
+//        }
+    }
+    
+    func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product])->Void)) {
+        let productIds = [Self.monthlyPremiumId, Self.yearlyPremiumId]
+        
+        Task { @MainActor in
+            do {
+                let products = try await Product.products(for: productIds)
+                completion(products)
+            } catch {
+                completion([])
+                print("Failed to fetch products: \(error)")
+            }
+        }
+    }
+    
+    func checkSubscriptionStatus() async -> Bool {
+        do {
+            for await transaction in Transaction.currentEntitlements {
+                return true
+            }
+        } catch {
+            print("Failed to check subscription: \(error)")
+        }
+        return false
     }
 }
 

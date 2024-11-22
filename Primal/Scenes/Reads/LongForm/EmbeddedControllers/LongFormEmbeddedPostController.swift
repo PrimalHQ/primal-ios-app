@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LongFormEmbeddedPostController<T: PostCell>: FeedViewController {
+class LongFormEmbeddedPostController<T: PostCell>: NoteViewController {
     override var barsMaxTransform: CGFloat { 0 }
     
     var heightConstraint: NSLayoutConstraint?
@@ -33,8 +33,6 @@ class LongFormEmbeddedPostController<T: PostCell>: FeedViewController {
         constraint.priority = .defaultHigh
         constraint.isActive = true
         self.heightConstraint = constraint
-        
-        loadingSpinner.removeFromSuperview()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

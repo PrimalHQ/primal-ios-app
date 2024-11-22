@@ -100,8 +100,10 @@ extension FixedWidthInteger {
     
     func satsToUsdAmountString(_ roundingStyle: RoundingStyle) -> String {
         switch roundingStyle {
+        case .threeDecimals:
+            return Double(self).satToUSD.nDecimalPoints(n: 3)
         case .twoDecimals:
-            return Double(self).satToUSD.twoDecimalPoints()
+            return Double(self).satToUSD.nDecimalPoints(n: 2)
         case .removeZeros:
             return Double(self).satToUSD.localized()
         }
@@ -127,11 +129,11 @@ extension Double {
         return nf.string(from: self as NSNumber) ?? ""
     }
     
-    func twoDecimalPoints() -> String {
+    func nDecimalPoints(n: Int) -> String {
         let nf = NumberFormatter()
         nf.numberStyle = .decimal
-        nf.maximumFractionDigits = 2
-        nf.minimumFractionDigits = 2
+        nf.maximumFractionDigits = n
+        nf.minimumFractionDigits = n
         return nf.string(from: self as NSNumber) ?? ""
     }
 }

@@ -363,8 +363,6 @@ private extension ArticleViewController {
     }
     
     func populateContent() {
-        let oldViewCount = contentStack.arrangedSubviews.count
-        
         topInfoView.update(content)
         
         let parsedContent = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: content.stats), user: content.user)
@@ -372,9 +370,15 @@ private extension ArticleViewController {
         topInfoView.zapEmbededController.posts = [parsedContent]
         infoVC.posts = [parsedContent]
         
-        commentZapPill.sats = content.stats.satszapped
+        commentZapPill.sats = content.stats.satszapped ?? 0
         
-        if oldViewCount > 0 { return } // Temporary
+        guard contentStack.arrangedSubviews.isEmpty else { return } // Temporary until we build a solution that will update current webviews
+        
+        contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        embeddedPostControllers = []
+        webViews = []
+        
+        let parts = parts
         
         let parser = MarkdownParser()
         for part in parts {

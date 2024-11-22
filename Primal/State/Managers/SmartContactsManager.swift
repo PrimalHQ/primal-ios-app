@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-private extension String {
+extension String { // TODO: Remove in 2025
     static let smartContactListKey = "smartContactListKey"
     static let smartContactDefaultListKey = "smartContactDefaultListKey"
 }
@@ -16,29 +16,15 @@ private extension String {
 struct CodableParsedUser: Codable {
     let data: PrimalUser
     let profileImage: MediaMetadata.Resource
-    let likes: Int?
     let followers: Int?
     
     init(_ parsed: ParsedUser) {
         data = parsed.data
         profileImage = parsed.profileImage
-        likes = parsed.likes
         followers = parsed.followers
     }
     
-    var parsed: ParsedUser { .init(data: data, profileImage: profileImage, likes: likes, followers: followers) }
-}
-
-private extension UserDefaults {
-    var smartContactLists: [String: [CodableParsedUser]] {
-        get { string(forKey: .smartContactListKey)?.decode() ?? [:] }
-        set { setValue(newValue.encodeToString(), forKey: .smartContactListKey) }
-    }
-    
-    var smartContactDefaultList: [String: [CodableParsedUser]] {
-        get { string(forKey: .smartContactDefaultListKey)?.decode() ?? [:] }
-        set { setValue(newValue.encodeToString(), forKey: .smartContactDefaultListKey) }
-    }
+    var parsed: ParsedUser { .init(data: data, profileImage: profileImage, followers: followers) }
 }
 
 final class SmartContactsManager {
@@ -57,82 +43,84 @@ final class SmartContactsManager {
         "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
     ] }
     
+    var cachedContactPubkeys: [String: [String]] = [:]
+    var cachedDefaults: [String: [ParsedUser]] = [:]
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    private init() {
+        ICloudKeychainManager.instance.$userPubkey
+            .flatMap { pubkey in
+                DatabaseManager.instance.lastVisitedProfilePubkeysPublisher(pubkey)
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                print(completion)
+            } receiveValue: { [weak self] pubkeys in
+                self?.cachedContactPubkeys[IdentityManager.instance.userHexPubkey] = pubkeys
+            }
+            .store(in: &cancellables)
+    }
+    
     func userSearchPublisher(_ text: String) -> AnyPublisher<[ParsedUser], Never> {
         switch text {
         case "":
-            let contacts = getContacts()
-            let contactPubkeys = contacts.map { $0.data.pubkey }
+            let contactPubkeys = cachedContactPubkeys[IdentityManager.instance.userHexPubkey] ?? []
+            let allPubkeys = contactPubkeys + Self.recommendedUsersNpubs.filter { !contactPubkeys.contains($0) }
             
-            let searchContacts = Set((contactPubkeys + Self.recommendedUsersNpubs))
-            
-            let defaultContacts = getDefaultContacts()
-            
+            return DatabaseManager.instance.getProfilesPublisher(allPubkeys).first()
+                .replaceError(with: [])
+                .flatMap({ users in
+                    let orderedUsers = allPubkeys.compactMap { pubkey in users.first(where: { $0.data.pubkey == pubkey }) }
+                    return Publishers.Merge(Just(orderedUsers), {
+                        let missingPubkeys = allPubkeys.filter { pubkey in !users.contains(where: { $0.data.pubkey == pubkey && $0.followers != nil }) }
+                        
+                        if missingPubkeys.isEmpty { return Just(orderedUsers).eraseToAnyPublisher() }
+                        
+                        return SocketRequest(name: "user_infos", payload: ["pubkeys": .array(missingPubkeys.map { .string($0) })])
+                            .publisher()
+                            .map {
+                                let users = $0.getSortedUsers() + users
+                                
+                                return allPubkeys.compactMap { pubkey in users.first(where: { $0.data.pubkey == pubkey }) }
+                            }
+                            .eraseToAnyPublisher()
+                    }())
+                })
+                .eraseToAnyPublisher()
+        default:
             return Publishers.Merge(
-                Just((contacts + defaultContacts).map { $0 }),
-                
-                SocketRequest(name: "user_infos", payload: .object([
-                    "pubkeys": .array(searchContacts.map { .string($0) })
+                DatabaseManager.instance.searchProfilesPublisher(text).replaceError(with: []).first(),
+                SocketRequest(name: "user_search", payload: .object([
+                    "query": .string(text),
+                    "limit": .number(15),
                 ]))
                 .publisher()
-                .map {
-                    let users = $0.getSortedUsers()
-                    
-                    let myContacts = contacts.map({ contact in users.first(where: { $0.data.pubkey == contact.data.pubkey }) ?? contact })
-                    let other = users.filter { user in !myContacts.contains(where: { $0.data.npub == user.data.npub }) }
-                    
-                    SmartContactsManager.instance.setDefaultContacts(users)
-                    SmartContactsManager.instance.setContacts(myContacts)
-                    
-                    return myContacts + other
-                }
-            ).eraseToAnyPublisher()
-        default:
-            return SocketRequest(name: "user_search", payload: .object([
-               "query": .string(text),
-               "limit": .number(15),
-            ]))
-            .publisher()
-            .map { $0.getSortedUsers() }
+                .map { $0.getSortedUsers() }
+            )
+            .filter { !$0.isEmpty }
             .eraseToAnyPublisher()
         }
     }
     
-    func getDefaultContacts() -> [ParsedUser] {
-        let contacts = getContacts()
-        let defaults = UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] ?? []
-        
-        return defaults.filter({ defaultC in !contacts.contains(where: { defaultC.data.pubkey == $0.data.pubkey })}).map { $0.parsed }
-    }
-    
-    func setDefaultContacts(_ contacts: [ParsedUser]) {
-        let contacts = contacts.filter { Self.recommendedUsersNpubs.contains($0.data.pubkey) }
-        UserDefaults.standard.smartContactDefaultList[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
-    }
-    
-    func setContacts(_ contacts: [ParsedUser]) {
-        UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
-    }
-    
-    func getContacts() -> [ParsedUser] {
-        (UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] ?? []).map { $0.parsed }
-    }
-    
     func addContact(_ contact: ParsedUser) {
-        if contact.isCurrentUser {
-            // Can't add self as contact
-            return
-        }
+        if contact.data.pubkey == IdentityManager.instance.userHexPubkey { return }
+        if MuteManager.instance.isMuted(contact.data.pubkey) { return }
         
-        var contacts = getContacts()
-        if let old = contacts.first(where: { $0.data.pubkey == contact.data.pubkey }) {
-            contact.followers = contact.followers ?? old.followers
-            contact.likes = contact.likes ?? old.likes
-        }
-        contacts.removeAll(where: { $0.data.pubkey == contact.data.pubkey })
-        contacts.insert(contact, at: 0)
-        if contacts.count > 10 {
-            contacts.removeLast(contacts.count - 10)
-        }
-        UserDefaults.standard.smartContactLists[IdentityManager.instance.userHexPubkey] = contacts.map { .init($0) }
+        var cached = cachedContactPubkeys[IdentityManager.instance.userHexPubkey, default: []]
+        cached.removeAll(where: { $0 == contact.data.pubkey })
+        cached.insert(contact.data.pubkey, at: 0)
+        cachedContactPubkeys[IdentityManager.instance.userHexPubkey] = cached
+        
+        DatabaseManager.instance.setVisitProfiles([contact.data])
+    }
+    
+    func addContacts(_ contacts: [ParsedUser]) {
+        let contacts = contacts.map { $0.data }
+            .filter({ $0.pubkey != IdentityManager.instance.userHexPubkey && !MuteManager.instance.isMuted($0.pubkey) })
+        
+        if contacts.isEmpty { return }
+        
+        DatabaseManager.instance.setVisitProfiles(contacts)
     }
 }

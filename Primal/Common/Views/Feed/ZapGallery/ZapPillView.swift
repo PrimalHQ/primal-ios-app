@@ -16,19 +16,17 @@ class ZapGalleryChildView: UIView {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func width() -> CGFloat { 0 }
 }
 
 class ZapAvatarView: ZapGalleryChildView {
-    let image = FLAnimatedImageView().constrainToSize(22)
+    let image = UserImageView(height: 22)
     
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 11
-        image.layer.masksToBounds = true
-        
-        image.setUserImage(zap.user, size: .init(width: 22, height: 22))
+        image.setUserImage(zap.user, disableAnimated: true)
         
         let imageBackground = UIView().constrainToSize(24)
         imageBackground.layer.cornerRadius = 12
@@ -43,10 +41,12 @@ class ZapAvatarView: ZapGalleryChildView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func width() -> CGFloat { 22 }
 }
 
 class ZapPillView: ZapGalleryChildView {
-    let image = FLAnimatedImageView().constrainToSize(22)
+    let image = UserImageView(height: 22)
     let amountLabel = UILabel()
     let endSpacer = SpacerView(width: 2)
     
@@ -55,15 +55,11 @@ class ZapPillView: ZapGalleryChildView {
     override init(zap: ParsedZap) {
         super.init(zap: zap)
         
-        image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 11
-        image.layer.masksToBounds = true
-        
         amountLabel.font = .appFont(withSize: 14, weight: .semibold)
         amountLabel.textColor = .foreground
         amountLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        image.setUserImage(zap.user, size: .init(width: 22, height: 22))
+        image.setUserImage(zap.user)
         amountLabel.text = zap.amountSats.localized()
         
         addSubview(stack)
@@ -76,7 +72,7 @@ class ZapPillView: ZapGalleryChildView {
         clipsToBounds = true
     }
     
-    func width() -> CGFloat {
+    override func width() -> CGFloat {
         41 + amountLabel.sizeThatFits(CGSize(width: 50, height: 30)).width
     }
     

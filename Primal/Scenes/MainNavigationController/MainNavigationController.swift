@@ -17,16 +17,6 @@ extension UINavigationController {
     }
 }
 
-final class FeedNavigationController: MainNavigationController {
-    init() {
-        super.init(rootViewController: MenuContainerController(child: HomeFeedViewController()))
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 class MainNavigationController: UINavigationController, Themeable, UIGestureRecognizerDelegate {
     var isTransparent: Bool = false {
         didSet {
@@ -37,6 +27,8 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     override var preferredStatusBarStyle: UIStatusBarStyle {
         viewControllers.last?.preferredStatusBarStyle ?? super.preferredStatusBarStyle
     }
+    
+    weak var backGestureDelegate: UIGestureRecognizerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +41,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         
         delegate = self
         
-        updateTheme()
+        updateAppearance()
     }
     
     func updateTheme() {
@@ -81,7 +73,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return viewControllers.count > 1
+        return viewControllers.count > 1 && (backGestureDelegate?.gestureRecognizerShouldBegin?(gestureRecognizer) ?? true)
     }
 }
 

@@ -99,7 +99,7 @@ final class RelayPool {
                         if connection.state.value == .connected {
                             connection.request(ev, handler)
                         } else {
-                            self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
+                            // self.unsentEvents.append(UnsentEvent(identity: connection.identity, event: ev, callback: handler))
                         }
                     }
                 }

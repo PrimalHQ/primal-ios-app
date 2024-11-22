@@ -11,7 +11,7 @@ import Kingfisher
 final class UserInfoTableCell: UITableViewCell, Themeable {
     let nameLabel = UILabel()
     let secondaryLabel = UILabel()
-    let profileIcon = UIImageView(image: UIImage(named: "profile"))
+    let profileIcon = UserImageView(height: 36)
     let followersLabel = UILabel()
     let followTitleLabel = UILabel()
     lazy var followStack = UIStackView(arrangedSubviews: [followersLabel, followTitleLabel])
@@ -37,13 +37,9 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
             secondaryLabel.isHidden = true
         }
         
-        profileIcon.kf.setImage(with: user.profileImage.url(for: .small), placeholder: UIImage(named: "Profile"), options: [
-            .processor(DownsamplingImageProcessor(size: CGSize(width: 36, height: 36))),
-            .scaleFactor(UIScreen.main.scale),
-            .cacheOriginalImage
-        ])
+        profileIcon.setUserImage(user)
         
-        if let count = user.likes {
+        if let count = user.followers {
             followersLabel.text = Int32(count).shortened()
             followStack.isHidden = false
         } else {
@@ -62,11 +58,6 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
 
 private extension UserInfoTableCell {
     func setup() {
-        profileIcon.constrainToSize(36)
-        profileIcon.contentMode = .scaleAspectFill
-        profileIcon.layer.cornerRadius = 18
-        profileIcon.layer.masksToBounds = true
-        
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
         nameStack.alignment = .leading
         nameStack.axis = .vertical

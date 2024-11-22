@@ -105,6 +105,7 @@ class ArticleWebView: WKWebView, Themeable {
     }
     
     var isFirstTime = true
+    var content = ""
     func updateContent(_ content: String) {
         loadMarkdown(content)
         
@@ -117,6 +118,7 @@ class ArticleWebView: WKWebView, Themeable {
             .replacingOccurrences(of: "{{ CONTENT }}", with: content)
             .replacingOccurrences(of: "{{ THEME }}", with: "\(Theme.current.shortTitle) \(FontSizeSelection.current.name)")
         
+        self.content = htmlContent
         loadHTMLString(htmlContent, baseURL: Bundle.main.bundleURL)
         
         calculateSize()

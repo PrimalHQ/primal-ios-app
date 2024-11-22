@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NostrObject: Encodable, Decodable {
+struct NostrObject: Encodable, Decodable, Equatable {
     let id: String
     let sig: String
     let tags: [[String]]

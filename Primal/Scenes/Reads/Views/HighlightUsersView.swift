@@ -93,20 +93,12 @@ class HighlightUsersView: UIView {
     }
 }
 
-class HighlighUserAvatarView: FLAnimatedImageView {
+class HighlighUserAvatarView: UserImageView {
     init(user: ParsedUser) {
-        super.init(frame: .zero)
+        super.init(height: 30)
         
-        constrainToSize(30)
-        
-        contentMode = .scaleAspectFill
-        layer.cornerRadius = 15
-        layer.masksToBounds = true
-        
-        setUserImage(user, size: .init(width: 30, height: 30))
+        setUserImage(user)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

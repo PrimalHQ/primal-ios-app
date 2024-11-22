@@ -29,7 +29,7 @@ struct FollowUsersMutelistRequest {
             }
             
             guard
-                let muteListObject = first.arrayValue?.last?.objectValue,
+                let muteListObject = first.objectValue,
                 let nostrObject: NostrObject = muteListObject.encodeToString()?.decode(),
                 let updatedObject = NostrObject.followedMuteLists(
                     content: nostrObject.content,

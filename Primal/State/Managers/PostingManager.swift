@@ -7,9 +7,102 @@
 
 import Combine
 import Foundation
+import UIKit
+
+protocol PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? { get }
+    var referencePubkey: String { get }
+}
+
+extension ParsedFeedFromMarket: PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? {
+        guard let id = data.id, let pubkey = data.pubkey else {
+            return nil
+        }
+        return ("a", "31990:\(pubkey):\(id)")
+    }
+    
+    var referencePubkey: String { data.pubkey ?? "" }
+}
+
+extension PrimalFeedPost: PostingReferenceObject {
+    var referencePubkey: String { pubkey }
+       
+    var universalID: String {
+        guard
+            kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue,
+            let tagId = tags.first(where: { $0.first == "d" })?[safe: 1]
+        else { return id }
+        
+        return "\(NostrKind.longForm.rawValue):\(pubkey):\(tagId)"
+    }
+    
+    var reference: (tagLetter: String, universalID: String)? { (referenceTagLetter, universalID) }
+    
+    var referenceTagLetter: String {
+        kind == NostrKind.longForm.rawValue ? "a" : "e"
+    }
+}
+
+extension Article: PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? {
+        guard
+            event.kind == NostrKind.longForm.rawValue || event.kind == NostrKind.shortenedArticle.rawValue,
+            let tagId = event.tags.first(where: { $0.first == "d" })?[safe: 1]
+        else { return nil }
+        
+        return ("a", "\(NostrKind.longForm.rawValue):\(event.pubkey):\(tagId)")
+    }
+    
+    var referenceTagLetter: String { "a" }
+    
+    var referencePubkey: String { event.pubkey }    
+}
 
 final class PostingManager {
-    private init() {}
+    private init() {
+        ICloudKeychainManager.instance.$userPubkey
+            .flatMap { DatabaseManager.instance.getCompletedDrafts(userPubkey: $0) }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.draftsToPost, onWeak: self)
+            .store(in: &cancellables)
+        
+        $draftsToPost
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] drafts in
+                guard let self else { return }
+                
+                if drafts.isEmpty {
+                    attemptToPostCancellable = nil
+                    return
+                }
+                
+                attemptToPostCancellable = Timer.publish(every: 15, on: .main, in: .default).autoconnect()
+                    .prepend(Date())
+                    .waitForConnection(Connection.regular)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveValue: { [weak self]  _ in
+                        for draft in drafts {
+                            self?.postDraft(draft)
+                        }
+                    })
+            })
+            .store(in: &cancellables)
+        
+        var notifiedEvs: Set<String> = []
+        postedEvent.sink { obj in
+            if notifiedEvs.contains(obj.id) { return }
+            notifiedEvs.insert(obj.id)
+            
+            if !obj.tags.contains(where: { tag in tag[safe: 3] == "root" }) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                    RootViewController.instance.showToast("Note Published")
+                }
+            }
+        }
+        .store(in: &cancellables)
+    }
     
     static let instance: PostingManager = PostingManager()
     
@@ -17,32 +110,45 @@ final class PostingManager {
     @Published var userReplied: Set<String> = []
     @Published var userLikes: Set<String> = []
     
+    @Published var draftsToPost: [NoteDraft] = []
+    @Published var attemptAmount: [String: Int] = [:]
+    
+    let postedEvent = PassthroughSubject<NostrObject, Never>()
+    
     var cancellables: Set<AnyCancellable> = []
+    var attemptToPostCancellable: AnyCancellable?
     
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
-    var lastPostedEvent: NostrObject?
+    func hasLiked(_ reference: PostingReferenceObject) -> Bool {
+        guard let id = reference.reference?.universalID else { return false }
+        return userLikes.contains(id)
+    }
     
-    func sendLikeEvent(post: PrimalFeedPost) {
+    var lastPostedEvent: NostrObject?
+        
+    func sendLikeEvent(referenceEvent: PostingReferenceObject) {
         if LoginManager.instance.method() != .nsec { return }
+        
+        guard let universalID = referenceEvent.reference?.universalID else { return }
 
-        guard !hasLiked(post.id) else {
+        guard !hasLiked(referenceEvent) else {
             return
         }
                 
-        guard let ev = NostrObject.like(post: post) else {
+        guard let ev = NostrObject.like(reference: referenceEvent) else {
             print("Error creating nostr like event")
             return
         }
                 
-        userLikes.insert(post.id)
+        userLikes.insert(universalID)
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
-            self.userLikes.remove(ev.id)
+            self.userLikes.remove(universalID)
         })
     }
     
@@ -105,11 +211,11 @@ final class PostingManager {
         })
     }
     
-    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool) -> Void) {
+    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool, NostrObject?) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
         guard var ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
+            callback(false, nil)
             return
         }
         
@@ -121,12 +227,12 @@ final class PostingManager {
         userReplied.insert(post.universalID)
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
+            callback(true, ev)
             
             Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             self.userReplied.remove(post.universalID)
-            callback(false)
+            callback(false, nil)
         })
     }
     
@@ -171,6 +277,20 @@ final class PostingManager {
         return ev
     }
     
+    func sendEvent(_ ev: NostrObject, _ callback: @escaping (Bool) -> Void) {
+        if LoginManager.instance.method() != .nsec { return }
+        
+        RelaysPostbox.instance.request(ev, successHandler: { [weak self] _ in
+            callback(true)
+            
+            self?.postedEvent.send(ev)
+            
+            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
+        }, errorHandler: {
+            callback(false)
+        })
+    }
+    
     func deleteHighlightEvents(_ highlights: [Highlight], _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
@@ -186,5 +306,40 @@ final class PostingManager {
         }, errorHandler: {
             callback(false)
         })
+    }
+}
+
+private extension PostingManager {
+    func postDraft(_ draft: NoteDraft) {
+        let numberOfTries = attemptAmount[draft.id, default: 0]
+        
+        print("\(draft.id) POST ATTEMPT \(Date())")
+        
+        if numberOfTries > 5 {
+            RootViewController.instance.showToast("Couldn't publish your note", icon: UIImage(named: "toastX"))
+            
+            draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
+            var draft = draft
+            draft.preparedEvent = nil
+            DatabaseManager.instance.saveDraft(draft)
+            return
+        }
+        
+        guard let ev = draft.preparedEvent else { return }
+        
+        attemptAmount[draft.id, default: 0] += 1
+        
+        sendEvent(ev) { completed in
+            if completed {
+                print("\(draft.id) POST ATTEMPT SUCCESS")
+                self.draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
+                
+                self.attemptAmount[draft.id] = nil
+                
+                DatabaseManager.instance.deleteDraft(draft)
+            } else {
+                print("\(draft.id) POST ATTEMPT FAILED")
+            }
+        }
     }
 }

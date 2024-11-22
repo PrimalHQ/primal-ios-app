@@ -12,21 +12,19 @@ import LinkPresentation
 import FLAnimatedImage
 import Nantes
 
-protocol PostCellDelegate: AnyObject, ZapGalleryViewDelegate {
+protocol PostCellDelegate: AnyObject {
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent)
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
+    func mainActionForZap(_ zap: ParsedZap)
 }
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
-    weak var delegate: PostCellDelegate? {
-        didSet {
-            zapGallery.delegate = delegate
-        }
-    }
+    weak var delegate: PostCellDelegate?
     
     let bottomBorder = UIView()
     let threeDotsButton = UIButton()
-    let profileImageView = FLAnimatedImageView()
+    let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
     let checkbox = VerifiedView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -41,14 +39,16 @@ class PostCell: UITableViewCell {
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
     let repostButton = FeedRepostButton()
+    let zapPreview = ZapPreviewView()
     let postPreview = PostPreviewView()
+    let infoView = SimpleInfoView()
     let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     let bookmarkButton = UIButton()
     
-    var zapGallery: ZapGallery = SmallZapGalleryView()
+    var zapGallery: ZapGallery?
     
     weak var imageAspectConstraint: NSLayoutConstraint?
     var bookmarkUpdater: AnyCancellable?
@@ -78,8 +78,7 @@ class PostCell: UITableViewCell {
         if CheckNip05Manager.instance.isVerified(user) {
             nipLabel.text = user.parsedNip
             nipLabel.isHidden = false
-            checkbox.isHidden = false
-            checkbox.isExtraVerified = user.nip05.hasSuffix("@primal.net")
+            checkbox.user = user
         } else {
             nipLabel.isHidden = true
             checkbox.isHidden = true
@@ -104,11 +103,18 @@ class PostCell: UITableViewCell {
             replyingToView.isHidden = true
         }
         
-        if let embeded = content.embededPost {
+        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
             postPreview.update(embeded)
             postPreview.isHidden = false
         } else {
             postPreview.isHidden = true
+        }
+        
+        if let zap = content.embeddedZap {
+            zapPreview.updateForZap(zap)
+            zapPreview.isHidden = false
+        } else {
+            zapPreview.isHidden = true
         }
         
         if let reposted = content.reposted?.users {
@@ -134,6 +140,26 @@ class PostCell: UITableViewCell {
         
         imageAspectConstraint?.isActive = false
         imageAspectConstraint = nil
+        
+        if let customEvent = content.customEvent {
+            infoView.isHidden = false
+            infoView.set(
+                kind: .file,
+                text: customEvent.post.tags.first(where: { $0.first == "alt" })?[safe: 1] ??
+                        (customEvent.post.content.isEmpty ? "Unknown reference" : customEvent.post.content)
+            )
+        } else {
+            switch content.notFound {
+            case nil:
+                infoView.isHidden = true
+            case .note:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned note not found.")
+            case .article:
+                infoView.isHidden = false
+                infoView.set(kind: .file, text: "Mentioned article not found.")
+            }
+        }
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
@@ -212,7 +238,7 @@ class PostCell: UITableViewCell {
         bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
             .sink { [weak self] isBookmarked in
                 self?.isShowingBookmarked = isBookmarked
-                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+                self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark"), for: .normal)
             }
     }
 }
@@ -256,11 +282,8 @@ private extension PostCell {
         nameStack.alignment = .center
         nameStack.spacing = 4
         
-        bottomButtonStack.distribution = .equalSpacing
-        
-        profileImageView.contentMode = .scaleAspectFill
-        profileImageView.layer.masksToBounds = true
-        profileImageView.isUserInteractionEnabled = true
+        bottomButtonStack.distribution = .fillEqually
+        bottomButtonStack.spacing = 12
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
@@ -272,6 +295,7 @@ private extension PostCell {
             guard let self else { return }
             self.delegate?.postCellDidTap(self, .post)
         }
+        mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.imageDelegate = self
         
@@ -314,7 +338,7 @@ private extension PostCell {
             delegate?.postCellDidTap(self, .payInvoice)
         }), for: .touchUpInside)
         
-        zapGallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        zapGallery?.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
         
@@ -322,7 +346,9 @@ private extension PostCell {
             delegate?.postCellDidTap(self, .article)
         }))
         
+        bookmarkButton.tintColor = .foreground5
         bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
+        bookmarkButton.contentHorizontalAlignment = .trailing
         bookmarkButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
@@ -333,7 +359,10 @@ private extension PostCell {
             repostButton.addTarget(self, action: #selector(repostTapped), for: .touchUpInside)
             replyButton.addTarget(self, action: #selector(replyTapped), for: .touchUpInside)
             
-            let tap = UITapGestureRecognizer(target: self, action: #selector(zapTapped))
+            let tap = BindableTapGestureRecognizer { [weak self] in
+                guard let self else { return }
+                delegate?.postCellDidTap(self, .zap)
+            }
             let long = UILongPressGestureRecognizer(target: self, action: #selector(zapLongPressed))
             tap.require(toFail: long)
             zapButton.addGestureRecognizer(tap)
@@ -341,10 +370,6 @@ private extension PostCell {
         } else {
             ([likeButton, repostButton, replyButton, zapButton] as [UIControl]).forEach { $0.addDisabledNSecWarning(RootViewController.instance) }
         }
-    }
-    
-    @objc func zapTapped() {
-        delegate?.postCellDidTap(self, .zap)
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
@@ -386,5 +411,19 @@ private extension PostCell {
         likeButton.titleLabel.animateToColor(color: UIColor(rgb: 0xCA079F))
 
         delegate?.postCellDidTap(self, .like)
+    }
+}
+
+extension PostCell: ZapGalleryViewDelegate {
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
+        delegate?.menuConfigurationForZap(zap)
+    }
+    
+    func mainActionForZap(_ zap: ParsedZap) {
+        delegate?.mainActionForZap(zap)
+    }
+    
+    func zapTapped(_ zap: ParsedZap) {
+        delegate?.postCellDidTap(self, .zapDetails)
     }
 }

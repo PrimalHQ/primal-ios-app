@@ -11,8 +11,6 @@ class HighlightCommentCell: PostCell {
     lazy var mainStack = UIStackView([profileImageView])
     
     // MARK: - State
-    var lastContentId: String?
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -21,11 +19,6 @@ class HighlightCommentCell: PostCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
-        if parsedContent.post.id != lastContentId {
-            zapGallery.zaps = []
-            lastContentId = parsedContent.post.id
-        }
-        
         super.update(parsedContent)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
@@ -37,19 +30,16 @@ class HighlightCommentCell: PostCell {
 
 private extension HighlightCommentCell {
     func setup() {
-        mainLabel.numberOfLines = 20
+        mainLabel.numberOfLines = 12
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         mainLabel.setContentHuggingPriority(.required, for: .vertical)
-        
-        zapGallery.singleLine = true
         
         mainStack.axis = .horizontal
         mainStack.alignment = .top
         mainStack.spacing = 8
         
-        profileImageView.constrainToSize(30)
-        profileImageView.layer.cornerRadius = 15
+        profileImageView.height = 30
     
         let commentedLabel = UILabel()
         commentedLabel.font = .appFont(withSize: 15, weight: .regular)

@@ -55,22 +55,6 @@ enum Theme: String {
     }
 }
 
-enum FeedDesign: String {
-    case standard, fullWidth
-    
-    static var current: FeedDesign {
-        get { .fullWidth }
-//        set {
-//            UserDefaults.standard.set(newValue.rawValue, forKey: "FeedDesign")
-//            ThemingManager.instance.themeDidChange()
-//        }
-    }
-    
-    var feedCellClass: AnyClass {
-        NewFeedCell.self
-    }
-}
-
 enum FontSizeSelection: Int {
     case small = -1
     case standard = 0
@@ -90,55 +74,41 @@ enum FontSizeSelection: Int {
     var contentFontSize: CGFloat {
         switch self {
         case .small:
-            return 14
-        case .standard:
             return 15
+        case .standard:
+            return 16
         case .large:
-            return 17
+            return 18
         case .huge:
-            return 19
+            return 20
         }
     }
     
     var contentLineHeight: CGFloat {
         switch self {
         case .small:
-            return 17
+            return 16
         case .standard:
-            return 17
+            return 18
         case .large:
-            return 19
+            return 20
         case .huge:
-            return 21
+            return 22
         }
     }
     
     var contentLineSpacing: CGFloat { return contentLineHeight - contentFontSize }
     
     var avatarSize: CGFloat {
-        switch FeedDesign.current {
-        case .fullWidth:
-            switch self {
-            case .small:
-                return 28
-            case .standard:
-                return 30
-            case .large:
-                return 32
-            case .huge:
-                return 34
-            }
+        switch self {
+        case .small:
+            return 34
         case .standard:
-            switch self {
-            case .small:
-                return 40
-            case .standard:
-                return 42
-            case .large:
-                return 48
-            case .huge:
-                return 50
-            }
+            return 36
+        case .large:
+            return 38
+        case .huge:
+            return 40
         }
     }
     

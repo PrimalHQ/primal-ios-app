@@ -16,7 +16,7 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
     
     private let icon = UIImageView(image: UIImage(named: "feedZapBig"))
     private let countLabel = UILabel()
-    private let avatarView = FLAnimatedImageView()
+    private let avatarView = UserImageView(height: 42)
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()
     
@@ -29,11 +29,6 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
         let iconStack = UIStackView(axis: .vertical, [icon, countLabel]).constrainToSize(width: 40)
         iconStack.alignment = .center
         iconStack.spacing = 5
-        
-        avatarView.constrainToSize(42)
-        avatarView.layer.cornerRadius = 21
-        avatarView.layer.masksToBounds = true
-        avatarView.contentMode = .scaleAspectFill
         
         let infoStack = UIStackView(axis: .vertical, [nameLabel, messageLabel])
         infoStack.spacing = 8

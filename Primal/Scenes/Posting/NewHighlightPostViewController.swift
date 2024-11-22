@@ -25,11 +25,9 @@ class NewHighlightPostViewController: UIViewController {
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView)
+    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: highlight.event.id, replyingTo: PrimalFeedPost(nostrPost: highlight.event, nostrPostStats: .empty(highlight.event.id)))
     
     private var cancellables: Set<AnyCancellable> = []
-    
-    var replyToPost: PrimalFeedPost?
     
     var onPost: (() -> Void)?
     
@@ -146,18 +144,18 @@ private extension NewHighlightPostViewController {
         contentStack.isLayoutMarginsRelativeArrangement = true
         contentStack.layoutMargins = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
         
-        verticalStack.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -102).isActive = true
-        
         imageView.layer.cornerRadius = 26
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
-        imageButton.constrainToSize(48)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
-        cameraButton.constrainToSize(48)
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
-        atButton.constrainToSize(48)
+        
+        [imageButton, cameraButton, atButton].forEach {
+            $0.tintColor = .foreground
+            $0.constrainToSize(48)
+        }
         
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
@@ -193,6 +191,7 @@ private extension NewHighlightPostViewController {
             keyboardConstraint,
             textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40),
             contentStack.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
+            verticalStack.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -102)
         ])
         
         cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)

@@ -9,11 +9,11 @@ import FLAnimatedImage
 import UIKit
 
 protocol ProfileFollowCellDelegate: AnyObject {
-    func followButtonPressedInCell(_ cell: ProfileFollowCell)
+    func followButtonPressedInCell(_ cell: UITableViewCell)
 }
 
 final class ProfileFollowCell: UITableViewCell, Themeable {
-    let avatar = FLAnimatedImageView()
+    let avatar = UserImageView(height: 36)
     
     let name = UILabel()
     let subname = UILabel()
@@ -80,11 +80,6 @@ private extension ProfileFollowCell {
         
         contentView.addSubview(border)
         border.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom).constrainToSize(height: 1)
-        
-        avatar.constrainToSize(36)
-        avatar.contentMode = .scaleAspectFill
-        avatar.layer.cornerRadius = 18
-        avatar.layer.masksToBounds = true
         
         name.font = .appFont(withSize: 16, weight: .bold)
         subname.font = .appFont(withSize: 14, weight: .regular)
