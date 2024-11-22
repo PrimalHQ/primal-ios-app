@@ -486,15 +486,16 @@ private extension ThreadViewController {
             inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
             textHeightConstraint?.isActive = !isEditing
             
+            imagesCollectionView.isHidden = isImageHidden
+            
             UIView.animate(withDuration: 0.2) {
                 self.replyingToLabel.isHidden = !isEditing
                 self.replyingToLabel.alpha = isEditing ? 1 : 0
                 
                 self.buttonStack.isHidden = !isEditing
                 self.buttonStack.alpha = isEditing ? 1 : 0
-                    
-                self.imagesCollectionView.isHidden = isImageHidden
-                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
+                
+                self.imagesCollectionView.alpha = isImageHidden ? 0.01 : 1
             }
             
             if isEditing && !oldIsEditing {

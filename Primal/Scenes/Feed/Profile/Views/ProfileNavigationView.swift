@@ -100,10 +100,12 @@ class ProfileNavigationView: UIView, Themeable {
             profilePicOverlayBig?.isHidden = true
             profilePicOverlaySmall?.isHidden = true
             profilePicture.isHidden = true
+            profilePictureBorder.isHidden = true
             return
         }
         
         profilePicture.isHidden = false
+        profilePictureBorder.isHidden = false
         
         if deltaFromMax < deltaTitleStartAppearing {
             let smallProgress = (deltaTitleStartAppearing - deltaFromMax) / titleTranslation

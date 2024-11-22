@@ -104,14 +104,15 @@ private extension PremiumHomeViewController {
     }
     
     func userStackView() -> UIView? {
-        guard let user = IdentityManager.instance.parsedUser else { return nil }
         let image = UserImageView(height: 80, glowPadding: 2)
-        image.setUserImage(user)
-        
         let checkbox = VerifiedView().constrainToSize(24)
-        checkbox.user = user.data
         
-        let nameLabel = UILabel(user.data.firstIdentifier, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
+        if let user = IdentityManager.instance.parsedUser {
+            image.setUserImage(user)
+            checkbox.user = user.data
+        }
+        
+        let nameLabel = UILabel(state.name, color: .foreground, font: .appFont(withSize: 22, weight: .bold))
         let nameStack = UIStackView([nameLabel, checkbox])
         nameStack.alignment = .center
         nameStack.spacing = 6

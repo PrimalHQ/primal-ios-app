@@ -358,6 +358,11 @@ final class IdentityManager {
             return
         }
         
+        if let parsedUser {
+            parsedUser.data.lud16 = data.lud16 ?? parsedUser.data.lud16
+            parsedUser.data.nip05 = data.nip05 ?? parsedUser.data.nip05
+        }
+        
         RelaysPostbox.instance.connect(bootstrap_relays)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             RelaysPostbox.instance.request(metadata_ev, successHandler: { _ in

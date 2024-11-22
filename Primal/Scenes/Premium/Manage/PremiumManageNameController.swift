@@ -62,6 +62,8 @@ private extension PremiumManageNameController {
         table.lightningRow.infoLabel.text = table.addressRow.infoLabel.text
         table.profileRow.infoLabel.text = "primal.net/" + pickedName
         
+        let oldPremiumState = WalletManager.instance.premiumState
+        
         actionButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let content = ["name": pickedName].encodeToString(), let event = NostrObject.create(content: content, kind: 30078) else { return }
             
@@ -83,9 +85,32 @@ private extension PremiumManageNameController {
                     actionButton.isEnabled = false
                     title = "Primal name changed"
                     
+                    if var user = IdentityManager.instance.parsedUser?.data.profileData {
+                        var shouldUpdate = false
+                        if user.lud16 == oldPremiumState?.lightning_address {
+                            user.lud16 = pickedName + "@primal.net"
+                            shouldUpdate = true
+                        }
+                        
+                        if user.nip05 == oldPremiumState?.nostr_address {
+                            user.nip05 = pickedName + "@primal.net"
+                            shouldUpdate = true
+                        }
+                        
+                        if shouldUpdate {
+                            IdentityManager.instance.updateProfile(user) { _ in
+                                IdentityManager.instance.requestUserProfile(local: false)
+                            }
+                        }
+                    }
+                    
                     WalletManager.instance.refreshPremiumState()
                     
-                    navigationController?.viewControllers.removeAll(where: { $0 as? PremiumSearchNameController != nil })
+                    guard let premium = navigationController?.viewControllers.first(where: { $0 as? PremiumViewController != nil }) else {
+                        navigationController?.viewControllers.removeAll(where: { $0 as? PremiumSearchNameController != nil })
+                        return
+                    }
+                    navigationController?.popToViewController(premium, animated: true)
                 }
                 .store(in: &cancellables)
         }), for: .touchUpInside)

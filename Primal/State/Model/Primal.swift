@@ -142,12 +142,12 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     let name: String
     let about: String
     var picture: String
-    let nip05: String
+    var nip05: String
     let banner: String
     let displayName: String
     let location: String
     let lud06: String
-    let lud16: String
+    var lud16: String
     let website: String
     let tags: [[String]]
     let created_at: Double
