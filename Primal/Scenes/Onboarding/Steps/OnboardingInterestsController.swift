@@ -132,11 +132,13 @@ private extension OnboardingInterestsController {
     }
 
     @objc func continuePressed() {
-        session.usersToFollow = suggestionGroups
+        let array = suggestionGroups
             .filter({ selectedToFollow.contains($0.group) })
             .map({ $0.members.map { mem in mem.pubkey } })
             .reduce([], +)
         
-        onboardingParent?.pushViewController(OnboardingPreviewController(data: oldData, session: session), animated: true)
+        session.usersToFollow = Set(array)
+        
+        onboardingParent?.pushViewController(OnboardingCheckInterestsController(data: oldData, session: session), animated: true)
     }
 }

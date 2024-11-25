@@ -22,6 +22,7 @@ struct AccountCreationData {
 
 class OnboardingSession {
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
+    typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
     var avatarURL = "" {
         didSet {
@@ -40,10 +41,11 @@ class OnboardingSession {
     @Published var isUploading = false
     
     @Published var suggestionGroups: [OnboardingSession.Group] = []
+    var userMetadata: [String: Metadata] = [:]
     
     @Published var defaultRelays: [String] = bootstrap_relays
     
-    var usersToFollow: [String] = []
+    var usersToFollow: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -70,6 +72,7 @@ class OnboardingSession {
                 print(completion)
             }, receiveValue: { [weak self] response in
                 self?.suggestionGroups = response.suggestions
+                self?.userMetadata = response.metadata
             })
             .store(in: &cancellables)
         

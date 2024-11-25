@@ -347,6 +347,8 @@
 		B91EF0ED2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EC2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift */; };
 		B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */; };
 		B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */; };
+		B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */; };
+		B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -931,6 +933,8 @@
 		B91EF0EC2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreDataCell.swift; sourceTree = "<group>"; };
 		B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreFAQController.swift; sourceTree = "<group>"; };
 		B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageContentFooterCell.swift; sourceTree = "<group>"; };
+		B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCheckInterestsController.swift; sourceTree = "<group>"; };
+		B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingReviewController.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -1851,15 +1855,15 @@
 		9E9F2F6C29F6AB6400A9CDF3 /* Steps */ = {
 			isa = PBXGroup;
 			children = (
-				B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */,
+				B91EF0F62CF51D3C00299ECF /* Unused */,
 				B901C38A2BAB231800C3AA69 /* OnboardingDisplayNameController.swift */,
 				B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */,
+				B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */,
+				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
 				B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */,
+				B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */,
 				B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */,
 				B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */,
-				B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */,
-				9E8DE4D929F7E73E0028D3C3 /* OnboardingProfileController.swift */,
-				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -2246,6 +2250,16 @@
 				B91EF0EC2CED1C2F00299ECF /* PremiumLearnMoreDataCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		B91EF0F62CF51D3C00299ECF /* Unused */ = {
+			isa = PBXGroup;
+			children = (
+				B9009B542B07ED2F002B0613 /* OnboardingAboutController.swift */,
+				9E8DE4D929F7E73E0028D3C3 /* OnboardingProfileController.swift */,
+				B9009B522B07DDC0002B0613 /* OnboardingUsernameController.swift */,
+			);
+			path = Unused;
 			sourceTree = "<group>";
 		};
 		B9318F632B62ADC20044B6AA /* InputControllers */ = {
@@ -3079,6 +3093,7 @@
 				B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
+				B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */,
 				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
 				B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
@@ -3112,6 +3127,7 @@
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
 				B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */,
 				B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */,
+				B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */,
 				B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */,
 				9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */,
 				932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */,
@@ -3624,7 +3640,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.118;
+				MARKETING_VERSION = 2.0.119;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3670,7 +3686,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.118;
+				MARKETING_VERSION = 2.0.119;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
