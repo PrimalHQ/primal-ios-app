@@ -71,7 +71,7 @@ final class WalletSendViewController: UIViewController, Themeable {
     
     let destination: Destination
     
-    let profilePictureView = UserImageView(height: 88)
+    let profilePictureView = UserImageView(height: 88, glowPadding: 3)
     let nameLabel = UILabel()
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()

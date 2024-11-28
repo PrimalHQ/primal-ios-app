@@ -17,6 +17,9 @@ class UserImageView: UIView {
     
     var height: CGFloat { didSet { updateHeight() } }
     let glowPadding: CGFloat
+    
+    var cachedLegendTheme: LegendTheme?
+    
     init(height: CGFloat, glowPadding: CGFloat = 1) {
         self.height = height
         self.glowPadding = glowPadding
@@ -66,8 +69,10 @@ class UserImageView: UIView {
         if let legendary = LegendCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), legendary.avatar_glow, let theme = legendary.theme {
             legendaryGradient.isHidden = false
             legendaryGradient.setLegendGradient(theme)
+            cachedLegendTheme = theme
         } else {
             legendaryGradient.isHidden = true
+            cachedLegendTheme = nil
         }
         
         guard

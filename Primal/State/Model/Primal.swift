@@ -240,6 +240,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     var satszapped: Int
     let score24h: Int
     var reposts: Int
+    var rawData: String?
     
     init(nostrPost: NostrContent, nostrPostStats: NostrContentStats) {
         self.id = nostrPost.id
@@ -256,6 +257,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
         self.satszapped = nostrPostStats.satszapped ?? 0
         self.score24h = nostrPostStats.score24h ?? 0
         self.reposts = nostrPostStats.reposts ?? 0
+        self.rawData = nostrPost.encodeToString()
     }
     
     init(id: String, pubkey: String, created_at: Double, tags: [[String]], content: String, sig: String, likes: Int, mentions: Int, replies: Int, zaps: Int, satszapped: Int, score24h: Int, reposts: Int) {

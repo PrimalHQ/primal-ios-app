@@ -54,7 +54,7 @@ final class TransactionCell: UITableViewCell, Themeable {
         
         if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
             if oldProfileId != transaction.1.data.pubkey {
-                profileImage.setUserImage(transaction.1)
+                profileImage.setUserImage(transaction.1, disableAnimated: true)
                 oldProfileId = transaction.1.data.pubkey
             }
             profileImage.contentMode = .scaleAspectFill

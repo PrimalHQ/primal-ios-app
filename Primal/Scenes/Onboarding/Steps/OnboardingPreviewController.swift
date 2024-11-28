@@ -150,7 +150,6 @@ private extension OnboardingPreviewController {
             
             var userSet = Set(self.session.usersToFollow)
             userSet.insert(self.session.newUserKeypair.hexVariant.pubkey)
-            userSet = []
 
             guard
                 let metadata_ev = NostrObject.metadata(profile),

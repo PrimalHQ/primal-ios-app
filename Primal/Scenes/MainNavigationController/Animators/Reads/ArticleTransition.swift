@@ -80,7 +80,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
         let navButtons = [lfController.navExtension.followButton, lfController.navExtension.unfollowButton]
         
         if presenting {
-            contentCell?.avatar.animatedImageView.animateTransitionTo(lfController.navExtension.profileIcon.animatedImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
+            contentCell?.avatar.animateTransitionTo(lfController.navExtension.profileIcon, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.titleLabel.animateTransitionTo(topInfoView.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             contentCell?.nameLabel.animateTransitionTo(lfController.navExtension.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
             
@@ -147,7 +147,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             } completion: { _ in
                 background.removeFromSuperview()
                 
-                contentCell?.avatar.animatedImageView.alpha = 1
+                contentCell?.avatar.alpha = 1
                 contentCell?.titleLabel.alpha = 1
                 contentCell?.nameLabel.alpha = 1
                 contentCell?.contentImageView.alpha = 1
@@ -160,6 +160,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             }
         } else {
             if let contentCell {
+                lfController.navExtension.profileIcon.isHidden = true
                 lfController.navExtension.profileIcon.animatedImageView.animateTransitionTo(contentCell.avatar.animatedImageView, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 topInfoView.titleLabel.animateTransitionTo(contentCell.titleLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)
                 lfController.navExtension.nameLabel.animateTransitionTo(contentCell.nameLabel, duration: 16 / 30, in: container, timing: .postsEaseInOut)

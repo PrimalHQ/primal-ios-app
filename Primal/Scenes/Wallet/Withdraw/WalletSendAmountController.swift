@@ -53,7 +53,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
-    let profilePictureView = UserImageView(height: 88)
+    let profilePictureView = UserImageView(height: 88, glowPadding: 3)
     let nameLabel = UILabel()
     let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
     lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
