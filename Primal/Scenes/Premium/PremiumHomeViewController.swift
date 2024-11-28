@@ -173,7 +173,7 @@ private extension PremiumHomeViewController {
         if let accent = strings.1 {
             mutable.append(.init(string: accent, attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .paragraphStyle: paragraph
             ]))
         }

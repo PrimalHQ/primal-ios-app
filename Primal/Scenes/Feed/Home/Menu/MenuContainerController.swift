@@ -474,7 +474,7 @@ final class MenuItemButton: UIButton, Themeable {
             .kern: 0.2
         ]))
         config.image = UIImage(named: imageName)
-        config.imagePadding = 10
+        config.imagePadding = 12
         config.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
         config.baseForegroundColor = .foreground2
         configuration = config

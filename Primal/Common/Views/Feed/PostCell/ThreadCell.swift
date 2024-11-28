@@ -19,6 +19,8 @@ class ThreadCell: PostCell {
     lazy var contentSpacer = UIView()
     lazy var parentIndicator = UIView()
     
+    let smallGallery = SmallZapGalleryView()
+    
     override func update(_ parsedContent: ParsedContent) {
         update(parsedContent, position: .child)
     }
@@ -57,18 +59,28 @@ class ThreadCell: PostCell {
             
             mainLabel.attributedText = parsedContent.attributedText
         }
+        
+        if parsedContent.zaps.isEmpty {
+            zapGallery?.isHidden = true
+        } else {
+            zapGallery?.isHidden = false
+            zapGallery?.zaps = parsedContent.zaps
+        }
     }
 }
 
 extension ThreadCell {
     func parentSetup() {
+        zapGallery = smallGallery
+        zapGallery?.delegate = self
+        
         contentSpacer.addSubview(parentIndicator)
         
         parentIndicator
             .centerToSuperview(axis: .horizontal)
             .constrainToSize(width: 2)
         
-        parentIndicator.backgroundColor = UIColor(rgb: 0x444444)
+        parentIndicator.backgroundColor = .foreground6
         parentIndicator.layer.cornerRadius = 1
     }
 }
@@ -132,7 +144,7 @@ final class PostThreadCell: ThreadCell {
         
         let actionButtonStandin = UIView()
         let contentStack = UIStackView(arrangedSubviews: [
-            mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, SpacerView(height: 0), actionButtonStandin
+            mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, smallGallery, SpacerView(height: 0), actionButtonStandin
         ])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])
@@ -141,7 +153,8 @@ final class PostThreadCell: ThreadCell {
         contentView.addSubview(mainStack)
         
         mainStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .trailing, padding: 16)
+            .pinToSuperview(edges: .leading, padding: 21)
         
         topConstraint = mainStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0)
         topConstraint?.isActive = true
@@ -154,6 +167,11 @@ final class PostThreadCell: ThreadCell {
         bottomButtonStack
             .centerToView(actionButtonStandin)
             .pin(to: actionButtonStandin, edges: .horizontal)//, padding: -16)
+        
+        contentView.addSubview(bookmarkButton)
+        bookmarkButton
+            .pin(to: bottomButtonStack, edges: .trailing)
+            .centerToView(bottomButtonStack, axis: .vertical)
         
         horizontalContentStack.spacing = 8
         horizontalProfileStack.spacing = 8

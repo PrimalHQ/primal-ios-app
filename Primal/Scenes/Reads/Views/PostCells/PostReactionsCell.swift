@@ -46,7 +46,7 @@ class PostReactionsCell: DefaultMainThreadCell {
         tagsView.tags = parsedContent.post.tags.filter({ $0.first == "t" }).compactMap { $0[safe: 1] }
         tagsView.isHidden = tagsView.tags.isEmpty
 
-        super.update(parsedContent, zaps: [])
+        super.updateMain(parsedContent)
     }
     
     required init?(coder: NSCoder) {

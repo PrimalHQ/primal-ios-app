@@ -34,7 +34,7 @@ final class OnboardingReviewController: UIViewController, OnboardingViewControll
 private extension OnboardingReviewController {
     func setup() {
         addBackground(5)
-        addNavigationBar("Create Account")
+        addNavigationBar("Primal Wallet")
         backButton.isHidden = true
         
         let botStack = UIStackView(axis: .vertical, [continueButton, skipButton])

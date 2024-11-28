@@ -20,7 +20,7 @@ class ReplyingToView: UIStackView {
         replyingToLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .light)
         
         replyingToLabel.textColor = .foreground4
-        userNameLabel.textColor = .accent
+        userNameLabel.textColor = .accent2
         
         replyingToLabel.text = "replying to "
     }

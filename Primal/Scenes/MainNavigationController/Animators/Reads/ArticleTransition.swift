@@ -147,7 +147,7 @@ class ArticleTransition: NSObject, UIViewControllerAnimatedTransitioning {
             } completion: { _ in
                 background.removeFromSuperview()
                 
-                contentCell?.avatar.alpha = 1
+                contentCell?.avatar.animatedImageView.alpha = 1
                 contentCell?.titleLabel.alpha = 1
                 contentCell?.nameLabel.alpha = 1
                 contentCell?.contentImageView.alpha = 1

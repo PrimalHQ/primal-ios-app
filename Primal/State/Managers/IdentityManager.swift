@@ -221,11 +221,28 @@ final class IdentityManager {
     }
     
     func requestUserContacts(callback: (() -> Void)? = nil) {
+        SocketRequest(name: "contact_list", payload: [
+            "pubkey": .string(userHexPubkey),
+            "extended_response": false
+        ]).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard let self, let contacts = res.contacts else {
+                    callback?()
+                    return
+                }
+                
+                userContacts = contacts
+                callback?()
+            }
+            .store(in: &cancellables)
+        
         let request: JSON = .object([
             "cache": .array([
                 "contact_list",
                 .object([
-                    "pubkey": .string(userHexPubkey)
+                    "pubkey": .string(userHexPubkey),
+                    "extended_response": false
                 ])
             ])
         ])
@@ -234,44 +251,12 @@ final class IdentityManager {
         Connection.regular.request(request) { res in
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
-                
-                let response = response.objectValue
-                
                 switch kind {
                 case .contacts:
-                    self.followListContentString = response?["content"]?.stringValue ?? self.followListContentString
-                    
-                    var tags: Set<String>?
-                    if let isEmpty = response?["tags"]?.arrayValue?.isEmpty {
-                        if isEmpty {
-                            tags = []
-                        } else {
-                            if let isInnerEmpty = response?["tags"]?.arrayValue?[0].arrayValue?.isEmpty {
-                                if isInnerEmpty {
-                                    tags = []
-                                } else {
-                                    let res = response?["tags"]?.arrayValue?.map {
-                                        $0.arrayValue?[safe: 1]?.stringValue ?? ""
-                                    }
-                                    
-                                    if let res {
-                                        tags = Set<String>(res)
-                                    }
-                                }
-                            }
-                        }
+                    DispatchQueue.main.async {
+                        self.followListContentString = response.objectValue?["content"]?.stringValue ?? self.followListContentString
                     }
-                    if let contacts = tags {
-                        let c = DatedSet(created_at: Int(response?["created_at"]?.doubleValue ?? -1), set: contacts)
-                        if self.userContacts.created_at <= c.created_at {
-                            self.userContacts = c
-                            callback?()
-                        }
-                    }
-                case .metadata, .userScore, .mediaMetadata, .userFollowers:
-                    break // NO ACTION
-                default:
-                    print("IdentityManager: requestUserContacts: Got unexpected event kind in response: \(String(describing: kind))")
+                default: break
                 }
             }
         }

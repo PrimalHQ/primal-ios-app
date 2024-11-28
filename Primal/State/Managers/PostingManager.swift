@@ -95,10 +95,10 @@ final class PostingManager {
             if notifiedEvs.contains(obj.id) { return }
             notifiedEvs.insert(obj.id)
             
-            if !obj.tags.contains(where: { tag in tag[safe: 3] == "root" }) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                    RootViewController.instance.showToast("Note Published")
-                }
+            let isRoot = !obj.tags.contains(where: { tag in tag[safe: 3] == "root" })
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                RootViewController.instance.showToast("\(isRoot ? "Note" : "Reply") Published")
             }
         }
         .store(in: &cancellables)

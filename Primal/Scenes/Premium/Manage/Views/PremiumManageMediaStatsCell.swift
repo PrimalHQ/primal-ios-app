@@ -12,8 +12,8 @@ class PremiumManageMediaStatsCell: UITableViewCell {
     let videosColor = UIColor(rgb: 0x0090F8)
     let otherColor = UIColor(rgb: 0xFF9F2F)
     
-    let usedLabel = UILabel("4.27 GB of 10 GB used", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
-    let freeLabel = UILabel("5.73 GB free", color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
+    let usedLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
+    let freeLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
     
     var graphConstraints: [NSLayoutConstraint] = []
     
@@ -84,9 +84,13 @@ class PremiumManageMediaStatsCell: UITableViewCell {
         ]
         NSLayoutConstraint.activate(graphConstraints)
         
-        let usedGB = Double(used) / GB
+        var usedGB = Double(used) / GB
         let totalGB = Double(total) / GB
         let freeGB = Double(stats.free) / GB
+        
+        if usedGB < 0.01 && used > 0 {
+            usedGB = 0.01
+        }
         
         usedLabel.text = "\(usedGB.localized()) GB of \(Int(totalGB.rounded())) GB used"
         freeLabel.text = "\(freeGB.localized()) GB free"

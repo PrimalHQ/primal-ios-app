@@ -152,7 +152,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
                     cell.thumbnailImage.kf.setImage(with: url)
                 }
             }
-        } else if r.url.hasSuffix("gif"), let url = r.url(for: .large) {
+        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium) {
             CachingManager.instance.fetchAnimatedImage(url) { result in
                 switch result {
                 case .success(let image):
@@ -164,13 +164,13 @@ extension ImageGalleryView: UICollectionViewDataSource {
         } else {
             if let cell = cell as? ImageCell {
                 if noDownsampling {
-                    cell.imageView.kf.setImage(with: r.url(for: .large), options: [
+                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
                         .transition(.fade(0.2)),
                         .scaleFactor(UIScreen.main.scale),
                         .cacheOriginalImage
                     ])
                 } else {
-                    cell.imageView.kf.setImage(with: r.url(for: .large), options: [
+                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
                         .processor(DownsamplingImageProcessor(size: frame.size)),
                         .transition(.fade(0.2)),
                         .scaleFactor(UIScreen.main.scale),
