@@ -38,4 +38,30 @@ extension UILabel {
         guard numberOfLines > 0 else { return false }
         return countLabelLines() > numberOfLines
     }
+    
+    // MARK: - Builder Pattern
+    @discardableResult
+    func setText(_ text: String) -> Self {
+        self.text = text
+        return self
+    }
+    
+    @discardableResult
+    func setFont(_ font: UIFont) -> Self {
+        self.font = font
+        return self
+    }
+    
+    @discardableResult
+    func setMultiline() -> Self {
+        textAlignment = .center
+        numberOfLines = 0
+        return self
+    }
+    
+    @discardableResult
+    func setLineSpacing(_ spacing: CGFloat) -> Self {
+        
+        return self
+    }
 }

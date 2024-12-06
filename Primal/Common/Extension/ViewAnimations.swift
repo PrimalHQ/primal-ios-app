@@ -183,7 +183,7 @@ extension UserImageView {
         let scale = other.bounds.height / height
         let distance = centerDistanceVectorToView(other)
         
-        let animatingIV = UserImageView(height: height, glowPadding: glowPadding)
+        let animatingIV = UserImageView(height: height)
         animatingIV.image = image
         animatingIV.contentMode = contentMode
         root.addSubview(animatingIV)

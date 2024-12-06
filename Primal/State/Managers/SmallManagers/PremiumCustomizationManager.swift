@@ -1,5 +1,5 @@
 //
-//  LegendCustomizationManager.swift
+//  PremiumCustomizationManager.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 19.11.24..
@@ -14,24 +14,41 @@ struct LegendCustomization: Codable {
     var avatar_glow: Bool
 }
 
+struct PremiumUserInfo: Codable {
+    var tier: String
+    var cohort_1: String
+    var cohort_2: String
+    var expires_on: Double?
+}
+
 extension LegendCustomization {
     var theme: LegendTheme? { .init(rawValue: style.lowercased()) }
 }
 
-class LegendCustomizationManager {
+class PremiumCustomizationManager {
     
-    static let instance = LegendCustomizationManager()
+    static let instance = PremiumCustomizationManager()
     
     private var customizations: [String: LegendCustomization] = [:]
+    private var infos: [String: PremiumUserInfo] = [:]
     
     private init() { }
     
     @MainActor
-    func addCustomizations(_ customizations: [String: LegendCustomization]) {
+    func addLegendCustomizations(_ customizations: [String: LegendCustomization]) {
         for custom in customizations {
             self.customizations[custom.key] = custom.value
         }
     }
     
+    @MainActor
+    func addPremiumInfo(_ infos: [String: PremiumUserInfo]) {
+        for inf in infos {
+            self.infos[inf.key] = inf.value
+        }
+    }
+    
     func getCustomization(pubkey: String) -> LegendCustomization? { customizations[pubkey] }
+    
+    func getPremiumInfo(pubkey: String) -> PremiumUserInfo? { infos[pubkey] }
 }

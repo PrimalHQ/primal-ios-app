@@ -11,10 +11,18 @@ class PremiumBecomeLegendController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let descStack = UIStackView(axis: .vertical, [
+            UILabel("The Legend tier was created to recognize",color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
+            UILabel("users who have made a significant",color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
+            UILabel("contribution to Primal.",color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+        ])
+        descStack.alignment = .center
+        descStack.spacing = 6
+        
         let titleLabel = UILabel("Donate $1000 or more to gain:", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
         titleLabel.textAlignment = .center
         
-        let privateBetaTitle = BecomeLegendTitledParagraph(title: "Private Beta Builds", paragraph: "Get access to new features before they are public.")
+        let privateBetaTitle = BecomeLegendTitledParagraph(title: "Way More Storage", paragraph: "Get 100GB of Primal Premium media storage.")
         let legendaryTitle = BecomeLegendTitledParagraph(title: "Legendary Custom Profile", paragraph: "Option to pick the color of your verified badge and set the glow around your avatar.")
         let infoStack = UIStackView(axis: .vertical, [
             BecomeLegendTitledParagraph(title: "Forever Premium", paragraph: "Primal Premium subscription never expires for legends."),
@@ -34,7 +42,7 @@ class PremiumBecomeLegendController: UIViewController {
         
         let action = LargeRoundedButton(title: "Become a Legend")
         
-        let mainStack = UIStackView(axis: .vertical, [titleLabel, infoStack, gratitudeStack, action])
+        let mainStack = UIStackView(axis: .vertical, [descStack, titleLabel, infoStack, gratitudeStack, action])
         mainStack.distribution = .equalSpacing
         view.addSubview(mainStack)
         mainStack
@@ -61,8 +69,14 @@ class PremiumBecomeLegendController: UIViewController {
             .centerToView(legendaryTitle, axis: .vertical, offset: -4)
         
         action.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.fadeTo(PremiumLegendAmountController())
-        }), for: .touchDown)
+            self?.navigationController?.pushViewController(PremiumLegendAmountController(), animated: true)
+        }), for: .touchUpInside)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 }
 

@@ -19,7 +19,7 @@ class LargeZapGalleryChildView: UIView {
 }
 
 class LargeZapPillView: LargeZapGalleryChildView {
-    let image = UserImageView(height: 26)
+    let image = UserImageView(height: 26, showLegendGlow: false)
     let amountLabel = UILabel()
     let endSpacer = SpacerView(width: 2)
     

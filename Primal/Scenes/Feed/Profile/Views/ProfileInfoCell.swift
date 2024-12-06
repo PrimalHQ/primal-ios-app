@@ -19,6 +19,7 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func linkPressed(_ url: URL?)
     func followersPressed()
     func followingPressed()
+    func premiumPillPressed()
     
     func didSelectTab(_ tab: Int)
 }
@@ -44,6 +45,7 @@ class ProfileInfoCell: UITableViewCell {
     let primaryLabel = UILabel()
     let checkboxIcon = VerifiedView().constrainToSize(20)
     let followsYou = FollowsYouView()
+    let premiumBadge = PremiumUserTitleView(height: 20, fontSize: 12)
     
     let secondaryLabel = UILabel()
     let descLabel = NantesLabel()
@@ -79,6 +81,25 @@ class ProfileInfoCell: UITableViewCell {
         } else {
             checkboxIcon.isHidden = true
             secondaryLabel.isHidden = true
+        }
+        
+        if let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: user.pubkey) {
+            premiumBadge.titleLabel.text = custom.cohort_1
+            premiumBadge.subtitleLabel.text = custom.cohort_2
+            
+            if custom.tier == "premium-legend" {
+                if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: user.pubkey)?.theme {
+                    premiumBadge.theme = custom
+                    premiumBadge.isHidden = false
+                } else {
+                    premiumBadge.isHidden = true
+                }
+            } else if (custom.tier == "premium" && Date(timeIntervalSince1970: custom.expires_on ?? 0).timeIntervalSinceNow > 0) {
+                premiumBadge.isHidden = false
+                premiumBadge.theme = nil
+            }
+        } else {
+            premiumBadge.isHidden = true
         }
         
         descLabel.attributedText = parsedDescription
@@ -171,14 +192,15 @@ private extension ProfileInfoCell {
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
-        let primaryStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, followsYou, UIView()])
-        primaryStack.spacing = 4
+        let primaryStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, premiumBadge, UIView()])
+        primaryStack.setCustomSpacing(4, after: primaryLabel)
+        primaryStack.setCustomSpacing(8, after: checkboxIcon)
         primaryStack.alignment = .center
         
         primaryLabel.font = .appFont(withSize: 20, weight: .bold)
         primaryLabel.adjustsFontSizeToFitWidth = true
         
-        let followStack = UIStackView([followingLabel, followersLabel])
+        let followStack = UIStackView([followingLabel, followersLabel, followsYou])
         followStack.spacing = 8
         followingLabel.setContentHuggingPriority(.required, for: .horizontal)
         
@@ -242,6 +264,10 @@ private extension ProfileInfoCell {
             self?.delegate?.didSelectTab(tab)
         }
         .store(in: &cancellables)
+        
+        premiumBadge.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.delegate?.premiumPillPressed()
+        }))
         
         followingLabel.isUserInteractionEnabled = true
         followingLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in self?.delegate?.followingPressed() }))

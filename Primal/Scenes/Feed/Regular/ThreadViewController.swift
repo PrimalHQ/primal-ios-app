@@ -337,8 +337,8 @@ private extension ThreadViewController {
             
             self.mainObject = mainPost.post
             self.posts = []
-            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
+            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             
             refreshControl.endRefreshing()
             

@@ -12,7 +12,7 @@ import AudioToolbox
 
 final class TransactionNotificationView: UIView {
     private var animationBackgroundView = UIView()
-    private let profileImage = UserImageView(height: 44, glowPadding: 2)
+    private let profileImage = UserImageView(height: 44)
     
     private let nameLabel = UILabel()
     private let messageLabel = UILabel()

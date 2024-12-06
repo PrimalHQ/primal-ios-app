@@ -38,6 +38,12 @@ class PremiumHomeViewController: UIViewController {
         
         setup()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
 }
 
 private extension PremiumHomeViewController {
@@ -96,7 +102,7 @@ private extension PremiumHomeViewController {
         view.addSubview(action)
         action.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
-        if let legend = LegendCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
+        if let legend = PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
             if legend.custom_badge {
                 titleView.theme = legend.theme
             }
@@ -104,7 +110,7 @@ private extension PremiumHomeViewController {
     }
     
     func userStackView() -> UIView? {
-        let image = UserImageView(height: 80, glowPadding: 2)
+        let image = UserImageView(height: 80)
         let checkbox = VerifiedView().constrainToSize(24)
         
         if let user = IdentityManager.instance.parsedUser {
@@ -182,8 +188,8 @@ private extension PremiumHomeViewController {
 }
 
 class PremiumUserTitleView: UIView, Themeable {
-    let titleLabel = UILabel("", color: .white, font: .appFont(withSize: 14, weight: .bold))
-    let subtitleLabel = UILabel("", color: .white, font: .appFont(withSize: 14, weight: .regular))
+    let titleLabel = UILabel()
+    let subtitleLabel = UILabel()
     
     var theme: LegendTheme? {
         didSet {
@@ -198,14 +204,19 @@ class PremiumUserTitleView: UIView, Themeable {
     
     private var gradient = GradientView(colors: [])
     
-    init() {
+    init(height: CGFloat = 28, fontSize: CGFloat = 14) {
         super.init(frame: .zero)
+        
+        titleLabel.font = .appFont(withSize: fontSize, weight: .bold)
+        titleLabel.textColor = .white
+        subtitleLabel.font = .appFont(withSize: fontSize, weight: .regular)
+        subtitleLabel.textColor = .white
         
         addSubview(gradient)
         gradient.pinToSuperview()
         
-        let subtitleParent = UIView().constrainToSize(height: 24)
-        subtitleParent.layer.cornerRadius = 12
+        let subtitleParent = UIView().constrainToSize(height: height - 4)
+        subtitleParent.layer.cornerRadius = (height - 4) / 2
         subtitleParent.backgroundColor = .black.withAlphaComponent(0.4)
         subtitleParent.addSubview(subtitleLabel)
         subtitleLabel.centerToSuperview(axis: .vertical).pinToSuperview(edges: .horizontal, padding: 10)
@@ -217,7 +228,7 @@ class PremiumUserTitleView: UIView, Themeable {
         addSubview(stack)
         stack.pinToSuperview(edges: [.vertical, .trailing], padding: 2).pinToSuperview(edges: .leading, padding: 10)
         
-        layer.cornerRadius = 14
+        layer.cornerRadius = height / 2
         clipsToBounds = true
         updateTheme()
     }

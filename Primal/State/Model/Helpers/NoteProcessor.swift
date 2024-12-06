@@ -24,7 +24,7 @@ class NoteProcessor: MetadataCoding {
 
     lazy var parsedUsers: [ParsedUser] = response.getSortedUsers()
     
-    lazy var parsedZaps = response.postZaps.map { primalZapEvent in
+    lazy var parsedZaps = response.postZaps.uniqueByFilter({ $0.zap_receipt_id }).map { primalZapEvent in
         ParsedZap(
             receiptId: primalZapEvent.zap_receipt_id,
             postId: primalZapEvent.event_id,

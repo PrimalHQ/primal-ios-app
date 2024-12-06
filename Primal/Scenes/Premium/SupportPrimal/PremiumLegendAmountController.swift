@@ -48,8 +48,15 @@ class PremiumLegendAmountController: UIViewController {
         }), for: .valueChanged)
         
         action.addAction(.init(handler: { [unowned self] _ in
-            guard let name = WalletManager.instance.premiumState?.name else { return }
-            show(PremiumLegendPayController(name: name, amount: balanceView.balance), sender: nil)
+            let balance = balanceView.balance
+            guard let name = WalletManager.instance.premiumState?.name else {
+                guard let nav = navigationController else { return }
+                show(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
+                    nav.show(PremiumLegendPayController(name: name, amount: balance), sender: nil)
+                }), sender: nil)
+                return
+            }
+            show(PremiumLegendPayController(name: name, amount: balance), sender: nil)
         }), for: .touchUpInside)
         
         balanceView.animateBalanceChange = false

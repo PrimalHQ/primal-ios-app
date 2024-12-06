@@ -107,6 +107,7 @@ final class WalletManager {
     
     @Published var premiumState: PremiumState?
     var hasPremium: Bool { premiumState != nil }
+    var hasLegend: Bool { premiumState?.isLegend == true }
     var hasPremiumPublisher: AnyPublisher<Bool, Never> {
         $premiumState.map { $0 != nil }.eraseToAnyPublisher()
     }

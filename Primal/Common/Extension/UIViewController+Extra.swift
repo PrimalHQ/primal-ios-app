@@ -18,6 +18,10 @@ extension UIViewController {
 }
 
 extension UIViewController {
+    func isParent(_ vc: UIViewController?) -> Bool {
+        vc == nil ? false : (vc == self ? true : isParent(vc?.parent))
+    }
+    
     func showErrorMessage(title: String = "Warning", _ message: String? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .default))

@@ -21,7 +21,7 @@ class ZapGalleryChildView: UIView {
 }
 
 class ZapAvatarView: ZapGalleryChildView {
-    let image = UserImageView(height: 22)
+    let image = UserImageView(height: 22, showLegendGlow: false)
     
     override init(zap: ParsedZap) {
         super.init(zap: zap)
@@ -46,7 +46,7 @@ class ZapAvatarView: ZapGalleryChildView {
 }
 
 class ZapPillView: ZapGalleryChildView {
-    let image = UserImageView(height: 22)
+    let image = UserImageView(height: 22, showLegendGlow: false)
     let amountLabel = UILabel()
     let endSpacer = SpacerView(width: 2)
     

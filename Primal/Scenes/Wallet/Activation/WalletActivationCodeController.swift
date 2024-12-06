@@ -150,13 +150,13 @@ private extension WalletActivationCodeController {
                 WalletManager.instance.isLoadingWallet = false
                 WalletManager.instance.userHasWallet = true
                 
-                guard let profile = IdentityManager.instance.user?.profileData else { return }
+                guard let profile = IdentityManager.instance.parsedUser?.data.profileData else { return }
                 profile.lud16 = newAddress
                 IdentityManager.instance.updateProfile(profile) { success in
                     if !success {
                         RootViewController.instance.showErrorMessage("Unable to update profile lud16 address to \(newAddress)")
                     } else {
-                        IdentityManager.instance.requestUserProfile()
+                        IdentityManager.instance.requestUserProfile(local: false)
                     }
                 }
             }

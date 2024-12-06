@@ -59,12 +59,16 @@ class ThreadCell: PostCell {
             
             mainLabel.attributedText = parsedContent.attributedText
         }
+    }
+    
+    override func updateMenu(_ content: ParsedContent) {
+        super.updateMenu(content)
         
-        if parsedContent.zaps.isEmpty {
+        if content.zaps.isEmpty {
             zapGallery?.isHidden = true
         } else {
             zapGallery?.isHidden = false
-            zapGallery?.zaps = parsedContent.zaps
+            zapGallery?.zaps = content.zaps
         }
     }
 }
@@ -139,6 +143,8 @@ final class PostThreadCell: ThreadCell {
         contentSpacer.constrainToSize(width: 24)
         
         profileImageView.height = 24
+        
+        smallGallery.singleLine = true
         
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameStack, threeDotsButton])
         

@@ -43,6 +43,10 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     @Published var posts: [ParsedContent] = [] {
         didSet {
+            defer {
+                playVideoOnScroll()
+            }
+            
             guard animateInserts, oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
                 table.reloadData()
                 return
@@ -115,7 +119,8 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var prevTransform: CGFloat = 0
     
     func playVideoOnScroll() {
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, presentedViewController == nil else { return }
+        if let presentedViewController, !presentedViewController.isBeingDismissed { return }
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
 
@@ -476,7 +481,8 @@ private extension NoteViewController {
             posts[index].zaps = zaps
             
             guard
-                self.view.window != nil,
+                self.navigationController?.view.window != nil,
+                self.navigationController?.topViewController?.isParent(self) == true,
                 table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
             else { return }
             

@@ -9,25 +9,55 @@ import UIKit
 import FLAnimatedImage
 import Kingfisher
 
-class UserImageView: UIView {
+class UserImageView: UIView, Themeable {
     let legendaryGradient = GradientView(colors: [])
+    let legendaryBackgroundCircleView = UIView()
     let animatedImageView = FLAnimatedImageView()
     
     var heightC: NSLayoutConstraint?
+    var gradientHeightC: NSLayoutConstraint?
+    var backgroundCircleHeightC: NSLayoutConstraint?
     
     var height: CGFloat { didSet { updateHeight() } }
-    let glowPadding: CGFloat
     
     var cachedLegendTheme: LegendTheme?
     
-    init(height: CGFloat, glowPadding: CGFloat = 1) {
+    var legendGradientSize: CGFloat {
+        height + {
+            if height >= 100 { return 12 }
+            if height >= 80 { return 8 }
+            if height >= 60 { return 7 }
+            if height >= 40 { return 6 }
+            if height >= 32 { return 4 }
+            return 3
+        }()
+    }
+    
+    var legendBackgroundCircleSize: CGFloat {
+        height + {
+            if height >= 100 { return 1.5 }
+            if height >= 40 { return 1 }
+            if height >= 32 { return 0.5 }
+            return 0
+        }()
+    }
+    
+    var showLegendGlow: Bool
+    init(height: CGFloat, showLegendGlow: Bool = true) {
         self.height = height
-        self.glowPadding = glowPadding
+        self.showLegendGlow = showLegendGlow
         super.init(frame: .init(origin: .zero, size: .init(width: height, height: height)))
         
         addSubview(legendaryGradient)
-        legendaryGradient.pinToSuperview(padding: -glowPadding)
+        legendaryGradient.centerToSuperview().constrainToAspect(1)
         legendaryGradient.layer.masksToBounds = true
+        gradientHeightC = legendaryGradient.heightAnchor.constraint(equalToConstant: legendGradientSize)
+        gradientHeightC?.isActive = true
+        
+        addSubview(legendaryBackgroundCircleView)
+        legendaryBackgroundCircleView.centerToSuperview().constrainToAspect(1)
+        backgroundCircleHeightC = legendaryBackgroundCircleView.heightAnchor.constraint(equalToConstant: legendBackgroundCircleSize)
+        backgroundCircleHeightC?.isActive = true
         
         addSubview(animatedImageView)
         animatedImageView.pinToSuperview()
@@ -39,6 +69,7 @@ class UserImageView: UIView {
         heightC?.isActive = true
         
         updateHeight()
+        updateTheme()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -66,12 +97,14 @@ class UserImageView: UIView {
     func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
         tag = tag + 1
         
-        if let legendary = LegendCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), legendary.avatar_glow, let theme = legendary.theme {
+        if showLegendGlow, let legendary = PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), legendary.avatar_glow, let theme = legendary.theme {
             legendaryGradient.isHidden = false
+            legendaryBackgroundCircleView.isHidden = false
             legendaryGradient.setLegendGradient(theme)
             cachedLegendTheme = theme
         } else {
             legendaryGradient.isHidden = true
+            legendaryBackgroundCircleView.isHidden = true
             cachedLegendTheme = nil
         }
         
@@ -105,10 +138,17 @@ class UserImageView: UIView {
         }
     }
     
+    func updateTheme() {
+        legendaryBackgroundCircleView.backgroundColor = .background
+    }
     
     private func updateHeight() {
         animatedImageView.layer.cornerRadius = height / 2
-        legendaryGradient.layer.cornerRadius = (height / 2) + glowPadding
+        legendaryGradient.layer.cornerRadius = legendGradientSize / 2
+        legendaryBackgroundCircleView.layer.cornerRadius = legendBackgroundCircleSize / 2
+        
         heightC?.constant = height
+        gradientHeightC?.constant = legendGradientSize
+        backgroundCircleHeightC?.constant = legendBackgroundCircleSize
     }
 }

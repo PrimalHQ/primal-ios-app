@@ -47,9 +47,9 @@ extension LegendTheme {
         case .brown:
             return [.init(rgb: 0xBB9971), .init(rgb: 0x5C3B22)]
         case .blue:
-            return [.init(rgb: 0x01E0FF), .init(rgb: 0x0190F8), .init(rgb: 0x2555EE), .init(rgb: 0x4A05CA)]
+            return [.init(rgb: 0x01E0FF), .init(rgb: 0x0190F8), .init(rgb: 0x2555EE)]
         case .sunfire:
-            return [.init(rgb: 0xFFA722), .init(rgb: 0xFA3C3C), .init(rgb: 0xF00492), .init(rgb: 0x620BA9)]
+            return [.init(rgb: 0xFFA722), .init(rgb: 0xFA3C3C), .init(rgb: 0xF00492)]
         }
     }
     
@@ -62,7 +62,7 @@ extension LegendTheme {
         case  .teal, .brown:
             return [0.2, 0.75]
         case .blue, .sunfire:
-            return [0.05, 0.3, 0.6, 0.9]
+            return [0.05, 0.35, 0.75]
         }
     }
     

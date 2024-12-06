@@ -9,7 +9,7 @@ import FLAnimatedImage
 import UIKit
 
 final class NewPostsButton: MyButton, Themeable {
-    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, glowPadding: 2) }
+    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let label = UILabel()
     
     lazy var avatarStack = UIStackView()

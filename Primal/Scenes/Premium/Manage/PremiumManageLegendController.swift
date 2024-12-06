@@ -34,7 +34,7 @@ class PremiumManageLegendController: UIViewController {
     init(state: PremiumState) {
         self.state = state
         
-        if let custom = LegendCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
+        if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
             table.selectTheme(.init(rawValue: custom.style.lowercased()))
             
             avatarSwitch.isOn = custom.avatar_glow
@@ -129,7 +129,7 @@ private extension PremiumManageLegendController {
                 let nostrObject = NostrObject.create(content: customizationString, kind: 30078)
             else { return }
             
-            LegendCustomizationManager.instance.addCustomizations([IdentityManager.instance.userHexPubkey: customization])
+            PremiumCustomizationManager.instance.addLegendCustomizations([IdentityManager.instance.userHexPubkey: customization])
             ThemingManager.instance.themeDidChange()
             
             SocketRequest(name: "membership_legend_customization", payload: ["event_from_user": nostrObject.toJSON()], connection: .wallet)

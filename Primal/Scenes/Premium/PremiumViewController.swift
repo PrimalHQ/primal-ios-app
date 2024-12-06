@@ -47,9 +47,23 @@ extension PremiumState: Equatable {
 final class PremiumViewController: UIPageViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
-    init() {
+    enum StartingScreen {
+        case home, buyLegend, primalOG
+    }
+    
+    enum RootState {
+        case home(PremiumState?)
+        case custom(UIViewController)
+    }
+    
+    let startingScreen: StartingScreen
+    init(startingScreen: StartingScreen = .home) {
+        self.startingScreen = startingScreen
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
-        WalletManager.instance.refreshPremiumState()
+        
+        if startingScreen == .home {
+            WalletManager.instance.refreshPremiumState()
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -60,29 +74,40 @@ final class PremiumViewController: UIPageViewController, Themeable {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = customBackButton
         
-        Publishers.Merge(
-            triggerRefresh.map { WalletManager.instance.premiumState },
-            WalletManager.instance.$premiumState.removeDuplicates()
+        Publishers.Merge3(
+            triggerRefresh.map { RootState.home(WalletManager.instance.premiumState) },
+            WalletManager.instance.$premiumState.dropFirst().removeDuplicates().map { RootState.home($0) },
+            Just({
+                switch startingScreen {
+                case .home:
+                    return RootState.home(WalletManager.instance.premiumState)
+                case .buyLegend:
+                    return RootState.custom(PremiumBecomeLegendController())
+                case .primalOG:
+                    return RootState.custom(PremiumPrimalOGHomeController())
+                }
+            }())
         )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 guard let self else { return }
                 
-                if let state {
-                    if state.isExpired {
-                        title = "Premium Expired"
+                switch state {
+                case .home(let state):
+                    if let state {
+                        if state.isExpired {
+                            title = "Premium Expired"
+                        } else {
+                            title = "Premium"
+                        }
+                        
+                        setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
                     } else {
-                        title = "Premium"
+                        setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)
                     }
-                    
-                    setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
-                } else {
-                    setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)
-                }
-                
-                if navigationController?.topViewController == self {
-                    let hasPremium = state != nil
-                    navigationController?.setNavigationBarHidden(!hasPremium, animated: false)
+                case .custom(let vc):
+                    setViewControllers([vc], direction: .forward, animated: false)
+                    title = vc.title
                 }
             }
             .store(in: &cancellables)
@@ -91,8 +116,6 @@ final class PremiumViewController: UIPageViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(!WalletManager.instance.hasPremium, animated: true)
-
         mainTabBarController?.setTabBarHidden(true, animated: animated)
         
         UserDefaults.standard.currentUserLastPremiumVisit = .now

@@ -44,6 +44,12 @@ final class PremiumOnboardingHomeViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 }
 
 private extension PremiumOnboardingHomeViewController {

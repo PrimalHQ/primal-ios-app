@@ -17,7 +17,7 @@ extension String { // TODO: Remove in 2025
 }
 
 final class MenuContainerController: UIViewController, Themeable {
-    private let profileImage = UserImageView(height: 52, glowPadding: 2)
+    private let profileImage = UserImageView(height: 52)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -25,7 +25,7 @@ final class MenuContainerController: UIViewController, Themeable {
     private let followersLabel = UILabel()
     private let mainStack = UIStackView()
     private let coverView = UIView()
-    private let menuProfileImage = UserImageView(height: 32, glowPadding: 1)
+    private let menuProfileImage = UserImageView(height: 32)
     
     private let premiumIndicator = NumberedNotificationIndicator()
     private let notificationIndicator = NumberedNotificationIndicator()

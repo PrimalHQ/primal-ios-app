@@ -32,7 +32,7 @@ class ProfileNavigationView: UIView, Themeable {
 
     let profilePictureParent = UIView()
     let profilePictureBorder = UIView()
-    let profilePicture = UserImageView(height: 74, glowPadding: 3)
+    let profilePicture = UserImageView(height: 74)
     
     weak var profilePicOverlayBig: UIView?
     weak var profilePicOverlaySmall: UIView?

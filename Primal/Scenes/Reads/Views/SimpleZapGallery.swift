@@ -38,7 +38,7 @@ class UserGalleryView: UIView {
 }
 
 class UserAvatarView: UIView {
-    let image = UserImageView(height: 22)
+    let image = UserImageView(height: 22, showLegendGlow: false)
     
     init(user: ParsedUser) {
         super.init(frame: .zero)
