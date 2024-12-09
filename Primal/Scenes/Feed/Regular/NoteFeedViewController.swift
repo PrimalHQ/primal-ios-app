@@ -63,8 +63,8 @@ class NoteFeedViewController: PostFeedViewController {
         2
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection { return super.tableView(tableView, numberOfRowsInSection: section) }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == postSection { return dataSource.tableView(tableView, numberOfRowsInSection: section) }
         return posts.isEmpty ? 6 : 0
     }
     

@@ -21,7 +21,7 @@ extension PostCell {
     }
 }
 
-class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
+class NoteViewController: UIViewController, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
@@ -36,6 +36,8 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var animateInserts = true
     
+    lazy var dataSource = RegularFeedDatasource(tableView: table, delegate: self)
+    
     var postSection: Int { 0 }
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         if indexPath.section != postSection { return nil }
@@ -47,20 +49,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 playVideoOnScroll()
             }
             
-            guard animateInserts, oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
-                table.reloadData()
-                return
-            }
-            
-            if oldValue.first?.post.id == posts.first?.post.id {
-                // Adding at the end
-                table.reloadData()
-                return
-            }
-            
-            // Adding at the start
-            let indexes: [IndexPath] =  (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
-            table.insertRows(at: indexes, with: .none)
+            dataSource.setPosts(posts)
         }
     }
     
@@ -122,7 +111,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
         guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
         
-        let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
+        let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementImageGalleryCell)?.currentVideoCells ?? [] }
 
         let firstPlayableCell: VideoCell? = allVideoCells.first(where: { cell in
             let bounds = cell.contentView.convert(cell.contentView.bounds, to: nil)
@@ -215,41 +204,35 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return threadVC
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        posts.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        if let cell = cell as? PostCell {
-            let data = posts[indexPath.row]
-            cell.update(data)
-            cell.delegate = self
-        }
-        
-        if let postToPreload = posts[safe: indexPath.row + 10] {
-            if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            } else if let url = postToPreload.linkPreview?.imagesData.first?.url(for: .large), url.isImageURL {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            }
-            
-            if let url = postToPreload.user.profileImage.url(for: .small) {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            }
-        }
-        
-        return cell
-    }
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
+//        if let cell = cell as? PostCell {
+//            let data = posts[indexPath.row]
+//            cell.update(data)
+//            cell.delegate = self
+//        }
+//        
+//        if let postToPreload = posts[safe: indexPath.row + 10] {
+//            if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
+//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+//            } else if let url = postToPreload.linkPreview?.imagesData.first?.url(for: .large), url.isImageURL {
+//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+//            }
+//            
+//            if let url = postToPreload.user.profileImage.url(for: .small) {
+//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+//            }
+//        }
+//        
+//        return cell
+//    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
         open(post: post)
     }
     
-    func updateTheme() {        
-        updateCellID()
-        table.register(PostFeedCell.self, forCellReuseIdentifier: postCellID)
+    func updateTheme() {
         table.reloadData()
         
         view.backgroundColor = .background2
@@ -427,21 +410,16 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
 }
 
 private extension NoteViewController {
-    func updateCellID() {
-        postCellID += "1"
-    }
-    
     func setup() {
         stack.axis = .vertical
         view.insertSubview(stack, at: 0)
         stack.pinToSuperview()
         
-        table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
-
+        
         DispatchQueue.main.async {
             self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
             self.table.contentInset = .init(top: self.barsMaxTransform, left: 0, bottom: 90, right: 0)

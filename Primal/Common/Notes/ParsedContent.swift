@@ -30,11 +30,10 @@ class ParsedElement: Equatable {
     }
 }
 
-final class ParsedUser {
+final class ParsedUser: Hashable {
     var data: PrimalUser
     var profileImage: MediaMetadata.Resource
     var followers: Int?
-    var extraInfo: JSON?
     
     init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, followers: Int? = nil) {
         self.data = data
@@ -46,17 +45,26 @@ final class ParsedUser {
         self.data = .init(pubkey: "empty")
         self.profileImage = .init(url: imageURL, variants: [])
     }
+    
+    static func == (lhs: ParsedUser, rhs: ParsedUser) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(data)
+        hasher.combine(profileImage)
+    }
 }
 
 extension PrimalFeedPost {
     var isArticle: Bool { kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue }
 }
 
-enum NotFoundContent {
+enum NotFoundContent: Hashable {
     case note, article
 }
 
-final class ParsedContent {
+final class ParsedContent: Hashable {
     var post: PrimalFeedPost
     let user: ParsedUser
     
@@ -96,6 +104,15 @@ final class ParsedContent {
     var notFound: NotFoundContent?
     
     var customEvent: ParsedContent?
+    
+    static func == (lhs: ParsedContent, rhs: ParsedContent) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(post)
+        hasher.combine(user)
+    }
 }
 
 struct ParsedRepost {
