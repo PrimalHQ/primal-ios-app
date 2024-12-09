@@ -142,9 +142,9 @@ class ProfileInfoCell: UITableViewCell {
         secondaryLabel.textColor = .foreground3
         descLabel.textColor = .foreground
         descLabel.linkAttributes = [
-            .foregroundColor: UIColor.accent
+            .foregroundColor: UIColor.accent2
         ]
-        linkView.textColor = .accent
+        linkView.textColor = .accent2
     }
     
     func updateFollowButton(_ isFollowing: Bool) {

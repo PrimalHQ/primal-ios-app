@@ -393,7 +393,7 @@ private extension ProfileViewController {
                         if range.location != NSNotFound {
                             attributedString.addAttributes([
                                 .link : URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
-                                .foregroundColor: UIColor.accent
+                                .foregroundColor: UIColor.accent2
                             ], range: range)
                         }
                     }

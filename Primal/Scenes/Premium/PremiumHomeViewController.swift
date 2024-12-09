@@ -103,9 +103,7 @@ private extension PremiumHomeViewController {
         action.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
         if let legend = PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
-            if legend.custom_badge {
-                titleView.theme = legend.theme
-            }
+            titleView.theme = legend.theme
         }
     }
     

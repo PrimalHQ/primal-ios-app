@@ -69,7 +69,14 @@ class PremiumBecomeLegendController: UIViewController {
             .centerToView(legendaryTitle, axis: .vertical, offset: -4)
         
         action.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.pushViewController(PremiumLegendAmountController(), animated: true)
+            guard let state = WalletManager.instance.premiumState else {
+                guard let nav = self?.navigationController else { return }
+                self?.show(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
+                    nav.pushViewController(PremiumLegendAmountController(state: .name(name)), animated: true)
+                }), sender: nil)
+                return
+            }
+            self?.navigationController?.pushViewController(PremiumLegendAmountController(state: .existingUser(state)), animated: true)
         }), for: .touchUpInside)
     }
     

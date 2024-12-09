@@ -76,7 +76,7 @@ final class PremiumViewController: UIPageViewController, Themeable {
         
         Publishers.Merge3(
             triggerRefresh.map { RootState.home(WalletManager.instance.premiumState) },
-            WalletManager.instance.$premiumState.dropFirst().removeDuplicates().map { RootState.home($0) },
+            WalletManager.instance.$premiumState.removeDuplicates().dropFirst().map { RootState.home($0) },
             Just({
                 switch startingScreen {
                 case .home:

@@ -23,8 +23,7 @@ class PremiumManageLegendController: UIViewController {
     let badgeSwitch = UISwitch(frame: .zero)
     let avatarSwitch = UISwitch(frame: .zero)
     
-    let profileImage = FLAnimatedImageView().constrainToSize(80)
-    let avatarRing = GradientView(colors: []).constrainToSize(84)
+    let profileImage = UserImageView(height: 80, showLegendGlow: false)
     
     let checkboxImage = UIImageView()
     
@@ -95,9 +94,6 @@ private extension PremiumManageLegendController {
         mainStack.setCustomSpacing(22, after: table)
         mainStack.setCustomSpacing(16, after: switchParentView)
         
-        view.addSubview(avatarRing)
-        avatarRing.isHidden = true
-        
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 24)
@@ -106,9 +102,6 @@ private extension PremiumManageLegendController {
         if let userStack = userStackView() {
             mainStack.insertArrangedSubview(userStack, at: 0)
             mainStack.setCustomSpacing(32, after: userStack)
-            
-            avatarRing.centerToView(profileImage)
-            avatarRing.layer.cornerRadius = 42
         }
         
         view.addSubview(action)
@@ -147,12 +140,14 @@ private extension PremiumManageLegendController {
         Publishers.CombineLatest3(table.$selectedTheme, $isBadgeOn, $isAvatarOn)
             .sink { [weak self] theme, isBadgeOn, isAvatarOn in
                 action.theme = theme
-                self?.titleView.theme = isBadgeOn ? theme : nil
+                self?.titleView.theme = theme
                 if let theme, isAvatarOn {
-                    self?.avatarRing.setLegendGradient(theme)
-                    self?.avatarRing.isHidden = false
+                    self?.profileImage.legendaryGradient.setLegendGradient(theme)
+                    self?.profileImage.legendaryGradient.isHidden = false
+                    self?.profileImage.legendaryBackgroundCircleView.isHidden = false
                 } else {
-                    self?.avatarRing.isHidden = true
+                    self?.profileImage.legendaryGradient.isHidden = true
+                    self?.profileImage.legendaryBackgroundCircleView.isHidden = true
                 }
                 
                 if let theme, isBadgeOn {
@@ -166,10 +161,7 @@ private extension PremiumManageLegendController {
     
     func userStackView() -> UIView? {
         guard let user = IdentityManager.instance.parsedUser else { return nil }
-        profileImage.layer.cornerRadius = 40
-        profileImage.contentMode = .scaleAspectFill
-        profileImage.clipsToBounds = true
-        profileImage.setUserImage(user, size: .init(width: 80, height: 80))
+        profileImage.setUserImage(user)
         
         let checkbox = UIView().constrainToSize(24)
         checkbox.addSubview(checkboxImage)
