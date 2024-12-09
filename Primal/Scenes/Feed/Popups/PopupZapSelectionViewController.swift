@@ -138,7 +138,7 @@ private extension PopupZapSelectionViewController {
             .foregroundColor: UIColor.foreground
         ])
         
-        usdLabel.text = selectedZapAmount.satsToUsdAmountString(.threeDecimals) + " USD"
+        usdLabel.text = "$\(selectedZapAmount.satsToUsdAmountString(.threeDecimals)) USD"
     }
     
     func setup() {

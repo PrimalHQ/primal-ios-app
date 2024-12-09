@@ -26,7 +26,7 @@ extension UIButton.Configuration {
 class LongFormNavExtensionView: UIView, Themeable {
     let nameLabel = UILabel()
     let secondaryLabel = UILabel()
-    let profileIcon = UserImageView(height: 40, glowPadding: 2)
+    let profileIcon = UserImageView(height: 40)
     let border = SpacerView(height: 1)
     
 //    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)

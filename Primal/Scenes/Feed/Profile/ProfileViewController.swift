@@ -393,7 +393,7 @@ private extension ProfileViewController {
                         if range.location != NSNotFound {
                             attributedString.addAttributes([
                                 .link : URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
-                                .foregroundColor: UIColor.accent
+                                .foregroundColor: UIColor.accent2
                             ], range: range)
                         }
                     }
@@ -563,6 +563,18 @@ extension ProfileViewController: MutedUserCellDelegate {
 }
 
 extension ProfileViewController: ProfileInfoCellDelegate {
+    func premiumPillPressed() {
+        guard let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: profile.data.pubkey), custom.tier != "free" else { return }
+        
+        if custom.cohort_1 == "Legend" {
+            if WalletManager.instance.hasLegend { return }
+            show(PremiumViewController(startingScreen: .buyLegend), sender: nil)
+            return
+        }
+        if WalletManager.instance.hasPremium { return }
+        show(PremiumViewController(startingScreen: .primalOG), sender: nil)
+    }
+    
     func followersPressed() {
         followersVC = followersVC ?? UserListController()
         guard let followersVC else { return }

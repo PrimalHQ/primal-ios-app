@@ -55,8 +55,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView, replyId: id, replyingTo: mainObject, defaultPostTitle: "Reply")
     
-    var mainPostZaps: [ParsedZap]? { didSet { table.reloadData() } }
-    
     @Published var mainPostRepliesHeightArray: [CGFloat] = [0, 150, 0, 0, 0]
     
     var isLoading = true {
@@ -68,12 +66,9 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     convenience init(post: ParsedContent) {
         self.init(threadId: post.post.id)
-        self.mainPostZaps = post.zaps
-        let copy = post.copy()
-        mainObject = copy.post
+        mainObject = post.post
         inputManager.replyingTo = mainObject
-        copy.reposted = nil
-        posts = [copy]
+        posts = [post]
         
         updateReplyToLabel()
     }
@@ -82,8 +77,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         id = threadId
         super.init(feed: FeedManager(threadId: threadId))
         setup()
-        
-        refreshZaps()
     }
     
     required init?(coder: NSCoder) {
@@ -199,7 +192,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
         if position == .main, let cell = cell as? DefaultMainThreadCell {
-            cell.update(data, zaps: mainPostZaps)
+            cell.update(data)
             cell.delegate = self
         } else if let cell = cell as? ThreadCell {
             cell.update(data, position: position)
@@ -259,7 +252,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     override func setBarsToTransform(_ transform: CGFloat) {
-        if !didMoveToMain || posts.count < 10 { return }
+        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 { return }
         
         super.setBarsToTransform(transform)
         
@@ -331,15 +324,6 @@ private extension ThreadViewController {
         textInputView.resignFirstResponder()
     }
     
-    func refreshZaps() {
-        NoteZapsRequest(noteId: id).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] zaps in
-                self?.mainPostZaps = zaps
-            })
-            .store(in: &cancellables)
-    }
-    
     func addPublishers() {
         feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
             guard let self, let mainPost = parsed.first(where: { $0.post.id == self.id }) else { return }
@@ -353,8 +337,8 @@ private extension ThreadViewController {
             
             self.mainObject = mainPost.post
             self.posts = []
-            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             self.mainPositionInThread = postsBefore.count
+            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             
             refreshControl.endRefreshing()
             
@@ -381,15 +365,6 @@ private extension ThreadViewController {
             }
             .store(in: &cancellables)
         
-        WalletManager.instance.zapEvent.debounce(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
-            guard let self, zap.postId == id else { return }
-            var zaps = mainPostZaps ?? []
-            let index = zaps.firstIndex(where: { $0.amountSats <= zap.amountSats }) ?? zaps.count
-            zaps.insert(zap, at: index)
-            mainPostZaps = zaps
-        }
-        .store(in: &cancellables)
-        
         $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
         .sink { [weak self] contentSize in
             let topBarHeight: CGFloat = (self?.topBarHeight ?? 100) + 12
@@ -402,9 +377,9 @@ private extension ThreadViewController {
             self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
         }
         .store(in: &cancellables)
-        
+
         Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
-            guard let self, $0 && $1 && !didMoveToMain else { return }
+            guard let self, $0 && $1, !didMoveToMain, mainPositionInThread > 0 else { return }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 self.didMoveToMain = true
@@ -486,15 +461,16 @@ private extension ThreadViewController {
             inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
             textHeightConstraint?.isActive = !isEditing
             
+            imagesCollectionView.isHidden = isImageHidden
+            
             UIView.animate(withDuration: 0.2) {
                 self.replyingToLabel.isHidden = !isEditing
                 self.replyingToLabel.alpha = isEditing ? 1 : 0
                 
                 self.buttonStack.isHidden = !isEditing
                 self.buttonStack.alpha = isEditing ? 1 : 0
-                    
-                self.imagesCollectionView.isHidden = isImageHidden
-                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
+                
+                self.imagesCollectionView.alpha = isImageHidden ? 0.01 : 1
             }
             
             if isEditing && !oldIsEditing {
@@ -636,7 +612,6 @@ private extension ThreadViewController {
         
         refreshControl.addAction(.init(handler: { [unowned self] _ in
             feed.requestThread(postId: id)
-            refreshZaps()
         }), for: .valueChanged)
         
         NSLayoutConstraint.activate([
@@ -653,7 +628,7 @@ private extension ThreadViewController {
         ]))
         value.append(NSAttributedString(string: "@\(name)", attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .medium),
-            .foregroundColor: UIColor.accent
+            .foregroundColor: UIColor.accent2
         ]))
         return value
     }

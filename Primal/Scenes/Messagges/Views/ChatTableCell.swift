@@ -10,7 +10,7 @@ import Kingfisher
 import FLAnimatedImage
 
 final class ChatTableCell: UITableViewCell, Themeable {
-    let profileImageView = UserImageView(height: 52, glowPadding: 2)
+    let profileImageView = UserImageView(height: 52)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let separator = UIView().constrainToSize(width: 1)

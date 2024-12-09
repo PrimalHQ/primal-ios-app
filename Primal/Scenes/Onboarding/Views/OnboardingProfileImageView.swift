@@ -9,7 +9,7 @@ import UIKit
 import FLAnimatedImage
 
 final class OnboardingProfileImageView: UIView {
-    let imageView = UserImageView(height: 105, glowPadding: 3)
+    let imageView = UserImageView(height: 105)
     init() {
         super.init(frame: .zero)
         imageView.animatedImageView.image = UIImage(named: "onboardingDefaultAvatar")

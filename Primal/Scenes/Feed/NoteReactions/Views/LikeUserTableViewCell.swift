@@ -10,7 +10,7 @@ import FLAnimatedImage
 
 final class LikeUserTableViewCell: UITableViewCell, Themeable {
     private let icon = UIImageView(image: UIImage(named: "feedLikeBig"))
-    private let avatarView = UserImageView(height: 42, glowPadding: 2)
+    private let avatarView = UserImageView(height: 42, showLegendGlow: false)
     private let nameLabel = UILabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

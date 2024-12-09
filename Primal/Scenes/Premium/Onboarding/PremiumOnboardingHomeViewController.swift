@@ -44,6 +44,12 @@ final class PremiumOnboardingHomeViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
 }
 
 private extension PremiumOnboardingHomeViewController {
@@ -68,7 +74,7 @@ private extension PremiumOnboardingHomeViewController {
         
         let midStack = UIStackView(axis: .vertical, [
             introLabel, SpacerView(height: 20),
-            learnView, SpacerView(height: 28),
+            learnView, SpacerView(height: 40),
             princeInfoView
         ])
         midStack.alignment = .center
@@ -88,7 +94,7 @@ private extension PremiumOnboardingHomeViewController {
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
-            .pinToSuperview(edges: .top, padding: 72)
+            .pinToSuperview(edges: .top, padding: 92)
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
         midStack.alignment = .center
@@ -185,8 +191,8 @@ class PremiumPriceInfoView: UIStackView {
 class LearnAboutPremiumView: UIView, Themeable {
     let learnMoreButton = ThemeableButton().constrainToSize(height: 44).setTheme {
         $0.backgroundColor = .background3
-        $0.setTitleColor(.accent, for: .normal)
-        $0.setTitleColor(.accent.withAlphaComponent(0.6), for: .highlighted)
+        $0.setTitleColor(.accent2, for: .normal)
+        $0.setTitleColor(.accent2.withAlphaComponent(0.6), for: .highlighted)
     }
     
     init() {

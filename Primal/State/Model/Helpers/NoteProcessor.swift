@@ -24,7 +24,7 @@ class NoteProcessor: MetadataCoding {
 
     lazy var parsedUsers: [ParsedUser] = response.getSortedUsers()
     
-    lazy var parsedZaps = response.postZaps.map { primalZapEvent in
+    lazy var parsedZaps = response.postZaps.uniqueByFilter({ $0.zap_receipt_id }).map { primalZapEvent in
         ParsedZap(
             receiptId: primalZapEvent.zap_receipt_id,
             postId: primalZapEvent.event_id,
@@ -206,7 +206,7 @@ class NoteProcessor: MetadataCoding {
         let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
-        var highlights: [(String, ParsedContent)] = []
+        var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
         
         let tmpText = text as NSString
         if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
@@ -232,7 +232,7 @@ class NoteProcessor: MetadataCoding {
                     } else if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
-                        highlights.append((content, mention))
+                        highlights.append((mentionText, content, mention))
                     } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
                     } else {
@@ -263,7 +263,7 @@ class NoteProcessor: MetadataCoding {
                     if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
-                        highlights.append((content, mention))
+                        highlights.append((mentionText, content, mention))
                     } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
                     } else {
@@ -318,7 +318,7 @@ class NoteProcessor: MetadataCoding {
             itemsToRemove.append(mentionText)
         }
         
-        if referencedPosts.isEmpty {
+        if referencedPosts.isEmpty && highlights.isEmpty {
             let flatTags = post.tags.flatMap { $0 }
             for mention in mentions {
                 if flatTags.contains(mention.post.id) {
@@ -396,8 +396,8 @@ class NoteProcessor: MetadataCoding {
             text = text.replacingOccurrences(of: onlyURL, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         }
         
-        for highlight in highlights {
-            text = text.replacingOccurrences(of: highlight.0, with: highlight.1.post.content.trimmingCharacters(in: .whitespacesAndNewlines))
+        for (reference, replacement, _) in highlights {
+            text = text.replacingOccurrences(of: reference, with: replacement)
         }
         
         // Remove empty lines
@@ -447,8 +447,8 @@ class NoteProcessor: MetadataCoding {
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
         p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
-        p.highlights = highlights.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id)}
-        p.highlightEvents = highlights.map { $0.1 }
+        p.highlights = highlights.flatMap { nsText.positions(of: $0.replacement, reference: $0.highlight.post.id)}
+        p.highlightEvents = highlights.map { $0.highlight }
         p.text = text
         p.buildContentString(style: contentStyle)
         

@@ -76,6 +76,7 @@ enum NostrKind: Int {
     case userMediaData = 10_000_164
     case eventKindCounts = 10_000_166
     case primalLegendInfo = 10_000_168
+    case primalPremiumInfo = 10_000_169
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605

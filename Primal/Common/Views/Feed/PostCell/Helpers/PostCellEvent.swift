@@ -53,7 +53,7 @@ extension ParsedContent {
         switch property {
         case .link:         return webURL()
         case .content:      return attributedText.string
-        case .rawData:      return post.encodeToString()
+        case .rawData:      return post.rawData ?? post.encodeToString()
         case .noteID:       return noteId()
         case .userPubkey:   return user.data.pubkey
         case .invoice:      return invoice?.string

@@ -36,9 +36,9 @@ extension String {
 }
 
 extension URL {
-    var isImageURL: Bool { lastPathComponent.isImageURLPathComponent }
+    var isImageURL: Bool { lastPathComponent.isImageURLPathComponent || absoluteString.isImageURLPathComponent }
     
-    var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent }
+    var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent || absoluteString.isVideoButNotYoutubePathComponent }
 }
 
 extension String : Identifiable {

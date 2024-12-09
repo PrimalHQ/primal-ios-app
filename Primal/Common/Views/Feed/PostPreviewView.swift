@@ -168,7 +168,7 @@ private extension PostPreviewView {
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        seeMoreLabel.textColor = .accent
+        seeMoreLabel.textColor = .accent2
         
         mainImages.layer.masksToBounds = true
         mainImages.layer.cornerRadius = 8

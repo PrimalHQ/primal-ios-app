@@ -390,7 +390,15 @@ extension PostRequestResult {
                 return
             }
             Task {
-                await LegendCustomizationManager.instance.addCustomizations(dic)
+                await PremiumCustomizationManager.instance.addLegendCustomizations(dic)
+            }
+        case .primalPremiumInfo:
+            guard let dic: [String: PremiumUserInfo] = contentString.decode() else {
+                print("Error decoding primalLegendInfo")
+                return
+            }
+            Task {
+                await PremiumCustomizationManager.instance.addPremiumInfo(dic)
             }
         default:
             events.append(payload)

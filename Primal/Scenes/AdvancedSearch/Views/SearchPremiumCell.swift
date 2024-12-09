@@ -40,9 +40,10 @@ class SearchPremiumCell: UITableViewCell, Themeable {
         backgroundPill.addSubview(stack)
         stack.pinToSuperview(padding: 16)
         
-        actionButton.addAction(.init(handler: { [weak self] _ in
+        actionButton.isUserInteractionEnabled = false
+        contentView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.delegate?.getPremiumPressed()
-        }), for: .touchUpInside)
+        }))
     }
     
     required init?(coder: NSCoder) {
@@ -52,6 +53,7 @@ class SearchPremiumCell: UITableViewCell, Themeable {
     func updateTheme() {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 6
+        paragraphStyle.alignment = .center
         subtitleLabel.attributedText = .init(string: "Buy a Subscription to become a Nostr power user and support our work:", attributes: [
             .foregroundColor: UIColor.foreground3,
             .font: UIFont.appFont(withSize: 15, weight: .regular),

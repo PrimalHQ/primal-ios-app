@@ -63,7 +63,7 @@ private extension PremiumBuySubscriptionController {
         let yearlyButton = PurchasePremiumButton(title: "Get Annual Plan")
         let monthlyButton = PurchasePremiumButton(title: "Get Monthly Plan")
         
-        let learnMoreButton = AccentUIButton(title: "Learn about Premium", font: .appFont(withSize: 14, weight: .regular))
+        let learnMoreButton = AccentUIButton(title: "Learn about Premium", font: .appFont(withSize: 16, weight: .regular))
 //        let promoCodeButton = AccentUIButton(title: "Have a promo code?", font: .appFont(withSize: 14, weight: .regular))
 //        let actionStack = UIStackView([learnMoreButton, SpacerView(width: 1, color: .foreground6), promoCodeButton])
 //        actionStack.constrainToSize(height: 20)

@@ -9,7 +9,7 @@ import FLAnimatedImage
 import UIKit
 
 final class NewPostsButton: MyButton, Themeable {
-    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, glowPadding: 2) }
+    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let label = UILabel()
     
     lazy var avatarStack = UIStackView()
@@ -67,7 +67,7 @@ final class NewPostsButton: MyButton, Themeable {
         }
         
         for avatar in avatars {
-            avatar.superview?.superview?.isHidden = true
+            avatar.superview?.isHidden = true
         }
         
         guard count > 0 else { return }
@@ -76,7 +76,7 @@ final class NewPostsButton: MyButton, Themeable {
         
         zip((1...count), zip(uniqueUsers, avatars)).forEach { (_, arg1) in
             let (user, avatar) = arg1
-            avatar.superview?.superview?.isHidden = false
+            avatar.superview?.isHidden = false
             avatar.setUserImage(user)
         }
     }

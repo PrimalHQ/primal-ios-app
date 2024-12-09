@@ -72,6 +72,6 @@ final class TermsAndConditionsView: UIStackView, Themeable {
         
         firstRow.textColor = .foreground3
         and.textColor = .foreground3
-        [termsButton, privacyButton].forEach { $0.setTitleColor(.accent, for: .normal) }
+        [termsButton, privacyButton].forEach { $0.setTitleColor(.accent2, for: .normal) }
     }
 }

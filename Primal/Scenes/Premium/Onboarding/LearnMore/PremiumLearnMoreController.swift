@@ -8,12 +8,18 @@
 import UIKit
 
 class PremiumLearnMoreController: PrimalPageController {
-    init() {
+    enum Tab: Int {
+        case why = 0
+        case features = 1
+        case faq = 2
+    }
+    
+    init(startingTab: Tab = .why) {
         super.init(tabs: [
             ("WHY PREMIUM", { PremiumLearnMoreWhyController() }),
             ("FEATURES", { PremiumLearnMoreFeaturesController() }),
             ("FAQ", { PremiumLearnMoreFAQController() })
-        ])
+        ], startingTab: startingTab.rawValue)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

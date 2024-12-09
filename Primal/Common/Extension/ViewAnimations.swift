@@ -172,3 +172,44 @@ extension UIView {
         return animating
     }
 }
+
+extension UserImageView {
+    @discardableResult
+    func animateTransitionTo(_ other: UIView?, duration: TimeInterval, in root: UIView, timing: CAMediaTimingFunction = .easeInOutQuart, fade: Bool = false) -> UserImageView? {
+        guard let other else { return nil }
+        alpha = 0.01
+        other.alpha = 0.01
+        
+        let scale = other.bounds.height / height
+        let distance = centerDistanceVectorToView(other)
+        
+        let animatingIV = UserImageView(height: height)
+        animatingIV.image = image
+        animatingIV.contentMode = contentMode
+        root.addSubview(animatingIV)
+        animatingIV.centerToView(self)
+        
+        if let cachedLegendTheme {
+            animatingIV.legendaryGradient.setLegendGradient(cachedLegendTheme)
+            animatingIV.legendaryGradient.isHidden = false
+        }
+        
+        CATransaction.begin()
+        CATransaction.setAnimationTimingFunction(timing)
+        
+        UIView.animate(withDuration: duration) {
+            animatingIV.transform = .init(translationX: distance.x, y: distance.y).scaledBy(x: scale, y: scale)
+            
+            if fade {
+                animatingIV.alpha = 0
+            }
+        } completion: { _ in
+            other.alpha = 1
+            animatingIV.removeFromSuperview()
+        }
+        
+        CATransaction.commit()
+        
+        return animatingIV
+    }
+}

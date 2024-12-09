@@ -10,7 +10,7 @@ import FLAnimatedImage
 import Kingfisher
 
 final class ExplorePeopleCell: UITableViewCell, Themeable {
-    let avatar = UserImageView(height: 64, glowPadding: 2)
+    let avatar = UserImageView(height: 64)
     
     let name = UILabel()
     let subname = UILabel()

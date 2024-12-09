@@ -66,7 +66,7 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
         
         if isPresenting {
             if let infoCell {
-                cell?.profileImage.animatedImageView.animateTransitionTo(infoCell.avatar.animatedImageView, duration: 18 / 30, in: container)
+                cell?.profileImage.animateTransitionTo(infoCell.avatar, duration: 18 / 30, in: container)
                 
                 if cell?.nameLabel.text == infoCell.mainLabel.text {
                     cell?.nameLabel.animateTransitionTo(infoCell.mainLabel, duration: 18 / 30, in: container)
@@ -111,7 +111,7 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
             }
         } else {
             if let cell {
-                infoCell?.avatar.animatedImageView.animateTransitionTo(cell.profileImage, duration: 14 / 30, in: container)
+                infoCell?.avatar.animateTransitionTo(cell.profileImage, duration: 14 / 30, in: container)
                 
                 if cell.nameLabel.text == infoCell?.mainLabel.text {
                     infoCell?.mainLabel.animateTransitionTo(cell.nameLabel, duration: 14 / 30, in: container)

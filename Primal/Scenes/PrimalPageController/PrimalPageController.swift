@@ -21,9 +21,11 @@ class PrimalPageController: UIViewController, Themeable {
     private var viewControllers: [String: UIViewController] = [:]
     @Published private(set) var currentTab = 0
     
-    init(tabs: [(String, () -> UIViewController)]) {
+    init(tabs: [(String, () -> UIViewController)], startingTab: Int = 0) {
         self.tabs = tabs
+        currentTab = startingTab
         tabSelectionView = .init(tabs: tabs.map { $0.0.uppercased() }, spacing: 5, distribution: .fillEqually)
+        tabSelectionView.set(tab: startingTab)
         super.init(nibName: nil, bundle: nil)
     }
     

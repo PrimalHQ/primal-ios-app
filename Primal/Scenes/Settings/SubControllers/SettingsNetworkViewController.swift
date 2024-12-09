@@ -320,7 +320,7 @@ final class RightAlignedAccentButton: UIButton, Themeable {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        setTitleColor(.accent, for: .normal)
+        setTitleColor(.accent2, for: .normal)
     }
 }
 

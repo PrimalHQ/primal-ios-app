@@ -1,8 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "privateBetaIcon.svg",
-      "idiom" : "universal"
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "image 155.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

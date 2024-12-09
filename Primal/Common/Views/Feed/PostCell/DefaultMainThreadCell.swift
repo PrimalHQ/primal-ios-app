@@ -10,8 +10,6 @@ import UIKit
 class DefaultMainThreadCell: ThreadCell {
     let selectionTextView = MainThreadCellTextView()
     
-//    var zapGalleryHeightConstraint: NSLayoutConstraint?
-    
     let repliesLabel = UILabel()
     let zapsLabel = UILabel()
     let likesLabel = UILabel()
@@ -24,9 +22,6 @@ class DefaultMainThreadCell: ThreadCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        zapGallery = SmallZapGalleryView()
-        zapGallery?.delegate = self
-        
         parentSetup()
         setup()
     }
@@ -34,10 +29,10 @@ class DefaultMainThreadCell: ThreadCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent, position: ThreadCell.ThreadPosition) {
-        self.update(parsedContent, zaps: [])
+        self.updateMain(parsedContent)
     }
     
-    func update(_ parsedContent: ParsedContent, zaps: [ParsedZap]?) {
+    func updateMain(_ parsedContent: ParsedContent) {
         super.update(parsedContent, position: .main)
         
         selectionTextView.attributedText = parsedContent.attributedText
@@ -62,22 +57,6 @@ class DefaultMainThreadCell: ThreadCell {
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
         
         contentBotSpacer.isHidden = !mainLabel.isHidden && mainImages.isHidden && linkPresentation.isHidden && postPreview.isHidden && articleView.isHidden && invoiceView.isHidden && infoView.isHidden
-        
-        if let zaps {
-            if zaps.isEmpty {
-                zapGallery?.isHidden = true
-            } else {
-                zapGallery?.isHidden = false
-                zapGallery?.zaps = zaps
-                
-//                zapGalleryHeightConstraint?.constant = zaps.count < 4 ? 24 : 56
-            }
-        } else {
-            zapGallery?.isHidden = post.zaps == 0
-            zapGallery?.zaps = []
-            
-//            zapGalleryHeightConstraint?.constant = post.zaps < 4 ? 24 : 56
-        }
     }
     
     override func updateMenu(_ content: ParsedContent) {
@@ -126,14 +105,11 @@ class DefaultMainThreadCell: ThreadCell {
         let horizontalProfileStack = UIStackView(arrangedSubviews: [profileImageView, nameVStack, threeDotsButton])
         horizontalProfileStack.alignment = .center
         
-        let descStack = UIStackView(axis: .vertical, [zapGallery!, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
+        let descStack = UIStackView(axis: .vertical, [smallGallery, timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
         descStack.spacing = 8
-        descStack.setCustomSpacing(20, after: zapGallery!)
+        descStack.setCustomSpacing(20, after: smallGallery)
         timeLabel.font = .appFont(withSize: 16, weight: .regular)
         infoRow.spacing = 12
-        
-//        zapGalleryHeightConstraint = zapGallery.heightAnchor.constraint(equalToConstant: 24)
-//        zapGalleryHeightConstraint?.isActive = true
         
         let textViewParent = UIView()
         let contentStack = UIStackView(axis: .vertical, [textViewParent, articleView, invoiceView, mainImages, linkPresentation, postPreview, zapPreview, infoView, contentBotSpacer])

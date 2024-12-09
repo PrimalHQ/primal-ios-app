@@ -49,7 +49,7 @@ final class VerifiedView: UIView, Themeable {
             }
             isHidden = false
             
-            if let custom = LegendCustomizationManager.instance.getCustomization(pubkey: user.pubkey), custom.custom_badge {
+            if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: user.pubkey), custom.custom_badge {
                 switch extraCheckState {
                 case .color(let color):
                     checkboxImage.image = custom.theme?.checkmarkBackgroundImage ?? UIImage(named: "verifiedBackground")

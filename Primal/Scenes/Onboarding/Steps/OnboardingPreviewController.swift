@@ -39,8 +39,6 @@ final class OnboardingPreviewController: UIViewController, OnboardingViewControl
     let secondScreen = UIStackView(axis: .vertical, [])
     let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 70)
     
-    let skipButton = SolidColorUIButton(title: "I’ll do this later", color: .white)
-    
     let titleLabel: UILabel = .init()
     let backButton = UIButton()
     
@@ -89,9 +87,6 @@ private extension OnboardingPreviewController {
             loadingSpinner.alpha = 0
             loadingSpinner.isHidden = true
             
-            skipButton.isHidden = true
-            skipButton.alpha = 0
-            
             instructionLabel.attributedText = descAttributedString("We will use this info to create your Nostr account. If you wish to make any changes, you can always do so in your profile settings.")
             
             progressView.currentPage = 2
@@ -106,7 +101,6 @@ private extension OnboardingPreviewController {
             secondScreen.isHidden = true
             instructionLabel.alpha = 0
             instructionLabel.isHidden = true
-            skipButton.isHidden = true
             
             loadingSpinner.alpha = 1
             loadingSpinner.isHidden = false
@@ -121,21 +115,19 @@ private extension OnboardingPreviewController {
             
             backButton.isHidden = true
             titleLabel.text = "Success!"
-            continueButton.setTitle("Activate Wallet", for: .normal)
+            continueButton.setTitle("Continue", for: .normal)
             secondScreen.alpha = 1
             secondScreen.isHidden = false
             loadingSpinner.alpha = 0
             loadingSpinner.isHidden = true
             
-            skipButton.alpha = 1
-            skipButton.isHidden = false
             progressView.isHidden = true
             progressView.alpha = 0
             
             instructionLabel.alpha = 1
             instructionLabel.isHidden = false
             
-            instructionLabel.attributedText = descAttributedString("Now you are ready to\nactivate your Primal Wallet.")
+            instructionLabel.attributedText = descAttributedString("Your Nostr key is available in your\nAccount Settings.")
             
             continueButton.isEnabled = true
         }
@@ -194,10 +186,10 @@ private extension OnboardingPreviewController {
     }
     
     func setup() {
-        addBackground(3)
+        addBackground(4)
         addNavigationBar("Create Account")
         
-        let botStack = UIStackView(axis: .vertical, [continueButton, skipButton, progressView])
+        let botStack = UIStackView(axis: .vertical, [continueButton, progressView])
         botStack.spacing = 18
         
         let avatarView = UIImageView().constrainToSize(108)
@@ -213,10 +205,15 @@ private extension OnboardingPreviewController {
         nameLabel.text = profile.displayname
         nameLabel.textColor = .white
         
-        [avatarView, SpacerView(height: 12), nameLabel, SpacerView(height: 24), KeyKeychainInfoView()].forEach { secondScreen.addArrangedSubview($0) }
+        let infoView = KeyKeychainInfoView()
+        [avatarView, SpacerView(height: 12), nameLabel, SpacerView(height: 36), infoView].forEach { secondScreen.addArrangedSubview($0) }
         secondScreen.alignment = .center
+        infoView.pinToSuperview(edges: .horizontal)
         
-        let stack = UIStackView(arrangedSubviews: [UIView(), profileView, secondScreen, instructionLabel, loadingSpinner, botStack])
+        let instructionStack = UIStackView(axis: .vertical, [secondScreen, instructionLabel])
+        instructionStack.spacing = 20
+        
+        let stack = UIStackView(arrangedSubviews: [UIView(), profileView, instructionStack, loadingSpinner, botStack])
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 36).pin(to: titleLabel, edges: .top, padding: 30).pinToSuperview(edges: .bottom, padding: 12, safeArea: true)
         
@@ -243,10 +240,6 @@ private extension OnboardingPreviewController {
         
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
         
-        skipButton.addAction(.init(handler: { _ in
-            RootViewController.instance.reset()
-        }), for: .touchUpInside)
-        
         profileView.changeBannerButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             self.session.addBanner(controller: self)
@@ -266,9 +259,41 @@ private extension OnboardingPreviewController {
                 createAccount()
             }
         case .created:
-            onboardingParent?.reset(OnboardingWalletController(session: session), animated: true)
+            onboardingParent?.reset(OnboardingReviewController(session: session), animated: true)
         case .uploading:
             return
         }
+    }
+}
+
+final class KeyKeychainInfoView: UIView {
+    init() {
+        super.init(frame: .zero)
+        setup()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func setup() {
+        let keyIcon = UIImageView(image: UIImage(named: "onboardingCheckTransparent"))
+        let titleLabel = UILabel()
+        let vStack = UIStackView(axis: .vertical, [keyIcon, titleLabel])
+
+        addSubview(vStack)
+        vStack.centerToSuperview()
+        vStack.alignment = .center
+        vStack.spacing = 12
+
+        titleLabel.text = "Account created!"
+        titleLabel.textColor = .white.withAlphaComponent(0.8)
+        titleLabel.font = .appFont(withSize: 16, weight: .semibold)
+        titleLabel.numberOfLines = 0
+
+        backgroundColor = .black.withAlphaComponent(0.25)
+        layer.cornerRadius = 16
+        
+        constrainToSize(height: 116)
     }
 }
