@@ -81,16 +81,16 @@ struct NostrUserProfileInfo: Codable {
     var media: Int { media_count ?? 0 }
 }
 
-struct MediaMetadata: Codable {
+struct MediaMetadata: Codable, Hashable {
     let event_id: String?
     let resources: [Resource]
     let thumbnails: [String: String]?
     
-    struct Resource: Codable {
+    struct Resource: Codable, Hashable {
         let url: String
         let variants: [Variant]
         
-        struct Variant: Codable {
+        struct Variant: Codable, Hashable {
             var a: Int
             var h: Int
             var w: Int

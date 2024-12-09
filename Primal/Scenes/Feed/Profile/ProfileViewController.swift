@@ -156,7 +156,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             var count = 1
             if MuteManager.instance.isMuted(profile.data.pubkey) { count += 1 }
@@ -165,7 +165,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
         switch tab {
         case .notes, .replies:
-            return super.tableView(tableView, numberOfRowsInSection: section)
+            return dataSource.cells.count
         case .reads:
             return articles.count
         case .media:

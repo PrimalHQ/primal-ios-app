@@ -136,11 +136,13 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 return cell
             }
             
+            let url = r.url(for: .small)?.absoluteString ?? r.url
+            
             let player: VideoPlayer
-            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == r.url {
+            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == url {
                 player = current
             } else {
-                player = .init(url: r.url)
+                player = .init(url: url)
             }
             
             if let cell = cell as? VideoCell {

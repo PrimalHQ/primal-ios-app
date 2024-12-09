@@ -126,29 +126,29 @@ final class TransactionViewController: NoteViewController {
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? cells.count : super.tableView(tableView, numberOfRowsInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard indexPath.section == 0 else {
-            let cell = super.tableView(tableView, cellForRowAt: indexPath)
-            if let postCell = cell as? PostCell {
-                postCell.bottomBorder.isHidden = true
-                postCell.contentView.backgroundColor = .background4
-                postCell.contentView.layer.cornerRadius = 8
-            }
-            return cell
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: cells[indexPath.row].cellID, for: indexPath)
-        (cell as? TransactionPartialCell)?.setupWithCellInfo(cells[indexPath.row])
-        
-        let hasPostSection = super.tableView(tableView, numberOfRowsInSection: 1) > 0
-        (cell as? TransactionInfoCell)?.setIsLastInSection(indexPath.row + 1 + (hasPostSection ? 1 : 0) == cells.count)
-        (cell as? TransactionAmountCell)?.setIsPending(transaction.state != "SUCCEEDED")
-        return cell
-    }
+//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        section == 0 ? cells.count : super.tableView(tableView, numberOfRowsInSection: section)
+//    }
+//    
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        guard indexPath.section == 0 else {
+//            let cell = super.tableView(tableView, cellForRowAt: indexPath)
+//            if let postCell = cell as? PostCell {
+//                postCell.bottomBorder.isHidden = true
+//                postCell.contentView.backgroundColor = .background4
+//                postCell.contentView.layer.cornerRadius = 8
+//            }
+//            return cell
+//        }
+//        
+//        let cell = tableView.dequeueReusableCell(withIdentifier: cells[indexPath.row].cellID, for: indexPath)
+//        (cell as? TransactionPartialCell)?.setupWithCellInfo(cells[indexPath.row])
+//        
+//        let hasPostSection = super.tableView(tableView, numberOfRowsInSection: 1) > 0
+//        (cell as? TransactionInfoCell)?.setIsLastInSection(indexPath.row + 1 + (hasPostSection ? 1 : 0) == cells.count)
+//        (cell as? TransactionAmountCell)?.setIsPending(transaction.state != "SUCCEEDED")
+//        return cell
+//    }
     
     var firstTimeAnimating = true
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

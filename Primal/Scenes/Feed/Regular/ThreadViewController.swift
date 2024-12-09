@@ -158,9 +158,9 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == postSection {
-            return super.tableView(tableView, numberOfRowsInSection: section)
+            return dataSource.tableView(tableView, numberOfRowsInSection: section)
         }
         return min(1, articles.count)
     }
