@@ -30,10 +30,31 @@ struct NoteFeedItem: Hashable {
     let element: NoteFeedElement
 }
 
-class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFeedItem> {
-    var cells: [NoteFeedItem] = []
+protocol RegularFeedElementCell: UITableViewCell {
+    func update(_ content: ParsedContent)
+    var delegate: FeedElementCellDelegate? { get set }
     
-    init(tableView: UITableView, delegate: PostCellDelegate) {
+    static var cellID: String { get }
+}
+
+protocol FeedElementCellDelegate: AnyObject {
+    func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent)
+    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
+    func mainActionForZap(_ zap: ParsedZap)
+}
+
+protocol NoteFeedDatasource: UITableViewDataSource {
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent?
+    func setPosts(_ posts: [ParsedContent])
+    
+    var cellCount: Int { get }
+}
+
+class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFeedItem>, NoteFeedDatasource {
+    var cells: [NoteFeedItem] = []
+    var cellCount: Int { cells.count }
+    
+    init(tableView: UITableView, delegate: FeedElementCellDelegate) {
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
             switch item.element {
@@ -69,7 +90,7 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementReactionsCell.cellID, for: indexPath)
             }
             
-            if let cell = cell as? PostCell {
+            if let cell = cell as? RegularFeedElementCell {
                 cell.update(item.content)
                 cell.delegate = delegate
             }
@@ -78,6 +99,13 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         }
         
         registerCells(tableView)
+        
+//        defaultRowAnimation = .none
+    }
+    
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        return data.content
     }
     
     private func registerCells(_ tableView: UITableView) {

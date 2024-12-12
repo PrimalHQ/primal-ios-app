@@ -80,10 +80,10 @@ class HighlightCommentsController: NoteViewController {
         table.register(HighlightCommentCell.self, forCellReuseIdentifier: postCellID)
     }
     
-    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
-        switch event {
-        case .post: return
-        default: super.performEvent(event, withPost: post, inCell: cell)
-        }
-    }
+//    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
+//        switch event {
+//        case .post: return
+//        default: super.performEvent(event, withPost: post, inCell: cell)
+//        }
+//    }
 }

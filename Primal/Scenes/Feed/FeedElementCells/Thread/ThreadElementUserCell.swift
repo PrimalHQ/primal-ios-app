@@ -7,106 +7,94 @@
 
 import UIKit
 
-class FeedElementBaseCell: UITableViewCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+class ThreadElementBaseCell: FeedElementBaseCell {
+    lazy var firstRow = UIView().constrainToSize(width: 32)
+    lazy var parentIndicator = UIView().constrainToSize(width: 2)
+    lazy var secondRow = UIView()
+    
+    let position: ThreadPosition
+    init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        self.position = position
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        selectionStyle = .none
+        parentIndicator.backgroundColor = .foreground6
+//        parentIndicator.layer.cornerRadius = 1
+        
+        let mainStack = UIStackView([firstRow, secondRow])
+        mainStack.spacing = 8
+        contentView.addSubview(mainStack)
+        mainStack
+            .pinToSuperview(edges: .trailing, padding: 12)
+            .pinToSuperview(edges: .leading, padding: 12)
+            .pinToSuperview(edges: .vertical)
+        
+        switch position {
+        case .parent:
+            firstRow.addSubview(parentIndicator)
+            parentIndicator
+                .pinToSuperview(edges: .trailing, padding: 11)
+                .pinToSuperview(edges: .top, padding: 0)
+                .pinToSuperview(edges: .bottom, padding: 0)
+            contentView.backgroundColor = .clear
+        case .main:
+            firstRow.isHidden = true
+            contentView.backgroundColor = .clear
+        case .child:
+            contentView.backgroundColor = .background2
+        }
+    }
+    
+    convenience override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        self.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    func update(_ parsedContent: ParsedContent) {
-        
-    }
 }
 
-class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementUserCell" }
     
     let threeDotsButton = UIButton()
-    let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
+    let profileImageView = UserImageView(height: 24)
     let checkbox = VerifiedView()
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
-    let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
-    let replyingToView = ReplyingToView()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
-    lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
-    lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
-    lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameSuperStack])
     let threeDotsSpacer = SpacerView(width: 20)
     
-    let repostedByOverlayButton = UIButton()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
-        let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        botC.priority = .defaultHigh
-        botC.isActive = true
-        
-        mainStack.spacing = 4
-        nameReplyStack.spacing = 4
-        nameSuperStack.spacing = 8
-        
-        contentView.addSubview(threeDotsButton)
-        threeDotsButton
-            .constrainToSize(44)
-            .pinToSuperview(edges: .top, padding: 2)
-            .pinToSuperview(edges: .trailing)
-        
-        nameStack.addArrangedSubview(threeDotsSpacer)
-        
-        contentView.addSubview(repostedByOverlayButton)
-        repostedByOverlayButton
-            .constrainToSize(width: 100)
-            .pin(to: repostIndicator, edges: .leading)
-            .pin(to: repostIndicator, edges: .top, padding: -11)
-            .pin(to: repostIndicator, edges: .bottom, padding: -5)
-        
-        repostedByOverlayButton.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            delegate?.postCellDidTap(self, .repostedProfile)
-        }), for: .touchUpInside)
-        
-        separatorLabel.text = "·"
-        [timeLabel, separatorLabel, nipLabel].forEach {
-            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
-            $0.textColor = .foreground3
+        switch position {
+        case .parent:
+            parentIndicator.removeFromSuperview()
+            
+            nameStack.constrainToSize(height: 24)
+            
+            firstRow.addSubview(profileImageView)
+            profileImageView.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: .trailing)
+        case .main:
+            profileImageView.height = 42
+            
+            nameStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            
+            let nameCheckStack = UIStackView([nameLabel, checkbox])
+            let nameSuperStack = UIStackView(axis: .vertical, [nameCheckStack, nipLabel])
+            
+            nameStack.addArrangedSubview(profileImageView)
+            nameStack.addArrangedSubview(nameSuperStack)
+        case .child:
+            nameStack.constrainToSize(height: 24)
+            
+            firstRow.addSubview(profileImageView)
+            profileImageView.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: .trailing)
         }
         
-        [nameLabel, nipLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
-        
-        nipLabel.lineBreakMode = .byTruncatingTail
-        separatorLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        
-        threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
-        
-        checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
-        
-        nameStack.alignment = .center
-        nameStack.spacing = 4
-        
-        nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
-        
-        threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
-        threeDotsButton.tintColor = .foreground3
-        threeDotsButton.showsMenuAsPrimaryAction = true
-
-        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .profile)
-        }))
+        setup()
     }
     
     required init?(coder: NSCoder) {
@@ -132,28 +120,10 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         profileImageView.setUserImage(parsedContent.user)
         
-        if let parent = parsedContent.replyingTo {
-            replyingToView.userNameLabel.text = parent.user.data.firstIdentifier
-            replyingToView.isHidden = false
-            nameSuperStack.alignment = .top
-        } else {
-            replyingToView.isHidden = true
-            nameSuperStack.alignment = .center   
-        }
-        
         threeDotsSpacer.isHidden = parsedContent.reposted != nil
         threeDotsButton.transform = parsedContent.reposted == nil ? .identity : .init(translationX: 0, y: -6)
         
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
-        
-        if let reposted = parsedContent.reposted?.users {
-            repostIndicator.update(users: reposted)
-            repostIndicator.isHidden = false
-        } else {
-            repostIndicator.isHidden = true
-        }
-        repostedByOverlayButton.isHidden = parsedContent.reposted == nil
-        
         
         let postInfo = parsedContent.postInfo
         let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
@@ -183,8 +153,22 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     }
 }
 
-private extension FeedElementUserCell {
+private extension ThreadElementUserCell {
     private func setup() {
+        secondRow.addSubview(nameStack)
+        nameStack
+            .pinToSuperview(edges: .top, padding: 8)
+            .pinToSuperview(edges: .bottom, padding: 2)
+            .pinToSuperview(edges: .horizontal)
+        
+        contentView.addSubview(threeDotsButton)
+        threeDotsButton
+            .constrainToSize(44)
+            .pinToSuperview(edges: .trailing)
+            .centerToSuperview(axis: .vertical)
+        
+        nameStack.addArrangedSubview(threeDotsSpacer)
+        
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
@@ -212,11 +196,7 @@ private extension FeedElementUserCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.tintColor = .foreground3
         threeDotsButton.showsMenuAsPrimaryAction = true
-        
-        repostIndicator.addAction(.init(handler: { [unowned self] _ in
-            delegate?.postCellDidTap(self, .repostedProfile)
-        }), for: .touchUpInside)
-            
+
         profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .profile)
         }))

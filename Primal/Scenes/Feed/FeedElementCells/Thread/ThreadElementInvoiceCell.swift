@@ -1,5 +1,5 @@
 //
-//  FeedElementInvoiceCell.swift
+//  ThreadElementInvoiceCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.12.24..
@@ -7,21 +7,21 @@
 
 import UIKit
 
-class FeedElementInvoiceCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementInvoiceCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementInvoiceCell" }
     
     let invoiceView = LightningInvoiceView()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(invoiceView)
+        secondRow.addSubview(invoiceView)
         invoiceView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
         
         invoiceView.copyButton.addAction(.init(handler: { [unowned self] _ in
             delegate?.postCellDidTap(self, .copy(.invoice))

@@ -8,19 +8,7 @@
 import UIKit
 import Nantes
 
-// This is a helper class necessary to prevent retain cycle because delegate in Nantes isn't defined as "weak"
-class FeedElementTextCellNantesDelegate {
-    weak var cell: FeedElementTextCell?
-}
-
-extension FeedElementTextCellNantesDelegate: NantesLabelDelegate {
-    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
-        guard let cell else { return }
-        cell.delegate?.postCellDidTap(cell, .url(link))
-    }
-}
-
-class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementTextCell" }
@@ -33,8 +21,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
         setup()
     }
@@ -51,11 +39,11 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     }
 }
 
-private extension FeedElementTextCell {
+private extension ThreadElementTextCell {
     func setup() {
-        contentView.addSubview(textStack)
+        secondRow.addSubview(textStack)
         textStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .bottom)
             .pinToSuperview(edges: .top, padding: 8)
         
@@ -65,7 +53,7 @@ private extension FeedElementTextCell {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-        nantesDelegate.cell = self
+//        nantesDelegate.cell = self
         
         mainLabel.numberOfLines = 0
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
@@ -75,5 +63,7 @@ private extension FeedElementTextCell {
             self.delegate?.postCellDidTap(self, .post)
         }
         mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        parentIndicator.transform = .init(translationX: 0, y: 6)
     }
 }

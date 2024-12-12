@@ -1,5 +1,5 @@
 //
-//  FeedElementPostPreviewCell.swift
+//  ThreadElementPostPreviewCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.12.24..
@@ -7,17 +7,17 @@
 
 import UIKit
 
-class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementPostPreviewCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementPostPreviewCell" }
     
     let postPreview = PostPreviewView()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(postPreview)
+        secondRow.addSubview(postPreview)
         postPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
@@ -45,13 +45,13 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     }
 }
 
-extension FeedElementPostPreviewCell: ImageCollectionViewDelegate {
+extension ThreadElementPostPreviewCell: ImageCollectionViewDelegate {
     func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource) {
         delegate?.postCellDidTap(self, .embeddedImages(resource))
     }
 }
 
-extension FeedElementPostPreviewCell: FeedElementVideoCell {
+extension ThreadElementPostPreviewCell: FeedElementVideoCell {
     var currentVideoCells: [VideoCell] {
         [postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
             .compactMap { $0 }

@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementReactionsCell" }
@@ -25,15 +25,15 @@ class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
     let bookmarkButton = UIButton()
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(bottomButtonStack)
+        secondRow.addSubview(bottomButtonStack)
         bottomButtonStack
             .pinToSuperview(edges: .top, padding: 0)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .leading, padding: 8)
-            .pinToSuperview(edges: .trailing, padding: 32)
+            .pinToSuperview(edges: .leading, padding: -8)
+            .pinToSuperview(edges: .trailing, padding: 16)
         
         bottomButtonStack.distribution = .fillEqually
         
@@ -43,8 +43,10 @@ class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
             .centerToView(bottomButtonStack, axis: .vertical)
             .constrainToSize(width: 40)
         
-        contentView.addSubview(bottomBorder)
-        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
+        if position == .child {
+            contentView.addSubview(bottomBorder)
+            bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
+        }
         
         bottomButtonStack.distribution = .fillEqually
         bottomButtonStack.spacing = 12

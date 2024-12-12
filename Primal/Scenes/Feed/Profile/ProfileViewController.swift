@@ -165,7 +165,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
         switch tab {
         case .notes, .replies:
-            return dataSource.cells.count
+            return dataSource.cellCount
         case .reads:
             return articles.count
         case .media:

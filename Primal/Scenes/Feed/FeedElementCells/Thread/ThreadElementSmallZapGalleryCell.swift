@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementSmallZapGalleryCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementSmallZapGalleryCell" }
@@ -15,17 +15,17 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
     var lastContentId: String?
     let gallery = SmallZapGalleryView()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
         gallery.singleLine = true
         gallery.delegate = self
         
-        contentView.addSubview(gallery)
+        secondRow.addSubview(gallery)
         gallery
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
         
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
@@ -44,7 +44,7 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
     }
 }
 
-extension FeedElementSmallZapGalleryCell: ZapGalleryViewDelegate {
+extension ThreadElementSmallZapGalleryCell: ZapGalleryViewDelegate {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
         delegate?.menuConfigurationForZap(zap)
     }

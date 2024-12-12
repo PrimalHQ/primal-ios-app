@@ -1,5 +1,5 @@
 //
-//  FeedElementInfoCell.swift
+//  ThreadElementInfoCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.12.24..
@@ -7,21 +7,21 @@
 
 import UIKit
 
-class FeedElementInfoCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementInfoCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementInfoCell" }
     
     let infoView = SimpleInfoView()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(infoView)
+        secondRow.addSubview(infoView)
         infoView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

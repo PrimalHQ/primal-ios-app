@@ -7,21 +7,21 @@
 
 import UIKit
 
-class FeedElementWebPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementWebPreviewCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementWebPreviewCell" }
     
     let linkPresentation = LinkPreview()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(linkPresentation)
+        secondRow.addSubview(linkPresentation)
         linkPresentation
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in

@@ -1,5 +1,5 @@
 //
-//  FeedElementImageGalleryCell.swift
+//  ThreadElementImageGalleryCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.12.24..
@@ -8,25 +8,21 @@
 import UIKit
 import Kingfisher
 
-protocol ElementImageGalleryCell: UITableViewCell, FeedElementVideoCell {
-    var mainImages: ImageGalleryView { get }
-}
-
-class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
+class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     let mainImages = ImageGalleryView()
     weak var imageAspectConstraint: NSLayoutConstraint?
     
     static var cellID: String { "FeedElementImageGalleryCell" }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(mainImages)
+        secondRow.addSubview(mainImages)
         mainImages
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal)
         
         mainImages.imageDelegate = self
         
@@ -80,19 +76,19 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         }
         
         DispatchQueue.main.async {
-            self.mainImages.resources = content.mediaResources
             self.mainImages.thumbnails = content.videoThumbnails
+            self.mainImages.resources = content.mediaResources
         }
     }
 }
 
-extension FeedElementImageGalleryCell: ImageCollectionViewDelegate {
+extension ThreadElementImageGalleryCell: ImageCollectionViewDelegate {
     func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource) {
         delegate?.postCellDidTap(self, .images(resource))
     }
 }
 
-extension FeedElementImageGalleryCell: ElementImageGalleryCell {
+extension ThreadElementImageGalleryCell: ElementImageGalleryCell {
     var currentVideoCells: [VideoCell] {
         guard let video = mainImages.currentVideoCell() else { return [] }
         return [video]
