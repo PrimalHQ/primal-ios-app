@@ -49,11 +49,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     @Published var posts: [ParsedContent] = [] {
         didSet {
-            defer {
-                playVideoOnScroll()
-            }
-            
             dataSource.setPosts(posts)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.playVideoOnScroll()
+            }
         }
     }
     
@@ -107,6 +107,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     }
     
     var topBarHeight: CGFloat = 100
+    var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevTransform: CGFloat = 0
@@ -426,8 +427,8 @@ private extension NoteViewController {
         
         DispatchQueue.main.async {
             self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
-            self.table.contentInset = .init(top: self.topBarHeight, left: 0, bottom: 90, right: 0)
-            self.table.contentOffset = .init(x: 0, y: -self.topBarHeight)
+            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 90, right: 0)
+            self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
         }
         
         view.addSubview(navigationBorder)

@@ -18,7 +18,9 @@ extension Article: Hashable {
     }
     
     func hash(into hasher: inout Hasher) {
+        hasher.combine(user)
         hasher.combine(identifier)
+        hasher.combine(event)
     }
 }
 

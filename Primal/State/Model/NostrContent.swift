@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct NostrContent: Codable, Equatable {
+struct NostrContent: Codable, Equatable, Hashable {
     let kind: Int32
     let content: String
     let id: String
@@ -64,7 +64,7 @@ struct NostrContentStats: Codable {
     }
 }
 
-struct NostrUserProfileInfo: Codable {
+struct NostrUserProfileInfo: Codable, Hashable {
     let follows_count: Int?
     let followers_count: Int?
     let note_count: Int?

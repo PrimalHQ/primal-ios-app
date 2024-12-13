@@ -104,7 +104,7 @@ class MediaTripleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupMetadata(_ resources: [ParsedContent], delegate: MediaTripleCellDelegate) {
+    func setupMetadata(_ resources: [ParsedContent], delegate: MediaTripleCellDelegate?) {
         self.delegate = delegate
         
         for (index, imageView) in imageViews.enumerated() {

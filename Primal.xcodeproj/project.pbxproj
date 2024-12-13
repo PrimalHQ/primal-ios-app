@@ -567,6 +567,8 @@
 		B9E67EB42D0A19C9006BB397 /* MainThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EB32D0A19C9006BB397 /* MainThreadElementReactionsCell.swift */; };
 		B9E67EB62D0A1F8D006BB397 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EB52D0A1F8D006BB397 /* MainThreadElementSmallZapGalleryCell.swift */; };
 		B9E67EB82D0A26FF006BB397 /* MainThreadElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EB72D0A26FF006BB397 /* MainThreadElementUserCell.swift */; };
+		B9E67EBA2D0B39C0006BB397 /* NotificationsFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EB92D0B39C0006BB397 /* NotificationsFeedDatasource.swift */; };
+		B9E67EBC2D0B5131006BB397 /* ProfileFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EBB2D0B5131006BB397 /* ProfileFeedDatasource.swift */; };
 		B9F933182B867D860064B495 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = B9F933172B867D860064B495 /* QRCode */; };
 		B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F933192B88EBE40064B495 /* CheckNip05Request.swift */; };
 		B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */; };
@@ -1182,6 +1184,8 @@
 		B9E67EB32D0A19C9006BB397 /* MainThreadElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementReactionsCell.swift; sourceTree = "<group>"; };
 		B9E67EB52D0A1F8D006BB397 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
 		B9E67EB72D0A26FF006BB397 /* MainThreadElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementUserCell.swift; sourceTree = "<group>"; };
+		B9E67EB92D0B39C0006BB397 /* NotificationsFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsFeedDatasource.swift; sourceTree = "<group>"; };
+		B9E67EBB2D0B5131006BB397 /* ProfileFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFeedDatasource.swift; sourceTree = "<group>"; };
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
 		B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumViewController.swift; sourceTree = "<group>"; };
 		B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Manager.swift; sourceTree = "<group>"; };
@@ -2838,6 +2842,8 @@
 			children = (
 				B9E67E932D076F6F006BB397 /* RegularFeedDatasource.swift */,
 				B9E67E952D088720006BB397 /* ThreadFeedDatasource.swift */,
+				B9E67EB92D0B39C0006BB397 /* NotificationsFeedDatasource.swift */,
+				B9E67EBB2D0B5131006BB397 /* ProfileFeedDatasource.swift */,
 			);
 			path = TableDataSource;
 			sourceTree = "<group>";
@@ -3363,6 +3369,7 @@
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
 				B91E571E2CDBCBE000C14809 /* PremiumBuySubscriptionController.swift in Sources */,
 				B98DD8CA2C5CFDB800E8369A /* FeedsSelectionController.swift in Sources */,
+				B9E67EBA2D0B39C0006BB397 /* NotificationsFeedDatasource.swift in Sources */,
 				B98DD8C42C57E94A00E8369A /* ArticleChromeManager.swift in Sources */,
 				9E0DEAFD29FD4D4B00145E08 /* VerifiedImageView.swift in Sources */,
 				B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */,
@@ -3561,6 +3568,7 @@
 				B906AAFD2C94B3160089813F /* MediaTripleCell.swift in Sources */,
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
+				B9E67EBC2D0B5131006BB397 /* ProfileFeedDatasource.swift in Sources */,
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
 				B9E67EA92D09D8FA006BB397 /* ThreadElementTextCell.swift in Sources */,
 				B91EF0C32CE7E70900299ECF /* PremiumManageMediaDataCell.swift in Sources */,
@@ -3792,7 +3800,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.138;
+				MARKETING_VERSION = 2.0.140;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3838,7 +3846,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.138;
+				MARKETING_VERSION = 2.0.140;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

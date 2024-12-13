@@ -40,6 +40,7 @@ final class FeedManager {
 
     var withRepliesOverride: Bool? {
         didSet {
+            if oldValue == withRepliesOverride { return }
             refresh()
         }
     }
