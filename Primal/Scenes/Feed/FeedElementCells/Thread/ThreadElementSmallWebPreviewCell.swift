@@ -1,5 +1,5 @@
 //
-//  FeedElementWebPreviewCell.swift
+//  ThreadElementWebPreviewCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.12.24..
@@ -7,12 +7,12 @@
 
 import UIKit
 
-class ThreadElementWebPreviewCell: ThreadElementBaseCell, RegularFeedElementCell {
+class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementWebPreviewCell" }
     
-    let linkPresentation = LinkPreview()
+    let linkPresentation = T()
     
     override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
@@ -33,5 +33,6 @@ class ThreadElementWebPreviewCell: ThreadElementBaseCell, RegularFeedElementCell
     
     override func update(_ content: ParsedContent) {
         linkPresentation.data = content.linkPreview
+        linkPresentation.updateTheme()
     }
 }

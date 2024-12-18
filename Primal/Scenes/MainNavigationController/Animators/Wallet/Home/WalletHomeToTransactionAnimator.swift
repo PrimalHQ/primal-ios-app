@@ -60,6 +60,7 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
         if let index = transactionController.cells.firstIndex(where: { $0.isAmountCell }) {
             amountCell = transactionController.table.cellForRow(at: .init(row: index, section: 0)) as? TransactionAmountCell
         }
+        
         UIView.animate(withDuration: 2 / 30) {
             amountCell?.visibleLabel.alpha = 0.01
         }
@@ -80,9 +81,27 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
             if let amountCell {
                 cell?.amountLabel.animateTransitionTo(amountCell.label, duration: 18 / 30, in: container)
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(550)) {
-                    UIView.animate(withDuration: 2 / 30) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(600)) {
+                    let otherAnimatingLabel = UILabel()
+                    if let attributedText = amountCell.label.attributedText {
+                        otherAnimatingLabel.attributedText = attributedText
+                    } else {
+                        otherAnimatingLabel.text = amountCell.label.text
+                        otherAnimatingLabel.font = amountCell.label.font
+                        otherAnimatingLabel.textColor = amountCell.label.textColor
+                    }
+                    otherAnimatingLabel.textAlignment = amountCell.label.textAlignment
+                    otherAnimatingLabel.numberOfLines = amountCell.label.numberOfLines
+                    otherAnimatingLabel.anchorPoint = .zero //init(x: 0, y: 1)
+                    otherAnimatingLabel.frame = amountCell.label.convert(amountCell.label.bounds, to: container)
+                    
+                    container.addSubview(otherAnimatingLabel)
+                    
+                    UIView.animate(withDuration: 4 / 30, delay: 0.3) {
                         amountCell.visibleLabel.alpha = 1
+                        otherAnimatingLabel.alpha = 0.5
+                    } completion: { _ in
+                        otherAnimatingLabel.removeFromSuperview()
                     }
                 }
             }

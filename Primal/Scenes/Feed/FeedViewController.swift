@@ -14,6 +14,13 @@ import Lottie
 import Kingfisher
 import StoreKit
 
+class PrintingTableView: UITableView {
+    override func reloadData() {
+        print("FEED IS reloading tableview")
+        super.reloadData()
+    }
+}
+
 extension PostCell: FeedElementVideoCell {
     var currentVideoCells: [VideoCell] {
         [mainImages.currentVideoCell(), postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
@@ -29,7 +36,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
-    let table = UITableView()
+    let table = PrintingTableView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -37,8 +44,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     let heavy = UIImpactFeedbackGenerator(style: .heavy)
     
     var postCellID = "cell" // Needed for updating the theme
-    
-    var animateInserts = true
     
     lazy var dataSource: NoteFeedDatasource = RegularFeedDatasource(tableView: table, delegate: self)
     
@@ -201,36 +206,12 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
-    
     @discardableResult
     func open(post: ParsedContent) -> NoteViewController {
         let threadVC = ThreadViewController(post: post)
         showViewController(threadVC)
         return threadVC
     }
-    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-//        if let cell = cell as? PostCell {
-//            let data = posts[indexPath.row]
-//            cell.update(data)
-//            cell.delegate = self
-//        }
-//        
-//        if let postToPreload = posts[safe: indexPath.row + 10] {
-//            if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
-//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-//            } else if let url = postToPreload.linkPreview?.imagesData.first?.url(for: .large), url.isImageURL {
-//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-//            }
-//            
-//            if let url = postToPreload.user.profileImage.url(for: .small) {
-//                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-//            }
-//        }
-//        
-//        return cell
-//    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let post = postForIndexPath(indexPath) else { return }
@@ -340,15 +321,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             
             hapticGenerator.impactOccurred()
             
-            (cell as? FeedElementReactionsCell)?.likeButton.animateTo(post.post.likes + 1, filled: true)
+            (cell as? ElementReactionsCell)?.likeButton.animateTo(post.post.likes + 1, filled: true)
         case .zap:
-            guard let cell = cell as? FeedElementReactionsCell else { return }
+            guard let cell = cell as? ElementReactionsCell else { return }
             zapFromCell(cell, showPopup: false)
         case .longTapZap:
-            guard let cell = cell as? FeedElementReactionsCell else { return }
             zapFromCell(cell, showPopup: true)
         case .repost:
-            guard let cell = cell as? FeedElementReactionsCell else { return }
+            guard let cell = cell as? ElementReactionsCell else { return }
             postCellDidTapRepost(cell)
         case .reply:
             if post.post.isArticle {
@@ -462,24 +442,17 @@ private extension NoteViewController {
             
             zaps.insert(zap, at: zapIndex)
             posts[index].zaps = zaps
-            
-            guard
-                self.navigationController?.view.window != nil,
-                self.navigationController?.topViewController?.isParent(self) == true,
-                table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
-            else { return }
-            
-            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
-                cell.updateMenu(posts[index])
-            } else {
-                table.reloadData()
-            }
+            let save = dataSource.defaultRowAnimation
+            dataSource.defaultRowAnimation = .none
+            dataSource.setPosts(posts)
+            dataSource.defaultRowAnimation = save
         }
         .store(in: &cancellables)
     }
     
-    func zapFromCell(_ cell: FeedElementReactionsCell, showPopup: Bool) {
+    func zapFromCell(_ cell: UITableViewCell?, showPopup: Bool) {
         guard
+            let cell,
             let indexPath = table.indexPath(for: cell),
             let post = postForIndexPath(indexPath)
         else { return }
@@ -512,12 +485,12 @@ private extension NoteViewController {
         doZapFromCell(cell, amount: zapAmount, message: zapMessage)
     }
     
-    func doZapFromCell(_ cell: FeedElementReactionsCell, amount: Int, message: String) {
+    func doZapFromCell(_ cell: UITableViewCell?, amount: Int, message: String) {
         guard
+            let cell,
             let indexPath = table.indexPath(for: cell),
             let parsed = postForIndexPath(indexPath)
         else { return }
-        
         
         let newZapAmount = parsed.post.satszapped + amount
         
@@ -557,12 +530,12 @@ private extension NoteViewController {
         }
     }
     
-    func animateZap(_ cell: FeedElementReactionsCell, amount: Int) {
+    func animateZap(_ cell: UITableViewCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
         heavy.impactOccurred()
         
-        guard let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : nil else { return }
+        guard let cell = cell as? ElementReactionsCell, let iconToPin = cell.zapImageView.window != nil ? cell.zapImageView : nil else { return }
         
         view.layoutIfNeeded()
         
@@ -595,7 +568,7 @@ extension NoteViewController: FeedElementCellDelegate {
 }
 
 extension NoteViewController: PostCellDelegate {
-    func postCellDidTapRepost(_ cell: FeedElementReactionsCell) {
+    func postCellDidTapRepost(_ cell: ElementReactionsCell) {
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.post else { return }
         
         let popup = PopupMenuViewController()

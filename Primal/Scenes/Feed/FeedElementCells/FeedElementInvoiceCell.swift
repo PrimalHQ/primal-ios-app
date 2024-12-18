@@ -37,5 +37,6 @@ class FeedElementInvoiceCell: FeedElementBaseCell, RegularFeedElementCell {
     override func update(_ content: ParsedContent) {
         guard let invoice = content.invoice else { return }
         invoiceView.updateForInvoice(invoice)
+        invoiceView.updateTheme()
     }
 }

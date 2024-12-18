@@ -10,7 +10,7 @@ import Kingfisher
 import Nantes
 import FLAnimatedImage
 
-final class PostPreviewPostPreviewView: UIView {
+final class PostPreviewPostPreviewView: UIView, Themeable {
     let profileImageView = UserImageView(height: 24)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -20,10 +20,12 @@ final class PostPreviewPostPreviewView: UIView {
     let seeMoreLabel = UILabel()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
-    let linkPreview = LinkPreview()
+    let linkPreview = SmallLinkPreview()
     let zapPreview = ZapPreviewView()
     let infoView = SimpleInfoView()
-
+    
+    let separatorLabel = UILabel()
+    
     weak var imageAspectConstraint: NSLayoutConstraint?
     
     init() {
@@ -121,6 +123,27 @@ final class PostPreviewPostPreviewView: UIView {
             }
         }
     }
+    
+    func updateTheme() {
+        infoView.updateTheme()
+        
+        [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
+            $0.textColor = .foreground3
+        }
+        
+        backgroundColor = .background4
+        layer.borderColor = UIColor.background3.cgColor
+        
+        nameLabel.textColor = .foreground
+        
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        seeMoreLabel.textColor = .accent2
+
+    }
 }
 
 private extension PostPreviewPostPreviewView {
@@ -130,7 +153,6 @@ private extension PostPreviewPostPreviewView {
         layer.borderWidth = 1
         layer.borderColor = UIColor.background3.cgColor
         
-        let separatorLabel = UILabel()
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
@@ -161,6 +183,7 @@ private extension PostPreviewPostPreviewView {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent2
+        seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.layer.masksToBounds = true
         mainImages.layer.cornerRadius = 8

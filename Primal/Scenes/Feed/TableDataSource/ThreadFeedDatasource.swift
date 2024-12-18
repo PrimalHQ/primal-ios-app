@@ -12,18 +12,6 @@ enum ThreadPosition: String {
     case parent, main, child
 }
 
-extension Article: Hashable {
-    static func == (lhs: Article, rhs: Article) -> Bool {
-        lhs.hashValue == rhs.hashValue
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(user)
-        hasher.combine(identifier)
-        hasher.combine(event)
-    }
-}
-
 enum HelperThreadFeedCell: Hashable {
     case article(Article)
 }
@@ -66,12 +54,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementSmallZapGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
                 case .imageGallery:
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementImageGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .webPreview:
-//                    if let host = item.content.linkPreview?.url.host() {
-//                        let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
-//                        let isRumble = host == "www.rumble.com" || host == "rumble.com"
-//                    }
+                case .webPreviewSmall:
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
+                case .webPreviewLarge:
+                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue + "Large", for: indexPath)
                 case .postPreview:
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementPostPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
                 case .zapPreview:
@@ -155,9 +141,13 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
         tableView.register(ChildThreadElementArticleCell.self, forCellReuseIdentifier: ThreadElementArticleCell.cellID + ThreadPosition.child.rawValue)
         
         // Links
-        tableView.register(ParentThreadElementWebPreviewCell.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementWebPreviewCell.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementWebPreviewCell.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue + "Large")
+        tableView.register(MainThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.main.rawValue + "Large")
+        tableView.register(ChildThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.child.rawValue + "Large")
+        
+        tableView.register(ParentThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.child.rawValue)
         
         // Reactions
         tableView.register(ParentThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.parent.rawValue)
@@ -181,12 +171,23 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
             if !content.text.isEmpty { parts.append(.init(content: content, element: .text, threadPosition: position)) }
             if let invoice = content.invoice { parts.append(.init(content: content, element: .invoice, threadPosition: position)) }
             if let article = content.article { parts.append(.init(content: content, element: .article, threadPosition: position)) }
+            
+            if content.embededPost != nil { parts.append(.init(content: content, element: .postPreview, threadPosition: position) )}
+            
             if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery, threadPosition: position)) }
-            if let linkPreview = content.linkPreview { parts.append(.init(content: content, element: .webPreview, threadPosition: position)) }
+            
+            if let data = content.linkPreview {
+                if data.url.isYoutubeURL || data.url.isRumbleURL {
+                    parts.append(.init(content: content, element: .webPreviewLarge, threadPosition: position))
+                } else {
+                    parts.append(.init(content: content, element: .webPreviewSmall, threadPosition: position))
+                }
+            }
+            
             if let zapPreview = content.embeddedZap { parts.append(.init(content: content, element: .zapPreview, threadPosition: position)) }
             if let custom = content.customEvent { parts.append(.init(content: content, element: .info, threadPosition: position))}
             if let error = content.notFound { parts.append(.init(content: content, element: .info, threadPosition: position)) }
-            if !content.zaps.isEmpty { parts.append(.init(content: content, element: .zapGallery, threadPosition: position))}
+            if !content.zaps.isEmpty { parts.append(.init(content: content, element: .zapGallery(content.zaps), threadPosition: position))}
             
             parts.append(.init(content: content, element: .reactions, threadPosition: position))
             

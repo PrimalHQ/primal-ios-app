@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell {
+class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementReactionsCell" }
@@ -40,7 +40,6 @@ class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementC
         setup()
         
         contentView.addSubview(bottomBorder)
-        bottomBorder.backgroundColor = .background3
         bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
         if LoginManager.instance.method() == .nsec {
@@ -94,6 +93,15 @@ class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementC
         repostsLabel.isHidden = post.reposts <= 0
         
         infoRow.isHidden = post.replies + post.zaps + post.likes + post.reposts <= 0
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        bookmarkButton.tintColor = .foreground5
+        bottomBorder.backgroundColor = .background3
     }
 }
 
@@ -152,8 +160,6 @@ private extension MainThreadElementReactionsCell {
         
         bottomButtonStack.addArrangedSubview(bookmarkButton)
         
-        bookmarkButton.tintColor = .foreground5
-                
         bookmarkButton.constrainToSize(width: 36)
         bookmarkButton.contentHorizontalAlignment = .center
         bottomButtonStack.distribution = .fill

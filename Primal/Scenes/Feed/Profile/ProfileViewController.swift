@@ -55,7 +55,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var articles: [Article] = [] {
         didSet {
             guard tab == .reads else { return }
-            profileDataSource?.setArticles(articles.uniqueByFilter({ $0.reference?.universalID }))
+            profileDataSource?.setArticles(articles.uniqueByFilter({ $0.identifier }))
             profileDataSource?.isLoading = isLoading
         }
     }
@@ -86,7 +86,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
                 profileDataSource?.setPosts(posts)
             case .replies:
                 feed.withRepliesOverride = true
-                profileDataSource?.setReplies(posts)
+                profileDataSource?.setPosts(posts)
             case .reads:
                 if articles.isEmpty {
                     requestArticles()
@@ -158,8 +158,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     }
     
     // MARK: - TableView
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard tab == .notes || tab == .reads else { return }
         if indexPath.row > dataSource.cellCount - 30 {
             feed.requestNewPage()

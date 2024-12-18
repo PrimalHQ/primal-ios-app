@@ -32,6 +32,14 @@ class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     override func update(_ parsedContent: ParsedContent) {
         mainLabel.attributedText = parsedContent.attributedText
         selectionTextView.attributedText = parsedContent.attributedText
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
     }
 }
 

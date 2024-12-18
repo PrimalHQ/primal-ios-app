@@ -42,6 +42,7 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
         if let post = content.embededPost {
             postPreview.update(post)
         }
+        postPreview.updateTheme()
     }
 }
 

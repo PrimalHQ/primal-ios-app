@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell {
+class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementReactionsCell" }
@@ -96,6 +96,16 @@ class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell 
                 self?.isShowingBookmarked = isBookmarked
                 self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark"), for: .normal)
             }
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        bookmarkButton.tintColor = .foreground5
+        
+        bottomBorder.backgroundColor = .background3
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {

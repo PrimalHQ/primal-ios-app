@@ -12,7 +12,7 @@ import GenericJSON
 import Lottie
 
 class ArticleListController: UIViewController, ArticleCellController, UITableViewDataSource, Themeable {
-    let table = UITableView()
+    let table = PrintingTableView()
     
     var cancellables: Set<AnyCancellable> = []
     

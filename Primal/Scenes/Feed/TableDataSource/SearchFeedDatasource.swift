@@ -1,68 +1,29 @@
 //
-//  RegularFeedDatasource.swift
+//  SearchFeedDatasource.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 9.12.24..
+//  Created by Pavle Stevanović on 13.12.24..
 //
 
-import Combine
 import UIKit
 
-enum SingleSection {
-    case main
-}
-
-enum NoteFeedElement: Hashable {
-    case userInfo
-    case text
-    case zapGallery([ParsedZap])
-    case imageGallery
-    case webPreviewSmall
-    case webPreviewLarge
-    case postPreview
-    case zapPreview
-    case article
-    case info
-    case invoice
-    case reactions
-}
-
-enum NoteFeedItem: Hashable {
-    case note(content: ParsedContent, element: NoteFeedElement)
+enum SearchFeedItem: Hashable {
+    case noteElement(content: ParsedContent, element: NoteFeedElement)
+    case premium
     case loading
 }
 
-protocol RegularFeedElementCell: UITableViewCell {
-    func update(_ content: ParsedContent)
-    var delegate: FeedElementCellDelegate? { get set }
-    
-    static var cellID: String { get }
-}
-
-protocol FeedElementCellDelegate: AnyObject {
-    func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent)
-    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
-    func mainActionForZap(_ zap: ParsedZap)
-}
-
-protocol NoteFeedDatasource: UITableViewDataSource {
-    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent?
-    func setPosts(_ posts: [ParsedContent])
-    
-    var defaultRowAnimation: UITableView.RowAnimation { get set }
-    var cellCount: Int { get }
-}
-
-class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFeedItem>, NoteFeedDatasource {
-    var cells: [NoteFeedItem] = [.loading]
+class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, SearchFeedItem>, NoteFeedDatasource {
+    var cells: [SearchFeedItem] = [.loading] {
+        didSet {
+            updateCells()
+        }
+    }
     var cellCount: Int { cells.count }
     
-    @Published var isScrolling = false
-    @Published var cachedNotes: [ParsedContent] = []
-    
-    var cancellables: Set<AnyCancellable> = []
-    
-    init(tableView: UITableView, delegate: FeedElementCellDelegate) {
+    let showPremiumCard: Bool
+    init(showPremiumCard: Bool, tableView: UITableView, delegate: FeedElementCellDelegate & SearchPremiumCellDelegate) {
+        self.showPremiumCard = showPremiumCard
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
             
@@ -70,7 +31,10 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
             case .loading:
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
-            case let .note(content, element):
+            case .premium:
+                cell = tableView.dequeueReusableCell(withIdentifier: "preview", for: indexPath)
+                (cell as? SearchPremiumCell)?.delegate = delegate
+            case .noteElement(let content, let element):
                 switch element {
                 case .userInfo:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementUserCell.cellID, for: indexPath)
@@ -101,27 +65,20 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                 if let cell = cell as? RegularFeedElementCell {
                     cell.update(content)
                     cell.delegate = delegate
+                    cell.contentView.backgroundColor = .black
                 }
             }
+            
             return cell
         }
         
         registerCells(tableView)
         
         defaultRowAnimation = .none
-                
-        Publishers.CombineLatest($cachedNotes, $isScrolling)
-            .filter { !$0.0.isEmpty && !$0.1 }
-            .sink { [weak self] notes, isScrolling in
-                print("FEED IS UPDATING: \(notes.count) isScrolling: \(isScrolling)")
-                self?.update(posts: notes)
-                self?.cachedNotes = []
-            }
-            .store(in: &cancellables)
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
         return content
     }
     
@@ -140,50 +97,52 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
         tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
         
+        tableView.register(SearchPremiumCell.self, forCellReuseIdentifier: "premium")
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cachedNotes = posts
-    }
-    
-    func update(posts: [ParsedContent]) {
         cells = posts.flatMap({ content in
-            var parts: [NoteFeedItem] = [.note(content: content, element: .userInfo)]
+            var parts: [SearchFeedItem] = [.noteElement(content: content, element: .userInfo)]
             
-            if !content.text.isEmpty { parts.append(.note(content: content, element: .text)) }
-            if let invoice = content.invoice { parts.append(.note(content: content, element: .invoice)) }
-            if let article = content.article { parts.append(.note(content: content, element: .article)) }
+            if !content.text.isEmpty { parts.append(.noteElement(content: content, element: .text)) }
+            if let invoice = content.invoice { parts.append(.noteElement(content: content, element: .invoice)) }
+            if let article = content.article { parts.append(.noteElement(content: content, element: .article)) }
             
-            if content.embededPost != nil { parts.append(.note(content: content, element: .postPreview) )}
+            if content.embededPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
             
-            if !content.mediaResources.isEmpty { parts.append(.note(content: content, element: .imageGallery)) }
+            if !content.mediaResources.isEmpty { parts.append(.noteElement(content: content, element: .imageGallery)) }
             
             if let data = content.linkPreview {
                 if data.url.isYoutubeURL || data.url.isRumbleURL {
-                    parts.append(.note(content: content, element: .webPreviewLarge))
+                    parts.append(.noteElement(content: content, element: .webPreviewLarge))
                 } else {
-                    parts.append(.note(content: content, element: .webPreviewSmall))
+                    parts.append(.noteElement(content: content, element: .webPreviewSmall))
                 }
             }
             
-            if let zapPreview = content.embeddedZap { parts.append(.note(content: content, element: .zapPreview)) }
-            if let custom = content.customEvent { parts.append(.note(content: content, element: .info))}
-            if let error = content.notFound { parts.append(.note(content: content, element: .info)) }
-            if !content.zaps.isEmpty { parts.append(.note(content: content, element: .zapGallery(content.zaps))) }
+            if let zapPreview = content.embeddedZap { parts.append(.noteElement(content: content, element: .zapPreview)) }
+            if let custom = content.customEvent { parts.append(.noteElement(content: content, element: .info))}
+            if let error = content.notFound { parts.append(.noteElement(content: content, element: .info)) }
+            if !content.zaps.isEmpty { parts.append(.noteElement(content: content, element: .zapGallery(content.zaps))) }
             
-            parts.append(.note(content: content, element: .reactions))
+            parts.append(.noteElement(content: content, element: .reactions))
             
             return parts
         })
         
         if cells.isEmpty {
             cells.append(.loading)
+        } else if showPremiumCard {
+            cells.append(.premium)
         }
-        
-        var snapshot = NSDiffableDataSourceSnapshot<SingleSection, NoteFeedItem>()
-        snapshot.appendSections([.main])
+    }
+    
+    func updateCells() {
+        var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, SearchFeedItem>()
+        snapshot.appendSections([.feed])
         snapshot.appendItems(cells)
+        
         apply(snapshot, animatingDifferences: true)
     }
 }

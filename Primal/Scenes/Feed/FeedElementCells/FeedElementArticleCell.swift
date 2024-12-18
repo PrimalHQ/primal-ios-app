@@ -34,4 +34,9 @@ class FeedElementArticleCell: FeedElementBaseCell, RegularFeedElementCell {
         guard let article = content.article else { return }
         articleView.setUp(article)
     }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        articleView.updateTheme()
+    }
 }

@@ -1,66 +1,56 @@
 //
-//  RegularFeedDatasource.swift
+//  ArticleEmbeddedPostCellDatasource.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 9.12.24..
+//  Created by Pavle Stevanović on 16.12.24..
 //
 
-import Combine
 import UIKit
 
-enum SingleSection {
-    case main
-}
-
-enum NoteFeedElement: Hashable {
-    case userInfo
-    case text
-    case zapGallery([ParsedZap])
-    case imageGallery
-    case webPreviewSmall
-    case webPreviewLarge
-    case postPreview
-    case zapPreview
-    case article
-    case info
-    case invoice
-    case reactions
-}
-
-enum NoteFeedItem: Hashable {
-    case note(content: ParsedContent, element: NoteFeedElement)
-    case loading
-}
-
-protocol RegularFeedElementCell: UITableViewCell {
-    func update(_ content: ParsedContent)
-    var delegate: FeedElementCellDelegate? { get set }
-    
-    static var cellID: String { get }
-}
-
-protocol FeedElementCellDelegate: AnyObject {
-    func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent)
-    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
-    func mainActionForZap(_ zap: ParsedZap)
-}
-
-protocol NoteFeedDatasource: UITableViewDataSource {
-    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent?
-    func setPosts(_ posts: [ParsedContent])
-    
-    var defaultRowAnimation: UITableView.RowAnimation { get set }
-    var cellCount: Int { get }
-}
-
-class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFeedItem>, NoteFeedDatasource {
-    var cells: [NoteFeedItem] = [.loading]
+class ArticleEmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiffableDataSource<TwoSectionFeed, ParsedContent>, NoteFeedDatasource {
+    var cells: [ParsedContent] = []
     var cellCount: Int { cells.count }
     
-    @Published var isScrolling = false
-    @Published var cachedNotes: [ParsedContent] = []
+    init(tableView: UITableView, delegate: FeedElementCellDelegate) {
+        super.init(tableView: tableView) { [weak delegate] tableView, indexPath, content in
+            let cell: UITableViewCell
+            
+            cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+            if let cell = cell as? RegularFeedElementCell {
+                cell.update(content)
+                cell.delegate = delegate
+            }
+            return cell
+        }
+        
+        registerCells(tableView)
+        
+        defaultRowAnimation = .none
+    }
     
-    var cancellables: Set<AnyCancellable> = []
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? { cells[safe: indexPath.row] }
+    
+    private func registerCells(_ tableView: UITableView) {
+        tableView.register(T.self, forCellReuseIdentifier: "cell")
+    }
+    
+    var alternatingSection = TwoSectionFeed.feed
+    func setPosts(_ posts: [ParsedContent]) {
+        cells = posts
+        
+        var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ParsedContent>()
+        snapshot.appendSections([alternatingSection])
+        snapshot.appendItems(cells)
+        apply(snapshot, animatingDifferences: true)
+        
+        alternatingSection = alternatingSection == .feed ? .info : .feed
+    }
+}
+
+
+class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection, (NoteFeedItem)>, NoteFeedDatasource {
+    var cells: [NoteFeedItem] = []
+    var cellCount: Int { cells.count }
     
     init(tableView: UITableView, delegate: FeedElementCellDelegate) {
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
@@ -74,6 +64,9 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                 switch element {
                 case .userInfo:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementUserCell.cellID, for: indexPath)
+//                    threeDotsButton.removeFromSuperview()
+//                    contentView.addSubview(threeDotsButton)
+//                    threeDotsButton.pinToSuperview(edges: .top, padding: 7).pinToSuperview(edges: .trailing, padding: 20)
                 case .text:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementTextCell.cellID, for: indexPath)
                 case .zapGallery:
@@ -96,11 +89,13 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementInvoiceCell.cellID, for: indexPath)
                 case .reactions:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementReactionsCell.cellID, for: indexPath)
+                    (cell as? FeedElementReactionsCell)?.bottomBorder.removeFromSuperview()
                 }
                 
                 if let cell = cell as? RegularFeedElementCell {
                     cell.update(content)
                     cell.delegate = delegate
+                    cell.contentView.backgroundColor = .background3
                 }
             }
             return cell
@@ -109,15 +104,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         registerCells(tableView)
         
         defaultRowAnimation = .none
-                
-        Publishers.CombineLatest($cachedNotes, $isScrolling)
-            .filter { !$0.0.isEmpty && !$0.1 }
-            .sink { [weak self] notes, isScrolling in
-                print("FEED IS UPDATING: \(notes.count) isScrolling: \(isScrolling)")
-                self?.update(posts: notes)
-                self?.cachedNotes = []
-            }
-            .store(in: &cancellables)
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
@@ -144,10 +130,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cachedNotes = posts
-    }
-    
-    func update(posts: [ParsedContent]) {
         cells = posts.flatMap({ content in
             var parts: [NoteFeedItem] = [.note(content: content, element: .userInfo)]
             
@@ -180,6 +162,7 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         if cells.isEmpty {
             cells.append(.loading)
         }
+        
         
         var snapshot = NSDiffableDataSourceSnapshot<SingleSection, NoteFeedItem>()
         snapshot.appendSections([.main])

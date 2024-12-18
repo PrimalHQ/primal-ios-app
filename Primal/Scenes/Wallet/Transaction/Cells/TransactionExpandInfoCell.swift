@@ -23,7 +23,7 @@ class TransactionExpandInfoCell: UITableViewCell {
 }
 
 extension TransactionExpandInfoCell: TransactionPartialCell {
-    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+    func setupWithCellInfo(_ info: TransactionCellType) {
         guard case let .expand(isExpanded) = info else { return }
         
         chevron.transform = isExpanded ? .identity : .init(rotationAngle: .pi)

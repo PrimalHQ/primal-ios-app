@@ -42,6 +42,7 @@ class ThreadElementPostPreviewCell: ThreadElementBaseCell, RegularFeedElementCel
         if let post = content.embededPost {
             postPreview.update(post)
         }
+        postPreview.updateTheme()
     }
 }
 

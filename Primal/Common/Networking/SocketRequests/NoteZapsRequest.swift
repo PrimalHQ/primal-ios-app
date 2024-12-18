@@ -24,11 +24,7 @@ extension SocketRequest {
     }
 }
 
-struct ParsedZap: Equatable {
-    static func == (lhs: ParsedZap, rhs: ParsedZap) -> Bool {
-        lhs.receiptId == rhs.receiptId
-    }
-    
+struct ParsedZap: Hashable {
     let receiptId: String
     let postId: String
     let amountSats: Int

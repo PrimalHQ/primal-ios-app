@@ -19,6 +19,10 @@ class FeedElementBaseCell: UITableViewCell {
     func update(_ parsedContent: ParsedContent) {
         
     }
+    
+    func updateTheme() {
+        
+    }
 }
 
 class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
@@ -42,6 +46,8 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     let threeDotsSpacer = SpacerView(width: 20)
     
     let repostedByOverlayButton = UIButton()
+    
+    var checkboxHeightC: NSLayoutConstraint?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -77,10 +83,6 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         }), for: .touchUpInside)
         
         separatorLabel.text = "·"
-        [timeLabel, separatorLabel, nipLabel].forEach {
-            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
-            $0.textColor = .foreground3
-        }
         
         [nameLabel, nipLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
         
@@ -92,16 +94,12 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
         
-        checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
-        
+        checkboxHeightC = checkbox.heightAnchor.constraint(equalToConstant: FontSizeSelection.current.contentFontSize)
+        checkboxHeightC?.isActive = true
         nameStack.alignment = .center
         nameStack.spacing = 4
         
-        nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
-        
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
-        threeDotsButton.tintColor = .foreground3
         threeDotsButton.showsMenuAsPrimaryAction = true
 
         profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
@@ -180,45 +178,23 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
                 delegate?.postCellDidTap(self, action)
             }
         })
+        
+        updateTheme()
     }
-}
-
-private extension FeedElementUserCell {
-    private func setup() {
-        separatorLabel.text = "·"
-        [timeLabel, separatorLabel, nipLabel].forEach {
-            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
-            $0.textColor = .foreground3
-        }
+    
+    override func updateTheme() {
+        super.updateTheme()
         
-        [nameLabel, nipLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
-        
-        nipLabel.lineBreakMode = .byTruncatingTail
-        separatorLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        
-        threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
-        
-        checkbox.constrainToSize(FontSizeSelection.current.contentFontSize)
-        
-        nameStack.alignment = .center
-        nameStack.spacing = 4
+        threeDotsButton.tintColor = .foreground3
         
         nameLabel.textColor = .foreground
         nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
         
-        threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
-        threeDotsButton.tintColor = .foreground3
-        threeDotsButton.showsMenuAsPrimaryAction = true
+        checkboxHeightC?.constant = FontSizeSelection.current.contentFontSize
         
-        repostIndicator.addAction(.init(handler: { [unowned self] _ in
-            delegate?.postCellDidTap(self, .repostedProfile)
-        }), for: .touchUpInside)
-            
-        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .profile)
-        }))
+        [timeLabel, separatorLabel, nipLabel].forEach {
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
+            $0.textColor = .foreground3
+        }
     }
 }

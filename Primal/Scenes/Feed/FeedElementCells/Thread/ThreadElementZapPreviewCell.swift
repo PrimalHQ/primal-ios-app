@@ -28,5 +28,6 @@ class ThreadElementZapPreviewCell: ThreadElementBaseCell, RegularFeedElementCell
     override func update(_ content: ParsedContent) {
         guard let zap = content.embeddedZap else { return }
         zapPreview.updateForZap(zap)
+        zapPreview.updateTheme()
     }
 }

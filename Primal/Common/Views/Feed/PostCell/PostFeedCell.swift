@@ -33,7 +33,7 @@ class PostFeedCell: PostCell {
     
     override func update(_ parsedContent: ParsedContent) {
         if parsedContent.post.id != lastContentId {
-            zapGallery?.zaps = []
+            zapGallery?.setZaps([])
             lastContentId = parsedContent.post.id
         }
         
@@ -63,10 +63,10 @@ class PostFeedCell: PostCell {
         
         if content.zaps.isEmpty {
             zapGallery?.superview?.isHidden = true
-            zapGallery?.zaps = []
+            zapGallery?.setZaps([])
         } else {
             zapGallery?.superview?.isHidden = false
-            zapGallery?.zaps = content.zaps
+            zapGallery?.setZaps(content.zaps)
         }
     }
 }

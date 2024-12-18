@@ -36,6 +36,19 @@ class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
         layoutSubviews()
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        seeMoreLabel.textColor = .accent2
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        textStack.spacing = FontSizeSelection.current.contentLineSpacing
+        
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
     }
 }
 
@@ -48,15 +61,12 @@ private extension ThreadElementTextCell {
             .pinToSuperview(edges: .top, padding: 8)
         
         textStack.axis = .vertical
-        textStack.spacing = FontSizeSelection.current.contentLineSpacing
-        
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
 //        nantesDelegate.cell = self
         
         mainLabel.numberOfLines = 0
-        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         mainLabel.delegate = nantesDelegate
         mainLabel.labelTappedBlock = { [weak self] in
             guard let self else { return }

@@ -66,6 +66,10 @@ class LargeZapGalleryView: UIView, ZapGallery {
     
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func setZaps(_ zaps: [ParsedZap]) {
+        self.zaps = zaps
+    }
+    
     var zaps: [ParsedZap] = [] {
         didSet {
             update()

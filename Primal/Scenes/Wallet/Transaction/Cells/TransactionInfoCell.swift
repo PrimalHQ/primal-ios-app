@@ -37,7 +37,7 @@ class TransactionInfoCell: UITableViewCell {
 }
 
 extension TransactionInfoCell: TransactionPartialCell {
-    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+    func setupWithCellInfo(_ info: TransactionCellType) {
         switch info {
         case let .info(name, info):
             titleLabel.text = name

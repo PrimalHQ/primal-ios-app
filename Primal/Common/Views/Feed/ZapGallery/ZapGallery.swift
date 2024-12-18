@@ -16,8 +16,9 @@ protocol ZapGalleryViewDelegate: AnyObject {
 
 protocol ZapGallery: UIView {
     var delegate: ZapGalleryViewDelegate? { get set }
-    var zaps: [ParsedZap] { get set }
+//    var zaps: [ParsedZap] { get set }
     var singleLine: Bool { get set }
+    func setZaps(_ zaps: [ParsedZap])
 }
 
 class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
@@ -83,12 +84,30 @@ class SmallZapGalleryView: UIView, ZapGallery {
     
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    var zaps: [ParsedZap] = [] {
-        didSet {
+    func setZaps(_ zaps: [ParsedZap]) {
+        defer {
+            self.zaps = zaps
             update()
             playSkeleton()
         }
+        
+        guard
+            !zaps.isEmpty, 
+            self.zaps.isEmpty,
+            let animatingId = WalletManager.instance.animatingZap.value?.receiptId,
+            zaps.contains(where: { $0.receiptId == animatingId })
+        else { return }
+        
+        var oldZaps = zaps
+        oldZaps.removeAll(where: { $0.receiptId == animatingId })
+        
+        if oldZaps.isEmpty { return }
+        
+        self.zaps = oldZaps
+        update()
     }
+    
+    private var zaps: [ParsedZap] = []
     
     var animatingChanges: Bool {
         guard let id = WalletManager.instance.animatingZap.value?.receiptId else { return false }
@@ -115,7 +134,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
         }
         defer {
             if animatingChanges {
-                // Start animating
                 animateStacks()
             }
         }

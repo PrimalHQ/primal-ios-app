@@ -33,5 +33,6 @@ class ThreadElementArticleCell: ThreadElementBaseCell, RegularFeedElementCell {
     override func update(_ content: ParsedContent) {
         guard let article = content.article else { return }
         articleView.setUp(article)
+        articleView.updateTheme()
     }
 }

@@ -35,11 +35,11 @@ class MainThreadElementSmallZapGalleryCell: ThreadElementBaseCell, RegularFeedEl
     
     override func update(_ parsedContent: ParsedContent) {
         if parsedContent.post.id != lastContentId {
-            gallery.zaps = []
+            gallery.setZaps([])
             lastContentId = parsedContent.post.id
         }
         
-        gallery.zaps = parsedContent.zaps
+        gallery.setZaps(parsedContent.zaps)
     }
 }
 

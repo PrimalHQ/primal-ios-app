@@ -20,11 +20,11 @@ enum ProfileFeedItem: Hashable {
     case loadingMedia
 }
 
-enum ProfileFeedSection {
+enum TwoSectionFeed {
     case info, feed
 }
 
-class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, ProfileFeedItem>, NoteFeedDatasource {
+class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ProfileFeedItem>, NoteFeedDatasource {
     var cells: [ProfileFeedItem] = [] {
         didSet {
             updateCells()
@@ -78,16 +78,10 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSmallZapGalleryCell.cellID, for: indexPath)
                 case .imageGallery:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementImageGalleryCell.cellID, for: indexPath)
-                case .webPreview:
-                    
-                    if let host = content.linkPreview?.url.host() {
-                        let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
-                        let isRumble = host == "www.rumble.com" || host == "rumble.com"
-                        
-                        cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
-                    } else {
-                        cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
-                    }
+                case .webPreviewSmall:
+                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
+                case .webPreviewLarge:
+                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
                 case .postPreview:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementPostPreviewCell.cellID, for: indexPath)
                 case .zapPreview:
@@ -137,6 +131,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
                 }
             case .loading:
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+                (cell as? SkeletonLoaderCell)?.loaderView.play()
             case .loadingMedia:
                 cell = tableView.dequeueReusableCell(withIdentifier: "mediaLoading", for: indexPath)
             }
@@ -148,13 +143,13 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
         parseDescription()
         requestUserProfile()
         
-        defaultRowAnimation = .none
+        defaultRowAnimation = .fade
         
         updateCells()
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row] else { return nil }
         switch data {
         case .feedElement(let content, _):
             return content
@@ -176,8 +171,8 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
         tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
         tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
         
-        tableView.register(FeedElementWebPreviewCell.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
-        tableView.register(FeedElementWebPreviewCell.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
+        tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
+        tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
         
         tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
         tableView.register(MediaTripleCell.self, forCellReuseIdentifier: "media")
@@ -186,10 +181,6 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
         tableView.register(MutedUserCell.self, forCellReuseIdentifier: "muted")
         tableView.register(ProfileInfoCell.self, forCellReuseIdentifier: "profile")
         tableView.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
-    }
-    
-    func setReplies(_ replies: [ParsedContent]) {
-        setPosts(replies)
     }
     
     func setPosts(_ posts: [ParsedContent]) {
@@ -202,12 +193,23 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
                 if !content.text.isEmpty { parts.append((content: content, element: .text)) }
                 if let invoice = content.invoice { parts.append((content: content, element: .invoice)) }
                 if let article = content.article { parts.append((content: content, element: .article)) }
+                
+                if content.embededPost != nil { parts.append((content: content, element: .postPreview) )}
+                
                 if !content.mediaResources.isEmpty { parts.append((content: content, element: .imageGallery)) }
-                if let linkPreview = content.linkPreview { parts.append((content: content, element: .webPreview)) }
+                
+                if let data = content.linkPreview {
+                    if data.url.isYoutubeURL || data.url.isRumbleURL {
+                        parts.append((content: content, element: .webPreviewLarge))
+                    } else {
+                        parts.append((content: content, element: .webPreviewSmall))
+                    }
+                }
+                
                 if let zapPreview = content.embeddedZap { parts.append((content: content, element: .zapPreview)) }
                 if let custom = content.customEvent { parts.append((content: content, element: .info))}
                 if let error = content.notFound { parts.append((content: content, element: .info)) }
-                if !content.zaps.isEmpty { parts.append((content: content, element: .zapGallery))}
+                if !content.zaps.isEmpty { parts.append((content: content, element: .zapGallery(content.zaps))) }
                 
                 parts.append((content: content, element: .reactions))
                 
@@ -242,7 +244,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<ProfileFeedSection, P
 
 private extension ProfileFeedDatasource {
     func updateCells() {
-        var snapshot = NSDiffableDataSourceSnapshot<ProfileFeedSection, ProfileFeedItem>()
+        var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ProfileFeedItem>()
         
         snapshot.appendSections([.info])
         snapshot.appendItems([.profileInfo(profile, parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: selectedTab)])
@@ -265,7 +267,7 @@ private extension ProfileFeedDatasource {
             snapshot.appendSections([.feed])
             snapshot.appendItems(cells)
         }
-        apply(snapshot, animatingDifferences: false)
+        apply(snapshot, animatingDifferences: true)
     }
     
     func parseDescription() {

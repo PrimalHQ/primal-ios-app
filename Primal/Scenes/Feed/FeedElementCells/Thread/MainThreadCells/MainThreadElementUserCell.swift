@@ -78,6 +78,22 @@ class MainThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
                 delegate?.postCellDidTap(self, action)
             }
         })
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        threeDotsButton.tintColor = .foreground3
+        
+        nameLabel.textColor = .foreground
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        nameLabel.textColor = .foreground
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        
+        nipLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
+        nipLabel.textColor = .foreground3
     }
 }
 
@@ -101,11 +117,6 @@ private extension MainThreadElementUserCell {
         nameCheckStack.spacing = 4
         
         mainStack.addArrangedSubview(threeDotsSpacer)
-         
-        [nipLabel].forEach {
-            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
-            $0.textColor = .foreground3
-        }
         
         [nameLabel, nipLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
         
@@ -120,11 +131,7 @@ private extension MainThreadElementUserCell {
         mainStack.alignment = .center
         mainStack.spacing = 8
         
-        nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
-        
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
-        threeDotsButton.tintColor = .foreground3
         threeDotsButton.showsMenuAsPrimaryAction = true
 
         profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in

@@ -7,12 +7,12 @@
 
 import UIKit
 
-class FeedElementWebPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
+class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFeedElementCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementWebPreviewCell" }
     
-    let linkPresentation = LinkPreview()
+    let linkPresentation = T()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,5 +33,6 @@ class FeedElementWebPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     
     override func update(_ content: ParsedContent) {
         linkPresentation.data = content.linkPreview
+        linkPresentation.updateTheme()
     }
 }

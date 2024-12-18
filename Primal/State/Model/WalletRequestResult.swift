@@ -114,7 +114,7 @@ struct InvoiceInfo: Codable {
     var description: String?
 }
 
-struct WalletTransaction: Codable {    
+struct WalletTransaction: Codable, Hashable {    
     var type: String
     var id: String
     var state: String

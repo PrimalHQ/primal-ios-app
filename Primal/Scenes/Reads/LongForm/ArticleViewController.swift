@@ -52,7 +52,7 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
     let contentStack = UIStackView(axis: .vertical, [])
     
     var webViews: [ArticleWebView] = []
-    var embeddedPostControllers: [LongFormEmbeddedPostController<LongFormEmbeddedPostCell>] = []
+    var embeddedPostControllers: [ArticleEmbeddedPostController] = []
     
     let commentZapPill = CommentZapPill()
     
@@ -387,13 +387,15 @@ private extension ArticleViewController {
                 let imageView = ArticleImageView(url: url, delegate: self)
                 contentStack.addArrangedSubview(imageView)
             case .post(let post):
-                let embedded = LongFormEmbeddedPostController<LongFormEmbeddedPostCell>(
-                    content: post,
-                    allowAdvancedInteraction: true
-                )
+                let embedded = ArticleEmbeddedPostController(content: post, allowAdvancedInteraction: true)
+                
+                let embeddedParent = UIView()
+                embeddedParent.addSubview(embedded.view)
+                embedded.view.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 5)
+                
                 embeddedPostControllers.append(embedded)
                 addChild(embedded)
-                contentStack.addArrangedSubview(embedded.view)
+                contentStack.addArrangedSubview(embeddedParent)
                 embedded.didMove(toParent: self)
                 break
             case .text(let text):

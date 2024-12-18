@@ -48,7 +48,7 @@ struct NostrContent: Codable, Equatable, Hashable {
     }
 }
 
-struct NostrContentStats: Codable {
+struct NostrContentStats: Codable, Hashable {
     let event_id: String
     let likes: Int?
     let mentions: Int?

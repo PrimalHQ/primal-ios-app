@@ -21,21 +21,9 @@ class HomeFeedChildController: PostFeedViewController {
     
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
+    
+    @Published var isScrolling = false
 
-    override var postSection: Int { 1 }
-    
-    override var posts: [ParsedContent] {
-        didSet {
-            if posts.isEmpty {
-                animateInserts = false
-            } else {
-                DispatchQueue.main.async {
-                    self.animateInserts = true
-                }
-            }
-        }
-    }
-    
     override init(feed: FeedManager) {
         super.init(feed: feed)
         
@@ -43,8 +31,6 @@ class HomeFeedChildController: PostFeedViewController {
             guard let self else { return true }
             return self.table.contentOffset.y > 300
         }
-        
-        animateInserts = false
     }
     
     required init?(coder: NSCoder) {
@@ -107,7 +93,9 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         guard indexPath.section == postSection else { return }
         
         feed.didShowPost(indexPath.row)
@@ -119,6 +107,8 @@ class HomeFeedChildController: PostFeedViewController {
         if scrollView.contentOffset.y < 100 {
             feed.didShowPost(0)
         }
+        
+        isScrolling = true
     }
     
     weak var parentHomeVC: HomeFeedViewController?
@@ -141,22 +131,6 @@ class HomeFeedChildController: PostFeedViewController {
         super.updateTheme()
         
         table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        2
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection { return dataSource.tableView(tableView, numberOfRowsInSection: section) }
-        return posts.isEmpty ? 6 : 0
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == postSection {
-            return super.tableView(tableView, cellForRowAt: indexPath)
-        }
-        return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
     }
 }
 
@@ -188,7 +162,24 @@ private extension HomeFeedChildController {
                     self?.posts = posts
                     self?.refreshControl.endRefreshing()
                 }
+                print("FEED IS Received")
             }
             .store(in: &cancellables)
+        
+        // MARK: - Scrolling tracking
+        $isScrolling.debounce(for: 2, scheduler: RunLoop.main).sink { [weak self] isScrolling in
+            if isScrolling {
+                self?.isScrolling = self?.table.isDragging ?? false
+            }
+        }
+        .store(in: &cancellables)
+        
+        $isScrolling.removeDuplicates().sink { [weak self] isScrolling in
+            print("FEED IS SCROLLING \(isScrolling)")
+            (self?.dataSource as? RegularFeedDatasource)?.isScrolling = isScrolling
+        }
+        .store(in: &cancellables)
+        
+        
     }
 }

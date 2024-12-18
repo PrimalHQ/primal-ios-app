@@ -1,75 +1,33 @@
 //
-//  RegularFeedDatasource.swift
+//  ArticleCommentsDatasource.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 9.12.24..
+//  Created by Pavle Stevanović on 16.12.24..
 //
 
-import Combine
 import UIKit
 
-enum SingleSection {
-    case main
-}
-
-enum NoteFeedElement: Hashable {
-    case userInfo
-    case text
-    case zapGallery([ParsedZap])
-    case imageGallery
-    case webPreviewSmall
-    case webPreviewLarge
-    case postPreview
-    case zapPreview
-    case article
-    case info
-    case invoice
-    case reactions
-}
-
-enum NoteFeedItem: Hashable {
+enum ArticleCommentsFeedItem: Hashable {
     case note(content: ParsedContent, element: NoteFeedElement)
-    case loading
+    case header
+    case empty
 }
 
-protocol RegularFeedElementCell: UITableViewCell {
-    func update(_ content: ParsedContent)
-    var delegate: FeedElementCellDelegate? { get set }
-    
-    static var cellID: String { get }
-}
-
-protocol FeedElementCellDelegate: AnyObject {
-    func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent)
-    func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration?
-    func mainActionForZap(_ zap: ParsedZap)
-}
-
-protocol NoteFeedDatasource: UITableViewDataSource {
-    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent?
-    func setPosts(_ posts: [ParsedContent])
-    
-    var defaultRowAnimation: UITableView.RowAnimation { get set }
-    var cellCount: Int { get }
-}
-
-class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFeedItem>, NoteFeedDatasource {
-    var cells: [NoteFeedItem] = [.loading]
+class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ArticleCommentsFeedItem>, NoteFeedDatasource {
+    var cells: [ArticleCommentsFeedItem] = []
     var cellCount: Int { cells.count }
     
-    @Published var isScrolling = false
-    @Published var cachedNotes: [ParsedContent] = []
-    
-    var cancellables: Set<AnyCancellable> = []
-    
-    init(tableView: UITableView, delegate: FeedElementCellDelegate) {
+    init(tableView: UITableView, delegate: FeedElementCellDelegate & PostCommentsTitleCellDelegate) {
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
             
             switch item {
-            case .loading:
-                cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-                (cell as? SkeletonLoaderCell)?.loaderView.play()
+            case .header:
+                cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
+                (cell as? PostCommentsTitleCell)?.delegate = delegate
+            case .empty:
+                cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+                (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
             case let .note(content, element):
                 switch element {
                 case .userInfo:
@@ -109,15 +67,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         registerCells(tableView)
         
         defaultRowAnimation = .none
-                
-        Publishers.CombineLatest($cachedNotes, $isScrolling)
-            .filter { !$0.0.isEmpty && !$0.1 }
-            .sink { [weak self] notes, isScrolling in
-                print("FEED IS UPDATING: \(notes.count) isScrolling: \(isScrolling)")
-                self?.update(posts: notes)
-                self?.cachedNotes = []
-            }
-            .store(in: &cancellables)
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
@@ -140,16 +89,13 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
         tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
         
-        tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
+        tableView.register(GenericEmptyTableCell.self, forCellReuseIdentifier: "empty")
+        tableView.register(PostCommentsTitleCell.self, forCellReuseIdentifier: "title")
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cachedNotes = posts
-    }
-    
-    func update(posts: [ParsedContent]) {
         cells = posts.flatMap({ content in
-            var parts: [NoteFeedItem] = [.note(content: content, element: .userInfo)]
+            var parts: [ArticleCommentsFeedItem] = [.note(content: content, element: .userInfo)]
             
             if !content.text.isEmpty { parts.append(.note(content: content, element: .text)) }
             if let invoice = content.invoice { parts.append(.note(content: content, element: .invoice)) }
@@ -177,13 +123,16 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
             return parts
         })
         
-        if cells.isEmpty {
-            cells.append(.loading)
-        }
+        var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ArticleCommentsFeedItem>()
+        snapshot.appendSections([.info])
+        snapshot.appendItems([.header])
         
-        var snapshot = NSDiffableDataSourceSnapshot<SingleSection, NoteFeedItem>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(cells)
+        if cells.isEmpty {
+            snapshot.appendItems([.empty])
+        } else {
+            snapshot.appendSections([.feed])
+            snapshot.appendItems(cells)
+        }
         apply(snapshot, animatingDifferences: true)
     }
 }

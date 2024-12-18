@@ -18,7 +18,7 @@ struct LinkMetadata {
     var data: WebPreview
 }
 
-final class LinkPreview: UIView {
+class LinkPreview: UIView, Themeable {
     var data: LinkMetadata? {
         didSet {
             guard let data else { return }
@@ -26,26 +26,30 @@ final class LinkPreview: UIView {
         }
     }
     
-    private let imageView = UIImageView()
-    private let iconView = UIImageView()
+    let imageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
 
-    private lazy var subtitleStack = UIStackView([iconView, subtitleLabel])
-    private lazy var contentStack = UIStackView(axis: .vertical, [titleLabel, subtitleStack])
-    private lazy var mainStack = UIStackView([imageView, contentStack])
+    lazy var subtitleStack = UIStackView([subtitleLabel])
+    lazy var contentStack = UIStackView(axis: .vertical, [titleLabel, subtitleStack])
+    lazy var mainStack = UIStackView([imageView, contentStack])
     
-    private var smallImageConstraints: [NSLayoutConstraint] = []
-    private var largeImageConstraints: [NSLayoutConstraint] = []
-    
-    init() {
+    required init() {
         super.init(frame: .zero)
         setup()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        imageView.tintColor = .foreground5
+        imageView.backgroundColor = .background3
+        subtitleLabel.textColor = .foreground4
+        titleLabel.textColor = .foreground
+        backgroundColor = .background5
+        layer.borderColor = UIColor.background3.withAlphaComponent(0.4).cgColor
     }
 }
 
@@ -57,51 +61,11 @@ private extension LinkPreview {
         let host = data.url.host()
         subtitleLabel.text = host
         
-        let imageSize: CGSize
-        
-        let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
-        let isRumble = host == "www.rumble.com" || host == "rumble.com"
-        
-        NSLayoutConstraint.deactivate(largeImageConstraints + smallImageConstraints)
-        
-        if isRumble || isYoutube {
-            imageSize = .init(width: 343, height: 193)
-            mainStack.axis = .vertical
-            mainStack.alignment = .fill
-            playIcon.isHidden = false
-            iconView.isHidden = false
-            iconView.image = isRumble ? UIImage(named: "rumbleIcon") : UIImage(named: "youtubeIcon")
-            NSLayoutConstraint.activate(largeImageConstraints)
-            
-            contentStack.removeArrangedSubview(titleLabel)
-            contentStack.addArrangedSubview(titleLabel)
-            contentStack.spacing = 12
-            contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
-            
-            layer.borderWidth = 0
-        } else {
-            imageSize = .init(width: 100, height: 90)
-            mainStack.axis = .horizontal
-            mainStack.alignment = .center
-            playIcon.isHidden = true
-            iconView.isHidden = true
-            NSLayoutConstraint.activate(smallImageConstraints)
-            
-            contentStack.removeArrangedSubview(subtitleStack)
-            contentStack.addArrangedSubview(subtitleStack)
-            contentStack.spacing = 4
-            contentStack.layoutMargins = .init(top: 12, left: 16, bottom: 12, right: 16)
-            
-            layer.borderWidth = 1
-            layer.borderColor = UIColor.background3.cgColor
-        }
-        
         if let imageString = data.data.md_image, !imageString.isEmpty {
             let metadata = data.imagesData.first(where: { $0.url == imageString })
             imageView.image = nil
             imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
                 .scaleFactor(UIScreen.main.scale),
-                .processor(DownsamplingImageProcessor(size: imageSize)),
                 .cacheOriginalImage,
                 .transition(.fade(0.2))
             ])
@@ -120,41 +84,23 @@ private extension LinkPreview {
         addSubview(mainStack)
         mainStack.pinToSuperview()
         
-        addSubview(playIcon)
-        playIcon.centerToView(imageView)
-        
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
-        imageView.tintColor = .foreground5
-        imageView.backgroundColor = .background3
         imageView.image = UIImage(named: "webPreviewIcon")
-        
-        smallImageConstraints = [
-            imageView.heightAnchor.constraint(equalToConstant: 90),
-            imageView.widthAnchor.constraint(equalToConstant: 100)
-        ]
-        largeImageConstraints = [
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 16 / 9)
-        ]
-        
-        backgroundColor = .background5
+                
         layer.cornerRadius = 8
         layer.masksToBounds = true
         layer.borderWidth = 1
-        layer.borderColor = UIColor.background3.withAlphaComponent(0.4).cgColor
-        
-        iconView.setContentHuggingPriority(.required, for: .horizontal)
-        iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         subtitleLabel.font = .appFont(withSize: 15, weight: .regular)
-        subtitleLabel.textColor = .foreground4
         
         titleLabel.font = .appFont(withSize: 16, weight: .regular)
-        titleLabel.textColor = .foreground
         titleLabel.numberOfLines = 2
         titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         addInteraction(UIContextMenuInteraction(delegate: self))
+        
+        updateTheme()
     }
 }
 
@@ -189,4 +135,65 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
             }
         }
     }
+}
+
+class SmallLinkPreview: LinkPreview {
+    required init() {
+        super.init() 
+        
+        imageView.constrainToSize(width: 100, height: 90)
+        
+        contentStack.spacing = 4
+        contentStack.layoutMargins = .init(top: 12, left: 16, bottom: 12, right: 16)
+        
+        mainStack.axis = .horizontal
+        mainStack.alignment = .center
+        
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.background3.cgColor
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+class LargeLinkPreview: LinkPreview {
+    private let iconView = UIImageView()
+    private let playIcon = UIImageView(image: UIImage(named: "playVideoLarge"))
+    
+    override var data: LinkMetadata? {
+        didSet {
+            guard let host = data?.url.host() else {
+                iconView.isHidden = true
+                return
+            }
+            let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
+            let isRumble = host == "www.rumble.com" || host == "rumble.com"
+            
+            iconView.image = isRumble ? UIImage(named: "rumbleIcon") : nil
+            iconView.image = isYoutube ? UIImage(named: "youtubeIcon") : nil
+            iconView.isHidden = !isRumble && !isYoutube
+        }
+    }
+    
+    required init() {
+        super.init()
+        
+        imageView.constrainToAspect(16 / 9)
+        
+        iconView.setContentHuggingPriority(.required, for: .horizontal)
+        iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        subtitleStack.insertArrangedSubview(iconView, at: 0)
+        
+        addSubview(playIcon)
+        playIcon.centerToView(imageView)
+        
+        contentStack.spacing = 12
+        contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+        
+        mainStack.axis = .vertical
+        mainStack.alignment = .fill
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

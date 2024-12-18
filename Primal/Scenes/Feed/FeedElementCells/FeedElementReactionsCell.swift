@@ -8,7 +8,22 @@
 import Combine
 import UIKit
 
-class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
+protocol ElementZapButtonCell: UITableViewCell {
+    var zapImageView: UIImageView { get }
+    var zapButton: FeedZapButton { get }
+}
+
+protocol ElementReactionsCell: ElementZapButtonCell {
+    var zapButton: FeedZapButton { get }
+    var repostButton: FeedRepostButton { get }
+    var likeButton: FeedLikeButton { get }
+}
+
+extension ElementReactionsCell {
+    var zapImageView: UIImageView { zapButton.iconView }
+}
+
+class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementReactionsCell" }
@@ -49,11 +64,8 @@ class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
         bottomButtonStack.distribution = .fillEqually
         bottomButtonStack.spacing = 12
         
-        bottomBorder.backgroundColor = .background3
-        
         repostButton.tintColor = UIColor(rgb: 0x757575)
         
-        bookmarkButton.tintColor = .foreground5
         bookmarkButton.setImage(UIImage(named: "feedBookmark")?.scalePreservingAspectRatio(size: 18), for: .normal)
         bookmarkButton.contentHorizontalAlignment = .trailing
         bookmarkButton.addAction(.init(handler: { [weak self] _ in
@@ -94,6 +106,16 @@ class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell {
                 self?.isShowingBookmarked = isBookmarked
                 self?.bookmarkButton.setImage(UIImage(named: isBookmarked ? "feedBookmarkFilled" : "feedBookmark"), for: .normal)
             }
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        bookmarkButton.tintColor = .foreground5
+        
+        bottomBorder.backgroundColor = .background3
     }
     
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {

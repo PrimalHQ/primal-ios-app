@@ -150,6 +150,22 @@ class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
                 delegate?.postCellDidTap(self, action)
             }
         })
+        
+        updateTheme()
+    }
+    
+    override func updateTheme() {
+        super.updateTheme()
+        
+        threeDotsButton.tintColor = .foreground3
+        
+        nameLabel.textColor = .foreground
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        
+        [timeLabel, separatorLabel, nipLabel].forEach {
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
+            $0.textColor = .foreground3
+        }
     }
 }
 

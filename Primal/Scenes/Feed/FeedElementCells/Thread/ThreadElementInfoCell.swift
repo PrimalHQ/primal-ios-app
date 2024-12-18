@@ -46,5 +46,7 @@ class ThreadElementInfoCell: ThreadElementBaseCell, RegularFeedElementCell {
                 infoView.set(kind: .file, text: "Mentioned article not found.")
             }
         }
+        
+        infoView.updateTheme()
     }
 }

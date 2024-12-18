@@ -85,19 +85,19 @@ class ChildThreadElementReactionsCell: ThreadElementReactionsCell {
 }
 
 // Link Preview
-class ParentThreadElementWebPreviewCell: ThreadElementWebPreviewCell {
+class ParentThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
-class MainThreadElementWebPreviewCell: ThreadElementWebPreviewCell {
+class MainThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
-class ChildThreadElementWebPreviewCell: ThreadElementWebPreviewCell {
+class ChildThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
     }

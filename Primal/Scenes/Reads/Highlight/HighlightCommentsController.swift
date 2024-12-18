@@ -19,13 +19,13 @@ class HighlightCommentsController: NoteViewController {
     init(comments: [ParsedContent]) {
         super.init()
         
-        animateInserts = false
-        
-        table.register(PostCommentsTitleCell.self, forCellReuseIdentifier: "title")
         table.refreshControl = nil
         DispatchQueue.main.async {
             self.table.contentInset = .zero
         }
+        
+        let highlightDatasource = HighlightCommentsDatasource(tableView: table, delegate: self)
+        dataSource = highlightDatasource
         
         posts = comments
         
@@ -35,18 +35,20 @@ class HighlightCommentsController: NoteViewController {
         heightC.priority = .defaultLow
         heightC.isActive = true
         
-        $posts
-            .sink { [weak self] posts in
-                guard let self else { return }
-                while cellHeight.count < posts.count {
-                    cellHeight.insert(78, at: 0)
-                }
-            }
-            .store(in: &cancellables)
-        
         $cellHeight
             .map { $0.reduce(0, +) }
             .assign(to: \.viewHeight, onWeak: self)
+            .store(in: &cancellables)
+        
+        $posts
+            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink(receiveValue: { [weak self] _ in
+                guard var cellHeightCount = self?.cellHeight.count else { return }
+                while cellHeightCount < highlightDatasource.cellCount {
+                    self?.cellHeight.append(30)
+                    cellHeightCount += 1
+                }
+            })
             .store(in: &cancellables)
         
         $viewHeight.sink { height in
@@ -59,31 +61,19 @@ class HighlightCommentsController: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
-        DispatchQueue.main.async {
-            while indexPath.row >= self.cellHeight.count {
-                self.cellHeight.append(0)
-            }
-            self.cellHeight[indexPath.row] = cell.contentView.frame.height
-        }
-        return cell
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { /* NO ACTION */ }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        while indexPath.row >= cellHeight.count {
+            cellHeight.append(40)
+        }
+        cellHeight[safe: indexPath.row] = cell.frame.height
+    }
 
     override func updateTheme() {
         super.updateTheme()
         
         view.backgroundColor = .background4
         table.backgroundColor = .background4
-        table.register(HighlightCommentCell.self, forCellReuseIdentifier: postCellID)
     }
-    
-//    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
-//        switch event {
-//        case .post: return
-//        default: super.performEvent(event, withPost: post, inCell: cell)
-//        }
-//    }
 }
