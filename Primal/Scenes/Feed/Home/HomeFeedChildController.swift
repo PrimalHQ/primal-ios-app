@@ -67,7 +67,7 @@ class HomeFeedChildController: PostFeedViewController {
             feed.addAllFuturePosts()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
-                self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
+                self.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             }
         }), for: .touchDown)
         
@@ -147,8 +147,8 @@ class HomeFeedChildController: PostFeedViewController {
         2
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection { return super.tableView(tableView, numberOfRowsInSection: section) }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == postSection { return dataSource.tableView(tableView, numberOfRowsInSection: section) }
         return posts.isEmpty ? 6 : 0
     }
     

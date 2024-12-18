@@ -39,8 +39,8 @@ class LongFormEmbeddedPostController<T: PostCell>: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
         DispatchQueue.main.async {
             self.heightConstraint?.constant = cell.contentView.frame.height
         }

@@ -20,6 +20,8 @@ protocol PostCellDelegate: AnyObject {
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
+    class var cellID: String { "PostCell" }
+    
     weak var delegate: PostCellDelegate?
     
     let bottomBorder = UIView()
@@ -138,9 +140,6 @@ class PostCell: UITableViewCell {
             invoiceView.isHidden = true
         }
         
-        imageAspectConstraint?.isActive = false
-        imageAspectConstraint = nil
-        
         if let customEvent = content.customEvent {
             infoView.isHidden = false
             infoView.set(
@@ -160,6 +159,9 @@ class PostCell: UITableViewCell {
                 infoView.set(kind: .file, text: "Mentioned article not found.")
             }
         }
+        
+        imageAspectConstraint?.isActive = false
+        imageAspectConstraint = nil
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
@@ -256,10 +258,9 @@ extension PostCell: ImageCollectionViewDelegate {
 
 private extension PostCell {
     func setup() {
+        selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .background2
-        contentView.addSubview(bottomBorder)
-        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
@@ -316,8 +317,6 @@ private extension PostCell {
         bottomBorder.backgroundColor = .background3
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
-        
-        selectionStyle = .none
         
         repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))

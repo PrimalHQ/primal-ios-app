@@ -64,32 +64,32 @@ class LongFormCommentsController: NoteViewController {
     
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return posts.isEmpty ? 2 : 1
-        }
-        return super.tableView(tableView, numberOfRowsInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 1 {
-            let cell = super.tableView(tableView, cellForRowAt: indexPath)
-            DispatchQueue.main.async {
-                self.cellHeight[safe: indexPath.row] = cell.contentView.frame.height
-            }
-            return cell
-        }
-        
-        guard indexPath.row == 0 else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
-            (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
-            return cell
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
-        (cell as? PostCommentsTitleCell)?.delegate = self
-        return cell
-    }
+//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if section == 0 {
+//            return posts.isEmpty ? 2 : 1
+//        }
+//        return super.tableView(tableView, numberOfRowsInSection: section)
+//    }
+//    
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        if indexPath.section == 1 {
+//            let cell = super.tableView(tableView, cellForRowAt: indexPath)
+//            DispatchQueue.main.async {
+//                self.cellHeight[safe: indexPath.row] = cell.contentView.frame.height
+//            }
+//            return cell
+//        }
+//        
+//        guard indexPath.row == 0 else {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+//            (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
+//            return cell
+//        }
+//        
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
+//        (cell as? PostCommentsTitleCell)?.delegate = self
+//        return cell
+//    }
     
     override func updateTheme() {
         super.updateTheme()

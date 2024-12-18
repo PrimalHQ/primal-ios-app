@@ -59,8 +59,8 @@ class HighlightCommentsController: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = dataSource.tableView(tableView, cellForRowAt: indexPath)
         DispatchQueue.main.async {
             while indexPath.row >= self.cellHeight.count {
                 self.cellHeight.append(0)
@@ -80,10 +80,10 @@ class HighlightCommentsController: NoteViewController {
         table.register(HighlightCommentCell.self, forCellReuseIdentifier: postCellID)
     }
     
-    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
-        switch event {
-        case .post: return
-        default: super.performEvent(event, withPost: post, inCell: cell)
-        }
-    }
+//    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
+//        switch event {
+//        case .post: return
+//        default: super.performEvent(event, withPost: post, inCell: cell)
+//        }
+//    }
 }

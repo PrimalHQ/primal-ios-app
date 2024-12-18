@@ -167,7 +167,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 24 > frame.width {
+            if currentWidth + 24 > (frame.width < 10 ? 300 : frame.width) {
                 let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(24)
                 hStack.addArrangedSubview(image)
                 break

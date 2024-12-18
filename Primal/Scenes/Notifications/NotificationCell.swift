@@ -46,7 +46,7 @@ final class NotificationCell: PostCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForNotification(_ notification: GroupedNotification, isNew: Bool, delegate: NotificationCellDelegate) {
+    func updateForNotification(_ notification: GroupedNotification, isNew: Bool, delegate: NotificationCellDelegate?) {
         if let post = notification.post {
             update(post)
             postContentStack.isHidden = false
