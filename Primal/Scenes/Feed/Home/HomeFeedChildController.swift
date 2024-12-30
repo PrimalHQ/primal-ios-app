@@ -187,7 +187,6 @@ private extension HomeFeedChildController {
         Publishers.CombineLatest3($cachedPosts, $isScrolling.removeDuplicates(), $didReachEnd.removeDuplicates())
             .filter({ !$0.isEmpty && (!$1 || $2) })
             .sink { [weak self] posts, isS, didR in
-                print("FEED IS \(isS) : \(didR)")
                 self?.cachedPosts = []
                 self?.posts = posts
             }

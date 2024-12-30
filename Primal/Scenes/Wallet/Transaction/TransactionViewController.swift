@@ -61,7 +61,9 @@ final class TransactionViewController: NoteViewController {
     }
     
     var firstTimeAnimating = true
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         guard indexPath.section == 1 else { return }
         
         guard firstTimeAnimating else { return }

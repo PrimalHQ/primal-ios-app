@@ -65,7 +65,6 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
                 if let cell = cell as? RegularFeedElementCell {
                     cell.update(content)
                     cell.delegate = delegate
-                    cell.contentView.backgroundColor = .black
                 }
             }
             
@@ -109,7 +108,7 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
             if let invoice = content.invoice { parts.append(.noteElement(content: content, element: .invoice)) }
             if let article = content.article { parts.append(.noteElement(content: content, element: .article)) }
             
-            if content.embededPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
+            if content.embeddedPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
             
             if !content.mediaResources.isEmpty { parts.append(.noteElement(content: content, element: .imageGallery)) }
             

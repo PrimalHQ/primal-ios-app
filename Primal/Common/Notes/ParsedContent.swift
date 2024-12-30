@@ -93,7 +93,7 @@ final class ParsedContent: Hashable {
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
     
-    var embededPost: ParsedContent?
+    var embeddedPost: ParsedContent?
     var embeddedZap: ParsedFeedZap?
     var reposted: ParsedRepost?
     
@@ -349,7 +349,9 @@ extension ParsedContent {
         new.attributedText = attributedText
         new.attributedTextShort = attributedTextShort
         
-        new.embededPost = embededPost
+        new.zaps = zaps
+        
+        new.embeddedPost = embeddedPost
         new.reposted = reposted
         
         new.mentionedUsers = mentionedUsers

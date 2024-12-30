@@ -139,7 +139,7 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
             if let invoice = content.invoice { parts.append(.note(content: content, element: .invoice)) }
             if let article = content.article { parts.append(.note(content: content, element: .article)) }
             
-            if content.embededPost != nil { parts.append(.note(content: content, element: .postPreview) )}
+            if content.embeddedPost != nil { parts.append(.note(content: content, element: .postPreview) )}
             
             if !content.mediaResources.isEmpty { parts.append(.note(content: content, element: .imageGallery)) }
             

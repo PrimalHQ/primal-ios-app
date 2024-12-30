@@ -189,7 +189,7 @@ final class NotificationFeedViewController: NoteViewController {
         .store(in: &cancellables)
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row > posts.count - 15 {
             loadMore()
         }

@@ -314,7 +314,7 @@ class NoteProcessor: MetadataCoding {
         }
         
         if referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
-            p.embededPost = mention
+            p.embeddedPost = mention
             itemsToRemove.append(mentionText)
         }
         
@@ -333,7 +333,7 @@ class NoteProcessor: MetadataCoding {
                     }
                     
                     if stringFound {
-                        p.embededPost = mention
+                        p.embeddedPost = mention
                         break
                     }
                 }
@@ -341,7 +341,7 @@ class NoteProcessor: MetadataCoding {
                 if let noteRef = bech32_note_id(mention.post.id), text.contains(noteRef) {
                     let searchString = "nostr:\(noteRef)"
                     itemsToRemove.append(searchString)
-                    p.embededPost = mention
+                    p.embeddedPost = mention
                     break
                 }
             }

@@ -15,27 +15,48 @@ protocol ImageCollectionViewDelegate: AnyObject {
     func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource)
 }
 
+class FullScreenFlowLayout: UICollectionViewFlowLayout {
+    override func prepare() {
+        super.prepare()
+        
+        scrollDirection = .horizontal
+        
+        guard let collectionView = collectionView else { return }
+        
+        // Set item size to match the collection view's bounds
+        itemSize = collectionView.bounds.size
+//        minimumLineSpacing = 0
+//        minimumInteritemSpacing = 0
+    }
+}
+
+class SizeReloadingCollectionView: UICollectionView {
+    var size: CGSize = .zero
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if frame.size != size {
+            size = frame.size
+            collectionViewLayout.invalidateLayout()
+        }
+    }
+}
+
 final class ImageGalleryView: UIView {
     weak var imageDelegate: ImageCollectionViewDelegate?
     
-    let layout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        return layout
-    }()
-    
-    lazy var collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    lazy var collection = SizeReloadingCollectionView(frame: .zero, collectionViewLayout: FullScreenFlowLayout())
     
     let progress = PrimalProgressView(bottomPadding: 0)
 
     var noDownsampling = false
     var resources: [MediaMetadata.Resource] {
         didSet {
-            collection.reloadData()
-            
             progress.isHidden = resources.count < 2
             progress.currentPage = 0
             progress.numberOfPages = resources.count
+            
+            collection.reloadData()
         }
     }
     
@@ -62,6 +83,7 @@ final class ImageGalleryView: UIView {
         stack.pinToSuperview()
         progress.primaryColor = .foreground
         progress.secondaryColor = .foreground.withAlphaComponent(0.4)
+        progress.isHidden = true
     }
     
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
@@ -80,10 +102,6 @@ final class ImageGalleryView: UIView {
 }
 
 extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        collectionView.frame.size
-    }
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         imageDelegate?.didTapMediaInCollection(self, resource: resources[indexPath.item])
     }

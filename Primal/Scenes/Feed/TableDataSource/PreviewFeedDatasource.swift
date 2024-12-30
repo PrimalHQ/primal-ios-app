@@ -109,7 +109,7 @@ class PreviewFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Previ
             if let invoice = content.invoice { parts.append(.noteElement(content: content, element: .invoice)) }
             if let article = content.article { parts.append(.noteElement(content: content, element: .article)) }
             
-            if content.embededPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
+            if content.embeddedPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
             
             if !content.mediaResources.isEmpty { parts.append(.noteElement(content: content, element: .imageGallery)) }
             

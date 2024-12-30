@@ -63,7 +63,9 @@ class HighlightCommentsController: NoteViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { /* NO ACTION */ }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         while indexPath.row >= cellHeight.count {
             cellHeight.append(40)
         }

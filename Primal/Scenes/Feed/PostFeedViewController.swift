@@ -19,7 +19,9 @@ class PostFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         guard indexPath.row > dataSource.cellCount - 30, dataSource.cellCount > 2 else { return }
         feed.requestNewPage()
     }

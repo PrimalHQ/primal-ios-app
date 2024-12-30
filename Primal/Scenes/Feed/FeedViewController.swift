@@ -61,6 +61,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
+    var preloadedPosts: Set<String> = []
     var cancellables: Set<AnyCancellable> = []
     var textSearch: String?
     
@@ -140,8 +141,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
+    var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        playVideoOnScroll()
+        if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
+            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        } else {
+            playVideoOnScroll()
+        }
+        cachedContentOffset = scrollView.contentOffset
         
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
@@ -215,6 +222,43 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let post = postForIndexPath(indexPath) else { return }
         open(post: post)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard
+            let post = postForIndexPath(indexPath),
+            let index = posts.firstIndex(where: { $0.post.id == post.post.id })
+        else { return }
+        
+        let postsToPreload = posts[index...].prefix(10).filter({ !preloadedPosts.contains($0.post.id) })
+        
+        for postToPreload in postsToPreload {
+            preloadPost(postToPreload)
+            if let embeddedPost = postToPreload.embeddedPost {
+                preloadPost(embeddedPost)
+                if let embEmbeddedPost = embeddedPost.embeddedPost {
+                    preloadPost(embEmbeddedPost)
+                }
+            }
+        }
+    }
+    
+    func preloadPost(_ post: ParsedContent) {
+        preloadedPosts.insert(post.post.id)
+                
+        if let url = post.mediaResources.first?.url(for: .medium) {
+            if url.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            } else if let thumbnailURL = post.videoThumbnails[url.absoluteString] ?? post.videoThumbnails.first?.value, let tURL = URL(string: thumbnailURL) {
+                KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
+            }
+        }
+        if let url = post.linkPreview?.imagesData.first?.url(for: .small), url.isImageURL {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
+        if let url = post.user.profileImage.url(for: .small) {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
     }
     
     func updateTheme() {
@@ -340,7 +384,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 thread.textInputView.becomeFirstResponder()
             }
         case .embeddedPost:
-            open(post: post.embededPost ?? post)
+            open(post: post.embeddedPost ?? post)
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
             showViewController(ProfileViewController(profile: profile))
@@ -606,7 +650,7 @@ extension NoteViewController: PostCellDelegate {
     }
     
     func postCellDidTapEmbeddedImages(_ cell: FeedElementPostPreviewCell, resource: MediaMetadata.Resource) {
-        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embededPost else { return }
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embeddedPost else { return }
         
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)

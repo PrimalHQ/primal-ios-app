@@ -194,7 +194,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
                 if let invoice = content.invoice { parts.append((content: content, element: .invoice)) }
                 if let article = content.article { parts.append((content: content, element: .article)) }
                 
-                if content.embededPost != nil { parts.append((content: content, element: .postPreview) )}
+                if content.embeddedPost != nil { parts.append((content: content, element: .postPreview) )}
                 
                 if !content.mediaResources.isEmpty { parts.append((content: content, element: .imageGallery)) }
                 

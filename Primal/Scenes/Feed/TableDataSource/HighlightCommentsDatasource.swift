@@ -94,7 +94,7 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
             if let invoice = content.invoice { parts.append(.init(content: content, element: .invoice)) }
             if let article = content.article { parts.append(.init(content: content, element: .article)) }
             
-            if content.embededPost != nil { parts.append(.init(content: content, element: .postPreview) )}
+            if content.embeddedPost != nil { parts.append(.init(content: content, element: .postPreview) )}
             
             if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery)) }
             

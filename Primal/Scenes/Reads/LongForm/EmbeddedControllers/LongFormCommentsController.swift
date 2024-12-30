@@ -55,8 +55,10 @@ class LongFormCommentsController: NoteViewController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         guard indexPath.section == 1 else { return }
             
         DispatchQueue.main.async {

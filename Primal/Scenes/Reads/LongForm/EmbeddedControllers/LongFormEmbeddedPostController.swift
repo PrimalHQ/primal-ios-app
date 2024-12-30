@@ -115,7 +115,9 @@ class ArticleEmbeddedPostController: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
+        
         while cellHeight.count < dataSource.cellCount {
             cellHeight.append(50)
         }

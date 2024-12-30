@@ -173,7 +173,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
             if let invoice = content.invoice { parts.append(.init(content: content, element: .invoice, threadPosition: position)) }
             if let article = content.article { parts.append(.init(content: content, element: .article, threadPosition: position)) }
             
-            if content.embededPost != nil { parts.append(.init(content: content, element: .postPreview, threadPosition: position) )}
+            if content.embeddedPost != nil { parts.append(.init(content: content, element: .postPreview, threadPosition: position) )}
             
             if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery, threadPosition: position)) }
             
