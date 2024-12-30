@@ -21,7 +21,7 @@ class ThreadElementPostPreviewCell: ThreadElementBaseCell, RegularFeedElementCel
         postPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
         
         let previewTap = BindableTapGestureRecognizer { [unowned self] in
             delegate?.postCellDidTap(self, .embeddedPost)

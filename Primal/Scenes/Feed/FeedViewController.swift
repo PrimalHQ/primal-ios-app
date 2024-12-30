@@ -47,7 +47,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     lazy var dataSource: NoteFeedDatasource = RegularFeedDatasource(tableView: table, delegate: self)
     
-    var postSection: Int { 0 }
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         dataSource.postForIndexPath(indexPath)
     }
@@ -403,11 +402,11 @@ private extension NoteViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
+        table.contentInset = .init(top: 100, left: 0, bottom: 150, right: 0)
         
         DispatchQueue.main.async {
             self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
-            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 90, right: 0)
+            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
             self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
         }
         

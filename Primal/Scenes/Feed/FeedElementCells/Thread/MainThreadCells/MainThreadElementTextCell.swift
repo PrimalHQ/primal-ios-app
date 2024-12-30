@@ -57,7 +57,7 @@ private extension MainThreadElementTextCell {
             .pinToSuperview(edges: .top, padding: 3)
             .pinToSuperview(edges: .bottom, padding: 0)
     
-        selectionTextView.backgroundColor = .background2
+        selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]
         selectionTextView.isEditable = false
         selectionTextView.isScrollEnabled = false

@@ -7,12 +7,12 @@
 
 import UIKit
 
-class NoteFeedViewController: PostFeedViewController {
-    override var postSection: Int { 1 }
-    
+class NoteFeedViewController: PostFeedViewController {    
     override var posts: [ParsedContent] {
         didSet {
-            refreshControl.endRefreshing()
+            if refreshControl.isRefreshing {
+                refreshControl.endRefreshing()
+            }
         }
     }
     

@@ -78,7 +78,7 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
         return content
     }
     
@@ -102,7 +102,7 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cells = posts.flatMap({ content in
+        var cells = posts.flatMap({ content in
             var parts: [SearchFeedItem] = [.noteElement(content: content, element: .userInfo)]
             
             if !content.text.isEmpty { parts.append(.noteElement(content: content, element: .text)) }
@@ -136,6 +136,8 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
         } else if showPremiumCard {
             cells.append(.premium)
         }
+        
+        self.cells = cells
     }
     
     func updateCells() {

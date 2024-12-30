@@ -50,7 +50,6 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
-    override var postSection: Int { 1 }
     var articleSection: Int { 1 }
     var articles: [Article] = [] {
         didSet {

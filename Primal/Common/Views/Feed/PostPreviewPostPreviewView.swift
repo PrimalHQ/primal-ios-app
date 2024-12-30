@@ -99,8 +99,6 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
         }
         
         mainLabel.attributedText = content.attributedText
-        layoutSubviews()
-        
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
         if let customEvent = content.customEvent {

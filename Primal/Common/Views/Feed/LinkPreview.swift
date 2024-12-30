@@ -60,18 +60,6 @@ private extension LinkPreview {
         
         let host = data.url.host()
         subtitleLabel.text = host
-        
-        if let imageString = data.data.md_image, !imageString.isEmpty {
-            let metadata = data.imagesData.first(where: { $0.url == imageString })
-            imageView.image = nil
-            imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
-                .transition(.fade(0.2))
-            ])
-        } else {
-            imageView.image = UIImage(named: "webPreviewIcon")
-        }
     }
     
     func setup() {
@@ -138,6 +126,22 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
 }
 
 class SmallLinkPreview: LinkPreview {
+    override var data: LinkMetadata? {
+        didSet {
+            guard let data = data, let imageString = data.data.md_image, !imageString.isEmpty else {
+                imageView.image = UIImage(named: "webPreviewIcon")
+                return
+            }
+            let metadata = data.imagesData.first(where: { $0.url == imageString })
+            imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
+                .scaleFactor(UIScreen.main.scale),
+                .processor(DownsamplingImageProcessor(size: .init(width: 100, height: 90))),
+                .cacheOriginalImage,
+                .transition(.fade(0.2))
+            ])
+        }
+    }
+    
     required init() {
         super.init() 
         
@@ -172,6 +176,15 @@ class LargeLinkPreview: LinkPreview {
             iconView.image = isRumble ? UIImage(named: "rumbleIcon") : nil
             iconView.image = isYoutube ? UIImage(named: "youtubeIcon") : nil
             iconView.isHidden = !isRumble && !isYoutube
+            
+            guard let data = data, let imageString = data.data.md_image, !imageString.isEmpty else {
+                imageView.image = UIImage(named: "webPreviewIcon")
+                return
+            }
+            let metadata = data.imagesData.first(where: { $0.url == imageString })
+            imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
+                .transition(.fade(0.2))
+            ])
         }
     }
     

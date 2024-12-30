@@ -106,10 +106,7 @@ final class PostPreviewView: UIView, Themeable {
         }
         
         mainLabel.attributedText = content.attributedText
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            self.seeMoreLabel.isHidden = !self.mainLabel.isTruncated()
-        }
+        seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
         if let customEvent = content.customEvent {
             infoView.isHidden = false
@@ -169,8 +166,6 @@ private extension PostPreviewView {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         secondaryIdentifierLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        nameLabel.adjustsFontSizeToFitWidth = true
-        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         verifiedBadge.constrainToSize(FontSizeSelection.current.contentFontSize)
         

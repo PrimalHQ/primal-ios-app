@@ -11,7 +11,7 @@ protocol NotificationCellDelegate: PostCellDelegate {
     func avatarListTappedInCell(_ cell: NotificationCell, index: Int)
 }
 
-final class NotificationCell: PostCell {
+final class NotificationCell: PostCell, ElementReactionsCell {
     let iconView = UIImageView()
     let iconLabel = UILabel()
     let avatarStack = AvatarView()
@@ -97,8 +97,6 @@ final class NotificationCell: PostCell {
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
         mainLabel.numberOfLines = parsedContent.user.isCurrentUser ? 6 : 12
-        
-        layoutSubviews()
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
     }

@@ -62,7 +62,7 @@ final class TransactionViewController: NoteViewController {
     
     var firstTimeAnimating = true
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard indexPath.section == postSection else { return }
+        guard indexPath.section == 1 else { return }
         
         guard firstTimeAnimating else { return }
         firstTimeAnimating = false

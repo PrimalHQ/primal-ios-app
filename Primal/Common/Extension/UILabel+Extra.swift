@@ -20,10 +20,12 @@ extension UILabel {
     }
     
     func countLabelLines() -> Int {
-        let myText = (text ?? "") as NSString
-        let attributes: [NSAttributedString.Key : Any] = [.font : font!]
+        let font = font ?? .appFont(withSize: 16, weight: .regular)
         
-        let width = bounds.width < 1 ? 315 : bounds.width
+        let myText = (text ?? "") as NSString
+        let attributes: [NSAttributedString.Key : Any] = [.font : font]
+        
+        let width = frame.width < 10 ? 335 : frame.width
         
         let labelSize = myText.boundingRect(
             with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),

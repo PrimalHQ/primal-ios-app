@@ -12,10 +12,6 @@ enum ThreadPosition: String {
     case parent, main, child
 }
 
-enum HelperThreadFeedCell: Hashable {
-    case article(Article)
-}
-
 struct ThreadFeedItem: Hashable {
     let content: ParsedContent
     let element: NoteFeedElement
@@ -23,11 +19,12 @@ struct ThreadFeedItem: Hashable {
 }
 
 enum ThreadFeedCellType: Hashable {
-    case other(HelperThreadFeedCell)
+    case article(Article)
     case threadElement(ThreadFeedItem)
 }
 
-class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadFeedCellType>, NoteFeedDatasource {
+class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ThreadFeedCellType>, NoteFeedDatasource {
+    var articles: [Article] = [] { didSet { updateCells() } }
     var cells: [ThreadFeedCellType] = []
     var cellCount: Int { cells.count }
     let threadID: String
@@ -41,9 +38,12 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
             let cell: UITableViewCell
             
             switch item {
-            case .other(let helper):
-                cell = tableView.dequeueReusableCell(withIdentifier: "", for: indexPath)
-                
+            case .article(let article):
+                cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
+                if let cell = cell as? ArticleCell {
+                    cell.setUp(article)
+                    cell.threeDotsButton.isHidden = true
+                }
             case .threadElement(let item):
                 switch item.element {
                 case .userInfo:
@@ -154,6 +154,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
         tableView.register(MainThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.child.rawValue)
         
+        tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
     }
     
     func setPosts(_ posts: [ParsedContent]) {
@@ -165,7 +166,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
                 if index == mainPosition { return .main }
                 return .child
             }()
-                        
+            
             var parts: [ThreadFeedItem] = [.init(content: content, element: .userInfo, threadPosition: position)]
             
             if !content.text.isEmpty { parts.append(.init(content: content, element: .text, threadPosition: position)) }
@@ -194,14 +195,27 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
             return parts.map { ThreadFeedCellType.threadElement($0) }
         })
         
-        var snapshot = NSDiffableDataSourceSnapshot<SingleSection, ThreadFeedCellType>()
-        snapshot.appendSections([.main])
+        updateCells()
+    }
+    
+    func updateCells() {
+        var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ThreadFeedCellType>()
+        
+        if !articles.isEmpty {
+            snapshot.appendSections([.info])
+            snapshot.appendItems(articles.map { .article($0) })
+        }
+        
+        snapshot.appendSections([.feed])
         snapshot.appendItems(cells)
         apply(snapshot, animatingDifferences: false)
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .threadElement(let element) = data else { return nil }
+        if articles.isEmpty, indexPath.section != 0 { return nil }
+        if !articles.isEmpty, indexPath.section != 1 { return nil }
+        
+        guard let data = cells[safe: indexPath.row], case .threadElement(let element) = data else { return nil }
         
         return element.content
     }
@@ -211,7 +225,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<SingleSection, ThreadF
             switch cell {
             case .threadElement(let element):
                 return element.content.post.id == threadID
-            case .other:
+            default:
                 return false
             }
         } ?? 0

@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 5.9.24..
 //
 
+import Combine
 import UIKit
 
 class HomeFeedChildController: PostFeedViewController {
@@ -22,7 +23,9 @@ class HomeFeedChildController: PostFeedViewController {
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
     
+    @Published var cachedPosts: [ParsedContent] = []
     @Published var isScrolling = false
+    @Published var didReachEnd = false
 
     override init(feed: FeedManager) {
         super.init(feed: feed)
@@ -50,6 +53,7 @@ class HomeFeedChildController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
+            isScrolling = false
             feed.addAllFuturePosts()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
@@ -96,7 +100,12 @@ class HomeFeedChildController: PostFeedViewController {
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        guard indexPath.section == postSection else { return }
+        let count = dataSource.cellCount
+        if indexPath.row > count - 20 {
+            didReachEnd = true
+        } else {
+            didReachEnd = false
+        }
         
         feed.didShowPost(indexPath.row)
     }
@@ -104,11 +113,11 @@ class HomeFeedChildController: PostFeedViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         
+        isScrolling = true
+        
         if scrollView.contentOffset.y < 100 {
             feed.didShowPost(0)
         }
-        
-        isScrolling = true
     }
     
     weak var parentHomeVC: HomeFeedViewController?
@@ -153,33 +162,35 @@ private extension HomeFeedChildController {
         
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in                
+            .sink { [weak self] posts in
                 if posts.isEmpty {
                     if self?.refreshControl.isRefreshing == false {
                         self?.posts = []
                     }
                 } else {
-                    self?.posts = posts
-                    self?.refreshControl.endRefreshing()
+                    self?.cachedPosts = posts
+                    if self?.refreshControl.isRefreshing == true {
+                        self?.refreshControl.endRefreshing()
+                    }
                 }
-                print("FEED IS Received")
             }
             .store(in: &cancellables)
         
-        // MARK: - Scrolling tracking
-        $isScrolling.debounce(for: 2, scheduler: RunLoop.main).sink { [weak self] isScrolling in
-            if isScrolling {
-                self?.isScrolling = self?.table.isDragging ?? false
+        $isScrolling.debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink { [weak self] isScrolling in
+                if isScrolling {
+                    self?.isScrolling = false
+                }
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
         
-        $isScrolling.removeDuplicates().sink { [weak self] isScrolling in
-            print("FEED IS SCROLLING \(isScrolling)")
-            (self?.dataSource as? RegularFeedDatasource)?.isScrolling = isScrolling
-        }
-        .store(in: &cancellables)
-        
-        
+        Publishers.CombineLatest3($cachedPosts, $isScrolling.removeDuplicates(), $didReachEnd.removeDuplicates())
+            .filter({ !$0.isEmpty && (!$1 || $2) })
+            .sink { [weak self] posts, isS, didR in
+                print("FEED IS \(isS) : \(didR)")
+                self?.cachedPosts = []
+                self?.posts = posts
+            }
+            .store(in: &cancellables)
     }
 }

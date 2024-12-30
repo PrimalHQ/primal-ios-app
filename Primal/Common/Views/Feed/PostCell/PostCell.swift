@@ -36,7 +36,7 @@ class PostCell: UITableViewCell {
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let articleView = ArticleFeedView()
-    let linkPresentation = LinkPreview()
+    let linkPresentation = SmallLinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()

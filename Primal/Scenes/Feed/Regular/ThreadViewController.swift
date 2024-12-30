@@ -44,7 +44,9 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     var articles: [Article] = [] {
         didSet {
             var offset = table.contentOffset
-            table.reloadData()
+            
+            (dataSource as? ThreadFeedDatasource)?.articles = articles
+            
             if oldValue.count == 0 && articles.count == 1 {
                 guard let height = self.table.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height else { return }
                 offset.y += height
@@ -71,6 +73,9 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     convenience init(post: ParsedContent) {
+        let post = post.copy()
+        post.buildContentString(style: .enlarged)
+        
         self.init(threadId: post.post.id)
         mainObject = post.post
         inputManager.replyingTo = mainObject
@@ -144,7 +149,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     var articleSection: Int { 0 }
-    override var postSection: Int { 0 }
     
     @discardableResult
     override func open(post: ParsedContent) -> NoteViewController {
@@ -168,11 +172,13 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         return super.open(post: post)
     }
     
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == postSection {
-            super.tableView(tableView, didSelectRowAt: indexPath)
-            return
-        }
+        super.tableView(tableView, didSelectRowAt: indexPath)
+        
         if indexPath.section == 0, let article = articles[safe: indexPath.row] {
             if let oldVC = navigationController?.viewControllers.first(where: { ($0 as? ArticleViewController)?.content.event.id == article.event.id }) {
                 navigationController?.popToViewController(oldVC, animated: true)
@@ -191,10 +197,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
             guard let self else { return }
             inputManager.askToSaveThenDismiss(self)
         }), for: .touchUpInside)
-        
-        table.register(PostThreadCell.self, forCellReuseIdentifier: postCellID)
-        table.register(DefaultMainThreadCell.self, forCellReuseIdentifier: postCellID + "main")
-        table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         
         textInputView.tintColor = .accent
         textInputView.textColor = .foreground
@@ -296,6 +298,7 @@ private extension ThreadViewController {
                 isLoading = false
             }
             
+            mainPost.buildContentString(style: .enlarged)
             self.mainObject = mainPost.post
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             
@@ -461,7 +464,6 @@ private extension ThreadViewController {
         table.keyboardDismissMode = .onDrag
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
-        table.register(ArticleCell.self, forCellReuseIdentifier: "article")
         
         view.insertSubview(keyboardSizer, at: 0)
         keyboardSizer.pinToSuperview(edges: [.bottom, .horizontal])

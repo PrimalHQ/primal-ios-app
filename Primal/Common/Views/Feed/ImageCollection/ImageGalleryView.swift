@@ -154,7 +154,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
                     cell.thumbnailImage.kf.setImage(with: url)
                 }
             }
-        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium) {
+        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
             CachingManager.instance.fetchAnimatedImage(url) { result in
                 switch result {
                 case .success(let image):

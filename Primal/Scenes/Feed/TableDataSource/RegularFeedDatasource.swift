@@ -57,9 +57,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
     var cells: [NoteFeedItem] = [.loading]
     var cellCount: Int { cells.count }
     
-    @Published var isScrolling = false
-    @Published var cachedNotes: [ParsedContent] = []
-    
     var cancellables: Set<AnyCancellable> = []
     
     init(tableView: UITableView, delegate: FeedElementCellDelegate) {
@@ -109,15 +106,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         registerCells(tableView)
         
         defaultRowAnimation = .none
-                
-        Publishers.CombineLatest($cachedNotes, $isScrolling)
-            .filter { !$0.0.isEmpty && !$0.1 }
-            .sink { [weak self] notes, isScrolling in
-                print("FEED IS UPDATING: \(notes.count) isScrolling: \(isScrolling)")
-                self?.update(posts: notes)
-                self?.cachedNotes = []
-            }
-            .store(in: &cancellables)
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
@@ -144,10 +132,6 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cachedNotes = posts
-    }
-    
-    func update(posts: [ParsedContent]) {
         cells = posts.flatMap({ content in
             var parts: [NoteFeedItem] = [.note(content: content, element: .userInfo)]
             

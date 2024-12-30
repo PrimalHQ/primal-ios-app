@@ -20,9 +20,8 @@ class PostFeedViewController: NoteViewController {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row > dataSource.cellCount - 30 {
-            feed.requestNewPage()
-        }
+        guard indexPath.row > dataSource.cellCount - 30, dataSource.cellCount > 2 else { return }
+        feed.requestNewPage()
     }
     
     override func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {

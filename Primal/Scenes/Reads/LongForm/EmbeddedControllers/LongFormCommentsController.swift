@@ -56,13 +56,6 @@ class LongFormCommentsController: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
-    override var postSection: Int { 1 }
-    
-    override func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        if indexPath.section == postSection { return super.postForIndexPath(indexPath) }
-        return parsedContent
-    }
-    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.section == 1 else { return }
             

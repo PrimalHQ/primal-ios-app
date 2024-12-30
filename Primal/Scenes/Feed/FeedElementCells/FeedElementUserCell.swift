@@ -12,6 +12,9 @@ class FeedElementBaseCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
+        
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -32,7 +35,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
-    let checkbox = VerifiedView()
+    let checkbox = VerifiedView().constrainToAspect(1)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
@@ -55,7 +58,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
         let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        botC.priority = .defaultHigh
+        botC.priority = .defaultLow
         botC.isActive = true
         
         mainStack.spacing = 4

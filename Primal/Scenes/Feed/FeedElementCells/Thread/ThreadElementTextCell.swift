@@ -33,8 +33,6 @@ class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
         mainLabel.attributedText = parsedContent.attributedTextShort
         mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreview == nil && parsedContent.embededPost == nil) ? 12 : 6
         
-        layoutSubviews()
-        
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
         
         updateTheme()
