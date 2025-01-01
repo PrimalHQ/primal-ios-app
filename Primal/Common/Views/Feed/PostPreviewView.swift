@@ -58,7 +58,7 @@ final class PostPreviewView: UIView, Themeable {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.height)) / CGFloat(max(1, first.width)))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
@@ -105,7 +105,7 @@ final class PostPreviewView: UIView, Themeable {
             zapPreview.isHidden = true
         }
         
-        mainLabel.attributedText = content.attributedText
+        mainLabel.attributedText = content.attributedTextShort
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
         if let customEvent = content.customEvent {

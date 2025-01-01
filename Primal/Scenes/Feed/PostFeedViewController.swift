@@ -22,7 +22,7 @@ class PostFeedViewController: NoteViewController {
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        guard indexPath.row > dataSource.cellCount - 30, dataSource.cellCount > 2 else { return }
+        guard indexPath.row > dataSource.cellCount - 50, dataSource.cellCount > 2 else { return }
         feed.requestNewPage()
     }
     

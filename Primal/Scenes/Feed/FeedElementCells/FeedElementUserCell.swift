@@ -12,9 +12,6 @@ class FeedElementBaseCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
-        
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -24,7 +21,7 @@ class FeedElementBaseCell: UITableViewCell {
     }
     
     func updateTheme() {
-        
+        contentView.backgroundColor = .background2
     }
 }
 

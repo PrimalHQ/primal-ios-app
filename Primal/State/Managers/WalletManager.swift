@@ -169,6 +169,7 @@ final class WalletManager {
         isLoadingTransactions = true
         
         PrimalWalletRequest(type: .transactions()).publisher()
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
                 self.transactions = val.transactions
@@ -181,6 +182,7 @@ final class WalletManager {
         isLoadingTransactions = true
         
         PrimalWalletRequest(type: .transactions()).publisher()
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] val in
                 guard let self else { return }
                 var transactions = self.transactions
@@ -205,6 +207,7 @@ final class WalletManager {
     
     func refreshHasWallet() {
         PrimalWalletRequest(type: .isUser).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] val in
                 self?.isLoadingWallet = false
                 self?.userHasWallet = val.kycLevel == KYCLevel.email || val.kycLevel == KYCLevel.idDocument
@@ -234,6 +237,7 @@ final class WalletManager {
     
     func refreshBalance() {
         PrimalWalletRequest(type: .balance).publisher()
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] val in
                 guard let balance = val.balance else { return }
                 
@@ -249,6 +253,7 @@ final class WalletManager {
     
     func loadNewTransactions() {
         PrimalWalletRequest(type: .transactions(since: transactions.first?.created_at)).publisher()
+           .receive(on: DispatchQueue.main)
            .sink { [weak self] res in
                let trans = res.transactions.filter { new in self?.transactions.contains(where: { old in old.id == new.id }) != true }
                if !trans.isEmpty {
@@ -260,6 +265,7 @@ final class WalletManager {
     
     func loadNewExchangeRate() {
         PrimalWalletRequest(type: .exchangeRate).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
                 guard let price = res.bitcoinPrice else { return }
                 self?.btcToUsd = price
@@ -273,6 +279,7 @@ final class WalletManager {
         isLoadingTransactions = true
      
         PrimalWalletRequest(type: .transactions(until: transactions.last?.created_at)).publisher()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
                 if !res.transactions.isEmpty {
                     self?.transactions += res.transactions
@@ -285,6 +292,7 @@ final class WalletManager {
     func requestAsync(_ request: PrimalWalletRequest.RequestType) async throws {
         return try await withCheckedThrowingContinuation({ continuation in
             PrimalWalletRequest(type: request).publisher()
+                .receive(on: DispatchQueue.main)
                 .sink { res in
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))

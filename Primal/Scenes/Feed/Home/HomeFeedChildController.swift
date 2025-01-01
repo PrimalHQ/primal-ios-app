@@ -100,18 +100,17 @@ class HomeFeedChildController: PostFeedViewController {
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        let count = dataSource.cellCount
-        if indexPath.row > count - 20 {
-            didReachEnd = true
-        } else {
-            didReachEnd = false
-        }
-        
         feed.didShowPost(indexPath.row)
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
+        
+        if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
+            didReachEnd = true
+        } else {
+            didReachEnd = false
+        }        
         
         isScrolling = true
         

@@ -221,7 +221,7 @@ private extension ImageFullScreenViewController {
         doubleTap.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTap)
         
-        let tap = BindableTapGestureRecognizer(action: { [unowned self] in self.showChrome = !self.showChrome })
+        let tap = BindableTapGestureRecognizer(action: { [weak self] in self?.showChrome = !(self?.showChrome ?? false) })
         tap.require(toFail: doubleTap)
         view.addGestureRecognizer(tap)
         

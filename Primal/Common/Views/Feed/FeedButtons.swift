@@ -35,7 +35,10 @@ class FeedButton: MyButton {
         let hStack = UIStackView(arrangedSubviews: [iconView, SpacerView(width: 4), titleLabel])
         addSubview(hStack)
         
-        hStack.pinToSuperview(padding: 8)
+        hStack.pinToSuperview(edges: [.leading, .vertical], padding: 8)
+        let rC = hStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
+        rC.priority = .defaultLow
+        rC.isActive = true
         hStack.alignment = .center
         
         iconView.setContentHuggingPriority(.required, for: .horizontal)

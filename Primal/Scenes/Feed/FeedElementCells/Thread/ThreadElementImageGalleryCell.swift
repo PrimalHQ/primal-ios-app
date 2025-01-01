@@ -44,7 +44,7 @@ class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCe
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(first.height) / CGFloat(first.width), constant: constant)
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(max(1, first.height)) / CGFloat(max(1, first.width)), constant: constant)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect

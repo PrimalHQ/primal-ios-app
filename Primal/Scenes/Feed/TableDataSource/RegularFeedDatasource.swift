@@ -105,7 +105,7 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         
         registerCells(tableView)
         
-        defaultRowAnimation = .none
+        defaultRowAnimation = .fade
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

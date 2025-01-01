@@ -43,12 +43,6 @@ class ParentThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
-class MainThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
 class ChildThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)

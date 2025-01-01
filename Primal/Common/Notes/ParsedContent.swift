@@ -165,8 +165,8 @@ enum ParsedContentTextStyle {
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
         attributedText = contentStringForText(text: text, style: style)
-        if attributedText.length > 1200 {
-            attributedTextShort = attributedText.attributedSubstring(from: .init(location: 0, length: 1000))
+        if attributedText.length > 550 {
+            attributedTextShort = attributedText.attributedSubstring(from: .init(location: 0, length: 500))
         } else {
             attributedTextShort = attributedText
         }
