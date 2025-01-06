@@ -102,6 +102,16 @@ final class VideoCell: UICollectionViewCell {
         
         playerView.playerLayer.player = nil
     }
+    
+    func setup(player: VideoPlayer, duration: Int, thumbnail: String?) {
+        self.player = player
+        thumbnailImage.image = nil
+        self.duration = duration
+        
+        if let thumbnailString = thumbnail {
+            thumbnailImage.kf.setImage(with: URL(string: thumbnailString))
+        }
+    }
 }
 
 extension VideoCell: UIContextMenuInteractionDelegate {

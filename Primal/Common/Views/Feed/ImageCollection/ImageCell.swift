@@ -7,9 +7,15 @@
 
 import UIKit
 import FLAnimatedImage
+import Kingfisher
 
 protocol ImageCellDelegate: AnyObject {
     func imagePreviewTappedFromCell(_ cell: ImageCell)
+}
+
+enum DownsamplingOption {
+    case none
+    case size(CGSize)
 }
 
 final class ImageCell: UICollectionViewCell, ImageMenuHandler, UIContextMenuInteractionDelegate {
@@ -48,6 +54,59 @@ final class ImageCell: UICollectionViewCell, ImageMenuHandler, UIContextMenuInte
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         animator.addCompletion {
             self.delegate?.imagePreviewTappedFromCell(self)
+        }
+    }
+    
+    func setup(url: URL?, downsampling: DownsamplingOption, originalUrl: String, userPubkey: String, delegate: ImageCellDelegate?) {
+        switch downsampling {
+        case .none:
+            imageView.kf.setImage(with: url, options: [.transition(.fade(0.2))]) { [weak self] result in
+                guard case .failure = result else { return }
+                self?.attemptOriginalLoad(originalURL: originalUrl, userPubkey: userPubkey)
+            }
+        case .size(let cGSize):
+            imageView.kf.setImage(with: url, options: [
+                .processor(DownsamplingImageProcessor(size: cGSize)),
+                .transition(.fade(0.2)),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ]) { [weak self] result in
+                guard case .failure = result else { return }
+                self?.attemptOriginalLoad(originalURL: originalUrl, userPubkey: userPubkey)
+            }
+        }
+        self.url = originalUrl
+        self.delegate = delegate
+    }
+    
+    func attemptOriginalLoad(originalURL: String, userPubkey: String) {
+        guard url == originalURL else { return }
+        imageView.kf.setImage(with: URL(string: originalURL), options: [.transition(.fade(0.2))]) { [weak self] result in
+            guard case .failure = result else { return }
+            self?.attemptBlossomLoad(currentURL: originalURL, originalURL: originalURL, userPubkey: userPubkey)
+        }
+    }
+    
+    func attemptBlossomLoad(currentURL: String, originalURL: String, userPubkey: String) {
+        guard
+            url == originalURL,
+            let blossomInfo = BlossomServerManager.instance.serversForUser(pubkey: userPubkey),
+            let firstServer = blossomInfo.first,
+            let pathComponent = URL(string: originalURL)?.pathExtension
+        else { return }
+        
+        let serverURL = blossomInfo.first(where: { !currentURL.contains($0) }) ?? firstServer
+        guard var finalURL = URL(string: serverURL) else { return }
+        finalURL.append(path: pathComponent)
+        
+        if finalURL.absoluteString == currentURL {
+            print("REACHED THE END OF BLOSSOM LIST")
+            return
+        }
+        
+        imageView.kf.setImage(with: finalURL, options: [.transition(.fade(0.2))]) { [weak self] result in
+            guard case .failure = result else { return }
+            self?.attemptBlossomLoad(currentURL: finalURL.absoluteString, originalURL: originalURL, userPubkey: userPubkey)
         }
     }
 }

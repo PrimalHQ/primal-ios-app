@@ -10,6 +10,7 @@ import UIKit
 import Ink
 import WebKit
 import SafariServices
+import Down
 
 enum LongFormContentSegment {
     case text(String)
@@ -194,7 +195,14 @@ private extension ArticleViewController {
         hideHighlightMenu()
         let parser = MarkdownParser()
         zip(textParts, webViews).forEach { (text, webView) in
-            webView.updateContent(parser.html(from: updateText(text)))
+            
+            let updatedText = updateText(text)
+            let down = Down(markdownString: updatedText)
+            if let html = try? down.toHTML(.smartUnsafe) {
+                webView.updateContent(html)
+            } else {
+                webView.updateContent(parser.html(from: updatedText))
+            }
         }
     }
     
@@ -407,7 +415,13 @@ private extension ArticleViewController {
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
         
-                webView.updateContent(parser.html(from: updateText(text)))
+                let updatedText = updateText(text)
+                let down = Down(markdownString: updatedText)
+                if let html = try? down.toHTML([.smartUnsafe]) {
+                    webView.updateContent(html)
+                } else {
+                    webView.updateContent(parser.html(from: updatedText))
+                }
             }
         }
         

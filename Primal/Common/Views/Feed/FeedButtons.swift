@@ -51,8 +51,16 @@ class FeedButton: MyButton {
         iconView.image = filled ? filledIcon : normalIcon
         iconView.tintColor = filled ? filledColor : normalColor
         titleLabel.textColor = filled ? filledColor : normalColor
-        titleLabel.text = count.localized()
-        titleLabel.isHidden = count < 1
+        
+        if count.digitCount > 5 {
+            titleLabel.isHidden = false
+            
+            let adjustedCount = count / 1000
+            titleLabel.text = adjustedCount.localized() + "k"
+        } else {
+            titleLabel.text = count.localized()
+            titleLabel.isHidden = count < 1
+        }
     }
     
     func animateTo(_ count: Int, filled: Bool) {

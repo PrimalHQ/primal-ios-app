@@ -56,7 +56,13 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     var followsUser = false { didSet { updateCells() } }
     var followedBy: [ParsedUser]? { didSet { updateCells() } }
     
-    var isLoading = true { didSet { updateCells() } }
+    var isLoading = true { 
+        didSet {
+            if isLoading != oldValue {
+                updateCells()        
+            }
+        }
+    }
     
     var cancellables: Set<AnyCancellable> = []
     

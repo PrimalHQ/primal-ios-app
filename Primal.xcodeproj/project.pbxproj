@@ -247,8 +247,6 @@
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
-		B906AAF52C91EE680089813F /* BlueSocketTestCommonLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B906AAF42C91EE680089813F /* BlueSocketTestCommonLibrary */; };
-		B906AAF72C91EE680089813F /* Socket in Frameworks */ = {isa = PBXBuildFile; productRef = B906AAF62C91EE680089813F /* Socket */; };
 		B906AAF92C9313E20089813F /* UserListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AAF82C9313E20089813F /* UserListController.swift */; };
 		B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AAFA2C949D3A0089813F /* FollowedByView.swift */; };
 		B906AAFD2C94B3160089813F /* MediaTripleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AAFC2C94B3160089813F /* MediaTripleCell.swift */; };
@@ -480,6 +478,7 @@
 		B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */; };
 		B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290542B4C46890069C87F /* SmartContactsManager.swift */; };
 		B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */; };
+		B9B687A32D25A2AD00140927 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B9B687A22D25A2AD00140927 /* Down */; };
 		B9B9E5672CB442180065DD7C /* BaseFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5662CB442180065DD7C /* BaseFeedManager.swift */; };
 		B9B9E5692CB449A20065DD7C /* UserFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5682CB449A20065DD7C /* UserFeedManager.swift */; };
 		B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56A2CB44E710065DD7C /* ExplorePeopleCell.swift */; };
@@ -582,6 +581,7 @@
 		B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F933192B88EBE40064B495 /* CheckNip05Request.swift */; };
 		B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */; };
 		B9F9331F2B8904570064B495 /* CheckNip05Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */; };
+		B9FAC6422D2BEE8400B57EF6 /* BlossomServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -1207,6 +1207,7 @@
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
 		B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumViewController.swift; sourceTree = "<group>"; };
 		B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Manager.swift; sourceTree = "<group>"; };
+		B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlossomServerManager.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -1217,13 +1218,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B906AAF72C91EE680089813F /* Socket in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				B906AB042C99F3E40089813F /* GRDB in Frameworks */,
 				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
+				B9B687A32D25A2AD00140927 /* Down in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
@@ -1238,7 +1239,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B906AAF52C91EE680089813F /* BlueSocketTestCommonLibrary in Frameworks */,
 				933B85722A9E027900C48FF6 /* FLAnimatedImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2122,6 +2122,7 @@
 				B9009B682B1F4577002B0613 /* CachingManager.swift */,
 				B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */,
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
+				B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */,
 			);
 			path = SmallManagers;
 			sourceTree = "<group>";
@@ -2964,8 +2965,8 @@
 				B9F933172B867D860064B495 /* QRCode */,
 				B99E037D2BF3F277006CCECB /* NostrSDK */,
 				B99E039B2C07C059006CCECB /* Ink */,
-				B906AAF62C91EE680089813F /* Socket */,
 				B906AB032C99F3E40089813F /* GRDB */,
+				B9B687A22D25A2AD00140927 /* Down */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -2987,7 +2988,6 @@
 			name = PrimalTests;
 			packageProductDependencies = (
 				933B85712A9E027900C48FF6 /* FLAnimatedImage */,
-				B906AAF42C91EE680089813F /* BlueSocketTestCommonLibrary */,
 			);
 			productName = PrimalTests;
 			productReference = 9393310229A3E370003954C2 /* PrimalTests.xctest */;
@@ -3056,8 +3056,8 @@
 				B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */,
 				B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 				B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */,
-				B906AAF32C91EE680089813F /* XCRemoteSwiftPackageReference "BlueSocket" */,
 				B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -3576,6 +3576,7 @@
 				B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */,
 				B91E56FC2CC13CE400C14809 /* SearchNoteFeedController.swift in Sources */,
 				93F27DAA2A27FB41004ADA55 /* PostingManager.swift in Sources */,
+				B9FAC6422D2BEE8400B57EF6 /* BlossomServerManager.swift in Sources */,
 				B94F2BD42ADC3C060041181B /* WalletReceiveDetailsController.swift in Sources */,
 				B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */,
 				B9DF0CB02C25920C009ADC7B /* ArticleTransition.swift in Sources */,
@@ -3844,7 +3845,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.154;
+				MARKETING_VERSION = 2.0.156;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3890,7 +3891,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.154;
+				MARKETING_VERSION = 2.0.156;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4086,14 +4087,6 @@
 				minimumVersion = 0.1.2;
 			};
 		};
-		B906AAF32C91EE680089813F /* XCRemoteSwiftPackageReference "BlueSocket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Kitura/BlueSocket.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.4;
-			};
-		};
 		B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
@@ -4116,6 +4109,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.6.0;
+			};
+		};
+		B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnxnguyen/Down";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
@@ -4174,16 +4175,6 @@
 			package = 9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */;
 			productName = Nantes;
 		};
-		B906AAF42C91EE680089813F /* BlueSocketTestCommonLibrary */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B906AAF32C91EE680089813F /* XCRemoteSwiftPackageReference "BlueSocket" */;
-			productName = BlueSocketTestCommonLibrary;
-		};
-		B906AAF62C91EE680089813F /* Socket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B906AAF32C91EE680089813F /* XCRemoteSwiftPackageReference "BlueSocket" */;
-			productName = Socket;
-		};
 		B906AB032C99F3E40089813F /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */;
@@ -4198,6 +4189,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */;
 			productName = Ink;
+		};
+		B9B687A22D25A2AD00140927 /* Down */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */;
+			productName = Down;
 		};
 		B9F933172B867D860064B495 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;

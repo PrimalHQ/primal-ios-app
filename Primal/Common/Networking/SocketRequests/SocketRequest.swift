@@ -400,6 +400,10 @@ extension PostRequestResult {
             Task {
                 await PremiumCustomizationManager.instance.addPremiumInfo(dic)
             }
+        case .blossom:
+            Task {
+                await BlossomServerManager.instance.addBlossomInfo(payload)
+            }
         default:
             events.append(payload)
         }

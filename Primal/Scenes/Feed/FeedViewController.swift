@@ -683,7 +683,7 @@ extension NoteViewController: PostCellDelegate {
         }
         
         if VideoPlaybackManager.instance.currentlyPlaying?.url != url {
-            VideoPlaybackManager.instance.currentlyPlaying = .init(url: url)
+            VideoPlaybackManager.instance.currentlyPlaying = VideoPlayer(url: url, originalURL: url, userPubkey: "")
         }
         
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }

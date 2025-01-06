@@ -30,6 +30,8 @@ enum NostrKind: Int {
     case muteList = 10_000
     case bookmarks = 10_003
     
+    case blossom = 10_063
+    
     case categoryList = 30_000
     case longForm = 30_023
     

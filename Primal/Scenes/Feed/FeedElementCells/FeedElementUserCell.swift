@@ -54,7 +54,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
-        let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2)
         botC.priority = .defaultLow
         botC.isActive = true
         

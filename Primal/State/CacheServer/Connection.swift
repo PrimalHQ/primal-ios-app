@@ -7,10 +7,8 @@
 
 import Foundation
 import Combine
-import NWWebSocket
 import Network
 import GenericJSON
-import Socket
 
 class ContinousConnection {
     let id: String
@@ -318,56 +316,5 @@ final class Connection {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
             self?.autoReconnect()
         }
-    }
-}
-
-extension Connection: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection: WebSocketConnection) {
-        isConnected = true
-        timeToReconnect = 1
-    }
-    
-    func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
-        isConnected = false
-        
-        PrimalEndpointsManager.instance.checkIfNecessary()
-        
-        autoReconnect()
-    }
-    
-    func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
-        
-    }
-    
-    func webSocketDidAttemptBetterPathMigration(result: Result<WebSocketConnection, NWError>) {
-        
-    }
-    
-    func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
-        print("WSERROR: \(error)")
-        
-        PrimalEndpointsManager.instance.checkIfNecessary()
-        
-        isConnected = false
-        
-        autoReconnect()
-    }
-    
-    func webSocketDidReceivePong(connection: WebSocketConnection) {
-        
-    }
-    
-    func webSocketDidReceiveMessage(connection: WebSocketConnection, string: String) {
-        guard let json: JSON = try? self.jsonDecoder.decode(JSON.self, from: string.data(using: .utf8)!) else {
-            print("Error decoding received string to json")
-            dump(string)
-            return
-        }
-        
-        self.processMessage(json)
-    }
-    
-    func webSocketDidReceiveMessage(connection: WebSocketConnection, data: Data) {
-        
     }
 }

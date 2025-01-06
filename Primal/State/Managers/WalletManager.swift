@@ -24,6 +24,11 @@ extension UserDefaults {
         get { max(minimumZapValue, integer(forKey: .minimumNotificationValueKey)) }
         set { setValue(newValue, forKey: .minimumNotificationValueKey)}
     }
+    
+    var useUSD: Bool {
+        get { bool(forKey: .useUSDKey) }
+        set { setValue(newValue, forKey: .useUSDKey) }
+    }
 }
 
 private extension String {
@@ -32,6 +37,7 @@ private extension String {
     static let oldTransactionsKey = "oldTransactionsKey"
     static let minimumZapValueKey = "minimumZapValueKey"
     static let minimumNotificationValueKey = "minimumNotificationValueKey"
+    static let useUSDKey = "walletUseUSDKey"
 }
 
 struct CodableParsedTransaction: Codable {
@@ -103,7 +109,13 @@ final class WalletManager {
     @Published var didJustCreateWallet = false
     @Published private var userZapped: [String: Int] = [:]
     @Published var btcToUsd: Double = 44022
-    @Published var isBitcoinPrimary = true
+    @Published var isBitcoinPrimary = !UserDefaults.standard.useUSD {
+        didSet {
+            if oldValue != isBitcoinPrimary {
+                UserDefaults.standard.useUSD = !isBitcoinPrimary
+            }
+        }
+    }
     
     @Published var premiumState: PremiumState?
     var hasPremium: Bool { premiumState != nil }

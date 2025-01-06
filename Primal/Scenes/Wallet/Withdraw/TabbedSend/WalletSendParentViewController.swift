@@ -78,6 +78,17 @@ extension WalletSearchController {
             return
         }
         
+        if text.hasPrefix("nprofile"), let npub = text.split(separator: ":").last?.string, let decoded = try? bech32_decode(npub) {
+            self.searchForPubkey(hex_encode(decoded.data)) { [weak self] user in
+                guard let user else {
+                    self?.textSearch = nil
+                    return
+                }
+                self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+            }
+            return
+        }
+        
         PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let self else { return }

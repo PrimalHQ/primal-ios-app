@@ -50,6 +50,7 @@ final class ImageGalleryView: UIView {
     let progress = PrimalProgressView(bottomPadding: 0)
 
     var noDownsampling = false
+    var userPubkey = ""
     var resources: [MediaMetadata.Resource] {
         didSet {
             progress.isHidden = resources.count < 2
@@ -160,7 +161,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
             if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == url {
                 player = current
             } else {
-                player = .init(url: url)
+                player = .init(url: url, originalURL: r.url, userPubkey: userPubkey)
             }
             
             if let cell = cell as? VideoCell {
@@ -173,33 +174,28 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 }
             }
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
-            CachingManager.instance.fetchAnimatedImage(url) { result in
+            CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
                 switch result {
                 case .success(let image):
                     (cell as? ImageCell)?.imageView.animatedImage = image
-                case .failure(let error):
-                    print(error)
+                case .failure:
+                    (cell as? ImageCell)?.setup(
+                        url: r.url(for: .medium),
+                        downsampling: .none,
+                        originalUrl: r.url,
+                        userPubkey: self?.userPubkey ?? "",
+                        delegate: self
+                    )
                 }
             }
         } else {
-            if let cell = cell as? ImageCell {
-                if noDownsampling {
-                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
-                        .transition(.fade(0.2)),
-                        .scaleFactor(UIScreen.main.scale),
-                        .cacheOriginalImage
-                    ])
-                } else {
-                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
-                        .processor(DownsamplingImageProcessor(size: frame.size)),
-                        .transition(.fade(0.2)),
-                        .scaleFactor(UIScreen.main.scale),
-                        .cacheOriginalImage
-                    ])
-                }
-                cell.url = r.url
-                cell.delegate = self
-            }
+            (cell as? ImageCell)?.setup(
+                url: r.url(for: .medium),
+                downsampling: noDownsampling ? .none : .size(frame.size),
+                originalUrl: r.url,
+                userPubkey: userPubkey,
+                delegate: self
+            )
         }
         return cell
     }
