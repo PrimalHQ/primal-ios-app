@@ -9,6 +9,7 @@ import AVKit
 import Combine
 import Kingfisher
 import UIKit
+import NostrSDK
 
 protocol QRCaptureController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var captureSession: AVCaptureSession { get }
@@ -20,7 +21,7 @@ final class CapturePreviewView: UIView {
     var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
 }
 
-final class ProfileScanQRController: UIViewController, OnboardingViewController, QRCaptureController {
+final class ProfileScanQRController: UIViewController, OnboardingViewController, QRCaptureController, MetadataCoding {
     var titleLabel: UILabel = .init()
     var backButton: UIButton = .init()
     
@@ -51,7 +52,16 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
         
         let text: String = String(text.split(separator: ":").last ?? "") // Eliminate junk text ("nostr:", etc.)
         
-        guard text.hasPrefix("npub"), let pubkey = HexKeypair.npubToHexPubkey(text) else { return }
+        var pubkey: String?
+        if text.hasPrefix("npub") {
+            pubkey = HexKeypair.npubToHexPubkey(text)
+        }
+        
+        if let result = try? decodedMetadata(from: text), let resPubkey = result.pubkey {
+            pubkey = resPubkey
+        }
+        
+        guard let pubkey else { return }
         
         didOpenQRCode = true
         

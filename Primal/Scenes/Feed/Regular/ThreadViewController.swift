@@ -98,6 +98,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     var bottomBarHeight: CGFloat = 150
     var keyboardCancellable: AnyCancellable?
+    override var adjustedTopBarHeight: CGFloat { topBarHeight + 7 }
     override var barsMaxTransform: CGFloat { bottomBarHeight }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -338,14 +339,12 @@ private extension ThreadViewController {
                     .reduce(0, +)               // Sum of all heights
             }
             .sink { [weak self] contentSize in
-                let topBarHeight: CGFloat = (self?.topBarHeight ?? 100) + 7
-                
-                guard let self, posts.count - mainPositionInThread < 6 else {
-                    self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: 150, right: 0)
+                guard let self, dataSource.cellCount - mainPositionInThread < 10 else {
+                    self?.table.contentInset = .init(top: self?.adjustedTopBarHeight ?? 107, left: 0, bottom: 150, right: 0)
                     return
                 }
-                let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - topBarHeight - contentSize)
-                self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
+                let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - adjustedTopBarHeight - contentSize)
+                self.table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: botInset, right: 0)
             }
 
         Publishers.CombineLatest($didLoadData, $didLoadView)

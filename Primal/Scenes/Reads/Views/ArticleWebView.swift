@@ -121,8 +121,6 @@ class ArticleWebView: WKWebView, Themeable {
         self.content = htmlContent
         loadHTMLString(htmlContent, baseURL: Bundle.main.bundleURL)
         
-        UIPasteboard.general.string = htmlContent
-        
         calculateSize()
     }
     

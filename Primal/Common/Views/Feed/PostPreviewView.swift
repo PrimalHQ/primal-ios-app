@@ -58,7 +58,7 @@ final class PostPreviewView: UIView, Themeable {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.height)) / CGFloat(max(1, first.width)))
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.width)) / CGFloat(max(1, first.height)))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
