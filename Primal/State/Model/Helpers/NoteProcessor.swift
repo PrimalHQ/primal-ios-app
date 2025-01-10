@@ -7,6 +7,7 @@
 
 import Foundation
 import NostrSDK
+import GenericJSON
 
 class NoteProcessor: MetadataCoding {
     let response: PostRequestResult
@@ -74,7 +75,7 @@ class NoteProcessor: MetadataCoding {
     lazy var parsedFeedZaps: [ParsedFeedZap] = {
         let notes = secondLevelMentions // must be secondLevelMentions to avoid a infinite recursion
         
-        return response.postZaps.map { primalZapEvent in
+        let coolZaps: [ParsedFeedZap] = response.postZaps.map({ primalZapEvent in
             let user = parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
             
             let referencedNote: ZappableReferenceObject? = notes.first(where: { $0.zaps.contains(where: { zap in zap.receiptId == primalZapEvent.zap_receipt_id })})
@@ -92,7 +93,55 @@ class NoteProcessor: MetadataCoding {
                 ),
                 zappedObject: zappedObject
             )
-        }        
+        })
+        
+        let uncoolZaps: [ParsedFeedZap] = response.zapReceipts.compactMap({ (id, event) in
+            guard
+                !coolZaps.contains(where: { $0.zap.receiptId == id }),
+                let pubkey = event["pubkey"]?.stringValue
+            else { return nil }
+
+            let user = parsedUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey))
+                
+            var otherUserPubkey = user.data.pubkey
+            var amount: Int = 0
+            for tags in event["tags"]?.arrayValue ?? [] {
+                guard
+                    let tagsArray = tags.arrayValue,
+                    let firstValue = tagsArray.first?.stringValue,
+                    let secondValue = tagsArray[safe: 1]?.stringValue
+                else { continue }
+
+                switch firstValue {
+                case "amount":
+                    if let tagAmount = Int(secondValue) {
+                        amount = tagAmount / 1000
+                    }
+                case "p":
+                    otherUserPubkey = secondValue
+                default:
+                    break
+                }
+            }
+            
+            let otherUser = parsedUsers.first(where: { $0.data.pubkey == otherUserPubkey }) ?? ParsedUser(data: .init(pubkey: pubkey))
+            
+            let postId: String = event["id"]?.stringValue ?? ""
+            let message: String = event["content"]?.stringValue ?? ""
+                    
+            return ParsedFeedZap(
+                zap: ParsedZap(
+                    receiptId: id,
+                    postId: postId,
+                    amountSats: amount,
+                    message: message,
+                    user: user
+                ),
+                zappedObject: otherUser
+            )
+        })
+        
+        return coolZaps + uncoolZaps
     }()
     
     lazy var reposts: [ParsedContent] = response.reposts
@@ -163,16 +212,11 @@ class NoteProcessor: MetadataCoding {
             
             guard preview.md_title?.isEmpty == false || preview.md_description?.isEmpty == false else { continue }
             
-            if p.linkPreview != nil {
-                p.linkPreview = nil
-                break // Leave the loop as we don't show the preview if there is more than one url preview
-            }
-            
-            p.linkPreview = LinkMetadata(
+            p.linkPreviews.append(LinkMetadata(
                 url: url,
                 imagesData: response.mediaMetadata.filter { $0.event_id == post.id }.flatMap { $0.resources },
                 data: preview
-            )
+            ))
         }
         
         // MARK: - Finding parent note
@@ -203,7 +247,7 @@ class NoteProcessor: MetadataCoding {
         }
         
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nevent1MentionPattern = "\\b(nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
         var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
@@ -223,7 +267,7 @@ class NoteProcessor: MetadataCoding {
                     
                 if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
                     if mention.post.kind == NostrKind.zapReceipt.rawValue {
-                        if let feedZap = parsedFeedZaps.first(where: { $0.zap.receiptId == mentionId}) {
+                        if let feedZap = parsedFeedZaps.first(where: { $0.zap.receiptId == mentionId }) {
                             p.embeddedZap = feedZap
                         } else {
                             p.customEvent = mention
@@ -246,36 +290,36 @@ class NoteProcessor: MetadataCoding {
             }
         }
         
-        // MARK: - Finding and extracting mentioned notes without "nostr:" or "@" prefix
-        let nevent1WildcardMentionPattern = "\\b((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-        
-        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1WildcardMentionPattern, options: []) {
-            postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                guard let matchRange = match?.range else { return }
-                    
-                let mentionText = (text as NSString).substring(with: matchRange)
-                
-                if referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }) { return } // Already slated for removal
-                
-                let naventString: String = "nostr:\(mentionText)"
-                
-                if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    if mention.post.kind == NostrKind.highlight.rawValue  {
-                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
-                        
-                        highlights.append((mentionText, content, mention))
-                    } else if mention.post.kind == post.kind {
-                        referencedPosts.append((mentionText, mention))
-                    } else {
-                        p.customEvent = mention
-                        itemsToRemove.append(mentionText)
-                    }
-                } else {
-                    itemsToRemove.append(mentionText)
-                    p.notFound = .note
-                }
-            }
-        }
+//        // MARK: - Finding and extracting mentioned notes without "nostr:" or "@" prefix
+//        let nevent1WildcardMentionPattern = "\\b((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+//        
+//        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1WildcardMentionPattern, options: []) {
+//            postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+//                guard let matchRange = match?.range else { return }
+//                    
+//                let mentionText = (text as NSString).substring(with: matchRange)
+//                
+//                if referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }) { return } // Already slated for removal
+//                
+//                let naventString: String = "nostr:\(mentionText)"
+//                
+//                if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
+//                    if mention.post.kind == NostrKind.highlight.rawValue  {
+//                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+//                        
+//                        highlights.append((mentionText, content, mention))
+//                    } else if mention.post.kind == post.kind {
+//                        referencedPosts.append((mentionText, mention))
+//                    } else {
+//                        p.customEvent = mention
+//                        itemsToRemove.append(mentionText)
+//                    }
+//                } else {
+//                    itemsToRemove.append(mentionText)
+//                    p.notFound = .note
+//                }
+//            }
+//        }
         
         let articleMentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
         if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
@@ -366,9 +410,6 @@ class NoteProcessor: MetadataCoding {
             text.range(of: $0.url)?.lowerBound ?? text.startIndex < text.range(of: $1.url)?.lowerBound ?? text.startIndex
         })
         
-        // Don't show link preview if post contains media gallery
-        if !p.mediaResources.isEmpty { p.linkPreview = nil }
-        
         let blocks = text.parse_mentions()
         for block in blocks {
             if case .invoice(let invoice) = block {
@@ -385,15 +426,16 @@ class NoteProcessor: MetadataCoding {
         }
         text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // Only remove url from text if
-        if p.mediaResources.isEmpty, // there are no images or video (no media preview)
-            otherURLs.count == 1,    // there is only one url in text
-            p.linkPreview != nil,    // link preview exists
-            let onlyURL = otherURLs.first,
-            text.hasSuffix(onlyURL) // the URL is on the end of the post
-        {
-            otherURLs = []
-            text = text.replacingOccurrences(of: onlyURL, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        // Only remove url from text if preview exists, only show preview if url exists
+        let allPreviews = p.linkPreviews
+        p.linkPreviews = []
+        otherURLs = otherURLs.filter { url in
+            if let preview = allPreviews.first(where: { $0.url.absoluteString == url }) {
+                p.linkPreviews.append(preview)
+                text = text.replacingOccurrences(of: url, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                return false
+            }
+            return true
         }
         
         for (reference, replacement, _) in highlights {

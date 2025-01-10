@@ -84,7 +84,7 @@ final class ParsedContent: Hashable {
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
-    var linkPreview: LinkMetadata?
+    var linkPreviews: [LinkMetadata] = []
     var article: Article?
     
     var invoice: Invoice?
@@ -341,7 +341,7 @@ extension ParsedContent {
         
         new.mediaResources = mediaResources
         new.videoThumbnails = videoThumbnails
-        new.linkPreview = linkPreview
+        new.linkPreviews = linkPreviews
         
         new.invoice = invoice
         
@@ -353,6 +353,8 @@ extension ParsedContent {
         
         new.embeddedPost = embeddedPost
         new.reposted = reposted
+        new.embeddedZap = embeddedZap
+        new.customEvent = customEvent
         
         new.mentionedUsers = mentionedUsers
         

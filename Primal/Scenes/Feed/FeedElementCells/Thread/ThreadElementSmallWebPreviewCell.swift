@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, RegularFeedElementCell {
+class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, RegularFeedElementCell, WebPreviewCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementWebPreviewCell" }
@@ -31,8 +31,11 @@ class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, Regula
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func updateWebPreview(_ metadata: LinkMetadata) {
+        linkPresentation.data = metadata        
+    }
+    
     override func update(_ content: ParsedContent) {
-        linkPresentation.data = content.linkPreview
         linkPresentation.updateTheme()
     }
 }

@@ -10,7 +10,7 @@ import SafariServices
 import LinkPresentation
 import Kingfisher
 
-struct LinkMetadata {
+struct LinkMetadata: Hashable {
     var url: URL
     
     var imagesData: [MediaMetadata.Resource]

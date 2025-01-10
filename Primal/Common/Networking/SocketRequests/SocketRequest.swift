@@ -123,7 +123,7 @@ extension PostRequestResult {
                 let descriptionTagArray = tags.compactMap({ $0.arrayValue }).first(where: { $0.first == "description" }),
                 let zapContent: JSON = descriptionTagArray[safe: 1]?.stringValue?.decode()
             else {
-                print("Error decoding relays from json")
+                print("Error decoding zapReceipt")
                 return
             }
             
@@ -225,6 +225,10 @@ extension PostRequestResult {
             
             let nostrContent = NostrContent(json: contentJSON)
             
+            if nostrContent.kind == NostrKind.zapReceipt.rawValue || nostrContent.kind == NostrKind.postZaps.rawValue, let newPayload = contentJSON.objectValue {
+                handlePostEvent(newPayload)
+            }
+            
             mentions.append(nostrContent)
             
             if nostrContent.kind == NostrKind.longForm.rawValue {
@@ -235,7 +239,6 @@ extension PostRequestResult {
                     event: nostrContent
                 ))
             }
-            
         case .mediaMetadata:
             guard let metadata: MediaMetadata = contentString.decode() else {
                 print("Error decoding metadata string to json")

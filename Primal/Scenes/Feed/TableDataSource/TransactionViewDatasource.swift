@@ -70,7 +70,7 @@ enum TransactionFeedItem: Hashable {
     case noteElement(content: ParsedContent, element: NoteFeedElement)
 }
 
-class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, TransactionFeedItem>, NoteFeedDatasource {
+class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, TransactionFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var noteSectionCells: [TransactionFeedItem] = []
     var infoCells: [TransactionCellType] = []
     
@@ -109,10 +109,15 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSmallZapGalleryCell.cellID, for: indexPath)
                 case .imageGallery:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementImageGalleryCell.cellID, for: indexPath)
-                case .webPreviewSmall:
+                case .webPreviewSmall(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
-                case .webPreviewLarge:
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .webPreviewLarge(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .webPreviewSystem(let metadata):
+                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSystemWebPreviewCell.cellID, for: indexPath)
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
                 case .postPreview:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementPostPreviewCell.cellID, for: indexPath)
                 case .zapPreview:
@@ -139,6 +144,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         
         defaultRowAnimation = .fade
         registerCells(tableView)
+        registerTransactionCells(tableView)
         setInfoCells()
                 
         if let zapInfo: ZapInfo = transaction.zap_request?.decode(), let postID = zapInfo.tags.first(where: { $0.first == "e" })?.last {
@@ -175,24 +181,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         return content
     }
     
-    private func registerCells(_ tableView: UITableView) {
-        tableView.register(FeedElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID)
-        tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID)
-        tableView.register(FeedElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID)
-        tableView.register(FeedElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID)
-        tableView.register(FeedElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID)
-        tableView.register(FeedElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID)
-        tableView.register(FeedElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID)
-        tableView.register(FeedElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID)
-        tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
-        tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
-        
-        tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
-        tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
-        
-        tableView.register(SearchPremiumCell.self, forCellReuseIdentifier: "premium")
-        tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
-        
+    private func registerTransactionCells(_ tableView: UITableView) {
         tableView.register(TransactionAmountCell.self, forCellReuseIdentifier: "amount")
         tableView.register(TransactionTitleCell.self, forCellReuseIdentifier: "title")
         tableView.register(TransactionUserInfoCell.self, forCellReuseIdentifier: "user")
@@ -202,34 +191,9 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        noteSectionCells = posts.flatMap({ content in
-            var parts: [TransactionFeedItem] = [.noteElement(content: content, element: .userInfo)]
-            
-            if !content.text.isEmpty { parts.append(.noteElement(content: content, element: .text)) }
-            if let invoice = content.invoice { parts.append(.noteElement(content: content, element: .invoice)) }
-            if let article = content.article { parts.append(.noteElement(content: content, element: .article)) }
-            
-            if content.embeddedPost != nil { parts.append(.noteElement(content: content, element: .postPreview) )}
-            
-            if !content.mediaResources.isEmpty { parts.append(.noteElement(content: content, element: .imageGallery)) }
-            
-            if let data = content.linkPreview {
-                if data.url.isYoutubeURL || data.url.isRumbleURL {
-                    parts.append(.noteElement(content: content, element: .webPreviewLarge))
-                } else {
-                    parts.append(.noteElement(content: content, element: .webPreviewSmall))
-                }
-            }
-            
-            if let zapPreview = content.embeddedZap { parts.append(.noteElement(content: content, element: .zapPreview)) }
-            if let custom = content.customEvent { parts.append(.noteElement(content: content, element: .info))}
-            if let error = content.notFound { parts.append(.noteElement(content: content, element: .info)) }
-            if !content.zaps.isEmpty { parts.append(.noteElement(content: content, element: .zapGallery(content.zaps))) }
-            
-            parts.append(.noteElement(content: content, element: .reactions))
-            
-            return parts
-        })
+        noteSectionCells = convertPostsToCells(posts).flatMap { post, elements in
+            elements.map { .noteElement(content: post, element: $0) }
+        }
         
         setInfoCells()
     }

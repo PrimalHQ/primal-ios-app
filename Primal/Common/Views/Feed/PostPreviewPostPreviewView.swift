@@ -77,7 +77,7 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
         mainImages.thumbnails = content.videoThumbnails
         mainImages.isHidden = content.mediaResources.isEmpty
         
-        if let data = content.linkPreview {
+        if let data = content.linkPreviews.first {
             linkPreview.data = data
             linkPreview.isHidden = false
         } else {

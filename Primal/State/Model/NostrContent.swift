@@ -118,7 +118,7 @@ struct WebPreviews: Codable {
     var resources: [WebPreview]
 }
 
-struct WebPreview: Codable {
+struct WebPreview: Codable, Hashable {
     var icon_url: String?
     var md_image: String?
     

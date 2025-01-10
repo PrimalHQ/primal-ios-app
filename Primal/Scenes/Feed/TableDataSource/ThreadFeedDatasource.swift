@@ -54,10 +54,12 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementSmallZapGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
                 case .imageGallery:
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementImageGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .webPreviewSmall:
+                case .webPreviewSmall(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .webPreviewLarge:
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .webPreviewLarge(let metadata), .webPreviewSystem(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue + "Large", for: indexPath)
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
                 case .postPreview:
                     cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementPostPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
                 case .zapPreview:
@@ -177,11 +179,11 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
             
             if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery, threadPosition: position)) }
             
-            if let data = content.linkPreview {
+            for data in content.linkPreviews {
                 if data.url.isYoutubeURL || data.url.isRumbleURL {
-                    parts.append(.init(content: content, element: .webPreviewLarge, threadPosition: position))
+                    parts.append(.init(content: content, element: .webPreviewLarge(data), threadPosition: position))
                 } else {
-                    parts.append(.init(content: content, element: .webPreviewSmall, threadPosition: position))
+                    parts.append(.init(content: content, element: .webPreviewSmall(data), threadPosition: position))
                 }
             }
             

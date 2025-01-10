@@ -582,6 +582,9 @@
 		B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */; };
 		B9F9331F2B8904570064B495 /* CheckNip05Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */; };
 		B9FAC6422D2BEE8400B57EF6 /* BlossomServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */; };
+		B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */; };
+		B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6452D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift */; };
+		B9FAC6482D31A95800B57EF6 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -1208,6 +1211,9 @@
 		B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumViewController.swift; sourceTree = "<group>"; };
 		B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Manager.swift; sourceTree = "<group>"; };
 		B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlossomServerManager.swift; sourceTree = "<group>"; };
+		B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSystemWebPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC6452D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularFeedDatasourceProtocol.swift; sourceTree = "<group>"; };
+		B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -2123,6 +2129,7 @@
 				B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */,
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
 				B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */,
+				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
 			sourceTree = "<group>";
@@ -2848,6 +2855,7 @@
 				B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */,
 				B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */,
 				B9E67E842D076327006BB397 /* FeedElementWebPreviewCell.swift */,
+				B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */,
 				B9E67E862D076354006BB397 /* FeedElementInfoCell.swift */,
 				B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */,
 				B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */,
@@ -2861,6 +2869,7 @@
 		B9E67E922D07692E006BB397 /* TableDataSource */ = {
 			isa = PBXGroup;
 			children = (
+				B9FAC6452D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift */,
 				B9E67E932D076F6F006BB397 /* RegularFeedDatasource.swift */,
 				B9E67E952D088720006BB397 /* ThreadFeedDatasource.swift */,
 				B9E67EB92D0B39C0006BB397 /* NotificationsFeedDatasource.swift */,
@@ -3201,6 +3210,7 @@
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */,
 				B91E56FE2CC1522A00C14809 /* SaveFeedController.swift in Sources */,
+				B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */,
 				B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */,
 				B9E67EAD2D09D8FA006BB397 /* ThreadElementArticleCell.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
@@ -3278,6 +3288,7 @@
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */,
 				9EE07AB52A1CF50200FB6C86 /* SunriseWave.swift in Sources */,
+				B9FAC6482D31A95800B57EF6 /* LinkPreviewManager.swift in Sources */,
 				B901C38D2BAB237E00C3AA69 /* OnboardingSession.swift in Sources */,
 				B98DD8D12C62332800E8369A /* ArticleListController.swift in Sources */,
 				B9E67E852D076327006BB397 /* FeedElementWebPreviewCell.swift in Sources */,
@@ -3492,6 +3503,7 @@
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				B9E67EB22D0A17E0006BB397 /* MainThreadElementTextCell.swift in Sources */,
 				B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */,
+				B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
 				B9C6D2422CAD93ED00B2EEBE /* FeedMarketplaceCellController.swift in Sources */,
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
@@ -3845,7 +3857,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.157;
+				MARKETING_VERSION = 2.0.158;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3891,7 +3903,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.157;
+				MARKETING_VERSION = 2.0.158;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

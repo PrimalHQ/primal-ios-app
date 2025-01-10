@@ -14,7 +14,7 @@ struct HighlightCommentsFeedItem: Hashable {
     let element: NoteFeedElement
 }
 
-class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, HighlightCommentsFeedItem>, NoteFeedDatasource {
+class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, HighlightCommentsFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var cells: [HighlightCommentsFeedItem] = []
     var cellCount: Int { cells.count }
     
@@ -32,10 +32,13 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSmallZapGalleryCell.cellID, for: indexPath)
             case .imageGallery:
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementImageGalleryCell.cellID, for: indexPath)
-            case .webPreviewSmall:
+            case .webPreviewSmall(let metadata):
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
-            case .webPreviewLarge:
+            case .webPreviewLarge(let metadata):
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
+            case .webPreviewSystem(let metadata):
+                cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSystemWebPreviewCell.cellID, for: indexPath)
+                (cell as? WebPreviewCell)?.updateWebPreview(metadata)
             case .postPreview:
                 cell = tableView.dequeueReusableCell(withIdentifier: FeedElementPostPreviewCell.cellID, for: indexPath)
             case .zapPreview:
@@ -60,6 +63,7 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
         }
         
         registerCells(tableView)
+        tableView.register(HighlightCommentElementUserCell.self, forCellReuseIdentifier: HighlightCommentElementUserCell.cellID)
         
         defaultRowAnimation = .none
     }
@@ -69,49 +73,21 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
         return cells[safe: indexPath.row]?.content
     }
     
-    private func registerCells(_ tableView: UITableView) {
-        tableView.register(HighlightCommentElementUserCell.self, forCellReuseIdentifier: HighlightCommentElementUserCell.cellID)
-        
-        tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID)
-        tableView.register(FeedElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID)
-        tableView.register(FeedElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID)
-        tableView.register(FeedElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID)
-        tableView.register(FeedElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID)
-        tableView.register(FeedElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID)
-        tableView.register(FeedElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID)
-        tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
-        tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
-        
-        tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
-        tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
-    }
-    
     func setPosts(_ posts: [ParsedContent]) {
-        cells = posts.flatMap({ content in
-            var parts: [HighlightCommentsFeedItem] = [.init(content: content, element: .userInfo)]
-            
-            if !content.text.isEmpty { parts.append(.init(content: content, element: .text)) }
-            if let invoice = content.invoice { parts.append(.init(content: content, element: .invoice)) }
-            if let article = content.article { parts.append(.init(content: content, element: .article)) }
-            
-            if content.embeddedPost != nil { parts.append(.init(content: content, element: .postPreview) )}
-            
-            if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery)) }
-            
-            if let data = content.linkPreview {
-                if data.url.isYoutubeURL || data.url.isRumbleURL {
-                    parts.append(.init(content: content, element: .webPreviewLarge))
-                } else {
-                    parts.append(.init(content: content, element: .webPreviewSmall))
+        var tmp = convertPostsToCells(posts).map { (content, elements) in
+            (content, elements.filter({
+                switch $0 {
+                case .reactions:
+                    return false
+                default:
+                    return true
                 }
-            }
-            
-            if let zapPreview = content.embeddedZap { parts.append(.init(content: content, element: .zapPreview)) }
-            if let custom = content.customEvent { parts.append(.init(content: content, element: .info))}
-            if let error = content.notFound { parts.append(.init(content: content, element: .info)) }
-            
-            return parts
-        })
+            }))
+        }
+        
+        cells = tmp.flatMap { post, elements in
+            elements.map { .init(content: post, element: $0) }
+        }
         
         var snapshot = NSDiffableDataSourceSnapshot<SingleSection, HighlightCommentsFeedItem>()
         snapshot.appendSections([.main])

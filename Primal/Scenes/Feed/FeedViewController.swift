@@ -253,7 +253,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
             }
         }
-        if let url = post.linkPreview?.imagesData.first?.url(for: .small), url.isImageURL {
+        for url in post.linkPreviews.compactMap({ $0.imagesData.first?.url(for: .small) }).filter({ $0.isImageURL }) {
             KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
         }
         if let url = post.user.profileImage.url(for: .small) {
@@ -346,7 +346,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
         switch event {
         case .url(let URL):
-            guard let url = URL ?? post.linkPreview?.url else { return }
+            guard let url = URL ?? post.linkPreviews.first?.url else { return }
             
             handleURLTap(url, from: post)
         case .images(let resource):
@@ -682,7 +682,7 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlaying?.url != url {
+        if VideoPlaybackManager.instance.currentlyPlaying?.originalURL != url {
             VideoPlaybackManager.instance.currentlyPlaying = VideoPlayer(url: url, originalURL: url, userPubkey: "")
         }
         

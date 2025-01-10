@@ -91,7 +91,7 @@ class PostCell: UITableViewCell {
         
         profileImageView.setUserImage(content.user)
         
-        if let metadata = content.linkPreview {
+        if let metadata = content.linkPreviews.first {
             linkPresentation.data = metadata
             linkPresentation.isHidden = false
         } else {

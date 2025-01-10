@@ -24,7 +24,7 @@ enum TwoSectionFeed {
     case info, feed
 }
 
-class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ProfileFeedItem>, NoteFeedDatasource {
+class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ProfileFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var cells: [ProfileFeedItem] = [] {
         didSet {
             updateCells()
@@ -84,10 +84,15 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSmallZapGalleryCell.cellID, for: indexPath)
                 case .imageGallery:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementImageGalleryCell.cellID, for: indexPath)
-                case .webPreviewSmall:
+                case .webPreviewSmall(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
-                case .webPreviewLarge:
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .webPreviewLarge(let metadata):
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .webPreviewSystem(let metadata):
+                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSystemWebPreviewCell.cellID, for: indexPath)
+                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
                 case .postPreview:
                     cell = tableView.dequeueReusableCell(withIdentifier: FeedElementPostPreviewCell.cellID, for: indexPath)
                 case .zapPreview:
@@ -146,6 +151,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
         }
         
         registerCells(tableView)
+        registerProfileCells(tableView)
         parseDescription()
         requestUserProfile()
         
@@ -165,21 +171,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
         return nil
     }
     
-    private func registerCells(_ tableView: UITableView) {
-        tableView.register(FeedElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID)
-        tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID)
-        tableView.register(FeedElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID)
-        tableView.register(FeedElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID)
-        tableView.register(FeedElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID)
-        tableView.register(FeedElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID)
-        tableView.register(FeedElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID)
-        tableView.register(FeedElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID)
-        tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
-        tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
-        
-        tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
-        tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
-        
+    private func registerProfileCells(_ tableView: UITableView) {
         tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
         tableView.register(MediaTripleCell.self, forCellReuseIdentifier: "media")
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
@@ -192,36 +184,9 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     func setPosts(_ posts: [ParsedContent]) {
         guard selectedTab == 0 || selectedTab == 1 else { return }
         
-        cells = posts
-            .flatMap({ content in
-                var parts: [(content: ParsedContent, element: NoteFeedElement)] = [(content: content, element: .userInfo)]
-                
-                if !content.text.isEmpty { parts.append((content: content, element: .text)) }
-                if let invoice = content.invoice { parts.append((content: content, element: .invoice)) }
-                if let article = content.article { parts.append((content: content, element: .article)) }
-                
-                if content.embeddedPost != nil { parts.append((content: content, element: .postPreview) )}
-                
-                if !content.mediaResources.isEmpty { parts.append((content: content, element: .imageGallery)) }
-                
-                if let data = content.linkPreview {
-                    if data.url.isYoutubeURL || data.url.isRumbleURL {
-                        parts.append((content: content, element: .webPreviewLarge))
-                    } else {
-                        parts.append((content: content, element: .webPreviewSmall))
-                    }
-                }
-                
-                if let zapPreview = content.embeddedZap { parts.append((content: content, element: .zapPreview)) }
-                if let custom = content.customEvent { parts.append((content: content, element: .info))}
-                if let error = content.notFound { parts.append((content: content, element: .info)) }
-                if !content.zaps.isEmpty { parts.append((content: content, element: .zapGallery(content.zaps))) }
-                
-                parts.append((content: content, element: .reactions))
-                
-                return parts
-            })
-            .map({ .feedElement($0.0, $0.1) })
+        cells = convertPostsToCells(posts).flatMap { post, elements in
+            elements.map { .feedElement(post, $0) }
+        }
     }
     
     func setMedia(_ media: [ParsedContent]) {

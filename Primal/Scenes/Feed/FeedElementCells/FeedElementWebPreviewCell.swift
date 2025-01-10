@@ -7,7 +7,11 @@
 
 import UIKit
 
-class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFeedElementCell {
+protocol WebPreviewCell {
+    func updateWebPreview(_ metadata: LinkMetadata)
+}
+
+class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
     weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementWebPreviewCell" }
@@ -31,8 +35,11 @@ class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFee
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func updateWebPreview(_ metadata: LinkMetadata) {
+        linkPresentation.data = metadata
+    }
+    
     override func update(_ content: ParsedContent) {
-        linkPresentation.data = content.linkPreview
         linkPresentation.updateTheme()
     }
 }
