@@ -18,6 +18,8 @@ class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFee
     
     let linkPresentation = T()
     
+    var tapAction = { }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -28,8 +30,8 @@ class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFee
             .pinToSuperview(edges: .horizontal, padding: 16)
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
-        linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .url(nil))
+        linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.tapAction()
         }))
     }
     
@@ -37,6 +39,11 @@ class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFee
     
     func updateWebPreview(_ metadata: LinkMetadata) {
         linkPresentation.data = metadata
+        
+        tapAction = { [weak self] in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, .url(metadata.url))
+        }
     }
     
     override func update(_ content: ParsedContent) {

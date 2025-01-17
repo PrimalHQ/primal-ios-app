@@ -23,7 +23,7 @@ enum ThreadFeedCellType: Hashable {
     case threadElement(ThreadFeedItem)
 }
 
-class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ThreadFeedCellType>, NoteFeedDatasource {
+class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ThreadFeedCellType>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var articles: [Article] = [] { didSet { updateCells() } }
     var cells: [ThreadFeedCellType] = []
     var cellCount: Int { cells.count }
@@ -45,33 +45,12 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
                     cell.threeDotsButton.isHidden = true
                 }
             case .threadElement(let item):
+                cell = tableView.dequeueReusableCell(withIdentifier: item.element.cellID + item.threadPosition.rawValue, for: indexPath)
                 switch item.element {
-                case .userInfo:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementUserCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .text:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementTextCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .zapGallery:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementSmallZapGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .imageGallery:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementImageGalleryCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .webPreviewSmall(let metadata):
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
+                case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .webPreviewLarge(let metadata), .webPreviewSystem(let metadata):
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementWebPreviewCell.cellID + item.threadPosition.rawValue + "Large", for: indexPath)
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementPostPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .zapPreview:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementZapPreviewCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .article:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementArticleCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .info:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementInfoCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .invoice:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementInvoiceCell.cellID + item.threadPosition.rawValue, for: indexPath)
-                case .reactions:
-                    cell = tableView.dequeueReusableCell(withIdentifier: ThreadElementReactionsCell.cellID + item.threadPosition.rawValue, for: indexPath)
+                default:
+                    break
                 }
                 
                 if let cell = cell as? RegularFeedElementCell {
@@ -91,70 +70,82 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
             return cell
         }
         
-        registerCells(tableView)
+        registerThreadCells(tableView)
         
         weakSelf = self
     }
     
-    private func registerCells(_ tableView: UITableView) {
+    private func registerThreadCells(_ tableView: UITableView) {
         // User
-        tableView.register(ParentThreadElementUserCell.self, forCellReuseIdentifier: ThreadElementUserCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementUserCell.self, forCellReuseIdentifier: ThreadElementUserCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementUserCell.self, forCellReuseIdentifier: ThreadElementUserCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID + ThreadPosition.child.rawValue)
         
         // Text
-        tableView.register(ParentThreadElementTextCell.self, forCellReuseIdentifier: ThreadElementTextCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementTextCell.self, forCellReuseIdentifier: ThreadElementTextCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementTextCell.self, forCellReuseIdentifier: ThreadElementTextCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID + ThreadPosition.child.rawValue)
         
         // Image Gallery
-        tableView.register(ParentThreadElementImageGalleryCell.self, forCellReuseIdentifier: ThreadElementImageGalleryCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementImageGalleryCell.self, forCellReuseIdentifier: ThreadElementImageGalleryCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementImageGalleryCell.self, forCellReuseIdentifier: ThreadElementImageGalleryCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID + ThreadPosition.child.rawValue)
         
         // Zap Gallery
-        tableView.register(ParentThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: ThreadElementSmallZapGalleryCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: ThreadElementSmallZapGalleryCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: ThreadElementSmallZapGalleryCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID + ThreadPosition.child.rawValue)
         
         // Info
-        tableView.register(ParentThreadElementInfoCell.self, forCellReuseIdentifier: ThreadElementInfoCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementInfoCell.self, forCellReuseIdentifier: ThreadElementInfoCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementInfoCell.self, forCellReuseIdentifier: ThreadElementInfoCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID + ThreadPosition.child.rawValue)
         
         // Zap Preview
-        tableView.register(ParentThreadElementZapPreviewCell.self, forCellReuseIdentifier: ThreadElementZapPreviewCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementZapPreviewCell.self, forCellReuseIdentifier: ThreadElementZapPreviewCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementZapPreviewCell.self, forCellReuseIdentifier: ThreadElementZapPreviewCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID + ThreadPosition.child.rawValue)
         
         // Invoice
-        tableView.register(ParentThreadElementInvoiceCell.self, forCellReuseIdentifier: ThreadElementInvoiceCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementInvoiceCell.self, forCellReuseIdentifier: ThreadElementInvoiceCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementInvoiceCell.self, forCellReuseIdentifier: ThreadElementInvoiceCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.child.rawValue)
         
         // Post preview
-        tableView.register(ParentThreadElementPostPreviewCell.self, forCellReuseIdentifier: ThreadElementPostPreviewCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementPostPreviewCell.self, forCellReuseIdentifier: ThreadElementPostPreviewCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementPostPreviewCell.self, forCellReuseIdentifier: ThreadElementPostPreviewCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID + ThreadPosition.child.rawValue)
         
         // Article
-        tableView.register(ParentThreadElementArticleCell.self, forCellReuseIdentifier: ThreadElementArticleCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementArticleCell.self, forCellReuseIdentifier: ThreadElementArticleCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementArticleCell.self, forCellReuseIdentifier: ThreadElementArticleCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID + ThreadPosition.child.rawValue)
         
         // Links
-        tableView.register(ParentThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue + "Large")
-        tableView.register(MainThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.main.rawValue + "Large")
-        tableView.register(ChildThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.child.rawValue + "Large")
+        tableView.register(ParentThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large" + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large" + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large" + ThreadPosition.child.rawValue)
         
-        tableView.register(ParentThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: ThreadElementWebPreviewCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + ThreadPosition.child.rawValue)
+        
+        tableView.register(ParentThreadElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID + ThreadPosition.child.rawValue)
+        
+        tableView.register(ParentThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.child.rawValue)
+        
+        tableView.register(ParentThreadElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID + ThreadPosition.child.rawValue)
         
         // Reactions
-        tableView.register(ParentThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.parent.rawValue)
-        tableView.register(MainThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.main.rawValue)
-        tableView.register(ChildThreadElementReactionsCell.self, forCellReuseIdentifier: ThreadElementReactionsCell.cellID + ThreadPosition.child.rawValue)
+        tableView.register(ParentThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.child.rawValue)
         
         tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
     }
@@ -162,37 +153,16 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
     func setPosts(_ posts: [ParsedContent]) {
         let mainPosition = posts.firstIndex(where: { $0.post.id == threadID }) ?? 0
         
-        cells = posts.enumerated().flatMap({ index, content in
+        cells = convertPostsToCells(posts).enumerated().flatMap({ index, content in
             let position: ThreadPosition = {
                 if index < mainPosition { return .parent }
                 if index == mainPosition { return .main }
                 return .child
             }()
             
-            var parts: [ThreadFeedItem] = [.init(content: content, element: .userInfo, threadPosition: position)]
-            
-            if !content.text.isEmpty { parts.append(.init(content: content, element: .text, threadPosition: position)) }
-            if let invoice = content.invoice { parts.append(.init(content: content, element: .invoice, threadPosition: position)) }
-            if let article = content.article { parts.append(.init(content: content, element: .article, threadPosition: position)) }
-            
-            if content.embeddedPost != nil { parts.append(.init(content: content, element: .postPreview, threadPosition: position) )}
-            
-            if !content.mediaResources.isEmpty { parts.append(.init(content: content, element: .imageGallery, threadPosition: position)) }
-            
-            for data in content.linkPreviews {
-                if data.url.isYoutubeURL || data.url.isRumbleURL {
-                    parts.append(.init(content: content, element: .webPreviewLarge(data), threadPosition: position))
-                } else {
-                    parts.append(.init(content: content, element: .webPreviewSmall(data), threadPosition: position))
-                }
+            let parts: [ThreadFeedItem] = content.1.map {
+                ThreadFeedItem(content: content.0, element: $0, threadPosition: position)
             }
-            
-            if let zapPreview = content.embeddedZap { parts.append(.init(content: content, element: .zapPreview, threadPosition: position)) }
-            if let custom = content.customEvent { parts.append(.init(content: content, element: .info, threadPosition: position))}
-            if let error = content.notFound { parts.append(.init(content: content, element: .info, threadPosition: position)) }
-            if !content.zaps.isEmpty { parts.append(.init(content: content, element: .zapGallery(content.zaps), threadPosition: position))}
-            
-            parts.append(.init(content: content, element: .reactions, threadPosition: position))
             
             return parts.map { ThreadFeedCellType.threadElement($0) }
         })

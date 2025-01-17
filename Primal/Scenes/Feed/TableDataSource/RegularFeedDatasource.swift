@@ -12,22 +12,6 @@ enum SingleSection {
     case main
 }
 
-enum NoteFeedElement: Hashable {
-    case userInfo
-    case text
-    case zapGallery([ParsedZap])
-    case imageGallery
-    case webPreviewSmall(LinkMetadata)
-    case webPreviewLarge(LinkMetadata)
-    case webPreviewSystem(LinkMetadata)
-    case postPreview
-    case zapPreview
-    case article
-    case info
-    case invoice
-    case reactions
-}
-
 enum NoteFeedItem: Hashable {
     case note(content: ParsedContent, element: NoteFeedElement)
     case loading
@@ -69,36 +53,12 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
             case let .note(content, element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
                 switch element {
-                case .userInfo:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementUserCell.cellID, for: indexPath)
-                case .text:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementTextCell.cellID, for: indexPath)
-                case .zapGallery:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSmallZapGalleryCell.cellID, for: indexPath)
-                case .imageGallery:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementImageGalleryCell.cellID, for: indexPath)
-                case .webPreviewSmall(let metadata):
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID, for: indexPath)
+                case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .webPreviewLarge(let metadata):
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementWebPreviewCell.cellID + "Large", for: indexPath)
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .webPreviewSystem(let metadata):
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementSystemWebPreviewCell.cellID, for: indexPath)
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementPostPreviewCell.cellID, for: indexPath)
-                case .zapPreview:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementZapPreviewCell.cellID, for: indexPath)
-                case .article:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementArticleCell.cellID, for: indexPath)
-                case .info:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementInfoCell.cellID, for: indexPath)
-                case .invoice:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementInvoiceCell.cellID, for: indexPath)
-                case .reactions:
-                    cell = tableView.dequeueReusableCell(withIdentifier: FeedElementReactionsCell.cellID, for: indexPath)
+                default:
+                    break
                 }
                 
                 if let cell = cell as? RegularFeedElementCell {

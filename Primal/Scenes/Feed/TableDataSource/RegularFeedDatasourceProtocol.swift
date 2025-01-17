@@ -8,6 +8,66 @@
 import Foundation
 import UIKit
 
+enum WebPreviewType: Hashable {
+    case small, large, webkit, system, youtube, music
+}
+
+enum NoteFeedElement: Hashable {
+    case userInfo
+    case text
+    case zapGallery([ParsedZap])
+    case imageGallery
+    case webPreview(WebPreviewType, LinkMetadata)
+    case postPreview
+    case zapPreview
+    case article
+    case info
+    case invoice
+    case reactions
+}
+
+extension NoteFeedElement {
+    var cellID: String {
+        switch self {
+        case .userInfo:
+            return FeedElementUserCell.cellID
+        case .text:
+            return FeedElementTextCell.cellID
+        case .zapGallery(let array):
+            return FeedElementSmallZapGalleryCell.cellID
+        case .imageGallery:
+            return FeedElementImageGalleryCell.cellID
+        case .webPreview(let webPreviewType, _):
+            switch webPreviewType {
+            case .small:
+                return FeedElementWebPreviewCell.cellID
+            case .large:
+                return FeedElementWebPreviewCell.cellID + "Large"
+            case .youtube:
+                return FeedElementYoutubePreviewCell.cellID
+            case .webkit:
+                return FeedElementWebkitLinkPreviewCell.cellID
+            case .system:
+                return FeedElementSystemWebPreviewCell.cellID
+            case .music:
+                return FeedElementMusicPreviewCell.cellID
+            }
+        case .postPreview:
+            return FeedElementPostPreviewCell.cellID
+        case .zapPreview:
+            return FeedElementZapPreviewCell.cellID
+        case .article:
+            return FeedElementArticleCell.cellID
+        case .info:
+            return FeedElementInfoCell.cellID
+        case .invoice:
+            return FeedElementInvoiceCell.cellID
+        case .reactions:
+            return FeedElementReactionsCell.cellID
+        }
+    }
+}
+
 protocol RegularFeedDatasourceProtocol {
     
 }
@@ -28,6 +88,9 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
         tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
         tableView.register(FeedElementSystemWebPreviewCell.self, forCellReuseIdentifier: FeedElementSystemWebPreviewCell.cellID)
+        tableView.register(FeedElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID)
+        tableView.register(FeedElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID)
+        tableView.register(FeedElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID)
         
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
     }
@@ -45,12 +108,18 @@ extension RegularFeedDatasourceProtocol {
             if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
             
             for data in content.linkPreviews {
-                if data.url.isYoutubeURL || data.url.isTwitterURL {
-                    parts.append(.webPreviewSystem(data))
+                if data.url.isYoutubeURL {
+                    parts.append(.webPreview(.youtube, data))
                 } else if data.url.isRumbleURL {
-                    parts.append(.webPreviewLarge(data))
+                    parts.append(.webPreview(.webkit, data))
+                } else if data.url.isTwitterURL {
+                    parts.append(.webPreview(.system, data))
+                } else if data.url.isGithubURL {
+                    parts.append(.webPreview(.large, data))
+                } else if data.url.isSpotifyURL || data.url.isTidalURL {
+                    parts.append(.webPreview(.music, data))
                 } else {
-                    parts.append(.webPreviewSmall(data))
+                    parts.append(.webPreview(.small, data))
                 }
             }
             

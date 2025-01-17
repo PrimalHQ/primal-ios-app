@@ -65,6 +65,8 @@ enum NotFoundContent: Hashable {
 }
 
 final class ParsedContent: Hashable {
+    let uniqueID: String = UUID().uuidString
+    
     var post: PrimalFeedPost
     let user: ParsedUser
     
@@ -112,10 +114,12 @@ final class ParsedContent: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(post)
         hasher.combine(user)
+        hasher.combine(reposted)
+        hasher.combine(uniqueID)
     }
 }
 
-struct ParsedRepost {
+struct ParsedRepost: Hashable {
     var users: [ParsedUser]
     var date: Date
     var id: String

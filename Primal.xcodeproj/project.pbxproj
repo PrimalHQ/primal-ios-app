@@ -560,7 +560,7 @@
 		B9E67EA92D09D8FA006BB397 /* ThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E9E2D09D8F9006BB397 /* ThreadElementTextCell.swift */; };
 		B9E67EAA2D09D8FA006BB397 /* ThreadElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E9F2D09D8F9006BB397 /* ThreadElementUserCell.swift */; };
 		B9E67EAB2D09D8FA006BB397 /* ThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EA02D09D8F9006BB397 /* ThreadElementReactionsCell.swift */; };
-		B9E67EAC2D09D8FA006BB397 /* ThreadElementSmallWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EA12D09D8F9006BB397 /* ThreadElementSmallWebPreviewCell.swift */; };
+		B9E67EAC2D09D8FA006BB397 /* ThreadElementWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EA12D09D8F9006BB397 /* ThreadElementWebPreviewCell.swift */; };
 		B9E67EAD2D09D8FA006BB397 /* ThreadElementArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EA22D09D8F9006BB397 /* ThreadElementArticleCell.swift */; };
 		B9E67EAF2D09E576006BB397 /* DerivativeClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EAE2D09E576006BB397 /* DerivativeClasses.swift */; };
 		B9E67EB22D0A17E0006BB397 /* MainThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67EB12D0A17E0006BB397 /* MainThreadElementTextCell.swift */; };
@@ -585,6 +585,13 @@
 		B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */; };
 		B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6452D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift */; };
 		B9FAC6482D31A95800B57EF6 /* LinkPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */; };
+		B9FAC64A2D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6492D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift */; };
+		B9FAC64C2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64B2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift */; };
+		B9FAC64E2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */; };
+		B9FAC6502D3A986800B57EF6 /* ThreadElementSystemWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64F2D3A986800B57EF6 /* ThreadElementSystemWebPreviewCell.swift */; };
+		B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6512D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift */; };
+		B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6532D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift */; };
+		B9FAC6562D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -1190,7 +1197,7 @@
 		B9E67E9E2D09D8F9006BB397 /* ThreadElementTextCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementTextCell.swift; sourceTree = "<group>"; };
 		B9E67E9F2D09D8F9006BB397 /* ThreadElementUserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67EA02D09D8F9006BB397 /* ThreadElementReactionsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementReactionsCell.swift; sourceTree = "<group>"; };
-		B9E67EA12D09D8F9006BB397 /* ThreadElementSmallWebPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementSmallWebPreviewCell.swift; sourceTree = "<group>"; };
+		B9E67EA12D09D8F9006BB397 /* ThreadElementWebPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementWebPreviewCell.swift; sourceTree = "<group>"; };
 		B9E67EA22D09D8F9006BB397 /* ThreadElementArticleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementArticleCell.swift; sourceTree = "<group>"; };
 		B9E67EAE2D09E576006BB397 /* DerivativeClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivativeClasses.swift; sourceTree = "<group>"; };
 		B9E67EB12D0A17E0006BB397 /* MainThreadElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementTextCell.swift; sourceTree = "<group>"; };
@@ -1214,6 +1221,13 @@
 		B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSystemWebPreviewCell.swift; sourceTree = "<group>"; };
 		B9FAC6452D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularFeedDatasourceProtocol.swift; sourceTree = "<group>"; };
 		B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewManager.swift; sourceTree = "<group>"; };
+		B9FAC6492D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementWebkitLinkPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC64B2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementYoutubePreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementMusicPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC64F2D3A986800B57EF6 /* ThreadElementSystemWebPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementSystemWebPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC6512D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementWebkitLinkPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC6532D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementYoutubePreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementMusicPreviewCell.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -2856,6 +2870,9 @@
 				B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */,
 				B9E67E842D076327006BB397 /* FeedElementWebPreviewCell.swift */,
 				B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */,
+				B9FAC6492D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift */,
+				B9FAC64B2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift */,
+				B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */,
 				B9E67E862D076354006BB397 /* FeedElementInfoCell.swift */,
 				B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */,
 				B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */,
@@ -2897,7 +2914,11 @@
 				B9E67E992D09D8F9006BB397 /* ThreadElementInvoiceCell.swift */,
 				B9E67E9D2D09D8F9006BB397 /* ThreadElementPostPreviewCell.swift */,
 				B9E67E9B2D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift */,
-				B9E67EA12D09D8F9006BB397 /* ThreadElementSmallWebPreviewCell.swift */,
+				B9E67EA12D09D8F9006BB397 /* ThreadElementWebPreviewCell.swift */,
+				B9FAC64F2D3A986800B57EF6 /* ThreadElementSystemWebPreviewCell.swift */,
+				B9FAC6512D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift */,
+				B9FAC6532D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift */,
+				B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */,
 				B9E67E982D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift */,
 				B9E67EA02D09D8F9006BB397 /* ThreadElementReactionsCell.swift */,
 			);
@@ -3175,6 +3196,7 @@
 				B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */,
 				B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */,
 				B906AB102C9B472C0089813F /* MediaResource.swift in Sources */,
+				B9FAC64C2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */,
@@ -3266,6 +3288,7 @@
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */,
+				B9FAC6502D3A986800B57EF6 /* ThreadElementSystemWebPreviewCell.swift in Sources */,
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
 				B98DD8C62C59118E00E8369A /* ArticleSelectionMenuView.swift in Sources */,
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
@@ -3344,6 +3367,7 @@
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,
 				B914CD6F2AA24BD300CD0BD1 /* UnmuteUserCell.swift in Sources */,
 				9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */,
+				B9FAC6562D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift in Sources */,
 				B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */,
 				B90032932BD271BC00ADD2E5 /* LikeUserTableViewCell.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
@@ -3403,6 +3427,7 @@
 				B94F2BE42AE2EFDD0041181B /* PlaceholderTextView.swift in Sources */,
 				9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */,
 				9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */,
+				B9FAC64E2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift in Sources */,
 				B91BB9612B3DE8AE003F6B2A /* WalletSendParentViewController.swift in Sources */,
 				B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */,
 				9E55F28D2A1FAA6F00D5D523 /* SettingsOptionButton.swift in Sources */,
@@ -3506,6 +3531,7 @@
 				B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
 				B9C6D2422CAD93ED00B2EEBE /* FeedMarketplaceCellController.swift in Sources */,
+				B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */,
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
 				B90032952BD2742A00ADD2E5 /* NoteRepostsViewController.swift in Sources */,
 				B90032882BD11DEA00ADD2E5 /* NoteReactionsParentController.swift in Sources */,
@@ -3620,7 +3646,7 @@
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				B99E03AB2C0DFB9F006CCECB /* PostTagsView.swift in Sources */,
 				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
-				B9E67EAC2D09D8FA006BB397 /* ThreadElementSmallWebPreviewCell.swift in Sources */,
+				B9E67EAC2D09D8FA006BB397 /* ThreadElementWebPreviewCell.swift in Sources */,
 				B906AAFD2C94B3160089813F /* MediaTripleCell.swift in Sources */,
 				B94F2BCB2AD82B160041181B /* LargeBalanceConversionInputView.swift in Sources */,
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
@@ -3647,6 +3673,7 @@
 				9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */,
 				B94F2BDA2ADDC1440041181B /* BuySatsCell.swift in Sources */,
 				B9B9E5792CB57FE20065DD7C /* ExploreZapsCell.swift in Sources */,
+				B9FAC64A2D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift in Sources */,
 				B9CE4DC42B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift in Sources */,
 				B94F2BD82ADDAF000041181B /* InAppPurchaseManager.swift in Sources */,
 				9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */,
@@ -3666,6 +3693,7 @@
 				B9CE4DD42B7E252D0060A1B8 /* ChunkUploader.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
+				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
 				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
 				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
@@ -3857,7 +3885,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.158;
+				MARKETING_VERSION = 2.0.161;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3903,7 +3931,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.158;
+				MARKETING_VERSION = 2.0.161;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

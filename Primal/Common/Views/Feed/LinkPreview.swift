@@ -11,6 +11,8 @@ import LinkPresentation
 import Kingfisher
 
 struct LinkMetadata: Hashable {
+    var id = UUID().uuidString // every link is unique
+    
     var url: URL
     
     var imagesData: [MediaMetadata.Resource]
@@ -173,25 +175,49 @@ class LargeLinkPreview: LinkPreview {
             let isYoutube = host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
             let isRumble = host == "www.rumble.com" || host == "rumble.com"
             
-            iconView.image = isRumble ? UIImage(named: "rumbleIcon") : nil
-            iconView.image = isYoutube ? UIImage(named: "youtubeIcon") : nil
-            iconView.isHidden = !isRumble && !isYoutube
+            playIcon.isHidden = data?.url.isGithubURL == true
+            
+            if isRumble {
+                iconView.image = UIImage(named: "rumbleIcon")
+            } else if isYoutube {
+                iconView.image = UIImage(named: "youtubeIcon")
+            } else {
+                iconView.isHidden = true
+            }
+            
+            if let old = imageHeightC {
+                old.isActive = false
+            }
             
             guard let data = data, let imageString = data.data.md_image, !imageString.isEmpty else {
                 imageView.image = UIImage(named: "webPreviewIcon")
+                imageHeightC = imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 9 / 16)
+                imageHeightC?.priority = .defaultHigh
+                imageHeightC?.isActive = true
                 return
             }
+            
             let metadata = data.imagesData.first(where: { $0.url == imageString })
+            if let height = metadata?.variants.first?.height, let width = metadata?.variants.first?.width {
+                imageHeightC = imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: CGFloat(height) / CGFloat(width))
+                imageHeightC?.priority = .defaultHigh
+                imageHeightC?.isActive = true
+            } else {
+                imageHeightC = imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 0.5)
+                imageHeightC?.priority = .defaultHigh
+                imageHeightC?.isActive = true
+            }
+            
             imageView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
                 .transition(.fade(0.2))
             ])
         }
     }
     
+    var imageHeightC: NSLayoutConstraint?
+    
     required init() {
         super.init()
-        
-        imageView.constrainToAspect(16 / 9)
         
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         iconView.setContentCompressionResistancePriority(.required, for: .horizontal)

@@ -78,26 +78,6 @@ class ChildThreadElementReactionsCell: ThreadElementReactionsCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Link Preview
-class ParentThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
 // Article preview
 class ParentThreadElementArticleCell: ThreadElementArticleCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -197,3 +177,104 @@ class ChildThreadElementInfoCell: ThreadElementInfoCell {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
+
+// Link Preview
+class ParentThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+// System Link Preview
+class ParentThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+// WK Link Preview
+class ParentThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+// Youtube Link Preview
+class ParentThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+// Music Link Preview
+class ParentThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+

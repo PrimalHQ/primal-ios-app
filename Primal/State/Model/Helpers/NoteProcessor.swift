@@ -431,7 +431,9 @@ class NoteProcessor: MetadataCoding {
         p.linkPreviews = []
         otherURLs = otherURLs.filter { url in
             if let preview = allPreviews.first(where: { $0.url.absoluteString == url }) {
-                p.linkPreviews.append(preview)
+                if !p.linkPreviews.contains(preview) { // Having duplicate identical webpreviews will cause crashes
+                    p.linkPreviews.append(preview)
+                }
                 text = text.replacingOccurrences(of: url, with: "").trimmingCharacters(in: .whitespacesAndNewlines)
                 return false
             }
