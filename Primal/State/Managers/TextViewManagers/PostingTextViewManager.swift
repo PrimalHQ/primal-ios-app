@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import GenericJSON
+import NostrSDK
 
 struct EditingToken {
     var range: NSRange
@@ -24,7 +25,7 @@ extension NoteDraft {
     var isPosting: Bool { preparedEvent != nil }
 }
 
-final class PostingTextViewManager: TextViewManager {
+final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var userSearchText: String?
     @Published var users: [ParsedUser] = []
     @Published var isPosting: Bool = false
@@ -127,7 +128,19 @@ final class PostingTextViewManager: TextViewManager {
         
         for i in tokens.indices {
             let token = tokens[i]
-            let replacement = "nostr:\(token.user.npub)"
+            
+            
+            var metadata = Metadata()
+            metadata.pubkey = token.user.pubkey
+            let relay = RelayHintManager.instance.getRelayHint(token.user.pubkey)
+            if !relay.isEmpty { metadata.relays = [relay] }
+            
+            let replacement: String
+            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
+                replacement = "nostr:\(identifier)"
+            } else {
+                replacement = "nostr:\(token.user.npub)"
+            }
             
             if currentText.length < token.range.endLocation {
                 print("TEXT LENGTH: \(currentText.length)")

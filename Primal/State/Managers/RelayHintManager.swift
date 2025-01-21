@@ -12,6 +12,7 @@ class RelayHintManager {
     
     var hints: [String: String] = [:]
     
+    @MainActor
     func addHints(_ hints: [String: String]) {
         for (key, value) in hints {
             self.hints[key] = value

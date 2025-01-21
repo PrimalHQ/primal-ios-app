@@ -13,6 +13,7 @@ import SafariServices
 import Lottie
 import Kingfisher
 import StoreKit
+import NostrSDK
 
 extension PostCell: FeedElementVideoCell {
     var currentVideoCells: [VideoCell] {
@@ -618,10 +619,34 @@ extension NoteViewController: PostCellDelegate {
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
-        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
-            guard let noteRef = bech32_note_id(post.universalID) else { return }
+        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
+            guard let self else { return }
+            
+            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue {
+                guard let noteRef = bech32_note_id(post.universalID) else { return }
+
+                let new = NewPostViewController()
+                new.textView.text = "\n\nnostr:\(noteRef)"
+                self.present(new, animated: true)
+                return
+            }
+            
+            var metadata = Metadata()
+            metadata.eventId = post.id
+            let hint = RelayHintManager.instance.getRelayHint(post.id)
+            if !hint.isEmpty { metadata.relays = [hint] }
+            
+            let replacement: String
+            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
+                replacement = "\nnostr:\(identifier)"
+            } else {
+                guard let noteRef = bech32_note_id(post.universalID) else { return }
+
+                replacement = "\n\nnostr:\(noteRef)"
+            }
+            
             let new = NewPostViewController()
-            new.textView.text = "\n\nnostr:\(noteRef)"
+            new.textView.text = replacement
             self.present(new, animated: true)
         }))
         

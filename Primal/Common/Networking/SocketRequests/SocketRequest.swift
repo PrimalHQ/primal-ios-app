@@ -343,7 +343,9 @@ extension PostRequestResult {
         case .relayHints:
             let hints: [String: String] = contentString.decode() ?? [:]
             
-            RelayHintManager.instance.addHints(hints)
+            Task {
+                await RelayHintManager.instance.addHints(hints)
+            }
         case .postZaps:
             guard let zap: PrimalZapEvent = contentString.decode() else {
                 print("Error decoding postZaps")
