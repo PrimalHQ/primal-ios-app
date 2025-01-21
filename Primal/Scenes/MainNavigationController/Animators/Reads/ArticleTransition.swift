@@ -9,7 +9,7 @@ import UIKit
 
 protocol ArticleCellController: UIViewController {
     var articles: [Article] { get }
-    var table: PrintingTableView { get }
+    var table: UITableView { get }
     var articleSection: Int { get }
 }
 

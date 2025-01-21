@@ -14,6 +14,8 @@ class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, Regula
     
     let linkPresentation = T()
     
+    var tapAction = { }
+    
     override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
         
@@ -24,8 +26,8 @@ class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, Regula
             .pinToSuperview(edges: .horizontal, padding: 0)
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
-        linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
-            delegate?.postCellDidTap(self, .url(nil))
+        linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.tapAction()
         }))
     }
     
@@ -33,6 +35,11 @@ class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, Regula
     
     func updateWebPreview(_ metadata: LinkMetadata) {
         linkPresentation.data = metadata        
+        
+        tapAction = { [weak self] in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, .url(metadata.url))
+        }
     }
     
     override func update(_ content: ParsedContent) {

@@ -78,7 +78,7 @@ class FeedElementWebkitLinkPreviewCell: FeedElementBaseCell, RegularFeedElementC
 
 private extension URL {
     var youtubeID: String? {
-        if path().contains("/shorts/") {
+        if path().contains("/shorts/") || path.contains("/live/") {
             return lastPathComponent
         }
         

@@ -179,30 +179,27 @@ class NoteProcessor: MetadataCoding {
         let p = ParsedContent(post: post, user: user)
         
         var text: String = post.content
-        let result: [String] = text.extractTagsMentionsAndURLs()
+                
         var imageURLs: [String] = []
         var videoURLS: [String] = []
         var otherURLs: [String] = []
-        var hashtags: [String] = []
-        var itemsToRemove: [String] = []
-        var itemsToReplace: [String] = []
+        let textMentions: [String] = text.extractMentions()
         var markedMentions: [(String, ref: String)] = []
+        var hashtags: [String] = text.extractHashtags(keepHashtag: true)
+        var itemsToRemove: [String] = []
         
-        for str in result {
-            if str.isValidURL {
-                if str.isImageURL {
-                    imageURLs.append(str)
-                    itemsToRemove.append(str)
-                } else if str.isVideoURL {
-                    videoURLS.append(str)
-                    itemsToRemove.append(str)
-                } else {
-                    otherURLs.append(str)
+        for str in text.extractURLs() {
+            if str.isImageURL {
+                imageURLs.append(str)
+                itemsToRemove.append(str)
+            } else if str.isVideoURL {
+                videoURLS.append(str)
+                itemsToRemove.append(str)
+            } else {
+                if str.contains("primal.net/e/") || str.contains("primal.net/p/") {
+                    continue
                 }
-            } else if str.isNip08Mention || str.isNip27Mention {
-                itemsToReplace.append(str)
-            } else if str.isHashtag {
-                hashtags.append(str)
+                otherURLs.append(str)
             }
         }
         
@@ -247,7 +244,7 @@ class NoteProcessor: MetadataCoding {
         }
         
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\b(nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nevent1MentionPattern = "\\b(((https://)?primal.net/e/)|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
         var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
@@ -262,6 +259,9 @@ class NoteProcessor: MetadataCoding {
                 let naventString: String = {
                     if mentionText.hasPrefix("nostr:") { return mentionText }
                     if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
+                    if mentionText.contains("primal.net/e/") {
+                        return "nostr:\(String(mentionText.split(separator: "primal.net/e/").last ?? ""))"
+                    }
                     return "nostr:\(mentionText)"
                 }()
                     
@@ -376,7 +376,7 @@ class NoteProcessor: MetadataCoding {
                         }
                     }
                     
-                    if stringFound {
+                    if stringFound && mention.post.kind == NostrKind.text.rawValue {
                         p.embeddedPost = mention
                         break
                     }
@@ -447,7 +447,7 @@ class NoteProcessor: MetadataCoding {
         // Remove empty lines
         text = text.removingDoubleEmptyLines()
         
-        for item in itemsToReplace {
+        for item in textMentions {
             guard
                 let pubkey: String = {
                     if item.isNip08Mention {
@@ -461,7 +461,7 @@ class NoteProcessor: MetadataCoding {
                     
                     guard
                         item.isNip27Mention,
-                        let npub = item.split(separator: ":").last?.string,
+                        let npub = item.split(separator: "/").last?.split(separator: ":").last?.string,
                         let decoded = try? bech32_decode(npub)
                     else { return nil }
                     let pubkey = hex_encode(decoded.data)

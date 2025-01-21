@@ -14,13 +14,6 @@ import Lottie
 import Kingfisher
 import StoreKit
 
-class PrintingTableView: UITableView {
-    override func reloadData() {
-        print("FEED IS reloading tableview")
-        super.reloadData()
-    }
-}
-
 extension PostCell: FeedElementVideoCell {
     var currentVideoCells: [VideoCell] {
         [mainImages.currentVideoCell(), postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
@@ -36,7 +29,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
-    let table = PrintingTableView()
+    let table = UITableView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -253,8 +246,12 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
             }
         }
-        for url in post.linkPreviews.compactMap({ $0.imagesData.first?.url(for: .small) }).filter({ $0.isImageURL }) {
-            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        for preview in post.linkPreviews {
+            if preview.url.isTwitterURL {
+                LinkPreviewManager.instance.preload(preview.url)
+            } else if let url = preview.imagesData.first?.url(for: .small), url.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            }
         }
         if let url = post.user.profileImage.url(for: .small) {
             KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)

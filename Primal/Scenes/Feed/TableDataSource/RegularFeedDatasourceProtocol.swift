@@ -95,7 +95,7 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
     }
     
-    func convertPostsToCells(_ posts: [ParsedContent]) -> [(ParsedContent, [NoteFeedElement])] {
+    func convertPostsToCells(_ posts: [ParsedContent], short: Bool = true) -> [(ParsedContent, [NoteFeedElement])] {
         posts.map({ content in
             var parts: [NoteFeedElement] = [.userInfo]
 
@@ -107,14 +107,14 @@ extension RegularFeedDatasourceProtocol {
             
             if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
             
-            for data in content.linkPreviews {
+            for (index, data) in content.linkPreviews.enumerated() {
+                if short && index > 1 { break } // Only show two link previews short view
+                
                 if data.url.isYoutubeURL {
                     parts.append(.webPreview(.youtube, data))
-                } else if data.url.isRumbleURL {
-                    parts.append(.webPreview(.webkit, data))
                 } else if data.url.isTwitterURL {
                     parts.append(.webPreview(.system, data))
-                } else if data.url.isGithubURL {
+                } else if data.url.isGithubURL || data.url.isRumbleURL {
                     parts.append(.webPreview(.large, data))
                 } else if data.url.isSpotifyURL || data.url.isTidalURL {
                     parts.append(.webPreview(.music, data))

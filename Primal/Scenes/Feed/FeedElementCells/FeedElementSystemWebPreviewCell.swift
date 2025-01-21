@@ -17,6 +17,8 @@ class FeedElementSystemWebPreviewCell: FeedElementBaseCell, RegularFeedElementCe
     var metadataProvider: LPMetadataProvider?
     let loadingSpinner = LoadingSpinnerView()
     
+    var heightC: NSLayoutConstraint?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -29,7 +31,9 @@ class FeedElementSystemWebPreviewCell: FeedElementBaseCell, RegularFeedElementCe
         contentView.addSubview(loadingSpinner)
         loadingSpinner.constrainToSize(70).centerToSuperview()
         
-        linkPresentation.constrainToAspect(16 / 11)
+        heightC = linkPresentation.heightAnchor.constraint(equalToConstant: 300)
+        heightC?.priority = .defaultHigh
+        heightC?.isActive = true
         linkPresentation.layer.cornerRadius = 16
     }
     
@@ -40,9 +44,11 @@ class FeedElementSystemWebPreviewCell: FeedElementBaseCell, RegularFeedElementCe
             linkPresentation.metadata = metadata
             linkPresentation.isHidden = false
             loadingSpinner.isHidden = true
+            heightC?.isActive = false
             return
         }
         
+        heightC?.isActive = true
         linkPresentation.isHidden = true
         loadingSpinner.isHidden = false
         loadingSpinner.play()

@@ -134,6 +134,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         tableView.register(MainThreadElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID + ThreadPosition.child.rawValue)
         
+        tableView.register(ParentThreadElementSystemWebPreviewCell.self, forCellReuseIdentifier: FeedElementSystemWebPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementSystemWebPreviewCell.self, forCellReuseIdentifier: FeedElementSystemWebPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementSystemWebPreviewCell.self, forCellReuseIdentifier: FeedElementSystemWebPreviewCell.cellID + ThreadPosition.child.rawValue)
+        
         tableView.register(ParentThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.parent.rawValue)
         tableView.register(MainThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID + ThreadPosition.child.rawValue)
@@ -153,7 +157,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
     func setPosts(_ posts: [ParsedContent]) {
         let mainPosition = posts.firstIndex(where: { $0.post.id == threadID }) ?? 0
         
-        cells = convertPostsToCells(posts).enumerated().flatMap({ index, content in
+        cells = convertPostsToCells(posts, short: false).enumerated().flatMap({ index, content in
             let position: ThreadPosition = {
                 if index < mainPosition { return .parent }
                 if index == mainPosition { return .main }
