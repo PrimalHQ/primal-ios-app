@@ -30,7 +30,7 @@ extension URL {
     
     var isTidalURL: Bool {
         let host = host()
-        return host == "listen.tidal.com"
+        return host == "listen.tidal.com" || host == "www.tidal.com" || host == "tidal.com"
     }
     
     var isGithubURL: Bool {

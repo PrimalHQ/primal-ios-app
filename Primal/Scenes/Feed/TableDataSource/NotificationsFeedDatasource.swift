@@ -13,10 +13,20 @@ class NotificationsFeedDatasource: UITableViewDiffableDataSource<SingleSection, 
     
     var separatorIndex: Int = -1
     
+    var cellID = "notification"
+    var idCount = 0
+    @discardableResult
+    func newCellID() -> String {
+        idCount += 1
+        cellID = "notification\(idCount)"
+        
+        return cellID
+    }
+    
     init(tableView: UITableView, delegate: NotificationCellDelegate) {
         weak var weakSelf: NotificationsFeedDatasource?
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
-            let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "notification", for: indexPath)
+            let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: weakSelf?.cellID ?? "notification", for: indexPath)
                 
             if let cell = cell as? NotificationCell {
                 cell.updateForNotification(
@@ -30,11 +40,6 @@ class NotificationsFeedDatasource: UITableViewDiffableDataSource<SingleSection, 
         }
         
         weakSelf = self
-        registerCells(tableView)
-    }
-    
-    private func registerCells(_ tableView: UITableView) {
-        tableView.register(NotificationCell.self, forCellReuseIdentifier: "notification")
     }
     
     func setPosts(_ posts: [ParsedContent]) {

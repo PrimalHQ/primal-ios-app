@@ -137,6 +137,7 @@ final class NotificationFeedViewController: NoteViewController {
         
         view.backgroundColor = .background
         
+        table.register(NotificationCell.self, forCellReuseIdentifier: (dataSource as? NotificationsFeedDatasource)?.newCellID() ?? "notification")
         table.reloadData()
     }
     

@@ -67,9 +67,14 @@ final class TransactionViewController: NoteViewController {
         guard indexPath.section == 1 else { return }
         
         guard firstTimeAnimating else { return }
-        firstTimeAnimating = false
         
-        cell.contentView.transform = .init(translationX: 0, y: -100)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.firstTimeAnimating = false
+        }
+        
+        cell.backgroundColor = .clear
+        cell.clipsToBounds = false
+        cell.contentView.transform = .init(translationX: 0, y: -50)
         cell.contentView.alpha = 0
         
         UIView.animate(withDuration: 0.4, delay: 0.4) {

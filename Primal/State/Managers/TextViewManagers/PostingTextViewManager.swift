@@ -362,11 +362,20 @@ private extension PostingTextViewManager {
             let selectedRange = textView.selectedTextRange,
             let wordRange = rangeOfMention(in: textView, from: selectedRange.start),
             let startPosition = textView.position(from: wordRange.start, offset: -1),
-            let cursorPosition = textView.position(from: selectedRange.start, offset: 0),
-            let newRange = textView.textRange(from: startPosition, to: cursorPosition),
+            let newRange = textView.textRange(from: startPosition, to: selectedRange.start),
             let word = textView.text(in: newRange),
-            let nsRange = textView.convertToNSRange(startPosition, cursorPosition)
+            let nsRange = textView.convertToNSRange(startPosition, selectedRange.start)
         else {
+            currentlyEditingToken = nil
+            return
+        }
+        
+        if startPosition != textView.beginningOfDocument, 
+           let charBeforePosition = textView.position(from: startPosition, offset: -1),
+           let charBeforeRange = textView.textRange(from: charBeforePosition, to: startPosition),
+           let charBefore = textView.text(in: charBeforeRange),
+           charBefore.first?.isWhitespace == false
+        {
             currentlyEditingToken = nil
             return
         }

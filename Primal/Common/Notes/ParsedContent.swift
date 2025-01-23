@@ -188,13 +188,13 @@ extension ParsedContent {
             if !highlights.isEmpty {
                 let highlightLengthCount = highlights.reduce(0, { $0 + $1.length })
                 
-                if text.count - highlightLengthCount > 21 {
+                if text.count - highlightLengthCount > 42 {
                     return false
                 }
                 return text.filter({ $0.isNewline }).count < 2
             }
             
-            if text.count > 21 {
+            if text.count > 42 {
                 return false
             }
             

@@ -123,7 +123,7 @@ extension String : Identifiable {
     }
     
     var isNip27Mention: Bool {
-        let mentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let mentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
         
         guard let mentionRegex = try? Regex(mentionPattern) else {
             print("Unable to create mention pattern regex")
@@ -198,12 +198,12 @@ extension String : Identifiable {
         return "https://\(host)/.well-known/lnurlp/\(lnurlp)"
     }
     
-    func extractHashtags(keepHashtag: Bool = false) -> [String] {
+    func extractHashtags() -> [String] {
         guard let regex = try? NSRegularExpression(pattern: "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+", options: []) else { return [] }
         
         return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
             .compactMap { Range($0.range, in: self) }
-            .map { keepHashtag ? self[$0].string : String(self[$0].dropFirst()) }
+            .map { String(self[$0].dropFirst()) }
     }
     
     func extractURLs() -> [String] {
@@ -218,7 +218,7 @@ extension String : Identifiable {
     
     func extractMentions() -> [String] {
         let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
-        let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
 
         guard
             let mentionRegex = try? NSRegularExpression(pattern: nip08MentionPattern, options: []),

@@ -102,7 +102,7 @@ private extension MainThreadElementUserCell {
         secondRow.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .top, padding: 12)
-            .pinToSuperview(edges: .bottom, padding: 2)
+            .pinToSuperview(edges: .bottom, padding: 3)
             .pinToSuperview(edges: .horizontal)
         
         contentView.addSubview(threeDotsButton)

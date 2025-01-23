@@ -64,6 +64,7 @@ class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell
         
         linkPreview.addSubview(playIcon)
         playIcon.centerToView(thumbnailView)
+        thumbnailView.contentMode = .scaleAspectFill
         
         contentStack.spacing = 12
         contentStack.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)

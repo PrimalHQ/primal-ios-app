@@ -96,8 +96,17 @@ private extension URL {
     var tidalEmbedURL: URL? {
         var embedString = absoluteString
         
-        embedString = embedString.replacingOccurrences(of: "listen.tidal.com", with: "embed.tidal.com")
-        embedString = embedString.replacingOccurrences(of: "/playlist/", with: "/playlists/")
+        if embedString.contains("listen.tidal.com") {
+            embedString = embedString.replacingOccurrences(of: "listen.tidal.com", with: "embed.tidal.com")
+            embedString = embedString.replacingOccurrences(of: "/playlist/", with: "/playlists/")
+            embedString = embedString.replacingOccurrences(of: "/track/", with: "/tracks/")
+        } else {
+            if let trackIDIndex = pathComponents.firstIndex(of: "track"), let trackID = pathComponents[safe: trackIDIndex + 1] {
+                embedString = "https://embed.tidal.com/tracks/\(trackID)"
+            } else if let playlistIDIndex = pathComponents.firstIndex(of: "playlist"), let playlistID = pathComponents[safe: playlistIDIndex + 1] {
+                embedString = "https://embed.tidal.com/playlists/\(playlistID)"
+            }
+        }
         
         return URL(string: embedString)
     }

@@ -185,7 +185,7 @@ class NoteProcessor: MetadataCoding {
         var otherURLs: [String] = []
         let textMentions: [String] = text.extractMentions()
         var markedMentions: [(String, ref: String)] = []
-        var hashtags: [String] = text.extractHashtags(keepHashtag: true)
+        var hashtags: [String] = text.extractHashtags()
         var itemsToRemove: [String] = []
         
         for str in text.extractURLs() {
@@ -461,10 +461,11 @@ class NoteProcessor: MetadataCoding {
                     
                     guard
                         item.isNip27Mention,
-                        let npub = item.split(separator: "/").last?.split(separator: ":").last?.string,
-                        let decoded = try? bech32_decode(npub)
+                        let mention = item.split(separator: "/").last?.split(separator: ":").last?.string,
+                        let metadata = try? decodedMetadata(from: mention),
+                        let pubkey = metadata.pubkey
+//                        let decoded = try? bech32_decode(npub)
                     else { return nil }
-                    let pubkey = hex_encode(decoded.data)
                     for mentionedPub in response.users.keys {
                         if pubkey.contains(mentionedPub) {
                             return mentionedPub
