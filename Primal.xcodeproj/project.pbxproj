@@ -525,6 +525,7 @@
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
+		B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */; };
 		B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */; };
 		B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */; };
 		B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */; };
@@ -592,6 +593,8 @@
 		B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6512D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift */; };
 		B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6532D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift */; };
 		B9FAC6562D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */; };
+		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
+		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
@@ -1162,6 +1165,7 @@
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
+		B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNwcQRController.swift; sourceTree = "<group>"; };
 		B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckLud16Request.swift; sourceTree = "<group>"; };
 		B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPreviewPostPreviewView.swift; sourceTree = "<group>"; };
 		B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNip05Check.swift; sourceTree = "<group>"; };
@@ -1228,6 +1232,8 @@
 		B9FAC6512D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementWebkitLinkPreviewCell.swift; sourceTree = "<group>"; };
 		B9FAC6532D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementYoutubePreviewCell.swift; sourceTree = "<group>"; };
 		B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementMusicPreviewCell.swift; sourceTree = "<group>"; };
+		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
+		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -1711,6 +1717,7 @@
 		9E55F28E2A1FB9B200D5D523 /* SubControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B9FAC6592D42C41200B57EF6 /* NWC */,
 				B9318F632B62ADC20044B6AA /* InputControllers */,
 				9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */,
 				9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */,
@@ -2958,6 +2965,16 @@
 			path = Premium;
 			sourceTree = "<group>";
 		};
+		B9FAC6592D42C41200B57EF6 /* NWC */ = {
+			isa = PBXGroup;
+			children = (
+				B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */,
+				B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */,
+				B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */,
+			);
+			path = NWC;
+			sourceTree = "<group>";
+		};
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
 			isa = PBXGroup;
 			children = (
@@ -3203,6 +3220,7 @@
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				B9C6D2402CAC53E800B2EEBE /* ZappingViewController.swift in Sources */,
+				B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */,
 				B900328F2BD26F4D00ADD2E5 /* NoteLikesViewController.swift in Sources */,
 				B9E67EB62D0A1F8D006BB397 /* MainThreadElementSmallZapGalleryCell.swift in Sources */,
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
@@ -3468,6 +3486,7 @@
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
+				B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */,
 				9E83DF7D2A5BF95500F2C379 /* SettingsZapsViewController.swift in Sources */,
 				B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */,
 				9ECCC88E2A3B6A6F00BE8F62 /* UITextView+Extra.swift in Sources */,
@@ -3572,6 +3591,7 @@
 				B98DD8BC2C50333200E8369A /* CompactArticleView.swift in Sources */,
 				B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */,
 				B94F2C042AEFD9310041181B /* SettingsNetworkViewController.swift in Sources */,
+				B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */,
 				B91EF0C12CE7E27F00299ECF /* PremiumManageMediaHeaderCell.swift in Sources */,
 				B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */,
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
@@ -3885,7 +3905,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.4;
+				MARKETING_VERSION = 2.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3931,7 +3951,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.4;
+				MARKETING_VERSION = 2.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

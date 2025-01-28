@@ -22,6 +22,8 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
     let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "1 sats", showArrow: true)
     let showNotifications = SettingsInfoView(name: "Show notifications above", desc: "1 sats", showArrow: true)
     
+    let nwcVC = SettingsWalletNWCController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -73,8 +75,13 @@ private extension SettingsWalletViewController {
 //            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),
 //            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
             SettingsInfoView(name: "Max wallet balance", desc: "\(WalletManager.instance.maxBalance.localized()) sats", showArrow: false), SpacerView(height: 10),
-            maxBalanceDesc
+            maxBalanceDesc,
+            nwcVC.view
         ])
+        
+        nwcVC.willMove(toParent: self)
+        addChild(nwcVC)
+        nwcVC.didMove(toParent: self)
         
         let scroll = UIScrollView()
         view.addSubview(scroll)

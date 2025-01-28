@@ -279,6 +279,12 @@ class NoteProcessor: MetadataCoding {
                         highlights.append((mentionText, content, mention))
                     } else if mention.post.kind == post.kind {
                         referencedPosts.append((mentionText, mention))
+                    } else if mention.post.kind == NostrKind.mediaPost.rawValue, let urlTag = mention.post.tags.first(where: { $0.first == "imeta" })?[safe: 1], urlTag.hasPrefix("url ") {
+                        let url = String(urlTag.dropFirst(4))
+                        let media = response.mediaMetadata.first(where: { $0.event_id == mentionId })?.resources.uniqueByFilter({ $0.url })
+                        mention.mediaResources.append(contentsOf: media ?? [.init(url: url, variants: [])])
+                        mention.mediaResources = mention.mediaResources.uniqueByFilter({ $0.url })
+                        referencedPosts.append((mentionText, mention))
                     } else {
                         p.customEvent = mention
                         itemsToRemove.append(mentionText)
@@ -462,9 +468,7 @@ class NoteProcessor: MetadataCoding {
                     guard
                         item.isNip27Mention,
                         let mention = item.split(separator: "/").last?.split(separator: ":").last?.string,
-                        let metadata = try? decodedMetadata(from: mention),
-                        let pubkey = metadata.pubkey
-//                        let decoded = try? bech32_decode(npub)
+                        let pubkey = (try? decodedMetadata(from: mention).pubkey) ?? mention.npubToPubkey()
                     else { return nil }
                     for mentionedPub in response.users.keys {
                         if pubkey.contains(mentionedPub) {

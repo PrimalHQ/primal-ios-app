@@ -28,6 +28,9 @@ class WalletRequestResult {
     var parsedLNURL: ParsedLNURL?
     var parsedLNInvoice: ParsedLNInvoice?
     var onchainAddress: String?
+    
+    var newNWC: PrimalWalletNewNWCResponse?
+    var nwcs: [PrimalWalletNWCConnection] = []
 }
 
 enum WalletResponseType: Int {
@@ -46,7 +49,9 @@ enum WalletResponseType: Int {
     case WALLET_PARSED_LNURL = 10_000_312
     case WALLET_PARSED_LNINVOICE = 10_000_313
     case WALLET_ONCHAIN_TIERS = 10_000_315
-    case WALLET_PARSED_ONCHAIN = 10000316
+    case WALLET_PARSED_ONCHAIN = 10_000_316
+    case WALLET_NEW_NWC = 10_000_319
+    case WALLET_NWC = 10_000_321
 }
 
 struct WalletQuote: Codable {

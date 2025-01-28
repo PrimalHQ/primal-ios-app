@@ -48,6 +48,10 @@ class WalletActivationCodeController: UIViewController {
             self.navigationController?.viewControllers.remove(object: self)
         }
     }
+    
+    var userProfile: NostrProfile? {
+        IdentityManager.instance.parsedUser?.data.profileData
+    }
 }
 
 private extension WalletActivationCodeController {
@@ -150,7 +154,7 @@ private extension WalletActivationCodeController {
                 WalletManager.instance.isLoadingWallet = false
                 WalletManager.instance.userHasWallet = true
                 
-                guard let profile = IdentityManager.instance.parsedUser?.data.profileData else { return }
+                guard let profile = userProfile else { return }
                 profile.lud16 = newAddress
                 IdentityManager.instance.updateProfile(profile) { success in
                     if !success {

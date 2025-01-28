@@ -72,7 +72,7 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .constrainToSize(height: 80)
+            .constrainToSize(height: 152)
         
         linkPreview.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)

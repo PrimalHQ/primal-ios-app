@@ -231,7 +231,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     let pubkey: String
     let created_at: Double
     let tags: [[String]]
-    let content: String
+    var content: String
     let sig: String
     var likes: Int
     let mentions: Int

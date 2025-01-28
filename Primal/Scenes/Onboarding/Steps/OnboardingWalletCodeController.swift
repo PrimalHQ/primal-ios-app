@@ -23,9 +23,11 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     
     let skipButton = SolidColorUIButton(title: "I’ll do this later", color: .white)
     
-    let session: OnboardingSession
-    init(email: String, session: OnboardingSession) {
+    var session: OnboardingSession
+    let profile: AccountCreationData
+    init(email: String, profile: AccountCreationData, session: OnboardingSession) {
         self.session = session
+        self.profile = profile
         super.init(email: email)
     }
     
@@ -51,6 +53,20 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     
     override func showSummary(_ newAddress: String) {
         onboardingParent?.resetCrossfade(OnboardingWalletFinalController())
+    }
+    
+    override var userProfile: NostrProfile? {
+        return NostrProfile(
+            name: profile.username,
+            display_name: profile.displayname,
+            about: profile.bio,
+            picture: profile.avatar,
+            banner: profile.banner,
+            website: profile.website,
+            lud06: nil,
+            lud16: profile.lightningWallet,
+            nip05: profile.nip05
+        )
     }
 }
 

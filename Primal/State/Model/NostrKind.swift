@@ -17,6 +17,7 @@ enum NostrKind: Int {
     case eventDeletion = 5
     case repost = 6
     case reaction = 7
+    case mediaPost = 20
     case channelCreation = 40
     case channelMetadata = 41
     case channelMessage = 42

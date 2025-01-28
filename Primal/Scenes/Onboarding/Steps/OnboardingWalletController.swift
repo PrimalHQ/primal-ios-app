@@ -24,9 +24,11 @@ class OnboardingWalletController: WalletActivateViewController, OnboardingViewCo
     
     let skipButton = SolidColorUIButton(title: "I’ll do this later", color: .white)
     
-    let session: OnboardingSession
-    init(session: OnboardingSession) {
+    var session: OnboardingSession
+    let profile: AccountCreationData
+    init(profile: AccountCreationData, session: OnboardingSession) {
         self.session = session
+        self.profile = profile
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -52,6 +54,6 @@ class OnboardingWalletController: WalletActivateViewController, OnboardingViewCo
     }
     
     override func showCodeController(_ email: String) {
-        onboardingParent?.reset(OnboardingWalletCodeController(email: email, session: session), animated: false)
+        onboardingParent?.reset(OnboardingWalletCodeController(email: email, profile: profile, session: session), animated: false)
     }
 }

@@ -9,6 +9,14 @@ import UIKit
 import SwiftUI
 
 extension UIView {
+    func shake() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.duration = 0.6
+        animation.values = [-20, 20, -20, 20, -10, 10, -5, 5, 0]
+        layer.add(animation, forKey: "shake")
+    }
+
     @discardableResult
     func dropShadow(scale: Bool = true) -> Self {
         layer.masksToBounds = false
