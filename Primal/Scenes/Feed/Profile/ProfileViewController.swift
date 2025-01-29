@@ -381,15 +381,16 @@ extension ProfileViewController: MutedUserCellDelegate {
 
 extension ProfileViewController: ProfileInfoCellDelegate {
     func premiumPillPressed() {
-        guard let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: profile.data.pubkey), custom.tier != "free" else { return }
-        
-        if custom.cohort_1 == "Legend" {
-            if WalletManager.instance.hasLegend { return }
-            show(PremiumViewController(startingScreen: .buyLegend), sender: nil)
-            return
-        }
-        if WalletManager.instance.hasPremium { return }
-        show(PremiumViewController(startingScreen: .primalOG), sender: nil)
+        present(ProfilePremiumCardController(user: profile), animated: false)
+//        guard let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: profile.data.pubkey), custom.tier != "free" else { return }
+//        
+//        if custom.cohort_1 == "Legend" {
+//            if WalletManager.instance.hasLegend { return }
+//            show(PremiumViewController(startingScreen: .buyLegend), sender: nil)
+//            return
+//        }
+//        if WalletManager.instance.hasPremium { return }
+//        show(PremiumViewController(startingScreen: .primalOG), sender: nil)
     }
     
     func followersPressed() {

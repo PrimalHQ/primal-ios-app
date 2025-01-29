@@ -526,6 +526,7 @@
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
 		B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */; };
+		B9DAA4562D4949EA00B00B82 /* ProfilePremiumCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */; };
 		B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */; };
 		B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */; };
 		B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */; };
@@ -1166,6 +1167,7 @@
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNwcQRController.swift; sourceTree = "<group>"; };
+		B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePremiumCardController.swift; sourceTree = "<group>"; };
 		B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckLud16Request.swift; sourceTree = "<group>"; };
 		B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPreviewPostPreviewView.swift; sourceTree = "<group>"; };
 		B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNip05Check.swift; sourceTree = "<group>"; };
@@ -1872,6 +1874,7 @@
 			children = (
 				9E8834B22A3239CF005DB548 /* Views */,
 				9E8834B02A320E90005DB548 /* ProfileViewController.swift */,
+				B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */,
 				B906AAF82C9313E20089813F /* UserListController.swift */,
 			);
 			path = Profile;
@@ -3269,6 +3272,7 @@
 				B91E57162CD528A600C14809 /* UITableView+Extra.swift in Sources */,
 				B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */,
 				B91EF0E22CECD20700299ECF /* PremiumCustomizationManager.swift in Sources */,
+				B9DAA4562D4949EA00B00B82 /* ProfilePremiumCardController.swift in Sources */,
 				9ED416182A4F7A6A00892235 /* RoundedCornersView.swift in Sources */,
 				B91BB9642B3E10C3003F6B2A /* WalletKeyboardTabController.swift in Sources */,
 				B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */,
@@ -3905,7 +3909,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3951,7 +3955,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.6;
+				MARKETING_VERSION = 2.1.7;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
