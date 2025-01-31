@@ -53,29 +53,6 @@ extension LegendTheme {
         }
     }
     
-    var simpleColors: [UIColor] {
-        switch self {
-        case .gold:
-            return [.init(rgb: 0xFFB700), .init(rgb: 0xCB721E)]
-        case .aqua:
-            return [.init(rgb: 0x6BCCFF), .init(rgb: 0x247FFF)]
-        case .silver:
-            return [.init(rgb: 0xCCCCCC), .init(rgb: 0x777777)]
-        case .purple:
-            return [.init(rgb: 0xC803EC), .init(rgb: 0x5613FF)]
-        case .purplehaze:
-            return [.init(rgb: 0xFB00C4), .init(rgb: 0x04F7FC)]
-        case .teal:
-            return [.init(rgb: 0x40FCFF), .init(rgb: 0x007D9F)]
-        case .brown:
-            return [.init(rgb: 0xBB9971), .init(rgb: 0x5C3B22)]
-        case .blue:
-            return [.init(rgb: 0x01E0FF), .init(rgb: 0x0190F8)]
-        case .sunfire:
-            return [.init(rgb: 0xFFA722), .init(rgb: 0xFA3C3C), .init(rgb: 0xF00492)]
-        }
-    }
-    
     var locations: [Double] {
         switch self {
         case .gold, .aqua, .silver:
@@ -86,6 +63,16 @@ extension LegendTheme {
             return [0.2, 0.75]
         case .blue, .sunfire:
             return [0.05, 0.35, 0.75]
+        }
+    }
+    
+    // When capsule button has themed background color, use this to style button text
+    var blackButtonText: Bool {
+        switch self {
+        case .purple, .purplehaze, .blue, .sunfire:
+            return false
+        default:
+            return true
         }
     }
     

@@ -33,8 +33,10 @@ class UserImageView: UIView, Themeable {
         }()
     }
     
+    var noBackgroundCircle = false { didSet { updateHeight() } }
+    
     var legendBackgroundCircleSize: CGFloat {
-        height + {
+        noBackgroundCircle ? height : height + {
             if height >= 100 { return 1.5 }
             if height >= 40 { return 1 }
             if height >= 32 { return 0.5 }

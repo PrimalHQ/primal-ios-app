@@ -210,6 +210,9 @@ class PremiumUserTitleView: UIView, Themeable {
         subtitleLabel.font = .appFont(withSize: fontSize, weight: .regular)
         subtitleLabel.textColor = .white
         
+        titleLabel.shadowColor = .black.withAlphaComponent(0.4)
+        titleLabel.shadowOffset = .init(width: 1, height: 1)
+        
         addSubview(gradient)
         gradient.pinToSuperview()
         

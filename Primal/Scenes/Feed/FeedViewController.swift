@@ -465,6 +465,7 @@ private extension NoteViewController {
                 guard let self else { return }
                 
                 if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
+                if self.navigationController?.topViewController != self { return }
                     
                 self.animateBarsToVisible()
             }

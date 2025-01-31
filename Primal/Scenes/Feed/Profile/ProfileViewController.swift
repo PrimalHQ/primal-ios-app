@@ -158,10 +158,9 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     // MARK: - TableView
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard tab == .notes || tab == .reads else { return }
-        if indexPath.row > dataSource.cellCount - 30 {
-            feed.requestNewPage()
-        }
+        guard tab == .notes || tab == .replies else { return }
+        
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

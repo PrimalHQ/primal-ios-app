@@ -241,7 +241,6 @@ final class WalletManager {
                     return
                 }
                 
-                
                 self?.premiumState = state
             }
             .store(in: &cancellables)

@@ -527,6 +527,8 @@
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
 		B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */; };
 		B9DAA4562D4949EA00B00B82 /* ProfilePremiumCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */; };
+		B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */; };
+		B9DAA45A2D4A634500B00B82 /* SettingsExternalNwcController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4592D4A634500B00B82 /* SettingsExternalNwcController.swift */; };
 		B9DB02EE2BB57CEE000F78DA /* CheckLud16Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */; };
 		B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */; };
 		B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */; };
@@ -1168,6 +1170,8 @@
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNwcQRController.swift; sourceTree = "<group>"; };
 		B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePremiumCardController.swift; sourceTree = "<group>"; };
+		B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCScheme.swift; sourceTree = "<group>"; };
+		B9DAA4592D4A634500B00B82 /* SettingsExternalNwcController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsExternalNwcController.swift; sourceTree = "<group>"; };
 		B9DB02ED2BB57CEE000F78DA /* CheckLud16Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckLud16Request.swift; sourceTree = "<group>"; };
 		B9DD12F62CB800A900C435FD /* PostPreviewPostPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostPreviewPostPreviewView.swift; sourceTree = "<group>"; };
 		B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNip05Check.swift; sourceTree = "<group>"; };
@@ -2974,6 +2978,7 @@
 				B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */,
 				B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */,
 				B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */,
+				B9DAA4592D4A634500B00B82 /* SettingsExternalNwcController.swift */,
 			);
 			path = NWC;
 			sourceTree = "<group>";
@@ -2983,6 +2988,7 @@
 			children = (
 				C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */,
 				C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */,
+				B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */,
 			);
 			path = Scheme;
 			sourceTree = "<group>";
@@ -3378,6 +3384,7 @@
 				B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */,
 				B9E67E8B2D0766F1006BB397 /* FeedElementReactionsCell.swift in Sources */,
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
+				B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */,
 				B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
 				B9E67EAA2D09D8FA006BB397 /* ThreadElementUserCell.swift in Sources */,
@@ -3722,6 +3729,7 @@
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
 				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
 				B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */,
+				B9DAA45A2D4A634500B00B82 /* SettingsExternalNwcController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3897,6 +3905,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Primal will only use the camera to import profile or content images into the app, as expressly selected by you.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Used to safeguard private keys.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Primal will only use the image gallery to import profile or content images into the app, as expressly selected by you, or to save images and video content when requested by you.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -3909,7 +3918,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.7;
+				MARKETING_VERSION = 2.1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3943,6 +3952,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Primal;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Primal will only use the camera to import profile or content images into the app, as expressly selected by you.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Used to safeguard private keys.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Primal will only use the image gallery to import profile or content images into the app, as expressly selected by you, or to save images and video content when requested by you.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -3955,7 +3965,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.7;
+				MARKETING_VERSION = 2.1.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

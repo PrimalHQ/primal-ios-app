@@ -56,6 +56,13 @@ class PremiumManageLegendController: UIViewController {
         
         setup()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
+    }
 }
 
 private extension PremiumManageLegendController {
@@ -116,7 +123,13 @@ private extension PremiumManageLegendController {
         }), for: .valueChanged)
         
         action.addAction(.init(handler: { [unowned self] _ in
-            let customization = LegendCustomization(style: table.selectedTheme?.rawValue.uppercased() ?? "", custom_badge: isBadgeOn, avatar_glow: isAvatarOn)
+            let customization = LegendCustomization(
+                style: table.selectedTheme?.rawValue.uppercased() ?? "",
+                custom_badge: isBadgeOn,
+                avatar_glow: isAvatarOn,
+                in_leaderboard: true,
+                current_shoutout: "Test"
+            )
             guard
                 let customizationString = customization.encodeToString(),
                 let nostrObject = NostrObject.create(content: customizationString, kind: 30078)
