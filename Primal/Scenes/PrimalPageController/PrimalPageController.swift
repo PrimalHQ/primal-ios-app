@@ -21,10 +21,10 @@ class PrimalPageController: UIViewController, Themeable {
     private var viewControllers: [String: UIViewController] = [:]
     @Published private(set) var currentTab = 0
     
-    init(tabs: [(String, () -> UIViewController)], startingTab: Int = 0) {
+    init(tabs: [(String, () -> UIViewController)], extraViews: [UIView] = [], startingTab: Int = 0) {
         self.tabs = tabs
         currentTab = startingTab
-        tabSelectionView = .init(tabs: tabs.map { $0.0.uppercased() }, spacing: 5, distribution: .fillEqually)
+        tabSelectionView = .init(tabs: tabs.map { $0.0.uppercased() }, extraViews: extraViews, spacing: 5, distribution: .fillEqually)
         tabSelectionView.set(tab: startingTab)
         super.init(nibName: nil, bundle: nil)
     }
@@ -106,9 +106,9 @@ private extension PrimalPageController {
         border.topAnchor.constraint(equalTo: tabSelectionView.bottomAnchor).isActive = true
         
         Publishers.CombineLatest($currentTab, tabSelectionView.$selectedTab)
-            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
             .sink { [weak self] (old, tab) in
-                guard let self else { return }
+                guard let self, old != tab else { return }
                 
                 currentTab = tab
                 pageVC.setViewControllers([getChild(tab: tab)], direction: tab > old ? .forward : .reverse, animated: true)

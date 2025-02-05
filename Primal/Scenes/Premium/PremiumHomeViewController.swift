@@ -104,6 +104,7 @@ private extension PremiumHomeViewController {
         
         if let legend = PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
             titleView.theme = legend.theme
+            action.theme = legend.theme
         }
     }
     
@@ -160,6 +161,43 @@ private extension PremiumHomeViewController {
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 6
         paragraph.alignment = .center
+        
+        if state.isLegend {
+//            let mutable = NSMutableAttributedString(string: "Your contribution to Primal: ", attributes: [
+//                .font: UIFont.appFont(withSize: 14, weight: .regular),
+//                .foregroundColor: UIColor.foreground3,
+//                .paragraphStyle: paragraph
+//            ])
+//                        
+//            let btc = Double(state.donated_btc ?? "") ?? 0
+//            let sats = Int(btc * .BTC_TO_SAT)
+//            
+//            mutable.append(.init(string: "\(sats.localized()) sats", attributes: [
+//                .font: UIFont.appFont(withSize: 14, weight: .bold),
+//                .foregroundColor: UIColor.foreground,
+//                .paragraphStyle: paragraph
+//            ]))
+//            
+//            var beggingText = "Want to contribute?"
+//            
+//            if sats > 0 {
+//                mutable.append(.init(string: "\nThank you for you support! 💜🫂", attributes: [
+//                    .font: UIFont.appFont(withSize: 14, weight: .regular),
+//                    .foregroundColor: UIColor.foreground3,
+//                    .paragraphStyle: paragraph
+//                ]))
+//                beggingText = "Want to contribute more?"
+//            }
+//            
+//            mutable.append(.init(string: "\n\(beggingText)", attributes: [
+//                .font: UIFont.appFont(withSize: 14, weight: .regular),
+//                .foregroundColor: UIColor.accent2,
+//                .paragraphStyle: paragraph
+//            ]))
+//            
+//            
+//            return mutable
+        }
         
         let strings: (String, String?) = {
             if state.isLegend { return ("", nil) }

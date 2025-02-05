@@ -23,7 +23,7 @@ final class TabSelectionView: UIView, Themeable {
         set { stack.distribution = newValue }
     }
     
-    init(tabs: [String] = [], spacing: CGFloat = 16, distribution: UIStackView.Distribution = .equalSpacing) {
+    init(tabs: [String] = [], extraViews: [UIView] = [], spacing: CGFloat = 16, distribution: UIStackView.Distribution = .equalSpacing) {
         super.init(frame: .zero)
         
         buttons = tabs.map { TabSelectionButton(text: $0, spacing: spacing) }
@@ -32,6 +32,8 @@ final class TabSelectionView: UIView, Themeable {
                 self?.selectedTab = index
             }), for: .touchUpInside)
         }
+        
+        extraViews.forEach { stack.addArrangedSubview($0) }
             
         setup()
         

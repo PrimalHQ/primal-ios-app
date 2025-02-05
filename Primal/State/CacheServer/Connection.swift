@@ -183,7 +183,7 @@ final class Connection {
     }
     
     func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        let subId = UUID().uuidString
+        let subId = "ios_" + UUID().uuidString
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
             guard let jsonData = try? self.jsonEncoder.encode(json) else {

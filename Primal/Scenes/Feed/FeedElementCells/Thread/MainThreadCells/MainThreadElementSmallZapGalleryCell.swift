@@ -23,7 +23,7 @@ class MainThreadElementSmallZapGalleryCell: ThreadElementBaseCell, RegularFeedEl
         secondRow.addSubview(gallery)
         gallery
             .pinToSuperview(edges: .top, padding: 8)
-            .pinToSuperview(edges: .bottom, padding: 0)
+            .pinToSuperview(edges: .bottom, padding: 1)
             .pinToSuperview(edges: .horizontal, padding: 0)
         
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in

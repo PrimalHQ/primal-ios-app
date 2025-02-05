@@ -24,7 +24,7 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
         contentView.addSubview(gallery)
         gallery
             .pinToSuperview(edges: .top, padding: 8)
-            .pinToSuperview(edges: .bottom, padding: 0)
+            .pinToSuperview(edges: .bottom, padding: 1)
             .pinToSuperview(edges: .horizontal, padding: 16)
         
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in

@@ -10,7 +10,7 @@ import Foundation
 extension URL {
     var isYoutubeURL: Bool {
         let host = host()
-        return host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be"
+        return host == "www.youtube.com" || host == "youtube.com" || host == "www.youtu.be" || host == "youtu.be" || host == "music.youtube.com"
     }
     
     var isTwitterURL: Bool {

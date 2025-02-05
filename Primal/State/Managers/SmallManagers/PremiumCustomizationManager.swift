@@ -15,6 +15,7 @@ struct LegendCustomization: Codable {
     var in_leaderboard: Bool
     var current_shoutout: String
     var legend_since: Double?
+    var edited_shoutout: String?
 }
 
 struct PremiumUserInfo: Codable {

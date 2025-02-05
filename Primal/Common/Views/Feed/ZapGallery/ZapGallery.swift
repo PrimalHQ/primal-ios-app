@@ -78,8 +78,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
             .constrainToSize(width: 30, height: 24)
             .pinToSuperview(edges: [.leading, .top])
         skeletonLoader.layer.cornerRadius = 12
-        
-        clipsToBounds = true
     }
     
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -346,6 +344,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()
                         view.backgroundColor = .init(rgb: 0xFFA02F)
+                        view.layer.cornerRadius = 11
                         background = view
                     }
                     

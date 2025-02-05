@@ -26,7 +26,7 @@ class ProfileNavigationView: UIView, Themeable {
     let searchButton = UIButton()
     let menuButton = UIButton()
     let primaryLabel = UILabel()
-    let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
+    let checkboxIcon = VerifiedView().constrainToSize(20)
     lazy var titleStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
     var overlayView = UIView()
 
@@ -82,7 +82,7 @@ class ProfileNavigationView: UIView, Themeable {
         }
         
         primaryLabel.text = user.firstIdentifier
-        checkboxIcon.isHidden = !CheckNip05Manager.instance.isVerified(user)
+        checkboxIcon.user = user
         
         menuButton.isHidden = user.isCurrentUser
         

@@ -68,7 +68,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     
     init(profile: ParsedUser, tableView: UITableView, delegate: FeedElementCellDelegate & ArticleCellDelegate & MediaTripleCellDelegate & ProfileInfoCellDelegate & MutedUserCellDelegate, refreshCallback: @escaping () -> ()) {
         self.profile = profile
-        parsedDescription = NSAttributedString(string: profile.data.about, attributes: aboutTextAttributes)
+        parsedDescription = NSAttributedString(string: profile.data.about.trimmingCharacters(in: .whitespacesAndNewlines), attributes: aboutTextAttributes)
         
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
@@ -241,6 +241,8 @@ private extension ProfileFeedDatasource {
                         aboutText = aboutText.replacingOccurrences(of: "nostr:\(user.data.npub)", with: replacementString)
                         aboutText = aboutText.replacingOccurrences(of: "@\(user.data.npub)", with: replacementString)
                     }
+                    
+                    aboutText = aboutText.trimmingCharacters(in: .whitespacesAndNewlines)
                     
                     let attributedString = NSMutableAttributedString(string: aboutText, attributes: aboutTextAttributes)
 
