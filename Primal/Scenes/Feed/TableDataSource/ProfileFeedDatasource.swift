@@ -32,7 +32,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     }
     var cellCount: Int { cells.count }
     
-    var profile: ParsedUser {
+    @Published var profile: ParsedUser {
         didSet {
             parseDescription()
             updateCells()

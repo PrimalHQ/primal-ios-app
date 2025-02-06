@@ -45,7 +45,7 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         mainLabel.attributedText = parsedContent.attributedTextShort
         mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPost == nil) ? 12 : 6
         
-        seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
+        seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 500)
         
         updateTheme()
     }

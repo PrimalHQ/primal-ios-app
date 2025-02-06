@@ -96,9 +96,7 @@ class UserImageView: UIView, Themeable {
         animatedImageView.image = UIImage(named: "Profile")        
     }
     
-    func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
-        tag = tag + 1
-        
+    func updateGlow(_ user: ParsedUser) {
         if showLegendGlow, let legendary = PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), legendary.avatar_glow, let theme = legendary.theme {
             legendaryGradient.isHidden = false
             legendaryBackgroundCircleView.isHidden = false
@@ -109,6 +107,12 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = true
             cachedLegendTheme = nil
         }
+    }
+    
+    func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
+        tag = tag + 1
+        
+        updateGlow(user)
         
         guard
             !disableAnimated,

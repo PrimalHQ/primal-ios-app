@@ -199,15 +199,15 @@ extension String : Identifiable {
     }
     
     func extractHashtags() -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+", options: []) else { return [] }
+        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#\\w+", options: []) else { return [] }
         
         return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
             .compactMap { Range($0.range, in: self) }
-            .map { String(self[$0].dropFirst()) }
+            .map { self[$0].string }
     }
     
     func extractURLs() -> [String] {
-        guard let regex = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+        guard let regex = try? NSRegularExpression(pattern: "\\b(https?:\\/\\/[\\S]+)\\b", options: []) else {
             return []
         }
         

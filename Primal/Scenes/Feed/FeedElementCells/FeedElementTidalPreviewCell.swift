@@ -1,45 +1,27 @@
 //
-//  FeedElementMusicPreviewCell.swift
+//  FeedElementTidalPreviewCell.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 16.1.25..
+//  Created by Pavle Stevanović on 5.2.25..
 //
 
 import UIKit
 import WebKit
 
-extension UIButton.Configuration {
-    static func musicCellPlayButton(fontSize: CGFloat = 14) -> UIButton.Configuration {
-        var config = UIButton.Configuration.filled()
-        config.cornerStyle = .capsule
-        config.baseBackgroundColor = .foreground
-        config.attributedTitle = .init("Play", attributes: .init([
-            .font: UIFont.appFont(withSize: fontSize, weight: .semibold),
-            .foregroundColor: UIColor.background2
-        ]))
-        config.image = UIImage(named: "smallPlayIcon")?.withTintColor(.background2, renderingMode: .alwaysOriginal)
-        config.imagePadding = 5
-        return config
-    }
-}
-
-class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
+class FeedElementTidalPreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
     weak var delegate: FeedElementCellDelegate?
     
-    static var cellID: String { "FeedElementMusicPreviewCell" }
+    static var cellID: String { "FeedElementTidalPreviewCell" }
     
-    private let iconView = UIImageView(image: UIImage(named: "youtubeIcon"))
+    private let iconView = UIImageView(image: UIImage(named: "tidalSmallIcon"))
     
     let linkPreview = UIView()
-    let thumbnailView = UIImageView().constrainToSize(128)
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
+    let thumbnailView = UIImageView().constrainToSize(92)
     private let linkLabel = UILabel()
 
-    let playButton = UIButton().constrainToSize(width: 67, height: 28)
+    let playButton = UIButton().constrainToSize(width: 81, height: 36)
     lazy var linkStack = UIStackView([iconView, linkLabel])
-    lazy var titleStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
-    lazy var contentStack = UIStackView(axis: .vertical, [linkStack, titleStack, playButton])
+    lazy var contentStack = UIStackView(axis: .vertical, [linkStack, playButton])
     lazy var mainStack = UIStackView([thumbnailView, contentStack])
     
     let webView: WKWebView = {
@@ -72,10 +54,10 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
             .pinToSuperview(edges: .horizontal, padding: 16)
-            .constrainToSize(height: 152)
+            .constrainToSize(height: 100)
         
         linkPreview.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 4).centerToSuperview(axis: .vertical)
         
         iconView.setContentHuggingPriority(.required, for: .horizontal)
         iconView.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -84,17 +66,12 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
         thumbnailView.clipsToBounds = true
         thumbnailView.layer.cornerRadius = 6
         
-        contentStack.distribution = .equalCentering
+        contentStack.spacing = 16
         contentStack.alignment = .leading
         
-        titleLabel.numberOfLines = 2
-        subtitleLabel.numberOfLines = 2
+        mainStack.spacing = 20
+        mainStack.alignment = .center
         
-        titleStack.spacing = 2
-        mainStack.spacing = 12
-        
-        titleLabel.font = .appFont(withSize: 16, weight: .regular)
-        subtitleLabel.font = .appFont(withSize: 12, weight: .regular)
         linkLabel.font = .appFont(withSize: 15, weight: .regular)
         
         linkStack.alignment = .center
@@ -134,11 +111,9 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
     override func update(_ content: ParsedContent) {
         thumbnailView.tintColor = .foreground5
         thumbnailView.backgroundColor = .background3
-        subtitleLabel.textColor = .foreground4
-        titleLabel.textColor = .foreground
         linkPreview.backgroundColor = .background5
         linkLabel.textColor = .foreground4
-        playButton.configuration = .musicCellPlayButton()
+        playButton.configuration = .musicCellPlayButton(fontSize: 16)
         iconView.tintColor = .foreground
     }
     
@@ -153,21 +128,6 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
     
     func set(data: LinkMetadata) {
         linkLabel.text = data.url.host()?.split(separator: ".").suffix(2).joined(separator: ".")
-        
-        titleLabel.text = data.data.md_title
-        titleLabel.isHidden = data.data.md_title?.isEmpty != false
-        
-        subtitleLabel.text = data.data.md_description
-        subtitleLabel.isHidden = data.data.md_description?.isEmpty != false
-        
-        iconView.isHidden = false
-        if data.url.isTidalURL {
-            iconView.image = UIImage(named: "tidalSmallIcon")
-        } else if data.url.isSpotifyURL {
-            iconView.image = UIImage(named: "spotifySmallIcon")
-        } else {
-            iconView.isHidden = true
-        }
         
         guard let imageString = data.data.md_image, !imageString.isEmpty else {
             thumbnailView.image = UIImage(named: "webPreviewIcon")

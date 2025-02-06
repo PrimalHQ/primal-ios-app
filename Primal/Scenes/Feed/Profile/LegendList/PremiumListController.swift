@@ -1,47 +1,35 @@
 //
-//  LegendListController.swift
+//  PremiumListController.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 3.2.25..
+//  Created by Pavle Stevanović on 5.2.25..
 //
 
 import Combine
 import UIKit
 
-struct LegendListItem {
+struct PremiumListItem {
     let index: Int
     let user: ParsedUser
     let since: Date
-    let sats: Int
 }
 
-struct LegendListServerResponse: Codable {
+struct PremiumListServerResponse: Codable {
     let pubkey: String
-    let donated_btc: String
-    let last_donation: Double
+    let premium_since: Double
+    let index: Double
 }
 
-class LegendListController: PrimalPageController {
-    var cancellables: Set<AnyCancellable> = []
-    
-    let latest: LegendListTableController
-    let contribution: LegendListTableController
-    
+class PremiumListController: PrimalPageController {
     init() {
-        let latest = LegendListTableController()
-        let contribution = LegendListTableController()
-        let aboutButton = UIButton(configuration: .accent("About Legends", font: .appFont(withSize: 14, weight: .regular)))
+        let buyButton = UIButton(configuration: .accent("Get Primal Premium", font: .appFont(withSize: 14, weight: .regular)))
         let aboutParent = UIView()
-        aboutParent.addSubview(aboutButton)
-        aboutButton.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing, padding: 0)
-        
-        self.latest = latest
-        self.contribution = contribution
+        aboutParent.addSubview(buyButton)
+        buyButton.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing, padding: 0)
         
         super.init(
             tabs: [
-                ("LATEST", { latest }),
-                ("CONTRIBUTION", { contribution })
+                ("LATEST", { PremiumListTableController() }),
             ],
             extraViews: [aboutParent]
         )
@@ -49,42 +37,12 @@ class LegendListController: PrimalPageController {
         tabSelectionView.stack.spacing = 22
         tabSelectionView.distribution = .fill
         
-        title = "Primal Legends"
+        title = "Premium Users"
         
-        aboutButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(PremiumBecomeLegendController(), sender: nil)
+        buyButton.addAction(.init(handler: { [weak self] _ in
+            self?.show(PremiumViewController(), sender: nil)
         }), for: .touchUpInside)
-        aboutButton.transform = .init(translationX: 0, y: -3)
-        
-        SocketRequest(name: "membership_legends_leaderboard", payload: [
-            "limit": 1000,
-            "order_by": "donated_btc",
-        ])
-        .publisher()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] res in
-            guard
-                let listResponse = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.primalLegendInfoList.rawValue }),
-                let items: [LegendListServerResponse] = listResponse["content"]?.stringValue?.decode()
-            else {
-                return
-            }
-            
-            let users = res.getSortedUsers()
-            
-            let legends: [LegendListItem] = items.enumerated().map { (index, item) in
-                .init(
-                    index: index + 1,
-                    user: users.first(where: { $0.data.pubkey == item.pubkey }) ?? .init(data: .init(pubkey: item.pubkey)),
-                    since: Date(timeIntervalSince1970: item.last_donation),
-                    sats: Int((Double(item.donated_btc) ?? 0))
-                )
-            }
-            
-            self?.contribution.legends = legends
-            self?.latest.legends = legends.sorted(by: { $0.since > $1.since })
-        }
-        .store(in: &cancellables)
+        buyButton.transform = .init(translationX: 0, y: -3)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -97,28 +55,45 @@ class LegendListController: PrimalPageController {
 }
 
 
-class LegendListTableController: UITableViewController, Themeable {
-    var legends: [LegendListItem] = [] { didSet { tableView.reloadData() } }
+class PremiumListTableController: UITableViewController, Themeable {
+    var legends: [PremiumListItem] = [] { didSet { tableView.reloadData() } }
+    
+    var cancellables: Set<AnyCancellable> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(LegendListTableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(PremiumListTableViewCell.self, forCellReuseIdentifier: "cell")
         
         tableView.contentInset = .init(top: 60, left: 0, bottom: 60, right: 0)
         tableView.separatorStyle = .none
-    }
-    
-    var firstTime = true
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
-        if firstTime {
-            firstTime = false
-            if !legends.isEmpty {
-                tableView.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: false)
+        SocketRequest(name: "membership_premium_leaderboard", payload: [
+            "limit": 1000,
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] res in
+            guard
+                let listResponse = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.primalPremiumInfoList.rawValue }),
+                let items: [PremiumListServerResponse] = listResponse["content"]?.stringValue?.decode()
+            else {
+                return
             }
+            
+            let users = res.getSortedUsers()
+            
+            let premiumUsers: [PremiumListItem] = items.enumerated().map { (index, item) in
+                .init(
+                    index: Int(item.index),
+                    user: users.first(where: { $0.data.pubkey == item.pubkey }) ?? .init(data: .init(pubkey: item.pubkey)),
+                    since: Date(timeIntervalSince1970: item.premium_since)
+                )
+            }
+            
+            self?.legends = premiumUsers
         }
+        .store(in: &cancellables)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -130,7 +105,7 @@ class LegendListTableController: UITableViewController, Themeable {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        (cell as? LegendListTableViewCell)?.setup(item: legends[indexPath.row])
+        (cell as? PremiumListTableViewCell)?.setup(item: legends[indexPath.row])
         return cell
     }
     
@@ -140,8 +115,7 @@ class LegendListTableController: UITableViewController, Themeable {
 }
 
 
-class LegendListTableViewCell: UITableViewCell, Themeable {
-    let indexLabel = UILabel()
+class PremiumListTableViewCell: UITableViewCell, Themeable {
     let userImage = UserImageView(height: 36)
     let nameLabel = UILabel()
     let check = VerifiedView().constrainToSize(16)
@@ -160,7 +134,7 @@ class LegendListTableViewCell: UITableViewCell, Themeable {
         let nameStack = UIStackView([nameLabel, check])
         let centerStack = UIStackView(axis: .vertical, [nameStack, sinceLabel])
         let satsStack = UIStackView(axis: .vertical, [satsLabel, satsInfoLabel])
-        let mainStack = UIStackView([indexLabel, userImage, centerStack, satsStack])
+        let mainStack = UIStackView([userImage, centerStack, satsStack])
         
         centerStack.alignment = .leading
         satsStack.alignment = .trailing
@@ -171,8 +145,6 @@ class LegendListTableViewCell: UITableViewCell, Themeable {
         centerStack.spacing = 4
         satsStack.spacing = 4
         mainStack.spacing = 8
-        
-        indexLabel.constrainToSize(width: 40)
         
         contentView.addSubview(mainStack)
         mainStack
@@ -185,7 +157,6 @@ class LegendListTableViewCell: UITableViewCell, Themeable {
         
         dateFormatter.dateFormat = "MMM d, yyyy"
         
-        indexLabel.font = .appFont(withSize: 16, weight: .bold)
         nameLabel.font = .appFont(withSize: 15, weight: .bold)
         sinceLabel.font = .appFont(withSize: 14, weight: .regular)
         satsLabel.font = .appFont(withSize: 15, weight: .bold)
@@ -194,22 +165,21 @@ class LegendListTableViewCell: UITableViewCell, Themeable {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(item: LegendListItem) {
-        indexLabel.text = item.index.localized()
-        
+    func setup(item: PremiumListItem) {
         userImage.setUserImage(item.user)
         nameLabel.text = item.user.data.firstIdentifier
         
         check.user = item.user.data
         
         sinceLabel.text = "Since: \(dateFormatter.string(from: item.since))"
-        satsLabel.text = item.sats.localized()
+        
+        satsInfoLabel.text = String(Calendar.current.component(.year, from: item.since))
+        satsLabel.text = "Primal OG"
      
         updateTheme()
     }
     
     func updateTheme() {
-        indexLabel.textColor = .foreground
         nameLabel.textColor = .foreground
         satsLabel.textColor = .foreground
         

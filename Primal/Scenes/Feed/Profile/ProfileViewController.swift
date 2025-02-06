@@ -29,7 +29,9 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     var profile: ParsedUser {
         didSet {
-            profileDataSource?.profile = profile
+            if profileDataSource?.profile != profile {
+                profileDataSource?.profile = profile
+            }
             navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
         }
     }
@@ -248,6 +250,7 @@ private extension ProfileViewController {
             }
             .store(in: &cancellables)
         
+        profileDataSource?.$profile.receive(on: DispatchQueue.main).assign(to: \.profile, onWeak: self).store(in: &cancellables)
         $tabToBe.dropFirst().debounce(for: 0.2, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in

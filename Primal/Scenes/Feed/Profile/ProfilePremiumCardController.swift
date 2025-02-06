@@ -97,6 +97,8 @@ class ProfilePremiumCardController: UIViewController {
     let userCopyStack = UIStackView(axis: .vertical, [])
     let becomeLegendButton = UIButton()
     
+    var isLegend = false
+    
     init(user: ParsedUser) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
@@ -181,12 +183,15 @@ private extension ProfilePremiumCardController {
         userStack.alignment = .center
         
         let sinceLabel = UILabel("", color: .white, font: .appFont(withSize: 16, weight: .semibold))
-        let aboutLabel =  UILabel("", color: .init(rgb: 0xAAAAAA), font: .appFont(withSize: 15, weight: .regular), multiline: true)
+        let aboutLabel =  UILabel()
         aboutLabel.isHidden = true
+        aboutLabel.numberOfLines = 0
         
         let otherLegendsButton = UIButton(configuration: .coloredButton("See other Legends", color: firstColor))
+        let becomeLegendParent = UIView()
+        becomeLegendParent.addSubview(becomeLegendButton)
+        becomeLegendButton.pinToSuperview()
         
-        var isLegend = false
         var isButtonTextBlack = true
         if let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: user.data.pubkey) {
             premiumBadge.titleLabel.text = custom.cohort_1
@@ -197,7 +202,7 @@ private extension ProfilePremiumCardController {
                 
                 if let data = PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), let customLegend = data.theme {
                     
-                    if let since = data.legend_since {
+                    if let since = custom.legend_since {
                         let formatter = DateFormatter()
                         formatter.dateFormat = "MMMM d, yyyy"
                         sinceLabel.text = "Legend since \(formatter.string(from: Date(timeIntervalSince1970: since)))"
@@ -206,7 +211,14 @@ private extension ProfilePremiumCardController {
                         sinceLabel.text = "Legend since \(custom.cohort_2)"
                     }
                     
-                    aboutLabel.text = data.current_shoutout
+                    let paragraph = NSMutableParagraphStyle()
+                    paragraph.alignment = .center
+                    paragraph.lineSpacing = 7
+                    aboutLabel.attributedText = .init(string: data.current_shoutout, attributes: [
+                        .paragraphStyle: paragraph,
+                        .foregroundColor: UIColor(rgb: 0xAAAAAA),
+                        .font: UIFont.appFont(withSize: 15, weight: .regular)
+                    ])
                     aboutLabel.isHidden = false
                     
                     premiumBadge.theme = customLegend
@@ -216,20 +228,38 @@ private extension ProfilePremiumCardController {
                 } else {
                     premiumBadge.isHidden = true
                 }
+                
+                if WalletManager.instance.hasLegend {
+                    becomeLegendParent.alpha = 0.001
+                    becomeLegendParent.isUserInteractionEnabled = false
+                }
+                
             } else {
                 sinceLabel.font = .appFont(withSize: 16, weight: .regular)
                 sinceLabel.text = "Primal OG since \(custom.cohort_2)"
                  
                 otherLegendsButton.configuration = .coloredButton("See other Primal OGs", color: .accent)
-                becomeLegendButton.isHidden = true
+                becomeLegendParent.alpha = 0.001
+                becomeLegendParent.isUserInteractionEnabled = false
             }
         }
+        
+        becomeLegendButton.addAction(.init(handler: { [weak self] _ in
+            guard let nav: UINavigationController = self?.presentingViewController?.findInChildren() else { return }
+            
+            nav.pushViewController(PremiumBecomeLegendController(), animated: true)
+            self?.animateClose()
+        }), for: .touchUpInside)
         
         otherLegendsButton.addAction(.init(handler: { [weak self] _ in
             guard let nav: UINavigationController = self?.presentingViewController?.findInChildren() else { return }
             
+            if self?.isLegend == true {
+                nav.pushViewController(LegendListController(), animated: true)
+            } else {
+                nav.pushViewController(PremiumListController(), animated: true)
+            }
             self?.animateClose()
-            nav.pushViewController(LegendListController(), animated: true)
         }), for: .touchUpInside)
         
         if PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey) != nil, user.data.pubkey == IdentityManager.instance.userHexPubkey {
@@ -260,12 +290,14 @@ private extension ProfilePremiumCardController {
         }
         
         becomeLegendButton.configuration = .coloredFilledButton("Become a Legend", color: firstColor, textColor: isButtonTextBlack ? .black : .white)
-        
-        let premiumUserExtraSpace = SpacerView(height: 150)
+                
+        let premiumUserExtraSpace = SpacerView(height: 50)
         [sinceLabel, aboutLabel, premiumUserExtraSpace, otherLegendsButton].forEach { userCopyStack.addArrangedSubview($0) }
         userCopyStack.alignment = .center
         userCopyStack.setCustomSpacing(8, after: sinceLabel)
         userCopyStack.setCustomSpacing(34, after: aboutLabel)
+        
+        aboutLabel.pinToSuperview(edges: .horizontal, padding: 20)
         
         let mainStack = UIStackView(axis: .vertical, [
             userImage, SpacerView(height: 28),
@@ -273,10 +305,10 @@ private extension ProfilePremiumCardController {
             secondLabel, SpacerView(height: 12),
             premiumBadge, SpacerView(height: 46),
             userCopyStack,
-            becomeLegendButton.constrainToSize(height: 44)
+            becomeLegendParent.constrainToSize(height: 44)
         ])
         
-        becomeLegendButton.pinToSuperview(edges: .horizontal)
+        becomeLegendParent.pinToSuperview(edges: .horizontal)
         userCopyStack.pinToSuperview(edges: .horizontal)
         
         cardView.addSubview(mainStack)

@@ -177,7 +177,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         return true
     }
     
-    func setBarsToTransform(_ transform: CGFloat) {
+    func setBarsToTransform(_ transform: CGFloat) {        
         prevTransform = transform
         navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
         navigationBorder.transform = .init(translationX: 0, y: transform)
@@ -382,7 +382,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 thread.textInputView.becomeFirstResponder()
             }
         case .embeddedPost:
-            open(post: post.embeddedPost ?? post)
+            let emb = post.embeddedPost ?? post
+            if emb.post.kind != 20 {
+                open(post: emb)
+            }
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
             showViewController(ProfileViewController(profile: profile))
@@ -465,7 +468,7 @@ private extension NoteViewController {
                 guard let self else { return }
                 
                 if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
-                if self.navigationController?.topViewController != self { return }
+                if self.navigationController?.topViewController?.isParent(self) != true { return }
                     
                 self.animateBarsToVisible()
             }

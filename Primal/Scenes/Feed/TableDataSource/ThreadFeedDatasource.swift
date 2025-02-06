@@ -146,6 +146,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         tableView.register(MainThreadElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID + ThreadPosition.child.rawValue)
         
+        tableView.register(ParentThreadElementTidalPreviewCell.self, forCellReuseIdentifier: FeedElementTidalPreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementTidalPreviewCell.self, forCellReuseIdentifier: FeedElementTidalPreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementTidalPreviewCell.self, forCellReuseIdentifier: FeedElementTidalPreviewCell.cellID + ThreadPosition.child.rawValue)
+        
         // Reactions
         tableView.register(ParentThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.parent.rawValue)
         tableView.register(MainThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.main.rawValue)

@@ -76,6 +76,7 @@ class ProfileNavigationView: UIView, Themeable {
         
         if let oldImageUrl, oldImageUrl == parsed.data.picture {
             // NOTHING to prevent double loading of gifs
+            profilePicture.updateGlow(parsed)
         } else {
             oldImageUrl = parsed.data.picture
             profilePicture.setUserImage(parsed, feed: false)

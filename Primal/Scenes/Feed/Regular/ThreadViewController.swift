@@ -329,6 +329,12 @@ private extension ThreadViewController {
             .store(in: &cancellables)
         
         weak var threadDS = dataSource as? ThreadFeedDatasource
+        
+//        threadDS?.$cellHeightArray.sink(receiveValue: { height in
+//            print("Height: \(height.reduce(0, +))")
+//        })
+//        .store(in: &cancellables)
+        
         updateInsetCancellable = threadDS?.$cellHeightArray
             .map { (height: [CGFloat]) in
                 let index = threadDS?.mainPostIndexPath.row ?? 0
@@ -338,8 +344,10 @@ private extension ThreadViewController {
                     .map { $0.1 }
                     .reduce(0, +)               // Sum of all heights
             }
+            .removeDuplicates()
             .sink { [weak self] contentSize in
-                guard let self, dataSource.cellCount - mainPositionInThread < 10 else {
+//                print("Height reduced: \(contentSize)")
+                guard let self, posts.count - mainPositionInThread < 6 else {
                     self?.table.contentInset = .init(top: self?.adjustedTopBarHeight ?? 107, left: 0, bottom: 150, right: 0)
                     return
                 }

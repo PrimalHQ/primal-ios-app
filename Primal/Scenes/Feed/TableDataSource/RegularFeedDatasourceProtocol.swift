@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 enum WebPreviewType: Hashable {
-    case small, large, webkit, system, youtube, music
+    case small, large, webkit, system, youtube, music, tidal
 }
 
 enum NoteFeedElement: Hashable {
@@ -51,6 +51,8 @@ extension NoteFeedElement {
                 return FeedElementSystemWebPreviewCell.cellID
             case .music:
                 return FeedElementMusicPreviewCell.cellID
+            case .tidal:
+                return FeedElementTidalPreviewCell.cellID
             }
         case .postPreview:
             return FeedElementPostPreviewCell.cellID
@@ -91,6 +93,7 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(FeedElementWebkitLinkPreviewCell.self, forCellReuseIdentifier: FeedElementWebkitLinkPreviewCell.cellID)
         tableView.register(FeedElementYoutubePreviewCell.self, forCellReuseIdentifier: FeedElementYoutubePreviewCell.cellID)
         tableView.register(FeedElementMusicPreviewCell.self, forCellReuseIdentifier: FeedElementMusicPreviewCell.cellID)
+        tableView.register(FeedElementTidalPreviewCell.self, forCellReuseIdentifier: FeedElementTidalPreviewCell.cellID)
         
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
     }
@@ -116,8 +119,10 @@ extension RegularFeedDatasourceProtocol {
                     parts.append(.webPreview(.system, data))
                 } else if data.url.isGithubURL || data.url.isRumbleURL {
                     parts.append(.webPreview(.large, data))
-                } else if data.url.isSpotifyURL || data.url.isTidalURL {
+                } else if data.url.isSpotifyURL {
                     parts.append(.webPreview(.music, data))
+                } else if data.url.isTidalURL {
+                    parts.append(.webPreview(.tidal, data))
                 } else {
                     parts.append(.webPreview(.small, data))
                 }

@@ -21,7 +21,7 @@ class ThreadElementMusicPreviewCell: ThreadElementBaseCell, RegularFeedElementCe
     private let subtitleLabel = UILabel()
     private let linkLabel = UILabel()
 
-    let playButton = UIButton().constrainToSize(height: 28)
+    let playButton = UIButton().constrainToSize(width: 67, height: 28)
     lazy var linkStack = UIStackView([iconView, linkLabel])
     lazy var titleStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
     lazy var contentStack = UIStackView(axis: .vertical, [linkStack, titleStack, playButton])

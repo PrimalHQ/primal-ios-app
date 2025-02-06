@@ -185,7 +185,7 @@ class NoteProcessor: MetadataCoding {
         var otherURLs: [String] = []
         let textMentions: [String] = text.extractMentions()
         var markedMentions: [(String, ref: String)] = []
-        var hashtags: [String] = text.extractHashtags()
+        let hashtags: [String] = text.extractHashtags()
         var itemsToRemove: [String] = []
         
         for str in text.extractURLs() {
@@ -244,7 +244,7 @@ class NoteProcessor: MetadataCoding {
         }
         
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\b(((https://)?primal.net/e/)|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nevent1MentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         
         var referencedPosts: [(String, ParsedContent)] = []
         var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
@@ -262,6 +262,9 @@ class NoteProcessor: MetadataCoding {
                     if mentionText.contains("primal.net/e/") {
                         return "nostr:\(String(mentionText.split(separator: "primal.net/e/").last ?? ""))"
                     }
+                    if mentionText.contains("njump.me/") {
+                        return "nostr:\(String(mentionText.split(separator: "njump.me/").last ?? ""))"
+                    }
                     return "nostr:\(mentionText)"
                 }()
                     
@@ -269,10 +272,11 @@ class NoteProcessor: MetadataCoding {
                     if mention.post.kind == NostrKind.zapReceipt.rawValue {
                         if let feedZap = parsedFeedZaps.first(where: { $0.zap.receiptId == mentionId }) {
                             p.embeddedZap = feedZap
-                        } else {
+                            itemsToRemove.append(mentionText)
+                        } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
                             p.customEvent = mention
+                            itemsToRemove.append(mentionText)
                         }
-                        itemsToRemove.append(mentionText)
                     } else if mention.post.kind == NostrKind.highlight.rawValue  {
                         let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
                         
@@ -285,7 +289,7 @@ class NoteProcessor: MetadataCoding {
                         mention.mediaResources.append(contentsOf: media ?? [.init(url: url, variants: [])])
                         mention.mediaResources = mention.mediaResources.uniqueByFilter({ $0.url })
                         referencedPosts.append((mentionText, mention))
-                    } else {
+                    } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
                         p.customEvent = mention
                         itemsToRemove.append(mentionText)
                     }
@@ -327,7 +331,7 @@ class NoteProcessor: MetadataCoding {
 //            }
 //        }
         
-        let articleMentionPattern = "\\bnostr:(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+        let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)(naddr1\\w+)\\b|#\\[(\\d+)\\]"
         if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
             articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard p.article == nil, let matchRange = match?.range else { return }
@@ -337,7 +341,7 @@ class NoteProcessor: MetadataCoding {
                 itemsToRemove.append(mentionText)
 
                 guard
-                    let address = mentionText.split(separator: ":").last,
+                    let address = mentionText.split(separator: ":").last?.split(separator: "/").last,
                     let metadata = try? decodedMetadata(from: String(address)),
                     let id = metadata.identifier,
                     let mention = self.response.mentions.first(where: {

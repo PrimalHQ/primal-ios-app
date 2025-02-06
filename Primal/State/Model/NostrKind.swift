@@ -80,7 +80,8 @@ enum NostrKind: Int {
     case eventKindCounts = 10_000_166
     case primalLegendInfo = 10_000_168
     case primalPremiumInfo = 10_000_169
-    case primalPremiumInfoList = 10_000_170
+    case primalLegendInfoList = 10_000_170
+    case primalPremiumInfoList = 10_000_171
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605
