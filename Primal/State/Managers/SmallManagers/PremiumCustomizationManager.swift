@@ -12,6 +12,9 @@ struct LegendCustomization: Codable {
     var style: String
     var custom_badge: Bool
     var avatar_glow: Bool
+    var in_leaderboard: Bool
+    var current_shoutout: String
+    var edited_shoutout: String?
 }
 
 struct PremiumUserInfo: Codable {
@@ -19,6 +22,8 @@ struct PremiumUserInfo: Codable {
     var cohort_1: String
     var cohort_2: String
     var expires_on: Double?
+    var legend_since: Double?
+    var premium_since: Double
 }
 
 extension LegendCustomization {

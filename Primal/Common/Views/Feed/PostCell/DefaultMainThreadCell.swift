@@ -238,7 +238,7 @@ extension DefaultMainThreadCell: UITextViewDelegate {
     }
 }
 
-private extension ParsedContent {
+extension ParsedContent {
     func longDateString() -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(post.created_at))
         let dateFormatter = DateFormatter()

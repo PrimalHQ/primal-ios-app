@@ -33,7 +33,7 @@ class PostFeedCell: PostCell {
     
     override func update(_ parsedContent: ParsedContent) {
         if parsedContent.post.id != lastContentId {
-            zapGallery?.zaps = []
+            zapGallery?.setZaps([])
             lastContentId = parsedContent.post.id
         }
         
@@ -42,9 +42,7 @@ class PostFeedCell: PostCell {
         textStack.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
         
-        mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreview == nil && parsedContent.embededPost == nil) ? 12 : 6
-        
-        layoutSubviews()
+        mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPost == nil) ? 12 : 6
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
         
@@ -63,10 +61,10 @@ class PostFeedCell: PostCell {
         
         if content.zaps.isEmpty {
             zapGallery?.superview?.isHidden = true
-            zapGallery?.zaps = []
+            zapGallery?.setZaps([])
         } else {
             zapGallery?.superview?.isHidden = false
-            zapGallery?.zaps = content.zaps
+            zapGallery?.setZaps(content.zaps)
         }
     }
 }

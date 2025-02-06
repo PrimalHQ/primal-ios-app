@@ -19,8 +19,10 @@ final class OnboardingReviewController: UIViewController, OnboardingViewControll
     var cancellables: Set<AnyCancellable> = []
     
     var session: OnboardingSession
-    init(session: OnboardingSession) {
+    let profile: AccountCreationData
+    init(profile: AccountCreationData, session: OnboardingSession) {
         self.session = session
+        self.profile = profile
         super.init(nibName: nil, bundle: nil)
         
         setup()
@@ -81,7 +83,7 @@ private extension OnboardingReviewController {
     }
     
     @objc func continuePressed() {
-        onboardingParent?.reset(OnboardingWalletController(session: session), animated: true)   
+        onboardingParent?.reset(OnboardingWalletController(profile: profile, session: session), animated: true)   
     }
     
     var instructionText: String { """

@@ -10,7 +10,7 @@ import Kingfisher
 import Nantes
 import FLAnimatedImage
 
-final class PostPreviewPostPreviewView: UIView {
+final class PostPreviewPostPreviewView: UIView, Themeable {
     let profileImageView = UserImageView(height: 24)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -20,10 +20,12 @@ final class PostPreviewPostPreviewView: UIView {
     let seeMoreLabel = UILabel()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
-    let linkPreview = LinkPreview()
+    let linkPreview = SmallLinkPreview()
     let zapPreview = ZapPreviewView()
     let infoView = SimpleInfoView()
-
+    
+    let separatorLabel = UILabel()
+    
     weak var imageAspectConstraint: NSLayoutConstraint?
     
     init() {
@@ -56,7 +58,7 @@ final class PostPreviewPostPreviewView: UIView {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.height)) / CGFloat(max(1, first.width)))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
@@ -75,7 +77,7 @@ final class PostPreviewPostPreviewView: UIView {
         mainImages.thumbnails = content.videoThumbnails
         mainImages.isHidden = content.mediaResources.isEmpty
         
-        if let data = content.linkPreview {
+        if let data = content.linkPreviews.first {
             linkPreview.data = data
             linkPreview.isHidden = false
         } else {
@@ -96,9 +98,7 @@ final class PostPreviewPostPreviewView: UIView {
             invoiceView.isHidden = true
         }
         
-        mainLabel.attributedText = content.attributedText
-        layoutSubviews()
-        
+        mainLabel.attributedText = content.attributedTextShort
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
         if let customEvent = content.customEvent {
@@ -121,6 +121,27 @@ final class PostPreviewPostPreviewView: UIView {
             }
         }
     }
+    
+    func updateTheme() {
+        infoView.updateTheme()
+        
+        [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
+            $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
+            $0.textColor = .foreground3
+        }
+        
+        backgroundColor = .background4
+        layer.borderColor = UIColor.background3.cgColor
+        
+        nameLabel.textColor = .foreground
+        
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        seeMoreLabel.textColor = .accent2
+
+    }
 }
 
 private extension PostPreviewPostPreviewView {
@@ -130,7 +151,6 @@ private extension PostPreviewPostPreviewView {
         layer.borderWidth = 1
         layer.borderColor = UIColor.background3.cgColor
         
-        let separatorLabel = UILabel()
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
@@ -161,6 +181,7 @@ private extension PostPreviewPostPreviewView {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent2
+        seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.layer.masksToBounds = true
         mainImages.layer.cornerRadius = 8

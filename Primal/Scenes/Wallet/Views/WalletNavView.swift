@@ -74,6 +74,9 @@ final class WalletNavView: UIView, Themeable {
         heightConstraint = heightAnchor.constraint(equalToConstant: expandedHeight)
         heightConstraint?.isActive = true
         
+        balanceConversionView.isBitcoinPrimary = WalletManager.instance.isBitcoinPrimary
+        largeView.balanceConversionView.isBitcoinPrimary = WalletManager.instance.isBitcoinPrimary
+        
         balanceConversionView.$isBitcoinPrimary.receive(on: DispatchQueue.main).sink { [weak self] isPrimary in
             if self?.largeView.balanceConversionView.isBitcoinPrimary != isPrimary {
                 self?.largeView.balanceConversionView.isBitcoinPrimary = isPrimary

@@ -19,21 +19,20 @@ class PostFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row > posts.count - 10  {
-            feed.requestNewPage()
-        }
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        return super.tableView(tableView, cellForRowAt: indexPath)
+        guard indexPath.row > dataSource.cellCount - 50, dataSource.cellCount > 2 else { return }
+        feed.requestNewPage()
     }
     
     override func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
-        guard case .mute = event, let indexPath = table.indexPath(for: cell) else {
+        guard case .mute = event, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else {
             super.postCellDidTap(cell, event)
             return
         }
         
-        let pubkey = posts[indexPath.row].user.data.pubkey
+        let pubkey = post.user.data.pubkey
         guard !MuteManager.instance.isMuted(pubkey) else {
             super.postCellDidTap(cell, .mute)
             return

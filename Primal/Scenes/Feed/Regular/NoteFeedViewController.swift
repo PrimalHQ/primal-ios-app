@@ -7,17 +7,11 @@
 
 import UIKit
 
-class NoteFeedViewController: PostFeedViewController {
-    override var postSection: Int { 1 }
-    
+class NoteFeedViewController: PostFeedViewController {    
     override var posts: [ParsedContent] {
         didSet {
-            if posts.isEmpty {
-                animateInserts = false
-            } else {
-                DispatchQueue.main.async {
-                    self.animateInserts = true
-                }
+            if refreshControl.isRefreshing {
+                refreshControl.endRefreshing()
             }
         }
     }
@@ -29,8 +23,6 @@ class NoteFeedViewController: PostFeedViewController {
             guard let self else { return true }
             return self.table.contentOffset.y > 300
         }
-        
-        animateInserts = false
     }
     
     required init?(coder: NSCoder) {
@@ -51,28 +43,6 @@ class NoteFeedViewController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
-    override func updateTheme() {
-        super.updateTheme()
-        
-        table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        2
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection { return super.tableView(tableView, numberOfRowsInSection: section) }
-        return posts.isEmpty ? 6 : 0
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == postSection {
-            return super.tableView(tableView, cellForRowAt: indexPath)
-        }
-        return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
     }
 }
 

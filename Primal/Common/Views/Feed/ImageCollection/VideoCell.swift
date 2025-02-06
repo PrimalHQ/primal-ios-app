@@ -96,6 +96,22 @@ final class VideoCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        playerView.playerLayer.player = nil
+    }
+    
+    func setup(player: VideoPlayer, duration: Int, thumbnail: String?) {
+        self.player = player
+        thumbnailImage.image = nil
+        self.duration = duration
+        
+        if let thumbnailString = thumbnail {
+            thumbnailImage.kf.setImage(with: URL(string: thumbnailString))
+        }
+    }
 }
 
 extension VideoCell: UIContextMenuInteractionDelegate {

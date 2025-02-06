@@ -68,7 +68,7 @@ class ThreadCell: PostCell {
             zapGallery?.isHidden = true
         } else {
             zapGallery?.isHidden = false
-            zapGallery?.zaps = content.zaps
+            zapGallery?.setZaps(content.zaps)
         }
     }
 }

@@ -20,7 +20,7 @@ class TransactionTitleCell: UITableViewCell {
 }
 
 extension TransactionTitleCell: TransactionPartialCell {
-    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+    func setupWithCellInfo(_ info: TransactionCellType) {
         guard case let .title(text) = info else { return }
         
         label.text = text

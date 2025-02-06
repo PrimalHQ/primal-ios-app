@@ -15,13 +15,14 @@ class NoteFeedPreviewController: NoteFeedViewController {
     init(feed: PrimalFeed, feedInfo: ParsedFeedFromMarket) {
         info = feedInfo
         super.init(feed: .init(newFeed: feed))
-        table.register(FeedPreviewCell.self, forCellReuseIdentifier: "infoCell")
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .zero
         
         table.removeFromSuperview()
         view.addSubview(table)
         table.pinToSuperview()
+        
+        dataSource = PreviewFeedDatasource(feed: feedInfo, tableView: table, delegate: self)
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +31,9 @@ class NoteFeedPreviewController: NoteFeedViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        
+        table.backgroundColor = .background
         
         DispatchQueue.main.async {
             self.table.contentInset = self.contentInset
@@ -39,22 +42,7 @@ class NoteFeedPreviewController: NoteFeedViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        section == 0 ? max(1, super.tableView(tableView, numberOfRowsInSection: section)) : super.tableView(tableView, numberOfRowsInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 && indexPath.row == 0 {
-            let cell = table.dequeueReusableCell(withIdentifier: "infoCell", for: indexPath)
-            (cell as? FeedPreviewCell)?.setup(info, delegate: self)
-            return cell
-        }
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        cell.isUserInteractionEnabled = !disableInteraction
-        return cell
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

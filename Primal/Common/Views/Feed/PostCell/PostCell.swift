@@ -20,6 +20,8 @@ protocol PostCellDelegate: AnyObject {
 
 /// Base class, not meant to be instantiated as is, use child classes like FeedCell
 class PostCell: UITableViewCell {
+    class var cellID: String { "PostCell" }
+    
     weak var delegate: PostCellDelegate?
     
     let bottomBorder = UIView()
@@ -34,7 +36,7 @@ class PostCell: UITableViewCell {
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let articleView = ArticleFeedView()
-    let linkPresentation = LinkPreview()
+    let linkPresentation = SmallLinkPreview()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
@@ -89,7 +91,7 @@ class PostCell: UITableViewCell {
         
         profileImageView.setUserImage(content.user)
         
-        if let metadata = content.linkPreview {
+        if let metadata = content.linkPreviews.first {
             linkPresentation.data = metadata
             linkPresentation.isHidden = false
         } else {
@@ -103,7 +105,7 @@ class PostCell: UITableViewCell {
             replyingToView.isHidden = true
         }
         
-        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
+        if let embeded = content.embeddedPost, embeded.post.kind == content.post.kind {
             postPreview.update(embeded)
             postPreview.isHidden = false
         } else {
@@ -138,9 +140,6 @@ class PostCell: UITableViewCell {
             invoiceView.isHidden = true
         }
         
-        imageAspectConstraint?.isActive = false
-        imageAspectConstraint = nil
-        
         if let customEvent = content.customEvent {
             infoView.isHidden = false
             infoView.set(
@@ -160,6 +159,9 @@ class PostCell: UITableViewCell {
                 infoView.set(kind: .file, text: "Mentioned article not found.")
             }
         }
+        
+        imageAspectConstraint?.isActive = false
+        imageAspectConstraint = nil
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
@@ -256,10 +258,9 @@ extension PostCell: ImageCollectionViewDelegate {
 
 private extension PostCell {
     func setup() {
+        selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .background2
-        contentView.addSubview(bottomBorder)
-        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
         
         separatorLabel.text = "·"
         [timeLabel, separatorLabel, nipLabel].forEach {
@@ -316,8 +317,6 @@ private extension PostCell {
         bottomBorder.backgroundColor = .background3
         
         repostButton.tintColor = UIColor(rgb: 0x757575)
-        
-        selectionStyle = .none
         
         repostIndicator.addTarget(self, action: #selector(repostProfileTapped), for: .touchUpInside)
         linkPresentation.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(linkPreviewTapped)))

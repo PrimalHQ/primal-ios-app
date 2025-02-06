@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 5.9.24..
 //
 
+import Combine
 import UIKit
 
 class HomeFeedChildController: PostFeedViewController {
@@ -21,21 +22,11 @@ class HomeFeedChildController: PostFeedViewController {
     
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
+    
+    @Published var cachedPosts: [ParsedContent] = []
+    @Published var isScrolling = false
+    @Published var didReachEnd = false
 
-    override var postSection: Int { 1 }
-    
-    override var posts: [ParsedContent] {
-        didSet {
-            if posts.isEmpty {
-                animateInserts = false
-            } else {
-                DispatchQueue.main.async {
-                    self.animateInserts = true
-                }
-            }
-        }
-    }
-    
     override init(feed: FeedManager) {
         super.init(feed: feed)
         
@@ -43,8 +34,6 @@ class HomeFeedChildController: PostFeedViewController {
             guard let self else { return true }
             return self.table.contentOffset.y > 300
         }
-        
-        animateInserts = false
     }
     
     required init?(coder: NSCoder) {
@@ -64,10 +53,11 @@ class HomeFeedChildController: PostFeedViewController {
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
+            isScrolling = false
             feed.addAllFuturePosts()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) {
-                self.table.scrollToRow(at: IndexPath(row: 0, section: self.postSection), at: .top, animated: true)
+                self.table.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
             }
         }), for: .touchDown)
         
@@ -107,14 +97,22 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard indexPath.section == postSection else { return }
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
         feed.didShowPost(indexPath.row)
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
+        
+        if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
+            didReachEnd = true
+        } else {
+            didReachEnd = false
+        }        
+        
+        isScrolling = true
         
         if scrollView.contentOffset.y < 100 {
             feed.didShowPost(0)
@@ -142,22 +140,6 @@ class HomeFeedChildController: PostFeedViewController {
         
         table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
     }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        2
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection { return super.tableView(tableView, numberOfRowsInSection: section) }
-        return posts.isEmpty ? 6 : 0
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == postSection {
-            return super.tableView(tableView, cellForRowAt: indexPath)
-        }
-        return tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
-    }
 }
 
 private extension HomeFeedChildController {
@@ -179,15 +161,33 @@ private extension HomeFeedChildController {
         
         feed.$parsedPosts
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] posts in                
+            .sink { [weak self] posts in
                 if posts.isEmpty {
                     if self?.refreshControl.isRefreshing == false {
                         self?.posts = []
                     }
                 } else {
-                    self?.posts = posts
-                    self?.refreshControl.endRefreshing()
+                    self?.cachedPosts = posts
+                    if self?.refreshControl.isRefreshing == true {
+                        self?.refreshControl.endRefreshing()
+                    }
                 }
+            }
+            .store(in: &cancellables)
+        
+        $isScrolling.debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink { [weak self] isScrolling in
+                if isScrolling {
+                    self?.isScrolling = false
+                }
+            }
+            .store(in: &cancellables)
+        
+        Publishers.CombineLatest3($cachedPosts, $isScrolling.removeDuplicates(), $didReachEnd.removeDuplicates())
+            .filter({ !$0.isEmpty && (!$1 || $2) })
+            .sink { [weak self] posts, isS, didR in
+                self?.cachedPosts = []
+                self?.posts = posts
             }
             .store(in: &cancellables)
     }

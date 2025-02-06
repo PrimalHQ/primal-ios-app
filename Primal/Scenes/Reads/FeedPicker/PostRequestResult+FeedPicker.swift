@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct FeedFromMarket: Codable {
+struct FeedFromMarket: Codable, Hashable {
     let amount: String?
     let personalized: Bool?
     let picture: String?
@@ -22,20 +22,20 @@ struct FeedFromMarket: Codable {
     var primal_spec: String?
 }
 
-struct FeedMetadata: Codable {
+struct FeedMetadata: Codable, Hashable {
     let is_primal: Bool
     let kind: String
     let event_id: String
 }
 
-struct FeedFollowActions: Codable {
+struct FeedFollowActions: Codable, Hashable {
     let dvm_pubkey: String
     let users: [String]
     let dvm_kind: Int
     let dvm_id: String
 }
 
-struct ParsedFeedFromMarket {
+struct ParsedFeedFromMarket: Hashable {
     let data: FeedFromMarket
     let user: ParsedUser
     let metadata: FeedMetadata?

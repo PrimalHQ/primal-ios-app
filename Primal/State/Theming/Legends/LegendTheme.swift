@@ -66,6 +66,16 @@ extension LegendTheme {
         }
     }
     
+    // When capsule button has themed background color, use this to style button text
+    var blackButtonText: Bool {
+        switch self {
+        case .purple, .purplehaze, .blue, .sunfire:
+            return false
+        default:
+            return true
+        }
+    }
+    
     var cgColors: [CGColor] { colors.map { $0.cgColor } }
     
     var nsNumberLocations: [NSNumber] { locations.map { NSNumber(floatLiteral: $0) } }

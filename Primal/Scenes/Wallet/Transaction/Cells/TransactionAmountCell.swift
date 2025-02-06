@@ -21,7 +21,7 @@ class TransactionAmountCell: UITableViewCell {
 }
 
 extension TransactionAmountCell: TransactionPartialCell {
-    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+    func setupWithCellInfo(_ info: TransactionCellType) {
         guard case let .amount(value, incoming) = info else { return }
         
         let color = incoming ? UIColor.receiveMoney : .sendMoney

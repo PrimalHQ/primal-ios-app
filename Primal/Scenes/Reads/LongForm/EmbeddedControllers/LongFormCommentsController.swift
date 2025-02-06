@@ -16,6 +16,7 @@ class LongFormCommentsController: NoteViewController {
     
     var viewHeight: AnyPublisher<CGFloat, Never> {
         $cellHeight
+            .debounce(for: 0.1, scheduler: RunLoop.main)
             .map { $0.reduce(0, +) + 100 }
             .eraseToAnyPublisher()
     }
@@ -41,12 +42,12 @@ class LongFormCommentsController: NoteViewController {
             self.table.contentInset = .zero
         }
         
+        dataSource = ArticleCommentsDatasource(tableView: table, delegate: self)
+        
         posts = content.replies
         cellHeight = posts.map { _ in 200 }
         
         navigationBorder.removeFromSuperview()
-        
-        animateInserts = false
         
         reload()
     }
@@ -54,41 +55,17 @@ class LongFormCommentsController: NoteViewController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func setBarsToTransform(_ transform: CGFloat) { return }
-    
-    override var postSection: Int { 1 }
-    
-    override func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        if indexPath.section == postSection { return super.postForIndexPath(indexPath) }
-        return parsedContent
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int { 2 }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return posts.isEmpty ? 2 : 1
-        }
-        return super.tableView(tableView, numberOfRowsInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 1 {
-            let cell = super.tableView(tableView, cellForRowAt: indexPath)
-            DispatchQueue.main.async {
-                self.cellHeight[safe: indexPath.row] = cell.contentView.frame.height
-            }
-            return cell
-        }
+
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        guard indexPath.row == 0 else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
-            (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
-            return cell
+        guard indexPath.section == 1 else { return }
+            
+        DispatchQueue.main.async {
+            while self.cellHeight.count <= indexPath.row { self.cellHeight.append(30) }
+            
+            self.cellHeight[safe: indexPath.row] = cell.contentView.frame.height
         }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
-        (cell as? PostCommentsTitleCell)?.delegate = self
-        return cell
     }
     
     override func updateTheme() {

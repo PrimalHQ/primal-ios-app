@@ -148,7 +148,7 @@ private extension WalletInAppPurchaseController {
                 fiatLoading.stop()
                 
                 Publishers.Merge(Just(true), Timer.publish(every: 35, on: .main, in: .default).autoconnect().map { _ in true })
-                    .flatMap { _ in PrimalWalletRequest(type: .quote(productId: product.productIdentifier, countryCode: self.countryCode)).publisher() }
+                    .flatMap { [weak self] _ in PrimalWalletRequest(type: .quote(productId: product.productIdentifier, countryCode: self?.countryCode ?? "")).publisher() }
                     .receive(on: DispatchQueue.main).sink { [weak self] result in
                         guard let quote = result.quote else {
                             if let message = result.message {

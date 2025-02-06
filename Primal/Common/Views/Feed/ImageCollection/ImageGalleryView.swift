@@ -15,27 +15,49 @@ protocol ImageCollectionViewDelegate: AnyObject {
     func didTapMediaInCollection(_ collection: ImageGalleryView, resource: MediaMetadata.Resource)
 }
 
+class FullScreenFlowLayout: UICollectionViewFlowLayout {
+    override func prepare() {
+        super.prepare()
+        
+        scrollDirection = .horizontal
+        
+        guard let collectionView = collectionView else { return }
+        
+        // Set item size to match the collection view's bounds
+        itemSize = collectionView.bounds.size
+//        minimumLineSpacing = 0
+//        minimumInteritemSpacing = 0
+    }
+}
+
+class SizeReloadingCollectionView: UICollectionView {
+    var size: CGSize = .zero
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if frame.size != size {
+            size = frame.size
+            collectionViewLayout.invalidateLayout()
+        }
+    }
+}
+
 final class ImageGalleryView: UIView {
     weak var imageDelegate: ImageCollectionViewDelegate?
     
-    let layout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        return layout
-    }()
-    
-    lazy var collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    lazy var collection = SizeReloadingCollectionView(frame: .zero, collectionViewLayout: FullScreenFlowLayout())
     
     let progress = PrimalProgressView(bottomPadding: 0)
 
     var noDownsampling = false
+    var userPubkey = ""
     var resources: [MediaMetadata.Resource] {
         didSet {
-            collection.reloadData()
-            
             progress.isHidden = resources.count < 2
             progress.currentPage = 0
             progress.numberOfPages = resources.count
+            
+            collection.reloadData()
         }
     }
     
@@ -62,6 +84,7 @@ final class ImageGalleryView: UIView {
         stack.pinToSuperview()
         progress.primaryColor = .foreground
         progress.secondaryColor = .foreground.withAlphaComponent(0.4)
+        progress.isHidden = true
     }
     
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
@@ -80,10 +103,6 @@ final class ImageGalleryView: UIView {
 }
 
 extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        collectionView.frame.size
-    }
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         imageDelegate?.didTapMediaInCollection(self, resource: resources[indexPath.item])
     }
@@ -136,11 +155,13 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 return cell
             }
             
+            let url = r.url(for: .small)?.absoluteString ?? r.url
+            
             let player: VideoPlayer
-            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == r.url {
+            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == url {
                 player = current
             } else {
-                player = .init(url: r.url)
+                player = .init(url: url, originalURL: r.url, userPubkey: userPubkey)
             }
             
             if let cell = cell as? VideoCell {
@@ -152,34 +173,29 @@ extension ImageGalleryView: UICollectionViewDataSource {
                     cell.thumbnailImage.kf.setImage(with: url)
                 }
             }
-        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium) {
-            CachingManager.instance.fetchAnimatedImage(url) { result in
+        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
+            CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
                 switch result {
                 case .success(let image):
                     (cell as? ImageCell)?.imageView.animatedImage = image
-                case .failure(let error):
-                    print(error)
+                case .failure:
+                    (cell as? ImageCell)?.setup(
+                        url: r.url(for: .medium),
+                        downsampling: .none,
+                        originalUrl: r.url,
+                        userPubkey: self?.userPubkey ?? "",
+                        delegate: self
+                    )
                 }
             }
         } else {
-            if let cell = cell as? ImageCell {
-                if noDownsampling {
-                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
-                        .transition(.fade(0.2)),
-                        .scaleFactor(UIScreen.main.scale),
-                        .cacheOriginalImage
-                    ])
-                } else {
-                    cell.imageView.kf.setImage(with: r.url(for: .medium), options: [
-                        .processor(DownsamplingImageProcessor(size: frame.size)),
-                        .transition(.fade(0.2)),
-                        .scaleFactor(UIScreen.main.scale),
-                        .cacheOriginalImage
-                    ])
-                }
-                cell.url = r.url
-                cell.delegate = self
-            }
+            (cell as? ImageCell)?.setup(
+                url: r.url(for: .medium),
+                downsampling: noDownsampling ? .none : .size(frame.size),
+                originalUrl: r.url,
+                userPubkey: userPubkey,
+                delegate: self
+            )
         }
         return cell
     }

@@ -21,6 +21,18 @@ struct PrimalPaymentTransaction : Encodable {
   let date: Date
 }
 
+struct PrimalWalletNewNWCResponse: Codable {
+    let nwc_pubkey: String
+    let uri: String
+}
+
+struct PrimalWalletNWCConnection: Codable, Hashable {
+    let nwc_pubkey: String
+    let appname: String
+    let daily_budget_btc: String?
+    let remaining_daily_budget_btc: String?
+}
+
 enum WalletTransactionNetwork: String {
     case lightning, onchain
 }
@@ -44,6 +56,9 @@ struct PrimalWalletRequest {
         case parseLNURL(String)
         case exchangeRate
         case onchainPaymentTiers(address: String, amount: String)
+        case nwcConnections
+        case nwcConnect(name: String, amount: Int?)
+        case nwc_rewoke(String)
         
         var requestContent: String {
             switch self {
@@ -133,6 +148,18 @@ struct PrimalWalletRequest {
                 return #"["exchange_rate", {}]"#
             case .onchainPaymentTiers(let address, let amount):
                 return #"["onchain_payment_tiers", {"target_bcaddr": "\#(address)", "amount_btc": "\#(amount)"}]"#
+            case .nwcConnections:
+                return #"["nwc_connections", {}]"#
+            case .nwc_rewoke(let key):
+                return #"["nwc_revoke", { "nwc_pubkey": "\#(key)" }]"#
+            case .nwcConnect(let name, let amount):
+                let btcString: String
+                if let amount {
+                    btcString = #""\#(amount.satsToBitcoinString())""#
+                } else {
+                    btcString = "null"
+                }
+                return #"["nwc_connect", { "appname": "\#(name)", "daily_budget_btc": \#(btcString) }]"#
             }
       }
   }
@@ -255,6 +282,18 @@ private extension WalletRequestResult {
                 return
             }
             tiers = parsed
+        case .WALLET_NEW_NWC:
+            guard let json: PrimalWalletNewNWCResponse = contentString.decode() else {
+                print("Unable to decode WALLET_NEW_NWC")
+                return
+            }
+            newNWC = json
+        case .WALLET_NWC:
+            guard let json: [PrimalWalletNWCConnection] = contentString.decode() else {
+                print("Unable to decode WALLET_NWC")
+                return
+            }
+            nwcs = json
         case .WALLET_IN_APP_PURCHASE, .WALLET_ACTIVATION_CODE:
             return // NO ACTION
         }

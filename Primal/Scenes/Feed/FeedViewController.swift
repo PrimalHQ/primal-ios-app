@@ -13,15 +13,20 @@ import SafariServices
 import Lottie
 import Kingfisher
 import StoreKit
+import NostrSDK
 
-extension PostCell {
+extension PostCell: FeedElementVideoCell {
     var currentVideoCells: [VideoCell] {
         [mainImages.currentVideoCell(), postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
             .compactMap { $0 }
     }
 }
 
-class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, Themeable, WalletSearchController {
+protocol FeedElementVideoCell {
+    var currentVideoCells: [VideoCell] { get }
+}
+
+class NoteViewController: UIViewController, UITableViewDelegate, Themeable, WalletSearchController {
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
@@ -34,36 +39,23 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var postCellID = "cell" // Needed for updating the theme
     
-    var animateInserts = true
+    lazy var dataSource: NoteFeedDatasource = RegularFeedDatasource(tableView: table, delegate: self)
     
-    var postSection: Int { 0 }
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        if indexPath.section != postSection { return nil }
-        return posts[safe: indexPath.row]
+        dataSource.postForIndexPath(indexPath)
     }
+    
     @Published var posts: [ParsedContent] = [] {
         didSet {
-            defer {
-                playVideoOnScroll()
-            }
+            dataSource.setPosts(posts)
             
-            guard animateInserts, oldValue.count != 0, oldValue.count < posts.count, view.window != nil else {
-                table.reloadData()
-                return
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.playVideoOnScroll()
             }
-            
-            if oldValue.first?.post.id == posts.first?.post.id {
-                // Adding at the end
-                table.reloadData()
-                return
-            }
-            
-            // Adding at the start
-            let indexes: [IndexPath] =  (0..<posts.count-oldValue.count).map { IndexPath(row: $0, section: postSection) }
-            table.insertRows(at: indexes, with: .none)
         }
     }
     
+    var preloadedPosts: Set<String> = []
     var cancellables: Set<AnyCancellable> = []
     var textSearch: String?
     
@@ -114,6 +106,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     var topBarHeight: CGFloat = 100
+    var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevTransform: CGFloat = 0
@@ -122,7 +115,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
         guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
         
-        let allVideoCells = table.visibleCells.flatMap { ($0 as? PostCell)?.currentVideoCells ?? [] }
+        let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
         let firstPlayableCell: VideoCell? = allVideoCells.first(where: { cell in
             let bounds = cell.contentView.convert(cell.contentView.bounds, to: nil)
@@ -142,8 +135,14 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        playVideoOnScroll()
+        if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
+            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        } else {
+            playVideoOnScroll()
+        }
+        cachedContentOffset = scrollView.contentOffset
         
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
@@ -178,7 +177,7 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return true
     }
     
-    func setBarsToTransform(_ transform: CGFloat) {
+    func setBarsToTransform(_ transform: CGFloat) {        
         prevTransform = transform
         navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
         navigationBorder.transform = .init(translationX: 0, y: transform)
@@ -207,7 +206,6 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    
     @discardableResult
     func open(post: ParsedContent) -> NoteViewController {
         let threadVC = ThreadViewController(post: post)
@@ -215,41 +213,53 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         return threadVC
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        posts.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        if let cell = cell as? PostCell {
-            let data = posts[indexPath.row]
-            cell.update(data)
-            cell.delegate = self
-        }
-        
-        if let postToPreload = posts[safe: indexPath.row + 10] {
-            if let url = postToPreload.mediaResources.first?.url(for: .large), url.isImageURL {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            } else if let url = postToPreload.linkPreview?.imagesData.first?.url(for: .large), url.isImageURL {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            }
-            
-            if let url = postToPreload.user.profileImage.url(for: .small) {
-                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
-            }
-        }
-        
-        return cell
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard indexPath.section == postSection, let post = posts[safe: indexPath.row] else { return }
+        guard let post = postForIndexPath(indexPath) else { return }
         open(post: post)
     }
     
-    func updateTheme() {        
-        updateCellID()
-        table.register(PostFeedCell.self, forCellReuseIdentifier: postCellID)
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard
+            let post = postForIndexPath(indexPath),
+            let index = posts.firstIndex(where: { $0.post.id == post.post.id })
+        else { return }
+        
+        let postsToPreload = posts[index...].prefix(10).filter({ !preloadedPosts.contains($0.post.id) })
+        
+        for postToPreload in postsToPreload {
+            preloadPost(postToPreload)
+            if let embeddedPost = postToPreload.embeddedPost {
+                preloadPost(embeddedPost)
+                if let embEmbeddedPost = embeddedPost.embeddedPost {
+                    preloadPost(embEmbeddedPost)
+                }
+            }
+        }
+    }
+    
+    func preloadPost(_ post: ParsedContent) {
+        preloadedPosts.insert(post.post.id)
+                
+        if let url = post.mediaResources.first?.url(for: .medium) {
+            if url.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            } else if let thumbnailURL = post.videoThumbnails[url.absoluteString] ?? post.videoThumbnails.first?.value, let tURL = URL(string: thumbnailURL) {
+                KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
+            }
+        }
+        for preview in post.linkPreviews {
+            if preview.url.isTwitterURL {
+                LinkPreviewManager.instance.preload(preview.url)
+            } else if let url = preview.imagesData.first?.url(for: .small), url.isImageURL {
+                KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+            }
+        }
+        if let url = post.user.profileImage.url(for: .small) {
+            KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
+        }
+    }
+    
+    func updateTheme() {
         table.reloadData()
         
         view.backgroundColor = .background2
@@ -331,17 +341,17 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
         performEvent(event, withPost: post, inCell: cell)
     }
     
-    func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: PostCell?) {
+    func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
         switch event {
         case .url(let URL):
-            guard let url = URL ?? post.linkPreview?.url else { return }
+            guard let url = URL ?? post.linkPreviews.first?.url else { return }
             
             handleURLTap(url, from: post)
         case .images(let resource):
-            guard let cell else { return }
+            guard let cell = cell as? ElementImageGalleryCell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
-            guard let cell else { return }
+            guard let cell = cell as? FeedElementPostPreviewCell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
             showViewController(ProfileViewController(profile: post.user))
@@ -352,15 +362,14 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
             
             hapticGenerator.impactOccurred()
             
-            cell?.likeButton.animateTo(post.post.likes + 1, filled: true)
+            (cell as? ElementReactionsCell)?.likeButton.animateTo(post.post.likes + 1, filled: true)
         case .zap:
-            guard let cell else { return }
+            guard let cell = cell as? ElementReactionsCell else { return }
             zapFromCell(cell, showPopup: false)
         case .longTapZap:
-            guard let cell else { return }
             zapFromCell(cell, showPopup: true)
         case .repost:
-            guard let cell else { return }
+            guard let cell = cell as? ElementReactionsCell else { return }
             postCellDidTapRepost(cell)
         case .reply:
             if post.post.isArticle {
@@ -373,7 +382,10 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 thread.textInputView.becomeFirstResponder()
             }
         case .embeddedPost:
-            open(post: post.embededPost ?? post)
+            let emb = post.embeddedPost ?? post
+            if emb.post.kind != 20 {
+                open(post: emb)
+            }
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
             showViewController(ProfileViewController(profile: profile))
@@ -404,10 +416,10 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
             MuteManager.instance.toggleMute(post.user.data.pubkey)
         case .bookmark:
             BookmarkManager.instance.bookmark(post)
-            cell?.updateMenu(post)
+            (cell as? FeedElementBaseCell)?.update(post)
         case .unbookmark:
             BookmarkManager.instance.unbookmark(post)
-            cell?.updateMenu(post)
+            (cell as? FeedElementBaseCell)?.update(post)
         case .articleTag(let tag):
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
         }
@@ -427,25 +439,20 @@ class NoteViewController: UIViewController, UITableViewDataSource, UITableViewDe
 }
 
 private extension NoteViewController {
-    func updateCellID() {
-        postCellID += "1"
-    }
-    
     func setup() {
         stack.axis = .vertical
         view.insertSubview(stack, at: 0)
         stack.pinToSuperview()
         
-        table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = .init(top: 100, left: 0, bottom: 90, right: 0)
-
+        table.contentInset = .init(top: 100, left: 0, bottom: 150, right: 0)
+        
         DispatchQueue.main.async {
             self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
-            self.table.contentInset = .init(top: self.barsMaxTransform, left: 0, bottom: 90, right: 0)
-            self.table.contentOffset = .init(x: 0, y: -self.barsMaxTransform)
+            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
+            self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
         }
         
         view.addSubview(navigationBorder)
@@ -461,6 +468,7 @@ private extension NoteViewController {
                 guard let self else { return }
                 
                 if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
+                if self.navigationController?.topViewController?.isParent(self) != true { return }
                     
                 self.animateBarsToVisible()
             }
@@ -479,24 +487,17 @@ private extension NoteViewController {
             
             zaps.insert(zap, at: zapIndex)
             posts[index].zaps = zaps
-            
-            guard
-                self.navigationController?.view.window != nil,
-                self.navigationController?.topViewController?.isParent(self) == true,
-                table.indexPathsForVisibleRows?.contains(where: { $0.row == index && $0.section == self.postSection }) == true
-            else { return }
-            
-            if posts[index].zaps.count > 1, let cell = table.cellForRow(at: IndexPath(row: index, section: postSection)) as? PostCell {
-                cell.updateMenu(posts[index])
-            } else {
-                table.reloadData()
-            }
+            let save = dataSource.defaultRowAnimation
+            dataSource.defaultRowAnimation = .none
+            dataSource.setPosts(posts)
+            dataSource.defaultRowAnimation = save
         }
         .store(in: &cancellables)
     }
     
-    func zapFromCell(_ cell: PostCell, showPopup: Bool) {
-        guard 
+    func zapFromCell(_ cell: UITableViewCell?, showPopup: Bool) {
+        guard
+            let cell,
             let indexPath = table.indexPath(for: cell),
             let post = postForIndexPath(indexPath)
         else { return }
@@ -529,12 +530,12 @@ private extension NoteViewController {
         doZapFromCell(cell, amount: zapAmount, message: zapMessage)
     }
     
-    func doZapFromCell(_ cell: PostCell, amount: Int, message: String) {
-        guard 
+    func doZapFromCell(_ cell: UITableViewCell?, amount: Int, message: String) {
+        guard
+            let cell,
             let indexPath = table.indexPath(for: cell),
             let parsed = postForIndexPath(indexPath)
         else { return }
-        
         
         let newZapAmount = parsed.post.satszapped + amount
         
@@ -574,12 +575,12 @@ private extension NoteViewController {
         }
     }
     
-    func animateZap(_ cell: PostCell, amount: Int) {
+    func animateZap(_ cell: UITableViewCell, amount: Int) {
         let animView = Self.bigZapAnimView
         
         heavy.impactOccurred()
         
-        guard let iconToPin = cell.zapButton.iconView.window != nil ? cell.zapButton.iconView : nil else { return }
+        guard let cell = cell as? ElementReactionsCell, let iconToPin = cell.zapImageView.window != nil ? cell.zapImageView : nil else { return }
         
         view.layoutIfNeeded()
         
@@ -603,10 +604,18 @@ private extension NoteViewController {
     }
 }
 
+extension NoteViewController: FeedElementCellDelegate {
+    func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent) {
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
+        
+        performEvent(event, withPost: post, inCell: cell)
+    }
+}
+
 extension NoteViewController: PostCellDelegate {
-    func postCellDidTapRepost(_ cell: PostCell) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        let post = posts[indexPath.row].post
+    func postCellDidTapRepost(_ cell: ElementReactionsCell) {
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.post else { return }
+        
         let popup = PopupMenuViewController()
         
         popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
@@ -614,25 +623,49 @@ extension NoteViewController: PostCellDelegate {
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
-        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { _ in
-            guard let noteRef = bech32_note_id(post.universalID) else { return }
+        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
+            guard let self else { return }
+            
+            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue {
+                guard let noteRef = bech32_note_id(post.universalID) else { return }
+
+                let new = NewPostViewController()
+                new.textView.text = "\n\nnostr:\(noteRef)"
+                self.present(new, animated: true)
+                return
+            }
+            
+            var metadata = Metadata()
+            metadata.eventId = post.id
+            let hint = RelayHintManager.instance.getRelayHint(post.id)
+            if !hint.isEmpty { metadata.relays = [hint] }
+            
+            let replacement: String
+            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
+                replacement = "\nnostr:\(identifier)"
+            } else {
+                guard let noteRef = bech32_note_id(post.universalID) else { return }
+
+                replacement = "\n\nnostr:\(noteRef)"
+            }
+            
             let new = NewPostViewController()
-            new.textView.text = "\n\nnostr:\(noteRef)"
+            new.textView.text = replacement
             self.present(new, animated: true)
         }))
         
         present(popup, animated: true)
     }
     
-    func postCellDidTapImages(_ cell: PostCell, resource: MediaMetadata.Resource) {
+    func postCellDidTapImages(_ cell: ElementImageGalleryCell, resource: MediaMetadata.Resource) {
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)
             return
         }
         
-        guard let index = table.indexPath(for: cell)?.row else { return }
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
         
-        let allImages = posts[index].mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
         if let imageCell = cell.mainImages.currentImageCell() {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
@@ -642,11 +675,8 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
-    func postCellDidTapEmbeddedImages(_ cell: PostCell, resource: MediaMetadata.Resource) {
-        guard
-            let index = table.indexPath(for: cell)?.row,
-            let post = posts[index].embededPost
-        else { return }
+    func postCellDidTapEmbeddedImages(_ cell: FeedElementPostPreviewCell, resource: MediaMetadata.Resource) {
+        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embeddedPost else { return }
         
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)
@@ -663,7 +693,7 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
-    func handleVideoUrlTapped(_ url: String, in cell: PostCell) {
+    func handleVideoUrlTapped(_ url: String, in cell: FeedElementVideoCell) {
         guard url.isVideoURL else {
             if let url = URL(string: url) {
                 let safari = SFSafariViewController(url: url)
@@ -672,14 +702,14 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        if let videoCell = cell.mainImages.currentVideoCell(), videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
+        if let videoCell = cell.currentVideoCells.first, videoCell.player?.avPlayer.rate ?? 1 < 0.01 {
             videoCell.player?.play()
             VideoPlaybackManager.instance.isMuted = false
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlaying?.url != url {
-            VideoPlaybackManager.instance.currentlyPlaying = .init(url: url)
+        if VideoPlaybackManager.instance.currentlyPlaying?.originalURL != url {
+            VideoPlaybackManager.instance.currentlyPlaying = VideoPlayer(url: url, originalURL: url, userPubkey: "")
         }
         
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }

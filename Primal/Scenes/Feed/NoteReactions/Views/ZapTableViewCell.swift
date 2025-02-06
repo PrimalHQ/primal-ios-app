@@ -10,6 +10,7 @@ import FLAnimatedImage
 
 protocol ZapTableViewCellDelegate: AnyObject {
     func contextMenuForZapCell(_ cell: ZapTableViewCell) -> UIMenu?
+    func messageTappedInZapCell(_ cell: ZapTableViewCell)
 }
 
 final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteractionDelegate {
@@ -47,6 +48,12 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
         
         let interaction = UIContextMenuInteraction(delegate: self)
         contentView.addInteraction(interaction)
+        
+        messageLabel.isUserInteractionEnabled = true
+        messageLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self else { return }
+            delegate?.messageTappedInZapCell(self)
+        }))
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -60,6 +67,7 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
         
         messageLabel.text = zap.message
         messageLabel.isHidden = zap.message.isEmpty
+        messageLabel.textColor = zap.message.isValidURL ? .accent : .foreground3
         
         updateTheme()
         
@@ -72,7 +80,6 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
         icon.tintColor = .foreground3
         nameLabel.textColor = .foreground
         
-        messageLabel.textColor = .foreground3
         countLabel.textColor = .foreground
     }
     

@@ -9,12 +9,11 @@ import SwiftUI
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = {
-        return DeeplinkCoordinator(handlers: [
-            PrimalSchemeDeeplinkHandler(),
-            NostrSchemeDeeplinkHandler()
-        ])
-    }()
+    lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = DeeplinkCoordinator(handlers: [
+        PrimalSchemeDeeplinkHandler(),
+        NostrSchemeDeeplinkHandler(),
+        NWCSchemeDeeplinkHandler()
+    ])
     
     var window: UIWindow?
 

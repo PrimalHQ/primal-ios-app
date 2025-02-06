@@ -259,7 +259,7 @@ private extension OnboardingPreviewController {
                 createAccount()
             }
         case .created:
-            onboardingParent?.reset(OnboardingReviewController(session: session), animated: true)
+            onboardingParent?.reset(OnboardingReviewController(profile: profile, session: session), animated: true)
         case .uploading:
             return
         }

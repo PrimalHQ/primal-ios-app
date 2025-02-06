@@ -8,13 +8,19 @@
 import UIKit
 
 class FollowedByView: UIView {
-    let images = AvatarView(size: 28, spacing: -8, reversed: true, borderColor: .background)
+    let images = (0...4).map { _ in UserImageView(height: 28) }
+    lazy var imagesStack = UIStackView(images)
     let label = UILabel()
     
     init() {
         super.init(frame: .zero)
         
-        let stack = UIStackView([images, label])
+        imagesStack.spacing = -8
+        imagesStack.transform = .init(rotationAngle: .pi)
+        
+        images.forEach { $0.transform = .init(rotationAngle: .pi) }
+        
+        let stack = UIStackView([imagesStack, label])
         addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).centerToSuperview()
         stack.spacing = 6
@@ -33,14 +39,20 @@ class FollowedByView: UIView {
     
     func setUsers(_ users: [ParsedUser]?) {
         guard let users else {
-            images.isHidden = true
+            imagesStack.isHidden = true
             label.text = ""
             
             return
         }
-        images.isHidden = false
+        imagesStack.isHidden = false
         
-        images.setImages(users.reversed().compactMap { $0.profileImage.url(for: .small) }, userCount: users.count)
+        images.forEach { $0.isHidden = true }
+        
+        zip(users, images).forEach { user, image in
+            image.setUserImage(user)
+            image.isHidden = false
+        }
+        
         label.text = "Followed by " + users.dropFirst().reduce(users.first?.data.firstIdentifier ?? "", { $0 + ", \($1.data.firstIdentifier)" })
     }
 }

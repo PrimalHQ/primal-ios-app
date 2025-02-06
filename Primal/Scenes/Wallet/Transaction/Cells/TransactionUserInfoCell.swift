@@ -29,7 +29,7 @@ class TransactionUserInfoCell: UITableViewCell {
 
 
 extension TransactionUserInfoCell: TransactionPartialCell {
-    func setupWithCellInfo(_ info: TransactionViewController.CellType) {
+    func setupWithCellInfo(_ info: TransactionCellType) {
         let user: ParsedUser?
         let message: String?
         let onchain: Bool

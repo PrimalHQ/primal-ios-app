@@ -7,8 +7,9 @@
 
 import Combine
 import UIKit
+import NostrSDK
 
-protocol WalletSearchController: UIViewController { 
+protocol WalletSearchController: UIViewController, MetadataCoding {
     var textSearch: String? { get set }
     var cancellables: Set<AnyCancellable> { get set }
 }
@@ -74,6 +75,17 @@ extension WalletSearchController {
                     }
                     self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                 }
+            }
+            return
+        }
+        
+        if let result = try? decodedMetadata(from: text), let pubkey = result.pubkey {
+            self.searchForPubkey(pubkey) { [weak self] user in
+                guard let user else {
+                    self?.textSearch = nil
+                    return
+                }
+                self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
             }
             return
         }

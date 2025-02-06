@@ -33,8 +33,10 @@ class UserImageView: UIView, Themeable {
         }()
     }
     
+    var noBackgroundCircle = false { didSet { updateHeight() } }
+    
     var legendBackgroundCircleSize: CGFloat {
-        height + {
+        noBackgroundCircle ? height : height + {
             if height >= 100 { return 1.5 }
             if height >= 40 { return 1 }
             if height >= 32 { return 0.5 }
@@ -94,9 +96,7 @@ class UserImageView: UIView, Themeable {
         animatedImageView.image = UIImage(named: "Profile")        
     }
     
-    func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
-        tag = tag + 1
-        
+    func updateGlow(_ user: ParsedUser) {
         if showLegendGlow, let legendary = PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey), legendary.avatar_glow, let theme = legendary.theme {
             legendaryGradient.isHidden = false
             legendaryBackgroundCircleView.isHidden = false
@@ -107,6 +107,12 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = true
             cachedLegendTheme = nil
         }
+    }
+    
+    func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
+        tag = tag + 1
+        
+        updateGlow(user)
         
         guard
             !disableAnimated,

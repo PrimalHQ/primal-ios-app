@@ -25,9 +25,11 @@ class UserListController: UIViewController, Themeable {
     init() {
         super.init(nibName: nil, bundle: nil)
         view.addSubview(table)
-        table.pinToSuperview()
+        table.pinToSuperview(safeArea: true)
         table.dataSource = self
         table.delegate = self
+        table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .init(top: 0, left: 0, bottom: 60, right: 0)
         
         view.addSubview(loadingSpinner)
         loadingSpinner.centerToSuperview()

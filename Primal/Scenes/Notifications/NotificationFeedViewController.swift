@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import GenericJSON
 
-struct GroupedNotification {
+struct GroupedNotification: Hashable {
     var users: [ParsedUser]
     var mainNotification: PrimalNotification
     var post: ParsedContent?
@@ -45,6 +45,7 @@ final class NotificationFeedViewController: NoteViewController {
         didSet {
             // We must assign posts to an array of posts that match so we can pass control to the FeedViewController
             posts = notifications.map { $0.post ?? .init(post: .empty, user: $0.users.first ?? ParsedUser(data: .empty)) }
+            (dataSource as? NotificationsFeedDatasource)?.setNotifications(notifications)
         }
     }
     var separatorIndex: Int = -1
@@ -66,6 +67,8 @@ final class NotificationFeedViewController: NoteViewController {
         self.tab = tab
         
         super.init()
+        
+        dataSource = NotificationsFeedDatasource(tableView: table, delegate: self)
         
         setup()
         
@@ -98,9 +101,7 @@ final class NotificationFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var barsMaxTransform: CGFloat {
-        super.topBarHeight + 60
-    }
+    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 }
     
     func setup() {
         title = "Notifications"
@@ -136,7 +137,7 @@ final class NotificationFeedViewController: NoteViewController {
         
         view.backgroundColor = .background
         
-        table.register(NotificationCell.self, forCellReuseIdentifier: postCellID)
+        table.register(NotificationCell.self, forCellReuseIdentifier: (dataSource as? NotificationsFeedDatasource)?.newCellID() ?? "notification")
         table.reloadData()
     }
     
@@ -171,7 +172,7 @@ final class NotificationFeedViewController: NoteViewController {
         }
         .receive(on: DispatchQueue.main)
         .sink { [weak self] newResult, seenResult in
-            self?.separatorIndex = newResult.count - 1
+            (self?.dataSource as? NotificationsFeedDatasource)?.separatorIndex = newResult.count - 1
             self?.notifications = newResult + seenResult
             self?.notifications.forEach { $0.post?.buildContentString(style: .notifications) }
             self?.isLoading = false
@@ -189,24 +190,10 @@ final class NotificationFeedViewController: NoteViewController {
         .store(in: &cancellables)
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { section == 0 ? notifications.count : 6 }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID, for: indexPath)
-        
-        if let cell = cell as? NotificationCell {
-            cell.updateForNotification(
-                notifications[indexPath.row],
-                isNew: indexPath.row <= separatorIndex,
-                delegate: self
-            )
-        }
-        
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row > posts.count - 15 {
             loadMore()
         }
-        
-        return cell
     }
     
     override func open(post: ParsedContent) -> NoteViewController {

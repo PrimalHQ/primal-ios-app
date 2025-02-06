@@ -10,7 +10,7 @@ import Kingfisher
 import Nantes
 import FLAnimatedImage
 
-final class PostPreviewView: UIView {
+final class PostPreviewView: UIView, Themeable {
     let profileImageView = UserImageView(height: 24)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -20,10 +20,11 @@ final class PostPreviewView: UIView {
     let seeMoreLabel = UILabel()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
-    let linkPreview = LinkPreview()
+    let linkPreview = SmallLinkPreview()
     let zapPreview = ZapPreviewView()
     let postPreview = PostPreviewPostPreviewView()
     let infoView = SimpleInfoView()
+    let separatorLabel = UILabel()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
     
@@ -57,7 +58,7 @@ final class PostPreviewView: UIView {
         
         imageAspectConstraint?.isActive = false
         if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(first.width) / CGFloat(first.height))
+            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.width)) / CGFloat(max(1, first.height)))
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect
@@ -76,7 +77,7 @@ final class PostPreviewView: UIView {
         mainImages.thumbnails = content.videoThumbnails
         mainImages.isHidden = content.mediaResources.isEmpty
         
-        if let data = content.linkPreview {
+        if let data = content.linkPreviews.first {
             linkPreview.data = data
             linkPreview.isHidden = false
         } else {
@@ -90,7 +91,7 @@ final class PostPreviewView: UIView {
             invoiceView.isHidden = true
         }
         
-        if let embeded = content.embededPost, embeded.post.kind == content.post.kind {
+        if let embeded = content.embeddedPost, embeded.post.kind == content.post.kind {
             postPreview.update(embeded)
             postPreview.isHidden = false
         } else {
@@ -104,9 +105,7 @@ final class PostPreviewView: UIView {
             zapPreview.isHidden = true
         }
         
-        mainLabel.attributedText = content.attributedText
-        layoutSubviews()
-        
+        mainLabel.attributedText = content.attributedTextShort
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
         if let customEvent = content.customEvent {
@@ -129,21 +128,36 @@ final class PostPreviewView: UIView {
             }
         }
     }
-}
-
-private extension PostPreviewView {
-    func setup() {
-        backgroundColor = .background4
-        layer.cornerRadius = 8
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.background3.cgColor
+    
+    func updateTheme() {
+        infoView.updateTheme()
         
-        let separatorLabel = UILabel()
-        separatorLabel.text = "·"
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
         }
+        
+        backgroundColor = .background4
+        layer.borderColor = UIColor.background3.cgColor
+        
+        nameLabel.textColor = .foreground
+        
+        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
+        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        seeMoreLabel.textColor = .accent2
+        
+        postPreview.updateTheme()
+    }
+}
+
+private extension PostPreviewView {
+    func setup() {
+        layer.cornerRadius = 8
+        layer.borderWidth = 1
+        
+        separatorLabel.text = "·"
         
         [nameLabel, secondaryIdentifierLabel, separatorLabel].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
         
@@ -153,22 +167,15 @@ private extension PostPreviewView {
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         secondaryIdentifierLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
-        nameLabel.textColor = .foreground
-        nameLabel.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .bold)
-        nameLabel.adjustsFontSizeToFitWidth = true
-        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        
         verifiedBadge.constrainToSize(FontSizeSelection.current.contentFontSize)
         
-        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         mainLabel.numberOfLines = 6
         mainLabel.lineBreakMode = .byWordWrapping
         mainLabel.lineBreakStrategy = .standard
         
         seeMoreLabel.text = "See more..."
         seeMoreLabel.textAlignment = .natural
-        seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-        seeMoreLabel.textColor = .accent2
+        seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.layer.masksToBounds = true
         mainImages.layer.cornerRadius = 8

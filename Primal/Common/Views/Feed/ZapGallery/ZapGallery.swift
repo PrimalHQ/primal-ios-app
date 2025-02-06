@@ -16,8 +16,9 @@ protocol ZapGalleryViewDelegate: AnyObject {
 
 protocol ZapGallery: UIView {
     var delegate: ZapGalleryViewDelegate? { get set }
-    var zaps: [ParsedZap] { get set }
+//    var zaps: [ParsedZap] { get set }
     var singleLine: Bool { get set }
+    func setZaps(_ zaps: [ParsedZap])
 }
 
 class GalleryZapPillMenuInteraction: UIContextMenuInteraction {
@@ -77,18 +78,34 @@ class SmallZapGalleryView: UIView, ZapGallery {
             .constrainToSize(width: 30, height: 24)
             .pinToSuperview(edges: [.leading, .top])
         skeletonLoader.layer.cornerRadius = 12
-        
-        clipsToBounds = true
     }
     
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    var zaps: [ParsedZap] = [] {
-        didSet {
+    func setZaps(_ zaps: [ParsedZap]) {
+        defer {
+            self.zaps = zaps
             update()
             playSkeleton()
         }
+        
+        guard
+            !zaps.isEmpty, 
+            self.zaps.isEmpty,
+            let animatingId = WalletManager.instance.animatingZap.value?.receiptId,
+            zaps.contains(where: { $0.receiptId == animatingId })
+        else { return }
+        
+        var oldZaps = zaps
+        oldZaps.removeAll(where: { $0.receiptId == animatingId })
+        
+        if oldZaps.isEmpty { return }
+        
+        self.zaps = oldZaps
+        update()
     }
+    
+    private var zaps: [ParsedZap] = []
     
     var animatingChanges: Bool {
         guard let id = WalletManager.instance.animatingZap.value?.receiptId else { return false }
@@ -115,7 +132,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
         }
         defer {
             if animatingChanges {
-                // Start animating
                 animateStacks()
             }
         }
@@ -167,7 +183,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 24 > frame.width {
+            if currentWidth + 24 > (frame.width < 10 ? 300 : frame.width) {
                 let image = UIImageView(image: UIImage(named: "zapGalleryExtra")).constrainToSize(24)
                 hStack.addArrangedSubview(image)
                 break
@@ -328,6 +344,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()
                         view.backgroundColor = .init(rgb: 0xFFA02F)
+                        view.layer.cornerRadius = 11
                         background = view
                     }
                     

@@ -30,11 +30,10 @@ class ParsedElement: Equatable {
     }
 }
 
-final class ParsedUser {
+final class ParsedUser: Hashable {
     var data: PrimalUser
     var profileImage: MediaMetadata.Resource
     var followers: Int?
-    var extraInfo: JSON?
     
     init(data: PrimalUser, profileImage: MediaMetadata.Resource? = nil, followers: Int? = nil) {
         self.data = data
@@ -46,17 +45,28 @@ final class ParsedUser {
         self.data = .init(pubkey: "empty")
         self.profileImage = .init(url: imageURL, variants: [])
     }
+    
+    static func == (lhs: ParsedUser, rhs: ParsedUser) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(data)
+        hasher.combine(profileImage)
+    }
 }
 
 extension PrimalFeedPost {
     var isArticle: Bool { kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue }
 }
 
-enum NotFoundContent {
+enum NotFoundContent: Hashable {
     case note, article
 }
 
-final class ParsedContent {
+final class ParsedContent: Hashable {
+    let uniqueID: String = UUID().uuidString
+    
     var post: PrimalFeedPost
     let user: ParsedUser
     
@@ -76,7 +86,7 @@ final class ParsedContent {
     
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
-    var linkPreview: LinkMetadata?
+    var linkPreviews: [LinkMetadata] = []
     var article: Article?
     
     var invoice: Invoice?
@@ -85,7 +95,7 @@ final class ParsedContent {
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
     
-    var embededPost: ParsedContent?
+    var embeddedPost: ParsedContent?
     var embeddedZap: ParsedFeedZap?
     var reposted: ParsedRepost?
     
@@ -96,9 +106,20 @@ final class ParsedContent {
     var notFound: NotFoundContent?
     
     var customEvent: ParsedContent?
+    
+    static func == (lhs: ParsedContent, rhs: ParsedContent) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(post)
+        hasher.combine(user)
+        hasher.combine(reposted)
+        hasher.combine(uniqueID)
+    }
 }
 
-struct ParsedRepost {
+struct ParsedRepost: Hashable {
     var users: [ParsedUser]
     var date: Date
     var id: String
@@ -148,8 +169,8 @@ enum ParsedContentTextStyle {
 extension ParsedContent {
     func buildContentString(style: ParsedContentTextStyle = .regular) {
         attributedText = contentStringForText(text: text, style: style)
-        if attributedText.length > 1200 {
-            attributedTextShort = attributedText.attributedSubstring(from: .init(location: 0, length: 1000))
+        if attributedText.length > 550 {
+            attributedTextShort = attributedText.attributedSubstring(from: .init(location: 0, length: 500))
         } else {
             attributedTextShort = attributedText
         }
@@ -167,13 +188,13 @@ extension ParsedContent {
             if !highlights.isEmpty {
                 let highlightLengthCount = highlights.reduce(0, { $0 + $1.length })
                 
-                if text.count - highlightLengthCount > 21 {
+                if text.count - highlightLengthCount > 42 {
                     return false
                 }
                 return text.filter({ $0.isNewline }).count < 2
             }
             
-            if text.count > 21 {
+            if text.count > 42 {
                 return false
             }
             
@@ -324,7 +345,7 @@ extension ParsedContent {
         
         new.mediaResources = mediaResources
         new.videoThumbnails = videoThumbnails
-        new.linkPreview = linkPreview
+        new.linkPreviews = linkPreviews
         
         new.invoice = invoice
         
@@ -332,8 +353,12 @@ extension ParsedContent {
         new.attributedText = attributedText
         new.attributedTextShort = attributedTextShort
         
-        new.embededPost = embededPost
+        new.zaps = zaps
+        
+        new.embeddedPost = embeddedPost
         new.reposted = reposted
+        new.embeddedZap = embeddedZap
+        new.customEvent = customEvent
         
         new.mentionedUsers = mentionedUsers
         

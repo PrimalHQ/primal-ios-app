@@ -19,7 +19,13 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     var didPostNewComment = false
         
-    var mainPositionInThread = 0
+    var mainPositionInThread: Int {
+        posts.firstIndex(where: { $0.post.id == id }) ?? 0
+    }
+    
+    var mainPostIndex: IndexPath {
+        (dataSource as? ThreadFeedDatasource)?.mainPostIndexPath ?? .init(row: 0, section: 0)
+    }
     
     private var didMoveToMain = false
     @Published private var didLoadView = false
@@ -33,10 +39,14 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     private let inputBackground = UIView()
     private let keyboardSizer = KeyboardSizingView()
     
+    var updateInsetCancellable: AnyCancellable?
+    
     var articles: [Article] = [] {
         didSet {
             var offset = table.contentOffset
-            table.reloadData()
+            
+            (dataSource as? ThreadFeedDatasource)?.articles = articles
+            
             if oldValue.count == 0 && articles.count == 1 {
                 guard let height = self.table.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height else { return }
                 offset.y += height
@@ -55,16 +65,17 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView, replyId: id, replyingTo: mainObject, defaultPostTitle: "Reply")
     
-    @Published var mainPostRepliesHeightArray: [CGFloat] = [0, 150, 0, 0, 0]
-    
     var isLoading = true {
         didSet {
-            mainPostRepliesHeightArray[1] = isLoading ? 150 : 0
+//            mainPostRepliesHeightArray[1] = isLoading ? 150 : 0
             table.reloadData()
         }
     }
     
     convenience init(post: ParsedContent) {
+        let post = post.copy()
+        post.buildContentString(style: .enlarged)
+        
         self.init(threadId: post.post.id)
         mainObject = post.post
         inputManager.replyingTo = mainObject
@@ -76,6 +87,8 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     init(threadId: String) {
         id = threadId
         super.init(feed: FeedManager(threadId: threadId))
+        
+        dataSource = ThreadFeedDatasource(threadID: threadId, tableView: table, delegate: self)
         setup()
     }
     
@@ -85,6 +98,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     var bottomBarHeight: CGFloat = 150
     var keyboardCancellable: AnyCancellable?
+    override var adjustedTopBarHeight: CGFloat { topBarHeight + 7 }
     override var barsMaxTransform: CGFloat { bottomBarHeight }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -93,6 +107,10 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         mainTabBarController?.showTabBarBorder = false
         
         didLoadView = true
+        
+        DispatchQueue.main.async {
+            self.didLoadView = true
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -132,7 +150,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     var articleSection: Int { 0 }
-    override var postSection: Int { 1 }
     
     @discardableResult
     override func open(post: ParsedContent) -> NoteViewController {
@@ -156,62 +173,13 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         return super.open(post: post)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int { 2 }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == postSection {
-            return super.tableView(tableView, numberOfRowsInSection: section)
-        }
-        return min(1, articles.count)
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 { // Parent Article
-            let cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
-            if let articleCell = cell as? ArticleCell {
-                articleCell.setUp(articles[indexPath.row])
-                articleCell.bottomSpacer.isHidden = false
-                articleCell.contentView.backgroundColor = .background2
-            }
-            return cell
-        }
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        let data = posts[indexPath.row]
-        let position: ThreadCell.ThreadPosition
-        scope: do {
-            if mainPositionInThread < indexPath.row {
-                position = .child
-                break scope
-            }
-            if mainPositionInThread > indexPath.row {
-                position = .parent
-                break scope
-            }
-            position = .main
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: postCellID + (position == .main ? "main" : ""), for: indexPath)
-        if position == .main, let cell = cell as? DefaultMainThreadCell {
-            cell.update(data)
-            cell.delegate = self
-        } else if let cell = cell as? ThreadCell {
-            cell.update(data, position: position)
-            cell.delegate = self
-        }
-        DispatchQueue.main.async { [self] in // Now the cell has been laid out
-            let heightIndex = indexPath.row - mainPositionInThread
-            if heightIndex >= 0 && heightIndex < mainPostRepliesHeightArray.count {
-                mainPostRepliesHeightArray[heightIndex] = cell.contentView.frame.height
-            }
-        }
-        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == postSection {
-            super.tableView(tableView, didSelectRowAt: indexPath)
-            return
-        }
+        super.tableView(tableView, didSelectRowAt: indexPath)
+        
         if indexPath.section == 0, let article = articles[safe: indexPath.row] {
             if let oldVC = navigationController?.viewControllers.first(where: { ($0 as? ArticleViewController)?.content.event.id == article.event.id }) {
                 navigationController?.popToViewController(oldVC, animated: true)
@@ -230,10 +198,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
             guard let self else { return }
             inputManager.askToSaveThenDismiss(self)
         }), for: .touchUpInside)
-        
-        table.register(PostThreadCell.self, forCellReuseIdentifier: postCellID)
-        table.register(DefaultMainThreadCell.self, forCellReuseIdentifier: postCellID + "main")
-        table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
         
         textInputView.tintColor = .accent
         textInputView.textColor = .foreground
@@ -335,9 +299,8 @@ private extension ThreadViewController {
                 isLoading = false
             }
             
+            mainPost.buildContentString(style: .enlarged)
             self.mainObject = mainPost.post
-            self.posts = []
-            self.mainPositionInThread = postsBefore.count
             self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             
             refreshControl.endRefreshing()
@@ -365,43 +328,59 @@ private extension ThreadViewController {
             }
             .store(in: &cancellables)
         
-        $mainPostRepliesHeightArray.map({ $0.reduce(0, +) }).filter({ $0 > 0 }) // Sum of all heights
-        .sink { [weak self] contentSize in
-            let topBarHeight: CGFloat = (self?.topBarHeight ?? 100) + 12
-            
-            guard let self, posts.count - mainPositionInThread < 6 else {
-                self?.table.contentInset = .init(top: topBarHeight, left: 0, bottom: 150, right: 0)
-                return
+        weak var threadDS = dataSource as? ThreadFeedDatasource
+        
+//        threadDS?.$cellHeightArray.sink(receiveValue: { height in
+//            print("Height: \(height.reduce(0, +))")
+//        })
+//        .store(in: &cancellables)
+        
+        updateInsetCancellable = threadDS?.$cellHeightArray
+            .map { (height: [CGFloat]) in
+                let index = threadDS?.mainPostIndexPath.row ?? 0
+                return height
+                    .enumerated()
+                    .filter({ $0.0 >= index })  // Ignore cells above the main
+                    .map { $0.1 }
+                    .reduce(0, +)               // Sum of all heights
             }
-            let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - topBarHeight - contentSize)
-            self.table.contentInset = .init(top: topBarHeight, left: 0, bottom: botInset, right: 0)
-        }
-        .store(in: &cancellables)
-
-        Publishers.CombineLatest($didLoadData, $didLoadView).sink(receiveValue: { [weak self] in
-            guard let self, $0 && $1, !didMoveToMain, mainPositionInThread > 0 else { return }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                self.didMoveToMain = true
-            }
-            
-            if self.didPostNewComment {
-                self.didPostNewComment = false
-                DispatchQueue.main.async {
-                    let index = min(self.posts.count - 1, self.mainPositionInThread + 1)
-                    self.table.scrollToRow(at: IndexPath(row: index, section: self.postSection), at: .top, animated: true)
+            .removeDuplicates()
+            .sink { [weak self] contentSize in
+//                print("Height reduced: \(contentSize)")
+                guard let self, posts.count - mainPositionInThread < 6 else {
+                    self?.table.contentInset = .init(top: self?.adjustedTopBarHeight ?? 107, left: 0, bottom: 150, right: 0)
+                    return
                 }
-            } else {
-                self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: postSection), at: .top, animated: false)
-                DispatchQueue.main.async {
-                    self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: false)
+                let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - adjustedTopBarHeight - contentSize)
+                self.table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: botInset, right: 0)
+            }
+
+        Publishers.CombineLatest($didLoadData, $didLoadView)
+            .filter { $0 && $1 }
+            .sink(receiveValue: { [weak self] _ in
+                guard let self, !didMoveToMain, mainPositionInThread > 0 else { return }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    self.didMoveToMain = true
+                    self.updateInsetCancellable = nil
+                }
+                
+                if self.didPostNewComment {
+                    self.didPostNewComment = false
                     DispatchQueue.main.async {
-                        self.table.scrollToRow(at: IndexPath(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: false)
+                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: true)
+                    }
+                } else {
+                    self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
+                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
+                        DispatchQueue.main.async {
+                            self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
+                        }
                     }
                 }
-            }
-        })
-        .store(in: &cancellables)
+            })
+            .store(in: &cancellables)
         
         Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent)
             .receive(on: DispatchQueue.main)
@@ -476,7 +455,7 @@ private extension ThreadViewController {
             if isEditing && !oldIsEditing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                     if self.mainPositionInThread < self.posts.count {
-                        self.table.scrollToRow(at: .init(row: self.mainPositionInThread, section: self.postSection), at: .top, animated: true)
+                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: true)
                     }
                 }
             }
@@ -492,7 +471,6 @@ private extension ThreadViewController {
         table.keyboardDismissMode = .onDrag
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
-        table.register(ArticleCell.self, forCellReuseIdentifier: "article")
         
         view.insertSubview(keyboardSizer, at: 0)
         keyboardSizer.pinToSuperview(edges: [.bottom, .horizontal])

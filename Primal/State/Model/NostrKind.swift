@@ -17,6 +17,7 @@ enum NostrKind: Int {
     case eventDeletion = 5
     case repost = 6
     case reaction = 7
+    case mediaPost = 20
     case channelCreation = 40
     case channelMetadata = 41
     case channelMessage = 42
@@ -29,6 +30,8 @@ enum NostrKind: Int {
     
     case muteList = 10_000
     case bookmarks = 10_003
+    
+    case blossom = 10_063
     
     case categoryList = 30_000
     case longForm = 30_023
@@ -77,6 +80,8 @@ enum NostrKind: Int {
     case eventKindCounts = 10_000_166
     case primalLegendInfo = 10_000_168
     case primalPremiumInfo = 10_000_169
+    case primalLegendInfoList = 10_000_170
+    case primalPremiumInfoList = 10_000_171
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605

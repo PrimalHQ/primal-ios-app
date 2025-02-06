@@ -15,6 +15,12 @@ class KeyboardManager {
     
     @Published private(set) var keyboardHeight: CGFloat = 0
     
+    var isShowingKeyboard: AnyPublisher<Bool, Never> {
+        $keyboardHeight.map { $0 >= 5 }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
+    
     private(set) var animationDuration: Double = 0.25
     private(set) var curveRawValue: UInt = 7
 
@@ -51,7 +57,7 @@ class KeyboardManager {
 }
 
 class KeyboardSizingView: UIView {
-    private var hConstraint: NSLayoutConstraint?
+    private(set) var hConstraint: NSLayoutConstraint?
     
     init() {
         super.init(frame: .zero)

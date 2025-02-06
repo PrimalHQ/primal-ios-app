@@ -71,7 +71,7 @@ class FeedPreviewCell: UITableViewCell, Themeable {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(_ parsed: ParsedFeedFromMarket, delegate: FeedMarketplaceCellDelegate) {
+    func setup(_ parsed: ParsedFeedFromMarket, delegate: FeedMarketplaceCellDelegate?) {
         self.delegate = delegate
         
         let feed = parsed.data

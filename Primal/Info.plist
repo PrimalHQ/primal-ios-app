@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Used to safeguard private keys.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -24,6 +22,26 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>nostr</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>nwc</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nostrnwc</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>primal-nwc</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nostrnwc+primal</string>
 			</array>
 		</dict>
 	</array>

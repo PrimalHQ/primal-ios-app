@@ -123,7 +123,7 @@ extension String : Identifiable {
     }
     
     var isNip27Mention: Bool {
-        let mentionPattern = "\\b(nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let mentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
         
         guard let mentionRegex = try? Regex(mentionPattern) else {
             print("Unable to create mention pattern regex")
@@ -199,45 +199,41 @@ extension String : Identifiable {
     }
     
     func extractHashtags() -> [String] {
-        let regex = try! NSRegularExpression(pattern: "#(\\w+)", options: [])
-        let results = regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
-            
-        return results
+        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#\\w+", options: []) else { return [] }
+        
+        return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
             .compactMap { Range($0.range, in: self) }
-            .map { String(self[$0].dropFirst()) }
+            .map { self[$0].string }
     }
-
-    func extractTagsMentionsAndURLs() -> [String] {
-        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+    
+    func extractURLs() -> [String] {
+        guard let regex = try? NSRegularExpression(pattern: "\\b(https?:\\/\\/[\\S]+)\\b", options: []) else {
+            return []
+        }
+        
+        return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
+            .compactMap { Range($0.range, in: self) }
+            .map { self[$0].string }
+    }
+    
+    func extractMentions() -> [String] {
         let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
-        let nip27MentionPattern = "\\b(nostr:)?((npub|nprofile)1\\w+)\\b|#\\[(\\d+)\\]"
+        let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
 
         guard
-            let hashtagRegex = try? NSRegularExpression(pattern: hashtagPattern, options: []),
             let mentionRegex = try? NSRegularExpression(pattern: nip08MentionPattern, options: []),
-            let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: []),
-            let urlDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: [])
         else {
             return []
         }
         
         var ranges: Set<Range<String.Index>> = []
-        hashtagRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
-            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                ranges.insert(range)
-            }
-        }
         mentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
             if let matchRange = match?.range, let range = Range(matchRange, in: self) {
                 ranges.insert(range)
             }
         }
         profileMentionRegex.enumerateMatches(in: self, options: [], range: NSRange(self.startIndex..., in: self)) { match, _, _ in
-            if let matchRange = match?.range, let range = Range(matchRange, in: self) {
-                ranges.insert(range)
-            }
-        }
-        urlDetector.enumerateMatches(in: self, range: NSRange(self.startIndex..., in: self)) { match, _, _ in
             if let matchRange = match?.range, let range = Range(matchRange, in: self) {
                 ranges.insert(range)
             }

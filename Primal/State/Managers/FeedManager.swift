@@ -40,6 +40,7 @@ final class FeedManager {
 
     var withRepliesOverride: Bool? {
         didSet {
+            if oldValue == withRepliesOverride { return }
             refresh()
         }
     }
@@ -80,7 +81,7 @@ final class FeedManager {
     func updateTheme() {
         (newPostObjects + parsedPosts).forEach {
             $0.buildContentString(style: contentStyle)
-            $0.embededPost?.buildContentString(style: .embedded)
+            $0.embeddedPost?.buildContentString(style: .embedded)
         }
     }
     
@@ -162,43 +163,57 @@ private extension FeedManager {
             
             self.parsedLongForm += result.getArticles()
             
-            var sorted = result.process(contentStyle: contentStyle)
+            let isOldEmpty = parsedPosts.isEmpty
+            let oldLastId = parsedPosts.last?.post.id
+            var alreadyAddedReposts = alreadyAddedReposts
+            let contentStyle = contentStyle
             
-            if (self.parsedPosts.count > 0 || sorted.count > 0) && self.parsedPosts.last?.post.id == sorted.first?.post.id {
-                sorted.removeFirst()
-            }
-            
-            if sorted.isEmpty {
-                self.parsedPosts = self.parsedPosts
-                didReachEnd = true
-                return
-            }
-            
-            let repostsGrouping = Dictionary(grouping: sorted.filter { $0.reposted != nil }, by: { $0.post.id })
-            for (id, reposts) in repostsGrouping {
-                // Remove same post without repost from page if it exists
-                sorted = sorted.filter { $0.post.id != id || $0.reposted != nil }
+            DispatchQueue.global(qos: .background).async {
+                var sorted = result.process(contentStyle: contentStyle)
                 
-                if let old = self.alreadyAddedReposts[id], let oldReposted = old.reposted {
-                    old.reposted = .init(users: oldReposted.users + reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
-                } else if let first = reposts.first {
-                    if let oldReposted = first.reposted {
-                        first.reposted = .init(users: reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
+                if (!isOldEmpty || !sorted.isEmpty) && oldLastId == sorted.first?.post.id {
+                    sorted.removeFirst()
+                }
+                
+                if sorted.isEmpty {
+                    DispatchQueue.main.async {
+                        self.parsedPosts = self.parsedPosts
+                        self.didReachEnd = true
                     }
-                    self.alreadyAddedReposts[id] = first
+                    return
+                }
+                
+                let repostsGrouping = Dictionary(grouping: sorted.filter { $0.reposted != nil }, by: { $0.post.id })
+                for (id, reposts) in repostsGrouping {
+                    // Remove same post without repost from page if it exists
+                    sorted = sorted.filter { $0.post.id != id || $0.reposted != nil }
+                    
+                    if let old = alreadyAddedReposts[id], let oldReposted = old.reposted {
+                        let newUsers = oldReposted.users + reposts.flatMap { $0.reposted?.users ?? [] }
+                        DispatchQueue.main.async {
+                            old.reposted = .init(users: newUsers, date: oldReposted.date, id: oldReposted.id)
+                        }
+                    } else if let first = reposts.first {
+                        if let oldReposted = first.reposted {
+                            first.reposted = .init(users: reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
+                        }
+                        alreadyAddedReposts[id] = first
+                    }
+                }
+                // Now remove all grouped reposts, we do this by ensuring that the post is either not a repost or the designated main repost from the "alreadyAddedReposts" map
+                sorted = sorted.filter { $0.reposted == nil || alreadyAddedReposts[$0.post.id] === $0 }
+                
+                DispatchQueue.main.async {
+                    if sorted.isEmpty {
+                        self.didReachEnd = true
+                        return
+                    }
+                    
+                    self.newParsedPosts.send(sorted)
+                    self.parsedPosts += sorted
+                    self.isRequestingNewPage = false
                 }
             }
-            // Now remove all grouped reposts, we do this by ensuring that the post is either not a repost or the designated main repost from the "alreadyAddedReposts" map
-            sorted = sorted.filter { $0.reposted == nil || self.alreadyAddedReposts[$0.post.id] === $0 }
-            
-            if sorted.isEmpty {
-                didReachEnd = true
-                return
-            }
-                        
-            self.newParsedPosts.send(sorted)
-            self.parsedPosts += sorted
-            self.isRequestingNewPage = false
         }
         .store(in: &cancellables)
     }
@@ -257,7 +272,7 @@ private extension FeedManager {
                 "since": .number(until.rounded())
             ]))
             .publisher()
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global(qos: .background))
             .map { [weak self] in
                 guard let self else { return $0.process(contentStyle: .regular) }
                 if let pagination = $0.pagination {

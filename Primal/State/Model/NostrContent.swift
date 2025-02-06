@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct NostrContent: Codable, Equatable {
+struct NostrContent: Codable, Equatable, Hashable {
     let kind: Int32
     let content: String
     let id: String
@@ -48,7 +48,7 @@ struct NostrContent: Codable, Equatable {
     }
 }
 
-struct NostrContentStats: Codable {
+struct NostrContentStats: Codable, Hashable {
     let event_id: String
     let likes: Int?
     let mentions: Int?
@@ -64,7 +64,7 @@ struct NostrContentStats: Codable {
     }
 }
 
-struct NostrUserProfileInfo: Codable {
+struct NostrUserProfileInfo: Codable, Hashable {
     let follows_count: Int?
     let followers_count: Int?
     let note_count: Int?
@@ -81,16 +81,16 @@ struct NostrUserProfileInfo: Codable {
     var media: Int { media_count ?? 0 }
 }
 
-struct MediaMetadata: Codable {
+struct MediaMetadata: Codable, Hashable {
     let event_id: String?
     let resources: [Resource]
     let thumbnails: [String: String]?
     
-    struct Resource: Codable {
+    struct Resource: Codable, Hashable {
         let url: String
         let variants: [Variant]
         
-        struct Variant: Codable {
+        struct Variant: Codable, Hashable {
             var a: Int
             var h: Int
             var w: Int
@@ -118,7 +118,7 @@ struct WebPreviews: Codable {
     var resources: [WebPreview]
 }
 
-struct WebPreview: Codable {
+struct WebPreview: Codable, Hashable {
     var icon_url: String?
     var md_image: String?
     

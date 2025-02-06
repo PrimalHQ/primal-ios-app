@@ -83,7 +83,8 @@ class PremiumBecomeLegendController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
 }
 

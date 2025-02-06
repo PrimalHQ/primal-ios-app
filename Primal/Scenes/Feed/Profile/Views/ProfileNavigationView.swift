@@ -26,7 +26,7 @@ class ProfileNavigationView: UIView, Themeable {
     let searchButton = UIButton()
     let menuButton = UIButton()
     let primaryLabel = UILabel()
-    let checkboxIcon = UIImageView(image: UIImage(named: "purpleVerified"))
+    let checkboxIcon = VerifiedView().constrainToSize(20)
     lazy var titleStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
     var overlayView = UIView()
 
@@ -76,13 +76,14 @@ class ProfileNavigationView: UIView, Themeable {
         
         if let oldImageUrl, oldImageUrl == parsed.data.picture {
             // NOTHING to prevent double loading of gifs
+            profilePicture.updateGlow(parsed)
         } else {
             oldImageUrl = parsed.data.picture
             profilePicture.setUserImage(parsed, feed: false)
         }
         
         primaryLabel.text = user.firstIdentifier
-        checkboxIcon.isHidden = !CheckNip05Manager.instance.isVerified(user)
+        checkboxIcon.user = user
         
         menuButton.isHidden = user.isCurrentUser
         

@@ -29,7 +29,7 @@ enum NotificationType: Int, CaseIterable, Codable {
     case POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO = 204
 }
 
-struct PrimalNotification: Codable {
+struct PrimalNotification: Codable, Hashable {
     var date: Date
     var type: NotificationType
     var data: NostrNotification
@@ -50,7 +50,7 @@ struct PrimalNotification: Codable {
     }
 }
 
-enum NostrNotification: Codable {
+enum NostrNotification: Codable, Hashable {
     case userFollowed(userId: String)
     case userUnfollowed(userId: String)
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Article {
+class Article: Hashable {
     let title: String
     let image: String?
     let summary: String?
@@ -49,6 +49,16 @@ class Article {
         self.stats = stats ?? .empty(id)
         self.event = event
         self.user = user
+    }
+    
+    static func == (lhs: Article, rhs: Article) -> Bool {
+        return false
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(user)
+        hasher.combine(identifier)
+        hasher.combine(event)
     }
 }
 

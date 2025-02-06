@@ -77,6 +77,18 @@ extension NoteZapsViewController: UITableViewDataSource {
 }
 
 extension NoteZapsViewController: ZapTableViewCellDelegate {
+    func messageTappedInZapCell(_ cell: ZapTableViewCell) {
+        guard
+            let index = table.indexPath(for: cell)?.row,
+            let zap = zaps[safe: index],
+            !zap.message.isEmpty, zap.message.isValidURL,
+            let url = URL(string: zap.message),
+            UIApplication.shared.canOpenURL(url)
+        else { return }
+        
+        UIApplication.shared.open(url)
+    }
+    
     func contextMenuForZapCell(_ cell: ZapTableViewCell) -> UIMenu? {
         guard
             let index = table.indexPath(for: cell)?.row,
