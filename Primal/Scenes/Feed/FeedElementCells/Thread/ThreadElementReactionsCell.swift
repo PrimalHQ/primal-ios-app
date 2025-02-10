@@ -9,8 +9,6 @@ import Combine
 import UIKit
 
 class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementReactionsCell" }
     
     var bookmarkUpdater: AnyCancellable?

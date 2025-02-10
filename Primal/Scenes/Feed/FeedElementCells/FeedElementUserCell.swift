@@ -8,6 +8,8 @@
 import UIKit
 
 class FeedElementBaseCell: UITableViewCell {
+    weak var delegate: FeedElementCellDelegate?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -26,7 +28,6 @@ class FeedElementBaseCell: UITableViewCell {
 }
 
 class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
     
     static var cellID: String { "FeedElementUserCell" }
     

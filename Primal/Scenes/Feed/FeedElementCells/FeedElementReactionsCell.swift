@@ -24,8 +24,6 @@ extension ElementReactionsCell {
 }
 
 class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementReactionsCell" }
     
     var bookmarkUpdater: AnyCancellable?

@@ -9,8 +9,6 @@ import UIKit
 import WebKit
 
 class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementYoutubePreviewCell" }
     
     private let iconView = UIImageView(image: UIImage(named: "youtubeIcon"))

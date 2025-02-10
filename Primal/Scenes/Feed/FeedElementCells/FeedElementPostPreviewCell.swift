@@ -8,8 +8,6 @@
 import UIKit
 
 class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementPostPreviewCell" }
     
     let postPreview = PostPreviewView()

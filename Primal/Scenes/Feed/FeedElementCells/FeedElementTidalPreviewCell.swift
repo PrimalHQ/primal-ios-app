@@ -9,8 +9,6 @@ import UIKit
 import WebKit
 
 class FeedElementTidalPreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementTidalPreviewCell" }
     
     private let iconView = UIImageView(image: UIImage(named: "tidalSmallIcon"))

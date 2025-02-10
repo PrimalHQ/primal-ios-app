@@ -13,7 +13,6 @@ protocol ElementImageGalleryCell: UITableViewCell, FeedElementVideoCell {
 }
 
 class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
     let mainImages = ImageGalleryView()
     weak var imageAspectConstraint: NSLayoutConstraint?
     

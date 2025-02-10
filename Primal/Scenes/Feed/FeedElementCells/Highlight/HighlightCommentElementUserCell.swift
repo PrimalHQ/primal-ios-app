@@ -7,9 +7,7 @@
 
 import UIKit
 
-class HighlightCommentElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
+class HighlightCommentElementUserCell: FeedElementBaseCell, RegularFeedElementCell {    
     static var cellID: String { "HighlightCommentElementUserCell" }
     
     let profileImageView = UserImageView(height: 30)

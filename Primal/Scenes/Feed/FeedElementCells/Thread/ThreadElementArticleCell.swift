@@ -8,8 +8,6 @@
 import UIKit
 
 class ThreadElementArticleCell: ThreadElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementArticleCell" }
     
     let articleView = ArticleFeedView()

@@ -10,8 +10,6 @@ import UIKit
 
 // This is a cell that only contains the reactions bar
 class PostReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementSmallZapGalleryCell" }
     
     var bookmarkUpdater: AnyCancellable?

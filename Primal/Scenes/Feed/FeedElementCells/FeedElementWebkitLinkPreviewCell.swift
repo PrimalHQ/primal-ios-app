@@ -9,8 +9,6 @@ import UIKit
 import WebKit
 
 class FeedElementWebkitLinkPreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementWebkitLinkPreviewCell" }
     
     let linkPresentation = LargeLinkPreview()

@@ -8,8 +8,6 @@
 import UIKit
 
 class FeedElementInvoiceCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementInvoiceCell" }
     
     let invoiceView = LightningInvoiceView()
