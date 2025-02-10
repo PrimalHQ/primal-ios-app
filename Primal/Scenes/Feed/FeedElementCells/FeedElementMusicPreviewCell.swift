@@ -24,8 +24,6 @@ extension UIButton.Configuration {
 }
 
 class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementMusicPreviewCell" }
     
     private let iconView = UIImageView(image: UIImage(named: "youtubeIcon"))

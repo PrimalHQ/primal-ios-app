@@ -8,8 +8,6 @@
 import UIKit
 
 class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementSmallZapGalleryCell" }
     
     var lastContentId: String?

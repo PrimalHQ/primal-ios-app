@@ -10,7 +10,7 @@ import Nantes
 
 // This is a helper class necessary to prevent retain cycle because delegate in Nantes isn't defined as "weak"
 class FeedElementTextCellNantesDelegate {
-    weak var cell: FeedElementTextCell?
+    weak var cell: FeedElementBaseCell?
 }
 
 extension FeedElementTextCellNantesDelegate: NantesLabelDelegate {
@@ -21,8 +21,6 @@ extension FeedElementTextCellNantesDelegate: NantesLabelDelegate {
 }
 
 class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementTextCell" }
     
     var useShortText: Bool { true }

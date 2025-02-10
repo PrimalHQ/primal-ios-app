@@ -12,8 +12,6 @@ protocol WebPreviewCell {
 }
 
 class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementWebPreviewCell" }
     
     let linkPresentation = T()

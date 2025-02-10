@@ -8,8 +8,6 @@
 import UIKit
 
 class MainThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementUserCell" }
     
     let threeDotsButton = UIButton()

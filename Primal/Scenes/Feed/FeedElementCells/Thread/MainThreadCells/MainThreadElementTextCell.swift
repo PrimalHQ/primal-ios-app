@@ -11,8 +11,6 @@ import UIKit
 import Nantes
 
 class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementTextCell" }
     
     var useShortText: Bool { true }

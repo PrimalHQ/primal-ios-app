@@ -8,8 +8,6 @@
 import UIKit
 
 class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, RegularFeedElementCell, WebPreviewCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementWebPreviewCell" }
     
     let linkPresentation = T()

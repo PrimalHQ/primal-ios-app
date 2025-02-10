@@ -8,8 +8,6 @@
 import UIKit
 
 class FeedElementArticleCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementArticleCell" }
     
     let articleView = ArticleFeedView()

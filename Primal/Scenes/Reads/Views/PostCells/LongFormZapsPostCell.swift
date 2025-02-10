@@ -10,8 +10,6 @@ import UIKit
 class LongFormZapsPostCell: FeedElementBaseCell, RegularFeedElementCell {    
     static var cellID: String { "LongFormZapsPostCell" }
     
-    var delegate: FeedElementCellDelegate?
-    
     lazy var largeGallery = LargeZapGalleryView(zapTapCallback: { [weak self] in
         guard let self else { return }
         delegate?.postCellDidTap(self, .longTapZap)

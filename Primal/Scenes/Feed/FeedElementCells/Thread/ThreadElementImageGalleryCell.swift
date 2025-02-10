@@ -9,7 +9,6 @@ import UIKit
 import Kingfisher
 
 class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
     let mainImages = ImageGalleryView()
     weak var imageAspectConstraint: NSLayoutConstraint?
     

@@ -8,8 +8,6 @@
 import UIKit
 
 class FeedElementZapPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementZapPreviewCell" }
     
     let zapPreview = ZapPreviewView()

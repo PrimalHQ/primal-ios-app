@@ -9,8 +9,6 @@ import UIKit
 import Nantes
 
 class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
-    weak var delegate: FeedElementCellDelegate?
-    
     static var cellID: String { "FeedElementTextCell" }
     
     var useShortText: Bool { true }
@@ -62,7 +60,7 @@ private extension ThreadElementTextCell {
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-//        nantesDelegate.cell = self
+        nantesDelegate.cell = self
         
         mainLabel.numberOfLines = 0
         mainLabel.delegate = nantesDelegate
