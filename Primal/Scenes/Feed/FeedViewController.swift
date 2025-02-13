@@ -504,7 +504,7 @@ private extension NoteViewController {
         
         let postUser = post.user.data
         if postUser.address == nil {
-            showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
+            showErrorMessage(title: "Can’t Zap", "The user you're trying to zap didn't set up their lightning wallet")
             return
         }
         

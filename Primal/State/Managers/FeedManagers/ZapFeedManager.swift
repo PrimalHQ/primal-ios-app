@@ -11,7 +11,7 @@ import GenericJSON
 
 class ExploreZapsFeedManager: ZapFeedManager {
     init() {
-        super.init(request: FeedManagerRequest(name: "explore_zaps", body: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]), contentStyle: .regular)
+        super.init(request: FeedManagerRequest(name: "explore_zaps", body: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]))
     }
 }
 
@@ -33,7 +33,7 @@ class ZapFeedManager: BaseFeedManager {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(request: FeedManagerRequestProtocol, contentStyle: ParsedContentTextStyle) {
+    init(request: FeedManagerRequestProtocol) {
         super.init(request: request)
         baseDelegate = self
         

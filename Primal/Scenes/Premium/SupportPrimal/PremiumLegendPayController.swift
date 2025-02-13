@@ -57,6 +57,7 @@ class PremiumLegendPayController: UIViewController {
                 }
                 
                 Connection.wallet.isConnectedPublisher.filter { $0 }
+                    .receive(on: DispatchQueue.main)
                     .sink { [weak self] _ in
                         self?.trackPayment = Connection.wallet.requestCacheContinous(name: "membership_purchase_monitor", request: ["membership_quote_id": .string(quote.membership_quote_id)]) { result in
 

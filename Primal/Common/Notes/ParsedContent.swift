@@ -233,7 +233,12 @@ extension ParsedContent {
         ])
         
         for element in httpUrls where element.position + element.length <= result.length {
-            guard let url = URL(string: element.text) else { continue }
+            guard let url = URL(string: element.reference) else {
+                result.addAttributes([
+                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5),
+                ], range: .init(location: element.position, length: element.length))
+                continue
+            }
             result.addAttributes([
                 .foregroundColor: UIColor.accent2,
                 .link: url

@@ -69,9 +69,9 @@ final class HomeFeedViewController: UIViewController, Themeable {
         }), for: .touchUpInside)
         
         pageVC.willMove(toParent: self)
-        view.addSubview(pageVC.view)
         addChild(pageVC)
         pageVC.didMove(toParent: self)
+        view.addSubview(pageVC.view)
         pageVC.view.pinToSuperview()
         
         postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)

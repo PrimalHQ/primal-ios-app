@@ -26,6 +26,8 @@ class HomeFeedChildController: PostFeedViewController {
     @Published var cachedPosts: [ParsedContent] = []
     @Published var isScrolling = false
     @Published var didReachEnd = false
+    
+    weak var menuContainer: MenuContainerController?
 
     override init(feed: FeedManager) {
         super.init(feed: feed)
@@ -70,6 +72,8 @@ class HomeFeedChildController: PostFeedViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        menuContainer = findParent()
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
@@ -121,6 +125,8 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var parentHomeVC: HomeFeedViewController?
     override func setBarsToTransform(_ transform: CGFloat) {
+        guard menuContainer?.isOpen == false else { return }
+        
         super.setBarsToTransform(transform)
         
         let percent = abs(transform / barsMaxTransform)
