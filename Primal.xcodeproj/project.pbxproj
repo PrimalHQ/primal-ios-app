@@ -540,7 +540,6 @@
 		B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */; };
 		B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12FA2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift */; };
 		B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */; };
-		B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */; };
 		B9DF0CAD2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */; };
 		B9DF0CB02C25920C009ADC7B /* ArticleTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAF2C25920C009ADC7B /* ArticleTransition.swift */; };
 		B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */; };
@@ -1189,7 +1188,6 @@
 		B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNip05Check.swift; sourceTree = "<group>"; };
 		B9DD12FA2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Nip05Check.swift"; sourceTree = "<group>"; };
 		B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostController.swift; sourceTree = "<group>"; };
-		B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormCommentCell.swift; sourceTree = "<group>"; };
 		B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostCell.swift; sourceTree = "<group>"; };
 		B9DF0CAF2C25920C009ADC7B /* ArticleTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleTransition.swift; sourceTree = "<group>"; };
 		B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapGalleryView.swift; sourceTree = "<group>"; };
@@ -2864,7 +2862,6 @@
 			isa = PBXGroup;
 			children = (
 				B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */,
-				B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */,
 				B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */,
 				B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */,
 			);
@@ -3389,7 +3386,6 @@
 				B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */,
 				B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */,
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
-				B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */,
 				B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */,
 				B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */,
 				B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */,
@@ -3950,7 +3946,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.19;
+				MARKETING_VERSION = 2.1.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3997,7 +3993,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.19;
+				MARKETING_VERSION = 2.1.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

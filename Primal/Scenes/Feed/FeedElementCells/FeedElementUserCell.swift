@@ -91,7 +91,6 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         separatorLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
         

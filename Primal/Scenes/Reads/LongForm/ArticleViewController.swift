@@ -414,6 +414,11 @@ private extension ArticleViewController {
                 webViewParent.addSubview(webView)
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
+                
+//                view.addGestureRecognizer(BindableTapGestureRecognizer(action: {
+//                    UIPasteboard.general.string = webView.content
+//                    RootViewController.instance.showToast("Copied!")
+//                }))
         
                 let updatedText = updateText(text)
                 let down = Down(markdownString: updatedText)

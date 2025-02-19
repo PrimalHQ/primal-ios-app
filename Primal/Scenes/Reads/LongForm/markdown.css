@@ -368,12 +368,14 @@ pre, code, mark {
 code {
   display: block;
   color: var(--text-color);
-  font-family: "Fira Mono";
+  font-family: "Fira Mono", monospace;
   font-size: var(--p-font-size);
   font-weight: var(--p-font-weight);
   line-height: var(--p-line-height);
   max-width: 100%;
   overflow-x: scroll;
+  padding: 18px;
+  border-radius: 4px;
 }
 
 del {

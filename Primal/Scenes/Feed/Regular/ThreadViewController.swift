@@ -216,7 +216,10 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     override func setBarsToTransform(_ transform: CGFloat) {
-        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 { return }
+        var transform = transform
+        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 {
+            transform = 0
+        }
         
         super.setBarsToTransform(transform)
         

@@ -35,6 +35,8 @@ class ExploreNoteFeedPreviewController: NoteFeedPreviewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        
+        view.backgroundColor = .clear
     }
     
     override func viewDidAppear(_ animated: Bool) {

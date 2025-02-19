@@ -329,6 +329,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 url = .init(string: "https://" + url.absoluteString) ?? url
             }
             
+            if url.absoluteString.contains("primal.net/legends") {
+                showViewController(LegendListController())
+                return
+            }
+            
             let safari = SFSafariViewController(url: url)
             present(safari, animated: true)
             return

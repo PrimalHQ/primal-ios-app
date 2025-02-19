@@ -46,7 +46,6 @@ class PreviewFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Previ
                 if let cell = cell as? RegularFeedElementCell {
                     cell.update(content)
                     cell.delegate = delegate
-                    cell.contentView.backgroundColor = .black
                 }
             }
             
