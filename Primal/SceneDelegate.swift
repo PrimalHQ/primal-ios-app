@@ -37,4 +37,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         deeplinkCoordinator.handleURL(firstUrl)
     }
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        
+    }
 }

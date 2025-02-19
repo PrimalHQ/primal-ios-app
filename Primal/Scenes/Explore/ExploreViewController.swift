@@ -15,6 +15,9 @@ final class ExploreViewController: PrimalPageController {
     
     private let configButton = UIButton(configuration: .simpleImage("searchConfig"))
     
+    let postButtonParent = UIView()
+    let postButton = NewPostButton()
+    
     init() {
         super.init(tabs: [
             ("FEEDS", { ExploreFeedsViewController() }),
@@ -64,6 +67,14 @@ private extension ExploreViewController {
         configButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedSearchController(), animated: true)
         }), for: .touchUpInside)
+        
+        postButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(NewPostViewController(), animated: true)
+        }), for: .touchUpInside)
+        view.addSubview(postButtonParent)
+        postButtonParent.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
     }
     
     @objc func searchTapped() {

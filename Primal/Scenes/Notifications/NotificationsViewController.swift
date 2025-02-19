@@ -10,6 +10,9 @@ import UIKit
 import GenericJSON
 
 final class NotificationsViewController: PrimalPageController {
+    let postButtonParent = UIView()
+    let postButton = NewPostButton()
+    
     init() {
         super.init(tabs: [
             ("ALL", { NotificationFeedViewController(tab: .all) }),
@@ -30,7 +33,15 @@ final class NotificationsViewController: PrimalPageController {
     func setup() {
         title = "Notifications"
         
-        updateTheme()
+        navigationItem.rightBarButtonItem = customSearchButton(scope: .myNotifications)
+        
+        postButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(NewPostViewController(), animated: true)
+        }), for: .touchUpInside)
+        view.addSubview(postButtonParent)
+        postButtonParent.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
     }
     
     override func updateTheme() {
