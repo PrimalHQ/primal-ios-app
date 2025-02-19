@@ -9,6 +9,13 @@ import Foundation
 import NostrSDK
 import GenericJSON
 
+public extension String {
+    static let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)?(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+    static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+    static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
+    static let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
+}
+
 class NoteProcessor: MetadataCoding {
     let response: PostRequestResult
     let contentStyle: ParsedContentTextStyle
@@ -232,13 +239,11 @@ class NoteProcessor: MetadataCoding {
         p.replyingTo = findReply("reply") ?? findReply("root")
         
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-        
         var referencedPosts: [(String, ParsedContent)] = []
         var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
         
         let tmpText = text as NSString
-        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+        if let postMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
             postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
                     
@@ -288,8 +293,7 @@ class NoteProcessor: MetadataCoding {
             }
         }
         
-        let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)?(naddr1\\w+)\\b|#\\[(\\d+)\\]"
-        if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
+        if let articleMentionRegex = try? NSRegularExpression(pattern: .articleMentionPattern, options: []) {
             articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard p.article == nil, let matchRange = match?.range else { return }
                     
@@ -334,8 +338,8 @@ class NoteProcessor: MetadataCoding {
             for mention in mentions {
                 if flatTags.contains(mention.post.id) {
                     var stringFound = false
-                    if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
-                        profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                    if let noteMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
+                        noteMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                             if !stringFound, let matchRange = match?.range {
                                 itemsToRemove.append((text as NSString).substring(with: matchRange))
                                 stringFound = true
