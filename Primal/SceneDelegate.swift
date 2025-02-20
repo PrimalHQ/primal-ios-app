@@ -12,11 +12,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = DeeplinkCoordinator(handlers: [
         PrimalSchemeDeeplinkHandler(),
         NostrSchemeDeeplinkHandler(),
-        NWCSchemeDeeplinkHandler()
+        NWCSchemeDeeplinkHandler(),
+        PrimalWebsiteScheme()
     ])
     
     var window: UIWindow?
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
@@ -26,6 +27,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
 
         if let url = connectionOptions.urlContexts.first?.url {
+            deeplinkCoordinator.handleURL(url)
+        }
+        
+        if let userActivity = connectionOptions.userActivities.first(where: { $0.activityType == NSUserActivityTypeBrowsingWeb }), let url = userActivity.webpageURL {
             deeplinkCoordinator.handleURL(url)
         }
     }
@@ -39,6 +44,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard let url = userActivity.webpageURL else { return }
         
+        deeplinkCoordinator.handleURL(url)
     }
 }

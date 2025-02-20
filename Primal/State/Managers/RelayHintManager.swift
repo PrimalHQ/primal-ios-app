@@ -50,7 +50,7 @@ class RelayHintManager: MetadataCoding {
         SocketRequest(name: "get_user_relays_2", payload: ["pubkeys": [.string(user.pubkey)]]).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
-                let relays = res.relayData.filter({ $0.value.read && $0.value.write }).map({ $0.key }).unique().prefix(2)
+                let relays = res.relayData.filter({ $0.value.write }).map({ $0.key }).unique().prefix(2)
                 
                 self?.userRelays[user.pubkey] = Array(relays)
             }

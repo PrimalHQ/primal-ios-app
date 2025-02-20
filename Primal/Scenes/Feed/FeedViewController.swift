@@ -356,7 +356,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let cell = cell as? ElementImageGalleryCell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
-            guard let cell = cell as? FeedElementPostPreviewCell else { return }
+            guard let cell = cell as? ElementPostPreviewCell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
             showViewController(ProfileViewController(profile: post.user))
@@ -680,7 +680,7 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
-    func postCellDidTapEmbeddedImages(_ cell: FeedElementPostPreviewCell, resource: MediaMetadata.Resource) {
+    func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, resource: MediaMetadata.Resource) {
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embeddedPost else { return }
         
         if resource.url.isVideoURL {

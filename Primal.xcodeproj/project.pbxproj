@@ -412,6 +412,7 @@
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
 		B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */; };
 		B97DF0802C8F1C820041C790 /* NoteFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */; };
+		B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */; };
 		B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */; };
 		B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */; };
 		B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */; };
@@ -1063,6 +1064,7 @@
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
 		B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumListFeedManager.swift; sourceTree = "<group>"; };
 		B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedPreviewController.swift; sourceTree = "<group>"; };
+		B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWebsiteScheme.swift; sourceTree = "<group>"; };
 		B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedView.swift; sourceTree = "<group>"; };
 		B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadArticleController.swift; sourceTree = "<group>"; };
 		B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleWebView.swift; sourceTree = "<group>"; };
@@ -3012,6 +3014,7 @@
 				C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */,
 				C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */,
 				B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */,
+				B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */,
 			);
 			path = Scheme;
 			sourceTree = "<group>";
@@ -3745,6 +3748,7 @@
 				B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				B91EF0D32CEB830600299ECF /* PremiumManageSubscriptionController.swift in Sources */,
+				B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */,
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
@@ -3946,7 +3950,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.21;
+				MARKETING_VERSION = 2.1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3993,7 +3997,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.21;
+				MARKETING_VERSION = 2.1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

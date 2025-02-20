@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ElementPostPreviewCell: UITableViewCell, FeedElementVideoCell {
+    var postPreview: PostPreviewView { get }
+}
+
 class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     static var cellID: String { "FeedElementPostPreviewCell" }
     
@@ -50,7 +54,7 @@ extension FeedElementPostPreviewCell: ImageCollectionViewDelegate {
     }
 }
 
-extension FeedElementPostPreviewCell: FeedElementVideoCell {
+extension FeedElementPostPreviewCell: ElementPostPreviewCell {
     var currentVideoCells: [VideoCell] {
         [postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
             .compactMap { $0 }
