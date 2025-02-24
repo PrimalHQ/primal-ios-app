@@ -319,15 +319,40 @@ private extension MainTabBarController {
                     guard let self, let to else { return }
                     RootViewController.instance.navigateTo = nil
                     
-                    let vc: UIViewController = {
+                    let (vc, tab) : (UIViewController?, MainTab) = {
                         switch to {
                         case .profile(let pubkey):
-                            return ProfileViewController(profile: .init(data: .init(pubkey: pubkey)))
+                            return (ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), .home)
                         case .note(let id):
-                            return ThreadViewController(threadId: id)
+                            return (ThreadViewController(threadId: id), .home)
+                        case .article(let pubkey, let id):
+                            return (LoadArticleController(kind: NostrKind.longForm.rawValue, identifier: id, pubkey: pubkey), .reads)
+                        case .search(let text):
+                            return (SearchNoteFeedController(feed: FeedManager(newFeed: PrimalFeed(
+                                name: "Search",
+                                spec: "{\"id\":\"advsearch\",\"query\":\"\(text)\"}",
+                                description: "Primal search results",
+                                feedkind: "search",
+                                enabled: true
+                            ))), .home)
+                        case .tab(let mainTab):
+                            return (nil, mainTab)
+                        case .messages:
+                            return (MessagesViewController(), .home)
+                        case .bookmarks:
+                            return (PublicBookmarksViewController(), .home)
+                        case .premium:
+                            return (PremiumViewController(), .home)
+                        case .legends:
+                            return (LegendListController(), .home)
                         }
                     }()
-                    self.switchToTab(.home, open: vc)
+                                        
+                    self.switchToTab(tab, open: vc)
+                    if vc == nil {
+                        self.navForTab(tab).popToRootViewController(animated: true)
+                    }
+                    
                     if self.presentedViewController as? SFSafariViewController != nil{
                         self.dismiss(animated: true)
                     }

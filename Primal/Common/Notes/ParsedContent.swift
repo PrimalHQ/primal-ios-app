@@ -129,7 +129,10 @@ struct ParsedRepost: Hashable {
 
 extension ParsedUser {
     func webURL() -> String {
-        "https://primal.net/p/\(data.npub)"
+        if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: data.pubkey) {
+            return "https://primal.net/\(name)"
+        }
+        return "https://primal.net/p/\(data.npub)"
     }
     
     var isCurrentUser: Bool { data.isCurrentUser }
@@ -307,12 +310,19 @@ extension ParsedContent {
     }
     
     func noteId() -> String {
-        post.kind == NostrKind.longForm.rawValue ?
-            getATagID() ?? bech32_note_id(post.id) ?? post.id
-          : bech32_note_id(post.id) ?? post.id
+        (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
     }
     
-    func webURL() -> String { "https://primal.net/e/\(noteId())" }
+    func webURL() -> String {
+        guard
+            post.kind == NostrKind.longForm.rawValue,
+            let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: user.data.pubkey),
+            let dTag = post.tags.first(where: { $0.first == "d" })?[safe: 1]
+        else {
+            return "https://primal.net/e/\(noteId())"
+        }
+        return "https://primal.net/\(name)/\(dTag)"
+    }
     
     var isEmpty: Bool {
         post.isEmpty || user.data.id.isEmpty

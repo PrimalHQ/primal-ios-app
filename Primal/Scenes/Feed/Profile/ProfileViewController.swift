@@ -29,7 +29,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     var profile: ParsedUser {
         didSet {
-            if profileDataSource?.profile != profile {
+            if profileDataSource?.profile.data != profile.data {
                 profileDataSource?.profile = profile
             }
             navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))

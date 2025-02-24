@@ -207,7 +207,7 @@ extension String : Identifiable {
     }
     
     func extractURLs() -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: "\\b(https?:\\/\\/[\\S]+)", options: []) else {
+        guard let regex = try? NSRegularExpression(pattern: "\\b(?i)https?:\\/\\/[\\S]+", options: []) else {
             return []
         }
         

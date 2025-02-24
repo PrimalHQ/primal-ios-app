@@ -329,8 +329,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 url = .init(string: "https://" + url.absoluteString) ?? url
             }
             
-            if url.absoluteString.contains("primal.net/legends") {
-                showViewController(LegendListController())
+            if url.host()?.contains("primal.net") == true {
+                PrimalWebsiteScheme().openURL(url)
                 return
             }
             

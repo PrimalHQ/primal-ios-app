@@ -38,17 +38,22 @@ class FollowedByView: UIView {
     }
     
     func setUsers(_ users: [ParsedUser]?) {
-        guard let users else {
+        guard var users else {
             imagesStack.isHidden = true
             label.text = ""
             
             return
         }
+        
+        users = users.filter { PremiumCustomizationManager.instance.getCustomization(pubkey: $0.data.pubkey) != nil } + users.filter {
+            PremiumCustomizationManager.instance.getCustomization(pubkey: $0.data.pubkey) == nil
+        }
+        
         imagesStack.isHidden = false
         
         images.forEach { $0.isHidden = true }
         
-        zip(users, images).forEach { user, image in
+        zip(users.reversed(), images).forEach { user, image in
             image.setUserImage(user)
             image.isHidden = false
         }

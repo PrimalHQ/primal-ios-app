@@ -20,6 +20,13 @@ extension CAMediaTimingFunction {
 enum DeeplinkNavigation {
     case profile(String)
     case note(String)
+    case article(pubkey: String, id: String)
+    case search(String)
+    case tab(MainTab)
+    case messages
+    case bookmarks
+    case premium
+    case legends
 }
 
 final class RootViewController: UIViewController {

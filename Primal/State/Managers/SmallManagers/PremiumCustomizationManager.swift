@@ -31,11 +31,11 @@ extension LegendCustomization {
 }
 
 class PremiumCustomizationManager {
-    
     static let instance = PremiumCustomizationManager()
     
     private var customizations: [String: LegendCustomization] = [:]
     private var infos: [String: PremiumUserInfo] = [:]
+    private var names: [String: String] = [:]
     
     private init() { }
     
@@ -52,6 +52,15 @@ class PremiumCustomizationManager {
             self.infos[inf.key] = inf.value
         }
     }
+    
+    @MainActor
+    func addPremiumNames(_ info: [String: String]) {
+        for inf in info {
+            names[inf.key] = inf.value
+        }
+    }
+    
+    func getPremiumName(pubkey: String) -> String? { names[pubkey] }
     
     func getCustomization(pubkey: String) -> LegendCustomization? { customizations[pubkey] }
     

@@ -389,6 +389,9 @@ extension PostRequestResult {
                 print("Error decoding primalName")
                 return
             }
+            Task {
+                await PremiumCustomizationManager.instance.addPremiumNames(dic)
+            }
         case .primalLegendInfo:
             guard let dic: [String: LegendCustomization] = contentString.decode() else {
                 print("Error decoding primalLegendInfo")
