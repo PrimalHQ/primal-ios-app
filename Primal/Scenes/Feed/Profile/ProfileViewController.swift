@@ -29,7 +29,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     var profile: ParsedUser {
         didSet {
-            if profileDataSource?.profile != profile {
+            if profileDataSource?.profile.data != profile.data {
                 profileDataSource?.profile = profile
             }
             navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
@@ -41,6 +41,9 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var isLoadingArticles = false { didSet { profileDataSource?.isLoading = isLoading } }
     
     var profileDataSource: ProfileFeedDatasource? { dataSource as? ProfileFeedDatasource }
+    
+    let postButtonParent = UIView()
+    let postButton = NewPostButton()
     
     @Published var tabToBe: Tab = .notes
         
@@ -189,6 +192,13 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         super.setBarsToTransform(transform)
         
         navigationBar.transform = .init(translationX: 0, y: transform)
+        
+        let percent = abs(transform / barsMaxTransform)
+        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+
+        postButton.alpha = 1 - percent
+        postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
+        postButtonParent.transform = .init(translationX: 0, y: -transform)
     }
 }
 
@@ -265,6 +275,14 @@ private extension ProfileViewController {
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         
         navigationBar.bannerParent.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bannerPicTapped)))
+        
+        postButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(NewPostViewController(), animated: true)
+        }), for: .touchUpInside)
+        view.addSubview(postButtonParent)
+        postButtonParent.addSubview(postButton)
+        postButton.constrainToSize(56).pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         
         let profileOverlay1 = UIView()
         let profileOverlay2 = UIView()

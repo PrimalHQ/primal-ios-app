@@ -207,7 +207,7 @@ extension String : Identifiable {
     }
     
     func extractURLs() -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: "\\b(https?:\\/\\/[\\S]+)\\b", options: []) else {
+        guard let regex = try? NSRegularExpression(pattern: "\\b(?i)https?:\\/\\/[\\S]+", options: []) else {
             return []
         }
         
@@ -217,12 +217,10 @@ extension String : Identifiable {
     }
     
     func extractMentions() -> [String] {
-        let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
-        let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
-
+        
         guard
-            let mentionRegex = try? NSRegularExpression(pattern: nip08MentionPattern, options: []),
-            let profileMentionRegex = try? NSRegularExpression(pattern: nip27MentionPattern, options: [])
+            let mentionRegex = try? NSRegularExpression(pattern: .nip08MentionPattern, options: []),
+            let profileMentionRegex = try? NSRegularExpression(pattern: .nip27MentionPattern, options: [])
         else {
             return []
         }

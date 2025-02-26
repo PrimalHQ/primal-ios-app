@@ -86,7 +86,7 @@ class PremiumManageLegendController: UIViewController {
             leaderboardSwitch.isOn = custom.in_leaderboard
             isLeaderboardOn = custom.in_leaderboard
             
-            shoutoutLabel.text = custom.current_shoutout
+            shoutoutLabel.text = custom.edited_shoutout ?? custom.current_shoutout
             shoutoutInput.text = custom.edited_shoutout ?? custom.current_shoutout
             
             countLabel.text = "\(shoutoutInput.text.count)/140"
@@ -230,7 +230,7 @@ private extension PremiumManageLegendController {
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest3($isBadgeOn, $isAvatarOn, $isLeaderboardOn)
+        Publishers.CombineLatest4(table.$selectedTheme, $isBadgeOn, $isAvatarOn, $isLeaderboardOn)
             .debounce(for: 0.3, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.sendUpdate()

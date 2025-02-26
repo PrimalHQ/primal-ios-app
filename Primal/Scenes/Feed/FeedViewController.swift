@@ -329,6 +329,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 url = .init(string: "https://" + url.absoluteString) ?? url
             }
             
+            if url.host()?.contains("primal.net") == true {
+                PrimalWebsiteScheme().openURL(url)
+                return
+            }
+            
             let safari = SFSafariViewController(url: url)
             present(safari, animated: true)
             return
@@ -351,7 +356,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let cell = cell as? ElementImageGalleryCell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
-            guard let cell = cell as? FeedElementPostPreviewCell else { return }
+            guard let cell = cell as? ElementPostPreviewCell else { return }
             postCellDidTapEmbeddedImages(cell, resource: resource)
         case .profile:
             showViewController(ProfileViewController(profile: post.user))
@@ -380,6 +385,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                 thread.textInputView.becomeFirstResponder()
+                thread.animateBarsToVisible()
             }
         case .embeddedPost:
             let emb = post.embeddedPost ?? post
@@ -504,7 +510,7 @@ private extension NoteViewController {
         
         let postUser = post.user.data
         if postUser.address == nil {
-            showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
+            showErrorMessage(title: "Can’t Zap", "The user you're trying to zap didn't set up their lightning wallet")
             return
         }
         
@@ -675,7 +681,7 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
-    func postCellDidTapEmbeddedImages(_ cell: FeedElementPostPreviewCell, resource: MediaMetadata.Resource) {
+    func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, resource: MediaMetadata.Resource) {
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embeddedPost else { return }
         
         if resource.url.isVideoURL {

@@ -92,7 +92,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         nipLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        
+
         threeDotsButton.setContentHuggingPriority(.required, for: .horizontal)
         
         checkboxHeightC = checkbox.heightAnchor.constraint(equalToConstant: FontSizeSelection.current.contentFontSize)

@@ -68,12 +68,6 @@ class LongFormCommentsController: NoteViewController {
         }
     }
     
-    override func updateTheme() {
-        super.updateTheme()
-        
-        table.register(LongFormCommentCell.self, forCellReuseIdentifier: postCellID)
-    }
-    
     func reload() {
         SocketRequest(name: "long_form_content_thread_view", payload: [
             "pubkey": .string(content.event.pubkey),
@@ -90,6 +84,9 @@ class LongFormCommentsController: NoteViewController {
             
             let posts = article?.replies ?? []
             self?.cellHeight = posts.map { _ in 200 }
+            
+            posts.forEach { $0.replyingTo = nil }
+            
             self?.posts = posts
         }
         .store(in: &cancellables)

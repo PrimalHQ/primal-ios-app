@@ -370,6 +370,7 @@
 		B94A0E2D2AAB577400DEBFE1 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2C2AAB577400DEBFE1 /* ChatMessageCell.swift */; };
 		B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */; };
 		B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */; };
+		B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94B189F2D5E233600A932CE /* RegexTests.swift */; };
 		B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BAE2AD04FE40041181B /* WalletManager.swift */; };
 		B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */; };
 		B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB22AD056D10041181B /* WalletRequestResult.swift */; };
@@ -409,7 +410,9 @@
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
+		B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */; };
 		B97DF0802C8F1C820041C790 /* NoteFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */; };
+		B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */; };
 		B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */; };
 		B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */; };
 		B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */; };
@@ -538,7 +541,6 @@
 		B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */; };
 		B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DD12FA2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift */; };
 		B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */; };
-		B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */; };
 		B9DF0CAD2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */; };
 		B9DF0CB02C25920C009ADC7B /* ArticleTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CAF2C25920C009ADC7B /* ArticleTransition.swift */; };
 		B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */; };
@@ -1019,6 +1021,7 @@
 		B94A0E2C2AAB577400DEBFE1 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextViewManager.swift; sourceTree = "<group>"; };
 		B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewManager.swift; sourceTree = "<group>"; };
+		B94B189F2D5E233600A932CE /* RegexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTests.swift; sourceTree = "<group>"; };
 		B94F2BAE2AD04FE40041181B /* WalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
 		B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletRequest.swift; sourceTree = "<group>"; };
 		B94F2BB22AD056D10041181B /* WalletRequestResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRequestResult.swift; sourceTree = "<group>"; };
@@ -1059,7 +1062,9 @@
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
 		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
+		B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumListFeedManager.swift; sourceTree = "<group>"; };
 		B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedPreviewController.swift; sourceTree = "<group>"; };
+		B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWebsiteScheme.swift; sourceTree = "<group>"; };
 		B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedView.swift; sourceTree = "<group>"; };
 		B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadArticleController.swift; sourceTree = "<group>"; };
 		B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleWebView.swift; sourceTree = "<group>"; };
@@ -1185,7 +1190,6 @@
 		B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNip05Check.swift; sourceTree = "<group>"; };
 		B9DD12FA2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Nip05Check.swift"; sourceTree = "<group>"; };
 		B9DF0CA72C22163B009ADC7B /* LongFormEmbeddedPostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostController.swift; sourceTree = "<group>"; };
-		B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormCommentCell.swift; sourceTree = "<group>"; };
 		B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormEmbeddedPostCell.swift; sourceTree = "<group>"; };
 		B9DF0CAF2C25920C009ADC7B /* ArticleTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleTransition.swift; sourceTree = "<group>"; };
 		B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapGalleryView.swift; sourceTree = "<group>"; };
@@ -1305,6 +1309,7 @@
 			isa = PBXGroup;
 			children = (
 				9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */,
+				B94B189F2D5E233600A932CE /* RegexTests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2710,6 +2715,7 @@
 				B9B9E56F2CB5621B0065DD7C /* NoteFeedManager.swift */,
 				B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */,
 				B9B9E5732CB57DCD0065DD7C /* ZapFeedManager.swift */,
+				B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */,
 			);
 			path = FeedManagers;
 			sourceTree = "<group>";
@@ -2858,7 +2864,6 @@
 			isa = PBXGroup;
 			children = (
 				B99E03A72C0DF2ED006CCECB /* PostReactionsCell.swift */,
-				B9DF0CAA2C237514009ADC7B /* LongFormCommentCell.swift */,
 				B9DF0CAC2C237F68009ADC7B /* LongFormEmbeddedPostCell.swift */,
 				B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */,
 			);
@@ -3009,6 +3014,7 @@
 				C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */,
 				C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */,
 				B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */,
+				B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */,
 			);
 			path = Scheme;
 			sourceTree = "<group>";
@@ -3224,6 +3230,7 @@
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
 				B9318F672B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift in Sources */,
 				B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */,
+				B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */,
 				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
 				B94F2BED2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift in Sources */,
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
@@ -3382,7 +3389,6 @@
 				B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */,
 				B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */,
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
-				B9DF0CAB2C237514009ADC7B /* LongFormCommentCell.swift in Sources */,
 				B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */,
 				B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */,
 				B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */,
@@ -3742,6 +3748,7 @@
 				B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				B91EF0D32CEB830600299ECF /* PremiumManageSubscriptionController.swift in Sources */,
+				B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */,
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
@@ -3762,6 +3769,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */,
+				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3942,7 +3950,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.17;
+				MARKETING_VERSION = 2.1.24;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3989,7 +3997,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.17;
+				MARKETING_VERSION = 2.1.24;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

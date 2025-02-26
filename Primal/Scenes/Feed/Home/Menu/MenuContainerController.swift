@@ -245,9 +245,9 @@ private extension MenuContainerController {
         }
         
         addChild(child)
+        child.didMove(toParent: self)
         view.addSubview(child.view)
         child.view.pinToSuperview(edges: .vertical)
-        child.didMove(toParent: self)
         
         let drag = UIPanGestureRecognizer(target: self, action: #selector(childPanned))
         child.view.addGestureRecognizer(drag)

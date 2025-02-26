@@ -63,7 +63,7 @@ extension ZappingViewController {
     func zapFromView(_ zapView: AnimatingZappingView, reference: ZappableReferenceObject, showPopup: Bool) {
         let postUser = reference.userToZap.data
         if postUser.address == nil {
-            showErrorMessage(title: "Can’t Zap", "User you're trying to zap didn't set up their lightning wallet")
+            showErrorMessage(title: "Can’t Zap", "The user you're trying to zap didn't set up their lightning wallet")
             return
         }
         

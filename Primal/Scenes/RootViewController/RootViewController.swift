@@ -17,6 +17,18 @@ extension CAMediaTimingFunction {
     static let postsEaseInOut = CAMediaTimingFunction(controlPoints: 0.9, 0.13, 0.14, 0.83)
 }
 
+enum DeeplinkNavigation {
+    case profile(String)
+    case note(String)
+    case article(pubkey: String, id: String)
+    case search(String)
+    case tab(MainTab)
+    case messages
+    case bookmarks
+    case premium
+    case legends
+}
+
 final class RootViewController: UIViewController {
     static let instance = RootViewController()
     
@@ -35,6 +47,8 @@ final class RootViewController: UIViewController {
     
     var didAnimate = false
     var didFinishInit = false
+    
+    @Published var navigateTo: DeeplinkNavigation?
     
     private init() {
         super.init(nibName: nil, bundle: nil)
@@ -89,6 +103,21 @@ final class RootViewController: UIViewController {
             self?.connectionDot.backgroundColor = isConnected ? .green : .red
         }
         .store(in: &cancellables)
+        
+        let notesDeeplink = NotificationCenter.default.publisher(for: .primalNoteLink)
+            .compactMap { $0.object as? String }
+            .map { DeeplinkNavigation.note($0) }
+        
+        let profileDeeplink = NotificationCenter.default.publisher(for: .primalProfileLink)
+            .compactMap { $0.object as? String }
+            .map { DeeplinkNavigation.profile(HexKeypair.npubToHexPubkey($0) ?? $0) }
+        
+        Publishers.Merge(notesDeeplink, profileDeeplink)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] in
+                self?.navigateTo = $0
+            })
+            .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) {

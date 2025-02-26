@@ -76,6 +76,7 @@ final class MainTabBarController: UIViewController, Themeable {
             oldValue?.end()
         }
     }
+    var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
     var newMessageCount = 0 {
@@ -292,29 +293,6 @@ private extension MainTabBarController {
             }
             .store(in: &cancellables)
         
-        NotificationCenter.default.publisher(for: .primalNoteLink)
-            .compactMap { $0.object as? String }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] note in
-                self?.switchToTab(.home, open: ThreadViewController(threadId: note))
-                if self?.presentedViewController as? SFSafariViewController != nil{
-                    self?.dismiss(animated: true)
-                }
-            }
-            .store(in: &cancellables)
-        
-        NotificationCenter.default.publisher(for: .primalProfileLink)
-            .compactMap { $0.object as? String }
-            .map { HexKeypair.npubToHexPubkey($0) ?? $0 }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] pubkey in
-                self?.switchToTab(.home, open: ProfileViewController(profile: .init(data: .init(pubkey: pubkey))))
-                if self?.presentedViewController as? SFSafariViewController != nil{
-                    self?.dismiss(animated: true)
-                }
-            }
-            .store(in: &cancellables)
-        
         Connection.regular.isConnectedPublisher.filter { $0 }.receive(on: DispatchQueue.main).sink { [weak self] _ in
             self?.continousConnection = Connection.regular.requestCacheContinous(name: "notification_counts", request: .object([
                 "pubkey": .string(IdentityManager.instance.userHexPubkey)
@@ -333,6 +311,54 @@ private extension MainTabBarController {
             }
         }
         .store(in: &cancellables)
+        
+        DispatchQueue.main.async { [self] in
+            RootViewController.instance.$navigateTo
+                .filter { $0 != nil }
+                .sink { [weak self] to in
+                    guard let self, let to else { return }
+                    RootViewController.instance.navigateTo = nil
+                    
+                    let (vc, tab) : (UIViewController?, MainTab) = {
+                        switch to {
+                        case .profile(let pubkey):
+                            return (ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), .home)
+                        case .note(let id):
+                            return (ThreadViewController(threadId: id), .home)
+                        case .article(let pubkey, let id):
+                            return (LoadArticleController(kind: NostrKind.longForm.rawValue, identifier: id, pubkey: pubkey), .reads)
+                        case .search(let text):
+                            return (SearchNoteFeedController(feed: FeedManager(newFeed: PrimalFeed(
+                                name: "Search",
+                                spec: "{\"id\":\"advsearch\",\"query\":\"\(text)\"}",
+                                description: "Primal search results",
+                                feedkind: "search",
+                                enabled: true
+                            ))), .home)
+                        case .tab(let mainTab):
+                            return (nil, mainTab)
+                        case .messages:
+                            return (MessagesViewController(), .home)
+                        case .bookmarks:
+                            return (PublicBookmarksViewController(), .home)
+                        case .premium:
+                            return (PremiumViewController(), .home)
+                        case .legends:
+                            return (LegendListController(), .home)
+                        }
+                    }()
+                                        
+                    self.switchToTab(tab, open: vc)
+                    if vc == nil {
+                        self.navForTab(tab).popToRootViewController(animated: true)
+                    }
+                    
+                    if self.presentedViewController as? SFSafariViewController != nil{
+                        self.dismiss(animated: true)
+                    }
+                }
+                .store(in: &cancellables)
+        }
         
         updateButtons()
         addCircleWalletButton()

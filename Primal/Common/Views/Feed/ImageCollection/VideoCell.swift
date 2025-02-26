@@ -122,16 +122,16 @@ extension VideoCell: UIContextMenuInteractionDelegate {
             actionProvider: { suggestedActions in
                 UIMenu(title: "", children: [
                     UIAction(title: "Save Video", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
-                        guard let self, let videoPath = player?.url else { return }
+                        guard let self, let videoPath = player?.url ?? player?.originalURL else { return }
                         saveVideo(videoPath)
                     }),
                     UIAction(title: "Share Video", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
-                        guard let self, let videoPath = player?.url else { return }
+                        guard let self, let videoPath = player?.originalURL else { return }
                         let activityViewController = UIActivityViewController(activityItems: [videoPath], applicationActivities: nil)
                         RootViewController.instance.present(activityViewController, animated: true, completion: nil)
                     }),
                     UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
-                        guard let self, let url = player?.url else { return }
+                        guard let self, let url = player?.originalURL else { return }
                         UIPasteboard.general.string = url
                         RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
                     }

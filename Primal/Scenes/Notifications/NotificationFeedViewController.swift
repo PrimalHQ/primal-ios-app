@@ -102,6 +102,7 @@ final class NotificationFeedViewController: NoteViewController {
     }
     
     override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 }
+    override var barsMaxTransform: CGFloat { adjustedTopBarHeight }
     
     func setup() {
         title = "Notifications"
@@ -246,7 +247,14 @@ final class NotificationFeedViewController: NoteViewController {
         if let mainVC = parentNotificatonVC {
             mainVC.tabSelectionView.transform = .init(translationX: 0, y: transform)
             mainVC.border.transform = .init(translationX: 0, y: transform)
-        }
+
+            let percent = abs(transform / barsMaxTransform)
+            let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+
+            mainVC.postButton.alpha = 1 - percent
+            mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
+            mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
+        }        
     }
 }
 

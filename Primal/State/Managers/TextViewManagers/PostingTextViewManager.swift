@@ -128,19 +128,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         for i in tokens.indices {
             let token = tokens[i]
-            
-            
-            var metadata = Metadata()
-            metadata.pubkey = token.user.pubkey
-            let relay = RelayHintManager.instance.getRelayHint(token.user.pubkey)
-            if !relay.isEmpty { metadata.relays = [relay] }
-            
-            let replacement: String
-            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
-                replacement = "nostr:\(identifier)"
-            } else {
-                replacement = "nostr:\(token.user.npub)"
-            }
+        
+            let replacement = "nostr:\(RelayHintManager.instance.encodeUserWithRelays(token.user))"
             
             if currentText.length < token.range.endLocation {
                 print("TEXT LENGTH: \(currentText.length)")
@@ -263,7 +252,11 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         let alert = UIAlertController(title: "Save note draft?", message: nil, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { _ in callback(false) }))
+        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { [weak self] _ in
+            self?.oldDraft = nil
+            self?.textView.text = ""
+            callback(false)
+        }))
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
             DatabaseManager.instance.saveDraft(draft)
             self?.oldDraft = draft

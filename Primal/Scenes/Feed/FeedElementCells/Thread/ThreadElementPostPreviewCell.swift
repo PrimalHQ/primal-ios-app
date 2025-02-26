@@ -50,7 +50,7 @@ extension ThreadElementPostPreviewCell: ImageCollectionViewDelegate {
     }
 }
 
-extension ThreadElementPostPreviewCell: FeedElementVideoCell {
+extension ThreadElementPostPreviewCell: ElementPostPreviewCell {
     var currentVideoCells: [VideoCell] {
         [postPreview.mainImages.currentVideoCell(), postPreview.postPreview.mainImages.currentVideoCell()]
             .compactMap { $0 }

@@ -69,12 +69,14 @@ final class HomeFeedViewController: UIViewController, Themeable {
         }), for: .touchUpInside)
         
         pageVC.willMove(toParent: self)
-        view.addSubview(pageVC.view)
         addChild(pageVC)
         pageVC.didMove(toParent: self)
+        view.addSubview(pageVC.view)
         pageVC.view.pinToSuperview()
         
-        postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
+        postButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(NewPostViewController(), animated: true)
+        }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
@@ -99,10 +101,6 @@ final class HomeFeedViewController: UIViewController, Themeable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
-    @objc func postPressed() {
-        present(NewPostViewController(), animated: true)
     }
     
     func updateTheme() {

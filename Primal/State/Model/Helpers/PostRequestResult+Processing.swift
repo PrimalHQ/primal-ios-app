@@ -85,12 +85,24 @@ extension PrimalUser {
 
 extension String {
     func splitLongFormParts(mentions: [ParsedContent]) -> [LongFormContentSegment] {
+        let nsString = (self as NSString)
+        
+        var referenceLinksText = ""
+        if let refRegex = try? NSRegularExpression(pattern: #"^\s*\[([^\]]+)\]:\s*<?(\S+?)>?(?:\s+(?:"([^"]*)"|'([^']*)'|\(([^)]*)\)))?\s*$"#, options: .anchorsMatchLines) {
+            refRegex.enumerateMatches(in: self, range: .init(startIndex..., in: self)) { match, _, _ in
+                guard let matchRange = match?.range else { return }
+
+                let mentionText = nsString.substring(with: matchRange)
+
+                referenceLinksText +=  "\n" + mentionText
+            }
+        }
+        
         let nevent1MentionPattern = "\\b(nostr:|@)((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
         guard let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) else { return [.text(self)] }
         
         var segments = [LongFormContentSegment]()
         var prevRangeStart: Int = 0
-        let nsString = (self as NSString)
         
         postMentionRegex.enumerateMatches(in: self, options: [], range: NSRange(startIndex..., in: self)) { match, _, _ in
             guard let matchRange = match?.range else { return }
@@ -127,7 +139,7 @@ extension String {
             case .text(let text):
                 let regexPattern = #"!\[([^\]]*)\]\(([^)]+)\)"#
                 guard let regex = try? NSRegularExpression(pattern: regexPattern, options: []) else {
-                    return [$0]
+                    return [.text(text + referenceLinksText)]
                 }
                 
                 var subSegments: [LongFormContentSegment] = []
@@ -144,7 +156,7 @@ extension String {
                         let prevTextRange = NSRange(location: prevRangeStart, length: match.range.location - prevRangeStart)
                         let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)
                         if !prevText.isEmpty {
-                            subSegments.append(.text(prevText))
+                            subSegments.append(.text(prevText + referenceLinksText))
                         }
                         
                         subSegments.append(.image(url))
@@ -154,7 +166,7 @@ extension String {
                 
                 let finalText = text.dropFirst(prevRangeStart).trimmingCharacters(in: .whitespacesAndNewlines)
                 if !finalText.isEmpty {
-                    subSegments.append(.text(finalText))
+                    subSegments.append(.text(finalText + referenceLinksText))
                 }
                 
                 return subSegments

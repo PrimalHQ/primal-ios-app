@@ -9,6 +9,13 @@ import Foundation
 import NostrSDK
 import GenericJSON
 
+public extension String {
+    static let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)?(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+    static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
+    static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
+    static let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
+}
+
 class NoteProcessor: MetadataCoding {
     let response: PostRequestResult
     let contentStyle: ParsedContentTextStyle
@@ -231,26 +238,12 @@ class NoteProcessor: MetadataCoding {
         
         p.replyingTo = findReply("reply") ?? findReply("root")
         
-        if p.replyingTo == nil {
-            for tagArray in post.tags {
-                guard
-                    tagArray.count >= 2, tagArray[0] == "a" || tagArray[0] == "e",
-                    let parentNote = mentions.first(where: { $0.post.id == tagArray[1] || $0.post.universalID == tagArray[1] })
-                else { continue }
-                
-                p.replyingTo = parentNote
-                break
-            }
-        }
-        
         // MARK: - Finding and extracting mentioned notes
-        let nevent1MentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-        
         var referencedPosts: [(String, ParsedContent)] = []
         var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
         
         let tmpText = text as NSString
-        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
+        if let postMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
             postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else { return }
                     
@@ -300,39 +293,7 @@ class NoteProcessor: MetadataCoding {
             }
         }
         
-//        // MARK: - Finding and extracting mentioned notes without "nostr:" or "@" prefix
-//        let nevent1WildcardMentionPattern = "\\b((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
-//        
-//        if let postMentionRegex = try? NSRegularExpression(pattern: nevent1WildcardMentionPattern, options: []) {
-//            postMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-//                guard let matchRange = match?.range else { return }
-//                    
-//                let mentionText = (text as NSString).substring(with: matchRange)
-//                
-//                if referencedPosts.contains(where: { $0.0.hasSuffix(mentionText) }) { return } // Already slated for removal
-//                
-//                let naventString: String = "nostr:\(mentionText)"
-//                
-//                if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-//                    if mention.post.kind == NostrKind.highlight.rawValue  {
-//                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
-//                        
-//                        highlights.append((mentionText, content, mention))
-//                    } else if mention.post.kind == post.kind {
-//                        referencedPosts.append((mentionText, mention))
-//                    } else {
-//                        p.customEvent = mention
-//                        itemsToRemove.append(mentionText)
-//                    }
-//                } else {
-//                    itemsToRemove.append(mentionText)
-//                    p.notFound = .note
-//                }
-//            }
-//        }
-        
-        let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)(naddr1\\w+)\\b|#\\[(\\d+)\\]"
-        if let articleMentionRegex = try? NSRegularExpression(pattern: articleMentionPattern, options: []) {
+        if let articleMentionRegex = try? NSRegularExpression(pattern: .articleMentionPattern, options: []) {
             articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard p.article == nil, let matchRange = match?.range else { return }
                     
@@ -377,8 +338,8 @@ class NoteProcessor: MetadataCoding {
             for mention in mentions {
                 if flatTags.contains(mention.post.id) {
                     var stringFound = false
-                    if let profileMentionRegex = try? NSRegularExpression(pattern: nevent1MentionPattern, options: []) {
-                        profileMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                    if let noteMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
+                        noteMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                             if !stringFound, let matchRange = match?.range {
                                 itemsToRemove.append((text as NSString).substring(with: matchRange))
                                 stringFound = true
@@ -450,6 +411,16 @@ class NoteProcessor: MetadataCoding {
             return true
         }
         
+        let shortenedUrls: [(String, String)] = otherURLs.map {
+            if $0.count <= 40 {
+                return ($0, $0)
+            }
+            
+            let newText = $0.prefix(30) + "..."
+            text = text.replacingOccurrences(of: $0, with: newText)
+            return (String(newText), $0)
+        }
+        
         for (reference, replacement, _) in highlights {
             text = text.replacingOccurrences(of: reference, with: replacement)
         }
@@ -499,7 +470,7 @@ class NoteProcessor: MetadataCoding {
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
         p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
-        p.httpUrls = otherURLs.flatMap { nsText.positions(of: $0, reference: $0) }
+        p.httpUrls = shortenedUrls.flatMap { nsText.positions(of: $0.0, reference: $0.1) }
         p.highlights = highlights.flatMap { nsText.positions(of: $0.replacement, reference: $0.highlight.post.id)}
         p.highlightEvents = highlights.map { $0.highlight }
         p.text = text

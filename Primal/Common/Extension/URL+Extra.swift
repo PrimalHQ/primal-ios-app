@@ -37,4 +37,14 @@ extension URL {
         let host = host()
         return host == "github.com" || host == "www.github.com"
     }
+    
+    var isMixCloudURL: Bool {
+        let host = host()
+        return host == "mixcloud.com" || host == "www.mixcloud.com"
+    }
+    
+    var isVimeoURL: Bool {
+        let host = host()
+        return host == "vimeo.com" || host == "www.vimeo.com"
+    }
 }

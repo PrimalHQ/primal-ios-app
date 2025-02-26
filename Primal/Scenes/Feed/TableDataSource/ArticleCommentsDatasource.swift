@@ -52,7 +52,7 @@ class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, A
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
         return content
     }
     
