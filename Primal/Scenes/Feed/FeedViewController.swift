@@ -676,6 +676,12 @@ extension NoteViewController: PostCellDelegate {
         if let imageCell = cell.mainImages.currentImageCell() {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
+        } else if let multiCell = cell.mainImages.collection.visibleCells.first as? MultipleImageGalleryCell,
+                  let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+                  let imageView = multiCell.imageViews[safe: index]?.display
+        {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
+            return
         }
         
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
