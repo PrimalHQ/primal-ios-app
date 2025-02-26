@@ -67,7 +67,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     var isLoading = true {
         didSet {
-//            mainPostRepliesHeightArray[1] = isLoading ? 150 : 0
             table.reloadData()
         }
     }
@@ -107,10 +106,6 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         mainTabBarController?.showTabBarBorder = false
         
         didLoadView = true
-        
-        DispatchQueue.main.async {
-            self.didLoadView = true
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -217,7 +212,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     override func setBarsToTransform(_ transform: CGFloat) {
         var transform = transform
-        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 {
+        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 || inputManager.isEditing {
             transform = 0
         }
         
@@ -375,12 +370,6 @@ private extension ThreadViewController {
                     }
                 } else {
                     self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(1)) {
-                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
-                        DispatchQueue.main.async {
-                            self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: false)
-                        }
-                    }
                 }
             })
             .store(in: &cancellables)

@@ -32,7 +32,7 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
             case .premium:
-                cell = tableView.dequeueReusableCell(withIdentifier: "preview", for: indexPath)
+                cell = tableView.dequeueReusableCell(withIdentifier: "premium", for: indexPath)
                 (cell as? SearchPremiumCell)?.delegate = delegate
             case .noteElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)

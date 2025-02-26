@@ -19,17 +19,24 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
     func openURL(_ url: URL) {
         guard canOpenURL(url) else { return }
 
-        let path = url.path().lowercased()
+        let path = url.path()
+        let pathL = path.lowercased()
         let id = url.lastPathComponent
         
-        if path.hasPrefix("/e/") || path.hasPrefix("/a/") {
+        if pathL.hasPrefix("/e/") || pathL.hasPrefix("/a/") {
+            guard let metadata = try? decodedMetadata(from: id) else {
+                if let decoded = try? bech32_decode(id) {
+                    notify(.primalNoteLink, hex_encode(decoded.data))
+                }
+                return
+            }
+            
             guard
-                let metadata = try? decodedMetadata(from: id),
                 let pubkey = metadata.pubkey,
                 let identifier = metadata.identifier
             else {
-                if let decoded = try? bech32_decode(id) {
-                    notify(.primalNoteLink, hex_encode(decoded.data))
+                if let eventId = metadata.eventId {
+                    notify(.primalNoteLink, eventId)
                 }
                 return
             }
@@ -38,36 +45,36 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             return
         }
         
-        if path.hasPrefix("/p/") {
+        if pathL.hasPrefix("/p/") {
             notify(.primalProfileLink, id)
             return
         }
         
-        if path.hasPrefix("/search/") {
+        if pathL.hasPrefix("/search/") {
             RootViewController.instance.navigateTo = .search(id)
-            return
-        }
-        
-        let staticPages: [String: DeeplinkNavigation] = [
-            "/home": .tab(.home),
-            "/reads": .tab(.reads),
-            "/notifications": .tab(.notifications),
-            "/explore": .tab(.explore),
-            "/messages": .messages,
-            "/bookmarks": .bookmarks,
-            "/premium": .premium,
-            "/legends": .legends
-        ]
-        
-        if let page = staticPages[path] {
-            RootViewController.instance.navigateTo = page
             return
         }
         
         let pathComponents = path.split(separator: "/")
         guard let firstComponent = pathComponents.first else { return }
-        
         let name = String(firstComponent)
+        
+        let staticPages: [String: DeeplinkNavigation] = [
+            "home": .tab(.home),
+            "reads": .tab(.reads),
+            "notifications": .tab(.notifications),
+            "explore": .tab(.explore),
+            "dms": .messages,
+            "bookmarks": .bookmarks,
+            "premium": .premium,
+            "legends": .legends
+        ]
+        
+        if let page = staticPages[name] {
+            RootViewController.instance.navigateTo = page
+            return
+        }
+        
         CheckNip05Request(domain: "primal.net", name: name).publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { data in
@@ -77,7 +84,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
                 else { return }
                 
                 if let second = pathComponents.dropFirst().first {
-                    RootViewController.instance.navigateTo = .article(pubkey: pubkey, id: String(second))
+                    RootViewController.instance.navigateTo = .article(pubkey: pubkey, id: id)
                 } else {
                     notify(.primalProfileLink, pubkey)
                 }

@@ -4,32 +4,20 @@
 
 import Foundation
 
-fileprivate let profileDeeplinkPrefix = "primal://p/"
-fileprivate let noteDeeplinkPrefix = "primal://e/"
+fileprivate let primalDeeplinkPrefix = "primal:"
 
 final class PrimalSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {
-        return url.absoluteString.starts(with: profileDeeplinkPrefix) ||
-                url.absoluteString.starts(with: noteDeeplinkPrefix)
+        return url.absoluteString.starts(with: primalDeeplinkPrefix)
     }
 
     func openURL(_ url: URL) {
-        guard canOpenURL(url) else { return }
+        guard canOpenURL(url), let host = url.host() else { return }
 
-        if url.absoluteString.starts(with: profileDeeplinkPrefix) {
-            let npub: String = url.absoluteString.replacingOccurrences(of: profileDeeplinkPrefix, with: "")
-
-            notify(.primalProfileLink, npub)
-        } else if url.absoluteString.starts(with: noteDeeplinkPrefix) {
-            let note: String = url.absoluteString.replacingOccurrences(of: noteDeeplinkPrefix, with: "")
-            
-            guard let decoded = try? bech32_decode(note) else {
-                notify(.primalNoteLink, note)
-                return
-            }
-            let eventId = hex_encode(decoded.data)
-                
-            notify(.primalNoteLink, eventId)
-        }
+        let path = url.path()
+        
+        guard let primalURL = URL(string: "https://primal.net/" + host + path) else { return }
+        
+        PrimalWebsiteScheme().openURL(primalURL)
     }
 }

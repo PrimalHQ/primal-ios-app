@@ -252,7 +252,11 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         let alert = UIAlertController(title: "Save note draft?", message: nil, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { _ in callback(false) }))
+        alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { [weak self] _ in
+            self?.oldDraft = nil
+            self?.textView.text = ""
+            callback(false)
+        }))
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak self] _ in
             DatabaseManager.instance.saveDraft(draft)
             self?.oldDraft = draft

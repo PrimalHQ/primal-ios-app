@@ -385,6 +385,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                 thread.textInputView.becomeFirstResponder()
+                thread.animateBarsToVisible()
             }
         case .embeddedPost:
             let emb = post.embeddedPost ?? post
