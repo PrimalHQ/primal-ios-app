@@ -86,19 +86,15 @@ extension NostrObject {
         createNostrLikeEvent(reference: reference)
     }
     
-    static func post(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-        createNostrPostEvent(content, mentionedPubkeys: mentionedPubkeys)
-    }
-    
     static func repost(_ post: PrimalFeedPost) -> NostrObject? {
         createNostrRepostEvent(post)
     }
     
-    static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
-    }
+//    static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
+//        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
+//    }
     
-    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?) -> NostrObject? {
+    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?, quotingObject: PrimalFeedPost?) -> NostrObject? {
         var allTags: [[String]] = []
 
         /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
@@ -109,6 +105,8 @@ extension NostrObject {
         /// The tag to the root of the reply chain goes first.
         /// The tag to the reply event being responded to goes last.
         
+        var pubkeysToTag = Set<String>(draft.taggedUsers.map { $0.userPubkey })
+        
         if let post = replyingToObject {
             if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
                 allTags.append(root)
@@ -118,11 +116,18 @@ extension NostrObject {
                 allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
             }
             
-            allTags.append(["p", post.pubkey])
+            pubkeysToTag.insert(post.pubkey)
+            pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
         }
         
-        let mentionedPubkeys = draft.taggedUsers.map { $0.userPubkey }
-        allTags += mentionedPubkeys.map { ["p", $0] }
+        if let quotingObject {
+            allTags.append([quotingObject.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
+            
+            pubkeysToTag.insert(quotingObject.pubkey)
+            pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+        }
+        
+        allTags += pubkeysToTag.map { ["p", $0] }
         
         allTags += draft.text.extractHashtags().map({ ["t", $0] })
 
@@ -341,12 +346,6 @@ fileprivate func createNostrLikeEvent(reference: PostingReferenceObject) -> Nost
     return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey]])
 }
 
-fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-    createNostrObject(content: content, kind: 1, tags:
-        mentionedPubkeys.map({ ["p", $0, "", "mention"] }) + content.extractHashtags().map({ ["t", $0] })
-    )
-}
-
 fileprivate func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? {
     let nostrContent = post.toRepostNostrContent()
     guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
@@ -356,33 +355,6 @@ fileprivate func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? 
     let jsonStr = String(data: jsonData, encoding: .utf8)!
     
     return createNostrObject(content: jsonStr, kind: 6, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
-}
-
-fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-    var allTags: [[String]] = []
-
-    /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
-    /// with clients that support replies but have not been updated to understand tag markers.
-    ///
-    /// https://github.com/nostr-protocol/nips/blob/master/10.md
-    ///
-    /// The tag to the root of the reply chain goes first.
-    /// The tag to the reply event being responded to goes last.
-    if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
-        allTags.append(root)
-        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
-    } else {
-        // For top level replies (those replying directly to the root event), only the "root" marker should be used.
-        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
-    }
-
-    allTags.append(["p", post.pubkey])
-
-    allTags += mentionedPubkeys.map { ["p", $0] }
-    
-    allTags += content.extractHashtags().map({ ["t", $0] })
-
-    return createNostrObject(content: content, kind: 1, tags: allTags)
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {

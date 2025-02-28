@@ -412,11 +412,14 @@ class NoteProcessor: MetadataCoding {
         }
         
         let shortenedUrls: [(String, String)] = otherURLs.map {
-            if $0.count <= 40 {
-                return ($0, $0)
+            let removedHTTPS = $0.replacingOccurrences(of: "https://", with: "").replacingOccurrences(of: "http://", with: "")
+            
+            if removedHTTPS.count <= 40 {
+                text = text.replacingOccurrences(of: $0, with: removedHTTPS)
+                return (removedHTTPS, $0)
             }
             
-            let newText = $0.prefix(30) + "..."
+            let newText = removedHTTPS.prefix(30) + "..."
             text = text.replacingOccurrences(of: $0, with: newText)
             return (String(newText), $0)
         }

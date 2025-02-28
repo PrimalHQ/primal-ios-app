@@ -637,6 +637,7 @@ extension NoteViewController: PostCellDelegate {
 
                 let new = NewPostViewController()
                 new.textView.text = "\n\nnostr:\(noteRef)"
+                new.manager.quoting = post
                 self.present(new, animated: true)
                 return
             }
@@ -648,7 +649,7 @@ extension NoteViewController: PostCellDelegate {
             
             let replacement: String
             if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
-                replacement = "\nnostr:\(identifier)"
+                replacement = "\n\nnostr:\(identifier)"
             } else {
                 guard let noteRef = bech32_note_id(post.universalID) else { return }
 
@@ -657,6 +658,7 @@ extension NoteViewController: PostCellDelegate {
             
             let new = NewPostViewController()
             new.textView.text = replacement
+            new.manager.quoting = post
             self.present(new, animated: true)
         }))
         
