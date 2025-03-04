@@ -40,7 +40,10 @@ extension DatabaseManager {
     
     func getProfilePublisher(_ pubkey: String) -> AnyPublisher<ParsedUser, any Error> {
         dbWriter.readPublisher { db in
-            try Profile.all().filterPubkeys([pubkey]).fetchOne(db)
+            try Profile.all()
+                .filterPubkeys([pubkey])
+                .including(optional: Profile.pictureMedia)
+                .fetchOne(db)
         }
         .map { profile in
             if let profile {
@@ -53,7 +56,11 @@ extension DatabaseManager {
     
     func getProfilesPublisher(_ pubkeys: [String]) -> AnyPublisher<[ParsedUser], any Error> {
         dbWriter.readPublisher { db in
-            try Profile.all().filterPubkeys(pubkeys).including(optional: Profile.profileCount).fetchAll(db)
+            try Profile.all()
+                .filterPubkeys(pubkeys)
+                .including(optional: Profile.pictureMedia)
+                .including(optional: Profile.profileCount)
+                .fetchAll(db)
         }
         .map { $0.map({ ParsedUser(profile: $0) }) }
         .eraseToAnyPublisher()
@@ -94,6 +101,6 @@ extension PrimalUser {
 
 extension ParsedUser {
     convenience init(profile: Profile) {
-        self.init(data: profile.primalUser, followers: profile.profileCount?.followers)
+        self.init(data: profile.primalUser, profileImage: profile.pictureMedia?.toNativeForm(), followers: profile.profileCount?.followers)
     }
 }

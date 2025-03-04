@@ -73,6 +73,7 @@ struct SocketRequest {
                     pendingResult.postZaps.sort(by: { $0.amount_sats > $1.amount_sats })
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
+                    DatabaseManager.instance.saveMediaResources(pendingResult.mediaMetadata.flatMap { $0.resources })
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     

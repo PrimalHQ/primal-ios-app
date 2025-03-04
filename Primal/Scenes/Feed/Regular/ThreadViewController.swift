@@ -386,7 +386,7 @@ private extension ThreadViewController {
             self.usersTableView.isHidden = users.isEmpty
             self.inputManager.usersHeightConstraint.constant = CGFloat(users.count) * 60
             UIView.animate(withDuration: 0.3) {
-                self.view.layoutSubviews()
+                self.view.layoutIfNeeded()
             } completion: { _ in
                 self.usersTableView.reloadData()
             }
