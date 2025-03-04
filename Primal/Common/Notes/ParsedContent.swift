@@ -317,7 +317,12 @@ extension ParsedContent {
     }
     
     func noteId() -> String {
-        (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
+        var metadata = Metadata()
+        metadata.eventId = post.id
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
+            return identifier
+        }
+        return (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
     }
     
     func webURL() -> String {
@@ -326,11 +331,6 @@ extension ParsedContent {
             let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: user.data.pubkey),
             let dTag = post.tags.first(where: { $0.first == "d" })?[safe: 1]
         else {
-            var metadata = Metadata()
-            metadata.eventId = post.id
-            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
-                return "https://primal.net/e/\(identifier)"
-            }
             return "https://primal.net/e/\(noteId())"
         }
         return "https://primal.net/\(name)/\(dTag)"
