@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import AVFAudio
+import GRDB
 
 struct ServerContentSettings: Codable {
     var show_primal_support: Bool
@@ -52,6 +53,22 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Self.contentSettings = settings
             }
             .store(in: &cancellables)
+////        
+//        try? DatabaseManager.instance.dbWriter.read { db in
+//            
+//            let rows = try Row.fetchOne(db, sql: "SELECT \"profile\".*, \"mediaResource\".* FROM \"profile\" LEFT JOIN \"mediaResource\" ON \"mediaResource\".\"url\" = \"profile\".\"picture\" WHERE \"profile\".\"pubkey\" = ?", arguments: [IdentityManager.instance.userHexPubkey])
+//            
+//            print(rows)
+//
+//
+//
+//
+//            
+//            let allMedia = try MediaResource.all().fetchAll(db)
+//            
+//            print(allMedia)
+//        }
+        
         
         return true
     }

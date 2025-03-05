@@ -51,3 +51,9 @@ extension MediaResource {
         .init(url: url, variants: variants)
     }
 }
+
+extension DerivableRequest<MediaResource> {
+    func filterURLS(_ urls: [String]) -> Self {
+        filter(urls.contains(MediaResource.Columns.url))
+    }
+}

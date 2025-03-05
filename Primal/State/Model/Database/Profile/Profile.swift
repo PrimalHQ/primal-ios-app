@@ -71,7 +71,7 @@ extension Profile: Codable, FetchableRecord, MutablePersistableRecord {
 extension Profile {
     static let profileLastVisit = hasOne(ProfileLastVisit.self)
     static let profileCount = hasOne(ProfileCount.self)
-    static let pictureMedia = hasOne(MediaResource.self, using: ForeignKey(["url"], to: ["picture"]))
+    static let pictureMedia = belongsTo(MediaResource.self, using: ForeignKey(["picture"], to: ["url"]))
 }
 
 extension DerivableRequest<Profile> {
