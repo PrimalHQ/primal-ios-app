@@ -79,6 +79,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             findDraft()
         }
     }
+    var quoting: PrimalFeedPost?
     
     private var tagRegex: NSRegularExpression! { try! NSRegularExpression(pattern: "@([^\\s\\K]+)") }
     
@@ -304,7 +305,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     func post(callback: @escaping (Bool, NostrObject?) -> Void) {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo) else {
+        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, quotingObject: quoting) else {
             callback(false, nil)
             return
         }

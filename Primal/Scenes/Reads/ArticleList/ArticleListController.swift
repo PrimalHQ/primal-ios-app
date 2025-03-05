@@ -133,18 +133,7 @@ extension ArticleListController: UITableViewDelegate {
     }
 }
 
-extension Article {
-    var url: URL? {
-        guard
-            let npub = event.pubkey.hexToNpub(),
-            let noteid = event.id.hexToNoteId()
-        else { return nil }
-    
-        let urlString = "https://highlighter.com/\(npub)/\(noteid)"
-    
-        return URL(string: urlString)
-    }
-    
+extension Article {    
     var asParsedContent: ParsedContent {
         .init(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
     }

@@ -127,11 +127,18 @@ struct ParsedRepost: Hashable {
     var user: ParsedUser? { users.first }
 }
 
-extension ParsedUser {
+extension ParsedUser: MetadataCoding {
     func webURL() -> String {
         if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: data.pubkey) {
             return "https://primal.net/\(name)"
         }
+        
+        var metadata = Metadata()
+        metadata.pubkey = data.pubkey
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
+            return "https://primal.net/p/\(identifier)"
+        }
+
         return "https://primal.net/p/\(data.npub)"
     }
     
@@ -310,7 +317,12 @@ extension ParsedContent {
     }
     
     func noteId() -> String {
-        (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
+        var metadata = Metadata()
+        metadata.eventId = post.id
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
+            return identifier
+        }
+        return (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
     }
     
     func webURL() -> String {

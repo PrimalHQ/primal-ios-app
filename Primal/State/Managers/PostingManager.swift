@@ -188,54 +188,6 @@ final class PostingManager {
         })
     }
     
-    func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping (Bool) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            print("Posting failed for id: \(ev.id)")
-            callback(false)
-        })
-    }
-    
-    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool, NostrObject?) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false, nil)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        userReplied.insert(post.universalID)
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true, ev)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            self.userReplied.remove(post.universalID)
-            callback(false, nil)
-        })
-    }
-    
     func sendPostHighlightEvent(_ content: String, mentionedPubkeys: [String], highlight: NostrContent, article: Article, _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
 
