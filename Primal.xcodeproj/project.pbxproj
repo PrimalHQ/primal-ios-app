@@ -372,6 +372,7 @@
 		B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */; };
 		B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */; };
 		B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94B189F2D5E233600A932CE /* RegexTests.swift */; };
+		B94D07D92D7A00F2001E4568 /* primal_shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B94D07D82D7A00F2001E4568 /* primal_shared.xcframework */; };
 		B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BAE2AD04FE40041181B /* WalletManager.swift */; };
 		B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */; };
 		B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB22AD056D10041181B /* WalletRequestResult.swift */; };
@@ -1027,6 +1028,7 @@
 		B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextViewManager.swift; sourceTree = "<group>"; };
 		B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewManager.swift; sourceTree = "<group>"; };
 		B94B189F2D5E233600A932CE /* RegexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTests.swift; sourceTree = "<group>"; };
+		B94D07D82D7A00F2001E4568 /* primal_shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = primal_shared.xcframework; path = ../../Downloads/primal_shared.xcframework; sourceTree = "<group>"; };
 		B94F2BAE2AD04FE40041181B /* WalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
 		B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletRequest.swift; sourceTree = "<group>"; };
 		B94F2BB22AD056D10041181B /* WalletRequestResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRequestResult.swift; sourceTree = "<group>"; };
@@ -1284,6 +1286,7 @@
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
+				B94D07D92D7A00F2001E4568 /* primal_shared.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1325,6 +1328,7 @@
 		933DBDB12A1126CE008DCF1F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B94D07D82D7A00F2001E4568 /* primal_shared.xcframework */,
 				B94F2BDE2ADDCD710041181B /* StoreKit.framework */,
 			);
 			name = Frameworks;
