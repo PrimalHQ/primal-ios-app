@@ -127,7 +127,7 @@ extension NostrObject {
             pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
         }
         
-        allTags += pubkeysToTag.map { ["p", $0] }
+        allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
         
         allTags += draft.text.extractHashtags().map({ ["t", $0] })
 
