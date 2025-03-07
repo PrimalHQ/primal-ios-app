@@ -58,7 +58,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var articleSection: Int { 1 }
     var articles: [Article] = [] {
         didSet {
-            guard tab == .reads else { return }
+            guard profileTab == .reads else { return }
             profileDataSource?.setArticles(articles.uniqueByFilter({ $0.identifier }))
             profileDataSource?.isLoading = isLoading
         }
@@ -66,25 +66,25 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     var media: [ParsedContent] = [] {
         didSet {
-            guard tab == .media else { return }
+            guard profileTab == .media else { return }
             profileDataSource?.setMedia(media)
             profileDataSource?.isLoading = isLoading
         }
     }
     
     var isEmpty: Bool {
-        switch tab {
+        switch profileTab {
         case .notes, .replies:  return posts.isEmpty
         case .reads:            return articles.isEmpty
         case .media:            return media.isEmpty
         }
     }
     
-    var tab: Tab = .notes {
+    var profileTab: Tab = .notes {
         didSet {
-            profileDataSource?.selectedTab = tab.rawValue
+            profileDataSource?.selectedTab = profileTab.rawValue
             
-            switch tab {
+            switch profileTab {
             case .notes:
                 feed.withRepliesOverride = false
                 profileDataSource?.setPosts(posts)
@@ -110,7 +110,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var isLoading: Bool {
         guard isEmpty else { return false }
         
-        switch tab {
+        switch profileTab {
         case .notes, .replies:  return !feed.didReachEnd
         case .reads:            return isLoadingArticles
         case .media:            return true
@@ -129,7 +129,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         super.init(feed: FeedManager(profilePubkey: profile.data.pubkey))
         
         dataSource = ProfileFeedDatasource(profile: profile, tableView: table, delegate: self, refreshCallback: { [unowned self] in
-            if self.tab == .reads {
+            if self.profileTab == .reads {
                 requestArticles()
             } else {
                 feed.refresh()
@@ -163,14 +163,14 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     // MARK: - TableView
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard tab == .notes || tab == .replies else { return }
+        guard profileTab == .notes || profileTab == .replies else { return }
         
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard indexPath.section == 1 else { return }
-        switch tab {
+        switch profileTab {
         case .notes, .replies:
             super.tableView(tableView, didSelectRowAt: indexPath)
         case .reads:
@@ -261,7 +261,7 @@ private extension ProfileViewController {
             .store(in: &cancellables)
         
         profileDataSource?.$profile.receive(on: DispatchQueue.main).assign(to: \.profile, onWeak: self).store(in: &cancellables)
-        $tabToBe.dropFirst().debounce(for: 0.2, scheduler: RunLoop.main).assign(to: \.tab, onWeak: self).store(in: &cancellables)
+        $tabToBe.dropFirst().debounce(for: 0.2, scheduler: RunLoop.main).assign(to: \.profileTab, onWeak: self).store(in: &cancellables)
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()

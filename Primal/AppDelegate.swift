@@ -57,9 +57,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         PrimalInitializer.shared.doInit()
         
-        
-        
-        
         return true
     }
 
