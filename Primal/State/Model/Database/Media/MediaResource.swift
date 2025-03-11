@@ -37,6 +37,12 @@ extension MediaResource: Codable, FetchableRecord, MutablePersistableRecord {
         try container.encode(variants.encodeToString(), forKey: .variants)
     }
     
+    static func initFromRow(_ row: Row) -> MediaResource? {
+        guard let urlS: String = row[Columns.url] else { return nil }
+        let json = row[Columns.variants] ?? ""
+        return .init(url: urlS, variants: json.decode() ?? [])
+    }
+    
     init(row: Row) {
         url = row[Columns.url]
         let json: String = row[Columns.variants]

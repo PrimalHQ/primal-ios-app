@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import UIKit
+import AVFoundation
 
 struct PostingAsset {
     let id = UUID().uuidString
@@ -123,6 +124,30 @@ class TextViewManager: NSObject, UITextViewDelegate {
                 uploadSelectedImage(image.id)
             }
         }
+    }
+    
+    func addMedia(_ files: [URL]) {
+        for url in files {
+            if let image = UIImage(contentsOfFile: url.path()) {
+                processSelectedAsset(.image((image, false)))
+            } else if let image = getThumbnailImage(forUrl: url) {
+                processSelectedAsset(.video(.init(thumbnail: image, url: url)))
+            }
+        }
+    }
+    
+    private func getThumbnailImage(forUrl url: URL) -> UIImage? {
+        let asset: AVAsset = AVAsset(url: url)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        do {
+            let thumbnailImage = try imageGenerator.copyCGImage(at: CMTimeMake(value: 1, timescale: 60), actualTime: nil)
+            return UIImage(cgImage: thumbnailImage)
+        } catch let error {
+            print(error)
+        }
+
+        return nil
     }
     
     // MARK: - UITextViewDelegate

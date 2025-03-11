@@ -319,7 +319,7 @@ private extension MainTabBarController {
                     guard let self, let to else { return }
                     RootViewController.instance.navigateTo = nil
                     
-                    let (vc, tab) : (UIViewController?, MainTab) = {
+                    let (vc, tab) : (UIViewController?, MainTab?) = {
                         switch to {
                         case .profile(let pubkey):
                             return (ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), .home)
@@ -345,16 +345,25 @@ private extension MainTabBarController {
                             return (PremiumViewController(), .home)
                         case .legends:
                             return (LegendListController(), .home)
+                        case .newPost(let text, let files):
+                            let newPost = NewPostViewController()
+                            newPost.manager.textView.text = text
+                            newPost.manager.addMedia(files)
+                            return (newPost, nil)
                         }
                     }()
                                         
-                    self.switchToTab(tab, open: vc)
-                    if vc == nil {
-                        self.navForTab(tab).popToRootViewController(animated: true)
-                    }
-                    
-                    if self.presentedViewController as? SFSafariViewController != nil{
-                        self.dismiss(animated: true)
+                    if let tab {
+                        self.switchToTab(tab, open: vc)
+                        if vc == nil {
+                            self.navForTab(tab).popToRootViewController(animated: true)
+                        }
+                        
+                        if self.presentedViewController as? SFSafariViewController != nil{
+                            self.dismiss(animated: true)
+                        }
+                    } else if let vc {
+                        (self.presentedViewController ?? self).present(vc, animated: true)
                     }
                 }
                 .store(in: &cancellables)
@@ -415,6 +424,10 @@ private extension MainTabBarController {
         if nav.viewControllers.count > 1 {
             nav.popToRootViewController(animated: true)
             return
+        }
+        
+        if tab == .home, let child: HomeFeedChildController = nav.viewControllers.first?.findInChildren() {
+            child.feed.addAllFuturePosts()
         }
 
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {

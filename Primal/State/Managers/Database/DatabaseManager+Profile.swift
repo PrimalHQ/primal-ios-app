@@ -72,7 +72,7 @@ extension DatabaseManager {
                 guard var profile = try? Profile(row: row) else {
                     return nil
                 }
-                profile.pictureMedia = .init(row: row)
+                profile.pictureMedia = .initFromRow(row)
                 profile.profileCount = .init(row: row)
                 return .init(profile: profile)
             }

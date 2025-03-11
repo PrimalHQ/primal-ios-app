@@ -27,6 +27,8 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             guard let metadata = try? decodedMetadata(from: id) else {
                 if let decoded = try? bech32_decode(id) {
                     notify(.primalNoteLink, hex_encode(decoded.data))
+                } else {
+                    notify(.primalNoteLink, id)
                 }
                 return
             }
