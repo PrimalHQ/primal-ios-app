@@ -186,6 +186,16 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
+    func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
+        let isTabBarHidden = vStack.transform != .identity
+        
+        if isTabBarHidden {
+            view.showToast(message, icon: icon, extraPadding: 0)
+        } else {
+            vStack.showToast(message, icon: icon, extraPadding: 95)
+        }
+    }
+    
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
         let nav: UINavigationController = navForTab(tab)
         let currentTab = navForTab(currentTab)

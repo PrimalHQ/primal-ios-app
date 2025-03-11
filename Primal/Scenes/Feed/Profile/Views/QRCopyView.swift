@@ -43,7 +43,7 @@ class QRCopyView: MyButton {
         addAction(.init(handler: { [weak self] _ in
             guard let text = self?.text, !text.isEmpty else { return }
             UIPasteboard.general.string = text
-            RootViewController.instance.view.showToast("Copied!")
+            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
         }), for: .touchUpInside)
     }
     

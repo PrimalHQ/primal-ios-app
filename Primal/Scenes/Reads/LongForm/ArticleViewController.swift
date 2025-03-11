@@ -364,7 +364,7 @@ private extension ArticleViewController {
             webView.selectedText { text in
                 guard let text, !text.isEmpty else { return }
                 UIPasteboard.general.string = text
-                self?.view.showToast("Copied!")
+                self?.mainTabBarController?.showToast("Copied!")
                 webView.clearSelection()
             }
         }), for: .touchUpInside)

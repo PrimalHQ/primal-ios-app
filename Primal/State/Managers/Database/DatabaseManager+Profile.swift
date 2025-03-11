@@ -49,7 +49,7 @@ extension DatabaseManager {
                 // No profile found, return a default ParsedUser
                 return ParsedUser(data: .init(pubkey: pubkey), profileImage: nil)
             }
-            profile.pictureMedia = .init(row: row)
+            profile.pictureMedia = .initFromRow(row)
             return ParsedUser(profile: profile)
         }
         .eraseToAnyPublisher()

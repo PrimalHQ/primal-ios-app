@@ -72,7 +72,7 @@ extension PremiumManageContactsController: PremiumManageContactsDataCellDelegate
         alert.addAction(.init(title: "Cancel", style: .cancel))
         alert.addAction(.init(title: "Update", style: .destructive, handler: { _ in
             FollowManager.instance.sendBatchFollowEvent(set.set, successHandler: {
-                RootViewController.instance.view.showToast("Contact list updated", extraPadding: 20)
+                RootViewController.instance.view.showToast("Contact list updated", extraPadding: 0)
             })
         }))
         present(alert, animated: true)

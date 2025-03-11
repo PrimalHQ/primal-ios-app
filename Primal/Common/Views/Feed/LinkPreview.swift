@@ -111,7 +111,11 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
             let copy = UIAction(title: "Copy URL", image: UIImage(systemName: "MenuCopyLink")) { _ in
                 guard let url = self?.data?.url.absoluteString else { return }
                 UIPasteboard.general.string = url
-                RootViewController.instance.view.showToast("Copied!")
+                if let mainTabVC: MainTabBarController = RootViewController.instance.findInChildren() {
+                    mainTabVC.showToast("Copied!")
+                } else {
+                    RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+                }
             }
             // Create and return a UIMenu with the share action
             return UIMenu(children: [share, copy])

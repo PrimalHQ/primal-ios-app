@@ -413,7 +413,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            RootViewController.instance.showToast("Copied!")
+            mainTabBarController?.showToast("Copied!")
         case .broadcast:
             break // TODO: Something?
         case .report:
@@ -743,7 +743,7 @@ extension NoteViewController: PostCellDelegate {
             items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
-                self?.view.showToast("Copied!")
+                self?.mainTabBarController?.showToast("Copied!")
             })
             
             if zap.message.isValidURL, let url = URL(string: zap.message) {

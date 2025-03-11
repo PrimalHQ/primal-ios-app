@@ -118,6 +118,12 @@ private extension ProfileShowQRController {
         addNavigationBar("")
         backButton.isHidden = false
         
+        qrParent.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let text = self?.user?.data.npub else { return }
+            UIPasteboard.general.string = text
+            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+        }))
+        
         action.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             let scan = (self.onboardingParent as? ProfileQRController)?.scanController ?? self.scanController

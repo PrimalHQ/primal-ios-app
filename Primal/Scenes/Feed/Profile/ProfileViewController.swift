@@ -454,11 +454,6 @@ extension ProfileViewController: ProfileInfoCellDelegate {
         show(EditProfileViewController(profile: profile.data), sender: nil)
     }
     
-    func npubPressed() {
-        UIPasteboard.general.string = profile.data.npub
-        view.showToast("Key copied to clipboard")
-    }
-    
     func followPressed(in cell: ProfileInfoCell) {
         if FollowManager.instance.isFollowing(profile.data.pubkey) {
             FollowManager.instance.sendUnfollowEvent(profile.data.pubkey)

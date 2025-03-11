@@ -39,7 +39,7 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
-    let connectionDot = UIView().constrainToSize(8)
+    let noConnectionView = NoConnectionView()
     
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
@@ -93,15 +93,14 @@ final class RootViewController: UIViewController {
         
         didFinishInit = true
         
-        view.addSubview(connectionDot)
-        connectionDot.pinToSuperview(edges: [.trailing, .top], padding: 20)
-        connectionDot.layer.cornerRadius = 4
-        connectionDot.backgroundColor = .accent
-        connectionDot.layer.zPosition = 900
-        connectionDot.isHidden = !DevModeSettings.enableDevMode
+        view.addSubview(noConnectionView)
+        noConnectionView
+            .pinToSuperview(edges: .horizontal, padding: 12)
+            .pinToSuperview(edges: .top, padding: 60, safeArea: true)
+            .constrainToSize(height: 44)
         
-        Connection.regular.isConnectedPublisher.receive(on: DispatchQueue.main).sink { [weak self] isConnected in
-            self?.connectionDot.backgroundColor = isConnected ? .green : .red
+        Connection.regular.cantConnectPublisher.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] cantConnect in
+            self?.noConnectionView.hasConnection = !cantConnect
         }
         .store(in: &cancellables)
         
@@ -232,9 +231,11 @@ final class RootViewController: UIViewController {
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         if let presentedViewController {
-            presentedViewController.view.showToast(message, icon: icon)
+            presentedViewController.view.showToast(message, icon: icon, extraPadding: 0)
+        } else if let mainTab: MainTabBarController = findInChildren() {
+            mainTab.showToast(message, icon: icon)
         } else {
-            view.showToast(message)
+            view.showToast(message, icon: icon)
         }
     }
     
