@@ -275,10 +275,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         
         guard let infoSub = urlString.split(separator: "//").last else { return }
         let info = String(infoSub)
+        let normalizedInfo = info.removingPercentEncoding ?? info
         
-        if urlString.hasPrefix("hashtag"), info.isHashtag {
+        if urlString.hasPrefix("hashtag"), normalizedInfo.isHashtag {
             let advancedSearch = AdvancedSearchManager()
-            advancedSearch.includeWordsText = info
+            advancedSearch.includeWordsText = normalizedInfo
             let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearch.feed))
             showViewController(feed)
             return
