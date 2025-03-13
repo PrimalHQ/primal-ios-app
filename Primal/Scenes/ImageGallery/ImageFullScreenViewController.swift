@@ -123,6 +123,8 @@ final class ImageFullScreenViewController: UIViewController {
             view.layoutIfNeeded()
         }
         
+        animatingIV.setNeedsDisplay()
+        
         // ISSUE: animatingIV didn’t show its image on the first run due to UIKit rendering timing.
         // FIX: Delay animation with DispatchQueue.main.async to ensure the image renders first.
         DispatchQueue.main.async {

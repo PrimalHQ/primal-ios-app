@@ -113,26 +113,11 @@ final class TransactionCell: UITableViewCell, Themeable {
         let btcAmount = (Double(transaction.0.amount_btc) ?? 0)
         
         if showBTC {
-            if let oldWasBtc, oldWasBtc != showBTC {
-                UIView.transition(with: amountLabel.superview ?? amountLabel, duration: 0.3, options: .transitionCrossDissolve) {
-                    self.amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
-                }
-            } else {
-                amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
-            }
+            amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()
             currencyLabel.text = "sats"
         } else {
             let usdAmount = Double(btcAmount * .BTC_TO_USD)
-            
-            let usdString = "$\(abs(usdAmount).nDecimalPoints(n: 2))"
-            
-            if let oldWasBtc, oldWasBtc != showBTC {
-                UIView.transition(with: amountLabel.superview ?? amountLabel, duration: 0.3, options: .transitionCrossDissolve) {
-                    self.amountLabel.text = usdString
-                }
-            } else {
-                amountLabel.text = usdString
-            }
+            amountLabel.text = "$\(abs(usdAmount).nDecimalPoints(n: 2))"
             currencyLabel.text = "USD"
         }
         
