@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import AVFAudio
 import GRDB
-//import primal_shared
+import PrimalShared
 
 struct ServerContentSettings: Codable {
     var show_primal_support: Bool
@@ -55,7 +55,34 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             .store(in: &cancellables)
 
-//        PrimalInitializer.shared.doInit()
+        PrimalInitializer.shared.doInit(appName: "ios", userAgent: "iOS_APP", showLog: false)
+        
+        let repo = RepositoryFactory.shared.createFeedRepository()
+        
+        Task {
+            do {
+                try await repo.fetchConversation(userId: "88cc134b1a65f54ef48acc1df3665063d3ea45f04eab8af4646e561c5ae99079", noteId: "fbd89c5b9a163a46b2441f7f89897cdb7acde5a322ae944ef3e6261f6d0f33a7")
+                print("fetched")
+            } catch {
+                print(error)
+            }
+        }
+        
+        
+        repo
+            .observeConversation(userId: "88cc134b1a65f54ef48acc1df3665063d3ea45f04eab8af4646e561c5ae99079", noteId: "fbd89c5b9a163a46b2441f7f89897cdb7acde5a322ae944ef3e6261f6d0f33a7")
+            .toPublisher()
+            .sink { obj in
+                print(obj)
+                
+                
+                
+//                first.nostrUris.first?.referencedUser.
+//                PrimalShared.FeedPost
+            }
+            .store(in: &cancellables)
+        
+        
         
         return true
     }
