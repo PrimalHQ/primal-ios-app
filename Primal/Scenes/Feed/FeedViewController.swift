@@ -620,7 +620,9 @@ extension NoteViewController: FeedElementCellDelegate {
 
 extension NoteViewController: PostCellDelegate {
     func postCellDidTapRepost(_ cell: ElementReactionsCell) {
-        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.post else { return }
+        guard let indexPath = table.indexPath(for: cell), let parsedPost = postForIndexPath(indexPath) else { return }
+        
+        let post = parsedPost.post
         
         let popup = PopupMenuViewController()
         
@@ -633,8 +635,7 @@ extension NoteViewController: PostCellDelegate {
             guard let self else { return }
             
             if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue {
-                guard let noteRef = bech32_note_id(post.universalID) else { return }
-
+                let noteRef = parsedPost.noteId(extended: true)
                 let new = NewPostViewController()
                 new.textView.text = "\n\nnostr:\(noteRef)"
                 new.manager.quoting = post

@@ -33,7 +33,7 @@ final class NotificationFeedViewController: NoteViewController {
         }
     }
     
-    var tab: Tab {
+    var notificationTab: Tab {
         didSet {
             notifications = []
             refresh()
@@ -64,7 +64,7 @@ final class NotificationFeedViewController: NoteViewController {
     }
     
     init(tab: Tab) {
-        self.tab = tab
+        self.notificationTab = tab
         
         super.init()
         
@@ -147,7 +147,7 @@ final class NotificationFeedViewController: NoteViewController {
         isLoading = true
         until = Date()
         
-        let tab = self.tab
+        let tab = self.notificationTab
         let payload = JSON.object([
             "pubkey": idJsonID,
             "limit": .number(20),
@@ -216,7 +216,7 @@ final class NotificationFeedViewController: NoteViewController {
             "pubkey": idJsonID,
             "limit": .number(152),
             "until": .number(until.timeIntervalSince1970.rounded() - 1),
-            "type_group": .string(tab.apiName)
+            "type_group": .string(notificationTab.apiName)
         ])
         
         isLoading = true
