@@ -46,7 +46,11 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         }
         
         if pathL.hasPrefix("/p/") {
-            notify(.primalProfileLink, id)
+            guard let metadata = try? decodedMetadata(from: id), let pubkey = metadata.pubkey else {
+                notify(.primalProfileLink, id)
+                return
+            }
+            RootViewController.instance.navigateTo = .profile(pubkey)
             return
         }
         
