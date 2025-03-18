@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import GenericJSON
 import UIKit
+import PrimalShared
 
 final class FeedManager {
     private var cancellables: Set<AnyCancellable> = []
@@ -72,10 +73,54 @@ final class FeedManager {
         refresh()
     }
     
+    var threadSub: AnyCancellable?
     init(threadId: String) {
         contentStyle = .threadChildren
         initSubscriptions()
-        requestThread(postId: threadId)
+//        requestThread(postId: threadId)
+        
+        
+        let repo = RepositoryFactory.shared.createFeedRepository()
+        
+        let userId = IdentityManager.instance.userHexPubkey
+        
+        Task {
+            do {
+                try await repo.fetchConversation(userId: userId, noteId: threadId)
+                print("fetched")
+            } catch {
+                print(error)
+            }
+        }
+        
+        threadSub = repo
+            .observeConversation(userId: userId, noteId: threadId)
+            .toPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] obj in
+                if obj.isEmpty { return }
+                
+                var result = PostRequestResult()
+                result.posts = obj.compactMap { $0.data.raw.decode() }
+                obj.forEach {
+                    guard
+                        let author = $0.author,
+                        let json: JSON = author.raw.decode()
+                    else { return }
+                    
+                    let nostrUser = NostrContent(json: json)
+                    if var user = PrimalUser(nostrUser: nostrUser) {
+                        user.rawData = author.raw
+                        result.users[nostrUser.pubkey] = user
+                    }
+                }
+                
+                self?.threadSub = nil
+                self?.postsEmitter.send(result)
+                
+//                first.nostrUris.first?.referencedUser.
+//                PrimalShared.FeedPost
+            }
     }
     
     func updateTheme() {

@@ -100,7 +100,7 @@ typealias ParsedTransaction = (WalletTransaction, ParsedUser)
 final class WalletManager {
     static let instance = WalletManager()
     
-    var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     @Published var userHasWallet: Bool?
     @Published var updatedAt: Double?
     @Published var balance: Int = 0
@@ -480,17 +480,19 @@ private extension WalletManager {
                         let json: [String: JSON] = content.decode()
                     else { return }
                     
-                    if let updatedAt = json["updated_at"]?.doubleValue {
-                        self?.updatedAt = updatedAt
-                    }
-                    
-                    if let amount = json["amount"]?.doubleValue {
-                        let balance = Int(amount * .BTC_TO_SAT)
-                        if self?.balance != balance {
-                            UserDefaults.standard.oldWalletAmount[ICloudKeychainManager.instance.userPubkey] = balance
-                            
-                            self?.balance = balance
-                            self?.updatedAt = Date().timeIntervalSince1970
+                    DispatchQueue.main.async {
+                        if let updatedAt = json["updated_at"]?.doubleValue {
+                            self?.updatedAt = updatedAt
+                        }
+                        
+                        if let amount = json["amount"]?.doubleValue {
+                            let balance = Int(amount * .BTC_TO_SAT)
+                            if self?.balance != balance {
+                                UserDefaults.standard.oldWalletAmount[ICloudKeychainManager.instance.userPubkey] = balance
+                                
+                                self?.balance = balance
+                                self?.updatedAt = Date().timeIntervalSince1970
+                            }
                         }
                     }
                 }
