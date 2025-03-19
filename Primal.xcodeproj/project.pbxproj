@@ -355,6 +355,8 @@
 		B9318F672B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */; };
 		B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
+		B93872F42D8B546C00AEDCFF /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */; };
+		B93872F52D8B546C00AEDCFF /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
 		B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429212BD2866D00746FBC /* thread-zap-medium.json */; };
@@ -593,7 +595,6 @@
 		B9E67ECB2D130075006BB397 /* HighlightCommentElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67ECA2D130075006BB397 /* HighlightCommentElementUserCell.swift */; };
 		B9E67ECD2D13021C006BB397 /* HighlightCommentsDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67ECC2D13021C006BB397 /* HighlightCommentsDatasource.swift */; };
 		B9E67ECF2D13201B006BB397 /* URL+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67ECE2D13201B006BB397 /* URL+Extra.swift */; };
-		B9F763FB2D89AF75004E93F1 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9F763FA2D89AF75004E93F1 /* PrimalShared.xcframework */; };
 		B9F933182B867D860064B495 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = B9F933172B867D860064B495 /* QRCode */; };
 		B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F933192B88EBE40064B495 /* CheckNip05Request.swift */; };
 		B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */; };
@@ -650,6 +651,17 @@
 				B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9F763FE2D8A2E7E004E93F1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				B93872F52D8B546C00AEDCFF /* PrimalShared.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1034,6 +1046,7 @@
 		B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendTransitionAnimator.swift; sourceTree = "<group>"; };
 		B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendAmountSendAnimator.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
+		B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
 		B94429212BD2866D00746FBC /* thread-zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "thread-zap-medium.json"; sourceTree = "<group>"; };
@@ -1270,7 +1283,6 @@
 		B9E67ECA2D130075006BB397 /* HighlightCommentElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCommentElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67ECC2D13021C006BB397 /* HighlightCommentsDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCommentsDatasource.swift; sourceTree = "<group>"; };
 		B9E67ECE2D13201B006BB397 /* URL+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extra.swift"; sourceTree = "<group>"; };
-		B9F763FA2D89AF75004E93F1 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
 		B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumViewController.swift; sourceTree = "<group>"; };
 		B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Manager.swift; sourceTree = "<group>"; };
@@ -1324,7 +1336,7 @@
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
-				B9F763FB2D89AF75004E93F1 /* PrimalShared.xcframework in Frameworks */,
+				B93872F42D8B546C00AEDCFF /* PrimalShared.xcframework in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1374,7 +1386,6 @@
 		933DBDB12A1126CE008DCF1F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B9F763FA2D89AF75004E93F1 /* PrimalShared.xcframework */,
 				B94F2BDE2ADDCD710041181B /* StoreKit.framework */,
 			);
 			name = Frameworks;
@@ -1439,6 +1450,7 @@
 			children = (
 				B950FB112C35DD260088F9E3 /* Primal.entitlements */,
 				9393313D29A3E6DE003954C2 /* Info.plist */,
+				B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */,
 				B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */,
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* Scenes */,
@@ -3095,6 +3107,7 @@
 				939330EF29A3E36F003954C2 /* Frameworks */,
 				939330F029A3E36F003954C2 /* Resources */,
 				B9DFA0AE2D7EFBC9002C6F34 /* Embed Foundation Extensions */,
+				B9F763FE2D8A2E7E004E93F1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

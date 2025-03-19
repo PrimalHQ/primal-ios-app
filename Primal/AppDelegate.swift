@@ -55,7 +55,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             .store(in: &cancellables)
 
-        PrimalInitializer.shared.doInit(appName: "ios", userAgent: "iOS_APP", showLog: false)
+        PrimalInitializer.shared.doInit(showLog: false)
         
         return true
     }

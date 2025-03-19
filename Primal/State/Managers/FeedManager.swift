@@ -49,6 +49,7 @@ final class FeedManager {
     var addFuturePostsDirectly: () -> Bool = { true }
     
     static var lastLocallyLoadedLatestFeedUserPubkey: String?
+    private var collectionTask: Task<Void, Never>?
     
     init(profilePubkey: String) {
         self.profilePubkey = profilePubkey
@@ -61,16 +62,37 @@ final class FeedManager {
         initSubscriptions()
         initFuturePublishersAndObservers()
         
-        if newFeed.name == "Latest" {
-            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
-            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
-            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
-                paginationInfo = loaded.pagination
-                postsEmitter.send(loaded)
-                return
+        let repo = RepositoryFactory.shared.createFeedRepository()
+        let feedFlow = repo.feedBySpec(userId: IdentityManager.instance.userHexPubkey, feedSpec: newFeed.spec)
+        
+        
+        
+        
+        collectionTask = Task { [weak self] in
+            for await value in feedFlow {
+                // Update the UI on the main thread
+                await MainActor.run {
+                    print(value)
+//                    self?.postsEmitter.send(value)
+                }
             }
         }
-        refresh()
+
+        
+//        if newFeed.name == "Latest" {
+//            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
+//            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
+//            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
+//                paginationInfo = loaded.pagination
+//                postsEmitter.send(loaded)
+//                return
+//            }
+//        }
+//        refresh()
+    }
+    
+    deinit {
+        collectionTask?.cancel()
     }
     
     var threadSub: AnyCancellable?
@@ -100,17 +122,17 @@ final class FeedManager {
             .sink { [weak self] obj in
                 if obj.isEmpty { return }
                 
-                var result = PostRequestResult()
-                result.posts = obj.compactMap { $0.data.raw.decode() }
+                let result = PostRequestResult()
+                result.posts = obj.compactMap { $0.rawNostrEvent.decode() }
                 obj.forEach {
                     guard
-                        let author = $0.author,
-                        let json: JSON = author.raw.decode()
+                        let authorRaw = $0.author.rawNostrEvent,
+                        let json: JSON = authorRaw.decode()
                     else { return }
                     
                     let nostrUser = NostrContent(json: json)
                     if var user = PrimalUser(nostrUser: nostrUser) {
-                        user.rawData = author.raw
+                        user.rawData = authorRaw
                         result.users[nostrUser.pubkey] = user
                     }
                 }
