@@ -325,6 +325,7 @@ private extension MainTabBarController {
         DispatchQueue.main.async { [self] in
             RootViewController.instance.$navigateTo
                 .filter { $0 != nil }
+                .delay(for: 0.5, scheduler: RunLoop.main)
                 .sink { [weak self] to in
                     guard let self, let to else { return }
                     RootViewController.instance.navigateTo = nil

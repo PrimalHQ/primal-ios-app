@@ -103,12 +103,11 @@ extension RegularFeedDatasourceProtocol {
             var parts: [NoteFeedElement] = [.userInfo]
 
             if !content.text.isEmpty { parts.append(.text) }
+            if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
             if let invoice = content.invoice { parts.append(.invoice) }
             if let article = content.article { parts.append(.article) }
             
             if content.embeddedPost != nil { parts.append(.postPreview)}
-            
-            if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
             
             for (index, data) in content.linkPreviews.enumerated() {
                 if short && index > 1 { break } // Only show two link previews short view

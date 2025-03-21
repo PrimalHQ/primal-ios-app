@@ -41,20 +41,20 @@ class ThreadElementMusicPreviewCell: ThreadElementBaseCell, RegularFeedElementCe
     override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
        
-        contentView.addSubview(webView)
+        secondRow.addSubview(webView)
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
         webView.alpha = 0
         webView.layer.cornerRadius = 12
         webView.clipsToBounds = true
         
-        contentView.addSubview(linkPreview)
+        secondRow.addSubview(linkPreview)
         linkPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 0)
             .constrainToSize(height: 152)
         
         linkPreview.addSubview(mainStack)

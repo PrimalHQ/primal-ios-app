@@ -316,8 +316,23 @@ extension ParsedContent {
         return result
     }
     
-    func noteId() -> String {
+    func noteId(extended: Bool) -> String {
         var metadata = Metadata()
+        let hint = RelayHintManager.instance.getRelayHint(post.id)
+        if extended && !hint.isEmpty {
+            metadata.relays = [hint]
+        }
+        
+        if post.kind == NostrKind.longForm.rawValue {
+            metadata.kind = UInt32(post.kind)
+            metadata.pubkey = user.data.pubkey
+            metadata.identifier = post.tags.first(where: { $0.first == "d" })?[safe: 1]
+            
+            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .address) {
+                return identifier
+            }
+        }
+        
         metadata.eventId = post.id
         if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
             return identifier
@@ -331,7 +346,7 @@ extension ParsedContent {
             let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: user.data.pubkey),
             let dTag = post.tags.first(where: { $0.first == "d" })?[safe: 1]
         else {
-            return "https://primal.net/e/\(noteId())"
+            return "https://primal.net/e/\(noteId(extended: false))"
         }
         return "https://primal.net/\(name)/\(dTag)"
     }

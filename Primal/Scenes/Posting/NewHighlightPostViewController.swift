@@ -69,7 +69,7 @@ private extension NewHighlightPostViewController {
         }()
         
         let articleText: String = {
-            return "\nnostr:\(article.asParsedContent.noteId())"
+            return "\nnostr:\(article.asParsedContent.noteId(extended: true))"
         }()
         
         let text = (manager.postingText + highlightText + articleText).trimmingCharacters(in: .whitespacesAndNewlines)

@@ -54,7 +54,7 @@ extension ParsedContent {
         case .link:         return webURL()
         case .content:      return attributedText.string
         case .rawData:      return post.rawData ?? post.encodeToString()
-        case .noteID:       return noteId()
+        case .noteID:       return noteId(extended: true)
         case .userPubkey:   return user.data.pubkey
         case .invoice:      return invoice?.string
         }
