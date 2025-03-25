@@ -635,32 +635,13 @@ extension NoteViewController: PostCellDelegate {
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
             
-            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue {
-                let noteRef = parsedPost.noteId(extended: true)
-                let new = NewPostViewController()
-                new.textView.text = "\n\nnostr:\(noteRef)"
-                new.manager.quoting = post
-                self.present(new, animated: true)
-                return
-            }
-            
-            var metadata = Metadata()
-            metadata.eventId = post.id
-            let hint = RelayHintManager.instance.getRelayHint(post.id)
-            if !hint.isEmpty { metadata.relays = [hint] }
-            
-            let replacement: String
-            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
-                replacement = "\n\nnostr:\(identifier)"
-            } else {
-                guard let noteRef = bech32_note_id(post.universalID) else { return }
+            let new = AdvancedEmbedPostViewController()
 
-                replacement = "\n\nnostr:\(noteRef)"
+            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue, let article = parsedPost.article {
+                new.manager.embeddedElements.append(.article(article))
+            } else {
+                new.manager.embeddedElements.append(.post(parsedPost))
             }
-            
-            let new = NewPostViewController()
-            new.textView.text = replacement
-            new.manager.quoting = post
             self.present(new, animated: true)
         }))
         

@@ -340,7 +340,7 @@ private extension ArticleViewController {
             guard let webView = self?.highlightedWebView else { return }
             webView.selectedText { [weak self] text in
                 guard let self, let text, let highlight = highlight(text: text) else { return }
-                present(NewHighlightPostViewController(article: content, highlight: highlight), animated: true)
+                present(AdvancedEmbedPostViewController(including: .highlight(content, highlight)), animated: true)
             }
         }), for: .touchUpInside)
         
@@ -373,7 +373,7 @@ private extension ArticleViewController {
     func populateContent() {
         topInfoView.update(content)
         
-        let parsedContent = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: content.stats), user: content.user)
+        let parsedContent = content.asParsedContent
         parsedContent.zaps = content.zaps
         topInfoView.zapEmbededController.posts = [parsedContent]
         infoVC.posts = [parsedContent]

@@ -1,5 +1,5 @@
 //
-//  NewHighlightPostViewController.swift
+//  AdvancedEmbedPostViewController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 23.7.24..
@@ -9,7 +9,13 @@ import Combine
 import UIKit
 import Kingfisher
 
-class NewHighlightPostViewController: UIViewController {
+enum PostEmbedPreview {
+    case highlight(Article, Highlight)
+    case post(ParsedContent)
+    case article(Article)
+}
+
+class AdvancedEmbedPostViewController: UIViewController {
     let postButtonText = "Post"
     
     let textView = SelfSizingTextView()
@@ -25,19 +31,28 @@ class NewHighlightPostViewController: UIViewController {
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    lazy var manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: highlight.event.id, replyingTo: PrimalFeedPost(nostrPost: highlight.event, nostrPostStats: .empty(highlight.event.id)))
+    let embeddedPreviewStack = UIStackView(axis: .vertical, [])
+    
+    let manager: PostingTextViewManager
     
     private var cancellables: Set<AnyCancellable> = []
     
     var onPost: (() -> Void)?
     
-    let article: Article
-    let highlight: Highlight
-    init(article: Article, highlight: Highlight, onPost: (() -> Void)? = nil) {
-        self.article = article
-        self.highlight = highlight
+    init(including: PostEmbedPreview? = nil, onPost: (() -> Void)? = nil) {
+        switch including {
+        case .highlight(_, let highlight):
+            manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: highlight.event.id, replyingTo: PrimalFeedPost(nostrPost: highlight.event, nostrPostStats: .empty(highlight.event.id)))
+        default:
+            manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: nil, replyingTo: nil)
+        }
+        
         self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
+        
+        if let including {
+            manager.embeddedElements.append(including)
+        }
         setup()
     }
     
@@ -52,7 +67,7 @@ class NewHighlightPostViewController: UIViewController {
     }
 }
 
-private extension NewHighlightPostViewController {
+private extension AdvancedEmbedPostViewController {
     @objc func postButtonPressed() {
         if manager.didUploadFail {
             manager.restartFailedUploads()
@@ -62,37 +77,21 @@ private extension NewHighlightPostViewController {
         if manager.isUploadingImages {
             return
         }
-
-        let highlightText: String = {
-            guard let noteRef = highlight.event.getNevent() else { return "" }
-            return "\nnostr:\(noteRef)"
-        }()
         
-        let articleText: String = {
-            return "\nnostr:\(article.asParsedContent.noteId(extended: true))"
-        }()
+        let text = manager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        let text = (manager.postingText + highlightText + articleText).trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        postButton.isEnabled = false
-        postButton.setTitle(" " + postButtonText + " ", for: .normal)
-        
-        let callback: (Bool) -> Void = { [weak self] success in
-            if success {
-                self?.postButton.setTitle("Posted", for: .normal)
-                self?.dismiss(animated: true) {
-                    self?.postButton.setTitle(self?.postButtonText, for: .normal)
-                    self?.manager.media = []
-                    self?.textView.text = ""
-                    self?.onPost?()
-                }
-            } else {
-                self?.postButton.setTitle(self?.postButtonText, for: .normal)
-                self?.postButton.isEnabled = true
-            }
+        guard !text.isEmpty else {
+            showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
+            return
         }
         
-        PostingManager.instance.sendPostHighlightEvent(text, mentionedPubkeys: manager.mentionedUsersPubkeys, highlight: highlight.event, article: article, callback)
+        let onPost = self.onPost
+        manager.post { success, _ in
+            if success {
+                onPost?()
+            }
+        }
+        dismiss(animated: true)
     }
     
     @objc func galleryButtonPressed() {
@@ -110,26 +109,7 @@ private extension NewHighlightPostViewController {
     func setup() {
         view.backgroundColor = .background2
         
-        let highlightLabel = UILabel()
-        highlightLabel.attributedText = NSAttributedString(string: highlight.content, attributes: [
-            .foregroundColor: UIColor.foreground,
-            .backgroundColor: UIColor.highlight,
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .paragraphStyle: {
-                let newParagraph = NSMutableParagraphStyle()
-                newParagraph.lineSpacing = 0
-                newParagraph.minimumLineHeight = 28
-                newParagraph.maximumLineHeight = 28
-                return newParagraph
-            }()
-        ])
-        highlightLabel.numberOfLines = 4
-        highlightLabel.lineBreakMode = .byTruncatingTail
-        
-        let articleView = CompactArticleView()
-        articleView.setUp(article)
-        
-        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, highlightLabel, articleView])
+        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, embeddedPreviewStack])
         verticalStack.spacing = 12
         let scrollView = UIScrollView()
         scrollView.addSubview(verticalStack)
@@ -233,29 +213,84 @@ private extension NewHighlightPostViewController {
         }
         .store(in: &cancellables)
         
-        manager.$media
-            .debounce(for: 0.1, scheduler: RunLoop.main).sink { [weak self] images in
-                guard let self else { return }
-                let isUploadingImages: Bool = {
-                    for image in images {
-                        if case .uploading = image.state {
-                            return true
-                        }
-                    }
-                    return false
-                }()
-                
-                self.postButton.setTitle(isUploadingImages ? "Uploading..." : self.postButtonText, for: .normal)
-                self.postButton.isEnabled = (images.isEmpty || !isUploadingImages) && self.postButton.title(for: .normal) == self.postButtonText
-            }
-            .store(in: &cancellables)
-                
-        manager.$media.receive(on: DispatchQueue.main).sink { [weak self] images in
-            guard let self else { return }
-            
-            self.imagesCollectionView.imageResources = images
-            self.imagesCollectionView.isHidden = images.isEmpty
+        manager.$postButtonEnabledState.assign(to: \.isEnabled, on: postButton).store(in: &cancellables)
+        manager.$postButtonTitle.sink { [postButton] title in
+            postButton.setTitle(title, for: .normal)
         }
         .store(in: &cancellables)
+        
+        manager.$isPosting.map({ !$0 }).assign(to: \.isUserInteractionEnabled, on: bottomStack).store(in: &cancellables)
+        
+        Publishers.CombineLatest(
+            manager.$users.map({ $0.isEmpty }).removeDuplicates(),
+            manager.$media
+        ).receive(on: DispatchQueue.main).sink { [weak self] isUsersEmpty, images in
+            guard let self else { return }
+            self.imagesCollectionView.imageResources = images
+            
+            self.imagesCollectionView.isHidden = images.isEmpty || !isUsersEmpty
+            self.embeddedPreviewStack.isHidden = !isUsersEmpty
+        }
+        .store(in: &cancellables)
+        
+        manager.$embeddedElements.sink { [weak self] elements in
+            guard let self else { return }
+            embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
+            
+            elements.forEach { self.embeddedPreviewStack.addArrangedSubview($0.makeView()) }
+        }
+        .store(in: &cancellables)
+    }
+}
+
+extension PostEmbedPreview {
+    func makeView() -> UIView {
+        switch self {
+        case .highlight(let article, let highlight):
+            return HighlightPreviewView(article: article, highlight: highlight)
+        case .article(let article):
+            let view = CompactArticleView()
+            view.setUp(article)
+            return view
+        case .post(let post):
+            let view = PostPreviewView()
+            view.update(post)
+            view.updateTheme()
+            return view
+        }
+    }
+}
+
+class HighlightPreviewView: UIStackView {
+    init(article: Article, highlight: Highlight) {
+        super.init(frame: .zero)
+        
+        let highlightLabel = UILabel()
+        highlightLabel.attributedText = NSAttributedString(string: highlight.content, attributes: [
+            .foregroundColor: UIColor.foreground,
+            .backgroundColor: UIColor.highlight,
+            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .paragraphStyle: {
+                let newParagraph = NSMutableParagraphStyle()
+                newParagraph.lineSpacing = 0
+                newParagraph.minimumLineHeight = 28
+                newParagraph.maximumLineHeight = 28
+                return newParagraph
+            }()
+        ])
+        highlightLabel.numberOfLines = 4
+        highlightLabel.lineBreakMode = .byTruncatingTail
+        
+        let articleView = CompactArticleView()
+        articleView.setUp(article)
+        
+        addArrangedSubview(highlightLabel)
+        addArrangedSubview(articleView)
+        axis = .vertical
+        spacing = 4
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

@@ -133,7 +133,7 @@ private extension HighlightViewController {
             UIButton(configuration: .highlightActionButton(icon: UIImage(named: "quoteIcon24"), title: "Quote"), primaryAction: .init(handler: { [weak self] _ in
                 guard let self, let highlight = highlights.first else { return }
                 
-                present(NewHighlightPostViewController(article: article, highlight: highlight, onPost: { [weak self] in
+                present(AdvancedEmbedPostViewController(including: .highlight(article, highlight), onPost: { [weak self] in
                     self?.dismiss(animated: true)
                 }), animated: true)
             })),

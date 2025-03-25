@@ -123,29 +123,22 @@ final class ImageFullScreenViewController: UIViewController {
             view.layoutIfNeeded()
         }
         
-        animatingIV.setNeedsDisplay()
+        NSLayoutConstraint.deactivate(cs)
+        animatingIV.pin(to: self.imageView)
         
-        // ISSUE: animatingIV didn’t show its image on the first run due to UIKit rendering timing.
-        // FIX: Delay animation with DispatchQueue.main.async to ensure the image renders first.
-        DispatchQueue.main.async {
-            NSLayoutConstraint.deactivate(cs)
-            animatingIV.pin(to: self.imageView)
-            
-            UIView.animate(withDuration: 0.3) {
-                self.background.alpha = 1
-                self.view.layoutIfNeeded()
-                animatingIV.layer.cornerRadius = 0
+        UIView.animate(withDuration: 0.3) {
+            self.background.alpha = 1
+            self.view.layoutIfNeeded()
+            animatingIV.layer.cornerRadius = 0
+        } completion: { _ in
+            UIView.animate(withDuration: 0.2) {
+                animatingIV.alpha = 0
             } completion: { _ in
-                UIView.animate(withDuration: 0.2) {
-                    animatingIV.alpha = 0
-                } completion: { _ in
-                    animatingIV.removeFromSuperview()
-                }
-                self.scroll.alpha = 1
-                startImageView.alpha = 1
+                animatingIV.removeFromSuperview()
             }
+            self.scroll.alpha = 1
+            startImageView.alpha = 1
         }
-        // Necessary to wait one cycle to ensure the image is loaded inside animatingIV, otherwise it sometimes doesn't show during the animation
     }
     
     // MARK: - View cycle

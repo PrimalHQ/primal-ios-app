@@ -153,8 +153,13 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     
     
     func setup(resources: [MediaMetadata.Resource], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
+        let realHeight = ImageGallerySizingConst.heightForTwoImages
         zip(resources, imageViews).forEach { image, imageView in
-            imageView.loadImage(url: image.url(for: .medium), downsampling: .none, originalURL: image.url, userPubkey: userPubkey)
+            var downsampling = DownsamplingOption.none
+            if let width = image.variants.first?.width, let height = image.variants.first?.height {
+                downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
+            }
+            imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
         }
         
         self.delegate = delegate

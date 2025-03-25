@@ -135,6 +135,8 @@ extension ArticleListController: UITableViewDelegate {
 
 extension Article {    
     var asParsedContent: ParsedContent {
-        .init(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
+        let post = ParsedContent(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
+        post.article = self
+        return post
     }
 }

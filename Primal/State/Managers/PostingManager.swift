@@ -188,28 +188,6 @@ final class PostingManager {
         })
     }
     
-    func sendPostHighlightEvent(_ content: String, mentionedPubkeys: [String], highlight: NostrContent, article: Article, _ callback: @escaping (Bool) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.postHighlight(content, highlight: highlight, article: article, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            callback(false)
-        })
-    }
-    
     func sendHighlightEvent(_ content: String, article: Article, _ callback: @escaping (Bool) -> Void) -> NostrObject? {
         if LoginManager.instance.method() != .nsec { return nil }
 

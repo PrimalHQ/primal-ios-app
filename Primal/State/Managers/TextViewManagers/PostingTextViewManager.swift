@@ -67,6 +67,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         }
     }
     
+    @Published var embeddedElements: [PostEmbedPreview] = []
     @Published private var currentlyEditingToken: EditingToken?
     
     let returnPressed = PassthroughSubject<Void, Never>()
@@ -79,7 +80,6 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             findDraft()
         }
     }
-    var quoting: PrimalFeedPost?
     
     private var tagRegex: NSRegularExpression! { try! NSRegularExpression(pattern: "@([^\\s\\K]+)") }
     
@@ -305,7 +305,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     func post(callback: @escaping (Bool, NostrObject?) -> Void) {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, quotingObject: quoting) else {
+        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, embeddedElements: embeddedElements) else {
             callback(false, nil)
             return
         }

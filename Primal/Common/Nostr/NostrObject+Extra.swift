@@ -94,7 +94,7 @@ extension NostrObject {
 //        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
 //    }
     
-    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?, quotingObject: PrimalFeedPost?) -> NostrObject? {
+    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?, embeddedElements: [PostEmbedPreview]) -> NostrObject? {
         var allTags: [[String]] = []
 
         /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
@@ -120,32 +120,57 @@ extension NostrObject {
             pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
         }
         
-        if let quotingObject {
-            allTags.append([quotingObject.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
-            
-            pubkeysToTag.insert(quotingObject.pubkey)
-            pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+        var text = postingText
+        
+        for include in embeddedElements {
+            switch include {
+            case .highlight(let article, let highlight):
+                let highlightText: String = {
+                    guard let noteRef = highlight.event.getNevent() else { return "" }
+                    return "\nnostr:\(noteRef)"
+                }()
+                
+                let articleText: String = {
+                    return "\nnostr:\(article.asParsedContent.noteId(extended: true))"
+                }()
+             
+                text += highlightText + articleText
+                
+                let articleID = article.asParsedContent.post.universalID
+                allTags.append(["e", highlight.event.id, "", "highlight"])
+                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
+
+                pubkeysToTag.insert(article.event.pubkey)
+            case .post(let post):
+                let noteRef = post.noteId(extended: true)
+                text += "\n" + noteRef
+                
+                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "post"])
+                
+                pubkeysToTag.insert(post.user.data.pubkey)
+                pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .article(let article):
+                let noteRef = article.asParsedContent.noteId(extended: true)
+                text += "\n" + noteRef
+                
+                let quotingObject = article.asParsedContent.post
+                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "article"])
+                
+                pubkeysToTag.insert(article.user.data.pubkey)
+                pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+                break
+            }
         }
+
+        guard let keypair = getKeypair(), let privkey = keypair.hexVariant.privkey else { return nil }
+        
+        pubkeysToTag.remove(keypair.hexVariant.pubkey) // Don't tag yourself
         
         allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
-        
         allTags += draft.text.extractHashtags().map({ ["t", $0] })
+        
+        return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: text, kind: 1, tags: allTags, createdAt: Int64(Date().timeIntervalSince1970))
 
-        return createNostrObject(content: postingText, kind: 1, tags: allTags)
-    }
-    
-    static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
-        var allTags: [[String]] = []
-
-        let articleID = article.asParsedContent.post.universalID
-        allTags.append(["e", highlight.id, "", "highlight"])
-        allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
-
-        allTags.append(["p", article.event.pubkey])
-        allTags += mentionedPubkeys.map { ["p", $0] }
-        allTags += content.extractHashtags().map({ ["t", $0] })
-
-        return createNostrObject(content: content, kind: 1, tags: allTags)
     }
     
     static func purchasePrimalPremium(pickedName: String, transaction: Transaction, verification: String) -> NostrObject? {
@@ -192,7 +217,7 @@ extension NostrObject {
             ["context", content],
             ["alt", "This is a highlight created in https://primal.net iOS application"],
             ["a", article.asParsedContent.post.universalID],
-            ["p", article.event.pubkey]
+            ["p", article.event.pubkey, "", "mention"]
         ])
     }
     

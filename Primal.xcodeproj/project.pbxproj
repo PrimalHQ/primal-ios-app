@@ -425,7 +425,7 @@
 		B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B12C493D7D00E8369A /* PostRequestResult+Article.swift */; };
 		B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B42C4949E900E8369A /* HighlightViewController.swift */; };
 		B98DD8B82C49540700E8369A /* HighlightUsersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B72C49540700E8369A /* HighlightUsersView.swift */; };
-		B98DD8BA2C502DA300E8369A /* NewHighlightPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B92C502DA300E8369A /* NewHighlightPostViewController.swift */; };
+		B98DD8BA2C502DA300E8369A /* AdvancedEmbedPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8B92C502DA300E8369A /* AdvancedEmbedPostViewController.swift */; };
 		B98DD8BC2C50333200E8369A /* CompactArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BB2C50333200E8369A /* CompactArticleView.swift */; };
 		B98DD8BE2C515FB200E8369A /* ArticleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */; };
 		B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8BF2C52A59900E8369A /* HighlightCommentsController.swift */; };
@@ -1104,7 +1104,7 @@
 		B98DD8B12C493D7D00E8369A /* PostRequestResult+Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostRequestResult+Article.swift"; sourceTree = "<group>"; };
 		B98DD8B42C4949E900E8369A /* HighlightViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightViewController.swift; sourceTree = "<group>"; };
 		B98DD8B72C49540700E8369A /* HighlightUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightUsersView.swift; sourceTree = "<group>"; };
-		B98DD8B92C502DA300E8369A /* NewHighlightPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHighlightPostViewController.swift; sourceTree = "<group>"; };
+		B98DD8B92C502DA300E8369A /* AdvancedEmbedPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedEmbedPostViewController.swift; sourceTree = "<group>"; };
 		B98DD8BB2C50333200E8369A /* CompactArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactArticleView.swift; sourceTree = "<group>"; };
 		B98DD8BD2C515FB200E8369A /* ArticleImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleImageView.swift; sourceTree = "<group>"; };
 		B98DD8BF2C52A59900E8369A /* HighlightCommentsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightCommentsController.swift; sourceTree = "<group>"; };
@@ -1819,7 +1819,7 @@
 			isa = PBXGroup;
 			children = (
 				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
-				B98DD8B92C502DA300E8369A /* NewHighlightPostViewController.swift */,
+				B98DD8B92C502DA300E8369A /* AdvancedEmbedPostViewController.swift */,
 				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
 				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
 				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
@@ -3557,7 +3557,7 @@
 				B9009B572B0FBF41002B0613 /* FullScreenVideoPlayerController.swift in Sources */,
 				B94429262BD4442D00746FBC /* Keyboard+Extra.swift in Sources */,
 				B91BB95D2B3B3854003F6B2A /* ErrorMessageCell.swift in Sources */,
-				B98DD8BA2C502DA300E8369A /* NewHighlightPostViewController.swift in Sources */,
+				B98DD8BA2C502DA300E8369A /* AdvancedEmbedPostViewController.swift in Sources */,
 				9E0DEAF929FD4A0600145E08 /* FollowButton.swift in Sources */,
 				9393313429A3E575003954C2 /* Primal.swift in Sources */,
 				9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */,
@@ -4065,7 +4065,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.2;
+				MARKETING_VERSION = 2.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4112,7 +4112,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.2;
+				MARKETING_VERSION = 2.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
