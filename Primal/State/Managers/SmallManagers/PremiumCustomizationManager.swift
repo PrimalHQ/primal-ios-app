@@ -9,7 +9,7 @@ import Foundation
 //{"style":"PURPLEHAZE","custom_badge":true,"avatar_glow":true}
 
 struct LegendCustomization: Codable {
-    var style: String
+    var style: String?
     var custom_badge: Bool
     var avatar_glow: Bool
     var in_leaderboard: Bool
@@ -27,7 +27,7 @@ struct PremiumUserInfo: Codable {
 }
 
 extension LegendCustomization {
-    var theme: LegendTheme? { .init(rawValue: style.lowercased()) }
+    var theme: LegendTheme? { .init(rawValue: style?.lowercased() ?? "") }
 }
 
 class PremiumCustomizationManager {

@@ -75,7 +75,7 @@ class PremiumManageLegendController: UIViewController {
         self.state = state
         
         if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey) {
-            table.selectTheme(.init(rawValue: custom.style.lowercased()))
+            table.selectTheme(.init(rawValue: custom.style?.lowercased() ?? ""))
             
             avatarSwitch.isOn = custom.avatar_glow
             isAvatarOn = custom.avatar_glow
