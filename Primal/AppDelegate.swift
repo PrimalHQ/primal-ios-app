@@ -9,7 +9,6 @@ import Combine
 import UIKit
 import AVFAudio
 import GRDB
-import PrimalShared
 
 struct ServerContentSettings: Codable {
     var show_primal_support: Bool
@@ -54,8 +53,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Self.contentSettings = settings
             }
             .store(in: &cancellables)
-
-        PrimalInitializer.shared.doInit(showLog: false)
         
         return true
     }

@@ -355,8 +355,6 @@
 		B9318F672B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */; };
 		B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
-		B93872F42D8B546C00AEDCFF /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */; };
-		B93872F52D8B546C00AEDCFF /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
 		B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429212BD2866D00746FBC /* thread-zap-medium.json */; };
@@ -477,6 +475,7 @@
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
+		B9A5EC852D9445B10014C568 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */; };
 		B9B1AB9A2B2C730400837312 /* regions.json in Resources */ = {isa = PBXBuildFile; fileRef = B9B1AB982B2C730400837312 /* regions.json */; };
 		B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */; };
 		B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */; };
@@ -659,7 +658,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B93872F52D8B546C00AEDCFF /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1046,7 +1044,6 @@
 		B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendTransitionAnimator.swift; sourceTree = "<group>"; };
 		B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendAmountSendAnimator.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
-		B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
 		B94429212BD2866D00746FBC /* thread-zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "thread-zap-medium.json"; sourceTree = "<group>"; };
@@ -1166,6 +1163,7 @@
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
+		B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9B1AB982B2C730400837312 /* regions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = regions.json; sourceTree = "<group>"; };
 		B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAmountCell.swift; sourceTree = "<group>"; };
@@ -1336,7 +1334,7 @@
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
-				B93872F42D8B546C00AEDCFF /* PrimalShared.xcframework in Frameworks */,
+				B9A5EC852D9445B10014C568 /* PrimalShared.xcframework in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1449,8 +1447,8 @@
 			isa = PBXGroup;
 			children = (
 				B950FB112C35DD260088F9E3 /* Primal.entitlements */,
+				B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */,
 				9393313D29A3E6DE003954C2 /* Info.plist */,
-				B93872F22D8B545D00AEDCFF /* PrimalShared.xcframework */,
 				B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */,
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* Scenes */,

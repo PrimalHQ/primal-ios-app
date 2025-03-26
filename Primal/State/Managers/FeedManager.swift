@@ -61,34 +61,31 @@ final class FeedManager {
         self.newFeed = newFeed
         initSubscriptions()
         initFuturePublishersAndObservers()
-        
-        let repo = RepositoryFactory.shared.createFeedRepository()
-        let feedFlow = repo.feedBySpec(userId: IdentityManager.instance.userHexPubkey, feedSpec: newFeed.spec)
-        
-        
-        
-        
-        collectionTask = Task { [weak self] in
-            for await value in feedFlow {
-                // Update the UI on the main thread
-                await MainActor.run {
-                    print(value)
-//                    self?.postsEmitter.send(value)
-                }
-            }
-        }
-
-        
-//        if newFeed.name == "Latest" {
-//            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
-//            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
-//            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
-//                paginationInfo = loaded.pagination
-//                postsEmitter.send(loaded)
-//                return
+//
+//        let repo = IosRepositoryFactory.shared.createFeedRepository()
+//        let feedFlow = repo.feedBySpec(userId: IdentityManager.instance.userHexPubkey, feedSpec: newFeed.spec)
+//        
+//        collectionTask = Task { [weak self] in
+//            for await value in feedFlow {
+//                // Update the UI on the main thread
+//                await MainActor.run {
+//                    print(value)
+////                    self?.postsEmitter.send(value)
+//                }
 //            }
 //        }
-//        refresh()
+
+        
+        if newFeed.name == "Latest" {
+            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
+            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
+            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
+                paginationInfo = loaded.pagination
+                postsEmitter.send(loaded)
+                return
+            }
+        }
+        refresh()
     }
     
     deinit {
@@ -102,7 +99,7 @@ final class FeedManager {
 //        requestThread(postId: threadId)
         
         
-        let repo = RepositoryFactory.shared.createFeedRepository()
+        let repo = IosRepositoryFactory.shared.createFeedRepository()
         
         let userId = IdentityManager.instance.userHexPubkey
         
