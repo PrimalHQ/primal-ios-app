@@ -377,6 +377,51 @@ private extension PostingTextViewManager {
         currentlyEditingToken = .init(range: nsRange, text: word)
     }
     
+    func findAndExtractReferences() {
+        let pattern = "(note1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]{39}|nevent1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|naddr1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|lnbc[a-z0-9]{40,})"
+
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
+        
+        var text = textView.text ?? ""
+        
+        let foundTexts = regex.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
+            .compactMap { Range($0.range, in: text) }
+            .map { text[$0].string }
+        
+        for foundText in foundTexts {
+            guard let metadata = try? decodedMetadata(from: foundText), let eventId = metadata.eventId else { continue }
+            
+            SocketRequest(name: "events", payload: [
+                "event_ids": [.string(eventId)],
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+                "extended_response": true
+            ])
+            .publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                if let post = res.process(contentStyle: .regular).first(where: { $0.post.id == eventId }) {
+                    self?.embeddedElements.append(.post(post))
+                } else if let article = res.getArticles().first(where: { $0.event.id == eventId }) {
+                    self?.embeddedElements.append(.article(article))
+                }
+            }
+            .store(in: &cancellables)
+
+            text = text.replacingOccurrences(of: foundText, with: "")
+            
+//            SocketRequest(name: "nip19_decode", payload: ["ids": [.string(foundText)]])
+//                .publisher()
+//                .sink { res in
+//                    print(res)
+//                }
+//                .store(in: &cancellables)
+        }
+     
+        if text != textView.text {
+            textView.text = text
+        }
+    }
+    
     func rangeOfMention(in textView: UITextView, from position: UITextPosition) -> UITextRange? {
         var startPosition = position
         
@@ -401,6 +446,7 @@ private extension PostingTextViewManager {
     func connectPublishers() {
         didChangeEvent.sink { [weak self] _ in
             self?.processFocusedWordForMention()
+            self?.findAndExtractReferences()
         }
         .store(in: &cancellables)
         

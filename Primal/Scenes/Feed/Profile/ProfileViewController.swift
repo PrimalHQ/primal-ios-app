@@ -277,7 +277,7 @@ private extension ProfileViewController {
         navigationBar.bannerParent.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(bannerPicTapped)))
         
         postButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(NewPostViewController(), animated: true)
+            self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)

@@ -357,7 +357,7 @@ private extension MainTabBarController {
                         case .legends:
                             return (LegendListController(), .home)
                         case .newPost(let text, let files):
-                            let newPost = NewPostViewController()
+                            let newPost = AdvancedEmbedPostViewController()
                             newPost.manager.textView.text = text
                             newPost.manager.addMedia(files)
                             return (newPost, nil)
