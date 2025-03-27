@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class PrimalShared__SkieTypeExportsKt, PrimalShared__SkieSuspendWrappersKt, PrimalSharedZapEventsKt, PrimalSharedUserProfileSearchItem, PrimalSharedUploadStatusUploading, PrimalSharedUploadStatusUploadFailed, PrimalSharedUploadStatusUploadCompleted, PrimalSharedUploadStatus, PrimalSharedUploadResult, PrimalSharedUploadJob, PrimalSharedUShort, PrimalSharedULong, PrimalSharedUInt, PrimalSharedUByte, PrimalSharedTagsKt, PrimalSharedStringUtilsKt_, PrimalSharedStringUtilsKt, PrimalSharedSkie_SuspendResultSuccess, PrimalSharedSkie_SuspendResultError, PrimalSharedSkie_SuspendResultCanceled, PrimalSharedSkie_SuspendResult, PrimalSharedSkie_SuspendHandler, PrimalSharedSkie_CancellationHandler, PrimalSharedSkieKotlinStateFlow<T>, PrimalSharedSkieKotlinSharedFlow<T>, PrimalSharedSkieKotlinOptionalStateFlow<T>, PrimalSharedSkieKotlinOptionalSharedFlow<T>, PrimalSharedSkieKotlinOptionalMutableStateFlow<T>, PrimalSharedSkieKotlinOptionalMutableSharedFlow<T>, PrimalSharedSkieKotlinOptionalFlow<T>, PrimalSharedSkieKotlinMutableStateFlow<T>, PrimalSharedSkieKotlinMutableSharedFlow<T>, PrimalSharedSkieKotlinFlow<T>, PrimalSharedSkieColdFlowIterator<E>, PrimalSharedShort, PrimalSharedRepostEventsKt, PrimalSharedRemote_cachingContentProfilePremiumInfoCompanion, PrimalSharedRemote_cachingContentProfilePremiumInfo, PrimalSharedRemote_cachingContentPrimalPagingCompanion, PrimalSharedRemote_cachingContentPrimalPaging, PrimalSharedRemote_cachingContentPrimalEventUserStatsCompanion, PrimalSharedRemote_cachingContentPrimalEventUserStats, PrimalSharedRemote_cachingContentPrimalEventStatsCompanion, PrimalSharedRemote_cachingContentPrimalEventStats, PrimalSharedReferencedZapCompanion, PrimalSharedReferencedZap, PrimalSharedReferencedUserCompanion, PrimalSharedReferencedUser, PrimalSharedReferencedNoteCompanion, PrimalSharedReferencedNote, PrimalSharedReferencedHighlightCompanion, PrimalSharedReferencedHighlight, PrimalSharedReferencedArticleCompanion, PrimalSharedReferencedArticle, PrimalSharedProfileStats, PrimalSharedProfileData, PrimalSharedPrimalTimeframe, PrimalSharedPrimalServerType, PrimalSharedPrimalScope, PrimalSharedPrimalRelayHintsKt, PrimalSharedPrimalPublishResult, PrimalSharedPrimalProfileStatsAndScoresKt, PrimalSharedPrimalPremiumInfoCompanion, PrimalSharedPrimalPremiumInfo, PrimalSharedPrimalLegendProfileCompanion, PrimalSharedPrimalLegendProfile, PrimalSharedPrimalInitializer, PrimalSharedPrimalEventUserStatsKt, PrimalSharedPrimalEventStatsKt, PrimalSharedPrimalEventCompanion, PrimalSharedPrimalEvent, PrimalSharedPremiumExtKt, PrimalSharedPostDataEventsKt, PrimalSharedPaging_commonPagingDataCompanion, PrimalSharedPaging_commonPagingData<T>, PrimalSharedPaging_commonLoadType, PrimalSharedPaging_commonLoadStates, PrimalSharedPaging_commonLoadStateNotLoading, PrimalSharedPaging_commonLoadStateLoading, PrimalSharedPaging_commonLoadStateError, PrimalSharedPaging_commonLoadState, PrimalSharedNumber, PrimalSharedNprofile, PrimalSharedNostrUnsignedEventCompanion, PrimalSharedNostrUnsignedEvent, PrimalSharedNostrResourcesKt, PrimalSharedNostrEventsKt, PrimalSharedNostrEventUserStats, PrimalSharedNostrEventStats, PrimalSharedNostrEventKindRange, PrimalSharedNostrEventKindCompanion, PrimalSharedNostrEventKind, PrimalSharedNostrEventExtKt, PrimalSharedNostrEventCompanion, PrimalSharedNostrEventAction, PrimalSharedNostrEvent, PrimalSharedNip19TLVType, PrimalSharedNip19TLV, PrimalSharedNevent, PrimalSharedNaddrKt, PrimalSharedNaddr, PrimalSharedMutableSet<ObjectType>, PrimalSharedMutableDictionary<KeyType, ObjectType>, PrimalSharedMetadataEventsKt, PrimalSharedLongFormContentEventsKt, PrimalSharedLong, PrimalSharedLocal_cachingRepostData, PrimalSharedLocal_cachingProfileStats, PrimalSharedLocal_cachingProfileData, PrimalSharedLocal_cachingPostData, PrimalSharedLocal_cachingHighlightData, PrimalSharedLocal_cachingEventZap, PrimalSharedLocal_cachingEventUserStats, PrimalSharedLocal_cachingEventUriNostr, PrimalSharedLocal_cachingEventUri, PrimalSharedLocal_cachingEventStats, PrimalSharedLocal_cachingEventRelayHints, PrimalSharedLocal_cachingDirectMessageData, PrimalSharedLocal_cachingArticleData, PrimalSharedLightningExtKt, PrimalSharedKotlinx_serialization_jsonJsonPrimitiveCompanion, PrimalSharedKotlinx_serialization_jsonJsonPrimitive, PrimalSharedKotlinx_serialization_jsonJsonNull, PrimalSharedKotlinx_serialization_jsonJsonElementCompanion, PrimalSharedKotlinx_serialization_jsonJsonElement, PrimalSharedKotlinx_serialization_coreStructureKindOBJECT, PrimalSharedKotlinx_serialization_coreStructureKindMAP, PrimalSharedKotlinx_serialization_coreStructureKindLIST, PrimalSharedKotlinx_serialization_coreStructureKindCLASS, PrimalSharedKotlinx_serialization_coreStructureKind, PrimalSharedKotlinx_serialization_coreSerializersModule, PrimalSharedKotlinx_serialization_coreSerialKindENUM, PrimalSharedKotlinx_serialization_coreSerialKindCONTEXTUAL, PrimalSharedKotlinx_serialization_coreSerialKind, PrimalSharedKotlinx_serialization_corePrimitiveKindSTRING, PrimalSharedKotlinx_serialization_corePrimitiveKindSHORT, PrimalSharedKotlinx_serialization_corePrimitiveKindLONG, PrimalSharedKotlinx_serialization_corePrimitiveKindINT, PrimalSharedKotlinx_serialization_corePrimitiveKindFLOAT, PrimalSharedKotlinx_serialization_corePrimitiveKindDOUBLE, PrimalSharedKotlinx_serialization_corePrimitiveKindCHAR, PrimalSharedKotlinx_serialization_corePrimitiveKindBYTE, PrimalSharedKotlinx_serialization_corePrimitiveKindBOOLEAN, PrimalSharedKotlinx_serialization_corePrimitiveKind, PrimalSharedKotlinx_serialization_corePolymorphicKindSEALED, PrimalSharedKotlinx_serialization_corePolymorphicKindOPEN, PrimalSharedKotlinx_serialization_corePolymorphicKind, PrimalSharedKotlinx_datetimeInstantCompanion, PrimalSharedKotlinx_datetimeInstant, PrimalSharedKotlinUnit, PrimalSharedKotlinThrowable, PrimalSharedKotlinRuntimeException, PrimalSharedKotlinNothing, PrimalSharedKotlinIntRangeCompanion, PrimalSharedKotlinIntRange, PrimalSharedKotlinIntProgressionCompanion, PrimalSharedKotlinIntProgression, PrimalSharedKotlinIntIterator, PrimalSharedKotlinIllegalStateException, PrimalSharedKotlinIllegalArgumentException, PrimalSharedKotlinException, PrimalSharedKotlinEnumCompanion, PrimalSharedKotlinEnum<E>, PrimalSharedKotlinCancellationException, PrimalSharedKotlinByteIterator, PrimalSharedKotlinByteArray, PrimalSharedKotlinArray<T>, PrimalSharedIosRepositoryFactory, PrimalSharedInt, PrimalSharedHighlightEventsKt, PrimalSharedHashtagUtilsKt, PrimalSharedFloat, PrimalSharedFeedSpecKind, PrimalSharedFeedPostStats, PrimalSharedFeedPostRepostInfo, PrimalSharedFeedPostAuthor, PrimalSharedFeedPost, PrimalSharedFeedKindKt, PrimalSharedFeedExtensionsKt, PrimalSharedEventZapCompanion, PrimalSharedEventZap, PrimalSharedEventUriType, PrimalSharedEventUriParsersKt, PrimalSharedEventUriNostrType, PrimalSharedEventUriNostrReferenceCompanion, PrimalSharedEventUriNostrReference, PrimalSharedEventLinkPreviewData, PrimalSharedEventLinkCompanion, PrimalSharedEventLink, PrimalSharedDvmFeed, PrimalSharedDouble, PrimalSharedConversionUtilsKt, PrimalSharedConversationRelationCompanion, PrimalSharedConversationRelation, PrimalSharedContentZapDefaultKt, PrimalSharedContentZapDefaultCompanion, PrimalSharedContentZapDefault, PrimalSharedContentZapConfigItemKt, PrimalSharedContentZapConfigItemCompanion, PrimalSharedContentZapConfigItem, PrimalSharedContentMetadataCompanion, PrimalSharedContentMetadata, PrimalSharedContentAppSettingsCompanion, PrimalSharedContentAppSettings, PrimalSharedConstantsKt, PrimalSharedCdnResourceVariantCompanion, PrimalSharedCdnResourceVariant, PrimalSharedCdnResource, PrimalSharedCdnImageCompanion, PrimalSharedCdnImage, PrimalSharedByte, PrimalSharedBoolean, PrimalSharedBookmarkType, PrimalSharedBase, PrimalSharedArticleUtilsKt, PrimalSharedAppConfigCompanion, PrimalSharedAppConfig, NSString, NSSet<ObjectType>, NSObject, NSNumber, NSMutableSet<ObjectType>, NSMutableDictionary<KeyType, ObjectType>, NSMutableArray<ObjectType>, NSError, NSDictionary<KeyType, ObjectType>, NSArray<ObjectType>;
+@class PrimalShared__SkieTypeExportsKt, PrimalShared__SkieSuspendWrappersKt, PrimalSharedZapEventsKt, PrimalSharedUserProfileSearchItem, PrimalSharedUploadStatusUploading, PrimalSharedUploadStatusUploadFailed, PrimalSharedUploadStatusUploadCompleted, PrimalSharedUploadStatus, PrimalSharedUploadResult, PrimalSharedUploadJob, PrimalSharedUShort, PrimalSharedULong, PrimalSharedUInt, PrimalSharedUByte, PrimalSharedTagsKt, PrimalSharedTagBookmarkCompanion, PrimalSharedTagBookmark, PrimalSharedStringUtilsKt_, PrimalSharedStringUtilsKt, PrimalSharedSkie_SuspendResultSuccess, PrimalSharedSkie_SuspendResultError, PrimalSharedSkie_SuspendResultCanceled, PrimalSharedSkie_SuspendResult, PrimalSharedSkie_SuspendHandler, PrimalSharedSkie_CancellationHandler, PrimalSharedSkieKotlinStateFlow<T>, PrimalSharedSkieKotlinSharedFlow<T>, PrimalSharedSkieKotlinOptionalStateFlow<T>, PrimalSharedSkieKotlinOptionalSharedFlow<T>, PrimalSharedSkieKotlinOptionalMutableStateFlow<T>, PrimalSharedSkieKotlinOptionalMutableSharedFlow<T>, PrimalSharedSkieKotlinOptionalFlow<T>, PrimalSharedSkieKotlinMutableStateFlow<T>, PrimalSharedSkieKotlinMutableSharedFlow<T>, PrimalSharedSkieKotlinFlow<T>, PrimalSharedSkieColdFlowIterator<E>, PrimalSharedShort, PrimalSharedRepostEventsKt, PrimalSharedRemote_cachingContentProfilePremiumInfoCompanion, PrimalSharedRemote_cachingContentProfilePremiumInfo, PrimalSharedRemote_cachingContentPrimalPagingCompanion, PrimalSharedRemote_cachingContentPrimalPaging, PrimalSharedRemote_cachingContentPrimalEventUserStatsCompanion, PrimalSharedRemote_cachingContentPrimalEventUserStats, PrimalSharedRemote_cachingContentPrimalEventStatsCompanion, PrimalSharedRemote_cachingContentPrimalEventStats, PrimalSharedReferencedZapCompanion, PrimalSharedReferencedZap, PrimalSharedReferencedUserCompanion, PrimalSharedReferencedUser, PrimalSharedReferencedNoteCompanion, PrimalSharedReferencedNote, PrimalSharedReferencedHighlightCompanion, PrimalSharedReferencedHighlight, PrimalSharedReferencedArticleCompanion, PrimalSharedReferencedArticle, PrimalSharedPublicBookmark, PrimalSharedProfileStats, PrimalSharedProfileData, PrimalSharedPrimalTimeframe, PrimalSharedPrimalServerType, PrimalSharedPrimalScope, PrimalSharedPrimalRelayHintsKt, PrimalSharedPrimalPublishResult, PrimalSharedPrimalProfileStatsAndScoresKt, PrimalSharedPrimalPremiumInfoCompanion, PrimalSharedPrimalPremiumInfo, PrimalSharedPrimalLegendProfileCompanion, PrimalSharedPrimalLegendProfile, PrimalSharedPrimalInitializer, PrimalSharedPrimalEventUserStatsKt, PrimalSharedPrimalEventStatsKt, PrimalSharedPrimalEventCompanion, PrimalSharedPrimalEvent, PrimalSharedPremiumExtKt, PrimalSharedPostDataEventsKt, PrimalSharedPaging_commonPagingDataCompanion, PrimalSharedPaging_commonPagingData<T>, PrimalSharedPaging_commonLoadType, PrimalSharedPaging_commonLoadStates, PrimalSharedPaging_commonLoadStateNotLoading, PrimalSharedPaging_commonLoadStateLoading, PrimalSharedPaging_commonLoadStateError, PrimalSharedPaging_commonLoadState, PrimalSharedNumber, PrimalSharedNprofile, PrimalSharedNostrUnsignedEventCompanion, PrimalSharedNostrUnsignedEvent, PrimalSharedNostrResourcesKt, PrimalSharedNostrEventsKt, PrimalSharedNostrEventUserStats, PrimalSharedNostrEventStats, PrimalSharedNostrEventKindRange, PrimalSharedNostrEventKindCompanion, PrimalSharedNostrEventKind, PrimalSharedNostrEventExtKt, PrimalSharedNostrEventCompanion, PrimalSharedNostrEventAction, PrimalSharedNostrEvent, PrimalSharedNip19TLVType, PrimalSharedNip19TLV, PrimalSharedNevent, PrimalSharedNetworkException, PrimalSharedNaddrKt, PrimalSharedNaddr, PrimalSharedMutableSet<ObjectType>, PrimalSharedMutableDictionary<KeyType, ObjectType>, PrimalSharedMetadataEventsKt, PrimalSharedLongFormContentEventsKt, PrimalSharedLong, PrimalSharedLocal_cachingRepostData, PrimalSharedLocal_cachingProfileStats, PrimalSharedLocal_cachingProfileData, PrimalSharedLocal_cachingPostData, PrimalSharedLocal_cachingHighlightData, PrimalSharedLocal_cachingEventZap, PrimalSharedLocal_cachingEventUserStats, PrimalSharedLocal_cachingEventUriNostr, PrimalSharedLocal_cachingEventUri, PrimalSharedLocal_cachingEventStats, PrimalSharedLocal_cachingEventRelayHints, PrimalSharedLocal_cachingDirectMessageData, PrimalSharedLocal_cachingArticleData, PrimalSharedLightningExtKt, PrimalSharedKotlinx_serialization_jsonJsonPrimitiveCompanion, PrimalSharedKotlinx_serialization_jsonJsonPrimitive, PrimalSharedKotlinx_serialization_jsonJsonNull, PrimalSharedKotlinx_serialization_jsonJsonElementCompanion, PrimalSharedKotlinx_serialization_jsonJsonElement, PrimalSharedKotlinx_serialization_coreStructureKindOBJECT, PrimalSharedKotlinx_serialization_coreStructureKindMAP, PrimalSharedKotlinx_serialization_coreStructureKindLIST, PrimalSharedKotlinx_serialization_coreStructureKindCLASS, PrimalSharedKotlinx_serialization_coreStructureKind, PrimalSharedKotlinx_serialization_coreSerializersModule, PrimalSharedKotlinx_serialization_coreSerialKindENUM, PrimalSharedKotlinx_serialization_coreSerialKindCONTEXTUAL, PrimalSharedKotlinx_serialization_coreSerialKind, PrimalSharedKotlinx_serialization_corePrimitiveKindSTRING, PrimalSharedKotlinx_serialization_corePrimitiveKindSHORT, PrimalSharedKotlinx_serialization_corePrimitiveKindLONG, PrimalSharedKotlinx_serialization_corePrimitiveKindINT, PrimalSharedKotlinx_serialization_corePrimitiveKindFLOAT, PrimalSharedKotlinx_serialization_corePrimitiveKindDOUBLE, PrimalSharedKotlinx_serialization_corePrimitiveKindCHAR, PrimalSharedKotlinx_serialization_corePrimitiveKindBYTE, PrimalSharedKotlinx_serialization_corePrimitiveKindBOOLEAN, PrimalSharedKotlinx_serialization_corePrimitiveKind, PrimalSharedKotlinx_serialization_corePolymorphicKindSEALED, PrimalSharedKotlinx_serialization_corePolymorphicKindOPEN, PrimalSharedKotlinx_serialization_corePolymorphicKind, PrimalSharedKotlinx_datetimeInstantCompanion, PrimalSharedKotlinx_datetimeInstant, PrimalSharedKotlinUnit, PrimalSharedKotlinThrowable, PrimalSharedKotlinRuntimeException, PrimalSharedKotlinNothing, PrimalSharedKotlinIntRangeCompanion, PrimalSharedKotlinIntRange, PrimalSharedKotlinIntProgressionCompanion, PrimalSharedKotlinIntProgression, PrimalSharedKotlinIntIterator, PrimalSharedKotlinIllegalStateException, PrimalSharedKotlinIllegalArgumentException, PrimalSharedKotlinException, PrimalSharedKotlinEnumCompanion, PrimalSharedKotlinEnum<E>, PrimalSharedKotlinCancellationException, PrimalSharedKotlinByteIterator, PrimalSharedKotlinByteArray, PrimalSharedKotlinArray<T>, PrimalSharedIosRepositoryFactory, PrimalSharedInt, PrimalSharedHighlightEventsKt, PrimalSharedHighlightData, PrimalSharedHighlight, PrimalSharedHashtagUtilsKt, PrimalSharedFloat, PrimalSharedFeedSpecKind, PrimalSharedFeedPostStats, PrimalSharedFeedPostRepostInfo, PrimalSharedFeedPostAuthor, PrimalSharedFeedPost, PrimalSharedFeedKindKt, PrimalSharedFeedExtensionsKt, PrimalSharedEventZapCompanion, PrimalSharedEventZap, PrimalSharedEventUriType, PrimalSharedEventUriParsersKt, PrimalSharedEventUriNostrType, PrimalSharedEventUriNostrReferenceCompanion, PrimalSharedEventUriNostrReference, PrimalSharedEventLinkPreviewData, PrimalSharedEventLinkCompanion, PrimalSharedEventLink, PrimalSharedDvmFeed, PrimalSharedDouble, PrimalSharedDirectMessage, PrimalSharedDMConversation, PrimalSharedConversionUtilsKt, PrimalSharedConversationRelationCompanion, PrimalSharedConversationRelation, PrimalSharedContentZapDefaultKt, PrimalSharedContentZapDefaultCompanion, PrimalSharedContentZapDefault, PrimalSharedContentZapConfigItemKt, PrimalSharedContentZapConfigItemCompanion, PrimalSharedContentZapConfigItem, PrimalSharedContentMetadataCompanion, PrimalSharedContentMetadata, PrimalSharedContentAppSettingsCompanion, PrimalSharedContentAppSettings, PrimalSharedConstantsKt, PrimalSharedCdnResourceVariantCompanion, PrimalSharedCdnResourceVariant, PrimalSharedCdnResource, PrimalSharedCdnImageCompanion, PrimalSharedCdnImage, PrimalSharedByte, PrimalSharedBoolean, PrimalSharedBookmarkType, PrimalSharedBase, PrimalSharedArticleUtilsKt, PrimalSharedArticle, PrimalSharedAppConfigCompanion, PrimalSharedAppConfig, NSString, NSSet<ObjectType>, NSObject, NSNumber, NSMutableSet<ObjectType>, NSMutableDictionary<KeyType, ObjectType>, NSMutableArray<ObjectType>, NSError, NSDictionary<KeyType, ObjectType>, NSArray<ObjectType>;
 
-@protocol PrimalSharedSkie_DispatcherDelegate, PrimalSharedProfileRepository, PrimalSharedPrimalPublisher, PrimalSharedNostrEventSignatureHandler, PrimalSharedNostrEventPublisher, PrimalSharedNostrEventImporter, PrimalSharedMutedUserRepository, PrimalSharedKotlinx_serialization_coreSerializersModuleCollector, PrimalSharedKotlinx_serialization_coreSerializationStrategy, PrimalSharedKotlinx_serialization_coreSerialDescriptor, PrimalSharedKotlinx_serialization_coreKSerializer, PrimalSharedKotlinx_serialization_coreEncoder, PrimalSharedKotlinx_serialization_coreDeserializationStrategy, PrimalSharedKotlinx_serialization_coreDecoder, PrimalSharedKotlinx_serialization_coreCompositeEncoder, PrimalSharedKotlinx_serialization_coreCompositeDecoder, PrimalSharedKotlinx_datetimeDateTimeFormat, PrimalSharedKotlinx_coroutines_coreStateFlow, PrimalSharedKotlinx_coroutines_coreSharedFlow, PrimalSharedKotlinx_coroutines_coreSelectInstance, PrimalSharedKotlinx_coroutines_coreSelectClause2, PrimalSharedKotlinx_coroutines_coreSelectClause1, PrimalSharedKotlinx_coroutines_coreSelectClause0, PrimalSharedKotlinx_coroutines_coreSelectClause, PrimalSharedKotlinx_coroutines_coreRunnable, PrimalSharedKotlinx_coroutines_coreParentJob, PrimalSharedKotlinx_coroutines_coreMutableStateFlow, PrimalSharedKotlinx_coroutines_coreMutableSharedFlow, PrimalSharedKotlinx_coroutines_coreJob, PrimalSharedKotlinx_coroutines_coreFlowCollector, PrimalSharedKotlinx_coroutines_coreFlow, PrimalSharedKotlinx_coroutines_coreDisposableHandle, PrimalSharedKotlinx_coroutines_coreChildJob, PrimalSharedKotlinx_coroutines_coreChildHandle, PrimalSharedKotlinSequence, PrimalSharedKotlinOpenEndRange, PrimalSharedKotlinKDeclarationContainer, PrimalSharedKotlinKClassifier, PrimalSharedKotlinKClass, PrimalSharedKotlinKAnnotatedElement, PrimalSharedKotlinIterator, PrimalSharedKotlinIterable, PrimalSharedKotlinCoroutineContextKey, PrimalSharedKotlinCoroutineContextElement, PrimalSharedKotlinCoroutineContext, PrimalSharedKotlinComparator, PrimalSharedKotlinComparable, PrimalSharedKotlinClosedRange, PrimalSharedKotlinAppendable, PrimalSharedKotlinAnnotation, PrimalSharedHighlightRepository, PrimalSharedFeedRepository, PrimalSharedEventRepository, PrimalSharedEventInteractionRepository, NSCopying;
+@protocol PrimalSharedSkie_DispatcherDelegate, PrimalSharedPublicBookmarksRepository, PrimalSharedProfileRepository, PrimalSharedPrimalPublisher, PrimalSharedNostrEventSignatureHandler, PrimalSharedNostrEventPublisher, PrimalSharedNostrEventImporter, PrimalSharedMutedUserRepository, PrimalSharedMessagesRepository, PrimalSharedMessageCipher, PrimalSharedKotlinx_serialization_coreSerializersModuleCollector, PrimalSharedKotlinx_serialization_coreSerializationStrategy, PrimalSharedKotlinx_serialization_coreSerialDescriptor, PrimalSharedKotlinx_serialization_coreKSerializer, PrimalSharedKotlinx_serialization_coreEncoder, PrimalSharedKotlinx_serialization_coreDeserializationStrategy, PrimalSharedKotlinx_serialization_coreDecoder, PrimalSharedKotlinx_serialization_coreCompositeEncoder, PrimalSharedKotlinx_serialization_coreCompositeDecoder, PrimalSharedKotlinx_datetimeDateTimeFormat, PrimalSharedKotlinx_coroutines_coreStateFlow, PrimalSharedKotlinx_coroutines_coreSharedFlow, PrimalSharedKotlinx_coroutines_coreSelectInstance, PrimalSharedKotlinx_coroutines_coreSelectClause2, PrimalSharedKotlinx_coroutines_coreSelectClause1, PrimalSharedKotlinx_coroutines_coreSelectClause0, PrimalSharedKotlinx_coroutines_coreSelectClause, PrimalSharedKotlinx_coroutines_coreRunnable, PrimalSharedKotlinx_coroutines_coreParentJob, PrimalSharedKotlinx_coroutines_coreMutableStateFlow, PrimalSharedKotlinx_coroutines_coreMutableSharedFlow, PrimalSharedKotlinx_coroutines_coreJob, PrimalSharedKotlinx_coroutines_coreFlowCollector, PrimalSharedKotlinx_coroutines_coreFlow, PrimalSharedKotlinx_coroutines_coreDisposableHandle, PrimalSharedKotlinx_coroutines_coreChildJob, PrimalSharedKotlinx_coroutines_coreChildHandle, PrimalSharedKotlinSequence, PrimalSharedKotlinOpenEndRange, PrimalSharedKotlinKDeclarationContainer, PrimalSharedKotlinKClassifier, PrimalSharedKotlinKClass, PrimalSharedKotlinKAnnotatedElement, PrimalSharedKotlinIterator, PrimalSharedKotlinIterable, PrimalSharedKotlinCoroutineContextKey, PrimalSharedKotlinCoroutineContextElement, PrimalSharedKotlinCoroutineContext, PrimalSharedKotlinComparator, PrimalSharedKotlinComparable, PrimalSharedKotlinClosedRange, PrimalSharedKotlinAppendable, PrimalSharedKotlinAnnotation, PrimalSharedHighlightRepository, PrimalSharedFeedRepository, PrimalSharedEventUriRepository, PrimalSharedEventRepository, PrimalSharedEventInteractionRepository, PrimalSharedArticleRepository, NSCopying;
 
 // Due to an Obj-C/Swift interop limitation, SKIE cannot generate Swift types with a lambda type argument.
 // Example of such type is: A<() -> Unit> where A<T> is a generic class.
@@ -1284,6 +1284,34 @@ __attribute__((swift_name("ReferencedZap.Companion")))
 - (id<PrimalSharedKotlinx_serialization_coreKSerializer>)serializer __attribute__((swift_name("serializer()")));
 @end
 
+
+/**
+ * @note annotations
+ *   kotlinx.serialization.Serializable
+*/
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("TagBookmark")))
+@interface PrimalSharedTagBookmark : PrimalSharedBase
+@property (class, readonly, getter=companion) PrimalSharedTagBookmarkCompanion *companion __attribute__((swift_name("companion")));
+@property (readonly) NSString *type __attribute__((swift_name("type")));
+@property (readonly) NSString *value __attribute__((swift_name("value")));
+- (instancetype)initWithType:(NSString *)type value:(NSString *)value __attribute__((swift_name("init(type:value:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedTagBookmark *)doCopyType:(NSString *)type value:(NSString *)value __attribute__((swift_name("doCopy(type:value:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("TagBookmark.Companion")))
+@interface PrimalSharedTagBookmarkCompanion : PrimalSharedBase
+@property (class, readonly, getter=shared) PrimalSharedTagBookmarkCompanion *shared __attribute__((swift_name("shared")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (id<PrimalSharedKotlinx_serialization_coreKSerializer>)serializer __attribute__((swift_name("serializer()")));
+@end
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("UserProfileSearchItem")))
 @interface PrimalSharedUserProfileSearchItem : PrimalSharedBase
@@ -1292,6 +1320,120 @@ __attribute__((swift_name("UserProfileSearchItem")))
 @property (readonly) PrimalSharedFloat * _Nullable score __attribute__((swift_name("score")));
 - (instancetype)initWithMetadata:(PrimalSharedProfileData *)metadata score:(PrimalSharedFloat * _Nullable)score followersCount:(PrimalSharedInt * _Nullable)followersCount __attribute__((swift_name("init(metadata:score:followersCount:)"))) __attribute__((objc_designated_initializer));
 - (PrimalSharedUserProfileSearchItem *)doCopyMetadata:(PrimalSharedProfileData *)metadata score:(PrimalSharedFloat * _Nullable)score followersCount:(PrimalSharedInt * _Nullable)followersCount __attribute__((swift_name("doCopy(metadata:score:followersCount:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((swift_name("KotlinThrowable")))
+@interface PrimalSharedKotlinThrowable : PrimalSharedBase
+@property (readonly) PrimalSharedKotlinThrowable * _Nullable cause __attribute__((swift_name("cause")));
+@property (readonly) NSString * _Nullable message __attribute__((swift_name("message")));
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+
+/**
+ * @note annotations
+ *   kotlin.experimental.ExperimentalNativeApi
+*/
+- (PrimalSharedKotlinArray<NSString *> *)getStackTrace __attribute__((swift_name("getStackTrace()")));
+- (void)printStackTrace __attribute__((swift_name("printStackTrace()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+- (NSError *)asError __attribute__((swift_name("asError()")));
+@end
+
+__attribute__((swift_name("KotlinException")))
+@interface PrimalSharedKotlinException : PrimalSharedKotlinThrowable
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+@end
+
+__attribute__((swift_name("KotlinRuntimeException")))
+@interface PrimalSharedKotlinRuntimeException : PrimalSharedKotlinException
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("NetworkException")))
+@interface PrimalSharedNetworkException : PrimalSharedKotlinRuntimeException
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
++ (instancetype)new __attribute__((unavailable));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Article")))
+@interface PrimalSharedArticle : PrimalSharedBase
+@property (readonly) NSString *aTag __attribute__((swift_name("aTag")));
+@property (readonly) NSString *articleId __attribute__((swift_name("articleId")));
+@property (readonly) NSString *articleRawJson __attribute__((swift_name("articleRawJson")));
+@property (readonly) PrimalSharedProfileData * _Nullable author __attribute__((swift_name("author")));
+@property (readonly) NSString *authorId __attribute__((swift_name("authorId")));
+@property (readonly) NSString * _Nullable authorMetadataId __attribute__((swift_name("authorMetadataId")));
+@property (readonly) PrimalSharedPublicBookmark * _Nullable bookmark __attribute__((swift_name("bookmark")));
+@property (readonly) NSString *content __attribute__((swift_name("content")));
+@property (readonly) int64_t createdAt __attribute__((swift_name("createdAt")));
+@property (readonly) NSString *eventId __attribute__((swift_name("eventId")));
+@property (readonly) PrimalSharedNostrEventStats * _Nullable eventStats __attribute__((swift_name("eventStats")));
+@property (readonly) NSArray<PrimalSharedEventZap *> *eventZaps __attribute__((swift_name("eventZaps")));
+@property (readonly) NSArray<NSString *> *hashtags __attribute__((swift_name("hashtags")));
+@property (readonly) NSArray<PrimalSharedHighlight *> *highlights __attribute__((swift_name("highlights")));
+@property (readonly) PrimalSharedCdnImage * _Nullable imageCdnImage __attribute__((swift_name("imageCdnImage")));
+@property (readonly) int64_t publishedAt __attribute__((swift_name("publishedAt")));
+@property (readonly) NSString * _Nullable summary __attribute__((swift_name("summary")));
+@property (readonly) NSString *title __attribute__((swift_name("title")));
+@property (readonly) NSArray<NSString *> *uris __attribute__((swift_name("uris")));
+@property (readonly) PrimalSharedNostrEventStats * _Nullable userEventStats __attribute__((swift_name("userEventStats")));
+@property (readonly) PrimalSharedInt * _Nullable wordsCount __attribute__((swift_name("wordsCount")));
+- (instancetype)initWithATag:(NSString *)aTag eventId:(NSString *)eventId articleId:(NSString *)articleId authorId:(NSString *)authorId createdAt:(int64_t)createdAt content:(NSString *)content title:(NSString *)title publishedAt:(int64_t)publishedAt articleRawJson:(NSString *)articleRawJson imageCdnImage:(PrimalSharedCdnImage * _Nullable)imageCdnImage summary:(NSString * _Nullable)summary authorMetadataId:(NSString * _Nullable)authorMetadataId wordsCount:(PrimalSharedInt * _Nullable)wordsCount uris:(NSArray<NSString *> *)uris hashtags:(NSArray<NSString *> *)hashtags author:(PrimalSharedProfileData * _Nullable)author eventStats:(PrimalSharedNostrEventStats * _Nullable)eventStats userEventStats:(PrimalSharedNostrEventStats * _Nullable)userEventStats eventZaps:(NSArray<PrimalSharedEventZap *> *)eventZaps bookmark:(PrimalSharedPublicBookmark * _Nullable)bookmark highlights:(NSArray<PrimalSharedHighlight *> *)highlights __attribute__((swift_name("init(aTag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedArticle *)doCopyATag:(NSString *)aTag eventId:(NSString *)eventId articleId:(NSString *)articleId authorId:(NSString *)authorId createdAt:(int64_t)createdAt content:(NSString *)content title:(NSString *)title publishedAt:(int64_t)publishedAt articleRawJson:(NSString *)articleRawJson imageCdnImage:(PrimalSharedCdnImage * _Nullable)imageCdnImage summary:(NSString * _Nullable)summary authorMetadataId:(NSString * _Nullable)authorMetadataId wordsCount:(PrimalSharedInt * _Nullable)wordsCount uris:(NSArray<NSString *> *)uris hashtags:(NSArray<NSString *> *)hashtags author:(PrimalSharedProfileData * _Nullable)author eventStats:(PrimalSharedNostrEventStats * _Nullable)eventStats userEventStats:(PrimalSharedNostrEventStats * _Nullable)userEventStats eventZaps:(NSArray<PrimalSharedEventZap *> *)eventZaps bookmark:(PrimalSharedPublicBookmark * _Nullable)bookmark highlights:(NSArray<PrimalSharedHighlight *> *)highlights __attribute__((swift_name("doCopy(aTag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("DMConversation")))
+@interface PrimalSharedDMConversation : PrimalSharedBase
+@property (readonly) PrimalSharedDirectMessage * _Nullable lastMessage __attribute__((swift_name("lastMessage")));
+@property (readonly) NSString *ownerId __attribute__((swift_name("ownerId")));
+@property (readonly) PrimalSharedProfileData * _Nullable participant __attribute__((swift_name("participant")));
+@property (readonly) PrimalSharedConversationRelation *relation __attribute__((swift_name("relation")));
+@property (readonly) int32_t unreadMessagesCount __attribute__((swift_name("unreadMessagesCount")));
+- (instancetype)initWithOwnerId:(NSString *)ownerId participant:(PrimalSharedProfileData * _Nullable)participant lastMessage:(PrimalSharedDirectMessage * _Nullable)lastMessage unreadMessagesCount:(int32_t)unreadMessagesCount relation:(PrimalSharedConversationRelation *)relation __attribute__((swift_name("init(ownerId:participant:lastMessage:unreadMessagesCount:relation:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedDMConversation *)doCopyOwnerId:(NSString *)ownerId participant:(PrimalSharedProfileData * _Nullable)participant lastMessage:(PrimalSharedDirectMessage * _Nullable)lastMessage unreadMessagesCount:(int32_t)unreadMessagesCount relation:(PrimalSharedConversationRelation *)relation __attribute__((swift_name("doCopy(ownerId:participant:lastMessage:unreadMessagesCount:relation:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("DirectMessage")))
+@interface PrimalSharedDirectMessage : PrimalSharedBase
+@property (readonly) NSString *content __attribute__((swift_name("content")));
+@property (readonly) int64_t createdAt __attribute__((swift_name("createdAt")));
+@property (readonly) NSArray<NSString *> *hashtags __attribute__((swift_name("hashtags")));
+@property (readonly) NSArray<PrimalSharedEventLink *> *links __attribute__((swift_name("links")));
+@property (readonly) NSString *messageId __attribute__((swift_name("messageId")));
+@property (readonly) NSArray<PrimalSharedEventUriNostrReference *> *nostrUris __attribute__((swift_name("nostrUris")));
+@property (readonly) NSString *ownerId __attribute__((swift_name("ownerId")));
+@property (readonly) NSString *participantId __attribute__((swift_name("participantId")));
+@property (readonly) NSString *receiverId __attribute__((swift_name("receiverId")));
+@property (readonly) NSString *senderId __attribute__((swift_name("senderId")));
+- (instancetype)initWithMessageId:(NSString *)messageId ownerId:(NSString *)ownerId senderId:(NSString *)senderId receiverId:(NSString *)receiverId participantId:(NSString *)participantId createdAt:(int64_t)createdAt content:(NSString *)content hashtags:(NSArray<NSString *> *)hashtags links:(NSArray<PrimalSharedEventLink *> *)links nostrUris:(NSArray<PrimalSharedEventUriNostrReference *> *)nostrUris __attribute__((swift_name("init(messageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedDirectMessage *)doCopyMessageId:(NSString *)messageId ownerId:(NSString *)ownerId senderId:(NSString *)senderId receiverId:(NSString *)receiverId participantId:(NSString *)participantId createdAt:(int64_t)createdAt content:(NSString *)content hashtags:(NSArray<NSString *> *)hashtags links:(NSArray<PrimalSharedEventLink *> *)links nostrUris:(NSArray<PrimalSharedEventUriNostrReference *> *)nostrUris __attribute__((swift_name("doCopy(messageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -1365,6 +1507,37 @@ __attribute__((swift_name("FeedPostStats")))
 @property (readonly) int64_t zapsCount __attribute__((swift_name("zapsCount")));
 - (instancetype)initWithRepliesCount:(int64_t)repliesCount userReplied:(BOOL)userReplied zapsCount:(int64_t)zapsCount satsZapped:(int64_t)satsZapped userZapped:(BOOL)userZapped likesCount:(int64_t)likesCount userLiked:(BOOL)userLiked repostsCount:(int64_t)repostsCount userReposted:(BOOL)userReposted userBookmarked:(BOOL)userBookmarked __attribute__((swift_name("init(repliesCount:userReplied:zapsCount:satsZapped:userZapped:likesCount:userLiked:repostsCount:userReposted:userBookmarked:)"))) __attribute__((objc_designated_initializer));
 - (PrimalSharedFeedPostStats *)doCopyRepliesCount:(int64_t)repliesCount userReplied:(BOOL)userReplied zapsCount:(int64_t)zapsCount satsZapped:(int64_t)satsZapped userZapped:(BOOL)userZapped likesCount:(int64_t)likesCount userLiked:(BOOL)userLiked repostsCount:(int64_t)repostsCount userReposted:(BOOL)userReposted userBookmarked:(BOOL)userBookmarked __attribute__((swift_name("doCopy(repliesCount:userReplied:zapsCount:satsZapped:userZapped:likesCount:userLiked:repostsCount:userReposted:userBookmarked:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Highlight")))
+@interface PrimalSharedHighlight : PrimalSharedBase
+@property (readonly) PrimalSharedProfileData * _Nullable author __attribute__((swift_name("author")));
+@property (readonly) NSArray<PrimalSharedFeedPost *> *comments __attribute__((swift_name("comments")));
+@property (readonly) PrimalSharedHighlightData *data __attribute__((swift_name("data")));
+- (instancetype)initWithData:(PrimalSharedHighlightData *)data author:(PrimalSharedProfileData * _Nullable)author comments:(NSArray<PrimalSharedFeedPost *> *)comments __attribute__((swift_name("init(data:author:comments:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedHighlight *)doCopyData:(PrimalSharedHighlightData *)data author:(PrimalSharedProfileData * _Nullable)author comments:(NSArray<PrimalSharedFeedPost *> *)comments __attribute__((swift_name("doCopy(data:author:comments:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("HighlightData")))
+@interface PrimalSharedHighlightData : PrimalSharedBase
+@property (readonly) NSString * _Nullable alt __attribute__((swift_name("alt")));
+@property (readonly) NSString *authorId __attribute__((swift_name("authorId")));
+@property (readonly) NSString *content __attribute__((swift_name("content")));
+@property (readonly) NSString * _Nullable context __attribute__((swift_name("context")));
+@property (readonly) int64_t createdAt __attribute__((swift_name("createdAt")));
+@property (readonly) NSString *highlightId __attribute__((swift_name("highlightId")));
+@property (readonly) NSString * _Nullable referencedEventATag __attribute__((swift_name("referencedEventATag")));
+@property (readonly) NSString * _Nullable referencedEventAuthorId __attribute__((swift_name("referencedEventAuthorId")));
+- (instancetype)initWithHighlightId:(NSString *)highlightId authorId:(NSString *)authorId content:(NSString *)content context:(NSString * _Nullable)context alt:(NSString * _Nullable)alt referencedEventATag:(NSString * _Nullable)referencedEventATag referencedEventAuthorId:(NSString * _Nullable)referencedEventAuthorId createdAt:(int64_t)createdAt __attribute__((swift_name("init(highlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedHighlightData *)doCopyHighlightId:(NSString *)highlightId authorId:(NSString *)authorId content:(NSString *)content context:(NSString * _Nullable)context alt:(NSString * _Nullable)alt referencedEventATag:(NSString * _Nullable)referencedEventATag referencedEventAuthorId:(NSString * _Nullable)referencedEventAuthorId createdAt:(int64_t)createdAt __attribute__((swift_name("doCopy(highlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -1469,6 +1642,20 @@ __attribute__((swift_name("ProfileStats")))
 - (NSString *)description __attribute__((swift_name("description()")));
 @end
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PublicBookmark")))
+@interface PrimalSharedPublicBookmark : PrimalSharedBase
+@property (readonly) PrimalSharedBookmarkType *bookmarkType __attribute__((swift_name("bookmarkType")));
+@property (readonly) NSString *ownerId __attribute__((swift_name("ownerId")));
+@property (readonly) NSString *tagType __attribute__((swift_name("tagType")));
+@property (readonly) NSString *tagValue __attribute__((swift_name("tagValue")));
+- (instancetype)initWithTagValue:(NSString *)tagValue tagType:(NSString *)tagType bookmarkType:(PrimalSharedBookmarkType *)bookmarkType ownerId:(NSString *)ownerId __attribute__((swift_name("init(tagValue:tagType:bookmarkType:ownerId:)"))) __attribute__((objc_designated_initializer));
+- (PrimalSharedPublicBookmark *)doCopyTagValue:(NSString *)tagValue tagType:(NSString *)tagType bookmarkType:(PrimalSharedBookmarkType *)bookmarkType ownerId:(NSString *)ownerId __attribute__((swift_name("doCopy(tagValue:tagType:bookmarkType:ownerId:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
 
 /**
  * @note annotations
@@ -1544,6 +1731,7 @@ __attribute__((swift_name("Nip19TLV")))
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 + (instancetype)nip19TLV __attribute__((swift_name("init()")));
+- (PrimalSharedKotlinByteArray *)hexToBytes:(NSString *)receiver __attribute__((swift_name("hexToBytes(_:)")));
 - (NSDictionary<PrimalSharedByte *, NSArray<PrimalSharedKotlinByteArray *> *> *)parseData:(PrimalSharedKotlinByteArray *)data __attribute__((swift_name("parse(data:)")));
 
 /**
@@ -1551,6 +1739,14 @@ __attribute__((swift_name("Nip19TLV")))
  * Other uncaught Kotlin exceptions are fatal.
 */
 - (NSDictionary<PrimalSharedByte *, NSArray<PrimalSharedKotlinByteArray *> *> * _Nullable)parseData:(NSString *)data error:(NSError * _Nullable * _Nullable)error __attribute__((swift_name("parse(data_:)")));
+- (PrimalSharedNaddr * _Nullable)parseUriAsNaddrOrNullNaddrUri:(NSString *)naddrUri __attribute__((swift_name("parseUriAsNaddrOrNull(naddrUri:)")));
+- (PrimalSharedNevent * _Nullable)parseUriAsNeventOrNullNeventUri:(NSString *)neventUri __attribute__((swift_name("parseUriAsNeventOrNull(neventUri:)")));
+- (PrimalSharedNprofile * _Nullable)parseUriAsNprofileOrNullNprofileUri:(NSString *)nprofileUri __attribute__((swift_name("parseUriAsNprofileOrNull(nprofileUri:)")));
+- (NSString *)readAsString:(PrimalSharedKotlinByteArray *)receiver __attribute__((swift_name("readAsString(_:)")));
+- (int32_t)toInt32Bytes:(PrimalSharedKotlinByteArray *)bytes __attribute__((swift_name("toInt32(bytes:)")));
+- (NSString *)toNaddrString:(PrimalSharedNaddr *)receiver __attribute__((swift_name("toNaddrString(_:)")));
+- (NSString *)toNeventString:(PrimalSharedNevent *)receiver __attribute__((swift_name("toNeventString(_:)")));
+- (NSString *)toNprofileString:(PrimalSharedNprofile *)receiver __attribute__((swift_name("toNprofileString(_:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -1816,6 +2012,13 @@ __attribute__((swift_name("Nprofile")))
 - (NSString *)description __attribute__((swift_name("description()")));
 @end
 
+__attribute__((swift_name("MessageCipher")))
+@protocol PrimalSharedMessageCipher
+@required
+- (NSString *)decryptMessageUserId:(NSString *)userId participantId:(NSString *)participantId content:(NSString *)content __attribute__((swift_name("decryptMessage(userId:participantId:content:)")));
+- (NSString *)encryptMessageUserId:(NSString *)userId participantId:(NSString *)participantId content:(NSString *)content __attribute__((swift_name("encryptMessage(userId:participantId:content:)")));
+@end
+
 __attribute__((swift_name("NostrEventSignatureHandler")))
 @protocol PrimalSharedNostrEventSignatureHandler
 @required
@@ -1863,6 +2066,48 @@ __attribute__((swift_name("PrimalPublisher")))
 - (void)signPublishImportNostrEventUnsignedNostrEvent:(PrimalSharedNostrUnsignedEvent *)unsignedNostrEvent outboxRelays:(NSArray<NSString *> *)outboxRelays completionHandler:(void (^)(PrimalSharedPrimalPublishResult * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("signPublishImportNostrEvent(unsignedNostrEvent:outboxRelays:completionHandler:)")));
 @end
 
+__attribute__((swift_name("ArticleRepository")))
+@protocol PrimalSharedArticleRepository
+@required
+- (id<PrimalSharedKotlinx_coroutines_coreFlow>)feedBySpecUserId:(NSString *)userId feedSpec:(NSString *)feedSpec __attribute__((swift_name("feedBySpec(userId:feedSpec:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchArticleAndCommentsUserId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchArticleAndComments(userId:articleId:articleAuthorId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchArticleHighlightsUserId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchArticleHighlights(userId:articleId:articleAuthorId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)observeArticleArticleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId completionHandler:(void (^)(id<PrimalSharedKotlinx_coroutines_coreFlow> _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("observeArticle(articleId:articleAuthorId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)observeArticleByCommentIdCommentNoteId:(NSString *)commentNoteId completionHandler:(void (^)(id<PrimalSharedKotlinx_coroutines_coreFlow> _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("observeArticleByCommentId(commentNoteId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)observeArticleByEventIdEventId:(NSString *)eventId articleAuthorId:(NSString *)articleAuthorId completionHandler:(void (^)(id<PrimalSharedKotlinx_coroutines_coreFlow> _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("observeArticleByEventId(eventId:articleAuthorId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)observeArticleCommentsUserId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId completionHandler:(void (^)(id<PrimalSharedKotlinx_coroutines_coreFlow> _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("observeArticleComments(userId:articleId:articleAuthorId:completionHandler:)")));
+@end
+
 __attribute__((swift_name("EventInteractionRepository")))
 @protocol PrimalSharedEventInteractionRepository
 @required
@@ -1900,13 +2145,24 @@ __attribute__((swift_name("EventRepository")))
 - (id<PrimalSharedKotlinx_coroutines_coreFlow>)pagedEventZapsUserId:(NSString *)userId eventId:(NSString *)eventId __attribute__((swift_name("pagedEventZaps(userId:eventId:)")));
 @end
 
+__attribute__((swift_name("EventUriRepository")))
+@protocol PrimalSharedEventUriRepository
+@required
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)loadEventLinksNoteId:(NSString *)noteId types:(NSArray<PrimalSharedEventUriType *> *)types completionHandler:(void (^)(NSArray<PrimalSharedEventLink *> * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("loadEventLinks(noteId:types:completionHandler:)")));
+@end
+
 __attribute__((swift_name("FeedRepository")))
 @protocol PrimalSharedFeedRepository
 @required
 - (id<PrimalSharedKotlinx_coroutines_coreFlow>)feedBySpecUserId:(NSString *)userId feedSpec:(NSString *)feedSpec __attribute__((swift_name("feedBySpec(userId:feedSpec:)")));
 
 /**
- * @note This method converts instances of CancellationException to errors.
+ * @note This method converts instances of NetworkException, CancellationException to errors.
  * Other uncaught Kotlin exceptions are fatal.
 */
 - (void)fetchConversationUserId:(NSString *)userId noteId:(NSString *)noteId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchConversation(userId:noteId:completionHandler:)")));
@@ -1928,6 +2184,7 @@ __attribute__((swift_name("FeedRepository")))
 __attribute__((swift_name("HighlightRepository")))
 @protocol PrimalSharedHighlightRepository
 @required
+- (id<PrimalSharedKotlinx_coroutines_coreFlow>)observeHighlightByIdHighlightId:(NSString *)highlightId __attribute__((swift_name("observeHighlightById(highlightId:)")));
 
 /**
  * @note This method converts instances of CancellationException to errors.
@@ -1940,6 +2197,49 @@ __attribute__((swift_name("HighlightRepository")))
  * Other uncaught Kotlin exceptions are fatal.
 */
 - (void)publishDeleteHighlightUserId:(NSString *)userId highlightId:(NSString *)highlightId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("publishDeleteHighlight(userId:highlightId:completionHandler:)")));
+@end
+
+__attribute__((swift_name("MessagesRepository")))
+@protocol PrimalSharedMessagesRepository
+@required
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchFollowConversationsUserId:(NSString *)userId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchFollowConversations(userId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchNewConversationMessagesUserId:(NSString *)userId conversationUserId:(NSString *)conversationUserId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchNewConversationMessages(userId:conversationUserId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchNonFollowsConversationsUserId:(NSString *)userId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchNonFollowsConversations(userId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)markAllMessagesAsReadAuthorization:(PrimalSharedNostrEvent *)authorization completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("markAllMessagesAsRead(authorization:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)markConversationAsReadAuthorization:(PrimalSharedNostrEvent *)authorization conversationUserId:(NSString *)conversationUserId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("markConversationAsRead(authorization:conversationUserId:completionHandler:)")));
+- (id<PrimalSharedKotlinx_coroutines_coreFlow>)newestConversationsUserId:(NSString *)userId relation:(PrimalSharedConversationRelation *)relation __attribute__((swift_name("newestConversations(userId:relation:)")));
+- (id<PrimalSharedKotlinx_coroutines_coreFlow>)newestMessagesUserId:(NSString *)userId participantId:(NSString *)participantId __attribute__((swift_name("newestMessages(userId:participantId:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)sendMessageUserId:(NSString *)userId receiverId:(NSString *)receiverId text:(NSString *)text completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("sendMessage(userId:receiverId:text:completionHandler:)")));
 @end
 
 __attribute__((swift_name("MutedUserRepository")))
@@ -2021,6 +2321,35 @@ __attribute__((swift_name("ProfileRepository")))
 - (id<PrimalSharedKotlinx_coroutines_coreFlow>)observeProfileDataProfileId:(NSString *)profileId __attribute__((swift_name("observeProfileData(profileId:)")));
 - (id<PrimalSharedKotlinx_coroutines_coreFlow>)observeProfileDataProfileIds:(NSArray<NSString *> *)profileIds __attribute__((swift_name("observeProfileData(profileIds:)")));
 - (id<PrimalSharedKotlinx_coroutines_coreFlow>)observeProfileStatsProfileId:(NSString *)profileId __attribute__((swift_name("observeProfileStats(profileId:)")));
+@end
+
+__attribute__((swift_name("PublicBookmarksRepository")))
+@protocol PrimalSharedPublicBookmarksRepository
+@required
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)addToBookmarksUserId:(NSString *)userId bookmarkType:(PrimalSharedBookmarkType *)bookmarkType tagValue:(NSString *)tagValue forceUpdate:(BOOL)forceUpdate completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("addToBookmarks(userId:bookmarkType:tagValue:forceUpdate:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)fetchAndPersistBookmarksUserId:(NSString *)userId completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("fetchAndPersistBookmarks(userId:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)isBookmarkedTagValue:(NSString *)tagValue completionHandler:(void (^)(PrimalSharedBoolean * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("isBookmarked(tagValue:completionHandler:)")));
+
+/**
+ * @note This method converts instances of CancellationException to errors.
+ * Other uncaught Kotlin exceptions are fatal.
+*/
+- (void)removeFromBookmarksUserId:(NSString *)userId bookmarkType:(PrimalSharedBookmarkType *)bookmarkType tagValue:(NSString *)tagValue forceUpdate:(BOOL)forceUpdate completionHandler:(void (^)(NSError * _Nullable))completionHandler __attribute__((swift_name("removeFromBookmarks(userId:bookmarkType:tagValue:forceUpdate:completionHandler:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -2635,31 +2964,48 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("__SkieSuspendWrappersKt")))
 @interface PrimalShared__SkieSuspendWrappersKt : PrimalSharedBase
 + (void)Skie_Suspend__0__fetchConversationDispatchReceiver:(id<PrimalSharedFeedRepository>)dispatchReceiver userId:(NSString *)userId noteId:(NSString *)noteId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__0__fetchConversation(dispatchReceiver:userId:noteId:suspendHandler:)")));
-+ (void)Skie_Suspend__10__fetchEventZapsDispatchReceiver:(id<PrimalSharedEventRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId limit:(int32_t)limit suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__10__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)")));
-+ (void)Skie_Suspend__11__publishAndSaveHighlightDispatchReceiver:(id<PrimalSharedHighlightRepository>)dispatchReceiver userId:(NSString *)userId content:(NSString *)content referencedEventATag:(NSString * _Nullable)referencedEventATag referencedEventAuthorTag:(NSString * _Nullable)referencedEventAuthorTag context:(NSString * _Nullable)context alt:(NSString *)alt createdAt:(int64_t)createdAt suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__11__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)")));
-+ (void)Skie_Suspend__12__publishDeleteHighlightDispatchReceiver:(id<PrimalSharedHighlightRepository>)dispatchReceiver userId:(NSString *)userId highlightId:(NSString *)highlightId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__12__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)")));
-+ (void)Skie_Suspend__13__fetchAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__13__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)")));
-+ (void)Skie_Suspend__14__muteUserAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId mutedUserId:(NSString *)mutedUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__14__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)")));
-+ (void)Skie_Suspend__15__unmuteUserAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId unmutedUserId:(NSString *)unmutedUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__15__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)")));
-+ (void)Skie_Suspend__16__fetchFollowersDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__16__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)")));
-+ (void)Skie_Suspend__17__fetchFollowingDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__17__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)")));
-+ (void)Skie_Suspend__18__fetchProfileDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__18__fetchProfile(dispatchReceiver:profileId:suspendHandler:)")));
-+ (void)Skie_Suspend__19__fetchProfileIdDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver primalName:(NSString *)primalName suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__19__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)")));
++ (void)Skie_Suspend__10__observeArticleByCommentIdDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver commentNoteId:(NSString *)commentNoteId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__10__observeArticleByCommentId(dispatchReceiver:commentNoteId:suspendHandler:)")));
++ (void)Skie_Suspend__11__observeArticleByEventIdDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver eventId:(NSString *)eventId articleAuthorId:(NSString *)articleAuthorId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__11__observeArticleByEventId(dispatchReceiver:eventId:articleAuthorId:suspendHandler:)")));
++ (void)Skie_Suspend__12__observeArticleCommentsDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver userId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__12__observeArticleComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)")));
++ (void)Skie_Suspend__13__likeEventDispatchReceiver:(id<PrimalSharedEventInteractionRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId eventAuthorId:(NSString *)eventAuthorId optionalTags:(NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> *)optionalTags suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__13__likeEvent(dispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:)")));
++ (void)Skie_Suspend__14__repostEventDispatchReceiver:(id<PrimalSharedEventInteractionRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId eventKind:(int32_t)eventKind eventAuthorId:(NSString *)eventAuthorId eventRawNostrEvent:(NSString *)eventRawNostrEvent optionalTags:(NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> *)optionalTags suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__14__repostEvent(dispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:)")));
++ (void)Skie_Suspend__15__fetchEventActionsDispatchReceiver:(id<PrimalSharedEventRepository>)dispatchReceiver eventId:(NSString *)eventId kind:(int32_t)kind suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__15__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)")));
++ (void)Skie_Suspend__16__fetchEventZapsDispatchReceiver:(id<PrimalSharedEventRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId limit:(int32_t)limit suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__16__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)")));
++ (void)Skie_Suspend__17__loadEventLinksDispatchReceiver:(id<PrimalSharedEventUriRepository>)dispatchReceiver noteId:(NSString *)noteId types:(NSArray<PrimalSharedEventUriType *> *)types suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__17__loadEventLinks(dispatchReceiver:noteId:types:suspendHandler:)")));
++ (void)Skie_Suspend__18__publishAndSaveHighlightDispatchReceiver:(id<PrimalSharedHighlightRepository>)dispatchReceiver userId:(NSString *)userId content:(NSString *)content referencedEventATag:(NSString * _Nullable)referencedEventATag referencedEventAuthorTag:(NSString * _Nullable)referencedEventAuthorTag context:(NSString * _Nullable)context alt:(NSString *)alt createdAt:(int64_t)createdAt suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__18__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)")));
++ (void)Skie_Suspend__19__publishDeleteHighlightDispatchReceiver:(id<PrimalSharedHighlightRepository>)dispatchReceiver userId:(NSString *)userId highlightId:(NSString *)highlightId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__19__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)")));
 + (void)Skie_Suspend__1__findAllPostsByIdsDispatchReceiver:(id<PrimalSharedFeedRepository>)dispatchReceiver postIds:(NSArray<NSString *> *)postIds suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__1__findAllPostsByIds(dispatchReceiver:postIds:suspendHandler:)")));
-+ (void)Skie_Suspend__20__fetchUserProfileFollowedByDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId userId:(NSString *)userId limit:(int32_t)limit suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__20__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)")));
-+ (void)Skie_Suspend__21__findProfileDataDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileIds:(NSArray<NSString *> *)profileIds suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__21__findProfileData(dispatchReceiver:profileIds:suspendHandler:)")));
-+ (void)Skie_Suspend__22__findProfileDataOrNullDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__22__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)")));
-+ (void)Skie_Suspend__23__isUserFollowingDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver userId:(NSString *)userId targetUserId:(NSString *)targetUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__23__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)")));
-+ (void)Skie_Suspend__24__joinDispatchReceiver:(id<PrimalSharedKotlinx_coroutines_coreJob>)dispatchReceiver suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__24__join(dispatchReceiver:suspendHandler:)")));
-+ (void)Skie_Suspend__25__hasNextDispatchReceiver:(PrimalSharedSkieColdFlowIterator<id> *)dispatchReceiver suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__25__hasNext(dispatchReceiver:suspendHandler:)")));
++ (void)Skie_Suspend__20__fetchFollowConversationsDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver userId:(NSString *)userId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__20__fetchFollowConversations(dispatchReceiver:userId:suspendHandler:)")));
++ (void)Skie_Suspend__21__fetchNewConversationMessagesDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver userId:(NSString *)userId conversationUserId:(NSString *)conversationUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__21__fetchNewConversationMessages(dispatchReceiver:userId:conversationUserId:suspendHandler:)")));
++ (void)Skie_Suspend__22__fetchNonFollowsConversationsDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver userId:(NSString *)userId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__22__fetchNonFollowsConversations(dispatchReceiver:userId:suspendHandler:)")));
++ (void)Skie_Suspend__23__markAllMessagesAsReadDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver authorization:(PrimalSharedNostrEvent *)authorization suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__23__markAllMessagesAsRead(dispatchReceiver:authorization:suspendHandler:)")));
++ (void)Skie_Suspend__24__markConversationAsReadDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver authorization:(PrimalSharedNostrEvent *)authorization conversationUserId:(NSString *)conversationUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__24__markConversationAsRead(dispatchReceiver:authorization:conversationUserId:suspendHandler:)")));
++ (void)Skie_Suspend__25__sendMessageDispatchReceiver:(id<PrimalSharedMessagesRepository>)dispatchReceiver userId:(NSString *)userId receiverId:(NSString *)receiverId text:(NSString *)text suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__25__sendMessage(dispatchReceiver:userId:receiverId:text:suspendHandler:)")));
++ (void)Skie_Suspend__26__fetchAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__26__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)")));
++ (void)Skie_Suspend__27__muteUserAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId mutedUserId:(NSString *)mutedUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__27__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)")));
++ (void)Skie_Suspend__28__unmuteUserAndPersistMuteListDispatchReceiver:(id<PrimalSharedMutedUserRepository>)dispatchReceiver userId:(NSString *)userId unmutedUserId:(NSString *)unmutedUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__28__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)")));
++ (void)Skie_Suspend__29__fetchFollowersDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__29__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)")));
 + (void)Skie_Suspend__2__findConversationDispatchReceiver:(id<PrimalSharedFeedRepository>)dispatchReceiver userId:(NSString *)userId noteId:(NSString *)noteId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__2__findConversation(dispatchReceiver:userId:noteId:suspendHandler:)")));
++ (void)Skie_Suspend__30__fetchFollowingDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__30__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)")));
++ (void)Skie_Suspend__31__fetchProfileDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__31__fetchProfile(dispatchReceiver:profileId:suspendHandler:)")));
++ (void)Skie_Suspend__32__fetchProfileIdDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver primalName:(NSString *)primalName suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__32__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)")));
++ (void)Skie_Suspend__33__fetchUserProfileFollowedByDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId userId:(NSString *)userId limit:(int32_t)limit suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__33__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)")));
++ (void)Skie_Suspend__34__findProfileDataDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileIds:(NSArray<NSString *> *)profileIds suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__34__findProfileData(dispatchReceiver:profileIds:suspendHandler:)")));
++ (void)Skie_Suspend__35__findProfileDataOrNullDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver profileId:(NSString *)profileId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__35__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)")));
++ (void)Skie_Suspend__36__isUserFollowingDispatchReceiver:(id<PrimalSharedProfileRepository>)dispatchReceiver userId:(NSString *)userId targetUserId:(NSString *)targetUserId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__36__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)")));
++ (void)Skie_Suspend__37__addToBookmarksDispatchReceiver:(id<PrimalSharedPublicBookmarksRepository>)dispatchReceiver userId:(NSString *)userId bookmarkType:(PrimalSharedBookmarkType *)bookmarkType tagValue:(NSString *)tagValue forceUpdate:(BOOL)forceUpdate suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__37__addToBookmarks(dispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:)")));
++ (void)Skie_Suspend__38__fetchAndPersistBookmarksDispatchReceiver:(id<PrimalSharedPublicBookmarksRepository>)dispatchReceiver userId:(NSString *)userId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__38__fetchAndPersistBookmarks(dispatchReceiver:userId:suspendHandler:)")));
++ (void)Skie_Suspend__39__isBookmarkedDispatchReceiver:(id<PrimalSharedPublicBookmarksRepository>)dispatchReceiver tagValue:(NSString *)tagValue suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__39__isBookmarked(dispatchReceiver:tagValue:suspendHandler:)")));
 + (void)Skie_Suspend__3__collectDispatchReceiver:(id<PrimalSharedKotlinx_coroutines_coreFlow>)dispatchReceiver collector:(id<PrimalSharedKotlinx_coroutines_coreFlowCollector>)collector suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__3__collect(dispatchReceiver:collector:suspendHandler:)")));
++ (void)Skie_Suspend__40__removeFromBookmarksDispatchReceiver:(id<PrimalSharedPublicBookmarksRepository>)dispatchReceiver userId:(NSString *)userId bookmarkType:(PrimalSharedBookmarkType *)bookmarkType tagValue:(NSString *)tagValue forceUpdate:(BOOL)forceUpdate suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__40__removeFromBookmarks(dispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:)")));
++ (void)Skie_Suspend__41__joinDispatchReceiver:(id<PrimalSharedKotlinx_coroutines_coreJob>)dispatchReceiver suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__41__join(dispatchReceiver:suspendHandler:)")));
++ (void)Skie_Suspend__42__hasNextDispatchReceiver:(PrimalSharedSkieColdFlowIterator<id> *)dispatchReceiver suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__42__hasNext(dispatchReceiver:suspendHandler:)")));
 + (void)Skie_Suspend__4__emitDispatchReceiver:(id<PrimalSharedKotlinx_coroutines_coreFlowCollector>)dispatchReceiver value:(id _Nullable)value suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__4__emit(dispatchReceiver:value:suspendHandler:)")));
 + (void)Skie_Suspend__5__importEventsDispatchReceiver:(id<PrimalSharedNostrEventImporter>)dispatchReceiver events:(NSArray<PrimalSharedNostrEvent *> *)events suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__5__importEvents(dispatchReceiver:events:suspendHandler:)")));
 + (void)Skie_Suspend__6__signPublishImportNostrEventDispatchReceiver:(id<PrimalSharedPrimalPublisher>)dispatchReceiver unsignedNostrEvent:(PrimalSharedNostrUnsignedEvent *)unsignedNostrEvent outboxRelays:(NSArray<NSString *> *)outboxRelays suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__6__signPublishImportNostrEvent(dispatchReceiver:unsignedNostrEvent:outboxRelays:suspendHandler:)")));
-+ (void)Skie_Suspend__7__likeEventDispatchReceiver:(id<PrimalSharedEventInteractionRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId eventAuthorId:(NSString *)eventAuthorId optionalTags:(NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> *)optionalTags suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__7__likeEvent(dispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:)")));
-+ (void)Skie_Suspend__8__repostEventDispatchReceiver:(id<PrimalSharedEventInteractionRepository>)dispatchReceiver userId:(NSString *)userId eventId:(NSString *)eventId eventKind:(int32_t)eventKind eventAuthorId:(NSString *)eventAuthorId eventRawNostrEvent:(NSString *)eventRawNostrEvent optionalTags:(NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> *)optionalTags suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__8__repostEvent(dispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:)")));
-+ (void)Skie_Suspend__9__fetchEventActionsDispatchReceiver:(id<PrimalSharedEventRepository>)dispatchReceiver eventId:(NSString *)eventId kind:(int32_t)kind suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__9__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)")));
++ (void)Skie_Suspend__7__fetchArticleAndCommentsDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver userId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__7__fetchArticleAndComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)")));
++ (void)Skie_Suspend__8__fetchArticleHighlightsDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver userId:(NSString *)userId articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__8__fetchArticleHighlights(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)")));
++ (void)Skie_Suspend__9__observeArticleDispatchReceiver:(id<PrimalSharedArticleRepository>)dispatchReceiver articleId:(NSString *)articleId articleAuthorId:(NSString *)articleAuthorId suspendHandler:(PrimalSharedSkie_SuspendHandler *)suspendHandler __attribute__((swift_name("Skie_Suspend__9__observeArticle(dispatchReceiver:articleId:articleAuthorId:suspendHandler:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -2667,44 +3013,6 @@ __attribute__((swift_name("__SkieTypeExportsKt")))
 @interface PrimalShared__SkieTypeExportsKt : PrimalSharedBase
 + (void)skieTypeExports_0P0:(PrimalSharedPaging_commonPagingData<id> *)p0 p1:(id<PrimalSharedKotlinx_coroutines_coreSelectClause1>)p1 p2:(id<PrimalSharedKotlinx_coroutines_coreSelectClause2>)p2 p3:(PrimalSharedKotlinx_serialization_corePolymorphicKind *)p3 p4:(PrimalSharedKotlinx_serialization_corePolymorphicKindOPEN *)p4 p5:(PrimalSharedKotlinx_serialization_corePolymorphicKindSEALED *)p5 p6:(PrimalSharedKotlinx_serialization_corePrimitiveKind *)p6 p7:(PrimalSharedKotlinx_serialization_corePrimitiveKindBOOLEAN *)p7 p8:(PrimalSharedKotlinx_serialization_corePrimitiveKindBYTE *)p8 p9:(PrimalSharedKotlinx_serialization_corePrimitiveKindCHAR *)p9 p10:(PrimalSharedKotlinx_serialization_corePrimitiveKindDOUBLE *)p10 p11:(PrimalSharedKotlinx_serialization_corePrimitiveKindFLOAT *)p11 p12:(PrimalSharedKotlinx_serialization_corePrimitiveKindINT *)p12 p13:(PrimalSharedKotlinx_serialization_corePrimitiveKindLONG *)p13 p14:(PrimalSharedKotlinx_serialization_corePrimitiveKindSHORT *)p14 p15:(PrimalSharedKotlinx_serialization_corePrimitiveKindSTRING *)p15 p16:(PrimalSharedKotlinx_serialization_coreSerialKindCONTEXTUAL *)p16 p17:(PrimalSharedKotlinx_serialization_coreSerialKindENUM *)p17 p18:(PrimalSharedKotlinx_serialization_coreStructureKind *)p18 p19:(PrimalSharedKotlinx_serialization_coreStructureKindCLASS *)p19 p20:(PrimalSharedKotlinx_serialization_coreStructureKindLIST *)p20 p21:(PrimalSharedKotlinx_serialization_coreStructureKindMAP *)p21 p22:(PrimalSharedKotlinx_serialization_coreStructureKindOBJECT *)p22 p23:(PrimalSharedKotlinx_serialization_jsonJsonNull *)p23 p24:(PrimalSharedKotlinx_serialization_jsonJsonPrimitive *)p24 __attribute__((swift_name("skieTypeExports_0(p0:p1:p2:p3:p4:p5:p6:p7:p8:p9:p10:p11:p12:p13:p14:p15:p16:p17:p18:p19:p20:p21:p22:p23:p24:)")));
 + (void)skieTypeExports_1P0:(PrimalSharedPaging_commonLoadStateError *)p0 p1:(PrimalSharedPaging_commonLoadStateLoading *)p1 p2:(PrimalSharedPaging_commonLoadStateNotLoading *)p2 __attribute__((swift_name("skieTypeExports_1(p0:p1:p2:)")));
-@end
-
-__attribute__((swift_name("KotlinThrowable")))
-@interface PrimalSharedKotlinThrowable : PrimalSharedBase
-@property (readonly) PrimalSharedKotlinThrowable * _Nullable cause __attribute__((swift_name("cause")));
-@property (readonly) NSString * _Nullable message __attribute__((swift_name("message")));
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
-
-/**
- * @note annotations
- *   kotlin.experimental.ExperimentalNativeApi
-*/
-- (PrimalSharedKotlinArray<NSString *> *)getStackTrace __attribute__((swift_name("getStackTrace()")));
-- (void)printStackTrace __attribute__((swift_name("printStackTrace()")));
-- (NSString *)description __attribute__((swift_name("description()")));
-- (NSError *)asError __attribute__((swift_name("asError()")));
-@end
-
-__attribute__((swift_name("KotlinException")))
-@interface PrimalSharedKotlinException : PrimalSharedKotlinThrowable
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
-@end
-
-__attribute__((swift_name("KotlinRuntimeException")))
-@interface PrimalSharedKotlinRuntimeException : PrimalSharedKotlinException
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithCause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(PrimalSharedKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
 @end
 
 __attribute__((swift_name("KotlinIllegalStateException")))

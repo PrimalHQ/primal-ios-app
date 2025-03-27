@@ -470,12 +470,12 @@
 		B99E03AD2C0DFBC6006CCECB /* PostCommentsTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */; };
 		B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */; };
 		B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */; };
+		B9A0CD862D959CDD00493C44 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A0CD852D959CDD00493C44 /* PrimalShared.xcframework */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
-		B9A5EC852D9445B10014C568 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */; };
 		B9B1AB9A2B2C730400837312 /* regions.json in Resources */ = {isa = PBXBuildFile; fileRef = B9B1AB982B2C730400837312 /* regions.json */; };
 		B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */; };
 		B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */; };
@@ -1158,12 +1158,12 @@
 		B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentsTitleCell.swift; sourceTree = "<group>"; };
 		B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryController.swift; sourceTree = "<group>"; };
 		B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFullScreenViewController.swift; sourceTree = "<group>"; };
+		B9A0CD852D959CDD00493C44 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
-		B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9B1AB982B2C730400837312 /* regions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = regions.json; sourceTree = "<group>"; };
 		B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAmountCell.swift; sourceTree = "<group>"; };
@@ -1334,7 +1334,7 @@
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
-				B9A5EC852D9445B10014C568 /* PrimalShared.xcframework in Frameworks */,
+				B9A0CD862D959CDD00493C44 /* PrimalShared.xcframework in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1447,9 +1447,9 @@
 			isa = PBXGroup;
 			children = (
 				B950FB112C35DD260088F9E3 /* Primal.entitlements */,
-				B9A5EC842D9445B10014C568 /* PrimalShared.xcframework */,
 				9393313D29A3E6DE003954C2 /* Info.plist */,
 				B91C46212BBB093D00AC2C9B /* PrivacyInfo.xcprivacy */,
+				B9A0CD852D959CDD00493C44 /* PrimalShared.xcframework */,
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* Scenes */,
 				9393312829A3E4E0003954C2 /* Common */,

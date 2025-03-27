@@ -446,6 +446,20 @@ extension PrimalShared.PrimalPublisher {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func signPublishImportNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent, outboxRelays: [Swift.String]) async throws -> PrimalShared.PrimalPublishResult
 }
+extension PrimalShared.ArticleRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleAndComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleHighlights(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticle(articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByCommentId(commentNoteId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByEventId(eventId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
 extension PrimalShared.EventInteractionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func likeEvent(userId: Swift.String, eventId: Swift.String, eventAuthorId: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
@@ -458,11 +472,29 @@ extension PrimalShared.EventRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func fetchEventZaps(userId: Swift.String, eventId: Swift.String, limit: Swift.Int32) async throws
 }
+extension PrimalShared.EventUriRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func loadEventLinks(noteId: Swift.String, types: [PrimalShared.EventUriType]) async throws -> [PrimalShared.EventLink]
+}
 extension PrimalShared.HighlightRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func publishAndSaveHighlight(userId: Swift.String, content: Swift.String, referencedEventATag: Swift.String?, referencedEventAuthorTag: Swift.String?, context: Swift.String?, alt: Swift.String, createdAt: Swift.Int64) async throws -> PrimalShared.Nevent
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func publishDeleteHighlight(userId: Swift.String, highlightId: Swift.String) async throws
+}
+extension PrimalShared.MessagesRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNewConversationMessages(userId: Swift.String, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNonFollowsConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllMessagesAsRead(authorization: PrimalShared.NostrEvent) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markConversationAsRead(authorization: PrimalShared.NostrEvent, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendMessage(userId: Swift.String, receiverId: Swift.String, text: Swift.String) async throws
 }
 extension PrimalShared.MutedUserRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -489,6 +521,16 @@ extension PrimalShared.ProfileRepository {
   public func findProfileDataOrNull(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func isUserFollowing(userId: Swift.String, targetUserId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.PublicBookmarksRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addToBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistBookmarks(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isBookmarked(tagValue: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFromBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
 }
 extension PrimalShared.Kotlinx_coroutines_coreJob {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)

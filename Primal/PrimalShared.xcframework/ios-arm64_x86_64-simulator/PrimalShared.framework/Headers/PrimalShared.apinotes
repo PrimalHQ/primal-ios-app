@@ -2460,6 +2460,29 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "description()"
     ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedNetworkException"
+  SwiftName: "NetworkException"
+  Methods:
+  - Selector: "initWithMessage:cause:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:cause:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nullable"
+    - Position: 1
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "init"
+    MethodKind: "Instance"
+    SwiftName: "init()"
+    Availability: "nonswift"
+  - Selector: "initWithMessage:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:)"
+    Availability: "nonswift"
+  - Selector: "initWithCause:"
+    MethodKind: "Instance"
+    SwiftName: "init(cause:)"
+    Availability: "nonswift"
 - Name: "PrimalSharedPrimalPremiumInfo"
   SwiftName: "PrimalPremiumInfo"
   Properties:
@@ -3362,6 +3385,57 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "init(name:ordinal:)"
     Availability: "nonswift"
+- Name: "PrimalSharedTagBookmark"
+  SwiftName: "TagBookmark"
+  Properties:
+  - Name: "type"
+    PropertyKind: "Instance"
+    SwiftName: "type"
+    Type: "NSString * _Nonnull"
+  - Name: "value"
+    PropertyKind: "Instance"
+    SwiftName: "value"
+    Type: "NSString * _Nonnull"
+  Methods:
+  - Selector: "initWithType:value:"
+    MethodKind: "Instance"
+    SwiftName: "init(type:value:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+  - Selector: "doCopyType:value:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(type:value:)"
+    ResultType: "PrimalSharedTagBookmark * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedTagBookmarkCompanion"
+  SwiftName: "TagBookmark.Companion"
+  Methods:
+  - Selector: "serializer"
+    MethodKind: "Instance"
+    SwiftName: "serializer()"
+    ResultType: "id<PrimalSharedKotlinx_serialization_coreKSerializer> _Nonnull"
 - Name: "PrimalSharedUserProfileSearchItem"
   SwiftName: "UserProfileSearchItem"
   Properties:
@@ -3586,51 +3660,391 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "description()"
     ResultType: "NSString * _Nonnull"
-- Name: "PrimalSharedNostrEventAction"
-  SwiftName: "NostrEventAction"
+- Name: "PrimalSharedArticle"
+  SwiftName: "Article"
   Properties:
-  - Name: "actionEventData"
+  - Name: "aTag"
     PropertyKind: "Instance"
-    SwiftName: "actionEventData"
-    Type: "PrimalSharedNostrEvent * _Nonnull"
-  - Name: "actionEventKind"
+    SwiftName: "aTag"
+    Type: "NSString * _Nonnull"
+  - Name: "articleId"
     PropertyKind: "Instance"
-    SwiftName: "actionEventKind"
-    Type: "int32_t"
-  - Name: "profile"
+    SwiftName: "articleId"
+    Type: "NSString * _Nonnull"
+  - Name: "articleRawJson"
     PropertyKind: "Instance"
-    SwiftName: "profile"
-    Type: "PrimalSharedProfileData * _Nonnull"
-  - Name: "score"
+    SwiftName: "articleRawJson"
+    Type: "NSString * _Nonnull"
+  - Name: "author"
     PropertyKind: "Instance"
-    SwiftName: "score"
-    Type: "float"
+    SwiftName: "author"
+    Type: "PrimalSharedProfileData * _Nullable"
+  - Name: "authorId"
+    PropertyKind: "Instance"
+    SwiftName: "authorId"
+    Type: "NSString * _Nonnull"
+  - Name: "authorMetadataId"
+    PropertyKind: "Instance"
+    SwiftName: "authorMetadataId"
+    Type: "NSString * _Nullable"
+  - Name: "bookmark"
+    PropertyKind: "Instance"
+    SwiftName: "bookmark"
+    Type: "PrimalSharedPublicBookmark * _Nullable"
+  - Name: "content"
+    PropertyKind: "Instance"
+    SwiftName: "content"
+    Type: "NSString * _Nonnull"
+  - Name: "createdAt"
+    PropertyKind: "Instance"
+    SwiftName: "createdAt"
+    Type: "int64_t"
+  - Name: "eventId"
+    PropertyKind: "Instance"
+    SwiftName: "eventId"
+    Type: "NSString * _Nonnull"
+  - Name: "eventStats"
+    PropertyKind: "Instance"
+    SwiftName: "eventStats"
+    Type: "PrimalSharedNostrEventStats * _Nullable"
+  - Name: "eventZaps"
+    PropertyKind: "Instance"
+    SwiftName: "eventZaps"
+    Type: "NSArray<PrimalSharedEventZap *> * _Nonnull"
+  - Name: "hashtags"
+    PropertyKind: "Instance"
+    SwiftName: "hashtags"
+    Type: "NSArray<NSString *> * _Nonnull"
+  - Name: "highlights"
+    PropertyKind: "Instance"
+    SwiftName: "highlights"
+    Type: "NSArray<PrimalSharedHighlight *> * _Nonnull"
+  - Name: "imageCdnImage"
+    PropertyKind: "Instance"
+    SwiftName: "imageCdnImage"
+    Type: "PrimalSharedCdnImage * _Nullable"
+  - Name: "publishedAt"
+    PropertyKind: "Instance"
+    SwiftName: "publishedAt"
+    Type: "int64_t"
+  - Name: "summary"
+    PropertyKind: "Instance"
+    SwiftName: "summary"
+    Type: "NSString * _Nullable"
+  - Name: "title"
+    PropertyKind: "Instance"
+    SwiftName: "title"
+    Type: "NSString * _Nonnull"
+  - Name: "uris"
+    PropertyKind: "Instance"
+    SwiftName: "uris"
+    Type: "NSArray<NSString *> * _Nonnull"
+  - Name: "userEventStats"
+    PropertyKind: "Instance"
+    SwiftName: "userEventStats"
+    Type: "PrimalSharedNostrEventStats * _Nullable"
+  - Name: "wordsCount"
+    PropertyKind: "Instance"
+    SwiftName: "wordsCount"
+    Type: "PrimalSharedInt * _Nullable"
   Methods:
-  - Selector: "initWithProfile:score:actionEventData:actionEventKind:"
+  - Selector: "initWithATag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:"
     MethodKind: "Instance"
-    SwiftName: "init(profile:score:actionEventData:actionEventKind:)"
+    SwiftName: "init(aTag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:)"
     Parameters:
     - Position: 0
-      Type: "PrimalSharedProfileData * _Nonnull"
+      Type: "NSString * _Nonnull"
     - Position: 1
-      Type: "float"
+      Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "PrimalSharedNostrEvent * _Nonnull"
+      Type: "NSString * _Nonnull"
     - Position: 3
-      Type: "int32_t"
-  - Selector: "doCopyProfile:score:actionEventData:actionEventKind:"
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "int64_t"
+    - Position: 5
+      Type: "NSString * _Nonnull"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+    - Position: 7
+      Type: "int64_t"
+    - Position: 8
+      Type: "NSString * _Nonnull"
+    - Position: 9
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 10
+      Type: "NSString * _Nullable"
+    - Position: 11
+      Type: "NSString * _Nullable"
+    - Position: 12
+      Type: "PrimalSharedInt * _Nullable"
+    - Position: 13
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 14
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 15
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 16
+      Type: "PrimalSharedNostrEventStats * _Nullable"
+    - Position: 17
+      Type: "PrimalSharedNostrEventStats * _Nullable"
+    - Position: 18
+      Type: "NSArray<PrimalSharedEventZap *> * _Nonnull"
+    - Position: 19
+      Type: "PrimalSharedPublicBookmark * _Nullable"
+    - Position: 20
+      Type: "NSArray<PrimalSharedHighlight *> * _Nonnull"
+  - Selector: "doCopyATag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:"
     MethodKind: "Instance"
-    SwiftName: "doCopy(profile:score:actionEventData:actionEventKind:)"
-    ResultType: "PrimalSharedNostrEventAction * _Nonnull"
+    SwiftName: "doCopy(aTag:eventId:articleId:authorId:createdAt:content:title:publishedAt:articleRawJson:imageCdnImage:summary:authorMetadataId:wordsCount:uris:hashtags:author:eventStats:userEventStats:eventZaps:bookmark:highlights:)"
+    ResultType: "PrimalSharedArticle * _Nonnull"
     Parameters:
     - Position: 0
-      Type: "PrimalSharedProfileData * _Nonnull"
+      Type: "NSString * _Nonnull"
     - Position: 1
-      Type: "float"
+      Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "PrimalSharedNostrEvent * _Nonnull"
+      Type: "NSString * _Nonnull"
     - Position: 3
-      Type: "int32_t"
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "int64_t"
+    - Position: 5
+      Type: "NSString * _Nonnull"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+    - Position: 7
+      Type: "int64_t"
+    - Position: 8
+      Type: "NSString * _Nonnull"
+    - Position: 9
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 10
+      Type: "NSString * _Nullable"
+    - Position: 11
+      Type: "NSString * _Nullable"
+    - Position: 12
+      Type: "PrimalSharedInt * _Nullable"
+    - Position: 13
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 14
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 15
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 16
+      Type: "PrimalSharedNostrEventStats * _Nullable"
+    - Position: 17
+      Type: "PrimalSharedNostrEventStats * _Nullable"
+    - Position: 18
+      Type: "NSArray<PrimalSharedEventZap *> * _Nonnull"
+    - Position: 19
+      Type: "PrimalSharedPublicBookmark * _Nullable"
+    - Position: 20
+      Type: "NSArray<PrimalSharedHighlight *> * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedHighlight"
+  SwiftName: "Highlight"
+  Properties:
+  - Name: "author"
+    PropertyKind: "Instance"
+    SwiftName: "author"
+    Type: "PrimalSharedProfileData * _Nullable"
+  - Name: "comments"
+    PropertyKind: "Instance"
+    SwiftName: "comments"
+    Type: "NSArray<PrimalSharedFeedPost *> * _Nonnull"
+  - Name: "data"
+    PropertyKind: "Instance"
+    SwiftName: "data"
+    Type: "PrimalSharedHighlightData * _Nonnull"
+  Methods:
+  - Selector: "initWithData:author:comments:"
+    MethodKind: "Instance"
+    SwiftName: "init(data:author:comments:)"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedHighlightData * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 2
+      Type: "NSArray<PrimalSharedFeedPost *> * _Nonnull"
+  - Selector: "doCopyData:author:comments:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(data:author:comments:)"
+    ResultType: "PrimalSharedHighlight * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedHighlightData * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 2
+      Type: "NSArray<PrimalSharedFeedPost *> * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedHighlightData"
+  SwiftName: "HighlightData"
+  Properties:
+  - Name: "alt"
+    PropertyKind: "Instance"
+    SwiftName: "alt"
+    Type: "NSString * _Nullable"
+  - Name: "authorId"
+    PropertyKind: "Instance"
+    SwiftName: "authorId"
+    Type: "NSString * _Nonnull"
+  - Name: "content"
+    PropertyKind: "Instance"
+    SwiftName: "content"
+    Type: "NSString * _Nonnull"
+  - Name: "context"
+    PropertyKind: "Instance"
+    SwiftName: "context"
+    Type: "NSString * _Nullable"
+  - Name: "createdAt"
+    PropertyKind: "Instance"
+    SwiftName: "createdAt"
+    Type: "int64_t"
+  - Name: "highlightId"
+    PropertyKind: "Instance"
+    SwiftName: "highlightId"
+    Type: "NSString * _Nonnull"
+  - Name: "referencedEventATag"
+    PropertyKind: "Instance"
+    SwiftName: "referencedEventATag"
+    Type: "NSString * _Nullable"
+  - Name: "referencedEventAuthorId"
+    PropertyKind: "Instance"
+    SwiftName: "referencedEventAuthorId"
+    Type: "NSString * _Nullable"
+  Methods:
+  - Selector: "initWithHighlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:"
+    MethodKind: "Instance"
+    SwiftName: "init(highlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "NSString * _Nullable"
+    - Position: 5
+      Type: "NSString * _Nullable"
+    - Position: 6
+      Type: "NSString * _Nullable"
+    - Position: 7
+      Type: "int64_t"
+  - Selector: "doCopyHighlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(highlightId:authorId:content:context:alt:referencedEventATag:referencedEventAuthorId:createdAt:)"
+    ResultType: "PrimalSharedHighlightData * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "NSString * _Nullable"
+    - Position: 5
+      Type: "NSString * _Nullable"
+    - Position: 6
+      Type: "NSString * _Nullable"
+    - Position: 7
+      Type: "int64_t"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedPublicBookmark"
+  SwiftName: "PublicBookmark"
+  Properties:
+  - Name: "bookmarkType"
+    PropertyKind: "Instance"
+    SwiftName: "bookmarkType"
+    Type: "PrimalSharedBookmarkType * _Nonnull"
+  - Name: "ownerId"
+    PropertyKind: "Instance"
+    SwiftName: "ownerId"
+    Type: "NSString * _Nonnull"
+  - Name: "tagType"
+    PropertyKind: "Instance"
+    SwiftName: "tagType"
+    Type: "NSString * _Nonnull"
+  - Name: "tagValue"
+    PropertyKind: "Instance"
+    SwiftName: "tagValue"
+    Type: "NSString * _Nonnull"
+  Methods:
+  - Selector: "initWithTagValue:tagType:bookmarkType:ownerId:"
+    MethodKind: "Instance"
+    SwiftName: "init(tagValue:tagType:bookmarkType:ownerId:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+  - Selector: "doCopyTagValue:tagType:bookmarkType:ownerId:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(tagValue:tagType:bookmarkType:ownerId:)"
+    ResultType: "PrimalSharedPublicBookmark * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"
@@ -3731,6 +4145,242 @@ Classes:
       Type: "PrimalSharedLong * _Nullable"
     - Position: 8
       Type: "PrimalSharedLong * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedDMConversation"
+  SwiftName: "DMConversation"
+  Properties:
+  - Name: "lastMessage"
+    PropertyKind: "Instance"
+    SwiftName: "lastMessage"
+    Type: "PrimalSharedDirectMessage * _Nullable"
+  - Name: "ownerId"
+    PropertyKind: "Instance"
+    SwiftName: "ownerId"
+    Type: "NSString * _Nonnull"
+  - Name: "participant"
+    PropertyKind: "Instance"
+    SwiftName: "participant"
+    Type: "PrimalSharedProfileData * _Nullable"
+  - Name: "relation"
+    PropertyKind: "Instance"
+    SwiftName: "relation"
+    Type: "PrimalSharedConversationRelation * _Nonnull"
+  - Name: "unreadMessagesCount"
+    PropertyKind: "Instance"
+    SwiftName: "unreadMessagesCount"
+    Type: "int32_t"
+  Methods:
+  - Selector: "initWithOwnerId:participant:lastMessage:unreadMessagesCount:relation:"
+    MethodKind: "Instance"
+    SwiftName: "init(ownerId:participant:lastMessage:unreadMessagesCount:relation:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 2
+      Type: "PrimalSharedDirectMessage * _Nullable"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "PrimalSharedConversationRelation * _Nonnull"
+  - Selector: "doCopyOwnerId:participant:lastMessage:unreadMessagesCount:relation:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(ownerId:participant:lastMessage:unreadMessagesCount:relation:)"
+    ResultType: "PrimalSharedDMConversation * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedProfileData * _Nullable"
+    - Position: 2
+      Type: "PrimalSharedDirectMessage * _Nullable"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "PrimalSharedConversationRelation * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedDirectMessage"
+  SwiftName: "DirectMessage"
+  Properties:
+  - Name: "content"
+    PropertyKind: "Instance"
+    SwiftName: "content"
+    Type: "NSString * _Nonnull"
+  - Name: "createdAt"
+    PropertyKind: "Instance"
+    SwiftName: "createdAt"
+    Type: "int64_t"
+  - Name: "hashtags"
+    PropertyKind: "Instance"
+    SwiftName: "hashtags"
+    Type: "NSArray<NSString *> * _Nonnull"
+  - Name: "links"
+    PropertyKind: "Instance"
+    SwiftName: "links"
+    Type: "NSArray<PrimalSharedEventLink *> * _Nonnull"
+  - Name: "messageId"
+    PropertyKind: "Instance"
+    SwiftName: "messageId"
+    Type: "NSString * _Nonnull"
+  - Name: "nostrUris"
+    PropertyKind: "Instance"
+    SwiftName: "nostrUris"
+    Type: "NSArray<PrimalSharedEventUriNostrReference *> * _Nonnull"
+  - Name: "ownerId"
+    PropertyKind: "Instance"
+    SwiftName: "ownerId"
+    Type: "NSString * _Nonnull"
+  - Name: "participantId"
+    PropertyKind: "Instance"
+    SwiftName: "participantId"
+    Type: "NSString * _Nonnull"
+  - Name: "receiverId"
+    PropertyKind: "Instance"
+    SwiftName: "receiverId"
+    Type: "NSString * _Nonnull"
+  - Name: "senderId"
+    PropertyKind: "Instance"
+    SwiftName: "senderId"
+    Type: "NSString * _Nonnull"
+  Methods:
+  - Selector: "initWithMessageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:"
+    MethodKind: "Instance"
+    SwiftName: "init(messageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
+      Type: "int64_t"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+    - Position: 7
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 8
+      Type: "NSArray<PrimalSharedEventLink *> * _Nonnull"
+    - Position: 9
+      Type: "NSArray<PrimalSharedEventUriNostrReference *> * _Nonnull"
+  - Selector: "doCopyMessageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(messageId:ownerId:senderId:receiverId:participantId:createdAt:content:hashtags:links:nostrUris:)"
+    ResultType: "PrimalSharedDirectMessage * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
+      Type: "int64_t"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+    - Position: 7
+      Type: "NSArray<NSString *> * _Nonnull"
+    - Position: 8
+      Type: "NSArray<PrimalSharedEventLink *> * _Nonnull"
+    - Position: 9
+      Type: "NSArray<PrimalSharedEventUriNostrReference *> * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedNostrEventAction"
+  SwiftName: "NostrEventAction"
+  Properties:
+  - Name: "actionEventData"
+    PropertyKind: "Instance"
+    SwiftName: "actionEventData"
+    Type: "PrimalSharedNostrEvent * _Nonnull"
+  - Name: "actionEventKind"
+    PropertyKind: "Instance"
+    SwiftName: "actionEventKind"
+    Type: "int32_t"
+  - Name: "profile"
+    PropertyKind: "Instance"
+    SwiftName: "profile"
+    Type: "PrimalSharedProfileData * _Nonnull"
+  - Name: "score"
+    PropertyKind: "Instance"
+    SwiftName: "score"
+    Type: "float"
+  Methods:
+  - Selector: "initWithProfile:score:actionEventData:actionEventKind:"
+    MethodKind: "Instance"
+    SwiftName: "init(profile:score:actionEventData:actionEventKind:)"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedProfileData * _Nonnull"
+    - Position: 1
+      Type: "float"
+    - Position: 2
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 3
+      Type: "int32_t"
+  - Selector: "doCopyProfile:score:actionEventData:actionEventKind:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(profile:score:actionEventData:actionEventKind:)"
+    ResultType: "PrimalSharedNostrEventAction * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedProfileData * _Nonnull"
+    - Position: 1
+      Type: "float"
+    - Position: 2
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 3
+      Type: "int32_t"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"
@@ -6614,6 +7264,69 @@ Classes:
     Parameters:
     - Position: 0
       Type: "PrimalSharedKotlinByteArray * _Nonnull"
+  - Selector: "parseUriAsNaddrOrNullNaddrUri:"
+    MethodKind: "Instance"
+    SwiftName: "parseUriAsNaddrOrNull(naddrUri:)"
+    ResultType: "PrimalSharedNaddr * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "parseUriAsNeventOrNullNeventUri:"
+    MethodKind: "Instance"
+    SwiftName: "parseUriAsNeventOrNull(neventUri:)"
+    ResultType: "PrimalSharedNevent * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "parseUriAsNprofileOrNullNprofileUri:"
+    MethodKind: "Instance"
+    SwiftName: "parseUriAsNprofileOrNull(nprofileUri:)"
+    ResultType: "PrimalSharedNprofile * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "toInt32Bytes:"
+    MethodKind: "Instance"
+    SwiftName: "toInt32(bytes:)"
+    ResultType: "int32_t"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinByteArray * _Nonnull"
+  - Selector: "hexToBytes:"
+    MethodKind: "Instance"
+    SwiftName: "hexToBytes(_:)"
+    ResultType: "PrimalSharedKotlinByteArray * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "readAsString:"
+    MethodKind: "Instance"
+    SwiftName: "readAsString(_:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinByteArray * _Nonnull"
+  - Selector: "toNaddrString:"
+    MethodKind: "Instance"
+    SwiftName: "toNaddrString(_:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedNaddr * _Nonnull"
+  - Selector: "toNeventString:"
+    MethodKind: "Instance"
+    SwiftName: "toNeventString(_:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedNevent * _Nonnull"
+  - Selector: "toNprofileString:"
+    MethodKind: "Instance"
+    SwiftName: "toNprofileString(_:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedNprofile * _Nonnull"
 - Name: "PrimalSharedNip19TLVType"
   SwiftBridge: "__Bridge__Nip19TLV_Type_"
   SwiftName: "Nip19TLV.__Type_"
@@ -6644,6 +7357,50 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "init(name:ordinal:)"
     Availability: "nonswift"
+- Name: "PrimalSharedNprofile"
+  SwiftName: "Nprofile"
+  Properties:
+  - Name: "pubkey"
+    PropertyKind: "Instance"
+    SwiftName: "pubkey"
+    Type: "NSString * _Nonnull"
+  - Name: "relays"
+    PropertyKind: "Instance"
+    SwiftName: "relays"
+    Type: "NSArray<NSString *> * _Nonnull"
+  Methods:
+  - Selector: "initWithPubkey:relays:"
+    MethodKind: "Instance"
+    SwiftName: "init(pubkey:relays:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSArray<NSString *> * _Nonnull"
+  - Selector: "doCopyPubkey:relays:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(pubkey:relays:)"
+    ResultType: "PrimalSharedNprofile * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSArray<NSString *> * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
 - Name: "PrimalSharedNostrEventKind"
   SwiftBridge: "NostrEventKind"
   SwiftName: "__NostrEventKind"
@@ -7158,50 +7915,6 @@ Classes:
     PropertyKind: "Instance"
     SwiftName: "ReplaceableEvents"
     Type: "PrimalSharedKotlinIntRange * _Nonnull"
-- Name: "PrimalSharedNprofile"
-  SwiftName: "Nprofile"
-  Properties:
-  - Name: "pubkey"
-    PropertyKind: "Instance"
-    SwiftName: "pubkey"
-    Type: "NSString * _Nonnull"
-  - Name: "relays"
-    PropertyKind: "Instance"
-    SwiftName: "relays"
-    Type: "NSArray<NSString *> * _Nonnull"
-  Methods:
-  - Selector: "initWithPubkey:relays:"
-    MethodKind: "Instance"
-    SwiftName: "init(pubkey:relays:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSArray<NSString *> * _Nonnull"
-  - Selector: "doCopyPubkey:relays:"
-    MethodKind: "Instance"
-    SwiftName: "doCopy(pubkey:relays:)"
-    ResultType: "PrimalSharedNprofile * _Nonnull"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSArray<NSString *> * _Nonnull"
-  - Selector: "isEqual:"
-    MethodKind: "Instance"
-    SwiftName: "isEqual(_:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "id _Nullable"
-  - Selector: "hash"
-    MethodKind: "Instance"
-    SwiftName: "hash()"
-    ResultType: "NSUInteger"
-  - Selector: "description"
-    MethodKind: "Instance"
-    SwiftName: "description()"
-    ResultType: "NSString * _Nonnull"
 - Name: "PrimalSharedConstantsKt"
   SwiftName: "ConstantsKt"
   Properties:
@@ -8894,9 +9607,97 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__7__likeEventDispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:"
+  - Selector: "Skie_Suspend__7__fetchArticleAndCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__7__likeEvent(dispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:)"
+    SwiftName: "Skie_Suspend__7__fetchArticleAndComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__8__fetchArticleHighlightsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__8__fetchArticleHighlights(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__9__observeArticleDispatchReceiver:articleId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__9__observeArticle(dispatchReceiver:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__10__observeArticleByCommentIdDispatchReceiver:commentNoteId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__10__observeArticleByCommentId(dispatchReceiver:commentNoteId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__11__observeArticleByEventIdDispatchReceiver:eventId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__11__observeArticleByEventId(dispatchReceiver:eventId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__12__observeArticleCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__12__observeArticleComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__13__likeEventDispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__13__likeEvent(dispatchReceiver:userId:eventId:eventAuthorId:optionalTags:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -8912,9 +9713,9 @@ Classes:
       Type: "NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__8__repostEventDispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:"
+  - Selector: "Skie_Suspend__14__repostEventDispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__8__repostEvent(dispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:)"
+    SwiftName: "Skie_Suspend__14__repostEvent(dispatchReceiver:userId:eventId:eventKind:eventAuthorId:eventRawNostrEvent:optionalTags:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -8934,9 +9735,9 @@ Classes:
       Type: "NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
     - Position: 7
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__9__fetchEventActionsDispatchReceiver:eventId:kind:suspendHandler:"
+  - Selector: "Skie_Suspend__15__fetchEventActionsDispatchReceiver:eventId:kind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__9__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__15__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -8948,9 +9749,9 @@ Classes:
       Type: "int32_t"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__10__fetchEventZapsDispatchReceiver:userId:eventId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__16__fetchEventZapsDispatchReceiver:userId:eventId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__10__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__16__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -8964,9 +9765,23 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__11__publishAndSaveHighlightDispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:"
+  - Selector: "Skie_Suspend__17__loadEventLinksDispatchReceiver:noteId:types:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__11__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)"
+    SwiftName: "Skie_Suspend__17__loadEventLinks(dispatchReceiver:noteId:types:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedEventUriRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSArray<PrimalSharedEventUriType *> * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__18__publishAndSaveHighlightDispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__18__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -8988,9 +9803,9 @@ Classes:
       Type: "int64_t"
     - Position: 8
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__12__publishDeleteHighlightDispatchReceiver:userId:highlightId:suspendHandler:"
+  - Selector: "Skie_Suspend__19__publishDeleteHighlightDispatchReceiver:userId:highlightId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__12__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__19__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9002,9 +9817,89 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__13__fetchAndPersistMuteListDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__20__fetchFollowConversationsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__13__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__20__fetchFollowConversations(dispatchReceiver:userId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__21__fetchNewConversationMessagesDispatchReceiver:userId:conversationUserId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__21__fetchNewConversationMessages(dispatchReceiver:userId:conversationUserId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__22__fetchNonFollowsConversationsDispatchReceiver:userId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__22__fetchNonFollowsConversations(dispatchReceiver:userId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__23__markAllMessagesAsReadDispatchReceiver:authorization:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__23__markAllMessagesAsRead(dispatchReceiver:authorization:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__24__markConversationAsReadDispatchReceiver:authorization:conversationUserId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__24__markConversationAsRead(dispatchReceiver:authorization:conversationUserId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__25__sendMessageDispatchReceiver:userId:receiverId:text:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__25__sendMessage(dispatchReceiver:userId:receiverId:text:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMessagesRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__26__fetchAndPersistMuteListDispatchReceiver:userId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__26__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9014,9 +9909,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__14__muteUserAndPersistMuteListDispatchReceiver:userId:mutedUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__27__muteUserAndPersistMuteListDispatchReceiver:userId:mutedUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__14__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__27__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9028,9 +9923,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__15__unmuteUserAndPersistMuteListDispatchReceiver:userId:unmutedUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__28__unmuteUserAndPersistMuteListDispatchReceiver:userId:unmutedUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__15__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__28__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9042,9 +9937,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__16__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__29__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__16__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__29__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9054,9 +9949,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__17__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__30__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__17__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__30__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9066,9 +9961,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__18__fetchProfileDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__31__fetchProfileDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__18__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__31__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9078,9 +9973,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__19__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
+  - Selector: "Skie_Suspend__32__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__19__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
+    SwiftName: "Skie_Suspend__32__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9090,9 +9985,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__20__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__33__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__20__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__33__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9106,9 +10001,9 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__21__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__34__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__21__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__34__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9118,9 +10013,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__22__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__35__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__22__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__35__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9130,9 +10025,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__23__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__36__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__23__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__36__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9144,9 +10039,69 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__24__joinDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__37__addToBookmarksDispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__24__join(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__37__addToBookmarks(dispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedPublicBookmarksRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "BOOL"
+    - Position: 5
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__38__fetchAndPersistBookmarksDispatchReceiver:userId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__38__fetchAndPersistBookmarks(dispatchReceiver:userId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedPublicBookmarksRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__39__isBookmarkedDispatchReceiver:tagValue:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__39__isBookmarked(dispatchReceiver:tagValue:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedPublicBookmarksRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__40__removeFromBookmarksDispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__40__removeFromBookmarks(dispatchReceiver:userId:bookmarkType:tagValue:forceUpdate:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedPublicBookmarksRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "BOOL"
+    - Position: 5
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__41__joinDispatchReceiver:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__41__join(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9154,9 +10109,9 @@ Classes:
       Type: "id<PrimalSharedKotlinx_coroutines_coreJob> _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__25__hasNextDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__42__hasNextDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__25__hasNext(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__42__hasNext(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -9473,6 +10428,94 @@ Protocols:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "void (^ _Nonnull)(PrimalSharedPrimalPublishResult * _Nullable, NSError * _Nullable)"
+- Name: "PrimalSharedArticleRepository"
+  SwiftName: "ArticleRepository"
+  Methods:
+  - Selector: "feedBySpecUserId:feedSpec:"
+    MethodKind: "Instance"
+    SwiftName: "feedBySpec(userId:feedSpec:)"
+    ResultType: "PrimalSharedSkieKotlinFlow<PrimalSharedPaging_commonPagingData<PrimalSharedArticle *> *> * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+  - Selector: "fetchArticleAndCommentsUserId:articleId:articleAuthorId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchArticleAndComments(userId:articleId:articleAuthorId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "fetchArticleHighlightsUserId:articleId:articleAuthorId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchArticleHighlights(userId:articleId:articleAuthorId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "observeArticleArticleId:articleAuthorId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__observeArticle(articleId:articleAuthorId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(PrimalSharedSkieKotlinFlow<PrimalSharedArticle *> * _Nullable, NSError * _Nullable)"
+  - Selector: "observeArticleByCommentIdCommentNoteId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__observeArticleByCommentId(commentNoteId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(PrimalSharedSkieKotlinOptionalFlow<PrimalSharedArticle *> * _Nullable, NSError * _Nullable)"
+  - Selector: "observeArticleByEventIdEventId:articleAuthorId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__observeArticleByEventId(eventId:articleAuthorId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(PrimalSharedSkieKotlinFlow<PrimalSharedArticle *> * _Nullable, NSError * _Nullable)"
+  - Selector: "observeArticleCommentsUserId:articleId:articleAuthorId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__observeArticleComments(userId:articleId:articleAuthorId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "void (^ _Nonnull)(PrimalSharedSkieKotlinFlow<NSArray<PrimalSharedFeedPost *> *> * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedEventInteractionRepository"
   SwiftName: "EventInteractionRepository"
   Methods:
@@ -9566,9 +10609,31 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 1
       Type: "NSString * _Nonnull"
+- Name: "PrimalSharedEventUriRepository"
+  SwiftName: "EventUriRepository"
+  Methods:
+  - Selector: "loadEventLinksNoteId:types:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__loadEventLinks(noteId:types:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSArray<PrimalSharedEventUriType *> * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(NSArray<PrimalSharedEventLink *> * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedHighlightRepository"
   SwiftName: "HighlightRepository"
   Methods:
+  - Selector: "observeHighlightByIdHighlightId:"
+    MethodKind: "Instance"
+    SwiftName: "observeHighlightById(highlightId:)"
+    ResultType: "PrimalSharedSkieKotlinFlow<PrimalSharedHighlight *> * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
   - Selector: "publishAndSaveHighlightUserId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__publishAndSaveHighlight(userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:completionHandler:)"
@@ -9602,6 +10667,95 @@ Protocols:
     - Position: 1
       Type: "NSString * _Nonnull"
     - Position: 2
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+- Name: "PrimalSharedMessagesRepository"
+  SwiftName: "MessagesRepository"
+  Methods:
+  - Selector: "fetchFollowConversationsUserId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchFollowConversations(userId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "fetchNewConversationMessagesUserId:conversationUserId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchNewConversationMessages(userId:conversationUserId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "fetchNonFollowsConversationsUserId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchNonFollowsConversations(userId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "markAllMessagesAsReadAuthorization:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__markAllMessagesAsRead(authorization:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "markConversationAsReadAuthorization:conversationUserId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__markConversationAsRead(authorization:conversationUserId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedNostrEvent * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "newestConversationsUserId:relation:"
+    MethodKind: "Instance"
+    SwiftName: "newestConversations(userId:relation:)"
+    ResultType: "PrimalSharedSkieKotlinFlow<PrimalSharedPaging_commonPagingData<PrimalSharedDMConversation *> *> * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedConversationRelation * _Nonnull"
+  - Selector: "newestMessagesUserId:participantId:"
+    MethodKind: "Instance"
+    SwiftName: "newestMessages(userId:participantId:)"
+    ResultType: "PrimalSharedSkieKotlinFlow<PrimalSharedPaging_commonPagingData<PrimalSharedDirectMessage *> *> * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+  - Selector: "sendMessageUserId:receiverId:text:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__sendMessage(userId:receiverId:text:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
       Type: "void (^ _Nonnull)(NSError * _Nullable)"
 - Name: "PrimalSharedMutedUserRepository"
   SwiftName: "MutedUserRepository"
@@ -9766,6 +10920,61 @@ Protocols:
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
+- Name: "PrimalSharedPublicBookmarksRepository"
+  SwiftName: "PublicBookmarksRepository"
+  Methods:
+  - Selector: "addToBookmarksUserId:bookmarkType:tagValue:forceUpdate:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__addToBookmarks(userId:bookmarkType:tagValue:forceUpdate:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "BOOL"
+    - Position: 4
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "fetchAndPersistBookmarksUserId:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchAndPersistBookmarks(userId:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "isBookmarkedTagValue:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__isBookmarked(tagValue:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(PrimalSharedBoolean * _Nullable, NSError * _Nullable)"
+  - Selector: "removeFromBookmarksUserId:bookmarkType:tagValue:forceUpdate:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__removeFromBookmarks(userId:bookmarkType:tagValue:forceUpdate:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedBookmarkType * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "BOOL"
+    - Position: 4
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
 - Name: "PrimalSharedKotlinx_coroutines_coreFlow"
   SwiftName: "Kotlinx_coroutines_coreFlow"
   Methods:
@@ -10765,6 +11974,31 @@ Protocols:
     Parameters:
     - Position: 0
       Type: "id _Nonnull"
+- Name: "PrimalSharedMessageCipher"
+  SwiftName: "MessageCipher"
+  Methods:
+  - Selector: "decryptMessageUserId:participantId:content:"
+    MethodKind: "Instance"
+    SwiftName: "decryptMessage(userId:participantId:content:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+  - Selector: "encryptMessageUserId:participantId:content:"
+    MethodKind: "Instance"
+    SwiftName: "encryptMessage(userId:participantId:content:)"
+    ResultType: "NSString * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
 - Name: "PrimalSharedNostrEventSignatureHandler"
   SwiftName: "NostrEventSignatureHandler"
   Methods:

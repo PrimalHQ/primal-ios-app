@@ -21230,6 +21230,46 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Function",
         "name": "skie",
         "printedName": "skie(_:)",
@@ -39039,6 +39079,320 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "ArticleRepository",
+        "printedName": "ArticleRepository",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "fetchArticleAndComments",
+            "printedName": "fetchArticleAndComments(userId:articleId:articleAuthorId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E05fetchC11AndComments6userId07articleI00j6AuthorI0ySS_S2StYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E05fetchC11AndComments6userId07articleI00j6AuthorI0ySS_S2StYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchArticleHighlights",
+            "printedName": "fetchArticleHighlights(userId:articleId:articleAuthorId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E05fetchC10Highlights6userId07articleH00i6AuthorH0ySS_S2StYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E05fetchC10Highlights6userId07articleH00i6AuthorH0ySS_S2StYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "observeArticle",
+            "printedName": "observeArticle(articleId:articleAuthorId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Kotlinx_coroutines_coreFlow",
+                "printedName": "any PrimalShared.Kotlinx_coroutines_coreFlow",
+                "usr": "c:objc(pl)PrimalSharedKotlinx_coroutines_coreFlow"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E07observeC09articleId0f6AuthorG0So0aB27Kotlinx_coroutines_coreFlow_pSS_SStYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E07observeC09articleId0f6AuthorG0So0aB27Kotlinx_coroutines_coreFlow_pSS_SStYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "observeArticleByCommentId",
+            "printedName": "observeArticleByCommentId(commentNoteId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Kotlinx_coroutines_coreFlow",
+                "printedName": "any PrimalShared.Kotlinx_coroutines_coreFlow",
+                "usr": "c:objc(pl)PrimalSharedKotlinx_coroutines_coreFlow"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E07observeC11ByCommentId011commentNoteH0So0aB27Kotlinx_coroutines_coreFlow_pSS_tYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E07observeC11ByCommentId011commentNoteH0So0aB27Kotlinx_coroutines_coreFlow_pSS_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "observeArticleByEventId",
+            "printedName": "observeArticleByEventId(eventId:articleAuthorId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Kotlinx_coroutines_coreFlow",
+                "printedName": "any PrimalShared.Kotlinx_coroutines_coreFlow",
+                "usr": "c:objc(pl)PrimalSharedKotlinx_coroutines_coreFlow"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E07observeC9ByEventId05eventH0013articleAuthorH0So0aB27Kotlinx_coroutines_coreFlow_pSS_SStYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E07observeC9ByEventId05eventH0013articleAuthorH0So0aB27Kotlinx_coroutines_coreFlow_pSS_SStYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "observeArticleComments",
+            "printedName": "observeArticleComments(userId:articleId:articleAuthorId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Kotlinx_coroutines_coreFlow",
+                "printedName": "any PrimalShared.Kotlinx_coroutines_coreFlow",
+                "usr": "c:objc(pl)PrimalSharedKotlinx_coroutines_coreFlow"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedArticleRepositoryP0aB0E07observeC8Comments6userId07articleH00i6AuthorH0So0aB27Kotlinx_coroutines_coreFlow_pSS_S2StYaKF",
+            "mangledName": "$sSo29PrimalSharedArticleRepositoryP0aB0E07observeC8Comments6userId07articleH00i6AuthorH0So0aB27Kotlinx_coroutines_coreFlow_pSS_S2StYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ArticleRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ArticleRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:objc(pl)PrimalSharedArticleRepository",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "objc_name": "PrimalSharedArticleRepository",
+        "declAttributes": [
+          "ObjC",
+          "Dynamic"
+        ],
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "EventInteractionRepository",
         "printedName": "EventInteractionRepository",
         "children": [
@@ -39368,6 +39722,101 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "EventUriRepository",
+        "printedName": "EventUriRepository",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "loadEventLinks",
+            "printedName": "loadEventLinks(noteId:types:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[PrimalShared.EventLink]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "EventLink",
+                    "printedName": "PrimalShared.EventLink",
+                    "usr": "c:objc(cs)PrimalSharedEventLink"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[PrimalShared.EventUriType]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "EventUriType",
+                    "printedName": "PrimalShared.EventUriType",
+                    "usr": "s:12PrimalShared12EventUriTypeO"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedEventUriRepositoryP0aB0E04loadC5Links6noteId5typesSaySo0abC4LinkCGSS_SayAC0cD4TypeOGtYaKF",
+            "mangledName": "$sSo30PrimalSharedEventUriRepositoryP0aB0E04loadC5Links6noteId5typesSaySo0abC4LinkCGSS_SayAC0cD4TypeOGtYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.EventUriRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.EventUriRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:objc(pl)PrimalSharedEventUriRepository",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "objc_name": "PrimalSharedEventUriRepository",
+        "declAttributes": [
+          "ObjC",
+          "Dynamic"
+        ],
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "HighlightRepository",
         "printedName": "HighlightRepository",
         "children": [
@@ -39521,6 +39970,292 @@
         "genericSig": "<τ_0_0 : AnyObject>",
         "sugared_genericSig": "<Self : AnyObject>",
         "objc_name": "PrimalSharedHighlightRepository",
+        "declAttributes": [
+          "ObjC",
+          "Dynamic"
+        ],
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MessagesRepository",
+        "printedName": "MessagesRepository",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "fetchFollowConversations",
+            "printedName": "fetchFollowConversations(userId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E24fetchFollowConversations6userIdySS_tYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E24fetchFollowConversations6userIdySS_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchNewConversationMessages",
+            "printedName": "fetchNewConversationMessages(userId:conversationUserId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E020fetchNewConversationC06userId016conversationUserI0ySS_SStYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E020fetchNewConversationC06userId016conversationUserI0ySS_SStYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchNonFollowsConversations",
+            "printedName": "fetchNonFollowsConversations(userId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E28fetchNonFollowsConversations6userIdySS_tYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E28fetchNonFollowsConversations6userIdySS_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "markAllMessagesAsRead",
+            "printedName": "markAllMessagesAsRead(authorization:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NostrEvent",
+                "printedName": "PrimalShared.NostrEvent",
+                "usr": "c:objc(cs)PrimalSharedNostrEvent"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E07markAllC6AsRead13authorizationySo0aB10NostrEventC_tYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E07markAllC6AsRead13authorizationySo0aB10NostrEventC_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "markConversationAsRead",
+            "printedName": "markConversationAsRead(authorization:conversationUserId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NostrEvent",
+                "printedName": "PrimalShared.NostrEvent",
+                "usr": "c:objc(cs)PrimalSharedNostrEvent"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E22markConversationAsRead13authorization18conversationUserIdySo0aB10NostrEventC_SStYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E22markConversationAsRead13authorization18conversationUserIdySo0aB10NostrEventC_SStYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "sendMessage",
+            "printedName": "sendMessage(userId:receiverId:text:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So30PrimalSharedMessagesRepositoryP0aB0E11sendMessage6userId08receiverH04textySS_S2StYaKF",
+            "mangledName": "$sSo30PrimalSharedMessagesRepositoryP0aB0E11sendMessage6userId08receiverH04textySS_S2StYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.MessagesRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.MessagesRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:objc(pl)PrimalSharedMessagesRepository",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "objc_name": "PrimalSharedMessagesRepository",
         "declAttributes": [
           "ObjC",
           "Dynamic"
@@ -40108,6 +40843,229 @@
         "genericSig": "<τ_0_0 : AnyObject>",
         "sugared_genericSig": "<Self : AnyObject>",
         "objc_name": "PrimalSharedProfileRepository",
+        "declAttributes": [
+          "ObjC",
+          "Dynamic"
+        ],
+        "isExternal": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PublicBookmarksRepository",
+        "printedName": "PublicBookmarksRepository",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "addToBookmarks",
+            "printedName": "addToBookmarks(userId:bookmarkType:tagValue:forceUpdate:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "BookmarkType",
+                "printedName": "PrimalShared.BookmarkType",
+                "usr": "s:12PrimalShared12BookmarkTypeO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So37PrimalSharedPublicBookmarksRepositoryP0aB0E05addToD06userId12bookmarkType8tagValue11forceUpdateySS_AC08BookmarkK0OSSSbtYaKF",
+            "mangledName": "$sSo37PrimalSharedPublicBookmarksRepositoryP0aB0E05addToD06userId12bookmarkType8tagValue11forceUpdateySS_AC08BookmarkK0OSSSbtYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.PublicBookmarksRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.PublicBookmarksRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchAndPersistBookmarks",
+            "printedName": "fetchAndPersistBookmarks(userId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So37PrimalSharedPublicBookmarksRepositoryP0aB0E015fetchAndPersistD06userIdySS_tYaKF",
+            "mangledName": "$sSo37PrimalSharedPublicBookmarksRepositoryP0aB0E015fetchAndPersistD06userIdySS_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.PublicBookmarksRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.PublicBookmarksRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "isBookmarked",
+            "printedName": "isBookmarked(tagValue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "KotlinBoolean",
+                "printedName": "PrimalShared.KotlinBoolean",
+                "usr": "c:objc(cs)PrimalSharedBoolean"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So37PrimalSharedPublicBookmarksRepositoryP0aB0E12isBookmarked8tagValueSo0aB7BooleanCSS_tYaKF",
+            "mangledName": "$sSo37PrimalSharedPublicBookmarksRepositoryP0aB0E12isBookmarked8tagValueSo0aB7BooleanCSS_tYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.PublicBookmarksRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.PublicBookmarksRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "removeFromBookmarks",
+            "printedName": "removeFromBookmarks(userId:bookmarkType:tagValue:forceUpdate:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "BookmarkType",
+                "printedName": "PrimalShared.BookmarkType",
+                "usr": "s:12PrimalShared12BookmarkTypeO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So37PrimalSharedPublicBookmarksRepositoryP0aB0E010removeFromD06userId12bookmarkType8tagValue11forceUpdateySS_AC08BookmarkK0OSSSbtYaKF",
+            "mangledName": "$sSo37PrimalSharedPublicBookmarksRepositoryP0aB0E010removeFromD06userId12bookmarkType8tagValue11forceUpdateySS_AC08BookmarkK0OSSSbtYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.PublicBookmarksRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.PublicBookmarksRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:objc(pl)PrimalSharedPublicBookmarksRepository",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "objc_name": "PrimalSharedPublicBookmarksRepository",
         "declAttributes": [
           "ObjC",
           "Dynamic"
