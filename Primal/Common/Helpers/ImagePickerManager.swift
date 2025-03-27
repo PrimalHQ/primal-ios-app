@@ -8,6 +8,8 @@
 import UIKit
 import AVFoundation
 import Photos
+import PhotosUI
+import FLAnimatedImage
 
 struct GalleryVideo {
     var thumbnail: UIImage
@@ -15,7 +17,9 @@ struct GalleryVideo {
 }
 
 enum ImageType {
-    case png, gif(Data), jpeg
+    case png
+    case gif(Data)
+    case jpeg
 }
 
 typealias GalleryImage = (UIImage, ImageType)
@@ -37,14 +41,21 @@ enum ImagePickerResult {
         case .video(let video): return video.thumbnail
         }
     }
+    
+    var animatedImage: FLAnimatedImage? {
+        guard let image, case .gif(let data) = image.1 else { return nil }
+        return FLAnimatedImage(gifData: data)
+    }
 }
 
-final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    var picker = UIImagePickerController()
+final class ImagePickerManager: NSObject {
+    // For camera capture only – PHPicker doesn’t support capturing.
+    var imagePicker = UIImagePickerController()
     
     weak var viewController: UIViewController?
     let pickImageCallback: (ImagePickerResult) -> ()
     
+    // Hold a strong reference to self during the picker presentation.
     var strongSelf: ImagePickerManager?
     
     enum Mode {
@@ -52,21 +63,19 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
     }
     
     @discardableResult
-    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false,  _ callback: @escaping (ImagePickerResult) -> ()) {
+    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, _ callback: @escaping (ImagePickerResult) -> ()) {
         viewController = vc
         pickImageCallback = callback
         super.init()
         
-        if allowVideo {
-            picker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary) ?? picker.mediaTypes
-        }
-        picker.delegate = self
+        // Configure UIImagePickerController for camera mode.
+        imagePicker.delegate = self
         
         switch mode {
         case .camera:
             openCamera()
         case .gallery:
-            openGallery()
+            openGallery(allowVideo: allowVideo)
         case .dialog:
             let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
             alert.popoverPresentationController?.sourceView = vc.view
@@ -74,7 +83,7 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
                 self.openCamera()
             })
             alert.addAction(UIAlertAction(title: "Gallery", style: .default) { _ in
-                self.openGallery()
+                self.openGallery(allowVideo: allowVideo)
             })
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
             viewController?.present(alert, animated: true, completion: nil)
@@ -83,12 +92,12 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
     
     func openCamera() {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            picker.sourceType = .camera
+            imagePicker.sourceType = .camera
             strongSelf = self
-            viewController?.present(picker, animated: true, completion: nil)
+            viewController?.present(imagePicker, animated: true, completion: nil)
         } else {
             let alertController: UIAlertController = {
-                let controller = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+                let controller = UIAlertController(title: "Warning", message: "You don't have a camera", preferredStyle: .alert)
                 let action = UIAlertAction(title: "OK", style: .default)
                 controller.addAction(action)
                 return controller
@@ -97,60 +106,132 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
         }
     }
     
-    func openGallery() {
+    func openGallery(allowVideo: Bool) {
         strongSelf = self
-        picker.sourceType = .photoLibrary
+        
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        // If you allow video, set filter to .any, otherwise only images.
+        config.filter = allowVideo ? PHPickerFilter.any(of: [.images, .videos]) : .images
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
         viewController?.present(picker, animated: true, completion: nil)
     }
+    
+    func getThumbnailImage(forUrl url: URL) -> UIImage? {
+        let asset = AVAsset(url: url)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        do {
+            let cgImage = try imageGenerator.copyCGImage(at: CMTimeMake(value: 1, timescale: 60), actualTime: nil)
+            return UIImage(cgImage: cgImage)
+        } catch {
+            print(error)
+        }
+        return nil
+    }
+}
 
+extension ImagePickerManager: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    // MARK: - UIImagePickerController Delegate (Camera Mode)
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         strongSelf = nil
         picker.dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
         
+        // Handle camera capture; for simplicity we assume image capture.
         if let image = info[.originalImage] as? UIImage {
-            guard let assetPath = (info[.imageURL] as? NSURL)?.absoluteString?.uppercased() else {
-                pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
-                return
-            }
-            
-            if assetPath.hasSuffix("PNG") == true {
-                pickImageCallback(.image((image, .png)))
-            } else if assetPath.hasSuffix("GIF") {
-                return
-                // This will be handled async by Photos library request
-//                pickImageCallback(.image((image, .gif)))
-            } else {
-                pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+            // When captured from camera, treat as JPEG.
+            pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+        }
+        
+        // (Additional video capture from camera could be added similarly.)
+    }
+}
+
+extension ImagePickerManager: PHPickerViewControllerDelegate {
+    // MARK: - PHPicker Delegate (Gallery Mode)
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        strongSelf = nil
+        
+        guard let result = results.first else { return }
+        let itemProvider = result.itemProvider
+        
+        // Check for video first (if allowed).
+        if itemProvider.hasItemConformingToTypeIdentifier("public.movie") {
+            itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
+                if let error = error {
+                    print("Error loading video: \(error)")
+                    return
+                }
+                guard let url = url, let absoluteURL = URL(string: url.absoluteString),
+                      let thumbnail = self.getThumbnailImage(forUrl: absoluteURL)
+                else { return }
+                DispatchQueue.main.async {
+                    self.pickImageCallback(.video(.init(thumbnail: thumbnail, url: absoluteURL)))
+                }
             }
             return
         }
         
-        guard
-            let videoURL = info[.mediaURL] as? NSURL,
-            let absolute = videoURL.absoluteURL,
-            let thumbnail = getThumbnailImage(forUrl: absolute)
-        else { return }
-        
-        pickImageCallback(.video(.init(thumbnail: thumbnail, url: absolute)))
-    }
-    
-    func getThumbnailImage(forUrl url: URL) -> UIImage? {
-        let asset: AVAsset = AVAsset(url: url)
-        let imageGenerator = AVAssetImageGenerator(asset: asset)
-        imageGenerator.appliesPreferredTrackTransform = true
-        do {
-            let thumbnailImage = try imageGenerator.copyCGImage(at: CMTimeMake(value: 1, timescale: 60), actualTime: nil)
-            return UIImage(cgImage: thumbnailImage)
-        } catch let error {
-            print(error)
+        // Check for GIF. We use "public.gif" to identify GIF images.
+        if itemProvider.hasItemConformingToTypeIdentifier(UTType.gif.identifier) {
+            itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.gif.identifier) { (url, error) in
+                if let error = error {
+                    print("Error loading GIF: \(error)")
+                    return
+                }
+                guard let url = url else { return }
+                do {
+                    let gifData = try Data(contentsOf: url)
+                    // Load a UIImage for display purposes.
+                    if let image = UIImage(data: gifData) {
+                        DispatchQueue.main.async {
+                            self.pickImageCallback(.image((image, .gif(gifData))))
+                        }
+                    }
+                } catch {
+                    print("Error reading GIF data: \(error)")
+                }
+            }
+            return
         }
-
-        return nil
+        
+        // Otherwise, handle standard images.
+        if itemProvider.canLoadObject(ofClass: UIImage.self) {
+            // Here we load the file representation so we can check the file type.
+            itemProvider.loadFileRepresentation(forTypeIdentifier: "public.image") { (url, error) in
+                if let error = error {
+                    print("Error loading image file representation: \(error)")
+                    return
+                }
+                guard let url = url else { return }
+                let ext = url.pathExtension.lowercased()
+                do {
+                    let imageData = try Data(contentsOf: url)
+                    if let image = UIImage(data: imageData) {
+                        DispatchQueue.main.async {
+                            if ext == "png" {
+                                self.pickImageCallback(.image((image, .png)))
+                            } else {
+                                self.pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+                            }
+                        }
+                    }
+                } catch {
+                    print("Error reading image data: \(error)")
+                }
+            }
+        }
     }
 }
 
@@ -159,14 +240,10 @@ private extension UIImage {
         if imageOrientation == .up {
             return self
         }
-
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         draw(in: CGRect(origin: .zero, size: size))
-        if let normalizedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext() {
-            UIGraphicsEndImageContext()
-            return normalizedImage
-        }
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? self
         UIGraphicsEndImageContext()
-        return self
+        return normalizedImage
     }
 }

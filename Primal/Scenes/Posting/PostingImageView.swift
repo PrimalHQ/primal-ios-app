@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FLAnimatedImage
 
 protocol PostingImageCollectionViewDelegate: AnyObject {
     func didTapImage(resource: PostingAsset)
@@ -69,7 +70,9 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            if let image = r.resource?.thumbnailImage {
+            if let thumnail = r.resource?.animatedImage {
+                cell.imageView.animatedImage = thumnail
+            } else if let image = r.resource?.thumbnailImage {
                 cell.imageView.image = image
             } else {
                 cell.imageView.image = nil
@@ -128,7 +131,7 @@ final class PostingImageCell: UICollectionViewCell {
     
     weak var delegate: PostingImageCellDelegate?
     
-    let imageView = UIImageView()
+    let imageView = FLAnimatedImageView()
     let xButton = UIButton()
     
     let loadingParent = UIView()
