@@ -10,7 +10,7 @@ import NostrSDK
 import GenericJSON
 
 public extension String {
-    static let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)?(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+    static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
     static let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"

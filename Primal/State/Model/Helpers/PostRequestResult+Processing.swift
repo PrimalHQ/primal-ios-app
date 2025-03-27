@@ -33,7 +33,7 @@ extension PostRequestResult: MetadataCoding {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        followers: userFollowers[user.pubkey] ?? userScore[user.pubkey]
+        followers: userFollowers[user.pubkey] ?? 0
     )}
     
     func process(contentStyle: ParsedContentTextStyle) -> [ParsedContent] {
