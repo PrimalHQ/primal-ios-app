@@ -13,6 +13,7 @@ enum PostEmbedPreview {
     case highlight(Article, Highlight)
     case post(ParsedContent)
     case article(Article)
+    case invoice(Invoice, String)
 }
 
 class AdvancedEmbedPostViewController: UIViewController {
@@ -27,7 +28,8 @@ class AdvancedEmbedPostViewController: UIViewController {
     let imageButton = UIButton()
     let cameraButton = UIButton()
     let atButton = UIButton()
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView()])
+    let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView(), clearButton])
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
@@ -124,6 +126,8 @@ private extension AdvancedEmbedPostViewController {
         contentStack.isLayoutMarginsRelativeArrangement = true
         contentStack.layoutMargins = UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
         
+        embeddedPreviewStack.spacing = 4
+        
         imageView.layer.cornerRadius = 26
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
@@ -140,6 +144,7 @@ private extension AdvancedEmbedPostViewController {
         bottomStack.isLayoutMarginsRelativeArrangement = true
         bottomStack.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         bottomStack.spacing = 4
+        bottomStack.alignment = .center
         
         let border = SpacerView(height: 1, priority: .required)
         border.backgroundColor = .background3
@@ -174,11 +179,35 @@ private extension AdvancedEmbedPostViewController {
             verticalStack.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -102)
         ])
         
-        cancel.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
+        
+        cancel.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            if manager.isPosting {
+                manager.askToDeleteDraft(self) { [weak self] delete in
+                    if !delete {
+                        self?.dismiss(animated: true)
+                    }
+                }
+                return
+            }
+            
+            manager.askToSaveThenDismiss(self)
+        }), for: .touchUpInside)
+        
+        clearButton.addAction(.init(handler: { [weak self] _ in
+            if self?.manager.postingText.isEmpty == true  { return }
+            
+            let alert = UIAlertController(title: "Are you sure?", message: "Clear everything?", preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "Clear", style: .destructive, handler: { _ in
+                self?.manager.reset()
+            }))
+            self?.present(alert, animated: true)
+        }), for: .touchUpInside)
         
         textView.tintColor = .accent
         
@@ -235,9 +264,26 @@ private extension AdvancedEmbedPostViewController {
         
         manager.$embeddedElements.sink { [weak self] elements in
             guard let self else { return }
+            
+            
             embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
             
-            elements.forEach { self.embeddedPreviewStack.addArrangedSubview($0.makeView()) }
+            elements.enumerated().forEach { index, item in
+                let myButton = UIButton()
+                myButton.showsMenuAsPrimaryAction = true
+                myButton.menu = .init(children: [
+                    UIAction(title: "Delete", handler: { [weak self] _ in
+                        self?.manager.embeddedElements.remove(at: index)
+                    })
+                ])
+                
+                let view = item.makeView()
+                view.isUserInteractionEnabled = false
+                myButton.addSubview(view)
+                view.pinToSuperview()
+                
+                self.embeddedPreviewStack.addArrangedSubview(myButton)
+            }
         }
         .store(in: &cancellables)
     }
@@ -257,6 +303,32 @@ extension PostEmbedPreview {
             view.update(post)
             view.updateTheme()
             return view
+        case .invoice(let invoice, _):
+            let view = LightningInvoiceView()
+            view.updateForInvoice(invoice)
+            return view
+        }
+    }
+    
+    func embedText() -> String {
+        switch self {
+        case .highlight(let article, let highlight):
+            let highlightText: String = {
+                guard let noteRef = highlight.event.getNevent() else { return "" }
+                return "nostr:\(noteRef)"
+            }()
+            
+            let articleText: String = {
+                return "nostr:\(article.asParsedContent.noteId(extended: true))"
+            }()
+         
+            return highlightText + "\n" + articleText
+        case .article(let article):
+            return article.asParsedContent.noteId(extended: true)
+        case .post(let post):
+            return post.noteId(extended: true)
+        case .invoice(_, let text):
+            return text
         }
     }
 }

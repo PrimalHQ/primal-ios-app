@@ -123,41 +123,26 @@ extension NostrObject {
         var text = postingText
         
         for include in embeddedElements {
+            text += "\n" + include.embedText()
             switch include {
             case .highlight(let article, let highlight):
-                let highlightText: String = {
-                    guard let noteRef = highlight.event.getNevent() else { return "" }
-                    return "\nnostr:\(noteRef)"
-                }()
-                
-                let articleText: String = {
-                    return "\nnostr:\(article.asParsedContent.noteId(extended: true))"
-                }()
-             
-                text += highlightText + articleText
-                
                 let articleID = article.asParsedContent.post.universalID
                 allTags.append(["e", highlight.event.id, "", "highlight"])
                 allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
 
                 pubkeysToTag.insert(article.event.pubkey)
             case .post(let post):
-                let noteRef = post.noteId(extended: true)
-                text += "\n" + noteRef
-                
                 allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "post"])
                 
                 pubkeysToTag.insert(post.user.data.pubkey)
                 pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
             case .article(let article):
-                let noteRef = article.asParsedContent.noteId(extended: true)
-                text += "\n" + noteRef
-                
                 let quotingObject = article.asParsedContent.post
                 allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "article"])
                 
                 pubkeysToTag.insert(article.user.data.pubkey)
                 pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .invoice(_):
                 break
             }
         }

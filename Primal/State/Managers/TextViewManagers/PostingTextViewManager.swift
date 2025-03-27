@@ -146,6 +146,10 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             currentText = currentText.appending("\n" + url) as NSString
         }
         
+        for element in embeddedElements {
+            currentText = currentText.appending("\n" + element.embedText()) as NSString
+        }
+        
         return currentText as String
     }
     
@@ -220,11 +224,18 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         ]), at: range.location)
     }
     
+    var currentDraftText: String {
+        (textView.text ?? "")
+            + embeddedElements
+                .map { "\n" + $0.embedText() }
+                .joined()
+    }
+    
     var currentDraft: NoteDraft {
         NoteDraft(
             replyingTo: replyingTo?.universalID ?? "",
             userPubkey: IdentityManager.instance.userHexPubkey,
-            text: textView.text ?? "",
+            text: currentDraftText,
             uploadedAssets: media.compactMap { $0.state.url },
             taggedUsers: tokens.map({ token in
                     .init(
@@ -244,7 +255,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                 callback(false)
                 return
             }
-        } else if textView.text.isEmpty == true {
+        } else if draft.text.isEmpty {
             callback(false)
             return
         }
@@ -389,37 +400,75 @@ private extension PostingTextViewManager {
             .map { text[$0].string }
         
         for foundText in foundTexts {
-            guard let metadata = try? decodedMetadata(from: foundText), let eventId = metadata.eventId else { continue }
-            
-            SocketRequest(name: "events", payload: [
-                "event_ids": [.string(eventId)],
-                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                "extended_response": true
-            ])
-            .publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] res in
-                if let post = res.process(contentStyle: .regular).first(where: { $0.post.id == eventId }) {
-                    self?.embeddedElements.append(.post(post))
-                } else if let article = res.getArticles().first(where: { $0.event.id == eventId }) {
-                    self?.embeddedElements.append(.article(article))
-                }
+            if extractReference(foundText) {
+                text = text.replacingOccurrences(of: foundText, with: "")
             }
-            .store(in: &cancellables)
-
-            text = text.replacingOccurrences(of: foundText, with: "")
-            
-//            SocketRequest(name: "nip19_decode", payload: ["ids": [.string(foundText)]])
-//                .publisher()
-//                .sink { res in
-//                    print(res)
-//                }
-//                .store(in: &cancellables)
         }
      
         if text != textView.text {
             textView.text = text
         }
+    }
+    
+    func extractReference(_ ref: String) -> Bool {
+        if ref.hasPrefix("lnbc") {
+            let blocks = ref.parse_mentions()
+            for block in blocks {
+                if case .invoice(let invoice) = block {
+                    embeddedElements.append(.invoice(invoice, ref))
+                    return true
+                }
+            }
+        }
+        
+        if let mentionId = ref.eventIdFromNEvent() {
+            fetchEmbeddedNote(mentionId)
+            return true
+        }
+        
+        guard let metadata = try? decodedMetadata(from: ref) else { return false }
+        
+        if let eventId = metadata.eventId {
+            fetchEmbeddedNote(eventId)
+            return true
+        }
+        
+        if let pubkey = metadata.pubkey, let identifier = metadata.identifier {
+            SocketRequest(name: "long_form_content_thread_view", payload: [
+                "pubkey": .string(pubkey),
+                "identifier": .string(identifier),
+                "kind": .number(Double(metadata.kind ?? UInt32(NostrKind.longForm.rawValue))),
+                "limit": 1,
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+            ])
+            .publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard let content = res.getArticles().first(where: { $0.identifier == identifier && ($0.event.kind == Int(metadata.kind ?? 30023)) }) else { return }
+                
+                self?.embeddedElements.append(.article(content))
+            }
+            .store(in: &cancellables)
+            return true
+        }
+        
+        return false
+    }
+    
+    func fetchEmbeddedNote(_ eventId: String) {
+        SocketRequest(name: "events", payload: [
+            "event_ids": [.string(eventId)],
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "extended_response": true
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] res in
+            if let post = res.process(contentStyle: .regular).first(where: { $0.post.id == eventId }) {
+                self?.embeddedElements.append(.post(post))
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func rangeOfMention(in textView: UITextView, from position: UITextPosition) -> UITextRange? {
