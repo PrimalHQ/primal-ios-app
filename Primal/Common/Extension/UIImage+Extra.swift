@@ -41,6 +41,12 @@ extension UIImage {
         return doc.uiImage(dimension: dimension, scale: 3)
     }
     
+    func gifData() -> Data? {
+        
+        
+        return nil
+    }
+    
     func detectQRCode() -> String? {
         guard let ciImage = CIImage.init(image: self) else { return nil }
         

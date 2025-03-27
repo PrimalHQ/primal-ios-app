@@ -322,22 +322,20 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
         
         var url = url
-        if urlString.isValidURL {
-            if urlString.lowercased().hasPrefix("http://") {
-                url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
-            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
-                url = .init(string: "https://" + url.absoluteString) ?? url
-            }
-            
-            if url.host()?.contains("primal.net") == true {
-                PrimalWebsiteScheme().openURL(url)
-                return
-            }
-            
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
+        if urlString.lowercased().hasPrefix("http://") {
+            url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
+        } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+            url = .init(string: "https://" + url.absoluteString) ?? url
+        }
+        
+        if url.host()?.contains("primal.net") == true {
+            PrimalWebsiteScheme().openURL(url)
             return
         }
+        
+        let safari = SFSafariViewController(url: url)
+        present(safari, animated: true)
+        return
     }
     
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {

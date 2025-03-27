@@ -7,13 +7,18 @@
 
 import UIKit
 import AVFoundation
+import Photos
 
 struct GalleryVideo {
     var thumbnail: UIImage
     var url: URL
 }
 
-typealias GalleryImage = (UIImage, isPNG: Bool)
+enum ImageType {
+    case png, gif(Data), jpeg
+}
+
+typealias GalleryImage = (UIImage, ImageType)
 
 enum ImagePickerResult {
     case image(GalleryImage)
@@ -108,12 +113,20 @@ final class ImagePickerManager: NSObject, UIImagePickerControllerDelegate, UINav
         strongSelf = nil
         
         if let image = info[.originalImage] as? UIImage {
-            var isPNG = false
-            if let assetPath = info[.imageURL] as? NSURL, assetPath.absoluteString?.uppercased().hasSuffix("PNG") == true {
-                isPNG = true
+            guard let assetPath = (info[.imageURL] as? NSURL)?.absoluteString?.uppercased() else {
+                pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+                return
             }
-
-            pickImageCallback(.image((image.updateImageOrientationUp(), isPNG)))
+            
+            if assetPath.hasSuffix("PNG") == true {
+                pickImageCallback(.image((image, .png)))
+            } else if assetPath.hasSuffix("GIF") {
+                return
+                // This will be handled async by Photos library request
+//                pickImageCallback(.image((image, .gif)))
+            } else {
+                pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+            }
             return
         }
         
