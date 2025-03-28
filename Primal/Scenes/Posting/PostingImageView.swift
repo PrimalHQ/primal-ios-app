@@ -70,6 +70,10 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
+            cell.contentView.backgroundColor = r.resource == nil ? .foreground5 : .background
+            cell.xButton.isHidden = r.resource == nil
+            cell.contentView.layer.cornerRadius = 8
+            
             if let thumnail = r.resource?.animatedImage {
                 cell.imageView.animatedImage = thumnail
             } else if let image = r.resource?.thumbnailImage {

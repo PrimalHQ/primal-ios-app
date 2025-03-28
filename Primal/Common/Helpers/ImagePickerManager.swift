@@ -10,6 +10,7 @@ import AVFoundation
 import Photos
 import PhotosUI
 import FLAnimatedImage
+import Combine
 
 struct GalleryVideo {
     var thumbnail: UIImage
@@ -57,6 +58,7 @@ final class ImagePickerManager: NSObject {
     
     // Hold a strong reference to self during the picker presentation.
     var strongSelf: ImagePickerManager?
+    var cancellables: Set<AnyCancellable> = []
     
     enum Mode {
         case gallery, camera, dialog
@@ -168,18 +170,71 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
         
         // Check for video first (if allowed).
         if itemProvider.hasItemConformingToTypeIdentifier("public.movie") {
-            itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
+            strongSelf = self
+            
+            let progressAlert = UIAlertController(title: "Processing", message: "Operation in progress...\n\n", preferredStyle: .alert)
+            
+            let progress = itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { [weak self] (url, error) in
                 if let error = error {
                     print("Error loading video: \(error)")
                     return
                 }
-                guard let url = url, let absoluteURL = URL(string: url.absoluteString),
-                      let thumbnail = self.getThumbnailImage(forUrl: absoluteURL)
-                else { return }
+                guard var url = url else { return }
+                    
+                do {
+                    // Create a unique temporary file URL
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    let fileName = UUID().uuidString + "." + (url.pathExtension)
+                    let tempURL = tempDirectory.appendingPathComponent(fileName)
+                    
+                    // Copy the video file
+                    try FileManager.default.copyItem(at: url, to: tempURL)
+                    url = tempURL
+                } catch {
+                    print("Error copying video: \(error.localizedDescription)")
+                }
+                
+                guard let thumbnail = self?.getThumbnailImage(forUrl: url) else { return }
+                
                 DispatchQueue.main.async {
-                    self.pickImageCallback(.video(.init(thumbnail: thumbnail, url: absoluteURL)))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                        progressAlert.dismiss(animated: true)
+                    }
+                    self?.pickImageCallback(.video(.init(thumbnail: thumbnail, url: url)))
+                    self?.strongSelf = nil
                 }
             }
+            
+            // Add progress view
+            let progressView = UIProgressView(progressViewStyle: .default)
+            progressView.translatesAutoresizingMaskIntoConstraints = false
+            progressView.progress = 0.0
+            
+            progressAlert.view?.addSubview(progressView)
+            progressView
+                .pinToSuperview(edges: .top, padding: 80)
+                .pinToSuperview(edges: .horizontal, padding: 20)
+                .constrainToSize(height: 8)
+            
+            // Add cancel action
+            progressAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+                self?.strongSelf = nil
+            })
+            
+            // Present
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                self.viewController?.present(progressAlert, animated: true, completion: nil)
+            }
+            
+            Publishers.CombineLatest(
+                progress.publisher(for: \.completedUnitCount),
+                progress.publisher(for: \.totalUnitCount)
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { completed, total in
+                progressView.progress = Float(completed) / Float(total)
+            }
+            .store(in: &cancellables)
             return
         }
         
