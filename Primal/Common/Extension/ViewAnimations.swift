@@ -31,6 +31,7 @@ extension UILabel {
         animatingLabel.numberOfLines = numberOfLines
         animatingLabel.anchorPoint = (.zero)
         animatingLabel.frame = bounds
+        animatingLabel.tintColor = tintColor
         
         let scale = otherLabel.font.pointSize / font.pointSize
         
@@ -48,6 +49,7 @@ extension UILabel {
         otherAnimatingLabel.frame = otherLabel.bounds
         otherAnimatingLabel.alpha = 0
         otherAnimatingLabel.transform = .init(scaleX: 1 / scale, y: 1 / scale)
+        otherAnimatingLabel.tintColor = otherLabel.tintColor
         
         let parent = UIView()
         parent.clipsToBounds = true
