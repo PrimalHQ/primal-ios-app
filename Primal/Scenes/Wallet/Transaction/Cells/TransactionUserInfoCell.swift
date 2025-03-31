@@ -70,6 +70,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
         messageLabel.isHidden = message?.isEmpty != false
         
         mainLabel.textColor = .foreground
+        messageLabel.textColor = .foreground
         subtitleLabel.textColor = .foreground4
         backgroundColor = .background2
         background.backgroundColor = .background4
