@@ -9,7 +9,6 @@ import Combine
 import UIKit
 import AVFAudio
 import GRDB
-//import primal_shared
 
 struct ServerContentSettings: Codable {
     var show_primal_support: Bool
@@ -47,6 +46,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
+        UNUserNotificationCenter.current().delegate = self
+        registerForPushNotifications()
+        
         SocketRequest(name: "client_config", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
             .sink { res in
@@ -54,8 +56,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Self.contentSettings = settings
             }
             .store(in: &cancellables)
-
-//        PrimalInitializer.shared.doInit()
         
         return true
     }
@@ -64,5 +64,58 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+    
+    // MARK: - Push Notifications
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        
+        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
+        
+        SocketRequest(name: "update_notification_token", payload: [
+            "pubkeys": .array(pubkeys.map { .string($0) }),
+            "token": .string(token),
+            "platform": "ios"
+        ])
+        .publisher()
+        .sink(receiveValue: { res in
+            print(res.message)
+        })
+        .store(in: &cancellables)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
+        print("Failed to register for remote notifications: \(error.localizedDescription)")
+    }
+    
+    func registerForPushNotifications() {
+        let center = UNUserNotificationCenter.current()
+        
+        // Request permission
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if granted {
+                print("User granted notification permission")
+                // Register with APNs only if permission is granted
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                print("Permission denied")
+            }
+        }
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        print("Notification payload: \(userInfo)")
+        // Handle the notification (e.g., navigate to a specific screen)
+        completionHandler()
     }
 }

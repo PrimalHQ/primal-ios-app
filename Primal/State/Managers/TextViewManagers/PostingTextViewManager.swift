@@ -388,6 +388,27 @@ private extension PostingTextViewManager {
         currentlyEditingToken = .init(range: nsRange, text: word)
     }
     
+    func findAndExtractMedia() {
+        var text = textView.text ?? ""
+        
+        let urls = text.extractURLs()
+        
+        for url in urls {
+            if url.isImageURL {
+                media.append(.init(state: .uploaded(url)))
+            } else if url.isVideoURL {
+                media.append(.init(state: .uploaded(url)))
+            } else {
+                continue
+            }
+            text = text.replacingOccurrences(of: url, with: "")
+        }
+        
+        if text != textView.text {
+            textView.text = text
+        }
+    }
+    
     func findAndExtractReferences() {
         let pattern = "(note1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]{39}|nevent1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|naddr1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|lnbc[a-z0-9]{40,})"
 
@@ -496,6 +517,7 @@ private extension PostingTextViewManager {
         didChangeEvent.sink { [weak self] _ in
             self?.processFocusedWordForMention()
             self?.findAndExtractReferences()
+            self?.findAndExtractMedia()
         }
         .store(in: &cancellables)
         
