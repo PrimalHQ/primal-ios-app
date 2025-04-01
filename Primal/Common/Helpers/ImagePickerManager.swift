@@ -72,6 +72,9 @@ final class ImagePickerManager: NSObject {
         
         // Configure UIImagePickerController for camera mode.
         imagePicker.delegate = self
+        if allowVideo {
+            imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .photoLibrary) ?? imagePicker.mediaTypes
+        }
         
         switch mode {
         case .camera:
@@ -111,14 +114,18 @@ final class ImagePickerManager: NSObject {
     func openGallery(allowVideo: Bool) {
         strongSelf = self
         
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 1
-        // If you allow video, set filter to .any, otherwise only images.
-        config.filter = allowVideo ? PHPickerFilter.any(of: [.images, .videos]) : .images
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.mediaTypes = []
+        viewController?.present(imagePicker, animated: true)
         
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        viewController?.present(picker, animated: true, completion: nil)
+//        var config = PHPickerConfiguration()
+//        config.selectionLimit = 1
+//        // If you allow video, set filter to .any, otherwise only images.
+//        config.filter = allowVideo ? PHPickerFilter.any(of: [.images, .videos]) : .images
+//        
+//        let picker = PHPickerViewController(configuration: config)
+//        picker.delegate = self
+//        viewController?.present(picker, animated: true, completion: nil)
     }
     
     func getThumbnailImage(forUrl url: URL) -> UIImage? {
