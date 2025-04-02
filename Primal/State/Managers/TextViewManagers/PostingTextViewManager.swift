@@ -391,16 +391,8 @@ private extension PostingTextViewManager {
     func findAndExtractMedia() {
         var text = textView.text ?? ""
         
-        let urls = text.extractURLs()
-        
-        for url in urls {
-            if url.isImageURL {
-                media.append(.init(state: .uploaded(url)))
-            } else if url.isVideoURL {
-                media.append(.init(state: .uploaded(url)))
-            } else {
-                continue
-            }
+        for url in text.extractURLs() where url.isImageURL || url.isVideoURL {
+            media.append(.init(state: .uploaded(url)))
             text = text.replacingOccurrences(of: url, with: "")
         }
         

@@ -109,6 +109,7 @@ private extension AdvancedEmbedPostViewController {
     }
     
     func setup() {
+        presentationController?.delegate = self
         view.backgroundColor = .background2
         
         let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, embeddedPreviewStack])
@@ -286,6 +287,16 @@ private extension AdvancedEmbedPostViewController {
             }
         }
         .store(in: &cancellables)
+    }
+}
+
+extension AdvancedEmbedPostViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {
+        manager.askToSaveThenDismiss(self)
+    }
+    
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+        false
     }
 }
 
