@@ -402,7 +402,7 @@ private extension PostingTextViewManager {
     }
     
     func findAndExtractReferences() {
-        let pattern = "(note1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]{39}|nevent1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|naddr1[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+|lnbc[a-z0-9]{40,})"
+        let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(lnbc[a-z0-9]{40,})"
 
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
         
