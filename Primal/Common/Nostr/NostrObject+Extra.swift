@@ -127,18 +127,18 @@ extension NostrObject {
             switch include {
             case .highlight(let article, let highlight):
                 let articleID = article.asParsedContent.post.universalID
-                allTags.append(["e", highlight.event.id, "", "highlight"])
-                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
+                allTags.append(["e", highlight.event.id, "", "mention"])
+                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "mention"])
 
                 pubkeysToTag.insert(article.event.pubkey)
             case .post(let post):
-                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "post"])
+                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "mention"])
                 
                 pubkeysToTag.insert(post.user.data.pubkey)
                 pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
             case .article(let article):
                 let quotingObject = article.asParsedContent.post
-                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "article"])
+                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
                 
                 pubkeysToTag.insert(article.user.data.pubkey)
                 pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
