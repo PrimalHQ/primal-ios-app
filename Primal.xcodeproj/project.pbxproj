@@ -412,6 +412,8 @@
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
+		B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */; };
+		B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */; };
 		B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */; };
 		B97DF0802C8F1C820041C790 /* NoteFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */; };
 		B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */; };
@@ -1091,6 +1093,8 @@
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
 		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
+		B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMediaUploadsController.swift; sourceTree = "<group>"; };
+		B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMediaUploadsController.swift; sourceTree = "<group>"; };
 		B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumListFeedManager.swift; sourceTree = "<group>"; };
 		B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedPreviewController.swift; sourceTree = "<group>"; };
 		B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWebsiteScheme.swift; sourceTree = "<group>"; };
@@ -1802,6 +1806,7 @@
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
+				B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */,
 				B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */,
 			);
 			path = SubControllers;
@@ -2463,6 +2468,7 @@
 				B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */,
 				B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */,
 				B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */,
+				B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */,
 			);
 			path = InputControllers;
 			sourceTree = "<group>";
@@ -3575,6 +3581,7 @@
 				B98DD8BE2C515FB200E8369A /* ArticleImageView.swift in Sources */,
 				B91EF0D92CEBA10B00299ECF /* PremiumManageLegendController.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
+				B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */,
 				B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */,
 				B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
@@ -3847,6 +3854,7 @@
 				B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */,
 				B91EF0BF2CE7D89A00299ECF /* PremiumManageMediaStatsCell.swift in Sources */,
 				B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */,
+				B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */,
 				9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */,
 				B91EF0D32CEB830600299ECF /* PremiumManageSubscriptionController.swift in Sources */,
 				B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */,
