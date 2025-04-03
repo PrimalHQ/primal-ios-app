@@ -270,20 +270,21 @@ private extension AdvancedEmbedPostViewController {
             embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
             
             elements.enumerated().forEach { index, item in
-                let myButton = UIButton()
-                myButton.showsMenuAsPrimaryAction = true
-                myButton.menu = .init(children: [
-                    UIAction(title: "Delete", handler: { [weak self] _ in
-                        self?.manager.embeddedElements.remove(at: index)
-                    })
-                ])
+                let myView = UIView()
                 
                 let view = item.makeView()
                 view.isUserInteractionEnabled = false
-                myButton.addSubview(view)
+                myView.addSubview(view)
                 view.pinToSuperview()
                 
-                self.embeddedPreviewStack.addArrangedSubview(myButton)
+                let xButton = UIButton(configuration: .simpleImage("deleteImageIcon"))
+                myView.addSubview(xButton)
+                xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 4)
+                xButton.addAction(.init(handler: { [unowned self] _ in
+                    self.manager.embeddedElements.remove(at: index)
+                }), for: .touchUpInside)
+                
+                self.embeddedPreviewStack.addArrangedSubview(myView)
             }
         }
         .store(in: &cancellables)

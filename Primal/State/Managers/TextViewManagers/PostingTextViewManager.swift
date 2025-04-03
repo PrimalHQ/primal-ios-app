@@ -397,7 +397,7 @@ private extension PostingTextViewManager {
         }
         
         if text != textView.text {
-            textView.text = text
+            textView.text = text.trimmingCharacters(in: .newlines)
         }
     }
     
@@ -419,7 +419,7 @@ private extension PostingTextViewManager {
         }
      
         if text != textView.text {
-            textView.text = text
+            textView.text = text.trimmingCharacters(in: .newlines)
         }
     }
     
@@ -601,21 +601,14 @@ private extension PostingTextViewManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] draft in
                 guard let self, let draft else { return }
-                if textView.text?.isEmpty == false, let text = textView.text {
-                    let vc = (RootViewController.instance.presentedViewController ?? RootViewController.instance)
-                    let alert = UIAlertController(title: "Discard the draft and start a new note?", message: nil, preferredStyle: .alert)
-                    alert.addAction(.init(title: "Cancel", style: .cancel))
-                    alert.addAction(.init(title: "OK", style: .destructive, handler: { [weak self] _ in
-                        self?.reset()
-                        self?.textView.text = text
-                        self?.textView.selectedRange = .init(location: 0, length: 0)
-                    }))
-                    vc.show(alert, sender: nil)
+                
+                if let text = textView.text, !text.isEmpty, !draft.isPosting {
+                    textView.text = draft.text + text
+                } else {
+                    textView.text = draft.text
                 }
                 
                 oldDraft = draft
-                
-                textView.text = draft.text
                 isEmpty = draft.text.isEmpty
                 isPosting = draft.isPosting
                 
@@ -627,7 +620,7 @@ private extension PostingTextViewManager {
                     )
                 })
                 
-                media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) }
+                media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) } + (draft.isPosting ? [] : media)
                 
                 didChangeEvent.send(textView)
             }
