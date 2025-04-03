@@ -103,16 +103,20 @@ final class Connection {
     
     var messageReceived = PassthroughSubject<Void, Never>()
 
-    let cantConnectPublisher = CurrentValueSubject<Bool, Never>(false)
+    var cantConnectPublisher: AnyPublisher<Bool, Never> {
+        Publishers.Merge(
+            isConnectedPublisher.filter({ $0 }),
+            isConnectedPublisher.debounce(for: 6, scheduler: RunLoop.main).filter({ !$0 })
+        )
+        .map({ !$0 })
+        .eraseToAnyPublisher()
+    }
     let isConnectedPublisher = CurrentValueSubject<Bool, Never>(false)
     
     private(set) var isConnected: Bool = false {
         didSet {
             if oldValue != isConnected {
                 isConnectedPublisher.send(isConnected)
-            }
-            if isConnected {
-                cantConnectPublisher.send(false)
             }
         }
     }
@@ -308,8 +312,6 @@ final class Connection {
         isReconnecting = true
         Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) {
             self.isReconnecting = false
-            if self.isConnected { return }
-            self.cantConnectPublisher.send(true)
         }
         
         connect()
