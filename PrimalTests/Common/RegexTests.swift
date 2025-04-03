@@ -10,8 +10,10 @@ import Foundation
 
 final class RegexTests: XCTestCase {
     
+    var articleRegex: NSRegularExpression!
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        articleRegex = try NSRegularExpression(pattern: .articleMentionPattern, options: [])
     }
 
     override func tearDownWithError() throws {
@@ -23,6 +25,7 @@ final class RegexTests: XCTestCase {
         
         for (text, matches) in data {
             var matchCount = 0
+            var allMatches: [String] = []
             articleMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
                 guard let matchRange = match?.range else {
                     XCTFail("No range")
@@ -31,11 +34,12 @@ final class RegexTests: XCTestCase {
                 
                 matchCount += 1
                 let mentionText = (text as NSString).substring(with: matchRange)
-
-                XCTAssertTrue(matches.contains(mentionText))
+                allMatches.append(mentionText)
+                
+                XCTAssertTrue(matches.contains(mentionText), "\(mentionText) not in \(matches)")
             }
             
-            XCTAssertEqual(matches.count, matchCount)
+            XCTAssertEqual(matches.count, matchCount, "\(text): \(matches) != \(allMatches)")
         }
     }
 
@@ -116,6 +120,67 @@ final class RegexTests: XCTestCase {
             """,
             [
                 "https://njump.me/naddr1qvzqqqr4gupzp4sl80zm866yqrha4esknfwp0j4lxfrt29pkrh5nnnj2rgx6dm62qq0y2an9wfuj6stswqk5uet9v3ej6snfw33k76tw943hjvm4wejqp96a3d"
+            ]
+        ),
+        // Test 1: Multiple matches in one text
+        (
+            """
+            Check out these nostr addresses:
+            - nostr:naddr1abc123
+            - https://njump.me/naddr1def456
+            - naddr1ghi789
+            And a hashtag: #[123]
+            """,
+            [
+                "nostr:naddr1abc123",
+                "https://njump.me/naddr1def456",
+                "naddr1ghi789",
+                "#[123]"
+            ]
+        ),
+        // Test 2: No matches
+        (
+            """
+            This text does not contain any nostr addresses or hashtags.
+            It includes some random text and URLs like https://example.com/naddr1xyz.
+            """,
+            []
+        ),
+        // Test 3: Edge cases
+        (
+            """
+            nostr:naddr1start at the beginning.
+            End with naddr1end.
+            Punctuation test: (naddr1punct), [naddr1bracket].
+            Hashtag test: #[456]
+            """,
+            [
+                "nostr:naddr1start",
+                "naddr1end",
+                "#[456]"
+            ]
+        ),
+        // Test 4: Invalid contexts
+        (
+            """
+            This is an invalid URL: https://zap.stream/naddr1invalid.
+            Partial match: naddr1 partial.
+            Similar pattern: nnaddr1similar.
+            """,
+            []
+        ),
+        // Test 5: Mixed valid and invalid
+        (
+            """
+            Valid: nostr:naddr1valid1
+            Invalid: https://invalid.com/naddr1invalid2
+            Valid standalone: naddr1valid3
+            Valid hashtag: #[789]
+            """,
+            [
+                "nostr:naddr1valid1",
+                "naddr1valid3",
+                "#[789]"
             ]
         ),
     ]

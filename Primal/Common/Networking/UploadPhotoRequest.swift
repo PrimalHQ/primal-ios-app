@@ -17,11 +17,11 @@ class UploadPhotoRequest {
 
     lazy var socket = NWWebSocket(url: url, connectAutomatically: true, connectionQueue: Self.dispatchQueue)
     var image: UIImage
-    var isPNG: Bool
+    var imageType: ImageType
 
-    init(image: UIImage, isPNG: Bool = true) {
+    init(image: UIImage, type: ImageType = .png) {
         self.image = image
-        self.isPNG = isPNG
+        self.imageType = type
         socket.delegate  = self
     }
 
@@ -38,9 +38,16 @@ class UploadPhotoRequest {
     }
 
     func uploadImage() {
-        let resized = resizeImage(image: image, targetSize: 200)
-
-        guard let imageData = isPNG ? image.pngData() : image.jpegData(compressionQuality: 0.9) else { return }
+        guard let imageData = {
+            switch imageType {
+            case .png:
+                return image.pngData()
+            case .gif(let data):
+                return data
+            case .jpeg:
+                return image.jpegData(compressionQuality: 0.9)
+            }
+        }() else { return }
 
         let strBase64:String = "data:image/svg+xml;base64," + imageData.base64EncodedString()
         let requestID = UUID().uuidString

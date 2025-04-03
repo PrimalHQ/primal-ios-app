@@ -10,13 +10,16 @@ import NostrSDK
 import GenericJSON
 
 public extension String {
-    static let articleMentionPattern = "\\b(nostr:|(https://)?(www.)?njump.me/)?(naddr1\\w+)\\b|#\\[(\\d+)\\]"
+    static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
     static let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
 }
 
 class NoteProcessor: MetadataCoding {
+    
+    typealias ProcessingHighlight = (reference: String, replacement: String, highlight: ParsedContent)
+    
     let response: PostRequestResult
     let contentStyle: ParsedContentTextStyle
     init(result: PostRequestResult, contentStyle: ParsedContentTextStyle) {
@@ -240,7 +243,7 @@ class NoteProcessor: MetadataCoding {
         
         // MARK: - Finding and extracting mentioned notes
         var referencedPosts: [(String, ParsedContent)] = []
-        var highlights: [(reference: String, replacement: String, highlight: ParsedContent)] = []
+        var highlights: [ProcessingHighlight] = []
         
         let tmpText = text as NSString
         if let postMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
@@ -262,30 +265,7 @@ class NoteProcessor: MetadataCoding {
                 }()
                     
                 if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
-                    if mention.post.kind == NostrKind.zapReceipt.rawValue {
-                        if let feedZap = parsedFeedZaps.first(where: { $0.zap.receiptId == mentionId }) {
-                            p.embeddedZap = feedZap
-                            itemsToRemove.append(mentionText)
-                        } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
-                            p.customEvent = mention
-                            itemsToRemove.append(mentionText)
-                        }
-                    } else if mention.post.kind == NostrKind.highlight.rawValue  {
-                        let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
-                        
-                        highlights.append((mentionText, content, mention))
-                    } else if mention.post.kind == post.kind {
-                        referencedPosts.append((mentionText, mention))
-                    } else if mention.post.kind == NostrKind.mediaPost.rawValue, let urlTag = mention.post.tags.first(where: { $0.first == "imeta" })?[safe: 1], urlTag.hasPrefix("url ") {
-                        let url = String(urlTag.dropFirst(4))
-                        let media = response.mediaMetadata.first(where: { $0.event_id == mentionId })?.resources.uniqueByFilter({ $0.url })
-                        mention.mediaResources.append(contentsOf: media ?? [.init(url: url, variants: [])])
-                        mention.mediaResources = mention.mediaResources.uniqueByFilter({ $0.url })
-                        referencedPosts.append((mentionText, mention))
-                    } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
-                        p.customEvent = mention
-                        itemsToRemove.append(mentionText)
-                    }
+                    extractNote(p: p, post: post, mention: mention, mentionText: mentionText, mentionId: mentionId, highlights: &highlights, itemsToRemove: &itemsToRemove, referencedPosts: &referencedPosts, otherURLs: otherURLs)
                 } else {
                     itemsToRemove.append(mentionText)
                     p.notFound = .note
@@ -303,28 +283,46 @@ class NoteProcessor: MetadataCoding {
 
                 guard
                     let address = mentionText.split(separator: ":").last?.split(separator: "/").last,
-                    let metadata = try? decodedMetadata(from: String(address)),
-                    let id = metadata.identifier,
-                    let mention = self.response.mentions.first(where: {
-                        ($0.kind == NostrKind.longForm.rawValue || $0.kind == NostrKind.shortenedArticle.rawValue) && $0.tags.contains(["d", id])
-                    })
+                    let metadata = try? decodedMetadata(from: String(address))
                 else {
-                    p.notFound = .article
+                    p.notFound = .note
                     return
                 }
-               
-                p.article = Article(
-                    id: id,
-                    title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",
-                    image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
-                    summary: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
-                    words: nil,
-                    zaps: [],
-                    replies: [],
-                    stats: response.stats[mention.id] ?? .empty(mention.id),
-                    event: mention,
-                    user: response.createParsedUser(response.users[mention.pubkey] ?? PrimalUser(pubkey: mention.pubkey))
-                )
+                
+                let kind = Int32(metadata.kind ?? 80081337)
+            
+                guard
+                    let id = metadata.identifier,
+                    let mention = self.response.mentions.first(where: {
+                        ($0.kind == kind) && $0.tags.contains(["d", id])
+                    })
+                else {
+                    if kind == NostrKind.longForm.rawValue {
+                        p.notFound = .article
+                    } else {
+                        p.notFound = .note
+                    }
+                    return
+                }
+                
+                if kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue {
+                    p.article = Article(
+                        id: id,
+                        title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",
+                        image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
+                        summary: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                        words: nil,
+                        zaps: [],
+                        replies: [],
+                        stats: response.stats[mention.id] ?? .empty(mention.id),
+                        event: mention,
+                        user: response.createParsedUser(response.users[mention.pubkey] ?? PrimalUser(pubkey: mention.pubkey))
+                    )
+                } else if let mention = response.createPrimalPost(content: mention) {
+                    p.customEvent = .init(post: mention.0, user: mention.1)
+                } else {
+                    p.notFound = .note
+                }
             }
         }
         
@@ -480,5 +478,42 @@ class NoteProcessor: MetadataCoding {
         p.buildContentString(style: contentStyle)
         
         return p
+    }
+    
+    private func extractNote(
+        p: ParsedContent,
+        post: PrimalFeedPost,
+        mention: ParsedContent,
+        mentionText: String,
+        mentionId: String,
+        highlights: inout [ProcessingHighlight],
+        itemsToRemove: inout [String],
+        referencedPosts: inout [(String, ParsedContent)],
+        otherURLs: [String]
+    ) {
+        if mention.post.kind == NostrKind.zapReceipt.rawValue {
+            if let feedZap = parsedFeedZaps.first(where: { $0.zap.receiptId == mentionId }) {
+                p.embeddedZap = feedZap
+                itemsToRemove.append(mentionText)
+            } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
+                p.customEvent = mention
+                itemsToRemove.append(mentionText)
+            }
+        } else if mention.post.kind == NostrKind.highlight.rawValue  {
+            let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            highlights.append((mentionText, content, mention))
+        } else if mention.post.kind == post.kind {
+            referencedPosts.append((mentionText, mention))
+        } else if mention.post.kind == NostrKind.mediaPost.rawValue, let urlTag = mention.post.tags.first(where: { $0.first == "imeta" })?[safe: 1], urlTag.hasPrefix("url ") {
+            let url = String(urlTag.dropFirst(4))
+            let media = response.mediaMetadata.first(where: { $0.event_id == mentionId })?.resources.uniqueByFilter({ $0.url })
+            mention.mediaResources.append(contentsOf: media ?? [.init(url: url, variants: [])])
+            mention.mediaResources = mention.mediaResources.uniqueByFilter({ $0.url })
+            referencedPosts.append((mentionText, mention))
+        } else if !otherURLs.contains(where: { $0.hasSuffix(mentionText) }) {
+            p.customEvent = mention
+            itemsToRemove.append(mentionText)
+        }
     }
 }

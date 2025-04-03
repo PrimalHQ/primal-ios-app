@@ -103,7 +103,12 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.showsMenuAsPrimaryAction = true
 
-        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        let tapArea = UIView()
+        contentView.addSubview(tapArea)
+        tapArea
+            .pin(to: profileImageView, edges: [.leading, .vertical])
+            .pin(to: separatorLabel, edges: .trailing)
+        tapArea.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .profile)
         }))
     }

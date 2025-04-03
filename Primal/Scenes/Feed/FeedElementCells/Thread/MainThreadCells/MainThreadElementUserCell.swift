@@ -131,8 +131,13 @@ private extension MainThreadElementUserCell {
         
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.showsMenuAsPrimaryAction = true
-
-        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        
+        let tapArea = UIView()
+        contentView.addSubview(tapArea)
+        tapArea
+            .pin(to: profileImageView, edges: [.leading, .vertical])
+            .pin(to: threeDotsButton, edges: .trailing, padding: 50)
+        tapArea.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .profile)
         }))
     }

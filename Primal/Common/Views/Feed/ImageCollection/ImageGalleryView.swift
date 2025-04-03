@@ -183,7 +183,11 @@ extension ImageGalleryView: UICollectionViewDataSource {
             CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
                 switch result {
                 case .success(let image):
-                    (cell as? ImageCell)?.imageView.animatedImage = image
+                    if let cell = cell as? ImageCell {
+                        cell.imageView.animatedImage = image
+                        cell.url = r.url
+                        cell.delegate = self
+                    }
                 case .failure:
                     (cell as? ImageCell)?.setup(
                         url: r.url(for: .medium),

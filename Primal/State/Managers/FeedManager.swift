@@ -123,9 +123,18 @@ final class FeedManager {
         isRequestingNewPage = true
         sendNewPageRequest()
     }
-            
+        
+    var runOnce = true
     func requestThread(postId: String, limit: Int32 = 100) {
         parsedPosts.removeAll()
+        
+        if runOnce {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { [weak self] in
+                guard let self, parsedPosts.isEmpty else { return }
+                requestThread(postId: postId, limit: limit)
+            }
+            runOnce = false
+        }
         
         SocketRequest(
             useHTTP: true,

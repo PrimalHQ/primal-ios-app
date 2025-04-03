@@ -52,8 +52,8 @@ class UploadAssetRequest {
         uploadAsset()
     }
     
-    convenience init(image: UIImage, isPNG: Bool = true) {
-        self.init(asset: .image((image, isPNG)))
+    convenience init(image: UIImage, type: ImageType = .png) {
+        self.init(asset: .image((image, type)))
     }
     
     var promise: ((Result<String, Error>) -> Void)?
@@ -73,8 +73,15 @@ class UploadAssetRequest {
     func uploadAsset() {
         guard let data = {
             switch pickedAsset {
-            case .image((let image, let isPNG)):
-                return isPNG ? image.pngData() : image.jpegData(compressionQuality: 0.9)
+            case .image((let image, let type)):
+                switch type {
+                case .png:
+                    return image.pngData()
+                case .jpeg:
+                    return image.jpegData(compressionQuality: 0.9)
+                case .gif(let data):
+                    return data
+                }
             case .video(let galleryVideo):
                 return try? Data(contentsOf: galleryVideo.url)
             }

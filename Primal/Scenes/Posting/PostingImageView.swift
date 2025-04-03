@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import FLAnimatedImage
 
 protocol PostingImageCollectionViewDelegate: AnyObject {
     func didTapImage(resource: PostingAsset)
@@ -70,7 +71,13 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            if let image = r.resource?.thumbnailImage {
+            cell.contentView.backgroundColor = r.resource == nil ? .foreground5 : .background
+            cell.xButton.isHidden = r.resource == nil
+            cell.contentView.layer.cornerRadius = 8
+            
+            if let thumnail = r.resource?.animatedImage {
+                cell.imageView.animatedImage = thumnail
+            } else if let image = r.resource?.thumbnailImage {
                 cell.imageView.image = image
                 cell.playerView.isHidden = true
             } else {
@@ -137,7 +144,7 @@ final class PostingImageCell: UICollectionViewCell {
     
     weak var delegate: PostingImageCellDelegate?
     
-    let imageView = UIImageView()
+    let imageView = FLAnimatedImageView()
     let playerView = PlayerView()
     let playButton = UIImageView(image: .videoPlay)
     let xButton = UIButton()
