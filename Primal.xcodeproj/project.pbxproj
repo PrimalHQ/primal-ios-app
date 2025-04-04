@@ -414,6 +414,7 @@
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
 		B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */; };
 		B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */; };
+		B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */; };
 		B97DF0802C8F1C820041C790 /* NoteFeedPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */; };
 		B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */; };
@@ -632,6 +633,13 @@
 			remoteGlobalIDString = 939330F129A3E36F003954C2;
 			remoteInfo = Primal;
 		};
+		B9658AF12D9FF9460037E5DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 939330EA29A3E36F003954C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B9658AEB2D9FF9460037E5DB;
+			remoteInfo = PrimalNotifications;
+		};
 		B9DFA0AB2D7EFBC9002C6F34 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 939330EA29A3E36F003954C2 /* Project object */;
@@ -648,6 +656,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */,
 				B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -1095,6 +1104,7 @@
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
 		B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMediaUploadsController.swift; sourceTree = "<group>"; };
+		B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrimalNotifications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B968CDFF2D5B784F00515D51 /* PremiumListFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumListFeedManager.swift; sourceTree = "<group>"; };
 		B97DF07F2C8F1C820041C790 /* NoteFeedPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedPreviewController.swift; sourceTree = "<group>"; };
 		B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWebsiteScheme.swift; sourceTree = "<group>"; };
@@ -1295,6 +1305,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B9658AEB2D9FF9460037E5DB /* PrimalNotifications */;
+		};
 		B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -1305,6 +1322,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		B9658AED2D9FF9460037E5DB /* PrimalNotifications */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = PrimalNotifications; sourceTree = "<group>"; };
 		B9DFA0A42D7EFBC9002C6F34 /* primalShare */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = primalShare; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -1339,6 +1357,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9393310929A3E370003954C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9658AE92D9FF9460037E5DB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1418,6 +1443,7 @@
 				9393310529A3E370003954C2 /* PrimalTests */,
 				9393310F29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A42D7EFBC9002C6F34 /* primalShare */,
+				B9658AED2D9FF9460037E5DB /* PrimalNotifications */,
 				939330F329A3E36F003954C2 /* Products */,
 				933DBDB12A1126CE008DCF1F /* Frameworks */,
 			);
@@ -1430,6 +1456,7 @@
 				9393310229A3E370003954C2 /* PrimalTests.xctest */,
 				9393310C29A3E370003954C2 /* PrimalUITests.xctest */,
 				B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */,
+				B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3102,6 +3129,7 @@
 			);
 			dependencies = (
 				B9DFA0AC2D7EFBC9002C6F34 /* PBXTargetDependency */,
+				B9658AF22D9FF9460037E5DB /* PBXTargetDependency */,
 			);
 			name = Primal;
 			packageProductDependencies = (
@@ -3162,6 +3190,28 @@
 			productReference = 9393310C29A3E370003954C2 /* PrimalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		B9658AEB2D9FF9460037E5DB /* PrimalNotifications */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B9658AF72D9FF9460037E5DB /* Build configuration list for PBXNativeTarget "PrimalNotifications" */;
+			buildPhases = (
+				B9658AE82D9FF9460037E5DB /* Sources */,
+				B9658AE92D9FF9460037E5DB /* Frameworks */,
+				B9658AEA2D9FF9460037E5DB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B9658AED2D9FF9460037E5DB /* PrimalNotifications */,
+			);
+			name = PrimalNotifications;
+			packageProductDependencies = (
+			);
+			productName = PrimalNotifications;
+			productReference = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B9DFA0A22D7EFBC9002C6F34 /* primalShare */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B9DFA0B22D7EFBC9002C6F34 /* Build configuration list for PBXNativeTarget "primalShare" */;
@@ -3191,7 +3241,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					939330F129A3E36F003954C2 = {
@@ -3205,6 +3255,9 @@
 					9393310B29A3E370003954C2 = {
 						CreatedOnToolsVersion = 14.2;
 						TestTargetID = 939330F129A3E36F003954C2;
+					};
+					B9658AEB2D9FF9460037E5DB = {
+						CreatedOnToolsVersion = 16.3;
 					};
 					B9DFA0A22D7EFBC9002C6F34 = {
 						CreatedOnToolsVersion = 16.2;
@@ -3243,6 +3296,7 @@
 				9393310129A3E370003954C2 /* PrimalTests */,
 				9393310B29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A22D7EFBC9002C6F34 /* primalShare */,
+				B9658AEB2D9FF9460037E5DB /* PrimalNotifications */,
 			);
 		};
 /* End PBXProject section */
@@ -3301,6 +3355,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9393310A29A3E370003954C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9658AEA2D9FF9460037E5DB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3892,6 +3953,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9658AE82D9FF9460037E5DB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B9DFA09F2D7EFBC9002C6F34 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3911,6 +3979,11 @@
 			isa = PBXTargetDependency;
 			target = 939330F129A3E36F003954C2 /* Primal */;
 			targetProxy = 9393310D29A3E370003954C2 /* PBXContainerItemProxy */;
+		};
+		B9658AF22D9FF9460037E5DB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B9658AEB2D9FF9460037E5DB /* PrimalNotifications */;
+			targetProxy = B9658AF12D9FF9460037E5DB /* PBXContainerItemProxy */;
 		};
 		B9DFA0AC2D7EFBC9002C6F34 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4073,7 +4146,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.11;
+				MARKETING_VERSION = 2.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4120,7 +4193,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.11;
+				MARKETING_VERSION = 2.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4207,6 +4280,65 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Primal;
+			};
+			name = Release;
+		};
+		B9658AF42D9FF9460037E5DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrimalNotifications/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PrimalNotifications;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.PrimalNotifications;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B9658AF52D9FF9460037E5DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrimalNotifications/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PrimalNotifications;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.PrimalNotifications;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -4306,6 +4438,15 @@
 			buildConfigurations = (
 				9393311D29A3E370003954C2 /* Debug */,
 				9393311E29A3E370003954C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B9658AF72D9FF9460037E5DB /* Build configuration list for PBXNativeTarget "PrimalNotifications" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B9658AF42D9FF9460037E5DB /* Debug */,
+				B9658AF52D9FF9460037E5DB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

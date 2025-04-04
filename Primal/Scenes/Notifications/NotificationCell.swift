@@ -19,10 +19,6 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     let border = SpacerView(height: 1)
     let newIndicator = UIView().constrainToSize(8)
     
-    let andOthersLabel = UILabel()
-    lazy var firstRow = UIStackView([nameLabel, andOthersLabel])
-    lazy var titleStack = UIStackView(axis: .vertical, [firstRow, titleLabel])
-    
     let mainParent = UIView()
     let auxParent = UIView()
     
@@ -60,27 +56,23 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
-        titleLabel.attributedText = notification.titleText
-        nameLabel.attributedText = notification.userNameText
+        titleLabel.attributedText = notification.fullTitleText
         
         if notification.users.count <= 1 {
-            andOthersLabel.isHidden = true
             auxParent.isHidden = false
             mainParent.isHidden = true
-            if titleStack.superview != auxParent {
-                titleStack.removeFromSuperview()
-                auxParent.addSubview(titleStack)
-                titleStack.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
+            if titleLabel.superview != auxParent {
+                titleLabel.removeFromSuperview()
+                auxParent.addSubview(titleLabel)
+                titleLabel.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
             }
         } else {
-            andOthersLabel.attributedText = notification.andOthersText
-            andOthersLabel.isHidden = false
             auxParent.isHidden = true
             mainParent.isHidden = false
-            if titleStack.superview != mainParent {
-                titleStack.removeFromSuperview()
-                mainParent.addSubview(titleStack)
-                titleStack.pinToSuperview()
+            if titleLabel.superview != mainParent {
+                titleLabel.removeFromSuperview()
+                mainParent.addSubview(titleLabel)
+                titleLabel.pinToSuperview()
             }
         }
         
@@ -124,13 +116,8 @@ private extension NotificationCell {
         
         iconView.tintColor = .init(rgb: 0x52CE0A)
         
-        titleStack.alignment = .leading
-        
-        titleLabel.numberOfLines = 1
+        titleLabel.numberOfLines = 0
         iconLabel.textAlignment = .center
-        
-        nameLabel.setContentHuggingPriority(.required, for: .horizontal)
-        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
         timeLabel.textColor = .foreground4
@@ -190,15 +177,24 @@ private extension NotificationCell {
 }
 
 extension GroupedNotification {
+    var fullTitleText: NSAttributedString {
+        let string = NSMutableAttributedString(attributedString: userNameText)
+        if users.count > 1 {
+            string.append(andOthersText)
+        }
+        string.append(titleText)
+        return string
+    }
+    
     var userNameText: NSAttributedString {
-        NSAttributedString(string: users.first?.data.firstIdentifier ?? "", attributes: [
+        NSAttributedString(string: (users.first?.data.firstIdentifier ?? "") + " ", attributes: [
             .foregroundColor: UIColor.foreground,
             .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .bold)
         ])
     }
     
     var andOthersText: NSAttributedString {
-        NSAttributedString(string: " and \(users.count - 1) other" + (users.count == 2 ? "\n" : "s\n"), attributes: [
+        NSAttributedString(string: "and \(users.count - 1) other" + (users.count == 2 ? " " : "s "), attributes: [
             .foregroundColor: UIColor.foreground,
             .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         ])

@@ -9,6 +9,8 @@ import Combine
 import UIKit
 import AVFAudio
 import GRDB
+import Intents
+import GenericJSON
 
 struct ServerContentSettings: Codable {
     var show_primal_support: Bool
@@ -48,6 +50,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()
+        registerNotificationCategory()
         
         SocketRequest(name: "client_config", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
@@ -59,7 +62,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
-
+    
     // MARK: - UISceneSession Lifecycle
     
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -72,27 +75,31 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
         
-        SocketRequest(name: "update_notification_token", payload: [
+        var payload: [String: JSON] = [
             "pubkeys": .array(pubkeys.map { .string($0) }),
             "token": .string(token),
             "platform": "ios"
-        ])
-        .publisher()
-        .sink(receiveValue: { res in
-            print(res.message)
-        })
-        .store(in: &cancellables)
+        ]
+        #if DEBUG
+        payload["environment"] = "sandbox"
+        #endif
+        
+        SocketRequest(name: "update_notification_token", payload: .object(payload)).publisher()
+            .sink(receiveValue: { res in
+                print(res.message ?? "")
+            })
+            .store(in: &cancellables)
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
         print("Failed to register for remote notifications: \(error.localizedDescription)")
     }
     
+}
+
+private extension AppDelegate {
     func registerForPushNotifications() {
-        let center = UNUserNotificationCenter.current()
-        
-        // Request permission
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             if granted {
                 print("User granted notification permission")
                 // Register with APNs only if permission is granted
@@ -104,18 +111,33 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    func registerNotificationCategory() {
+        let actions = [
+            UNNotificationAction(identifier: "REPLY", title: "Reply", options: []),
+            UNNotificationAction(identifier: "MUTE", title: "Mute", options: [.destructive])
+        ]
+
+        let category = UNNotificationCategory(
+            identifier: "MESSAGE_CATEGORY",
+            actions: actions,
+            intentIdentifiers: [],
+            options: []
+        )
+
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
         completionHandler([.banner, .sound, .badge])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         print("Notification payload: \(userInfo)")
-        // Handle the notification (e.g., navigate to a specific screen)
+        // Handle the notification tap (e.g., navigate to a specific screen)
         completionHandler()
     }
 }
