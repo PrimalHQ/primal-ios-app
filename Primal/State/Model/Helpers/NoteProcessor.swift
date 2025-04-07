@@ -382,8 +382,21 @@ class NoteProcessor: MetadataCoding {
         let blocks = text.parse_mentions()
         for block in blocks {
             if case .invoice(let invoice) = block {
-                p.invoice = invoice
-                itemsToRemove.append(invoice.string)
+                var string = invoice.string
+                if !string.lowercased().hasPrefix("lnbc") {
+                    let pattern = "lnbc[a-z0-9]{50,}"
+                    if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
+                        var matchFound = false
+                        regex.enumerateMatches(in: text, range: .init(text.startIndex..., in: text)) { match, _, _ in
+                            guard !matchFound, let matchRange = match?.range else { return }
+                            
+                            matchFound = true
+                            string = (text as NSString).substring(with: matchRange)
+                        }
+                    }
+                }
+                p.invoice = (invoice, string)
+                itemsToRemove.append(string)
                 break
             }
         }

@@ -398,7 +398,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             showViewController(ArticleViewController(content: article))
         case .payInvoice:
             guard let invoice = post.invoice else { return }
-            search(invoice.string)
+            search(invoice.1)
             textSearch = nil
         case .zapDetails:
             show(NoteReactionsParentController(.zaps, noteId: post.post.id), sender: nil)

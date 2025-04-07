@@ -56,7 +56,7 @@ extension ParsedContent {
         case .rawData:      return post.rawData ?? post.encodeToString()
         case .noteID:       return noteId(extended: true)
         case .userPubkey:   return user.data.pubkey
-        case .invoice:      return invoice?.string
+        case .invoice:      return invoice?.1
         }
     }
 }

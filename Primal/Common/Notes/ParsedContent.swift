@@ -89,7 +89,7 @@ final class ParsedContent: Hashable {
     var linkPreviews: [LinkMetadata] = []
     var article: Article?
     
-    var invoice: Invoice?
+    var invoice: (Invoice, String)?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")

@@ -134,7 +134,7 @@ class PostCell: UITableViewCell {
         }
         
         if let invoice = content.invoice {
-            invoiceView.updateForInvoice(invoice)
+            invoiceView.updateForInvoice(invoice.0)
             invoiceView.isHidden = false
         } else {
             invoiceView.isHidden = true
