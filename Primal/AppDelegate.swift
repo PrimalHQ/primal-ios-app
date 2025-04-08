@@ -136,6 +136,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
+        
+        if let extra = userInfo["extra"] as? [String: Any] {
+            var waitForOpen = false
+            if let userPubkey = extra["user_pubkey"] as? String, IdentityManager.instance.userHexPubkey != userPubkey, let npub = userPubkey.hexToNpub() {
+                let key = ICloudKeychainManager.instance.getSavedNsec(npub) ?? npub
+                _ = LoginManager.instance.login(key)
+                RootViewController.instance.reset()
+                waitForOpen = true
+            }
+            
+            if let url = extra["link"] as? String, let url = URL(string: url) {
+                if waitForOpen {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                        PrimalWebsiteScheme().openURL(url)
+                    }
+                } else {
+                    PrimalWebsiteScheme().openURL(url)
+                }
+            }
+        }
+        
         print("Notification payload: \(userInfo)")
         // Handle the notification tap (e.g., navigate to a specific screen)
         completionHandler()

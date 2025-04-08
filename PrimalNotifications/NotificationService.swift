@@ -20,42 +20,68 @@ class NotificationService: UNNotificationServiceExtension {
         guard let bestAttemptContent else { contentHandler(request.content); return }
         
         let userInfo = request.content.userInfo
-        guard let communicationData = userInfo["communication-data"] as? [String: Any],
-              let senderID = communicationData["sender"] as? String,
-              let message = communicationData["message"] as? String,
-              let conversationId = communicationData["conversationId"] as? String else {
+        guard
+            let communicationData = userInfo["extra"] as? [String: Any],
+            let userId = communicationData["user_pubkey"] as? String,
+            let userName = communicationData["user_displayname"] as? String
+        else {
             contentHandler(bestAttemptContent)
             return
         }
         
-        // 2. Create sender intent
-        let senderHandle = INPersonHandle(value: senderID, type: .unknown)
-        let sender = INPerson(
-            personHandle: senderHandle,
-            nameComponents: nil,
-            displayName: "Remote User",
-            image: nil,  // Can load from avatarUrl
-            contactIdentifier: nil,
-            customIdentifier: nil
-        )
+        var isCurrentUser = true
+        if let currentUserPubkey = UserDefaults(suiteName: "group.primal")?.string(forKey: "currentUserPubkey") {
+            isCurrentUser = currentUserPubkey == userId
+        }
         
-        // 3. Create message intent
-        let intent = INSendMessageIntent(
-            recipients: nil,
-            outgoingMessageType: .outgoingMessageText,
-            content: message,
-            speakableGroupName: nil,
-            conversationIdentifier: conversationId,
-            serviceName: nil,
-            sender: sender,
-            attachments: nil
-        )
-
-        // Modify the notification content here...
-        bestAttemptContent.threadIdentifier = conversationId
-        bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
+        let conversationId = communicationData["conversation_id"] as? String
+        let senderId = communicationData["initiator_displayname"] as? String ?? "unknown"
+        let senderImageUrl = communicationData["initiator_image"] as? String ?? ""
         
-        contentHandler((try? bestAttemptContent.updating(from: intent)) ?? bestAttemptContent)
+        Task {
+            var senderImage: INImage?
+            if let imageUrl = URL(string: senderImageUrl), let imageData = try? await downloadImageData(from: imageUrl) {
+                senderImage = .init(imageData: imageData)
+            }
+            
+            var nameComps = PersonNameComponents()
+            nameComps.nickname = senderId
+            
+            let senderHandle = INPersonHandle(value: senderId, type: .unknown)
+            let sender = INPerson(
+                personHandle: senderHandle,
+                nameComponents: nameComps,
+                displayName: isCurrentUser ? bestAttemptContent.title : "@\(userName): \(bestAttemptContent.title)",
+                image: senderImage,
+                contactIdentifier: senderId,
+                customIdentifier: senderId
+            )
+            
+            let intent = INSendMessageIntent(
+                recipients: nil,
+                outgoingMessageType: .outgoingMessageText,
+                content: nil,
+                speakableGroupName: nil,
+                conversationIdentifier: conversationId,
+                serviceName: "kind 1",
+                sender: sender,
+                attachments: nil
+            )
+            
+            let interaction = INInteraction(intent: intent, response: nil)
+            interaction.direction = .incoming
+            try? await interaction.donate()
+            
+            if let attempt = try? request.content.updating(from: intent).mutableCopy() as? UNMutableNotificationContent {
+                attempt.body = bestAttemptContent.body
+                contentHandler(attempt)
+                return
+            }
+            
+            bestAttemptContent.threadIdentifier = conversationId ?? ""
+            
+            contentHandler(bestAttemptContent)
+        }
     }
     
     override func serviceExtensionTimeWillExpire() {
@@ -65,5 +91,13 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(bestAttemptContent)
         }
     }
+    
 
+    func downloadImageData(from url: URL) async throws -> Data {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+        return data
+    }
 }

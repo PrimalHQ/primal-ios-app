@@ -253,6 +253,11 @@ private extension MainTabBarController {
     func setup() {
         IdentityManager.instance.requestUserProfile()
         
+        if let userDefaults = UserDefaults(suiteName: "group.primal") {
+            userDefaults.set(IdentityManager.instance.userHexPubkey, forKey: "currentUserPubkey")
+            userDefaults.synchronize()
+        }
+        
         updateTheme()
         updateChildren = true
         

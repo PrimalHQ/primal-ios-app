@@ -123,7 +123,6 @@ extension NostrObject {
         var text = postingText
         
         for include in embeddedElements {
-            text += "\n" + include.embedText()
             switch include {
             case .highlight(let article, let highlight):
                 let articleID = article.asParsedContent.post.universalID
