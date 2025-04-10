@@ -8,6 +8,23 @@
 import Foundation
 import GenericJSON
 
+enum PushNotificationGroup {
+    case NEW_FOLLOWS
+    case ZAPS
+    case REACTIONS
+    case REPLIES
+    case REPOSTS
+    case MENTIONS
+    case DIRECT_MESSAGES
+    case WALLET_TRANSACTIONS
+}
+
+enum AdditionalNotificationOptions {
+    case ignore_events_with_too_many_mentions
+    case only_show_dm_notifications_from_users_i_follow
+    case only_show_reactions_from_users_i_follow
+}
+
 enum NotificationType: Int, CaseIterable, Codable {
     case NEW_USER_FOLLOWED_YOU = 1
     
@@ -17,6 +34,8 @@ enum NotificationType: Int, CaseIterable, Codable {
     case YOUR_POST_WAS_REPLIED_TO = 6
     case YOU_WERE_MENTIONED_IN_POST = 7
     case YOUR_POST_WAS_MENTIONED_IN_POST = 8
+    case YOUR_POST_WAS_HIGHLIGHTED = 9
+    case YOUR_POST_WAS_BOOKMARKED = 10
     
     case POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED = 101
     case POST_YOU_WERE_MENTIONED_IN_WAS_LIKED = 102
@@ -55,7 +74,7 @@ enum NostrNotification: Codable, Hashable {
     case userUnfollowed(userId: String)
     
     case postZapped(postId: String, userId: String, amount: Int)
-    case postLiked(postId: String, userId: String)
+    case postLiked(postId: String, userId: String, reaction: String)
     case postReposted(postId: String, userId: String)
     case postReplied(postId: String, userId: String, reply: String)
     
@@ -89,7 +108,19 @@ enum NostrNotification: Codable, Hashable {
                 let your_post = object["your_post"]?.stringValue,
                 let who_liked_it = object["who_liked_it"]?.stringValue
             else { return nil }
-            return .postLiked(postId: your_post, userId: who_liked_it)
+            return .postLiked(postId: your_post, userId: who_liked_it, reaction: "like")
+        case .YOUR_POST_WAS_HIGHLIGHTED:
+            guard
+                let your_post = object["your_post"]?.stringValue,
+                let who_highlighted_it = object["who_highlighted_it"]?.stringValue
+            else { return nil }
+            return .postLiked(postId: your_post, userId: who_highlighted_it, reaction: "highlight")
+        case .YOUR_POST_WAS_BOOKMARKED:
+            guard
+                let your_post = object["your_post"]?.stringValue,
+                let who_bookmarked_it = object["who_bookmarked_it"]?.stringValue
+            else { return nil }
+            return .postLiked(postId: your_post, userId: who_bookmarked_it, reaction: "bookmark")
         case .YOUR_POST_WAS_REPOSTED:
             guard
                 let your_post = object["your_post"]?.stringValue,
@@ -171,7 +202,7 @@ enum NostrNotification: Codable, Hashable {
 extension NostrNotification {
     var mainUserId: String? {
         switch self {
-        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _):
+        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId, _), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _):
             
             return userId
         case .postMention, .userMention:
@@ -182,7 +213,7 @@ extension NostrNotification {
     var mainPostId: String? {
         switch self {
         case    .postZapped(let postId, _, _),
-                .postLiked(let postId, _),
+                .postLiked(let postId, _, _),
                 .postReposted(let postId, _),
                 .userMention(let postId),
                 .postMention(let postId, _),

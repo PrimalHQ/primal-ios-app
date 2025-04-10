@@ -238,8 +238,8 @@ extension GroupedNotification {
             return "followed you"
         case .YOUR_POST_WAS_ZAPPED:
             return "zapped your note"
-        case .YOUR_POST_WAS_LIKED:
-            return "liked your note"
+        case .YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
+            return "reacted to your note"
         case .YOUR_POST_WAS_REPOSTED:
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
@@ -305,6 +305,10 @@ extension NotificationType {
             return "notifPostRepost"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
             return "notifPostReply"
+        case .YOUR_POST_WAS_HIGHLIGHTED:
+            return "notifHighlight"
+        case .YOUR_POST_WAS_BOOKMARKED:
+            return "notifBookmark"
         }
     }
 }

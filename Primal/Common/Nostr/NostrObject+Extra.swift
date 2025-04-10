@@ -322,6 +322,11 @@ extension NostrObject {
         
         return createNostrObject(content: note, kind: 9734, tags: tags)
     }
+    
+    static func notificationsEnableEvent(token: String) -> NostrObject? {       
+        guard let contentString = ["token": token].encodeToString() else { return nil }
+        return createNostrObject(content: contentString, kind: 1337)
+    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()

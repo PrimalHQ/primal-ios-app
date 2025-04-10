@@ -304,11 +304,13 @@ final class IdentityManager {
         }
     }
     
-    func updateNotifications(_ notifications: PrimalSettingsNotifications) {
+    func updateNotifications(_ notifications: PrimalSettingsNotifications, _ push: PrimalSettingsPushNotifications, _ additional: PrimalSettingsAdditionalNotifications) {
         if LoginManager.instance.method() != .nsec { return }
 
         guard var settings = userSettings else { return }
         settings.notifications = notifications
+        settings.pushNotifications = push
+        settings.notificationsAdditional = additional
         updateSettings(settings)
     }
     

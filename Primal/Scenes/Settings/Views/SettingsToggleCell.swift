@@ -18,6 +18,8 @@ class SettingsToggleCell: UITableViewCell, Themeable {
     let label = UILabel()
     let toggle = UISwitch(frame: .zero)
     
+    var heightC: NSLayoutConstraint?
+    
     weak var delegate: SettingsToggleCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -37,6 +39,7 @@ class SettingsToggleCell: UITableViewCell, Themeable {
         icon.setContentHuggingPriority(.required, for: .horizontal)
         
         label.font = .appFont(withSize: 16, weight: .regular)
+        label.numberOfLines = 0
         
         background.addSubview(topBorder)
         topBorder.pinToSuperview(edges: [.horizontal, .top])
@@ -45,6 +48,10 @@ class SettingsToggleCell: UITableViewCell, Themeable {
             guard let self else { return }
             self.delegate?.toggleUpdatedInCell(self)
         }), for: .valueChanged)
+        
+        heightC = contentView.heightAnchor.constraint(equalToConstant: 48)
+        heightC?.priority = .defaultHigh
+        heightC?.isActive = true
     }
     
     required init?(coder: NSCoder) {

@@ -7,6 +7,7 @@
 
 import UserNotifications
 import Intents
+import UniformTypeIdentifiers
 
 class NotificationService: UNNotificationServiceExtension {
 
@@ -57,10 +58,13 @@ class NotificationService: UNNotificationServiceExtension {
                 customIdentifier: senderId
             )
             
+            let recipientHandle = INPersonHandle(value: userId, type: .unknown)
+            let recipient = INPerson(personHandle: recipientHandle, nameComponents: nil, displayName: userName, image: nil, contactIdentifier: nil, customIdentifier: nil, isMe: true)
+            
             let intent = INSendMessageIntent(
-                recipients: nil,
+                recipients: [recipient],
                 outgoingMessageType: .outgoingMessageText,
-                content: nil,
+                content: bestAttemptContent.body,
                 speakableGroupName: nil,
                 conversationIdentifier: conversationId,
                 serviceName: "kind 1",
@@ -72,13 +76,17 @@ class NotificationService: UNNotificationServiceExtension {
             interaction.direction = .incoming
             try? await interaction.donate()
             
-            if let attempt = try? request.content.updating(from: intent).mutableCopy() as? UNMutableNotificationContent {
-                attempt.body = bestAttemptContent.body
-                contentHandler(attempt)
-                return
+            bestAttemptContent.threadIdentifier = conversationId ?? ""
+            bestAttemptContent.categoryIdentifier = "MESSAGE_CATEGORY"
+        
+            if let urlString = communicationData["content_image"] as? String, let url = URL(string: urlString), let data = try? await downloadImageData(from: url), let attachment = try? createAttachment(from: data) {
+                bestAttemptContent.attachments = [attachment]
             }
             
-            bestAttemptContent.threadIdentifier = conversationId ?? ""
+            if let communicationNotification = try? bestAttemptContent.updating(from: intent) {
+                contentHandler(communicationNotification)
+                return
+            }
             
             contentHandler(bestAttemptContent)
         }
@@ -99,5 +107,18 @@ class NotificationService: UNNotificationServiceExtension {
             throw URLError(.badServerResponse)
         }
         return data
+    }
+    
+    func createAttachment(from data: Data) throws -> UNNotificationAttachment {
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let fileName = "image.\(UUID().uuidString).jpg"
+        let fileURL = tempDirectory.appendingPathComponent(fileName)
+
+        try data.write(to: fileURL)
+        
+        return try UNNotificationAttachment(identifier: "attachment", url: fileURL, options: [
+            UNNotificationAttachmentOptionsThumbnailHiddenKey: false,
+            UNNotificationAttachmentOptionsTypeHintKey: UTType.jpeg
+        ])
     }
 }
