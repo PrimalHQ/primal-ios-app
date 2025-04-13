@@ -1,6 +1,16 @@
 {
   "images" : [
     {
+      "filename" : "reposted a note you were mentioned in - light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
       "filename" : "reposted a note you were mentioned in - dark.svg",
       "idiom" : "universal"
     }

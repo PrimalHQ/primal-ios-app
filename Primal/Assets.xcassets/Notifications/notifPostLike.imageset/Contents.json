@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "a post your post was mentioned in was liked (1).svg",
+      "filename" : "liked a note your note was mentioned in - light.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "a post your post was mentioned in was liked.svg",
+      "filename" : "liked a note your note was mentioned in - dark.svg",
       "idiom" : "universal"
     }
   ],

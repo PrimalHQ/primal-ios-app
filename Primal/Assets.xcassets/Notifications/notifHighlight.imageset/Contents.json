@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "liked - light.svg",
+      "filename" : "highlighted - light.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "liked - dark.svg",
+      "filename" : "highlighted - dark.svg",
       "idiom" : "universal"
     }
   ],

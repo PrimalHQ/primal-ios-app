@@ -27,6 +27,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     lazy var bottomBarStandIn = UIView()
     lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, bottomBarStandIn])
     
+    var firstRowLeftC: NSLayoutConstraint?
+    
     var notificationCellDelegate: NotificationCellDelegate? {
         get { delegate as? NotificationCellDelegate }
         set { delegate = newValue }
@@ -53,6 +55,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         iconView.image = notification.icon
         iconLabel.attributedText = notification.iconText
+        
+        firstRowLeftC?.constant = notification.mainNotification.type.isReply ? -40 : 0
         
         avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
@@ -105,8 +109,13 @@ private extension NotificationCell {
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         
         let firstRow = UIStackView([avatarStack, auxParent, UIView(), timeLabel])
+        let firstRowParent = UIView()
+        firstRowParent.addSubview(firstRow)
+        firstRow.pinToSuperview(edges: [.vertical, .trailing])
+        firstRowLeftC = firstRow.leadingAnchor.constraint(equalTo: firstRowParent.leadingAnchor)
+        firstRowLeftC?.isActive = true
         
-        let contentStack = UIStackView(arrangedSubviews: [firstRow, mainParent, postContentStack])
+        let contentStack = UIStackView(arrangedSubviews: [firstRowParent, mainParent, postContentStack])
         let mainStack = UIStackView(arrangedSubviews: [iconStack, contentStack])
         
         iconView.centerToView(avatarStack, axis: .vertical)
@@ -271,44 +280,54 @@ extension GroupedNotification {
 }
 
 extension NotificationType {
-    var icon: UIImage? { UIImage(named: iconName) }
-    
-    var iconName: String {
+    var icon: UIImage? {
         switch self {
         case .NEW_USER_FOLLOWED_YOU:
-            return "notifFollow"
+            return .notifFollow
         case .YOUR_POST_WAS_ZAPPED:
-            return "notifPostZap1"
+            return .notifPostZap1
         case .YOUR_POST_WAS_LIKED:
-            return "notifPostLike1"
+            return .notifPostLike1
         case .YOUR_POST_WAS_REPOSTED:
-            return "notifPostRepost1"
+            return .notifPostRepost1
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "notifPostReply1"
+            return nil
+//            return "notifPostReply1"
         case .YOU_WERE_MENTIONED_IN_POST:
-            return "notifUserMention"
+            return .notifUserMention
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
-            return "notifPostMention"
+            return .notifPostMention
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
-            return "notifUserZap"
+            return .notifUserZap
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:
-            return "notifUserLike"
+            return .notifUserLike
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED:
-            return "notifUserRepost"
+            return .notifUserRepost
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
-            return "notifUserReply"
+            return nil
+//            return "notifUserReply"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
-            return "notifPostZap"
+            return .notifPostZap
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
-            return "notifPostLike"
+            return .notifPostLike
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
-            return "notifPostRepost"
+            return .notifPostRepost
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
-            return "notifPostReply"
+            return nil
+//            return "notifPostReply"
         case .YOUR_POST_WAS_HIGHLIGHTED:
-            return "notifHighlight"
+            return .notifHighlight
         case .YOUR_POST_WAS_BOOKMARKED:
-            return "notifBookmark"
+            return .notifBookmark
+        }
+    }
+    
+    var isReply: Bool {
+        switch self {
+        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+            return true
+        default:
+            return false
         }
     }
 }
