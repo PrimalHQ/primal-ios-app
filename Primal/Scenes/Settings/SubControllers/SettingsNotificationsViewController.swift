@@ -57,8 +57,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             let stack = UIStackView(axis: .vertical, [pushView, SpacerView(height: 10), pushInfoLabel])
             let view = UIView()
             view.addSubview(stack)
-            stack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .vertical, padding: 10)
-            view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 115)
+            stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 10).pinToSuperview(edges: .bottom, padding: 0)
+            view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 105)
             return view
         }()
         
@@ -95,7 +95,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             $pushNotificationsEnabled.debounce(for: 0.5, scheduler: RunLoop.main).filter({ $0 })
         )
         .sink { [weak self] _ in
-            self?.updateTable()
+            self?.updateTable(animate: true)
         }
         .store(in: &cancellables)
         
@@ -156,7 +156,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             .store(in: &cancellables)
         
         updateNotificationStatus()
-        updateTable()
+        updateTable(animate: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -171,6 +171,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
     func updateTheme() {
         table.reloadData()
         table.backgroundColor = .background
+        
+        pushView.switchView.onTintColor = .accent
         
         navigationItem.leftBarButtonItem = customBackButton
     }
@@ -202,7 +204,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         }
     }
     
-    func updateTable() {
+    var didHaveEnabled = false
+    func updateTable(animate: Bool) {
         tableData = []
         
         if pushNotificationsEnabled {
@@ -232,10 +235,17 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             .additional(.only_show_dm_notifications_from_users_i_follow),
             .additional(.only_show_reactions_from_users_i_follow)
         ]))
-     
-        UIView.transition(with: table, duration: 0.3, options: .transitionCrossDissolve) {
-            self.table.reloadData()
+        
+        if animate { // IF THE STRUCTURE OF THE TABLE CHANGES, THIS CODE WILL CRASH AND NEEDS TO BE UPDATED
+            if didHaveEnabled && !pushNotificationsEnabled {
+                table.deleteSections(.init(integer: 0), with: .automatic)
+            }
+            if !didHaveEnabled && pushNotificationsEnabled {
+                table.insertSections(.init(integer: 0), with: .automatic)
+            }
         }
+            
+        didHaveEnabled = pushNotificationsEnabled
     }
 }
 

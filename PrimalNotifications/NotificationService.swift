@@ -52,7 +52,7 @@ class NotificationService: UNNotificationServiceExtension {
             let sender = INPerson(
                 personHandle: senderHandle,
                 nameComponents: nameComps,
-                displayName: isCurrentUser ? bestAttemptContent.title : "@\(userName): \(bestAttemptContent.title)",
+                displayName: bestAttemptContent.title, //isCurrentUser ? bestAttemptContent.title : "@\(userName): \(bestAttemptContent.title)",
                 image: senderImage,
                 contactIdentifier: senderId,
                 customIdentifier: senderId

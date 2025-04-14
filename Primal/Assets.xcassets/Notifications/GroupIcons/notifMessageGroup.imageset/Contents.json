@@ -1,15 +1,6 @@
 {
   "images" : [
     {
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
       "filename" : "Messages - filled.svg",
       "idiom" : "universal"
     }

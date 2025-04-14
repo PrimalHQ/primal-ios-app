@@ -12,7 +12,7 @@ final class SettingsHeaderView: UITableViewHeaderFooterView, Themeable {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         contentView.addSubview(label)
-        label.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 10).pinToSuperview(edges: .bottom, padding: 12)
+        label.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 28).pinToSuperview(edges: .bottom, padding: 12)
         label.font = .appFont(withSize: 14, weight: .medium)
         label.text = "YOUR NOSTR FEEDS"
     }
