@@ -206,6 +206,12 @@ final class NotificationFeedViewController: NoteViewController {
             }
             return self
         }
+        if post.post.kind != 1 {
+            if post.post.kind == NostrKind.highlight.rawValue, let article = post.article {
+                show(ArticleViewController(content: article), sender: nil)
+            }
+            return self
+        }
         return super.open(post: post)
     }
     
@@ -284,7 +290,7 @@ extension Array where Element == GroupedNotification {
                     first.users.append(contentsOf: notifications.dropFirst().flatMap { $0.users })
                     grouped.append(first)
                 }
-            case .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_REPOSTED, .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED, .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED, .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
+            case .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_REPOSTED, .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED, .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED, .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 
@@ -298,7 +304,19 @@ extension Array where Element == GroupedNotification {
                     }
                 }
                 grouped += groupedByPost
-            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+            case .YOUR_POST_WAS_LIKED:
+                let notifications = filter { $0.mainNotification.type == type }
+                
+                var groupedByReaction = [GroupedNotification]()
+                for notification in notifications {
+                    if let index = groupedByReaction.firstIndex(where: { $0.mainNotification.data.reactionType == notification.mainNotification.data.reactionType }) {
+                        groupedByReaction[index].users += notification.users
+                    } else {
+                        groupedByReaction.append(notification)
+                    }
+                }
+                grouped += groupedByReaction
+            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 grouped += notifications
@@ -313,7 +331,8 @@ extension Array where Element == GroupedNotification {
 
 extension PostRequestResult {
     func getParsedNotifications() -> [GroupedNotification] {
-        let posts = NoteProcessor(result: self, contentStyle: .regular).process()
+        let processor = NoteProcessor(result: self, contentStyle: .regular)
+        let posts = processor.process()
         
         return notifications.sorted(by: { $0.date > $1.date }).map { notif in
             var parsedUsers: [ParsedUser] = []
@@ -323,11 +342,25 @@ extension PostRequestResult {
             }
             
             var notificationPost: ParsedContent?
-            if let postId = notif.data.mainPostId, let post = posts.first(where: { $0.post.id == postId }) {
-                if parsedUsers.isEmpty {
-                    parsedUsers.append(post.user)
+            if let postId = notif.data.mainPostId {
+                if let post = posts.first(where: { $0.post.id == postId }) {
+                    if parsedUsers.isEmpty {
+                        parsedUsers.append(post.user)
+                    }
+                    notificationPost = post
+                } else if let highlight = highlights.first(where: { $0.id == postId }){
+                    notificationPost = .init(.init(
+                        post: .init(nostrPost: highlight, nostrPostStats: .empty(postId)),
+                        user: createParsedUser(users[highlight.pubkey] ?? .init(pubkey: highlight.pubkey))
+                    ))
+                    
+                    notificationPost?.text = highlight.content
+                    notificationPost?.highlights = [.init(position: 0, length: highlight.content.count, text: highlight.content, reference: highlight.id)]
+                    notificationPost?.article = processor.articles.first(where: { article in
+                        print(highlight)
+                        return true
+                    })
                 }
-                notificationPost = post
             }
             
             return GroupedNotification(users: parsedUsers, mainNotification: notif, post: notificationPost)

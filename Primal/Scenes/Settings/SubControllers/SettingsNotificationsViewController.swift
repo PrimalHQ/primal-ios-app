@@ -238,10 +238,10 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         
         if animate { // IF THE STRUCTURE OF THE TABLE CHANGES, THIS CODE WILL CRASH AND NEEDS TO BE UPDATED
             if didHaveEnabled && !pushNotificationsEnabled {
-                table.deleteSections(.init(integer: 0), with: .automatic)
+                table.deleteSections(.init(integer: 0), with: .fade)
             }
             if !didHaveEnabled && pushNotificationsEnabled {
-                table.insertSections(.init(integer: 0), with: .automatic)
+                table.insertSections(.init(integer: 0), with: .fade)
             }
         }
             

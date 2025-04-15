@@ -78,8 +78,8 @@ private extension SettingsMainViewController {
         let appearance = SettingsOptionButton(title: "Appearance")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Accounts")
-        let notifications = SettingsOptionButton(title: "Notifications")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
+        let notifications = SettingsOptionButton(title: "Notifications")
         let devMode = SettingsOptionButton(title: "Dev Mode")
         devMode.isHidden = true
         let zaps = SettingsOptionButton(title: "Zaps")
@@ -87,7 +87,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, notifications, mediaUploads, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         

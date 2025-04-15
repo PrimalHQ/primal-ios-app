@@ -22,10 +22,12 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     let mainParent = UIView()
     let auxParent = UIView()
     
+    let reactionLabel = UILabel()
+    
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     lazy var bottomBarStandIn = UIView()
-    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, bottomBarStandIn])
+    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, articleView, postPreview, bottomBarStandIn])
     
     var firstRowLeftC: NSLayoutConstraint?
     
@@ -51,6 +53,15 @@ final class NotificationCell: PostCell, ElementReactionsCell {
             bottomBarStandIn.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
         } else {
             postContentStack.isHidden = true
+        }
+        
+        if let reaction = notification.mainNotification.data.reactionType {
+            reactionLabel.text = reaction.emojiString
+            reactionLabel.isHidden = false
+            iconView.isHidden = true
+        } else {
+            reactionLabel.isHidden = true
+            iconView.isHidden = false
         }
         
         iconView.image = notification.icon
@@ -143,6 +154,9 @@ private extension NotificationCell {
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         bottomC.priority = .defaultHigh
         bottomC.isActive = true
+        
+        contentView.addSubview(reactionLabel)
+        reactionLabel.centerToView(iconView)
         
         contentView.addSubview(newIndicator)
         newIndicator.pinToSuperview(edges: [.top, .trailing], padding: 10)
@@ -247,8 +261,12 @@ extension GroupedNotification {
             return "followed you"
         case .YOUR_POST_WAS_ZAPPED:
             return "zapped your note"
-        case .YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
+        case .YOUR_POST_WAS_LIKED:
             return "reacted to your note"
+        case  .YOUR_POST_WAS_HIGHLIGHTED:
+            return "highlighted your article"
+        case .YOUR_POST_WAS_BOOKMARKED:
+            return "bookmarked your note"
         case .YOUR_POST_WAS_REPOSTED:
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
@@ -292,7 +310,6 @@ extension NotificationType {
             return .notifPostRepost1
         case .YOUR_POST_WAS_REPLIED_TO:
             return nil
-//            return "notifPostReply1"
         case .YOU_WERE_MENTIONED_IN_POST:
             return .notifUserMention
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
@@ -305,7 +322,6 @@ extension NotificationType {
             return .notifUserRepost
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
             return nil
-//            return "notifUserReply"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
             return .notifPostZap
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
@@ -314,7 +330,6 @@ extension NotificationType {
             return .notifPostRepost
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
             return nil
-//            return "notifPostReply"
         case .YOUR_POST_WAS_HIGHLIGHTED:
             return .notifHighlight
         case .YOUR_POST_WAS_BOOKMARKED:
