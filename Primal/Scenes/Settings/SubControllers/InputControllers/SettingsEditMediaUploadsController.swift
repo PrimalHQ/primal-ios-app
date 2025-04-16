@@ -16,6 +16,18 @@ final class SettingsEditMediaUploadsController: UIViewController, SettingsContro
     private var cancellables: Set<AnyCancellable> = []
     private var viewCancellables: Set<AnyCancellable> = []
     
+    let completion: (String) -> Void
+    let titleView: UIView
+    init(title: String, completion: @escaping (String) -> Void) {
+        self.completion = completion
+        titleView = SettingsTitleView(title: title)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,33 +51,36 @@ final class SettingsEditMediaUploadsController: UIViewController, SettingsContro
 
 extension SettingsEditMediaUploadsController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        guard
-            let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-            !text.containsEmoji,
-            let url = URL(string: text),
-            text.hasPrefix("wss://")
-        else { return false }
-        
-        
-        let alert = UIAlertController(title: "Are you sure?", message: "Do you want to switch to this caching service?\n\(text)", preferredStyle: .alert)
-        alert.addAction(.init(title: "OK", style: .default) { _ in
-            NetworkSettings.cacheServerOverride = text
-            textField.text = ""
-        })
-        alert.addAction(.init(title: "Cancel", style: .cancel))
-        present(alert, animated: true)
-        
+        sendCompletion()
         textField.resignFirstResponder()
         return false
     }
 }
 
 private extension SettingsEditMediaUploadsController {
+    func sendCompletion() {
+        let text = blossomServerInput.input.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.containsEmoji, let url = URL(string: text) else { return }
+        
+        let alert = UIAlertController(title: "Are you sure?", message: "Do you want to switch to this blossom server?\n\(text)", preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .default) { [weak self] _ in
+            guard let self else { return }
+            navigationController?.popViewController(animated: true)
+            completion(text)
+        })
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
     func setup() {
         title = "Media Uploads"
         updateTheme()
         
         blossomServerInput.input.placeholder = "enter blossom server url"
+        blossomServerInput.input.delegate = self
+        blossomServerInput.action.addAction(.init(handler: { [weak self] _ in
+            self?.sendCompletion()
+        }), for: .touchUpInside)
 
         let regularConnection = SettingsNetworkStatusView(title: MediaUploadSettings.blossomServer ?? "")
         regularConnection.status = true
@@ -88,7 +103,7 @@ private extension SettingsEditMediaUploadsController {
         relayStackParent.layer.cornerRadius = 12
         
         let stack = UIStackView(axis: .vertical, [
-            SettingsTitleView(title: "SWITCH BLOSSOM SERVER"), SpacerView(height: 8),
+            titleView, SpacerView(height: 8),
             blossomServerInput, SpacerView(height: 30),
             titleLabel("Suggested blossom servers"), SpacerView(height: 8),
         ])
@@ -117,6 +132,13 @@ private extension SettingsEditMediaUploadsController {
         view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.blossomServerInput.input.resignFirstResponder()
         }))
+        
+        SocketRequest(name: "get_recommended_blossom_servers", payload: nil).publisher()
+            .sink { res in
+                print(res.message)
+                print(res.events)
+            }
+            .store(in: &cancellables)
     }
     
     func titleLabel(_ text: String) -> UILabel {

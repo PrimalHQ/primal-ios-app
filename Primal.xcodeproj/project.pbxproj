@@ -354,6 +354,7 @@
 		B9318F652B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */; };
 		B9318F672B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */; };
 		B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */; };
+		B934ADA82DAEAE110044E5B5 /* PushNotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADA72DAEAE080044E5B5 /* PushNotificationCell.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
@@ -1043,6 +1044,7 @@
 		B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMinTransactionController.swift; sourceTree = "<group>"; };
 		B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendTransitionAnimator.swift; sourceTree = "<group>"; };
 		B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendAmountSendAnimator.swift; sourceTree = "<group>"; };
+		B934ADA72DAEAE080044E5B5 /* PushNotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationCell.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
@@ -2162,6 +2164,7 @@
 				9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */,
 				B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */,
 				9ED416112A4CAC5A00892235 /* NotificationCell.swift */,
+				B934ADA72DAEAE080044E5B5 /* PushNotificationCell.swift */,
 				9ED416132A4E03E500892235 /* AvatarView.swift */,
 			);
 			path = Notifications;
@@ -3884,6 +3887,7 @@
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
 				B9E67EA92D09D8FA006BB397 /* ThreadElementTextCell.swift in Sources */,
 				B91EF0C32CE7E70900299ECF /* PremiumManageMediaDataCell.swift in Sources */,
+				B934ADA82DAEAE110044E5B5 /* PushNotificationCell.swift in Sources */,
 				B9DF0CA82C22163B009ADC7B /* LongFormEmbeddedPostController.swift in Sources */,
 				B9E67EC02D0CA7A8006BB397 /* PreviewFeedDatasource.swift in Sources */,
 				B98DD8E22C666B4B00E8369A /* PostRequestResult+FeedPicker.swift in Sources */,
@@ -4146,7 +4150,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.19;
+				MARKETING_VERSION = 2.2.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4193,7 +4197,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.19;
+				MARKETING_VERSION = 2.2.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

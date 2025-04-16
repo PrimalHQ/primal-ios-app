@@ -656,10 +656,11 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
-        if let imageCell = cell.mainImages.currentImageCell() {
+        let current = cell.mainImages.currentImageCell()
+        if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
-        } else if let multiCell = cell.mainImages.collection.visibleCells.first as? MultipleImageGalleryCell,
+        } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
@@ -680,8 +681,15 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
-        if let imageCell = cell.postPreview.mainImages.currentImageCell() {
+        let current = cell.postPreview.mainImages.currentImageCell()
+        if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            return
+        } else if let multiCell = current as? MultipleImageGalleryCell,
+                  let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+                  let imageView = multiCell.imageViews[safe: index]?.display
+        {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
             return
         }
         

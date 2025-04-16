@@ -17,6 +17,23 @@ extension UserDefaults {
         get { string(forKey: "notificationEnableEventsKey")?.decode() ?? [] }
         set { setValue(newValue.encodeToString(), forKey: "notificationEnableEventsKey") }
     }
+    
+    var currentUserEnabledNotifications: Bool {
+        notificationEnableEvents.contains(where: { $0.pubkey == IdentityManager.instance.userHexPubkey })
+    }
+    
+    private var hideNotificationPermissionRequest: [String] {
+        get { string(forKey: "hideNotificationPermissionRequestKey")?.split(separator: ",").map(\.description) ?? [] }
+        set { set(newValue.joined(separator: ","), forKey: "hideNotificationPermissionRequestKey") }
+    }
+    
+    var currentUserHideNotificationPermissionRequest: Bool {
+        hideNotificationPermissionRequest.contains(IdentityManager.instance.userHexPubkey)
+    }
+    
+    func hideNotificationPermissionForCurrentUser() {
+        hideNotificationPermissionRequest.append(IdentityManager.instance.userHexPubkey)
+    }
 }
 
 struct ServerContentSettings: Codable {

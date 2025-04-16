@@ -14,7 +14,12 @@ class InteractiveImageView: UIView, ImageMenuHandler, UIContextMenuInteractionDe
     
     var url: String = ""
     
-    var image: UIImage? { display.image }
+    var image: UIImage? {
+        get { display.image }
+        set { display.image = newValue }
+    }
+    
+    var playIcon = UIImageView(image: .videoPlay)
     
     let display = UIImageView()
     
@@ -29,6 +34,9 @@ class InteractiveImageView: UIView, ImageMenuHandler, UIContextMenuInteractionDe
         display.layer.masksToBounds = true
         display.isUserInteractionEnabled = true
         display.addInteraction(UIContextMenuInteraction(delegate: self))
+        
+        addSubview(playIcon)
+        playIcon.centerToSuperview()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -109,8 +117,8 @@ class InteractiveImageView: UIView, ImageMenuHandler, UIContextMenuInteractionDe
     }
 }
 
-protocol MultipleImageGalleryCell {
-    func setup(resources: [MediaMetadata.Resource], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?)
+protocol MultipleImageGalleryCell: AnimatingImageProvider {
+    func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?)
     
     var imageViews: [InteractiveImageView] { get }
 }
@@ -152,14 +160,23 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     }
     
     
-    func setup(resources: [MediaMetadata.Resource], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
+    func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
         let realHeight = ImageGallerySizingConst.heightForTwoImages
         zip(resources, imageViews).forEach { image, imageView in
             var downsampling = DownsamplingOption.none
             if let width = image.variants.first?.width, let height = image.variants.first?.height {
                 downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
             }
-            imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+            
+            imageView.playIcon.isHidden = true
+            if image.url.isImageURL == true {
+                imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+            } else if let thumbnail = thumbnails[image.url] {
+                imageView.loadImage(url: URL(string: thumbnail), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+                imageView.playIcon.isHidden = false
+            } else {
+                imageView.image = nil
+            }
         }
         
         self.delegate = delegate

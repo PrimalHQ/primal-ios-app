@@ -55,14 +55,23 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
     }
     
     
-    func setup(resources: [MediaMetadata.Resource], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
+    func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
         let realHeight = ImageGallerySizingConst.heightForFourImages / 2
         zip(resources, imageViews).forEach { image, imageView in
             var downsampling = DownsamplingOption.none
             if let width = image.variants.first?.width, let height = image.variants.first?.height {
                 downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
             }
-            imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+            
+            imageView.playIcon.isHidden = true
+            if image.url.isImageURL == true {
+                imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+            } else if let thumbnail = thumbnails[image.url] {
+                imageView.loadImage(url: URL(string: thumbnail), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+                imageView.playIcon.isHidden = false
+            } else {
+                imageView.image = nil
+            }
         }
         
         self.delegate = delegate

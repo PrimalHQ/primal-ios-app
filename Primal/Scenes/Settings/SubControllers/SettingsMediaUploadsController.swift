@@ -147,10 +147,14 @@ private extension SettingsMediaUploadsController {
         
         [mirrorInput, blossomServerInput].forEach { $0.input.isUserInteractionEnabled = false }
         mirrorInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController())
+            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM MIRROR SERVER", completion: { mirrorServer in
+                mirrorConnection.title = mirrorServer
+            }))
         }))
         blossomServerInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController())
+            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM SERVER", completion: { blossomServer in
+                regularConnection.title = blossomServer
+            }))
         }))
         
         restoreBlossomButton.addAction(.init(handler: { [weak self] _ in

@@ -42,6 +42,16 @@ class SizeReloadingCollectionView: UICollectionView {
     }
 }
 
+protocol AnimatingImageProvider {
+    var imageViewsForAnimation: [UIImageView] { get }
+}
+extension ImageCell: AnimatingImageProvider {
+    var imageViewsForAnimation: [UIImageView] { [imageView] }
+}
+extension MultipleImageGalleryCell {
+    var imageViewsForAnimation: [UIImageView] { imageViews.map { $0.display } }
+}
+
 final class ImageGalleryView: UIView {
     weak var imageDelegate: ImageCollectionViewDelegate?
     
@@ -87,8 +97,8 @@ final class ImageGalleryView: UIView {
     
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
     
-    func currentImageCell() -> ImageCell? {
-        collection.visibleCells.compactMap({ $0 as? ImageCell }).first
+    func currentImageCell() -> AnimatingImageProvider? {
+        collection.visibleCells.compactMap({ $0 as? AnimatingImageProvider }).first
     }
     
     func currentVideoCell() -> VideoCell? {
@@ -147,7 +157,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
         guard resources.count == 1 else {
             let identifier = resources.count > 3 ? "quadruple" : (resources.count > 2 ? "triple" : "double")
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
-            (cell as? MultipleImageGalleryCell)?.setup(resources: resources, downsampling: .none, userPubkey: userPubkey, delegate: self)
+            (cell as? MultipleImageGalleryCell)?.setup(resources: resources, thumbnails: thumbnails, downsampling: .none, userPubkey: userPubkey, delegate: self)
             return cell
         }
         
