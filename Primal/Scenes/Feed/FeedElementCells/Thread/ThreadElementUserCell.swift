@@ -124,12 +124,14 @@ class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
         
         let postInfo = parsedContent.postInfo
-        let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
+        let muteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
+        let postMuteTitle = postInfo.isPostMuted ? "Unmute Thread" : "Mute Thread"
         
         let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
         let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
         
         let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
+            (postMuteTitle, "MenuMuteThread", .toggleMutePost, .destructive),
             ("Share Note", "MenuShare", .share, []),
             ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
@@ -138,7 +140,7 @@ class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
             ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
             ("Broadcast", "MenuBroadcast", .broadcast, []),
-            (muteTitle, "blockIcon", .mute, .destructive),
+            (muteTitle, "blockIcon", .muteUser, .destructive),
             ("Report user", "warningIcon", .report, .destructive)
         ]
 

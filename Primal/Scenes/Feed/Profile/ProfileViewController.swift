@@ -32,7 +32,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
             if profileDataSource?.profile.data != profile.data {
                 profileDataSource?.profile = profile
             }
-            navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
+            navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
         }
     }
     
@@ -269,7 +269,7 @@ private extension ProfileViewController {
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
-        navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMuted(profile.data.pubkey))
+        navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
         navigationBar.delegate = self
         
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
@@ -323,12 +323,12 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     
     func tappedMuteUser() {
         let pubkey = profile.data.pubkey
-        MuteManager.instance.toggleMute(pubkey) { [weak self] in
+        MuteManager.instance.toggleMuteUser(pubkey) { [weak self] in
             self?.posts = []
             self?.articles = []
             self?.media = []
             
-            if !MuteManager.instance.isMuted(pubkey) {
+            if !MuteManager.instance.isMutedUser(pubkey) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                     self?.feed.refresh()
                 }

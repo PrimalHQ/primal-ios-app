@@ -579,7 +579,7 @@ extension ChatViewController: ChatMessageCellDelegate {
                 },
                 UIAction(title: "Mute user", image: UIImage(named: "blockIcon"), handler: { [weak self] _ in
                     let pubkey = message.user.data.pubkey
-                    MuteManager.instance.toggleMute(pubkey) {
+                    MuteManager.instance.toggleMuteUser(pubkey) {
                         self?.navigationController?.popViewController(animated: true)
                     }
                 })

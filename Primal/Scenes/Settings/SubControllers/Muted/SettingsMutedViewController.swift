@@ -28,9 +28,9 @@ class SettingsMutedViewController: PrimalPageController {
     init() {
         super.init(tabs: [
             ("USERS", { SettingsMutedUsersController() }),
-            ("WORDS", { SettingsMutedUsersController() }),
-            ("HASHTAGS", { SettingsMutedUsersController() }),
-            ("THREADS", { SettingsMutedFeedController() }),
+            ("WORDS", { SettingsMutedWordsController(option: .word) }),
+            ("HASHTAGS", { SettingsMutedWordsController(option: .hashtag) }),
+            ("THREADS", { Bool.random() ? SettingsMutedFeedController() : SettingsMutedWordsController(option: .thread) }),
         ], extraViews: [])
     }
     

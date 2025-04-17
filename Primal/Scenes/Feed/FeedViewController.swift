@@ -417,8 +417,13 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             break // TODO: Something?
         case .report:
             break // TODO: Something?
-        case .mute:
-            MuteManager.instance.toggleMute(post.user.data.pubkey)
+        case .muteUser:
+            MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
+        case .toggleMutePost:
+            MuteManager.instance.toggleMuted(.thread(eventId: post.post.id))
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                (cell as? FeedElementBaseCell)?.update(post)
+            }
         case .bookmark:
             BookmarkManager.instance.bookmark(post)
             (cell as? FeedElementBaseCell)?.update(post)

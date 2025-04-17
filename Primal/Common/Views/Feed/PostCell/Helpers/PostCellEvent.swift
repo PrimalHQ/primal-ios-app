@@ -34,7 +34,8 @@ enum PostCellEvent {
     case copy(NoteCopiableProperty)
     case broadcast
     case report
-    case mute
+    case muteUser
+    case toggleMutePost
     case bookmark
     case unbookmark
 }

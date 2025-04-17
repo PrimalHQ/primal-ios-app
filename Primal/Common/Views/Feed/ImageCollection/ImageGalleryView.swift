@@ -190,16 +190,16 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 }
             }
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
+            (cell as? ImageCell)?.url = r.url
             CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
+                guard let cell = cell as? ImageCell, cell.url == r.url else { return }
+                
                 switch result {
                 case .success(let image):
-                    if let cell = cell as? ImageCell {
-                        cell.imageView.animatedImage = image
-                        cell.url = r.url
-                        cell.delegate = self
-                    }
+                    cell.imageView.animatedImage = image
+                    cell.delegate = self
                 case .failure:
-                    (cell as? ImageCell)?.setup(
+                    cell.setup(
                         url: r.url(for: .medium),
                         downsampling: .none,
                         originalUrl: r.url,

@@ -491,7 +491,7 @@ private extension ArticleViewController {
             ("Copy Raw Data", "MenuCopyData", .postEvent(.copy(.rawData)), []),
             ("Copy Article ID", "MenuCopyNoteID", .postEvent(.copy(.noteID)), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .postEvent(.copy(.userPubkey)), []),
-            ("Mute User", "blockIcon", .postEvent(.mute), .destructive),
+            ("Mute User", "blockIcon", .postEvent(.muteUser), .destructive),
             ("Report user", "warningIcon", .postEvent(.report), .destructive)
         ]
 
@@ -504,7 +504,7 @@ private extension ArticleViewController {
                     commentsVC.performEvent(postAction, withPost: post, inCell: nil)
                     
                     switch postAction {
-                    case .mute:
+                    case .muteUser:
                         navigationController?.popViewController(animated: false)
                     default:
                         break

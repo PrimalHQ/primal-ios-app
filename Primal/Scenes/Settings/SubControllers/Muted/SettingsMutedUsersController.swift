@@ -40,7 +40,7 @@ class SettingsMutedUsersController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
-        mutedUserNPUBs = MuteManager.instance.muteList.sorted()
+        mutedUserNPUBs = MuteManager.instance.muteTags.filter({ $0.first == "p" }).compactMap({ $0[safe: 1] })
         
         SocketRequest(name: "user_infos", payload: .object(["pubkeys": .array(mutedUserNPUBs.map { .string($0) })])).publisher()
             .receive(on: DispatchQueue.main)
@@ -118,7 +118,7 @@ extension SettingsMutedUsersController: UnmuteUserCellDelegate {
         
         let index = indexPath.row
         
-        MuteManager.instance.toggleMute(mutedUserNPUBs[index])
+        MuteManager.instance.toggleMuteUser(mutedUserNPUBs[index])
         mutedUserNPUBs.remove(at: index)
         
         if mutedUserNPUBs.isEmpty {

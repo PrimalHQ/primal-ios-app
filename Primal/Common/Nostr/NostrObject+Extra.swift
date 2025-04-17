@@ -241,8 +241,8 @@ extension NostrObject {
         createNostrPublicZapEvent(comment, target: target, relays: relays)
     }
 
-    static func muteList(_ mutedPubkeys: [String]) -> NostrObject? {
-        createNostrMuteListEvent(mutedPubkeys)
+    static func muteList(_ mutedTags: [[String]]) -> NostrObject? {
+        createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: mutedTags)
     }
     
     static func followedMuteLists(content: String, tags: [[String]]) -> NostrObject? {
@@ -454,12 +454,6 @@ fileprivate func createNostrPublicZapEvent(_ comment: String = "", target: ZapTa
     let tags = createZapTags(target, relays)
     
     return createNostrObject(content: comment, kind: 9734, tags: tags)
-}
-
-fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObject? {
-    let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
-
-    return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
 }
 
 fileprivate func createNostrBookmarkListEvent(_ bookmarks: [Tag]) -> NostrObject? {

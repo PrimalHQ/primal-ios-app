@@ -307,15 +307,15 @@ extension Array where Element == GroupedNotification {
             case .YOUR_POST_WAS_LIKED:
                 let notifications = filter { $0.mainNotification.type == type }
                 
-                var groupedByReaction = [GroupedNotification]()
+                var groupedByPostReaction = [GroupedNotification]()
                 for notification in notifications {
-                    if let index = groupedByReaction.firstIndex(where: { $0.mainNotification.data.reactionType == notification.mainNotification.data.reactionType }) {
-                        groupedByReaction[index].users += notification.users
+                    if let index = groupedByPostReaction.firstIndex(where: { $0.mainNotification.data.reactionType == notification.mainNotification.data.reactionType && $0.post?.post.id == notification.post?.post.id }) {
+                        groupedByPostReaction[index].users += notification.users
                     } else {
-                        groupedByReaction.append(notification)
+                        groupedByPostReaction.append(notification)
                     }
                 }
-                grouped += groupedByReaction
+                grouped += groupedByPostReaction
             case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
                 
                 let notifications = filter { $0.mainNotification.type == type }

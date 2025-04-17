@@ -111,8 +111,8 @@ extension ArticleListController: ArticleCellDelegate {
             RootViewController.instance.view.showToast("Copied!")
         case .report:
             break // TODO: Something?
-        case .mute:
-            MuteManager.instance.toggleMute(post.user.data.pubkey)
+        case .muteUser:
+            MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
         case .bookmark:
             BookmarkManager.instance.bookmark(post)
         case .unbookmark:
