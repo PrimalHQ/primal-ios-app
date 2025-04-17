@@ -55,13 +55,13 @@ final class NotificationCell: PostCell, ElementReactionsCell {
             postContentStack.isHidden = true
         }
         
-        if let reaction = notification.mainNotification.data.reactionType {
+        if let reaction = notification.mainNotification.data.reactionType, reaction != "+" {
             reactionLabel.text = reaction.emojiString
             reactionLabel.isHidden = false
-            iconView.isHidden = true
+            iconView.alpha = 0.01
         } else {
             reactionLabel.isHidden = true
-            iconView.isHidden = false
+            iconView.alpha = 1
         }
         
         iconView.image = notification.icon
@@ -234,9 +234,10 @@ extension GroupedNotification {
         guard let post else { return nil }
         switch mainNotification.type {
         case .YOUR_POST_WAS_LIKED:
+            let color = mainNotification.data.reactionType == "+" ? UIColor(rgb: 0xBC1870) : UIColor.foreground
             return .init(string: post.post.likes.shortened(), attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .medium),
-                .foregroundColor: UIColor(rgb: 0xBC1870)
+                .foregroundColor: color
             ])
         case .YOUR_POST_WAS_REPOSTED:
             return .init(string: post.post.reposts.shortened(), attributes: [
@@ -262,6 +263,9 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_ZAPPED:
             return "zapped your note"
         case .YOUR_POST_WAS_LIKED:
+            if mainNotification.data.reactionType == "+" {
+                return "liked your note"
+            }
             return "reacted to your note"
         case  .YOUR_POST_WAS_HIGHLIGHTED:
             return "highlighted your article"

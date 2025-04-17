@@ -33,13 +33,13 @@ struct PrimalNoteStatus: Codable, Hashable {
 
 struct PrimalZapDefaultSettings: Codable, Hashable {
     var amount: Int
-    var message: String
+    var message: String?
 }
 
 struct PrimalZapListSettings: Codable, Hashable {
     var emoji: String
     var amount: Int
-    var message: String
+    var message: String?
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
@@ -95,7 +95,7 @@ struct PrimalSettingsPushNotifications: Codable, Hashable {
 struct PrimalSettingsAdditionalNotifications: Codable, Hashable {
     var ignore_events_with_too_many_mentions = true
     var only_show_dm_notifications_from_users_i_follow = true
-    var only_show_reactions_from_users_i_follow = false
+    var only_show_reactions_from_users_i_follow: Bool? = false
 }
 
 struct PrimalSettingsNotifications: Codable, Hashable {
@@ -138,7 +138,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     let tags: [[String]]
     
     init?(json: JSON) {
-        guard var settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+        guard var settingsContent: PrimalSettingsContent = json.objectValue?["content"]?.stringValue?.decode() else {
             print("Error decoding PrimalSettingsContent to json")
             return nil
         }

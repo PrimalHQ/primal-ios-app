@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import Kingfisher
 
-class SettingsMutedViewController: UIViewController, Themeable {
+class SettingsMutedUsersController: UIViewController, Themeable {
     let table = UITableView()
     
     var mutedUserNPUBs: [String] = []
@@ -30,6 +30,7 @@ class SettingsMutedViewController: UIViewController, Themeable {
         table.register(UnmuteUserCell.self, forCellReuseIdentifier: "cell")
         table.register(EmptyMuteListCell.self, forCellReuseIdentifier: "empty")
         table.separatorStyle = .none
+        table.contentInset = .init(top: 60, left: 0, bottom: 0, right: 0)
         
         updateTheme()
     }
@@ -68,7 +69,7 @@ class SettingsMutedViewController: UIViewController, Themeable {
     }
 }
 
-extension SettingsMutedViewController: UITableViewDataSource {
+extension SettingsMutedUsersController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { mutedUserNPUBs.isEmpty ? 1 : (loadedUsers.isEmpty ? 0 : mutedUserNPUBs.count) }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -103,7 +104,7 @@ extension SettingsMutedViewController: UITableViewDataSource {
     }
 }
 
-extension SettingsMutedViewController: UITableViewDelegate {
+extension SettingsMutedUsersController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !mutedUserNPUBs.isEmpty, let npub = mutedUserNPUBs[safe: indexPath.row], let user = loadedUsers[npub] else { return }
         let profile = ProfileViewController(profile: .init(data: user))
@@ -111,7 +112,7 @@ extension SettingsMutedViewController: UITableViewDelegate {
     }
 }
 
-extension SettingsMutedViewController: UnmuteUserCellDelegate {
+extension SettingsMutedUsersController: UnmuteUserCellDelegate {
     func unmuteButtonPressed(_ cell: UnmuteUserCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         

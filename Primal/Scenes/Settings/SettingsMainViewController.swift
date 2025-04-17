@@ -77,7 +77,7 @@ private extension SettingsMainViewController {
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
-        let muted = SettingsOptionButton(title: "Muted Accounts")
+        let muted = SettingsOptionButton(title: "Muted")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
         let notifications = SettingsOptionButton(title: "Notifications")
         let devMode = SettingsOptionButton(title: "Dev Mode")

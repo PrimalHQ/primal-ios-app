@@ -266,7 +266,7 @@
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
 		B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */; };
 		B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */; };
-		B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */; };
+		B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6C2AA2487100CD0BD1 /* SettingsMutedUsersController.swift */; };
 		B914CD6F2AA24BD300CD0BD1 /* UnmuteUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6E2AA24BD300CD0BD1 /* UnmuteUserCell.swift */; };
 		B914CD712AA2647100CD0BD1 /* UnmuteUserButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD702AA2647100CD0BD1 /* UnmuteUserButton.swift */; };
 		B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */; };
@@ -355,6 +355,8 @@
 		B9318F672B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */; };
 		B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */; };
 		B934ADA82DAEAE110044E5B5 /* PushNotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADA72DAEAE080044E5B5 /* PushNotificationCell.swift */; };
+		B934ADAB2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */; };
+		B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
@@ -956,7 +958,7 @@
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
 		B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackManager.swift; sourceTree = "<group>"; };
 		B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutedUserCell.swift; sourceTree = "<group>"; };
-		B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
+		B914CD6C2AA2487100CD0BD1 /* SettingsMutedUsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedUsersController.swift; sourceTree = "<group>"; };
 		B914CD6E2AA24BD300CD0BD1 /* UnmuteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteUserCell.swift; sourceTree = "<group>"; };
 		B914CD702AA2647100CD0BD1 /* UnmuteUserButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteUserButton.swift; sourceTree = "<group>"; };
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
@@ -1045,6 +1047,8 @@
 		B9318F662B62B6BD0044B6AA /* WalletSendTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendTransitionAnimator.swift; sourceTree = "<group>"; };
 		B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendAmountSendAnimator.swift; sourceTree = "<group>"; };
 		B934ADA72DAEAE080044E5B5 /* PushNotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationCell.swift; sourceTree = "<group>"; };
+		B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
+		B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedWordsController.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
@@ -1825,13 +1829,13 @@
 		9E55F28E2A1FB9B200D5D523 /* SubControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B934ADA92DAFDD150044E5B5 /* Muted */,
 				B9FAC6592D42C41200B57EF6 /* NWC */,
 				B9318F632B62ADC20044B6AA /* InputControllers */,
 				9E55F28F2A1FB9C600D5D523 /* SettingsNsecViewController.swift */,
 				9ED4161B2A4F7D1900892235 /* SettingsNotificationsViewController.swift */,
 				9E83DF7C2A5BF95500F2C379 /* SettingsZapsViewController.swift */,
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
-				B914CD6C2AA2487100CD0BD1 /* SettingsMutedViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
@@ -2501,6 +2505,16 @@
 				B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */,
 			);
 			path = InputControllers;
+			sourceTree = "<group>";
+		};
+		B934ADA92DAFDD150044E5B5 /* Muted */ = {
+			isa = PBXGroup;
+			children = (
+				B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */,
+				B914CD6C2AA2487100CD0BD1 /* SettingsMutedUsersController.swift */,
+				B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */,
+			);
+			path = Muted;
 			sourceTree = "<group>";
 		};
 		B944292F2BD81F5900746FBC /* ZapGallery */ = {
@@ -3484,6 +3498,7 @@
 				B9DAA45F2D53C0C900B00B82 /* PremiumListController.swift in Sources */,
 				B9E67E892D07636C006BB397 /* FeedElementPostPreviewCell.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
+				B934ADAB2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift in Sources */,
 				B9DAA4632D53E48400B00B82 /* ThreadElementTidalPreviewCell.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
 				B9E67E8F2D0767F3006BB397 /* FeedElementZapPreviewCell.swift in Sources */,
@@ -3519,7 +3534,7 @@
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
-				B914CD6D2AA2487100CD0BD1 /* SettingsMutedViewController.swift in Sources */,
+				B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */,
 				B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */,
 				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
 				B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */,
@@ -3856,6 +3871,7 @@
 				B906AB012C9899D30089813F /* MediaLoadingCell.swift in Sources */,
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				B9E67EB82D0A26FF006BB397 /* MainThreadElementUserCell.swift in Sources */,
+				B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				B91E56F52CC0496E00C14809 /* AdvancedSearchFilterController.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
@@ -4150,7 +4166,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.20;
+				MARKETING_VERSION = 2.2.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4197,7 +4213,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.20;
+				MARKETING_VERSION = 2.2.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

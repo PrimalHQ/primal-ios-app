@@ -338,7 +338,7 @@ extension PrimalSettingsAdditionalNotifications {
         case .only_show_dm_notifications_from_users_i_follow:
             return only_show_dm_notifications_from_users_i_follow
         case .only_show_reactions_from_users_i_follow:
-            return only_show_reactions_from_users_i_follow
+            return only_show_reactions_from_users_i_follow ?? false
         }
     }
     
