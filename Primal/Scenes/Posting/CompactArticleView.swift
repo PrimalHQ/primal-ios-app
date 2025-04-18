@@ -15,6 +15,7 @@ class CompactArticleView: UIView, Themeable {
     let dot = UIView().constrainToSize(3)
     let timeLabel = UILabel()
     let titleLabel = UILabel()
+    let durationLabel = UILabel()
     
     let contentImageView = UIImageView().constrainToSize(width: 100)
     
@@ -60,16 +61,24 @@ class CompactArticleView: UIView, Themeable {
         timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
         avatar.setUserImage(content.user)
         nameLabel.text = content.user.data.firstIdentifier
+        
+        if let words = content.words {
+            durationLabel.text = "\(1 + (words / 200)) min read"
+            durationLabel.isHidden = false
+        } else {
+            durationLabel.isHidden = true
+        }
     }
     
     func updateTheme() {
-        nameLabel.textColor = .foreground2
+        nameLabel.textColor = .foreground
         timeLabel.textColor = .foreground4
         dot.backgroundColor = .foreground4
         
         contentImageView.layer.borderColor = UIColor.foreground6.cgColor
         
         titleLabel.textColor = .foreground
+        durationLabel.textColor = .foreground4
         
         backgroundColor = .background4
     }
@@ -87,7 +96,10 @@ private extension CompactArticleView {
         
         layer.cornerRadius = 8
         
-        let contentStack = UIStackView([titleLabel, contentImageView])
+        let durationTitleStack = UIStackView(axis: .vertical, [titleLabel, durationLabel])
+        durationTitleStack.spacing = 4
+        
+        let contentStack = UIStackView([durationTitleStack, contentImageView])
         contentStack.spacing = 12
         contentStack.alignment = .top
         
@@ -103,6 +115,8 @@ private extension CompactArticleView {
         titleLabel.font = .appFont(withSize: 16, weight: .heavy)
         titleLabel.numberOfLines = 2
         titleLabel.lineBreakMode = .byTruncatingTail
+        
+        durationLabel.font = .appFont(withSize: 14, weight: .regular)
         
         contentImageView.layer.borderWidth = 1
         contentImageView.layer.cornerRadius = 4

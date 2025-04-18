@@ -201,7 +201,7 @@ private extension PostPreviewView {
         addSubview(mainStack)
         
         mainStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: 12)
             .pinToSuperview(edges: .vertical, padding: 12)
         
         // USER INTERACTION DISABLED FOR SUBVIEWS (except for images)

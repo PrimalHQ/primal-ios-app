@@ -266,7 +266,6 @@ private extension AdvancedEmbedPostViewController {
         manager.$embeddedElements.sink { [weak self] elements in
             guard let self else { return }
             
-            
             embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
             
             elements.enumerated().forEach { index, item in
@@ -274,12 +273,14 @@ private extension AdvancedEmbedPostViewController {
                 
                 let view = item.makeView()
                 view.isUserInteractionEnabled = false
+                view.layer.borderWidth = 0
+                view.backgroundColor = .background3
                 myView.addSubview(view)
                 view.pinToSuperview()
                 
                 let xButton = UIButton(configuration: .simpleImage("deleteImageIcon"))
                 myView.addSubview(xButton)
-                xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 4)
+                xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 8)
                 xButton.addAction(.init(handler: { [unowned self] _ in
                     self.manager.embeddedElements.remove(at: index)
                 }), for: .touchUpInside)
@@ -318,6 +319,7 @@ extension PostEmbedPreview {
         case .invoice(let invoice, _):
             let view = LightningInvoiceView()
             view.updateForInvoice(invoice)
+            view.copyButton.isHidden = true
             return view
         }
     }

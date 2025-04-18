@@ -61,9 +61,12 @@ final class SettingsMediaUploadsController: UIViewController, SettingsController
     private let blossomServerInput = WebConnectInputView()
     private let mirrorInput = WebConnectInputView()
     private let mirrorStack = UIStackView(axis: .vertical, [])
+    private let mirrorListStack = UIStackView(axis: .vertical, [])
     
     private var cancellables: Set<AnyCancellable> = []
     private var viewCancellables: Set<AnyCancellable> = []
+    
+    @Published var mirrors: [String] = []
     
     @Published var enableMirror: Bool = false
     
@@ -98,14 +101,6 @@ private extension SettingsMediaUploadsController {
         regularConnection.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview()
         regularConnectionParent.layer.cornerRadius = 12
         
-        let mirrorConnection = SettingsNetworkStatusView(title: MediaUploadSettings.blossomServer ?? "")
-        mirrorConnection.status = true
-        
-        let mirrorConnectionParent = ThemeableView().constrainToSize(height: 44).setTheme { $0.backgroundColor = .background3 }
-        mirrorConnectionParent.addSubview(mirrorConnection)
-        mirrorConnection.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview()
-        mirrorConnectionParent.layer.cornerRadius = 12
-        
         let restoreBlossomButton = RightAlignedAccentButton(title: "restore default blossom server")
         
         let enableMirrorSwitch = SettingsSwitchView("Enable blossom mirror")
@@ -127,7 +122,10 @@ private extension SettingsMediaUploadsController {
             mirrorStack, SpacerView(height: 16)
         ])
         
-        [mirrorConnectionParent, SpacerView(height: 20), SettingsTitleView(title: "SWITCH BLOSSOM MIRROR SERVER"), SpacerView(height: 8), mirrorInput]
+        mirrorListStack.layer.cornerRadius = 12
+        mirrorListStack.clipsToBounds = true
+        
+        [mirrorListStack, SpacerView(height: 20), SettingsTitleView(title: "SWITCH BLOSSOM MIRROR SERVER"), SpacerView(height: 8), mirrorInput]
             .forEach { mirrorStack.addArrangedSubview($0) }
         
         mirrorStack.isHidden = !enableMirror
@@ -148,7 +146,7 @@ private extension SettingsMediaUploadsController {
         [mirrorInput, blossomServerInput].forEach { $0.input.isUserInteractionEnabled = false }
         mirrorInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM MIRROR SERVER", completion: { mirrorServer in
-                mirrorConnection.title = mirrorServer
+                self?.mirrors.append(mirrorServer)
             }))
         }))
         blossomServerInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
@@ -174,6 +172,17 @@ private extension SettingsMediaUploadsController {
             }
         }
         .store(in: &cancellables)
+        
+        $mirrors.sink { [weak self] mirrors in
+            guard let self else { return }
+            mirrorListStack.subviews.forEach { $0.removeFromSuperview() }
+            
+            for mirror in mirrors {
+                let view = relayConnectionView(mirror, last: mirror == mirrors.last)
+                mirrorListStack.addArrangedSubview(view)
+            }
+        }
+        .store(in: &viewCancellables)
     }
     
     func titleLabel(_ text: String) -> UILabel {
@@ -181,5 +190,19 @@ private extension SettingsMediaUploadsController {
         label.text = text
         label.font = .appFont(withSize: 18, weight: .semibold)
         return label
+    }
+    
+    func relayConnectionView(_ mirror: String, last: Bool) -> UIView {
+        let view = SettingsNetworkStatusListView(title: mirror, onDelete: { [weak self] in
+            let alert = UIAlertController(title: "Are you sure?", message: "Do you want to delete this mirror?\n\(mirror)", preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .destructive) { _ in
+                self?.mirrors.removeAll { $0 == mirror }
+            })
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            self?.present(alert, animated: true)
+        })
+        view.border.isHidden = last
+        view.backgroundColor = .background3
+        return view
     }
 }

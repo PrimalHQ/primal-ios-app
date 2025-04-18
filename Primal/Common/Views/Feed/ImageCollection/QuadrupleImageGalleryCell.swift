@@ -12,6 +12,8 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
     let imageView2 = InteractiveImageView()
     let imageView3 = InteractiveImageView()
     let imageView4 = InteractiveImageView()
+    let lastViewCover = UIView()
+    let extraLabel = UILabel()
     
     var imageViews: [InteractiveImageView] { [imageView1, imageView2, imageView3, imageView4] }
     
@@ -34,6 +36,17 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
 
         contentView.addSubview(stack)
         stack.pinToSuperview()
+        
+        contentView.addSubview(lastViewCover)
+        lastViewCover.pin(to: imageView4)
+        
+        lastViewCover.backgroundColor = .black.withAlphaComponent(0.5)
+        lastViewCover.isUserInteractionEnabled = false
+        lastViewCover.addSubview(extraLabel)
+        extraLabel.centerToSuperview()
+        
+        extraLabel.font = .appFont(withSize: 48, weight: .regular)
+        extraLabel.textColor = .white
         
         contentView.backgroundColor = .background3
         
@@ -75,6 +88,13 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
         }
         
         self.delegate = delegate
+        
+        guard resources.count > 4 else {
+            lastViewCover.isHidden = true
+            return
+        }
+        
+        extraLabel.text = "+\(resources.count - 4)"
     }
 }
 
