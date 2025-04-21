@@ -33,7 +33,9 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
         super.viewWillAppear(animated)
         
         minTransaction.descLabel.text = "\(UserDefaults.standard.minimumZapValue) sats"
-        showNotifications.descLabel.text = "\(UserDefaults.standard.minimumNotificationValue) sats"
+        
+        let minimumNotificationValue = IdentityManager.instance.userSettings?.notificationsAdditional?.show_wallet_push_notifications_above_sats ?? 1
+        showNotifications.descLabel.text = "\(minimumNotificationValue) sats"
     }
     
     func updateTheme() {
@@ -69,7 +71,7 @@ private extension SettingsWalletViewController {
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
             showNotifications,                                                                                                  SpacerView(height: 10),
-            descLabel("Get notified within the app when you receive a payment above a certain size"),                           SpacerView(height: 24),
+            descLabel("Get notified with push notifications when you receive a payment above a certain size"),                           SpacerView(height: 24),
             minTransaction,                                                                                                     SpacerView(height: 10),
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
 //            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),

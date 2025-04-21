@@ -19,9 +19,13 @@ final class SettingsEditMinNotificationController: UIViewController, Themeable {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        guard let value = Int(valueInput.text ?? "") else { return }
+        guard let value = Int(valueInput.text ?? ""), var settings = IdentityManager.instance.userSettings else { return }
 
-        UserDefaults.standard.minimumNotificationValue = value
+        if settings.notificationsAdditional == nil {
+            settings.notificationsAdditional = .init()
+        }
+        settings.notificationsAdditional?.show_wallet_push_notifications_above_sats = value
+        IdentityManager.instance.updateSettings(settings)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -49,7 +53,8 @@ private extension SettingsEditMinNotificationController {
             amountParent
         ])
         
-        valueInput.text = "\(UserDefaults.standard.minimumNotificationValue)"
+        let minimumNotificationValue = IdentityManager.instance.userSettings?.notificationsAdditional?.show_wallet_push_notifications_above_sats ?? 1
+        valueInput.text = "\(minimumNotificationValue)"
         valueInput.keyboardType = .numberPad
         
         view.addSubview(stack)

@@ -20,11 +20,6 @@ extension UserDefaults {
         set { setValue(newValue, forKey: .minimumZapValueKey) }
     }
     
-    var minimumNotificationValue: Int {
-        get { max(minimumZapValue, integer(forKey: .minimumNotificationValueKey)) }
-        set { setValue(newValue, forKey: .minimumNotificationValueKey)}
-    }
-    
     var useUSD: Bool {
         get { bool(forKey: .useUSDKey) }
         set { setValue(newValue, forKey: .useUSDKey) }

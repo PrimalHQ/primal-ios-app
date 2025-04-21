@@ -81,22 +81,6 @@ private extension SettingsEditMediaUploadsController {
         blossomServerInput.action.addAction(.init(handler: { [weak self] _ in
             self?.sendCompletion()
         }), for: .touchUpInside)
-
-        let regularConnection = SettingsNetworkStatusView(title: MediaUploadSettings.blossomServer ?? "")
-        regularConnection.status = true
-        
-        let regularConnectionParent = ThemeableView().constrainToSize(height: 44).setTheme { $0.backgroundColor = .background3 }
-        regularConnectionParent.addSubview(regularConnection)
-        regularConnection.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview()
-        regularConnectionParent.layer.cornerRadius = 12
-        
-        let mirrorConnection = SettingsNetworkStatusView(title: MediaUploadSettings.blossomServer ?? "")
-        mirrorConnection.status = true
-        
-        let mirrorConnectionParent = ThemeableView().constrainToSize(height: 44).setTheme { $0.backgroundColor = .background3 }
-        mirrorConnectionParent.addSubview(mirrorConnection)
-        mirrorConnection.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview()
-        mirrorConnectionParent.layer.cornerRadius = 12
         
         relayStackParent.addSubview(relayStack)
         relayStack.pinToSuperview()
@@ -134,9 +118,21 @@ private extension SettingsEditMediaUploadsController {
         }))
         
         SocketRequest(name: "get_recommended_blossom_servers", payload: nil).publisher()
-            .sink { res in
-                print(res.message)
-                print(res.events)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard
+                    let event = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.blossomSuggestions.rawValue }),
+                    let suggested: [String] = event["content"]?.stringValue?.decode()
+                else { return }
+                
+                for server in suggested {
+                    let view = SuggestedServerView(title: server)
+                    stack.addArrangedSubview(view)
+                    view.addGestureRecognizer(BindableTapGestureRecognizer(action: {
+                        self?.completion(server)
+                        self?.navigationController?.popViewController(animated: true)
+                    }))
+                }
             }
             .store(in: &cancellables)
     }
@@ -147,4 +143,26 @@ private extension SettingsEditMediaUploadsController {
         label.font = .appFont(withSize: 18, weight: .semibold)
         return label
     }
+}
+
+class SuggestedServerView: UIStackView {
+    init(title: String) {
+        super.init(frame: .zero)
+        
+        let greenDot = SpacerView(width: 10, height: 10, color: .init(rgb: 0x66E205))
+        let copyImage = UIImageView(image: .setLink)
+        
+        [greenDot, UILabel(title, color: .foreground3, font: .appFont(withSize: 16, weight: .regular)), copyImage]
+            .forEach { addArrangedSubview($0) }
+        
+        spacing = 12
+        alignment = .center
+        isLayoutMarginsRelativeArrangement = true
+        layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
+        
+        greenDot.layer.cornerRadius = 5
+        copyImage.tintColor = .accent
+    }
+    
+    required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }

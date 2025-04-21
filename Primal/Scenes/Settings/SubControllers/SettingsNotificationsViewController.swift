@@ -34,8 +34,6 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
     lazy var pushInfoLabel = descLabel("")
     
     @Published var pushNotificationsEnabled = false
-    
-    var didChange = false
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +66,6 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             self?.additional = settings?.notificationsAdditional ?? .init()
             
             self?.table.reloadData()
-            self?.didChange = false
         }
         .store(in: &cancellables)
         
@@ -159,13 +156,9 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         updateTable(animate: false)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        if didChange, let notifications, let push, let additional {
-            IdentityManager.instance.updateNotifications(notifications, push, additional)
-            didChange = false
-        }
+    func updateNotifications() {
+        guard let notifications, let push, let additional else { return }
+        IdentityManager.instance.updateNotifications(notifications, push, additional)
     }
     
     func updateTheme() {
@@ -223,10 +216,10 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
         
         tableData.append(.init(text: "SHOW IN NOTIFICATION TAB:", notifications: [
             .inApp(.NEW_FOLLOWS, [.NEW_USER_FOLLOWED_YOU]),
-            .inApp(.ZAPS, [.YOUR_POST_WAS_ZAPPED, .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED]),
-            .inApp(.REACTIONS, [.YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_BOOKMARKED, .YOUR_POST_WAS_HIGHLIGHTED, .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED]),
-            .inApp(.REPLIES, [.YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO]),
-            .inApp(.REPOSTS, [.YOUR_POST_WAS_REPOSTED, .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED]),
+            .inApp(.ZAPS, [.YOUR_POST_WAS_ZAPPED]),
+            .inApp(.REACTIONS, [.YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_BOOKMARKED, .YOUR_POST_WAS_HIGHLIGHTED]),
+            .inApp(.REPLIES, [.YOUR_POST_WAS_REPLIED_TO]),
+            .inApp(.REPOSTS, [.YOUR_POST_WAS_REPOSTED]),
             .inApp(.MENTIONS, [.YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST]),
         ]))
         
@@ -326,7 +319,7 @@ extension SettingsNotificationsViewController: SettingsToggleCellDelegate {
         guard let indexPath = table.indexPath(for: cell) else { return }
         let notification = tableData[indexPath.section].notifications[indexPath.row]
         setValueForType(notification, value: cell.toggle.isOn)
-        didChange = true
+        updateNotifications()
     }
 }
 

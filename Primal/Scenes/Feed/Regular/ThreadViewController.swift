@@ -286,30 +286,56 @@ private extension ThreadViewController {
         textInputView.resignFirstResponder()
     }
     
+    func buildHierarchy(mainPost: ParsedContent, posts: [ParsedContent]) -> [ParsedContent] {
+        let simpleSort = {
+            let postsBefore = posts.filter { $0.post.created_at < mainPost.post.created_at }
+            let postsAfter = posts.filter { $0.post.created_at > mainPost.post.created_at }
+            return postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
+        }
+        
+        guard var currentPost = posts.first(where: { $0.replyingTo == nil }) else { // Find root
+            return simpleSort()
+        }
+        
+        var result: [ParsedContent] = []
+        while currentPost.post.id != mainPost.post.id && result.count < posts.count { // check result size to avoid an infinite loop
+            result.append(currentPost)
+            guard let next = posts.first(where: { $0.replyingTo?.post.id == currentPost.post.id }) else { // Find child
+                return simpleSort() // unable to find child so defaulting to the old sort
+            }
+            currentPost = next
+        }
+        
+        result.append(mainPost) // Main post
+        let mainChildren = posts.filter({ $0.replyingTo?.post.id == mainPost.post.id }).sorted(by: { $0.post.created_at > $1.post.created_at })
+        result.append(contentsOf: mainChildren)
+        
+        if result.count != posts.count { // In case some post is missing or added twice
+            return simpleSort()
+        }
+        
+        return result
+    }
+    
     func addPublishers() {
         feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
             guard let self, let mainPost = parsed.first(where: { $0.post.id == self.id }) else { return }
             
-            let postsBefore = parsed.filter { $0.post.created_at < mainPost.post.created_at }
-            let postsAfter = parsed.filter { $0.post.created_at > mainPost.post.created_at }
-            
-            if !parsed.isEmpty {
-                isLoading = false
-            }
-            
             mainPost.buildContentString(style: .enlarged)
             self.mainObject = mainPost.post
-            self.posts = postsBefore.sorted(by: { $0.post.created_at < $1.post.created_at }) + [mainPost] + postsAfter.sorted(by: { $0.post.created_at > $1.post.created_at })
             
             refreshControl.endRefreshing()
             
-            didLoadData = true
+            self.posts = buildHierarchy(mainPost: mainPost, posts: parsed)
             
             let user = posts[self.mainPositionInThread].user.data
             
             placeholderLabel.text = "Reply to \(user.displayName)"
             
             replyingToLabel.attributedText = self.replyToString(name: user.name)
+            
+            isLoading = false
+            didLoadData = true
         }
         .store(in: &cancellables)
         

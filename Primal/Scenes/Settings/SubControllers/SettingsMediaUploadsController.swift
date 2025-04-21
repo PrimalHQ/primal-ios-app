@@ -13,50 +13,6 @@ extension String {
     static let blossomMirrorKey = "blossomMirrorKey"
 }
 
-struct MediaUploadSettings {
-    static var blossomServer: String? {
-        get {
-            return UserDefaults.standard.string(forKey: .blossomServerKey) ?? "blossom.primal.net"
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: .blossomServerKey)
-        
-            if let newValue {
-//                RelaysPostbox.instance.disconnect()
-            } else {
-//                if let keys = IdentityManager.instance.userRelays?.keys, !keys.isEmpty {
-//                    RelaysPostbox.instance.connect(Array(keys))
-//                } else {
-//                    RelaysPostbox.instance.connect(bootstrap_relays)
-//                }
-            }
-        }
-    }
-    
-    static var blossomMirrorServer: String? {
-        get { UserDefaults.standard.string(forKey: .blossomMirrorKey) }
-        set {
-            UserDefaults.standard.set(newValue, forKey: .blossomMirrorKey)
-        
-            if let newValue {
-//                Connection.regular.socketURL = URL(string: newValue) ?? PrimalEndpointsManager.regularURL
-            } else {
-//                Connection.regular.socketURL = PrimalEndpointsManager.regularURL
-            }
-        }
-    }
-    
-    static var blossomServerURL: URL? {
-        guard let blossomServer else { return nil }
-        return URL(string: blossomServer)
-    }
-    
-    static var blossomMirrorURL: URL? {
-        guard let blossomMirrorServer else { return nil }
-        return URL(string: blossomMirrorServer)
-    }
-}
-
 final class SettingsMediaUploadsController: UIViewController, SettingsController, Themeable {
     private let blossomServerInput = WebConnectInputView()
     private let mirrorInput = WebConnectInputView()
@@ -66,6 +22,7 @@ final class SettingsMediaUploadsController: UIViewController, SettingsController
     private var cancellables: Set<AnyCancellable> = []
     private var viewCancellables: Set<AnyCancellable> = []
     
+    @Published var primaryServer: String = "blossom.primal.net"
     @Published var mirrors: [String] = []
     
     @Published var enableMirror: Bool = false
@@ -88,12 +45,16 @@ private extension SettingsMediaUploadsController {
         title = "Media Uploads"
         updateTheme()
         
-        enableMirror = MediaUploadSettings.blossomMirrorServer?.isEmpty == false
+        let allServers = BlossomServerManager.instance.serversForUser(pubkey: IdentityManager.instance.userHexPubkey) ?? []
+        primaryServer = allServers.first ?? primaryServer
+        mirrors = Array(allServers.dropFirst())
+        
+        enableMirror = mirrors.isEmpty == false
         
         blossomServerInput.input.placeholder = "enter blossom server url"
         mirrorInput.input.placeholder = "enter blossom server url"
 
-        let regularConnection = SettingsNetworkStatusView(title: MediaUploadSettings.blossomServer ?? "")
+        let regularConnection = SettingsNetworkStatusView(title: primaryServer)
         regularConnection.status = true
         
         let regularConnectionParent = ThemeableView().constrainToSize(height: 44).setTheme { $0.backgroundColor = .background3 }
@@ -151,15 +112,14 @@ private extension SettingsMediaUploadsController {
         }))
         blossomServerInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM SERVER", completion: { blossomServer in
-                regularConnection.title = blossomServer
+                self?.primaryServer = blossomServer
             }))
         }))
         
         restoreBlossomButton.addAction(.init(handler: { [weak self] _ in
             let alert = UIAlertController(title: "Are you sure?", message: "Do you want to restore the default blossom server?", preferredStyle: .alert)
             alert.addAction(.init(title: "OK", style: .destructive) { _ in
-                MediaUploadSettings.blossomServer = nil
-                regularConnection.title = MediaUploadSettings.blossomServer ?? ""
+                // TODO: RESTORE DEFAULT
             })
             alert.addAction(.init(title: "Cancel", style: .cancel))
             self?.present(alert, animated: true)
@@ -173,6 +133,11 @@ private extension SettingsMediaUploadsController {
         }
         .store(in: &cancellables)
         
+        $primaryServer.sink { value in
+            regularConnection.title = value
+        }
+        .store(in: &cancellables)
+        
         $mirrors.sink { [weak self] mirrors in
             guard let self else { return }
             mirrorListStack.subviews.forEach { $0.removeFromSuperview() }
@@ -183,6 +148,27 @@ private extension SettingsMediaUploadsController {
             }
         }
         .store(in: &viewCancellables)
+        
+        Publishers.CombineLatest3($primaryServer, $mirrors, $enableMirror)
+            .dropFirst()
+            .sink { server, mirrors, enableMirror in
+                guard
+                    let ev = NostrObject.blossomSettings(servers: [server] + (enableMirror ? mirrors : [])),
+                    let json = ev.toJSON().objectValue
+                else {
+                    print("Error creating blossom event")
+                    return
+                }
+                
+                BlossomServerManager.instance.addBlossomInfo(json)
+                
+                RelaysPostbox.instance.request(ev, successHandler: { _ in
+                    // do nothing
+                }, errorHandler: {
+                    
+                })
+            }
+            .store(in: &cancellables)
     }
     
     func titleLabel(_ text: String) -> UILabel {

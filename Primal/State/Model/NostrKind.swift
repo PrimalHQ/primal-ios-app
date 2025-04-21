@@ -83,6 +83,7 @@ enum NostrKind: Int {
     case primalLegendInfoList = 10_000_170
     case primalPremiumInfoList = 10_000_171
     case nip19DecodeResult = 10_000_173
+    case blossomSuggestions = 10_000_175
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605

@@ -31,7 +31,7 @@ class NoConnectionView: UIView, Themeable {
             messageView.isHidden = false
             
             messageView.alpha = 0
-            messageView.transform = .init(translationX: 200, y: 0)
+            messageView.transform = .init(translationX: 0, y: -50)
             
             UIView.animate(withDuration: 0.3) {
                 self.messageView.alpha = 1

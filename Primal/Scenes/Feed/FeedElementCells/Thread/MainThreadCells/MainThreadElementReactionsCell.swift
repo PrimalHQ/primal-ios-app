@@ -186,3 +186,12 @@ private extension MainThreadElementReactionsCell {
     }
 }
 
+extension ParsedContent {
+    func longDateString() -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(post.created_at))
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale.current
+        dateFormatter.dateFormat = "EEEE, MMMM d, yyyy • hh:mm a"
+        return dateFormatter.string(from: date)
+    }
+}

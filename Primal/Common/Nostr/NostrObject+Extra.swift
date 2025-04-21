@@ -90,10 +90,6 @@ extension NostrObject {
         createNostrRepostEvent(post)
     }
     
-//    static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-//        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
-//    }
-    
     static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?, embeddedElements: [PostEmbedPreview]) -> NostrObject? {
         var allTags: [[String]] = []
 
@@ -219,6 +215,11 @@ extension NostrObject {
         }
         
         return createNostrObject(content: "", kind: 10002, tags: relayTags)
+    }
+    
+    static func blossomSettings(servers: [String]) -> NostrObject? {
+        let tags: [[String]] = [["alt", "File servers used by the user"]] + servers.map({ ["server", $0] })
+        return createNostrObject(content: "", kind: NostrKind.blossom.rawValue, tags: tags)
     }
     
     static func getSettings() -> NostrObject? {

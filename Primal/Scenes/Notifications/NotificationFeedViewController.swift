@@ -120,13 +120,17 @@ final class NotificationFeedViewController: NoteViewController {
         }), for: .valueChanged)
     }
     
+    
+    var lastRefresh = Date.distantPast
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         
-        refresh()
+        if mainTabBarController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
+            refresh()
+        }
     }
     
     override func updateTheme() {
@@ -146,6 +150,7 @@ final class NotificationFeedViewController: NoteViewController {
         didReachEnd = false
         isLoading = true
         until = Date()
+        lastRefresh = .now
         
         let tab = self.notificationTab
         let payload = JSON.object([

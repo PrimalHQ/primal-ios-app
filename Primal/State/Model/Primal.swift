@@ -96,6 +96,7 @@ struct PrimalSettingsAdditionalNotifications: Codable, Hashable {
     var ignore_events_with_too_many_mentions = true
     var only_show_dm_notifications_from_users_i_follow = true
     var only_show_reactions_from_users_i_follow: Bool? = false
+    var show_wallet_push_notifications_above_sats: Int? = 1
 }
 
 struct PrimalSettingsNotifications: Codable, Hashable {
