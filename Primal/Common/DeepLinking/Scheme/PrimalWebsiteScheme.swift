@@ -68,6 +68,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         let staticPages: [String: DeeplinkNavigation] = [
             "home": .tab(.home),
             "reads": .tab(.reads),
+            "wallet": .tab(.wallet),
             "notifications": .tab(.notifications),
             "explore": .tab(.explore),
             "dms": .messages,
