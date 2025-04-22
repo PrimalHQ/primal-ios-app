@@ -1,0 +1,865 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.1 effective-5.10 (swiftlang-6.1.0.110.21 clang-1700.0.13.3)
+// swift-module-flags: -target arm64-apple-ios14.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -O -module-name BlossomUploader
+// swift-module-flags-ignorable:  -interface-compiler-version 6.1
+@_exported import BlossomUploader
+import Combine
+import Foundation
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension BlossomUploader.SkieSwiftFlowProtocol {
+  public func toPublisher() -> some Combine.Publisher<Self.Element, _Concurrency.CancellationError>
+  
+}
+extension Combine.Publisher where Self.Failure == _Concurrency.CancellationError {
+  public func sink(receiveValue: @escaping (Self.Output) -> Swift.Void) -> Combine.AnyCancellable
+}
+public enum Skie {
+  public enum RuntimeKotlin {
+    public enum SkieColdFlowIterator {
+      public typealias __Kotlin = BlossomUploader.SkieColdFlowIterator
+    }
+    public enum SkieKotlinFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinFlow
+    }
+    public enum SkieKotlinMutableSharedFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinMutableSharedFlow
+    }
+    public enum SkieKotlinMutableStateFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinMutableStateFlow
+    }
+    public enum SkieKotlinOptionalFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinOptionalFlow
+    }
+    public enum SkieKotlinOptionalMutableSharedFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinOptionalMutableSharedFlow
+    }
+    public enum SkieKotlinOptionalMutableStateFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinOptionalMutableStateFlow
+    }
+    public enum SkieKotlinOptionalSharedFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinOptionalSharedFlow
+    }
+    public enum SkieKotlinOptionalStateFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinOptionalStateFlow
+    }
+    public enum SkieKotlinSharedFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinSharedFlow
+    }
+    public enum SkieKotlinStateFlow {
+      public typealias __Kotlin = BlossomUploader.SkieKotlinStateFlow
+    }
+    public enum Skie_CancellationHandler {
+      public typealias __Kotlin = BlossomUploader.Skie_CancellationHandler
+    }
+    public enum Skie_DispatcherDelegate {
+      public typealias __Kotlin = BlossomUploader.Skie_DispatcherDelegate
+    }
+    public enum Skie_SuspendHandler {
+      public typealias __Kotlin = BlossomUploader.Skie_SuspendHandler
+    }
+    public enum Skie_SuspendResult {
+      public typealias __Kotlin = BlossomUploader.Skie_SuspendResult
+      public enum Success {
+        public typealias __Kotlin = BlossomUploader.Skie_SuspendResult.Success
+      }
+      public enum Error {
+        public typealias __Kotlin = BlossomUploader.Skie_SuspendResult.Error
+      }
+      public enum Canceled {
+        public typealias __Kotlin = BlossomUploader.Skie_SuspendResult.Canceled
+      }
+    }
+  }
+  public typealias co_touchlab_skie__runtime_kotlin = BlossomUploader.Skie.RuntimeKotlin
+  public enum KotlinxCoroutinesCore {
+    public enum Flow {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreFlow
+    }
+    public enum StateFlow {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreStateFlow
+    }
+    public enum SharedFlow {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreSharedFlow
+    }
+    public enum MutableSharedFlow {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreMutableSharedFlow
+    }
+    public enum MutableStateFlow {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreMutableStateFlow
+    }
+    public enum Runnable {
+      public typealias __Kotlin = BlossomUploader.Kotlinx_coroutines_coreRunnable
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_coroutines_core = BlossomUploader.Skie.KotlinxCoroutinesCore
+  public enum KotlinxSerializationCore {
+    public enum SerialKind {
+    }
+    public enum SerializersModule {
+    }
+    public enum PolymorphicKind {
+    }
+    public enum PrimitiveKind {
+    }
+    public enum StructureKind {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_serialization_core = BlossomUploader.Skie.KotlinxSerializationCore
+  public enum Okio {
+    public enum BufferedSource {
+    }
+    public enum BufferedSink {
+    }
+  }
+  public typealias com_squareup_okio__okio = BlossomUploader.Skie.Okio
+  public enum Nostr {
+    public enum SignResult {
+    }
+  }
+  public typealias Primal_domain__nostr = BlossomUploader.Skie.Nostr
+  public enum KotlinxSerializationJson {
+    public enum JsonElement {
+    }
+    public enum JsonPrimitive {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_serialization_json = BlossomUploader.Skie.KotlinxSerializationJson
+}
+@_hasMissingDesignatedInitializers public class SkieSwiftFlowIterator<T> : _Concurrency.AsyncIteratorProtocol {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func next() async -> T?
+  @objc deinit
+  public typealias Element = T
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncIteratorProtocol, Failure) public typealias __AsyncIteratorProtocol_Failure = Swift.Never
+}
+public protocol SkieSwiftFlowProtocol<Element> : _Concurrency.AsyncSequence {
+  associatedtype Element
+  associatedtype Delegate : BlossomUploader.Kotlinx_coroutines_coreFlow
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinOptionalFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinOptionalFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftSharedFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var replayCache: [T] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalSharedFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var replayCache: [T?] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinOptionalSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinOptionalSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftMutableSharedFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var subscriptionCount: BlossomUploader.SkieSwiftStateFlow<BlossomUploader.KotlinInt> {
+    get
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T) async throws
+  final public func tryEmit(value: T) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftMutableSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftMutableSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinMutableSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinMutableSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreMutableSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalMutableSharedFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var subscriptionCount: BlossomUploader.SkieSwiftStateFlow<BlossomUploader.KotlinInt> {
+    get
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T?) async throws
+  final public func tryEmit(value: T?) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreMutableSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftStateFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var value: T {
+    get
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinStateFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalStateFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var value: T? {
+    get
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinOptionalStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinOptionalStateFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftMutableStateFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var value: T {
+    get
+    set(value)
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  final public var subscriptionCount: BlossomUploader.SkieSwiftStateFlow<BlossomUploader.KotlinInt> {
+    get
+  }
+  final public func compareAndSet(expect: T, update: T) -> Swift.Bool
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T) async throws
+  final public func tryEmit(value: T) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftMutableStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftMutableStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinMutableStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinMutableStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinMutableStateFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreMutableStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalMutableStateFlow<T> : BlossomUploader.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  final public var value: T? {
+    get
+    set(value)
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  final public var subscriptionCount: BlossomUploader.SkieSwiftStateFlow<BlossomUploader.KotlinInt> {
+    get
+  }
+  final public func compareAndSet(expect: T?, update: T?) -> Swift.Bool
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T?) async throws
+  final public func tryEmit(value: T?) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>, result: inout BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> BlossomUploader.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = BlossomUploader.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = BlossomUploader.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>
+  public typealias Delegate = any BlossomUploader.Kotlinx_coroutines_coreMutableStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+extension BlossomUploader.Skie.RuntimeKotlin.SkieColdFlowIterator {
+  public struct __Suspend<E> where E : AnyObject {
+    public let __kotlinObject: BlossomUploader.SkieColdFlowIterator<E>
+    public init(_ __kotlinObject: BlossomUploader.SkieColdFlowIterator<E>)
+  }
+}
+public func skie<E>(_ kotlinObject: BlossomUploader.SkieColdFlowIterator<E>) -> BlossomUploader.Skie.RuntimeKotlin.SkieColdFlowIterator.__Suspend<E> where E : AnyObject
+extension BlossomUploader.Skie.RuntimeKotlin.SkieColdFlowIterator.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func hasNext() async throws -> BlossomUploader.KotlinBoolean
+}
+extension BlossomUploader.Kotlinx_coroutines_coreFlow {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func collect(collector: any BlossomUploader.Kotlinx_coroutines_coreFlowCollector) async throws
+}
+extension BlossomUploader.Kotlinx_coroutines_coreFlowCollector {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func emit(value: Any?) async throws
+}
+extension BlossomUploader.BlossomApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func headMedia(authorization: Swift.String, fileMetadata: BlossomUploader.FileMetadata) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func headUpload(authorization: Swift.String, fileMetadata: BlossomUploader.FileMetadata) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putMedia(authorization: Swift.String, fileMetadata: BlossomUploader.FileMetadata, bufferedSource: any BlossomUploader.OkioBufferedSource, onProgress: ((BlossomUploader.KotlinInt, BlossomUploader.KotlinInt) -> Swift.Void)?) async throws -> BlossomUploader.BlobDescriptor
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putMirror(authorization: Swift.String, fileUrl: Swift.String) async throws -> BlossomUploader.BlobDescriptor
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putUpload(authorization: Swift.String, fileMetadata: BlossomUploader.FileMetadata, bufferedSource: any BlossomUploader.OkioBufferedSource, onProgress: ((BlossomUploader.KotlinInt, BlossomUploader.KotlinInt) -> Swift.Void)?) async throws -> BlossomUploader.BlobDescriptor
+}
+extension BlossomUploader.BlossomServerListProvider {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func provideBlossomServerList(userId: Swift.String) async throws -> [Swift.String]
+}
+extension BlossomUploader.IosPrimalBlossomUploadService {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upload(path: Swift.String, userId: Swift.String, onProgress: ((BlossomUploader.KotlinInt, BlossomUploader.KotlinInt) -> Swift.Void)?) async throws -> BlossomUploader.UploadResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upload(path: Swift.String, userId: Swift.String, onSignRequested: @escaping (BlossomUploader.NostrNostrUnsignedEvent) -> BlossomUploader.NostrNostrEvent, onProgress: ((BlossomUploader.KotlinInt, BlossomUploader.KotlinInt) -> Swift.Void)?) async throws -> BlossomUploader.UploadResult
+}
+extension BlossomUploader.NostrNostrEventSignatureHandler {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func signNostrEvent(unsignedNostrEvent: BlossomUploader.NostrNostrUnsignedEvent) async throws -> BlossomUploader.NostrSignResult
+}
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftFlow<T>) -> BlossomUploader.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftFlow<T>) -> BlossomUploader.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftOptionalFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftOptionalFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftSharedFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftOptionalSharedFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftOptionalSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftMutableSharedFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+}
+extension BlossomUploader.SkieSwiftMutableSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+}
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftOptionalMutableSharedFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+}
+extension BlossomUploader.SkieSwiftOptionalMutableSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableSharedFlow<T>)
+}
+public func SkieKotlinStateFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinStateFlow<T> where T : AnyObject
+public func SkieKotlinStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinStateFlow<T> where T : AnyObject
+public func SkieKotlinStateFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftStateFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftOptionalStateFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftOptionalStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftMutableStateFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftMutableStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>) -> BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension BlossomUploader.SkieSwiftOptionalMutableStateFlow where T : AnyObject {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension BlossomUploader.SkieSwiftOptionalMutableStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: BlossomUploader.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case canceled(BlossomUploader.Skie_SuspendResult.Canceled)
+    case error(BlossomUploader.Skie_SuspendResult.Error)
+    case success(BlossomUploader.Skie_SuspendResult.Success)
+    public static func == (a: BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed, b: BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed where __Sealed : BlossomUploader.Skie_SuspendResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed? where __Sealed : BlossomUploader.Skie_SuspendResult
+extension BlossomUploader.Skie.KotlinxSerializationCore.SerialKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case polymorphicKind(BlossomUploader.Kotlinx_serialization_corePolymorphicKind)
+    case primitiveKind(BlossomUploader.Kotlinx_serialization_corePrimitiveKind)
+    case cONTEXTUAL(BlossomUploader.Kotlinx_serialization_coreSerialKind.CONTEXTUAL)
+    case eNUM(BlossomUploader.Kotlinx_serialization_coreSerialKind.ENUM)
+    case structureKind(BlossomUploader.Kotlinx_serialization_coreStructureKind)
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationCore.SerialKind.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationCore.SerialKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationCore.SerialKind.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_coreSerialKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationCore.SerialKind.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_coreSerialKind
+extension BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_coreSerializersModule
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_coreSerializersModule
+extension BlossomUploader.Skie.KotlinxSerializationCore.PolymorphicKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case oPEN(BlossomUploader.Kotlinx_serialization_corePolymorphicKind.OPEN)
+    case sEALED(BlossomUploader.Kotlinx_serialization_corePolymorphicKind.SEALED)
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_corePolymorphicKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_corePolymorphicKind
+extension BlossomUploader.Skie.KotlinxSerializationCore.PrimitiveKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case bOOLEAN(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.BOOLEAN)
+    case bYTE(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.BYTE)
+    case cHAR(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.CHAR)
+    case dOUBLE(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.DOUBLE)
+    case fLOAT(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.FLOAT)
+    case iNT(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.INT)
+    case lONG(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.LONG)
+    case sHORT(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.SHORT)
+    case sTRING(BlossomUploader.Kotlinx_serialization_corePrimitiveKind.STRING)
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_corePrimitiveKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_corePrimitiveKind
+extension BlossomUploader.Skie.KotlinxSerializationCore.StructureKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case cLASS(BlossomUploader.Kotlinx_serialization_coreStructureKind.CLASS)
+    case lIST(BlossomUploader.Kotlinx_serialization_coreStructureKind.LIST)
+    case mAP(BlossomUploader.Kotlinx_serialization_coreStructureKind.MAP)
+    case oBJECT(BlossomUploader.Kotlinx_serialization_coreStructureKind.OBJECT)
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationCore.StructureKind.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationCore.StructureKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationCore.StructureKind.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_coreStructureKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationCore.StructureKind.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_coreStructureKind
+extension BlossomUploader.Skie.Okio.BufferedSource {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(BlossomUploader.OkioBuffer)
+    case `else`
+    public static func == (a: BlossomUploader.Skie.Okio.BufferedSource.__Sealed, b: BlossomUploader.Skie.Okio.BufferedSource.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Okio.BufferedSource.__Sealed where __Sealed : BlossomUploader.OkioBufferedSource
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Okio.BufferedSource.__Sealed? where __Sealed : BlossomUploader.OkioBufferedSource
+extension BlossomUploader.Skie.Okio.BufferedSink {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(BlossomUploader.OkioBuffer)
+    case `else`
+    public static func == (a: BlossomUploader.Skie.Okio.BufferedSink.__Sealed, b: BlossomUploader.Skie.Okio.BufferedSink.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Okio.BufferedSink.__Sealed where __Sealed : BlossomUploader.OkioBufferedSink
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Okio.BufferedSink.__Sealed? where __Sealed : BlossomUploader.OkioBufferedSink
+extension BlossomUploader.Skie.Nostr.SignResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case rejected(BlossomUploader.NostrSignResult.Rejected)
+    case signed(BlossomUploader.NostrSignResult.Signed)
+    public static func == (a: BlossomUploader.Skie.Nostr.SignResult.__Sealed, b: BlossomUploader.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed where __Sealed : BlossomUploader.NostrSignResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed? where __Sealed : BlossomUploader.NostrSignResult
+extension BlossomUploader.Skie.KotlinxSerializationJson.JsonElement {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case jsonPrimitive(BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive)
+    case `else`
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationJson.JsonElement.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationJson.JsonElement.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonElement.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonElement
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonElement.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonElement
+extension BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case jsonNull(BlossomUploader.Kotlinx_serialization_jsonJsonNull)
+    case `else`
+    public static func == (a: BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed, b: BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive
+extension BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.Sendable {}
+extension BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.BitwiseCopyable {}

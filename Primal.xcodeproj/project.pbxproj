@@ -357,6 +357,7 @@
 		B934ADAB2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */; };
 		B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */; };
 		B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */; };
+		B934ADBA2DB822F50044E5B5 /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
@@ -1049,6 +1050,7 @@
 		B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
 		B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedWordsController.swift; sourceTree = "<group>"; };
 		B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteWordCell.swift; sourceTree = "<group>"; };
+		B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlossomUploader.xcframework; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
@@ -1348,6 +1350,7 @@
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
+				B934ADBA2DB822F50044E5B5 /* BlossomUploader.xcframework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
@@ -1481,6 +1484,7 @@
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
+				B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */,
 				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
 			);
 			path = Primal;
