@@ -9,8 +9,7 @@ import Combine
 import UIKit
 
 extension String {
-    static let blossomServerKey = "blossomServerKey"
-    static let blossomMirrorKey = "blossomMirrorKey"
+    static let blossomDefaultServer = "blossom.primal.net"
 }
 
 final class SettingsMediaUploadsController: UIViewController, SettingsController, Themeable {
@@ -22,7 +21,7 @@ final class SettingsMediaUploadsController: UIViewController, SettingsController
     private var cancellables: Set<AnyCancellable> = []
     private var viewCancellables: Set<AnyCancellable> = []
     
-    @Published var primaryServer: String = "blossom.primal.net"
+    @Published var primaryServer: String = .blossomDefaultServer
     @Published var mirrors: [String] = []
     
     @Published var enableMirror: Bool = false
@@ -119,7 +118,7 @@ private extension SettingsMediaUploadsController {
         restoreBlossomButton.addAction(.init(handler: { [weak self] _ in
             let alert = UIAlertController(title: "Are you sure?", message: "Do you want to restore the default blossom server?", preferredStyle: .alert)
             alert.addAction(.init(title: "OK", style: .destructive) { _ in
-                // TODO: RESTORE DEFAULT
+                self?.primaryServer = .blossomDefaultServer
             })
             alert.addAction(.init(title: "Cancel", style: .cancel))
             self?.present(alert, animated: true)

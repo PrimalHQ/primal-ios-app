@@ -176,6 +176,8 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
                 imageView.playIcon.isHidden = false
             } else {
                 imageView.image = nil
+                imageView.url = image.url
+                imageView.playIcon.isHidden = !image.url.isVideoURL
             }
         }
         

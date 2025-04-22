@@ -220,6 +220,20 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         inputParent.transform = .init(translationX: 0, y: -transform)
     }
+    
+    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
+        if post.post.id == self.id {
+            switch event {
+            case .images(let resource):
+                guard let cell, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath), !resource.url.isVideoURL else { break }
+                let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+                present(ImageGalleryController(current: resource.url, all: allImages), animated: false)
+                return
+            default: break
+            }
+        }
+        super.performEvent(event, withPost: post, inCell: cell)
+    }
 }
 
 private extension ThreadViewController {

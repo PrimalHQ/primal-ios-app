@@ -10,7 +10,7 @@ import UIKit
 class MainThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-//        mainImages.noDownsampling = true
+        mainImages.noDownsampling = true
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
