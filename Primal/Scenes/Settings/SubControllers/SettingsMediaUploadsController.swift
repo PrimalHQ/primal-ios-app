@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 extension String {
-    static let blossomDefaultServer = "blossom.primal.net"
+    static let blossomDefaultServer = "https://blossom.primal.net"
 }
 
 final class SettingsMediaUploadsController: UIViewController, SettingsController, Themeable {

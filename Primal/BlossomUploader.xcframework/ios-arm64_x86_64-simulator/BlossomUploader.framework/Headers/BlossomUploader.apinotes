@@ -1009,6 +1009,8 @@ Classes:
       Type: "NSString * _Nonnull"
 - Name: "BlossomUploaderUploadResult"
   SwiftName: "UploadResult"
+- Name: "BlossomUploaderUploadResultSuccess"
+  SwiftName: "UploadResult.Success"
   Properties:
   - Name: "originalFileSize"
     PropertyKind: "Instance"
@@ -1036,7 +1038,7 @@ Classes:
   - Selector: "doCopyRemoteUrl:originalFileSize:originalHash:"
     MethodKind: "Instance"
     SwiftName: "doCopy(remoteUrl:originalFileSize:originalHash:)"
-    ResultType: "BlossomUploaderUploadResult * _Nonnull"
+    ResultType: "BlossomUploaderUploadResultSuccess * _Nonnull"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
@@ -1044,6 +1046,42 @@ Classes:
       Type: "int64_t"
     - Position: 2
       Type: "NSString * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderUploadResultFailed"
+  SwiftName: "UploadResult.Failed"
+  Properties:
+  - Name: "error"
+    PropertyKind: "Instance"
+    SwiftName: "error"
+    Type: "BlossomUploaderBlossomException * _Nonnull"
+  Methods:
+  - Selector: "initWithError:"
+    MethodKind: "Instance"
+    SwiftName: "init(error:)"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderBlossomException * _Nonnull"
+  - Selector: "doCopyError:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(error:)"
+    ResultType: "BlossomUploaderUploadResultFailed * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderBlossomException * _Nonnull"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"

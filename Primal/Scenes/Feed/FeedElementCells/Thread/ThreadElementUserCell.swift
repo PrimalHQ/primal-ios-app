@@ -122,29 +122,8 @@ class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
         threeDotsButton.transform = parsedContent.reposted == nil ? .identity : .init(translationX: 0, y: -6)
         
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
-        
-        let postInfo = parsedContent.postInfo
-        let muteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
-        let postMuteTitle = postInfo.isPostMuted ? "Unmute Thread" : "Mute Thread"
-        
-        let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
-        let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
-        
-        let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
-            (postMuteTitle, "MenuMuteThread", .toggleMutePost, .destructive),
-            ("Share Note", "MenuShare", .share, []),
-            ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
-            postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
-            ("Copy Note Text", "MenuCopyText", .copy(.content), []),
-            ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
-            ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
-            ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
-            ("Broadcast", "MenuBroadcast", .broadcast, []),
-            (muteTitle, "blockIcon", .muteUser, .destructive),
-            ("Report user", "warningIcon", .report, .destructive)
-        ]
 
-        threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
+        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, imageName, action, attributes) in
             UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)

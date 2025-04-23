@@ -432,6 +432,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             (cell as? FeedElementBaseCell)?.update(post)
         case .articleTag(let tag):
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
+        case .requestDelete:
+            break
         }
     }
     

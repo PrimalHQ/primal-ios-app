@@ -95,6 +95,11 @@ public enum Skie {
     }
   }
   public typealias org_jetbrains_kotlinx__kotlinx_coroutines_core = BlossomUploader.Skie.KotlinxCoroutinesCore
+  public enum NetworkingUpload {
+    public enum UploadResult {
+    }
+  }
+  public typealias Primal_core__networking_upload = BlossomUploader.Skie.NetworkingUpload
   public enum KotlinxSerializationCore {
     public enum SerialKind {
     }
@@ -731,6 +736,19 @@ extension BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed where __Sealed : BlossomUploader.Skie_SuspendResult
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed? where __Sealed : BlossomUploader.Skie_SuspendResult
+extension BlossomUploader.Skie.NetworkingUpload.UploadResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failed(BlossomUploader.UploadResult.Failed)
+    case success(BlossomUploader.UploadResult.Success)
+    public static func == (a: BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed, b: BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed where __Sealed : BlossomUploader.UploadResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed? where __Sealed : BlossomUploader.UploadResult
 extension BlossomUploader.Skie.KotlinxSerializationCore.SerialKind {
   @frozen public enum __Sealed : Swift.Hashable {
     case polymorphicKind(BlossomUploader.Kotlinx_serialization_corePolymorphicKind)

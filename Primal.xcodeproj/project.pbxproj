@@ -259,7 +259,6 @@
 		B906AB102C9B472C0089813F /* MediaResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB0F2C9B472C0089813F /* MediaResource.swift */; };
 		B906AB122C9B47800089813F /* Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB112C9B47800089813F /* Thumbnail.swift */; };
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
-		B90B7F272B97BA5F0074CD98 /* UploadPhotoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90B7F262B97BA5F0074CD98 /* UploadPhotoRequest.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -357,7 +356,7 @@
 		B934ADAB2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */; };
 		B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */; };
 		B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */; };
-		B934ADBA2DB822F50044E5B5 /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */; };
+		B934ADF22DB972EB0044E5B5 /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B934ADF12DB972EB0044E5B5 /* BlossomUploader.xcframework */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
@@ -534,7 +533,6 @@
 		B9CE4DC42B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */; };
 		B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */; };
 		B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */; };
-		B9CE4DD42B7E252D0060A1B8 /* ChunkUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */; };
 		B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */; };
 		B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD82B8505C40060A1B8 /* WalletActivationCodeController.swift */; };
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
@@ -952,7 +950,6 @@
 		B906AB0F2C9B472C0089813F /* MediaResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaResource.swift; sourceTree = "<group>"; };
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
-		B90B7F262B97BA5F0074CD98 /* UploadPhotoRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadPhotoRequest.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -1050,7 +1047,7 @@
 		B934ADAA2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedViewController.swift; sourceTree = "<group>"; };
 		B934ADAC2DAFDF150044E5B5 /* SettingsMutedWordsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMutedWordsController.swift; sourceTree = "<group>"; };
 		B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteWordCell.swift; sourceTree = "<group>"; };
-		B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlossomUploader.xcframework; sourceTree = "<group>"; };
+		B934ADF12DB972EB0044E5B5 /* BlossomUploader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlossomUploader.xcframework; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
@@ -1225,7 +1222,6 @@
 		B9CE4DC32B7526480060A1B8 /* WalletHomeToTransactionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHomeToTransactionAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupDatePickerController.swift; sourceTree = "<group>"; };
 		B9CE4DD02B7D1DFC0060A1B8 /* Data+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extra.swift"; sourceTree = "<group>"; };
-		B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkUploader.swift; sourceTree = "<group>"; };
 		B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBar.swift; sourceTree = "<group>"; };
 		B9CE4DD82B8505C40060A1B8 /* WalletActivationCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletActivationCodeController.swift; sourceTree = "<group>"; };
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
@@ -1350,7 +1346,7 @@
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
-				B934ADBA2DB822F50044E5B5 /* BlossomUploader.xcframework in Frameworks */,
+				B934ADF22DB972EB0044E5B5 /* BlossomUploader.xcframework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
@@ -1483,8 +1479,8 @@
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
+				B934ADF12DB972EB0044E5B5 /* BlossomUploader.xcframework */,
 				939330FB29A3E370003954C2 /* Preview Content */,
-				B934ADB92DB822F50044E5B5 /* BlossomUploader.xcframework */,
 				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
 			);
 			path = Primal;
@@ -1889,8 +1885,6 @@
 				B90032832BD0180300ADD2E5 /* SocketRequests */,
 				B9009B5F2B11082D002B0613 /* Requests */,
 				9E83DF782A57FDEC00F2C379 /* UploadAssetRequest.swift */,
-				B9CE4DD32B7E252D0060A1B8 /* ChunkUploader.swift */,
-				B90B7F262B97BA5F0074CD98 /* UploadPhotoRequest.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -3595,7 +3589,6 @@
 				B98DD8DB2C65055B00E8369A /* MediaManager.swift in Sources */,
 				9E9F2F8729F6AB6400A9CDF3 /* PrimalProgressView.swift in Sources */,
 				9E8834BC2A3242C0005DB548 /* ProfileInfoCell.swift in Sources */,
-				B90B7F272B97BA5F0074CD98 /* UploadPhotoRequest.swift in Sources */,
 				93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */,
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */,
@@ -3946,7 +3939,6 @@
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
-				B9CE4DD42B7E252D0060A1B8 /* ChunkUploader.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
