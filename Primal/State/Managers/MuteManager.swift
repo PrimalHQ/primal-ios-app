@@ -6,10 +6,6 @@ import Foundation
 import Combine
 import GenericJSON
 
-extension NSNotification.Name {
-    static let userMuted: NSNotification.Name = .init(rawValue: "userMutedNotification")
-}
-
 final class MuteManager {
     
     enum Option {
@@ -67,7 +63,7 @@ final class MuteManager {
             muteTags.insert(option.tag())
             switch option {
             case .user(let pubkey):
-                NotificationCenter.default.post(name: .userMuted, object: pubkey)
+                notify(.userMuted, pubkey)
             case .word, .hashtag, .thread: break
             }
         }

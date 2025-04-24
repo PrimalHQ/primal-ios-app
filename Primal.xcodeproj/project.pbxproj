@@ -261,6 +261,7 @@
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
 		B907D39C2DB9753F002B86DA /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B934ADF12DB972EB0044E5B5 /* BlossomUploader.xcframework */; };
 		B907D39D2DB9753F002B86DA /* BlossomUploader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B934ADF12DB972EB0044E5B5 /* BlossomUploader.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -962,6 +963,7 @@
 		B906AB0F2C9B472C0089813F /* MediaResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaResource.swift; sourceTree = "<group>"; };
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
+		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -1936,6 +1938,7 @@
 				B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */,
 				B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */,
 				B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */,
+				B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */,
 			);
 			path = Popups;
 			sourceTree = "<group>";
@@ -3549,6 +3552,7 @@
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */,
 				B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */,
 				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
+				B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */,
 				B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
@@ -4175,7 +4179,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.30;
+				MARKETING_VERSION = 2.2.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4222,7 +4226,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.30;
+				MARKETING_VERSION = 2.2.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

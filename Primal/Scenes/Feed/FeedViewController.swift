@@ -413,10 +413,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
             mainTabBarController?.showToast("Copied!")
-        case .broadcast:
-            break // TODO: Something?
         case .report:
-            break // TODO: Something?
+            present(PopupReportContentController(), animated: true)
         case .muteUser:
             MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
         case .toggleMutePost:
@@ -433,7 +431,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .articleTag(let tag):
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
         case .requestDelete:
-            break
+            requestDelete(post)
         }
     }
     
@@ -613,6 +611,25 @@ private extension NoteViewController {
                 animView.removeFromSuperview()
             }
         }
+    }
+    
+    func requestDelete(_ post: ParsedContent) {
+        let alert = UIAlertController(title: "Delete note?", message: "This will issue a \"request delete\" command to the relays where the note was published.", preferredStyle: .alert)
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+            guard let deleteEvent = NostrObject.deleteNote(post) else { return }
+            
+            PostingManager.instance.sendEvent(deleteEvent) { success in
+                guard success else { return }
+                
+                DispatchQueue.main.async {
+                    notify(.noteDeleted, post.post.id)
+                    
+                    RootViewController.instance.showToast("Note Deleted")
+                }
+            }
+        }))
+        present(alert, animated: true)
     }
 }
 

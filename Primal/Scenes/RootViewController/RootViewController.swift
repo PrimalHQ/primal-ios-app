@@ -99,8 +99,16 @@ final class RootViewController: UIViewController {
             .pinToSuperview(edges: .top, padding: 60, safeArea: true)
             .constrainToSize(height: 44)
         
-        Connection.regular.cantConnectPublisher.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] cantConnect in
-            self?.noConnectionView.hasConnection = !cantConnect
+        
+        let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
+        let delay3SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(3), scheduler: RunLoop.main).map({ _ in false })
+        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay3SecondsForegroundPublisher)
+        
+        Publishers.CombineLatest(
+            Publishers.Merge(Just(false), didJustEnterForegroundPublisher),
+            Connection.regular.cantConnectPublisher.removeDuplicates()
+        ).receive(on: DispatchQueue.main).sink { [weak self] didJustEnterForeground, cantConnect in
+            self?.noConnectionView.hasConnection = didJustEnterForeground || !cantConnect
         }
         .store(in: &cancellables)
         

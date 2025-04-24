@@ -47,7 +47,7 @@ class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCe
         }
         
         guard content.mediaResources.count == 1 else {
-            let aspect = mainImages.heightAnchor.constraint(equalToConstant: content.mediaResources.count == 2 ? ImageGallerySizingConst.heightForTwoImages : ImageGallerySizingConst.heightForFourImages)
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: content.mediaResources.aspectForGallery())
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect

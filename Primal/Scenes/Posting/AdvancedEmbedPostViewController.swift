@@ -42,12 +42,7 @@ class AdvancedEmbedPostViewController: UIViewController {
     var onPost: (() -> Void)?
     
     init(including: PostEmbedPreview? = nil, onPost: (() -> Void)? = nil) {
-        switch including {
-        case .highlight(_, let highlight):
-            manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: highlight.event.id, replyingTo: PrimalFeedPost(nostrPost: highlight.event, nostrPostStats: .empty(highlight.event.id)))
-        default:
-            manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: nil, replyingTo: nil)
-        }
+        manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: nil, replyingTo: nil)
         
         self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
@@ -269,9 +264,15 @@ private extension AdvancedEmbedPostViewController {
             embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
             
             elements.enumerated().forEach { index, item in
+                let view = item.makeView()
+                
+                if case .highlight = item {
+                    self.embeddedPreviewStack.addArrangedSubview(view)
+                    return
+                }
+                
                 let myView = UIView()
                 
-                let view = item.makeView()
                 view.isUserInteractionEnabled = false
                 view.layer.borderWidth = 0
                 view.backgroundColor = .background3

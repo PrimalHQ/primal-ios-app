@@ -116,8 +116,6 @@ extension NostrObject {
             pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
         }
         
-        var text = postingText
-        
         for include in embeddedElements {
             switch include {
             case .highlight(let article, let highlight):
@@ -149,7 +147,7 @@ extension NostrObject {
         allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
         allTags += draft.text.extractHashtags().map({ ["t", $0] })
         
-        return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: text, kind: 1, tags: allTags, createdAt: Int64(Date().timeIntervalSince1970))
+        return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: postingText, kind: 1, tags: allTags, createdAt: Int64(Date().timeIntervalSince1970))
 
     }
     
@@ -201,10 +199,17 @@ extension NostrObject {
         ])
     }
     
-    static func delete(_ highlights: [Highlight]) -> NostrObject? {
-        createNostrObject(content: "Removing highlight", kind: NostrKind.eventDeletion.rawValue, tags: highlights.map {
+    static func deleteHighlights(_ highlights: [Highlight]) -> NostrObject? {
+        createNostrObject(content: "Removing highlight", kind: NostrKind.eventDeletion.rawValue, tags: [["k", NostrKind.highlight.rawValue.string]] + highlights.map {
             ["e", $0.event.id]
         })
+    }
+    
+    static  func deleteNote(_ note: ParsedContent) -> NostrObject? {
+        createNostrObject(content: "Removing Note", kind: NostrKind.eventDeletion.rawValue, tags: [
+            ["k", NostrKind.text.rawValue.string],
+            ["e", note.post.id]
+        ])
     }
     
     static func relays(_ relays: [String: RelayInfo]) -> NostrObject? {

@@ -8,9 +8,13 @@
 import UIKit
 import Kingfisher
 
-struct ImageGallerySizingConst {
-    static let heightForTwoImages: CGFloat = 250
-    static let heightForFourImages: CGFloat = 400
+
+extension Array where Element == MediaMetadata.Resource {
+    func aspectForGallery() -> CGFloat {
+        if count == 2 { return 0.5 }
+        if count == 3 { return 0.87 }
+        return 1
+    }
 }
 
 protocol ElementImageGalleryCell: UITableViewCell, FeedElementVideoCell {
@@ -56,7 +60,7 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         }
         
         guard content.mediaResources.count == 1 else {
-            let aspect = mainImages.heightAnchor.constraint(equalToConstant: content.mediaResources.count == 2 ? ImageGallerySizingConst.heightForTwoImages : ImageGallerySizingConst.heightForFourImages)
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: content.mediaResources.aspectForGallery())
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect

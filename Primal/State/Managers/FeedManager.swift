@@ -163,6 +163,17 @@ private extension FeedManager {
             }
             .store(in: &cancellables)
         
+        NotificationCenter.default.publisher(for: .noteDeleted)
+            .compactMap { $0.object as? String}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] eventId in
+                guard let self else { return }
+                
+                parsedPosts = parsedPosts.filter { $0.post.id != eventId }
+                newPostObjects = newPostObjects.filter { $0.post.id != eventId }
+            }
+            .store(in: &cancellables)
+        
         postsEmitter.sink { [weak self] result in
             guard let self else { return }
             

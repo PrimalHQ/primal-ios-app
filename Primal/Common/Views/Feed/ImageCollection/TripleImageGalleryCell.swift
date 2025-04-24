@@ -14,23 +14,24 @@ final class TripleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     
     var imageViews: [InteractiveImageView] { [imageView1, imageView2, imageView3] }
     
+    lazy var substack = UIStackView([imageView2, imageView3])
+    lazy var mainStack = UIStackView(axis: .vertical, [imageView1, substack])
+    
     weak var delegate: ImageCellDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let hStack = UIStackView([imageView2, imageView3])
-        hStack.distribution = .fillEqually
-        hStack.spacing = 4
+        substack.distribution = .fillEqually
+        substack.spacing = 1
         
-        let stack = UIStackView(axis: .vertical, [imageView1, hStack])
-        stack.distribution = .fillEqually
-        stack.spacing = 4
+        mainStack.distribution = .fillEqually
+        mainStack.spacing = 1
 
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(mainStack)
+        mainStack.pinToSuperview()
         
-        contentView.backgroundColor = .background3
+        contentView.backgroundColor = .background
         
         imageViews.forEach { imageView in
             imageView.previewCallback = { [weak self, weak imageView] in
@@ -51,11 +52,26 @@ final class TripleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     
     
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
-        let realHeight = ImageGallerySizingConst.heightForFourImages / 2
-        zip(resources, imageViews).forEach { image, imageView in
+        
+        let size = frame.size
+        let halfSize = CGSize(width: (size.width - 1) / 2, height: (size.height - 1) / 2)
+        
+        zip(resources, imageViews).enumerated().forEach { (index, arg1) in
+            let (image, imageView) = arg1
+            
             var downsampling = DownsamplingOption.none
             if let width = image.variants.first?.width, let height = image.variants.first?.height {
-                downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
+                
+                if index == 0 {
+                    mainStack.axis = width < height ? .horizontal : .vertical
+                    substack.axis = width < height ? .vertical : .horizontal
+                    
+                    downsampling = width < height ?
+                        .size(.init(width: halfSize.width, height: size.height)) :
+                        .size(.init(width: size.width, height: halfSize.height))
+                } else {
+                    downsampling = .size(halfSize)
+                }
             }
             
             imageView.playIcon.isHidden = true

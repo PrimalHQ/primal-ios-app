@@ -220,7 +220,7 @@ extension ParsedContent {
         if user.data.pubkey != IdentityManager.instance.userHexPubkey {
             actionsData.append(("Report Content", "warningIcon", .report, .destructive))
         } else {
-            actionsData.append(("Request Delete", "trashIcon", .requestDelete, .destructive))
+            actionsData.append(("Request Delete", "MenuTrash", .requestDelete, .destructive))
         }
             
         return actionsData

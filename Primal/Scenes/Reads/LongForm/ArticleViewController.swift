@@ -31,12 +31,6 @@ private extension String {
     static let hideArticleHighlightsKey = "hideArticleHighlightsKey"
 }
 
-extension Notification.Name {
-    static var articleSettingsUpdated: Notification.Name {
-        return Notification.Name("articleSettingsUpdated")
-    }
-}
-
 struct ArticleSettings {
     static var hideArticleHighlights: Bool {
         get { UserDefaults.standard.bool(forKey: .hideArticleHighlightsKey) }

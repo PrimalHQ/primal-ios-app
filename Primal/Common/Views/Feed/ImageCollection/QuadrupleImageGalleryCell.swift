@@ -24,15 +24,15 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
         
         let hStack1 = UIStackView([imageView1, imageView2])
         hStack1.distribution = .fillEqually
-        hStack1.spacing = 4
+        hStack1.spacing = 1
         
         let hStack2 = UIStackView([imageView3, imageView4])
         hStack2.distribution = .fillEqually
-        hStack2.spacing = 4
+        hStack2.spacing = 1
         
         let stack = UIStackView(axis: .vertical, [hStack1, hStack2])
         stack.distribution = .fillEqually
-        stack.spacing = 4
+        stack.spacing = 1
 
         contentView.addSubview(stack)
         stack.pinToSuperview()
@@ -48,7 +48,7 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
         extraLabel.font = .appFont(withSize: 48, weight: .regular)
         extraLabel.textColor = .white
         
-        contentView.backgroundColor = .background3
+        contentView.backgroundColor = .background
         
         imageViews.forEach { imageView in
             imageView.previewCallback = { [weak self, weak imageView] in
@@ -69,12 +69,11 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
     
     
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
-        let realHeight = ImageGallerySizingConst.heightForFourImages / 2
+        
+        let size = frame.size
+        
         zip(resources, imageViews).forEach { image, imageView in
-            var downsampling = DownsamplingOption.none
-            if let width = image.variants.first?.width, let height = image.variants.first?.height {
-                downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
-            }
+            var downsampling = DownsamplingOption.size(.init(width: (size.width - 1) / 2, height: (size.height - 1) / 2))
             
             imageView.playIcon.isHidden = true
             if image.url.isImageURL == true {

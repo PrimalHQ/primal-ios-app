@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 final class SettingsEditMediaUploadsController: UIViewController, SettingsController, Themeable {
-    private let blossomServerInput = WebConnectInputView()
+    let blossomServerInput = WebConnectInputView()
     private let relayStackParent = UIView()
     private let relayStack = UIStackView(axis: .vertical, [])
     
@@ -60,23 +60,18 @@ extension SettingsEditMediaUploadsController: UITextFieldDelegate {
 private extension SettingsEditMediaUploadsController {
     func sendCompletion() {
         let text = blossomServerInput.input.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.containsEmoji, let url = URL(string: text) else { return }
+        guard !text.containsEmoji, text.hasPrefix("https://") else {
+            showErrorMessage("Please enter a valid server URL")
+            return
+        }
         
-        let alert = UIAlertController(title: "Are you sure?", message: "Do you want to switch to this blossom server?\n\(text)", preferredStyle: .alert)
-        alert.addAction(.init(title: "OK", style: .default) { [weak self] _ in
-            guard let self else { return }
-            navigationController?.popViewController(animated: true)
-            completion(text)
-        })
-        alert.addAction(.init(title: "Cancel", style: .cancel))
-        present(alert, animated: true)
+        completion(text)
     }
     
     func setup() {
         title = "Media Uploads"
         updateTheme()
         
-        blossomServerInput.input.placeholder = "enter blossom server url"
         blossomServerInput.input.delegate = self
         blossomServerInput.action.addAction(.init(handler: { [weak self] _ in
             self?.sendCompletion()
@@ -89,7 +84,7 @@ private extension SettingsEditMediaUploadsController {
         let stack = UIStackView(axis: .vertical, [
             titleView, SpacerView(height: 8),
             blossomServerInput, SpacerView(height: 30),
-            titleLabel("Suggested blossom servers"), SpacerView(height: 8),
+            titleLabel("Suggested media servers"), SpacerView(height: 8),
         ])
         
         let scroll = UIScrollView()
@@ -117,6 +112,8 @@ private extension SettingsEditMediaUploadsController {
             self?.blossomServerInput.input.resignFirstResponder()
         }))
         
+        let currentServers = BlossomServerManager.instance.serversForUser(pubkey: IdentityManager.instance.userHexPubkey) ?? []
+        
         SocketRequest(name: "get_recommended_blossom_servers", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] res in
@@ -125,7 +122,7 @@ private extension SettingsEditMediaUploadsController {
                     let suggested: [String] = event["content"]?.stringValue?.decode()
                 else { return }
                 
-                for server in suggested {
+                for server in suggested.filter({ !currentServers.contains($0) }) {
                     let view = SuggestedServerView(title: server)
                     stack.addArrangedSubview(view)
                     view.addGestureRecognizer(BindableTapGestureRecognizer(action: {

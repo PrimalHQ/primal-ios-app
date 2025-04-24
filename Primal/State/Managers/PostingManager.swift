@@ -92,6 +92,7 @@ final class PostingManager {
         
         var notifiedEvs: Set<String> = []
         postedEvent.sink { obj in
+            if obj.kind != NostrKind.text.rawValue { return }
             if notifiedEvs.contains(obj.id) { return }
             notifiedEvs.insert(obj.id)
             
@@ -224,7 +225,7 @@ final class PostingManager {
     func deleteHighlightEvents(_ highlights: [Highlight], _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
-        guard let ev = NostrObject.delete(highlights) else {
+        guard let ev = NostrObject.deleteHighlights(highlights) else {
             callback(false)
             return
         }

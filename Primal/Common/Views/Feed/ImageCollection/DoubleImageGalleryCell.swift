@@ -135,12 +135,12 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
         super.init(frame: frame)
         let stack = UIStackView(imageViews)
         stack.distribution = .fillEqually
-        stack.spacing = 4
+        stack.spacing = 1
         
         contentView.addSubview(stack)
         stack.pinToSuperview()
         
-        contentView.backgroundColor = .background3
+        contentView.backgroundColor = .background
         
         imageViews.forEach { imageView in
             imageView.previewCallback = { [weak self, weak imageView] in
@@ -161,12 +161,11 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     
     
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
-        let realHeight = ImageGallerySizingConst.heightForTwoImages
+        
+        let size = frame.size
+        
         zip(resources, imageViews).forEach { image, imageView in
-            var downsampling = DownsamplingOption.none
-            if let width = image.variants.first?.width, let height = image.variants.first?.height {
-                downsampling = .size(.init(width: width * (height / realHeight), height: realHeight))
-            }
+            let downsampling = DownsamplingOption.size(.init(width: (size.width - 1) / 2, height: size.height))
             
             imageView.playIcon.isHidden = true
             if image.url.isImageURL == true {

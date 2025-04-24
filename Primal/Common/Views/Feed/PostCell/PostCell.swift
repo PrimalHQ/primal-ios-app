@@ -225,7 +225,6 @@ class PostCell: UITableViewCell {
             ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
             ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
-            ("Broadcast", "MenuBroadcast", .broadcast, []),
             (muteTitle, "blockIcon", .muteUser, .destructive),
             ("Report user", "warningIcon", .report, .destructive)
         ]

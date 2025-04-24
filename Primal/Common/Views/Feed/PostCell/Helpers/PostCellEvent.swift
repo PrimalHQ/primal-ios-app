@@ -32,7 +32,6 @@ enum PostCellEvent {
     
     case share
     case copy(NoteCopiableProperty)
-    case broadcast
     case report
     case muteUser
     case toggleMutePost
@@ -54,7 +53,7 @@ extension ParsedContent {
     func propertyText(_ property: NoteCopiableProperty) -> String? {
         switch property {
         case .link:         return webURL()
-        case .content:      return attributedText.string
+        case .content:      return post.content
         case .rawData:      return post.rawData ?? post.encodeToString()
         case .noteID:       return noteId(extended: true)
         case .userPubkey:   return user.data.pubkey

@@ -363,10 +363,7 @@ open class AnimatedImageCache {
                 if !removed.isEmpty {
                     DispatchQueue.main.async {
                         let cleanedHashes = removed.map { $0.lastPathComponent }
-                        NotificationCenter.default.post(
-                            name: .KingfisherDidCleanDiskCache,
-                            object: self,
-                            userInfo: [KingfisherDiskCacheCleanedHashKey: cleanedHashes])
+                        notify(.KingfisherDidCleanDiskCache, self, userInfo: [KingfisherDiskCacheCleanedHashKey: cleanedHashes])
                     }
                 }
 

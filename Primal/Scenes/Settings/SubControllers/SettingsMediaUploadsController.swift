@@ -50,8 +50,8 @@ private extension SettingsMediaUploadsController {
         
         enableMirror = mirrors.isEmpty == false
         
-        blossomServerInput.input.placeholder = "enter blossom server url"
-        mirrorInput.input.placeholder = "enter blossom server url"
+        blossomServerInput.input.placeholder = "enter media server url"
+        mirrorInput.input.placeholder = "enter media mirror server url"
 
         let regularConnection = SettingsNetworkStatusView(title: primaryServer)
         regularConnection.status = true
@@ -61,63 +61,63 @@ private extension SettingsMediaUploadsController {
         regularConnection.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview()
         regularConnectionParent.layer.cornerRadius = 12
         
-        let restoreBlossomButton = RightAlignedAccentButton(title: "restore default blossom server")
+        let restoreBlossomButton = RightAlignedAccentButton(title: "restore default media server")
         
-        let enableMirrorSwitch = SettingsSwitchView("Enable blossom mirror")
+        let enableMirrorSwitch = SettingsSwitchView("Enable media mirrors")
         enableMirrorSwitch.switchView.isOn = enableMirror
         enableMirrorSwitch.switchView.addAction(.init(handler: { [weak self, weak enableMirrorSwitch] _ in
             self?.enableMirror = enableMirrorSwitch?.switchView.isOn ?? false
         }), for: .valueChanged)
         
         let stack = UIStackView(axis: .vertical, [
-            titleLabel("BLOSSOM SERVER"), SpacerView(height: 16),
+            titleLabel("MEDIA SERVER"), SpacerView(height: 16),
             regularConnectionParent, SpacerView(height: 20),
-            SettingsTitleView(title: "SWITCH BLOSSOM SERVER"), SpacerView(height: 8),
+            SettingsTitleView(title: "SWITCH MEDIA SERVER"), SpacerView(height: 8),
             blossomServerInput, SpacerView(height: 16),
             restoreBlossomButton, SpacerView(height: 8),
             SettingsBorder(), SpacerView(height: 24),
-            titleLabel("MIRROR"), SpacerView(height: 8),
+            titleLabel("MEDIA MIRRORS"), SpacerView(height: 8),
             enableMirrorSwitch, SpacerView(height: 10),
-            descLabel("When enabled, your uploads to the primary blossom server will be automatically copied to the mirror."), SpacerView(height: 8),
+            descLabel("You can enable one or more media mirror servers. When enabled, your uploads to the primary media server will be automatically copied to the mirror(s)."), SpacerView(height: 8),
             mirrorStack, SpacerView(height: 16)
         ])
         
         mirrorListStack.layer.cornerRadius = 12
         mirrorListStack.clipsToBounds = true
         
-        [mirrorListStack, SpacerView(height: 20), SettingsTitleView(title: "SWITCH BLOSSOM MIRROR SERVER"), SpacerView(height: 8), mirrorInput]
+        [mirrorListStack, SpacerView(height: 20), SettingsTitleView(title: "ADD A MEDIA MIRROR SERVER"), SpacerView(height: 8), mirrorInput]
             .forEach { mirrorStack.addArrangedSubview($0) }
         
         mirrorStack.isHidden = !enableMirror
         
         let scroll = UIScrollView()
-        scroll.keyboardDismissMode = .onDrag
         
         view.addSubview(scroll)
-        scroll.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-        scroll.bottomAnchor.constraint(lessThanOrEqualTo: view.keyboardLayoutGuide.topAnchor).isActive = true
-        let scrollBot = scroll.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -54)
-        scrollBot.priority = .defaultHigh
-        scrollBot.isActive = true
+        scroll.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 54, safeArea: true)
         scroll.addSubview(stack)
         stack.pinToSuperview(padding: 24)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -48).isActive = true
         
         [mirrorInput, blossomServerInput].forEach { $0.input.isUserInteractionEnabled = false }
         mirrorInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM MIRROR SERVER", completion: { mirrorServer in
+            let vc = SettingsEditMediaUploadsController(title: "ADD A MEDIA MIRROR SERVER", completion: { mirrorServer in
                 self?.mirrors.append(mirrorServer)
-            }))
+            })
+            self?.navigationController?.fadeTo(vc)
+            
+            vc.blossomServerInput.input.placeholder = "enter media server url"
         }))
         blossomServerInput.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            self?.navigationController?.fadeTo(SettingsEditMediaUploadsController(title: "SWITCH BLOSSOM SERVER", completion: { blossomServer in
+            let vc = SettingsEditMediaUploadsController(title: "SWITCH MEDIA SERVER", completion: { blossomServer in
                 self?.primaryServer = blossomServer
-            }))
+            })
+            self?.navigationController?.fadeTo(vc)
+            vc.blossomServerInput.input.placeholder = "enter media mirror server url"
         }))
         
         restoreBlossomButton.addAction(.init(handler: { [weak self] _ in
-            let alert = UIAlertController(title: "Are you sure?", message: "Do you want to restore the default blossom server?", preferredStyle: .alert)
-            alert.addAction(.init(title: "OK", style: .destructive) { _ in
+            let alert = UIAlertController(title: "Are you sure?", message: "Do you want to restore the default media server?", preferredStyle: .alert)
+            alert.addAction(.init(title: "Restore", style: .destructive) { _ in
                 self?.primaryServer = .blossomDefaultServer
             })
             alert.addAction(.init(title: "Cancel", style: .cancel))
