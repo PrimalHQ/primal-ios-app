@@ -711,6 +711,44 @@ extension BlossomUploader.SkieSwiftOptionalMutableStateFlow where T : Swift._Obj
   convenience public init(_ flow: BlossomUploader.SkieSwiftMutableStateFlow<T>)
   convenience public init(_ flow: BlossomUploader.SkieSwiftOptionalMutableStateFlow<T>)
 }
+extension BlossomUploader.Mime {
+  public typealias Type_ = BlossomUploader.__Bridge__Mime_Type_
+}
+extension BlossomUploader.__Bridge__Mime_Type_ {
+  public func toKotlinEnum() -> BlossomUploader.Mime.__Type_
+}
+extension BlossomUploader.Mime.__Type_ {
+  public func toSwiftEnum() -> BlossomUploader.Mime.Type_
+}
+@frozen public enum __Bridge__Mime_Type_ : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case application
+  case audio
+  case font
+  case image
+  case model
+  case text
+  case video
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: BlossomUploader.Mime.__Type_, result: inout BlossomUploader.Mime.Type_?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: BlossomUploader.Mime.__Type_, result: inout BlossomUploader.Mime.Type_?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: BlossomUploader.Mime.__Type_?) -> BlossomUploader.__Bridge__Mime_Type_
+  public func _bridgeToObjectiveC() -> BlossomUploader.Mime.__Type_
+  public typealias _ObjectiveCType = BlossomUploader.Mime.__Type_
+  public static func == (a: BlossomUploader.__Bridge__Mime_Type_, b: BlossomUploader.__Bridge__Mime_Type_) -> Swift.Bool
+  public typealias AllCases = [BlossomUploader.__Bridge__Mime_Type_]
+  nonisolated public static var allCases: [BlossomUploader.__Bridge__Mime_Type_] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 extension BlossomUploader.Skie.RuntimeKotlin.Skie_SuspendResult {
   @frozen public enum __Sealed : Swift.Hashable {
     case canceled(BlossomUploader.Skie_SuspendResult.Canceled)
@@ -879,5 +917,8 @@ extension BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed? where __Sealed : BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive
+public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
+extension BlossomUploader.__Bridge__Mime_Type_ : Swift.Sendable {}
+extension BlossomUploader.__Bridge__Mime_Type_ : Swift.BitwiseCopyable {}
 extension BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.Sendable {}
 extension BlossomUploader.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.BitwiseCopyable {}

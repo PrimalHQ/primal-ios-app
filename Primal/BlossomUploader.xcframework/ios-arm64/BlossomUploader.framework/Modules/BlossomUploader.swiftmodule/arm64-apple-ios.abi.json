@@ -23711,6 +23711,794 @@
         ]
       },
       {
+        "kind": "TypeDecl",
+        "name": "__Bridge__Mime_Type_",
+        "printedName": "__Bridge__Mime_Type_",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "application",
+            "printedName": "application",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O11applicationyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O11applicationyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 0
+          },
+          {
+            "kind": "Var",
+            "name": "audio",
+            "printedName": "audio",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O5audioyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O5audioyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 1
+          },
+          {
+            "kind": "Var",
+            "name": "font",
+            "printedName": "font",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O4fontyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O4fontyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 2
+          },
+          {
+            "kind": "Var",
+            "name": "image",
+            "printedName": "image",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O5imageyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O5imageyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 3
+          },
+          {
+            "kind": "Var",
+            "name": "model",
+            "printedName": "model",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O5modelyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O5modelyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 4
+          },
+          {
+            "kind": "Var",
+            "name": "text",
+            "printedName": "text",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O4textyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O4textyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 5
+          },
+          {
+            "kind": "Var",
+            "name": "video",
+            "printedName": "video",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BlossomUploader.__Bridge__Mime_Type_.Type) -> BlossomUploader.__Bridge__Mime_Type_",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O5videoyA2CmF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O5videoyA2CmF",
+            "moduleName": "BlossomUploader",
+            "fixedbinaryorder": 6
+          },
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O4nameSSvp",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O4nameSSvp",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O4nameSSvg",
+                "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O4nameSSvg",
+                "moduleName": "BlossomUploader",
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "ordinal",
+            "printedName": "ordinal",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int32",
+                "printedName": "Swift.Int32",
+                "usr": "s:s5Int32V"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O7ordinals5Int32Vvp",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O7ordinals5Int32Vvp",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int32",
+                    "printedName": "Swift.Int32",
+                    "usr": "s:s5Int32V"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O7ordinals5Int32Vvg",
+                "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O7ordinals5Int32Vvg",
+                "moduleName": "BlossomUploader",
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "_forceBridgeFromObjectiveC",
+            "printedName": "_forceBridgeFromObjectiveC(_:result:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "__Type_",
+                "printedName": "BlossomUploader.Mime.__Type_",
+                "usr": "c:objc(cs)BlossomUploaderMimeType"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  }
+                ],
+                "paramValueOwnership": "InOut",
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O06_forceC14FromObjectiveC_6resultySo0abdE0C_ACSgztFZ",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O06_forceC14FromObjectiveC_6resultySo0abdE0C_ACSgztFZ",
+            "moduleName": "BlossomUploader",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "_conditionallyBridgeFromObjectiveC",
+            "printedName": "_conditionallyBridgeFromObjectiveC(_:result:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "__Type_",
+                "printedName": "BlossomUploader.Mime.__Type_",
+                "usr": "c:objc(cs)BlossomUploaderMimeType"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  }
+                ],
+                "paramValueOwnership": "InOut",
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O014_conditionallyC14FromObjectiveC_6resultSbSo0abdE0C_ACSgztFZ",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O014_conditionallyC14FromObjectiveC_6resultSbSo0abdE0C_ACSgztFZ",
+            "moduleName": "BlossomUploader",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "_unconditionallyBridgeFromObjectiveC",
+            "printedName": "_unconditionallyBridgeFromObjectiveC(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Bridge__Mime_Type_",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "BlossomUploader.Mime.__Type_?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Type_",
+                    "printedName": "BlossomUploader.Mime.__Type_",
+                    "usr": "c:objc(cs)BlossomUploaderMimeType"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O016_unconditionallyC14FromObjectiveCyACSo0abdE0CSgFZ",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O016_unconditionallyC14FromObjectiveCyACSo0abdE0CSgFZ",
+            "moduleName": "BlossomUploader",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "_bridgeToObjectiveC",
+            "printedName": "_bridgeToObjectiveC()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Type_",
+                "printedName": "BlossomUploader.Mime.__Type_",
+                "usr": "c:objc(cs)BlossomUploaderMimeType"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O19_bridgeToObjectiveCSo0abdE0CyF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O19_bridgeToObjectiveCSo0abdE0CyF",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "__Bridge__Mime_Type_",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "__Bridge__Mime_Type_",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O2eeoiySbAC_ACtFZ",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O2eeoiySbAC_ACtFZ",
+            "moduleName": "BlossomUploader",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O9hashValueSivp",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O9hashValueSivp",
+            "moduleName": "BlossomUploader",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O9hashValueSivg",
+                "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O9hashValueSivg",
+                "moduleName": "BlossomUploader",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O4hash4intoys6HasherVz_tF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O4hash4intoys6HasherVz_tF",
+            "moduleName": "BlossomUploader",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "allCases",
+            "printedName": "allCases",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[BlossomUploader.__Bridge__Mime_Type_]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Bridge__Mime_Type_",
+                    "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                    "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O8allCasesSayACGvpZ",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O8allCasesSayACGvpZ",
+            "moduleName": "BlossomUploader",
+            "static": true,
+            "implicit": true,
+            "declAttributes": [
+              "Nonisolated"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[BlossomUploader.__Bridge__Mime_Type_]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O8allCasesSayACGvgZ",
+                "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O8allCasesSayACGvgZ",
+                "moduleName": "BlossomUploader",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "toKotlinEnum",
+            "printedName": "toKotlinEnum()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Type_",
+                "printedName": "BlossomUploader.Mime.__Type_",
+                "usr": "c:objc(cs)BlossomUploaderMimeType"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O12toKotlinEnumSo0abdE0CyF",
+            "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O12toKotlinEnumSo0abdE0CyF",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O",
+        "mangledName": "$s15BlossomUploader20__Bridge__Mime_Type_O",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "AccessControl",
+          "Frozen"
+        ],
+        "isEnumExhaustive": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CaseIterable",
+            "printedName": "CaseIterable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "AllCases",
+                "printedName": "AllCases",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[BlossomUploader.__Bridge__Mime_Type_]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "__Bridge__Mime_Type_",
+                        "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                        "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s12CaseIterableP",
+            "mangledName": "$ss12CaseIterableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_ObjectiveCBridgeable",
+            "printedName": "_ObjectiveCBridgeable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "_ObjectiveCType",
+                "printedName": "_ObjectiveCType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "__Type_",
+                    "printedName": "BlossomUploader.Mime.__Type_",
+                    "usr": "c:objc(cs)BlossomUploaderMimeType"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:s21_ObjectiveCBridgeableP",
+            "mangledName": "$ss21_ObjectiveCBridgeableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "BitwiseCopyable",
+            "printedName": "BitwiseCopyable",
+            "usr": "s:s15BitwiseCopyableP",
+            "mangledName": "$ss15BitwiseCopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Function",
         "name": "onEnum",
         "printedName": "onEnum(of:)",
@@ -24693,6 +25481,73 @@
         "declAttributes": [
           "AccessControl",
           "DisfavoredOverload"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "resolveBlossomUrls",
+        "printedName": "resolveBlossomUrls(originalUrl:blossoms:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Array",
+            "printedName": "[Swift.String]",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "usr": "s:Sa"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.String?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Array",
+            "printedName": "[Swift.String]",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "usr": "s:Sa"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:15BlossomUploader07resolveA4Urls11originalUrl8blossomsSaySSGSSSg_AEtF",
+        "mangledName": "$s15BlossomUploader07resolveA4Urls11originalUrl8blossomsSaySSGSSSg_AEtF",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "AccessControl"
         ],
         "funcSelfKind": "NonMutating"
       },
@@ -25697,6 +26552,117 @@
             "printedName": "Copyable",
             "usr": "s:s8CopyableP",
             "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "__Type_",
+        "printedName": "__Type_",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "toSwiftEnum",
+            "printedName": "toSwiftEnum()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Bridge__Mime_Type_",
+                "printedName": "BlossomUploader.__Bridge__Mime_Type_",
+                "usr": "s:15BlossomUploader20__Bridge__Mime_Type_O"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So23BlossomUploaderMimeTypeC0aB0E11toSwiftEnumAC010__Bridge__c1_D1_OyF",
+            "mangledName": "$sSo23BlossomUploaderMimeTypeC0aB0E11toSwiftEnumAC010__Bridge__c1_D1_OyF",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:objc(cs)BlossomUploaderMimeType",
+        "moduleName": "BlossomUploader",
+        "objc_name": "BlossomUploaderMimeType",
+        "declAttributes": [
+          "ObjC",
+          "Dynamic"
+        ],
+        "isFromExtension": true,
+        "superclassUsr": "c:objc(cs)BlossomUploaderKotlinEnum",
+        "isExternal": true,
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "BlossomUploader.KotlinEnum<BlossomUploader.Mime.__Type_>",
+          "BlossomUploader.KotlinBase",
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
           }
         ]
       }

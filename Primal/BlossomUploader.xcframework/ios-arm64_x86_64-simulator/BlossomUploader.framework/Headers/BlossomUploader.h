@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class NSString, NSSet<ObjectType>, NSObject, NSNumber, NSMutableSet<ObjectType>, NSMutableDictionary<KeyType, ObjectType>, NSMutableArray<ObjectType>, NSError, NSDictionary<KeyType, ObjectType>, NSData, NSArray<ObjectType>, BlossomUploader__SkieTypeExportsKt, BlossomUploader__SkieSuspendWrappersKt, BlossomUploaderUploadResultSuccess, BlossomUploaderUploadResultFailed, BlossomUploaderUploadResult, BlossomUploaderUploadRequirementException, BlossomUploaderUShort, BlossomUploaderULong, BlossomUploaderUInt, BlossomUploaderUByte, BlossomUploaderSkie_SuspendResultSuccess, BlossomUploaderSkie_SuspendResultError, BlossomUploaderSkie_SuspendResultCanceled, BlossomUploaderSkie_SuspendResult, BlossomUploaderSkie_SuspendHandler, BlossomUploaderSkie_CancellationHandler, BlossomUploaderSkieKotlinStateFlow<T>, BlossomUploaderSkieKotlinSharedFlow<T>, BlossomUploaderSkieKotlinOptionalStateFlow<T>, BlossomUploaderSkieKotlinOptionalSharedFlow<T>, BlossomUploaderSkieKotlinOptionalMutableStateFlow<T>, BlossomUploaderSkieKotlinOptionalMutableSharedFlow<T>, BlossomUploaderSkieKotlinOptionalFlow<T>, BlossomUploaderSkieKotlinMutableStateFlow<T>, BlossomUploaderSkieKotlinMutableSharedFlow<T>, BlossomUploaderSkieKotlinFlow<T>, BlossomUploaderSkieColdFlowIterator<E>, BlossomUploaderShort, BlossomUploaderOkioTimeoutCompanion, BlossomUploaderOkioTimeout, BlossomUploaderOkioIOException, BlossomUploaderOkioByteStringCompanion, BlossomUploaderOkioByteString, BlossomUploaderOkioBufferUnsafeCursor, BlossomUploaderOkioBuffer, BlossomUploaderNumber, BlossomUploaderNostrSignatureException, BlossomUploaderNostrSignResultSigned, BlossomUploaderNostrSignResultRejected, BlossomUploaderNostrSignResult, BlossomUploaderNostrNostrUnsignedEventCompanion, BlossomUploaderNostrNostrUnsignedEvent, BlossomUploaderNostrNostrEventCompanion, BlossomUploaderNostrNostrEvent, BlossomUploaderNostrExtensions, BlossomUploaderMutableSet<ObjectType>, BlossomUploaderMutableDictionary<KeyType, ObjectType>, BlossomUploaderLong, BlossomUploaderKotlinx_serialization_jsonJsonPrimitiveCompanion, BlossomUploaderKotlinx_serialization_jsonJsonPrimitive, BlossomUploaderKotlinx_serialization_jsonJsonNull, BlossomUploaderKotlinx_serialization_jsonJsonElementCompanion, BlossomUploaderKotlinx_serialization_jsonJsonElement, BlossomUploaderKotlinx_serialization_coreStructureKindOBJECT, BlossomUploaderKotlinx_serialization_coreStructureKindMAP, BlossomUploaderKotlinx_serialization_coreStructureKindLIST, BlossomUploaderKotlinx_serialization_coreStructureKindCLASS, BlossomUploaderKotlinx_serialization_coreStructureKind, BlossomUploaderKotlinx_serialization_coreSerializersModule, BlossomUploaderKotlinx_serialization_coreSerialKindENUM, BlossomUploaderKotlinx_serialization_coreSerialKindCONTEXTUAL, BlossomUploaderKotlinx_serialization_coreSerialKind, BlossomUploaderKotlinx_serialization_corePrimitiveKindSTRING, BlossomUploaderKotlinx_serialization_corePrimitiveKindSHORT, BlossomUploaderKotlinx_serialization_corePrimitiveKindLONG, BlossomUploaderKotlinx_serialization_corePrimitiveKindINT, BlossomUploaderKotlinx_serialization_corePrimitiveKindFLOAT, BlossomUploaderKotlinx_serialization_corePrimitiveKindDOUBLE, BlossomUploaderKotlinx_serialization_corePrimitiveKindCHAR, BlossomUploaderKotlinx_serialization_corePrimitiveKindBYTE, BlossomUploaderKotlinx_serialization_corePrimitiveKindBOOLEAN, BlossomUploaderKotlinx_serialization_corePrimitiveKind, BlossomUploaderKotlinx_serialization_corePolymorphicKindSEALED, BlossomUploaderKotlinx_serialization_corePolymorphicKindOPEN, BlossomUploaderKotlinx_serialization_corePolymorphicKind, BlossomUploaderKotlinThrowable, BlossomUploaderKotlinRuntimeException, BlossomUploaderKotlinNothing, BlossomUploaderKotlinIllegalStateException, BlossomUploaderKotlinException, BlossomUploaderKotlinCancellationException, BlossomUploaderKotlinByteIterator, BlossomUploaderKotlinByteArray, BlossomUploaderKotlinArray<T>, BlossomUploaderIosPrimalBlossomUploadService, BlossomUploaderInt, BlossomUploaderFloat, BlossomUploaderFileMetadata, BlossomUploaderDouble, BlossomUploaderByte, BlossomUploaderBoolean, BlossomUploaderBlossomUploadException, BlossomUploaderBlossomMirrorException, BlossomUploaderBlossomException, BlossomUploaderBlossomApiFactory, BlossomUploaderBlobDescriptorCompanion, BlossomUploaderBlobDescriptor, BlossomUploaderBase;
+@class NSString, NSSet<ObjectType>, NSObject, NSNumber, NSMutableSet<ObjectType>, NSMutableDictionary<KeyType, ObjectType>, NSMutableArray<ObjectType>, NSError, NSDictionary<KeyType, ObjectType>, NSData, NSArray<ObjectType>, BlossomUploader__SkieTypeExportsKt, BlossomUploader__SkieSuspendWrappersKt, BlossomUploaderUploadResultSuccess, BlossomUploaderUploadResultFailed, BlossomUploaderUploadResult, BlossomUploaderUploadRequirementException, BlossomUploaderUShort, BlossomUploaderULong, BlossomUploaderUInt, BlossomUploaderUByte, BlossomUploaderSkie_SuspendResultSuccess, BlossomUploaderSkie_SuspendResultError, BlossomUploaderSkie_SuspendResultCanceled, BlossomUploaderSkie_SuspendResult, BlossomUploaderSkie_SuspendHandler, BlossomUploaderSkie_CancellationHandler, BlossomUploaderSkieKotlinStateFlow<T>, BlossomUploaderSkieKotlinSharedFlow<T>, BlossomUploaderSkieKotlinOptionalStateFlow<T>, BlossomUploaderSkieKotlinOptionalSharedFlow<T>, BlossomUploaderSkieKotlinOptionalMutableStateFlow<T>, BlossomUploaderSkieKotlinOptionalMutableSharedFlow<T>, BlossomUploaderSkieKotlinOptionalFlow<T>, BlossomUploaderSkieKotlinMutableStateFlow<T>, BlossomUploaderSkieKotlinMutableSharedFlow<T>, BlossomUploaderSkieKotlinFlow<T>, BlossomUploaderSkieColdFlowIterator<E>, BlossomUploaderShort, BlossomUploaderOkioTimeoutCompanion, BlossomUploaderOkioTimeout, BlossomUploaderOkioIOException, BlossomUploaderOkioByteStringCompanion, BlossomUploaderOkioByteString, BlossomUploaderOkioBufferUnsafeCursor, BlossomUploaderOkioBuffer, BlossomUploaderNumber, BlossomUploaderNostrSignatureException, BlossomUploaderNostrSignResultSigned, BlossomUploaderNostrSignResultRejected, BlossomUploaderNostrSignResult, BlossomUploaderNostrNostrUnsignedEventCompanion, BlossomUploaderNostrNostrUnsignedEvent, BlossomUploaderNostrNostrEventCompanion, BlossomUploaderNostrNostrEvent, BlossomUploaderNostrExtensions, BlossomUploaderMutableSet<ObjectType>, BlossomUploaderMutableDictionary<KeyType, ObjectType>, BlossomUploaderMimeType, BlossomUploaderMimeSubtype, BlossomUploaderMime, BlossomUploaderLong, BlossomUploaderKotlinx_serialization_jsonJsonPrimitiveCompanion, BlossomUploaderKotlinx_serialization_jsonJsonPrimitive, BlossomUploaderKotlinx_serialization_jsonJsonNull, BlossomUploaderKotlinx_serialization_jsonJsonElementCompanion, BlossomUploaderKotlinx_serialization_jsonJsonElement, BlossomUploaderKotlinx_serialization_coreStructureKindOBJECT, BlossomUploaderKotlinx_serialization_coreStructureKindMAP, BlossomUploaderKotlinx_serialization_coreStructureKindLIST, BlossomUploaderKotlinx_serialization_coreStructureKindCLASS, BlossomUploaderKotlinx_serialization_coreStructureKind, BlossomUploaderKotlinx_serialization_coreSerializersModule, BlossomUploaderKotlinx_serialization_coreSerialKindENUM, BlossomUploaderKotlinx_serialization_coreSerialKindCONTEXTUAL, BlossomUploaderKotlinx_serialization_coreSerialKind, BlossomUploaderKotlinx_serialization_corePrimitiveKindSTRING, BlossomUploaderKotlinx_serialization_corePrimitiveKindSHORT, BlossomUploaderKotlinx_serialization_corePrimitiveKindLONG, BlossomUploaderKotlinx_serialization_corePrimitiveKindINT, BlossomUploaderKotlinx_serialization_corePrimitiveKindFLOAT, BlossomUploaderKotlinx_serialization_corePrimitiveKindDOUBLE, BlossomUploaderKotlinx_serialization_corePrimitiveKindCHAR, BlossomUploaderKotlinx_serialization_corePrimitiveKindBYTE, BlossomUploaderKotlinx_serialization_corePrimitiveKindBOOLEAN, BlossomUploaderKotlinx_serialization_corePrimitiveKind, BlossomUploaderKotlinx_serialization_corePolymorphicKindSEALED, BlossomUploaderKotlinx_serialization_corePolymorphicKindOPEN, BlossomUploaderKotlinx_serialization_corePolymorphicKind, BlossomUploaderKotlinThrowable, BlossomUploaderKotlinRuntimeException, BlossomUploaderKotlinPair<A, B>, BlossomUploaderKotlinNothing, BlossomUploaderKotlinIllegalStateException, BlossomUploaderKotlinException, BlossomUploaderKotlinEnumCompanion, BlossomUploaderKotlinEnum<E>, BlossomUploaderKotlinCancellationException, BlossomUploaderKotlinByteIterator, BlossomUploaderKotlinByteArray, BlossomUploaderKotlinArray<T>, BlossomUploaderIosPrimalBlossomUploadService, BlossomUploaderInt, BlossomUploaderFloat, BlossomUploaderFileTypeVideo, BlossomUploaderFileTypeImage, BlossomUploaderFileTypeDocument, BlossomUploaderFileTypeCredentials, BlossomUploaderFileType, BlossomUploaderFileMetadata, BlossomUploaderDouble, BlossomUploaderByte, BlossomUploaderBoolean, BlossomUploaderBlossomUtilsKt, BlossomUploaderBlossomUploadException, BlossomUploaderBlossomMirrorException, BlossomUploaderBlossomException, BlossomUploaderBlossomApiFactory, BlossomUploaderBlobDescriptorCompanion, BlossomUploaderBlobDescriptor, BlossomUploaderBase;
 
-@protocol NSCopying, BlossomUploaderSkie_DispatcherDelegate, BlossomUploaderOkioSource, BlossomUploaderOkioSink, BlossomUploaderOkioCloseable, BlossomUploaderOkioBufferedSource, BlossomUploaderOkioBufferedSink, BlossomUploaderNostrNostrEventSignatureHandler, BlossomUploaderKotlinx_serialization_coreSerializersModuleCollector, BlossomUploaderKotlinx_serialization_coreSerializationStrategy, BlossomUploaderKotlinx_serialization_coreSerialDescriptor, BlossomUploaderKotlinx_serialization_coreKSerializer, BlossomUploaderKotlinx_serialization_coreEncoder, BlossomUploaderKotlinx_serialization_coreDeserializationStrategy, BlossomUploaderKotlinx_serialization_coreDecoder, BlossomUploaderKotlinx_serialization_coreCompositeEncoder, BlossomUploaderKotlinx_serialization_coreCompositeDecoder, BlossomUploaderKotlinx_coroutines_coreStateFlow, BlossomUploaderKotlinx_coroutines_coreSharedFlow, BlossomUploaderKotlinx_coroutines_coreRunnable, BlossomUploaderKotlinx_coroutines_coreMutableStateFlow, BlossomUploaderKotlinx_coroutines_coreMutableSharedFlow, BlossomUploaderKotlinx_coroutines_coreFlowCollector, BlossomUploaderKotlinx_coroutines_coreFlow, BlossomUploaderKotlinKDeclarationContainer, BlossomUploaderKotlinKClassifier, BlossomUploaderKotlinKClass, BlossomUploaderKotlinKAnnotatedElement, BlossomUploaderKotlinIterator, BlossomUploaderKotlinComparable, BlossomUploaderKotlinAnnotation, BlossomUploaderBlossomServerListProvider, BlossomUploaderBlossomApi;
+@protocol NSCopying, BlossomUploaderSkie_DispatcherDelegate, BlossomUploaderOkioSource, BlossomUploaderOkioSink, BlossomUploaderOkioCloseable, BlossomUploaderOkioBufferedSource, BlossomUploaderOkioBufferedSink, BlossomUploaderNostrNostrEventSignatureHandler, BlossomUploaderKotlinx_serialization_coreSerializersModuleCollector, BlossomUploaderKotlinx_serialization_coreSerializationStrategy, BlossomUploaderKotlinx_serialization_coreSerialDescriptor, BlossomUploaderKotlinx_serialization_coreKSerializer, BlossomUploaderKotlinx_serialization_coreEncoder, BlossomUploaderKotlinx_serialization_coreDeserializationStrategy, BlossomUploaderKotlinx_serialization_coreDecoder, BlossomUploaderKotlinx_serialization_coreCompositeEncoder, BlossomUploaderKotlinx_serialization_coreCompositeDecoder, BlossomUploaderKotlinx_coroutines_coreStateFlow, BlossomUploaderKotlinx_coroutines_coreSharedFlow, BlossomUploaderKotlinx_coroutines_coreRunnable, BlossomUploaderKotlinx_coroutines_coreMutableStateFlow, BlossomUploaderKotlinx_coroutines_coreMutableSharedFlow, BlossomUploaderKotlinx_coroutines_coreFlowCollector, BlossomUploaderKotlinx_coroutines_coreFlow, BlossomUploaderKotlinKDeclarationContainer, BlossomUploaderKotlinKClassifier, BlossomUploaderKotlinKClass, BlossomUploaderKotlinKAnnotatedElement, BlossomUploaderKotlinIterator, BlossomUploaderKotlinComparable, BlossomUploaderKotlinAnnotation, BlossomUploaderFileTypeMatcher, BlossomUploaderBlossomServerListProvider, BlossomUploaderBlossomApi;
 
 // Due to an Obj-C/Swift interop limitation, SKIE cannot generate Swift types with a lambda type argument.
 // Example of such type is: A<() -> Unit> where A<T> is a generic class.
@@ -478,6 +478,147 @@ __attribute__((swift_name("Skie_SuspendResult.Success")))
 - (NSString *)description __attribute__((swift_name("description()")));
 @end
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FileType")))
+@interface BlossomUploaderFileType : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderFileType *shared __attribute__((swift_name("shared")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)fileType __attribute__((swift_name("init()")));
+- (BlossomUploaderMime * _Nullable)detectBuffer:(BlossomUploaderKotlinByteArray *)buffer __attribute__((swift_name("detect(buffer:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FileType.Credentials")))
+@interface BlossomUploaderFileTypeCredentials : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderFileTypeCredentials *shared __attribute__((swift_name("shared")));
+@property (readonly) BlossomUploaderMime *Jks __attribute__((swift_name("Jks")));
+@property (readonly) BlossomUploaderMime *Kdbx __attribute__((swift_name("Kdbx")));
+@property (readonly) BlossomUploaderMime *OpenSshPrivateKey __attribute__((swift_name("OpenSshPrivateKey")));
+@property (readonly) BlossomUploaderMime *Pem __attribute__((swift_name("Pem")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)credentials __attribute__((swift_name("init()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FileType.Document")))
+@interface BlossomUploaderFileTypeDocument : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderFileTypeDocument *shared __attribute__((swift_name("shared")));
+@property (readonly) BlossomUploaderMime *Pdf __attribute__((swift_name("Pdf")));
+@property (readonly) BlossomUploaderMime *Rtf __attribute__((swift_name("Rtf")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)document __attribute__((swift_name("init()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FileType.Image")))
+@interface BlossomUploaderFileTypeImage : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderFileTypeImage *shared __attribute__((swift_name("shared")));
+@property (readonly) BlossomUploaderMime *Avif __attribute__((swift_name("Avif")));
+@property (readonly) BlossomUploaderMime *Bmp __attribute__((swift_name("Bmp")));
+@property (readonly) BlossomUploaderMime *Dwg __attribute__((swift_name("Dwg")));
+@property (readonly) BlossomUploaderMime *Exr __attribute__((swift_name("Exr")));
+@property (readonly) BlossomUploaderMime *Gif __attribute__((swift_name("Gif")));
+@property (readonly) BlossomUploaderMime *Heif __attribute__((swift_name("Heif")));
+@property (readonly) BlossomUploaderMime *Ico __attribute__((swift_name("Ico")));
+@property (readonly) BlossomUploaderMime *Jpeg __attribute__((swift_name("Jpeg")));
+@property (readonly) BlossomUploaderMime *Jpeg2000 __attribute__((swift_name("Jpeg2000")));
+@property (readonly) BlossomUploaderMime *Jxr __attribute__((swift_name("Jxr")));
+@property (readonly) BlossomUploaderMime *Png __attribute__((swift_name("Png")));
+@property (readonly) BlossomUploaderMime *Psd __attribute__((swift_name("Psd")));
+@property (readonly) BlossomUploaderMime *Svg __attribute__((swift_name("Svg")));
+@property (readonly) BlossomUploaderMime *Tiff __attribute__((swift_name("Tiff")));
+@property (readonly) BlossomUploaderMime *Webp __attribute__((swift_name("Webp")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)image __attribute__((swift_name("init()")));
+@end
+
+__attribute__((swift_name("FileTypeMatcher")))
+@protocol BlossomUploaderFileTypeMatcher
+@required
+- (BOOL)invokeBuffer:(BlossomUploaderKotlinByteArray *)buffer __attribute__((swift_name("invoke(buffer:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FileType.Video")))
+@interface BlossomUploaderFileTypeVideo : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderFileTypeVideo *shared __attribute__((swift_name("shared")));
+@property (readonly) BlossomUploaderMime *Avi __attribute__((swift_name("Avi")));
+@property (readonly) BlossomUploaderMime *Flv __attribute__((swift_name("Flv")));
+@property (readonly) BlossomUploaderMime *M4v __attribute__((swift_name("M4v")));
+@property (readonly) BlossomUploaderMime *Mkv __attribute__((swift_name("Mkv")));
+@property (readonly) BlossomUploaderMime *Mov __attribute__((swift_name("Mov")));
+@property (readonly) BlossomUploaderMime *Mp4 __attribute__((swift_name("Mp4")));
+@property (readonly) BlossomUploaderMime *Mpeg __attribute__((swift_name("Mpeg")));
+@property (readonly) BlossomUploaderMime *Webm __attribute__((swift_name("Webm")));
+@property (readonly) BlossomUploaderMime *Wmv __attribute__((swift_name("Wmv")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)video __attribute__((swift_name("init()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Mime")))
+@interface BlossomUploaderMime : BlossomUploaderBase
+@property (readonly) BlossomUploaderMimeSubtype *subtype __attribute__((swift_name("subtype")));
+@property (readonly) BlossomUploaderMimeType *type __attribute__((swift_name("type")));
+- (instancetype)initWithType:(BlossomUploaderMimeType *)type subtype:(BlossomUploaderMimeSubtype *)subtype __attribute__((swift_name("init(type:subtype:)"))) __attribute__((objc_designated_initializer));
+- (BlossomUploaderMime *)doCopyType:(BlossomUploaderMimeType *)type subtype:(BlossomUploaderMimeSubtype *)subtype __attribute__((swift_name("doCopy(type:subtype:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+- (NSString *)toStringParameter:(BlossomUploaderKotlinPair<NSString *, NSString *> *)parameter __attribute__((swift_name("toString(parameter:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Mime.Subtype")))
+@interface BlossomUploaderMimeSubtype : BlossomUploaderBase
+- (instancetype)initWithValue:(NSString *)value __attribute__((swift_name("init(value:)"))) __attribute__((objc_designated_initializer));
+- (BlossomUploaderMimeSubtype *)doCopyValue:(NSString *)value __attribute__((swift_name("doCopy(value:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((swift_name("KotlinComparable")))
+@protocol BlossomUploaderKotlinComparable
+@required
+- (int32_t)compareToOther:(id _Nullable)other __attribute__((swift_name("compareTo(other:)")));
+@end
+
+__attribute__((swift_name("KotlinEnum")))
+@interface BlossomUploaderKotlinEnum<E> : BlossomUploaderBase <BlossomUploaderKotlinComparable>
+@property (class, readonly, getter=companion) BlossomUploaderKotlinEnumCompanion *companion __attribute__((swift_name("companion")));
+@property (readonly) NSString *name __attribute__((swift_name("name")));
+@property (readonly) int32_t ordinal __attribute__((swift_name("ordinal")));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer));
+- (int32_t)compareToOther:(E)other __attribute__((swift_name("compareTo(other:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Mime.Type_")))
+@interface BlossomUploaderMimeType : BlossomUploaderKotlinEnum<BlossomUploaderMimeType *>
+@property (class, readonly) BlossomUploaderMimeType *application __attribute__((swift_name("application")));
+@property (class, readonly) BlossomUploaderMimeType *audio __attribute__((swift_name("audio")));
+@property (class, readonly) BlossomUploaderMimeType *font __attribute__((swift_name("font")));
+@property (class, readonly) BlossomUploaderMimeType *image __attribute__((swift_name("image")));
+@property (class, readonly) BlossomUploaderMimeType *model __attribute__((swift_name("model")));
+@property (class, readonly) BlossomUploaderMimeType *text __attribute__((swift_name("text")));
+@property (class, readonly) BlossomUploaderMimeType *video __attribute__((swift_name("video")));
+@property (class, readonly) NSArray<BlossomUploaderMimeType *> *entries __attribute__((swift_name("entries")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
++ (BlossomUploaderKotlinArray<BlossomUploaderMimeType *> *)values __attribute__((swift_name("values()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end
+
 
 /**
  * @note annotations
@@ -688,8 +829,9 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("UploadResult.Failed")))
 @interface BlossomUploaderUploadResultFailed : BlossomUploaderUploadResult
 @property (readonly) BlossomUploaderBlossomException *error __attribute__((swift_name("error")));
-- (instancetype)initWithError:(BlossomUploaderBlossomException *)error __attribute__((swift_name("init(error:)"))) __attribute__((objc_designated_initializer));
-- (BlossomUploaderUploadResultFailed *)doCopyError:(BlossomUploaderBlossomException *)error __attribute__((swift_name("doCopy(error:)")));
+@property (readonly) NSString * _Nullable message __attribute__((swift_name("message")));
+- (instancetype)initWithError:(BlossomUploaderBlossomException *)error message:(NSString * _Nullable)message __attribute__((swift_name("init(error:message:)"))) __attribute__((objc_designated_initializer));
+- (BlossomUploaderUploadResultFailed *)doCopyError:(BlossomUploaderBlossomException *)error message:(NSString * _Nullable)message __attribute__((swift_name("doCopy(error:message:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -706,6 +848,12 @@ __attribute__((swift_name("UploadResult.Success")))
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("BlossomUtilsKt")))
+@interface BlossomUploaderBlossomUtilsKt : BlossomUploaderBase
++ (NSArray<NSString *> *)resolveBlossomUrlsOriginalUrl:(NSString * _Nullable)originalUrl blossoms:(NSArray<NSString *> *)blossoms __attribute__((swift_name("resolveBlossomUrls(originalUrl:blossoms:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -758,6 +906,52 @@ __attribute__((swift_name("Kotlinx_coroutines_coreRunnable")))
 @protocol BlossomUploaderKotlinx_coroutines_coreRunnable
 @required
 - (void)run __attribute__((swift_name("run()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinByteArray")))
+@interface BlossomUploaderKotlinByteArray : BlossomUploaderBase
+@property (readonly) int32_t size __attribute__((swift_name("size")));
++ (instancetype)arrayWithSize:(int32_t)size __attribute__((swift_name("init(size:)")));
++ (instancetype)arrayWithSize:(int32_t)size init:(BlossomUploaderByte *(^)(BlossomUploaderInt *))init __attribute__((swift_name("init(size:init:)")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (int8_t)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
+- (BlossomUploaderKotlinByteIterator *)iterator __attribute__((swift_name("iterator()")));
+- (void)setIndex:(int32_t)index value:(int8_t)value __attribute__((swift_name("set(index:value:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinPair")))
+@interface BlossomUploaderKotlinPair<__covariant A, __covariant B> : BlossomUploaderBase
+@property (readonly) A _Nullable first __attribute__((swift_name("first")));
+@property (readonly) B _Nullable second __attribute__((swift_name("second")));
+- (instancetype)initWithFirst:(A _Nullable)first second:(B _Nullable)second __attribute__((swift_name("init(first:second:)"))) __attribute__((objc_designated_initializer));
+- (BlossomUploaderKotlinPair<A, B> *)doCopyFirst:(A _Nullable)first second:(B _Nullable)second __attribute__((swift_name("doCopy(first:second:)")));
+- (BOOL)equalsOther:(id _Nullable)other __attribute__((swift_name("equals(other:)")));
+- (int32_t)hashCode __attribute__((swift_name("hashCode()")));
+- (NSString *)toString __attribute__((swift_name("toString()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinEnumCompanion")))
+@interface BlossomUploaderKotlinEnumCompanion : BlossomUploaderBase
+@property (class, readonly, getter=shared) BlossomUploaderKotlinEnumCompanion *shared __attribute__((swift_name("shared")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinArray")))
+@interface BlossomUploaderKotlinArray<T> : BlossomUploaderBase
+@property (readonly) int32_t size __attribute__((swift_name("size")));
++ (instancetype)arrayWithSize:(int32_t)size init:(T _Nullable (^)(BlossomUploaderInt *))init __attribute__((swift_name("init(size:init:)")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (T _Nullable)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
+- (id<BlossomUploaderKotlinIterator>)iterator __attribute__((swift_name("iterator()")));
+- (void)setIndex:(int32_t)index value:(T _Nullable)value __attribute__((swift_name("set(index:value:)")));
 @end
 
 __attribute__((swift_name("Kotlinx_serialization_coreSerializationStrategy")))
@@ -846,18 +1040,6 @@ __attribute__((swift_name("OkioBufferedSource")))
 - (id _Nullable)selectOptions_:(NSArray<id> *)options __attribute__((swift_name("select(options_:)")));
 - (void)skipByteCount:(int64_t)byteCount __attribute__((swift_name("skip(byteCount:)")));
 @property (readonly) BlossomUploaderOkioBuffer *buffer __attribute__((swift_name("buffer")));
-@end
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("KotlinArray")))
-@interface BlossomUploaderKotlinArray<T> : BlossomUploaderBase
-@property (readonly) int32_t size __attribute__((swift_name("size")));
-+ (instancetype)arrayWithSize:(int32_t)size init:(T _Nullable (^)(BlossomUploaderInt *))init __attribute__((swift_name("init(size:init:)")));
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-- (T _Nullable)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
-- (id<BlossomUploaderKotlinIterator>)iterator __attribute__((swift_name("iterator()")));
-- (void)setIndex:(int32_t)index value:(T _Nullable)value __attribute__((swift_name("set(index:value:)")));
 @end
 
 __attribute__((swift_name("NostrNostrEventSignatureHandler")))
@@ -1179,6 +1361,21 @@ __attribute__((swift_name("NostrSignResult.Rejected")))
 - (NSString *)description __attribute__((swift_name("description()")));
 @end
 
+__attribute__((swift_name("KotlinIterator")))
+@protocol BlossomUploaderKotlinIterator
+@required
+- (BOOL)hasNext __attribute__((swift_name("hasNext()")));
+- (id _Nullable)next __attribute__((swift_name("next()")));
+@end
+
+__attribute__((swift_name("KotlinByteIterator")))
+@interface BlossomUploaderKotlinByteIterator : BlossomUploaderBase <BlossomUploaderKotlinIterator>
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (BlossomUploaderByte *)next __attribute__((swift_name("next()")));
+- (int8_t)nextByte __attribute__((swift_name("nextByte()")));
+@end
+
 __attribute__((swift_name("Kotlinx_serialization_coreEncoder")))
 @protocol BlossomUploaderKotlinx_serialization_coreEncoder
 @required
@@ -1270,12 +1467,6 @@ __attribute__((swift_name("Kotlinx_serialization_coreDecoder")))
 @property (readonly) BlossomUploaderKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
 @end
 
-__attribute__((swift_name("KotlinComparable")))
-@protocol BlossomUploaderKotlinComparable
-@required
-- (int32_t)compareToOther:(id _Nullable)other __attribute__((swift_name("compareTo(other:)")));
-@end
-
 __attribute__((swift_name("OkioByteString")))
 @interface BlossomUploaderOkioByteString : BlossomUploaderBase <BlossomUploaderKotlinComparable>
 @property (class, readonly, getter=companion) BlossomUploaderOkioByteStringCompanion *companion __attribute__((swift_name("companion")));
@@ -1311,19 +1502,6 @@ __attribute__((swift_name("OkioByteString")))
 - (BlossomUploaderKotlinByteArray *)toByteArray __attribute__((swift_name("toByteArray()")));
 - (NSString *)description __attribute__((swift_name("description()")));
 - (NSString *)utf8 __attribute__((swift_name("utf8()")));
-@end
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("KotlinByteArray")))
-@interface BlossomUploaderKotlinByteArray : BlossomUploaderBase
-@property (readonly) int32_t size __attribute__((swift_name("size")));
-+ (instancetype)arrayWithSize:(int32_t)size __attribute__((swift_name("init(size:)")));
-+ (instancetype)arrayWithSize:(int32_t)size init:(BlossomUploaderByte *(^)(BlossomUploaderInt *))init __attribute__((swift_name("init(size:init:)")));
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-- (int8_t)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
-- (BlossomUploaderKotlinByteIterator *)iterator __attribute__((swift_name("iterator()")));
-- (void)setIndex:(int32_t)index value:(int8_t)value __attribute__((swift_name("set(index:value:)")));
 @end
 
 __attribute__((swift_name("OkioSink")))
@@ -1500,13 +1678,6 @@ __attribute__((swift_name("OkioTimeout")))
 + (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
 @end
 
-__attribute__((swift_name("KotlinIterator")))
-@protocol BlossomUploaderKotlinIterator
-@required
-- (BOOL)hasNext __attribute__((swift_name("hasNext()")));
-- (id _Nullable)next __attribute__((swift_name("next()")));
-@end
-
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("NostrNostrEvent.Companion")))
 @interface BlossomUploaderNostrNostrEventCompanion : BlossomUploaderBase
@@ -1670,14 +1841,6 @@ __attribute__((swift_name("OkioByteString.Companion")))
 - (BlossomUploaderOkioByteString *)ofData:(BlossomUploaderKotlinByteArray *)data __attribute__((swift_name("of(data:)")));
 - (BlossomUploaderOkioByteString *)toByteString:(NSData *)receiver __attribute__((swift_name("toByteString(_:)")));
 - (BlossomUploaderOkioByteString *)toByteString:(BlossomUploaderKotlinByteArray *)receiver offset:(int32_t)offset byteCount:(int32_t)byteCount __attribute__((swift_name("toByteString(_:offset:byteCount:)")));
-@end
-
-__attribute__((swift_name("KotlinByteIterator")))
-@interface BlossomUploaderKotlinByteIterator : BlossomUploaderBase <BlossomUploaderKotlinIterator>
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (BlossomUploaderByte *)next __attribute__((swift_name("next()")));
-- (int8_t)nextByte __attribute__((swift_name("nextByte()")));
 @end
 
 __attribute__((objc_subclassing_restricted))
