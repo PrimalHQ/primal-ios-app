@@ -414,7 +414,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             UIPasteboard.general.string = post.propertyText(property)
             mainTabBarController?.showToast("Copied!")
         case .report:
-            present(PopupReportContentController(), animated: true)
+            present(PopupReportContentController(post), animated: true)
         case .muteUser:
             MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
         case .toggleMutePost:

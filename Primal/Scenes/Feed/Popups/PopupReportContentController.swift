@@ -13,13 +13,16 @@ enum ReportReason: String, CaseIterable {
     case illegal
     case spam
     case impersonation
+    case other
 }
 
 class PopupReportContentController: UIViewController {
     
     let optionViews = ReportReason.allCases.map { ReportPickerSelectionView(name: $0.rawValue.capitalized) }
     
-    init() {
+    let post: ParsedContent
+    init(_ post: ParsedContent) {
+        self.post = post
         super.init(nibName: nil, bundle: nil)
         modalTransitionStyle = .crossDissolve
         modalPresentationStyle = .overFullScreen
@@ -45,9 +48,8 @@ class PopupReportContentController: UIViewController {
         subtitle.numberOfLines = 0
         
         let cancelButton = UIButton(configuration: .coloredButton("Dismiss", color: .accent2))
-        let reportButton = UIButton(configuration: .coloredButton("Report", color: .foreground3))
+        let reportButton = UIButton(configuration: .coloredButton("Report", color: .foreground4))
         reportButton.isEnabled = false
-        reportButton.alpha = 0.7
         
         zip(optionViews, ReportReason.allCases).forEach { view, reason in
             view.addAction(.init(handler: { [weak view, weak self] _ in
@@ -55,7 +57,7 @@ class PopupReportContentController: UIViewController {
                 self?.optionViews.forEach { $0.isSelected = false }
                 view?.isSelected = true
                 reportButton.isEnabled = true
-                reportButton.alpha = 1
+                reportButton.configuration = .coloredButton("Report", color: .accent2)
             }), for: .touchUpInside)
         }
         
@@ -69,6 +71,14 @@ class PopupReportContentController: UIViewController {
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
             self?.dismiss(animated: true, completion: nil)
+        }), for: .touchUpInside)
+        
+        reportButton.addAction(.init(handler: { [weak self] _ in
+            guard let self, let currentReason, let event = NostrObject.reportNote(currentReason, post) else { return }
+            
+            dismiss(animated: true, completion: nil)
+            
+            PostingManager.instance.sendEvent(event, { _ in })
         }), for: .touchUpInside)
     }
 }

@@ -190,7 +190,7 @@ extension ParsedContent {
         let postInfo = postInfo
         let userMuteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
         
-        let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        let bookmarkAction = ("Add Bookmark", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
         let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
         
         var actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = []

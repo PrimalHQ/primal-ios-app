@@ -145,7 +145,7 @@ extension NostrObject {
         pubkeysToTag.remove(keypair.hexVariant.pubkey) // Don't tag yourself
         
         allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
-        allTags += draft.text.extractHashtags().map({ ["t", $0] })
+        allTags += draft.text.extractHashtags().map({ ["t", $0.dropFirst().string] })
         
         return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: postingText, kind: 1, tags: allTags, createdAt: Int64(Date().timeIntervalSince1970))
 
@@ -205,10 +205,17 @@ extension NostrObject {
         })
     }
     
-    static  func deleteNote(_ note: ParsedContent) -> NostrObject? {
+    static func deleteNote(_ note: ParsedContent) -> NostrObject? {
         createNostrObject(content: "Removing Note", kind: NostrKind.eventDeletion.rawValue, tags: [
             ["k", NostrKind.text.rawValue.string],
             ["e", note.post.id]
+        ])
+    }
+    
+    static func reportNote(_ report: ReportReason, _ note: ParsedContent) -> NostrObject? {
+        createNostrObject(content: "", kind: 1984, tags: [
+            ["e", note.post.id, report.rawValue],
+            ["p", note.user.data.pubkey]
         ])
     }
     
