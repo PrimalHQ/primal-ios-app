@@ -10,6 +10,7 @@ import NostrSDK
 import GenericJSON
 
 public extension String {
+    static let lightningInvoicePattern = "lnbc[a-z0-9]{40,}"
     static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
@@ -253,15 +254,15 @@ class NoteProcessor: MetadataCoding {
                 let mentionText = tmpText.substring(with: matchRange)
                 
                 let naventString: String = {
-                    if mentionText.hasPrefix("nostr:") { return mentionText }
-                    if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
+                    if mentionText.hasPrefix("nostr:") { return mentionText.dropFirst(6).string }
+                    if mentionText.hasPrefix("@") { return mentionText.dropFirst().string }
                     if mentionText.contains("primal.net/e/") {
-                        return "nostr:\(String(mentionText.split(separator: "primal.net/e/").last ?? ""))"
+                        return String(mentionText.split(separator: "primal.net/e/").last ?? "")
                     }
                     if mentionText.contains("njump.me/") {
-                        return "nostr:\(String(mentionText.split(separator: "njump.me/").last ?? ""))"
+                        return String(mentionText.split(separator: "njump.me/").last ?? "")
                     }
-                    return "nostr:\(mentionText)"
+                    return mentionText
                 }()
                     
                 if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
@@ -379,12 +380,16 @@ class NoteProcessor: MetadataCoding {
             text.range(of: $0.url)?.lowerBound ?? text.startIndex < text.range(of: $1.url)?.lowerBound ?? text.startIndex
         })
         
-        let blocks = text.parse_mentions()
-        for block in blocks {
-            if case .invoice(let invoice) = block {
-                p.invoice = invoice
-                itemsToRemove.append(invoice.string)
-                break
+        if let invoiceMentionRegex = try? NSRegularExpression(pattern: .lightningInvoicePattern, options: []) {
+            invoiceMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard p.invoice == nil, let matchRange = match?.range else { return }
+                    
+                let mentionText = (text as NSString).substring(with: matchRange)
+                
+                if let invoice = mentionText.invoiceFromString() {
+                    p.invoice = invoice
+                    itemsToRemove.append(mentionText)
+                }
             }
         }
         

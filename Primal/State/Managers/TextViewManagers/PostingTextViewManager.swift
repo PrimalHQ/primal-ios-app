@@ -35,6 +35,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     
     @Published var oldDraft: NoteDraft?
     
+    var extractReferences = true
+    
     let defaultPostButtonTitle: String
     
     var tokens: [UserToken] {
@@ -311,6 +313,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         textView.text = ""
         media = []
+        embeddedElements = []
     }
     
     func post(callback: @escaping (Bool, NostrObject?) -> Void) {
@@ -390,52 +393,54 @@ private extension PostingTextViewManager {
     
     func findAndExtractMedia() {
         var text = textView.text ?? ""
+        let attributedText = NSMutableAttributedString(attributedString: textView.attributedText)
         
         for url in text.extractURLs() where url.isImageURL || url.isVideoURL {
             media.append(.init(state: .uploaded(url)))
-            text = text.replacingOccurrences(of: url, with: "")
+            
+            if let range = text.range(of: url) {
+                let nsRange = NSRange(range, in: text)
+                
+                attributedText.replaceCharacters(in: nsRange, with: "")
+                text = text.replacingCharacters(in: range, with: "")
+            }
         }
         
         if text != textView.text {
-            textView.text = text.trimmingCharacters(in: .newlines)
+            textView.attributedText = attributedText
         }
     }
     
     func findAndExtractReferences() {
+        guard extractReferences else { return }
+        
         let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(lnbc[a-z0-9]{40,})"
 
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
         
         var text = textView.text ?? ""
         
+        let attributedText = NSMutableAttributedString(attributedString: textView.attributedText)
+        
         let foundTexts = regex.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
             .compactMap { Range($0.range, in: text) }
             .map { text[$0].string }
         
         for foundText in foundTexts {
-            if extractReference(foundText) {
-                text = text.replacingOccurrences(of: foundText, with: "")
+            if extractReference(foundText), let range = text.range(of: foundText) {
+                attributedText.replaceCharacters(in: NSRange(range, in: text), with: "")
+                text = text.replacingCharacters(in: range, with: "")
             }
         }
      
         if text != textView.text {
-            textView.text = text.trimmingCharacters(in: .newlines)
+            textView.attributedText = attributedText
         }
     }
     
     func extractReference(_ ref: String) -> Bool {
-        if ref.hasPrefix("lnbc") {
-            let blocks = ref.parse_mentions()
-            for block in blocks {
-                if case .invoice(let invoice) = block {
-                    embeddedElements.append(.invoice(invoice, ref))
-                    return true
-                }
-            }
-        }
-        
-        if let mentionId = ref.eventIdFromNEvent() {
-            fetchEmbeddedNote(mentionId)
+        if ref.hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
+            embeddedElements.append(.invoice(invoice, ref))
             return true
         }
         

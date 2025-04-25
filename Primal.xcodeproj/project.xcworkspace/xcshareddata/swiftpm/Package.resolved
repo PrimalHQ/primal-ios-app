@@ -1,5 +1,5 @@
 {
-  "originHash" : "f027c3de4156ec7db5d1f8ebf284a3faeabb3bee41d3001287e68085a4f3d281",
+  "originHash" : "c8f5483697d9dbc59f577541602f4496982dce6182551522a65214b48ccb7a8a",
   "pins" : [
     {
       "identity" : "cryptoswift",
@@ -71,6 +71,15 @@
       "state" : {
         "revision" : "c1f60c63f356d364f4284ba82961acbe7de79bcc",
         "version" : "7.8.1"
+      }
+    },
+    {
+      "identity" : "ldk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lightningdevkit/ldk-swift/",
+      "state" : {
+        "revision" : "b36f37fc216ae83eb8fdc625ae3c85ea4158a7d6",
+        "version" : "0.0.125"
       }
     },
     {

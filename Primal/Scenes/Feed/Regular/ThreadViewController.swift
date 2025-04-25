@@ -87,6 +87,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         id = threadId
         super.init(feed: FeedManager(threadId: threadId))
         
+        inputManager.extractReferences = false
         dataSource = ThreadFeedDatasource(threadID: threadId, tableView: table, delegate: self)
         setup()
     }
