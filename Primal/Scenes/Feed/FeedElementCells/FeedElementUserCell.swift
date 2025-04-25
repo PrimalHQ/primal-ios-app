@@ -213,11 +213,10 @@ extension ParsedContent {
             actionsData.append((userMuteTitle, "blockIcon", .muteUser, .destructive))
         }
         
-        if !postInfo.isPostMuted {
-            actionsData.append(("Mute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
-        }
-        
         if user.data.pubkey != IdentityManager.instance.userHexPubkey {
+            if !postInfo.isPostMuted {
+                actionsData.append(("Mute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
+            }
             actionsData.append(("Report Content", "warningIcon", .report, .destructive))
         } else {
             actionsData.append(("Request Delete", "MenuTrash", .requestDelete, .destructive))

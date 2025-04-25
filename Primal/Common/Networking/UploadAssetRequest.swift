@@ -96,7 +96,12 @@ class UploadAssetRequest {
                     self?.progress = Double(truncating: first) / Double(truncating: second)
                 })
                 
-                guard let success = result as? UploadResult.Success else { throw UploadError.unableToCompleteUpload }
+                guard let success = result as? UploadResult.Success else {
+                    if let failure = result as? UploadResult.Failed {
+                        print(failure.error.description())
+                    }
+                    throw UploadError.unableToCompleteUpload
+                }
                                 
                 self.promise?(.success(success.remoteUrl))
             } catch {
