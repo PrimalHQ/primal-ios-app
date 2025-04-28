@@ -55,6 +55,7 @@ final class PremiumOnboardingHomeViewController: UIViewController, Themeable {
 private extension PremiumOnboardingHomeViewController {
     func setup() {
         let topStack = UIStackView([
+            SpacerView(height: 50),
             ThemeableImageView().constrainToSize(45).setTheme { $0.image = Theme.current.logoIcon },
             ThemeableImageView(image: UIImage(named: "primalPremium")).setTheme { $0.tintColor = .foreground }
         ])
@@ -73,8 +74,8 @@ private extension PremiumOnboardingHomeViewController {
         let cancel = ThemeableButton().setTheme { $0.configuration = .bigCancel() }
         
         let midStack = UIStackView(axis: .vertical, [
-            introLabel, SpacerView(height: 20),
-            learnView, SpacerView(height: 40),
+            introLabel, SpacerView(height: 20, priority: .defaultLow),
+            learnView, SpacerView(height: 40, priority: .defaultLow),
             princeInfoView
         ])
         midStack.alignment = .center
@@ -94,7 +95,7 @@ private extension PremiumOnboardingHomeViewController {
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
-            .pinToSuperview(edges: .top, padding: 92)
+            .pinToSuperview(edges: .top, padding: 42)
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
         midStack.alignment = .center
