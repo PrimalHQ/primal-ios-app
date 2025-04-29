@@ -96,6 +96,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         notificationCellDelegate = delegate
         
         newIndicator.isHidden = !isNew
+        
+        postPreview.updateTheme()
     }
     
     override func update(_ parsedContent: ParsedContent) {

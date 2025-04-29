@@ -9,6 +9,9 @@ import UIKit
 import AVKit
 
 final class FullScreenVideoPlayerController: AVPlayerViewController {
+    
+    static weak var instance: FullScreenVideoPlayerController?
+    
     let video: VideoPlayer
     
     init(_ video: VideoPlayer) {
@@ -28,6 +31,8 @@ final class FullScreenVideoPlayerController: AVPlayerViewController {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
         player?.isMuted = false
         player?.play()
+        
+        Self.instance = self
     }
     
     override func viewDidDisappear(_ animated: Bool) {

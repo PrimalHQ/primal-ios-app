@@ -271,11 +271,11 @@ final class NotificationFeedViewController: NoteViewController {
 
 extension NotificationFeedViewController: NotificationCellDelegate {
     func avatarListTappedInCell(_ cell: NotificationCell, index: Int) {
-        guard let notification = notifications[safe: table.indexPath(for: cell)?.row] else { return }
+        guard let indexPath = table.indexPath(for: cell), let notification = (dataSource as? NotificationsFeedDatasource)?.notificationForIndexPath(indexPath) else { return }
         
         let filteredUsers = notification.users.filter { $0.profileImage.url(for: .small) != nil }
         
-        guard let user = filteredUsers[safe: index]  else { return }
+        guard let user = filteredUsers[safe: index] ?? notification.users.first else { return }
         
         let profile = ProfileViewController(profile: user)
         show(profile, sender: nil)

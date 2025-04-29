@@ -60,14 +60,10 @@ final class FeedManager {
         initSubscriptions()
         initFuturePublishersAndObservers()
         
-        if newFeed.name == "Latest" {
-            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
-            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
-            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
-                paginationInfo = loaded.pagination
-                postsEmitter.send(loaded)
-                return
-            }
+        if newFeed.name == "Latest", let loaded = HomeFeedLocalLoadingManager.savedFeed {
+            paginationInfo = loaded.pagination
+            postsEmitter.send(loaded)
+            return
         }
         refresh()
     }

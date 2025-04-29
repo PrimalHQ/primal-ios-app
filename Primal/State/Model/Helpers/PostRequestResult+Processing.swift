@@ -180,7 +180,9 @@ extension String {
 }
 
 extension String: @retroactive MetadataCoding {
-    func eventIdFromNEvent() -> String? { (try? decodedMetadata(from: self))?.eventId }
+    func eventIdFromNEvent() -> String? {
+        (try? decodedMetadata(from: self))?.eventId ?? self.noteIdToHex()
+    }
     
     func invoiceFromString() -> Invoice? {
         guard let invoice = Bolt11Invoice.fromStr(s: self).getValue() else { return nil }

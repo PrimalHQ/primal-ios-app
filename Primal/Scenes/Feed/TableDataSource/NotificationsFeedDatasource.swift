@@ -72,12 +72,14 @@ class NotificationsFeedDatasource: UITableViewDiffableDataSource<SingleSection, 
         apply(snapshot, animatingDifferences: false)
     }
     
-    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
+    func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? { notificationForIndexPath(indexPath)?.post }
+    
+    func notificationForIndexPath(_ indexPath: IndexPath) -> GroupedNotification? {
         guard indexPath.section == 0, let cell = cells[safe: indexPath.row] else { return nil }
         
         switch cell {
         case .notification(let notification):
-            return notification.post
+            return notification
         case .pushNotifications:
             return nil
         }

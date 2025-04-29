@@ -134,7 +134,7 @@ private extension ProfileShowQRController {
     func update(_ user: ParsedUser) {
         userInfo.image.imageView.setUserImage(user, feed: false)
         userInfo.name.text = user.data.firstIdentifier
-        userInfo.address.text = user.data.lud16
+        userInfo.address.text = " \(user.data.nip05) " // we add whitespace in case nip05 is empty, the label shouldn't collapse to 0 height
         
         updateTabs(user)
     }
@@ -194,6 +194,8 @@ private extension ProfileShowQRController {
                 indicatorView.removeFromSuperview()
                 tabParent.addSubview(indicatorView)
                 indicatorView.pin(to: button, edges: .horizontal).pin(to: button, edges: .bottom, padding: -10)
+                
+                userInfo.address.text = " \(isFirst ? user.data.nip05 : user.data.lud16) "
                 
                 UIView.animate(withDuration: 0.3) {
                     self.tabParent.layoutIfNeeded()

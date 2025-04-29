@@ -113,7 +113,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
@@ -137,11 +137,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
-            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
-        } else {
-            playVideoOnScroll()
+        if FullScreenVideoPlayerController.instance == nil {
+            if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
+                VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+            } else {
+                playVideoOnScroll()
+            }
         }
+        
         cachedContentOffset = scrollView.contentOffset
         
         let newPosition = scrollView.contentOffset.y

@@ -607,7 +607,7 @@ private extension PostingTextViewManager {
             .sink { [weak self] draft in
                 guard let self, let draft else { return }
                 
-                if let text = textView.text, !text.isEmpty, !draft.isPosting {
+                if let text = textView.text, !text.isEmpty, !draft.isPosting, text != draft.text {
                     textView.text = draft.text + text
                 } else {
                     textView.text = draft.text
