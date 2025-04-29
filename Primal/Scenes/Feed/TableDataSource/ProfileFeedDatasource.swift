@@ -196,7 +196,7 @@ private extension ProfileFeedDatasource {
         snapshot.appendSections([.info])
         snapshot.appendItems([.profileInfo(profile, parsedDescription, stats: userStats, followedBy: followedBy, followsUser: followsUser, selectedTab: selectedTab)])
         
-        if MuteManager.instance.isMuted(profile.data.pubkey) {
+        if MuteManager.instance.isMutedUser(profile.data.pubkey) {
             snapshot.appendItems([.muted(profile)])
         }
 

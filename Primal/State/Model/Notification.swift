@@ -8,6 +8,23 @@
 import Foundation
 import GenericJSON
 
+enum PushNotificationGroup {
+    case NEW_FOLLOWS
+    case ZAPS
+    case REACTIONS
+    case REPLIES
+    case REPOSTS
+    case MENTIONS
+    case DIRECT_MESSAGES
+    case WALLET_TRANSACTIONS
+}
+
+enum AdditionalNotificationOptions {
+    case ignore_events_with_too_many_mentions
+    case only_show_dm_notifications_from_users_i_follow
+    case only_show_reactions_from_users_i_follow
+}
+
 enum NotificationType: Int, CaseIterable, Codable {
     case NEW_USER_FOLLOWED_YOU = 1
     
@@ -27,6 +44,9 @@ enum NotificationType: Int, CaseIterable, Codable {
     case POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED = 202
     case POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED = 203
     case POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO = 204
+    
+    case YOUR_POST_WAS_HIGHLIGHTED = 301
+    case YOUR_POST_WAS_BOOKMARKED = 302
 }
 
 struct PrimalNotification: Codable, Hashable {
@@ -55,7 +75,9 @@ enum NostrNotification: Codable, Hashable {
     case userUnfollowed(userId: String)
     
     case postZapped(postId: String, userId: String, amount: Int)
-    case postLiked(postId: String, userId: String)
+    case postLiked(postId: String, userId: String, reaction: String)
+    case postBookmarked(postId: String, userId: String)
+    case postHighlighted(postId: String, userId: String, highlight: String)
     case postReposted(postId: String, userId: String)
     case postReplied(postId: String, userId: String, reply: String)
     
@@ -89,7 +111,20 @@ enum NostrNotification: Codable, Hashable {
                 let your_post = object["your_post"]?.stringValue,
                 let who_liked_it = object["who_liked_it"]?.stringValue
             else { return nil }
-            return .postLiked(postId: your_post, userId: who_liked_it)
+            return .postLiked(postId: your_post, userId: who_liked_it, reaction: object["reaction"]?.stringValue ?? "")
+        case .YOUR_POST_WAS_HIGHLIGHTED:
+            guard
+                let your_post = object["your_post"]?.stringValue,
+                let who_highlighted_it = object["who_highlighted_it"]?.stringValue,
+                let highlight = object["highlight"]?.stringValue
+            else { return nil }
+            return .postHighlighted(postId: your_post, userId: who_highlighted_it, highlight: highlight)
+        case .YOUR_POST_WAS_BOOKMARKED:
+            guard
+                let your_post = object["your_post"]?.stringValue,
+                let who_bookmarked_it = object["who_bookmarked_it"]?.stringValue
+            else { return nil }
+            return .postBookmarked(postId: your_post, userId: who_bookmarked_it)
         case .YOUR_POST_WAS_REPOSTED:
             guard
                 let your_post = object["your_post"]?.stringValue,
@@ -169,9 +204,14 @@ enum NostrNotification: Codable, Hashable {
 }
 
 extension NostrNotification {
+    var reactionType: String? {
+        guard case let .postLiked(_, _, reaction) = self else { return nil }
+        return reaction
+    }
+    
     var mainUserId: String? {
         switch self {
-        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _):
+        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId, _), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _), .postBookmarked(_, let userId), .postHighlighted(_, let userId, _):
             
             return userId
         case .postMention, .userMention:
@@ -182,7 +222,7 @@ extension NostrNotification {
     var mainPostId: String? {
         switch self {
         case    .postZapped(let postId, _, _),
-                .postLiked(let postId, _),
+                .postLiked(let postId, _, _),
                 .postReposted(let postId, _),
                 .userMention(let postId),
                 .postMention(let postId, _),
@@ -191,18 +231,18 @@ extension NostrNotification {
                 .userMentionReposted(let postId, _),
                 .postMentionZapped(let postId, _, _),
                 .postMentionLiked(let postId, _),
-                .postMentionReposted(let postId, _):
+                .postMentionReposted(let postId, _),
+                .postBookmarked(let postId, _):
             
             return postId
-            
+        case .postHighlighted(_, _, let highlight):
+            return highlight
         case    .userMentionReplied(_, _, reply: let reply),
                 .postReplied(_, _, reply: let reply),
                 .postMentionReplied(_, _, reply: let reply):
             
             return reply
-        case    .userFollowed(_),
-                .userUnfollowed(_):
-            
+        case .userFollowed, .userUnfollowed:
             return nil
         }
     }

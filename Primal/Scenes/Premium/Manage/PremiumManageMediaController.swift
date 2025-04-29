@@ -163,7 +163,7 @@ extension PremiumManageMediaController: PremiumManageMediaDataCellDelegate {
             let url = media[safe: index]?.url
         else { return }
         UIPasteboard.general.string = url
-        RootViewController.instance.view.showToast("Link copied!", extraPadding: 20)
+        RootViewController.instance.view.showToast("Link copied!", extraPadding: 0)
     }
     
     func deleteButtonPressedInCell(_ cell: PremiumManageMediaDataCell) {

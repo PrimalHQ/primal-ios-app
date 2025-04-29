@@ -226,18 +226,19 @@ final class SmallBalanceConversionView: LargeBalanceConversionView {
         
         largeAmountLabel.adjustsFontSizeToFitWidth = true
         
-        transform = .init(translationX: 0, y: 10)
-        
         roundingStyle = .twoDecimals
         
         guard let dollarParent = large$Label.superview, let currencyParent = largeCurrencyLabel.superview, dollarParent != currencyParent else { return }
         let stack = UIStackView([dollarParent, largeAmountLabel, currencyParent])
         primaryRow.addSubview(stack)
-        stack.pinToSuperview()
+        stack
+            .pinToSuperview(edges: .horizontal)
+            .pinToSuperview(edges: .bottom, padding: -10)
+            .pinToSuperview(edges: .top, padding: 20)
         stack.spacing = 4
     }
     
-    override var labelOffset: CGFloat { 10 }
+    override var labelOffset: CGFloat { 4 }
     
     override var rowSpacing: CGFloat { 4 }
     

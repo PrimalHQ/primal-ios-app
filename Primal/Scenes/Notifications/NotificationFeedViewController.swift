@@ -33,7 +33,7 @@ final class NotificationFeedViewController: NoteViewController {
         }
     }
     
-    var tab: Tab {
+    var notificationTab: Tab {
         didSet {
             notifications = []
             refresh()
@@ -64,7 +64,7 @@ final class NotificationFeedViewController: NoteViewController {
     }
     
     init(tab: Tab) {
-        self.tab = tab
+        self.notificationTab = tab
         
         super.init()
         
@@ -120,13 +120,17 @@ final class NotificationFeedViewController: NoteViewController {
         }), for: .valueChanged)
     }
     
+    
+    var lastRefresh = Date.distantPast
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         
-        refresh()
+        if notifications.isEmpty || mainTabBarController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
+            refresh()
+        }
     }
     
     override func updateTheme() {
@@ -146,8 +150,9 @@ final class NotificationFeedViewController: NoteViewController {
         didReachEnd = false
         isLoading = true
         until = Date()
+        lastRefresh = .now
         
-        let tab = self.tab
+        let tab = self.notificationTab
         let payload = JSON.object([
             "pubkey": idJsonID,
             "limit": .number(20),
@@ -206,6 +211,12 @@ final class NotificationFeedViewController: NoteViewController {
             }
             return self
         }
+        if post.post.kind != 1 {
+            if post.post.kind == NostrKind.highlight.rawValue, let article = post.article {
+                show(ArticleViewController(content: article), sender: nil)
+            }
+            return self
+        }
         return super.open(post: post)
     }
     
@@ -216,7 +227,7 @@ final class NotificationFeedViewController: NoteViewController {
             "pubkey": idJsonID,
             "limit": .number(152),
             "until": .number(until.timeIntervalSince1970.rounded() - 1),
-            "type_group": .string(tab.apiName)
+            "type_group": .string(notificationTab.apiName)
         ])
         
         isLoading = true
@@ -260,11 +271,11 @@ final class NotificationFeedViewController: NoteViewController {
 
 extension NotificationFeedViewController: NotificationCellDelegate {
     func avatarListTappedInCell(_ cell: NotificationCell, index: Int) {
-        guard let notification = notifications[safe: table.indexPath(for: cell)?.row] else { return }
+        guard let indexPath = table.indexPath(for: cell), let notification = (dataSource as? NotificationsFeedDatasource)?.notificationForIndexPath(indexPath) else { return }
         
         let filteredUsers = notification.users.filter { $0.profileImage.url(for: .small) != nil }
         
-        guard let user = filteredUsers[safe: index]  else { return }
+        guard let user = filteredUsers[safe: index] ?? notification.users.first else { return }
         
         let profile = ProfileViewController(profile: user)
         show(profile, sender: nil)
@@ -284,7 +295,7 @@ extension Array where Element == GroupedNotification {
                     first.users.append(contentsOf: notifications.dropFirst().flatMap { $0.users })
                     grouped.append(first)
                 }
-            case .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_LIKED, .YOUR_POST_WAS_REPOSTED, .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED, .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED, .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
+            case .YOUR_POST_WAS_ZAPPED, .YOUR_POST_WAS_REPOSTED, .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED, .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED, .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 
@@ -298,7 +309,19 @@ extension Array where Element == GroupedNotification {
                     }
                 }
                 grouped += groupedByPost
-            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+            case .YOUR_POST_WAS_LIKED:
+                let notifications = filter { $0.mainNotification.type == type }
+                
+                var groupedByPostReaction = [GroupedNotification]()
+                for notification in notifications {
+                    if let index = groupedByPostReaction.firstIndex(where: { $0.mainNotification.data.reactionType == notification.mainNotification.data.reactionType && $0.post?.post.id == notification.post?.post.id }) {
+                        groupedByPostReaction[index].users += notification.users
+                    } else {
+                        groupedByPostReaction.append(notification)
+                    }
+                }
+                grouped += groupedByPostReaction
+            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 grouped += notifications
@@ -313,7 +336,8 @@ extension Array where Element == GroupedNotification {
 
 extension PostRequestResult {
     func getParsedNotifications() -> [GroupedNotification] {
-        let posts = NoteProcessor(result: self, contentStyle: .regular).process()
+        let processor = NoteProcessor(result: self, contentStyle: .regular)
+        let posts = processor.process()
         
         return notifications.sorted(by: { $0.date > $1.date }).map { notif in
             var parsedUsers: [ParsedUser] = []
@@ -323,11 +347,25 @@ extension PostRequestResult {
             }
             
             var notificationPost: ParsedContent?
-            if let postId = notif.data.mainPostId, let post = posts.first(where: { $0.post.id == postId }) {
-                if parsedUsers.isEmpty {
-                    parsedUsers.append(post.user)
+            if let postId = notif.data.mainPostId {
+                if let post = posts.first(where: { $0.post.id == postId }) {
+                    if parsedUsers.isEmpty {
+                        parsedUsers.append(post.user)
+                    }
+                    notificationPost = post
+                } else if let highlight = highlights.first(where: { $0.id == postId }){
+                    notificationPost = .init(.init(
+                        post: .init(nostrPost: highlight, nostrPostStats: .empty(postId)),
+                        user: createParsedUser(users[highlight.pubkey] ?? .init(pubkey: highlight.pubkey))
+                    ))
+                    
+                    notificationPost?.text = highlight.content
+                    notificationPost?.highlights = [.init(position: 0, length: highlight.content.count, text: highlight.content, reference: highlight.id)]
+                    notificationPost?.article = processor.articles.first(where: { article in
+                        print(highlight)
+                        return true
+                    })
                 }
-                notificationPost = post
             }
             
             return GroupedNotification(users: parsedUsers, mainNotification: notif, post: notificationPost)

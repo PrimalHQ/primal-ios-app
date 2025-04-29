@@ -42,13 +42,13 @@ private extension SettingsDevModeController {
     func setup() {
         title = "Dev Mode"
         
-        let devMode = SettingsSwitchView("Enable Dev Mode")
+//        let devMode = SettingsSwitchView("Enable Dev Mode")
         let scrollButton = SettingsSwitchView("Enable Smooth Scroll Button")
         
         let stack = UIStackView(axis: .vertical, [
-            devMode, SpacerView(height: 10),
-            descLabel("Show the connected state in the top right corner of the screen. More dev features to come."), SpacerView(height: 20),
-            SettingsBorder(), SpacerView(height: 20),
+//            devMode, SpacerView(height: 10),
+//            descLabel("Show the connected state in the top right corner of the screen. More dev features to come."), SpacerView(height: 20),
+//            SettingsBorder(), SpacerView(height: 20),
             scrollButton, SpacerView(height: 10),
             descLabel("Show the button for smooth scrolling"), SpacerView(height: 20),
             smoothScrollSpeed, SpacerView(height: 20)
@@ -67,14 +67,14 @@ private extension SettingsDevModeController {
         
         updateTheme()
         
-        devMode.switchView.isOn = DevModeSettings.enableDevMode
+//        devMode.switchView.isOn = DevModeSettings.enableDevMode
         scrollButton.switchView.isOn = !RootViewController.instance.smoothScrollButton.isHidden
         
-        devMode.switchView.addAction(.init(handler: { [weak devMode] _ in
-            guard let value = devMode?.switchView.isOn else { return }
-            DevModeSettings.enableDevMode = value
-            RootViewController.instance.connectionDot.isHidden = !value
-        }), for: .valueChanged)
+//        devMode.switchView.addAction(.init(handler: { [weak devMode] _ in
+//            guard let value = devMode?.switchView.isOn else { return }
+//            DevModeSettings.enableDevMode = value
+//
+//        }), for: .valueChanged)
         
         scrollButton.switchView.addAction(.init(handler: { [weak scrollButton] _ in
             guard let value = scrollButton?.switchView.isOn else { return }

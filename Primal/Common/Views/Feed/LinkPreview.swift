@@ -102,16 +102,20 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
             guard let url = self?.data?.url else { return nil }
             return SFSafariViewController(url: url)
         }, actionProvider: { [weak self] suggestedActions in
-            let share = UIAction(title: "Share", image: UIImage(systemName: "MenuShare")) { action in
+            let share = UIAction(title: "Share", image: .menuShare) { action in
                 guard let url = self?.data?.url else { return }
                 let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 RootViewController.instance.present(activityViewController, animated: true, completion: nil)
             }
 
-            let copy = UIAction(title: "Copy URL", image: UIImage(systemName: "MenuCopyLink")) { _ in
+            let copy = UIAction(title: "Copy URL", image: .menuCopyLink) { _ in
                 guard let url = self?.data?.url.absoluteString else { return }
                 UIPasteboard.general.string = url
-                RootViewController.instance.view.showToast("Copied!")
+                if let mainTabVC: MainTabBarController = RootViewController.instance.findInChildren() {
+                    mainTabVC.showToast("Copied!")
+                } else {
+                    RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+                }
             }
             // Create and return a UIMenu with the share action
             return UIMenu(children: [share, copy])

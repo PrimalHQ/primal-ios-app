@@ -100,7 +100,7 @@ final class ImageFullScreenViewController: UIViewController {
         startImageView.alpha = 0.01
         
         if imageView.image == nil, let image = startImageView.image {
-            imageView.image = startImageView.image
+            imageView.image = image
             setInsetForZoomedIn(viewSize: view.frame.size)
             
             let s = image.size
@@ -109,21 +109,22 @@ final class ImageFullScreenViewController: UIViewController {
             aspectC.isActive = true
         }
         
+        var cs: [NSLayoutConstraint] = []
         if startImageView.window == view.window {
             let startingFrame = startImageView.convert(startImageView.bounds, to: nil)
             animatingIV.translatesAutoresizingMaskIntoConstraints = false
-            let cs: [NSLayoutConstraint] = [
+            cs = [
                 animatingIV.topAnchor.constraint(equalTo: view.topAnchor, constant: startingFrame.minY),
                 animatingIV.leftAnchor.constraint(equalTo: view.leftAnchor, constant: startingFrame.minX),
                 animatingIV.widthAnchor.constraint(equalToConstant: startingFrame.width),
                 animatingIV.heightAnchor.constraint(equalToConstant: startingFrame.height)
             ]
             NSLayoutConstraint.activate(cs)
-            view.layoutSubviews()
-            NSLayoutConstraint.deactivate(cs)
+            view.layoutIfNeeded()
         }
         
-        animatingIV.pin(to: imageView)
+        NSLayoutConstraint.deactivate(cs)
+        animatingIV.pin(to: self.imageView)
         
         UIView.animate(withDuration: 0.3) {
             self.background.alpha = 1

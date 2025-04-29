@@ -60,14 +60,10 @@ final class FeedManager {
         initSubscriptions()
         initFuturePublishersAndObservers()
         
-        if newFeed.name == "Latest" {
-            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
-            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
-            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
-                paginationInfo = loaded.pagination
-                postsEmitter.send(loaded)
-                return
-            }
+        if newFeed.name == "Latest", let loaded = HomeFeedLocalLoadingManager.savedFeed {
+            paginationInfo = loaded.pagination
+            postsEmitter.send(loaded)
+            return
         }
         refresh()
     }
@@ -123,9 +119,14 @@ final class FeedManager {
         isRequestingNewPage = true
         sendNewPageRequest()
     }
-            
+        
     func requestThread(postId: String, limit: Int32 = 100) {
         parsedPosts.removeAll()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { [weak self] in
+            guard let self, parsedPosts.isEmpty else { return }
+            requestThread(postId: postId, limit: limit)
+        }
         
         SocketRequest(
             useHTTP: true,
@@ -155,6 +156,17 @@ private extension FeedManager {
                 
                 parsedPosts = parsedPosts.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user?.data.pubkey != pubkey }
                 newPostObjects = newPostObjects.filter { $0.user.data.pubkey != pubkey && $0.reposted?.user?.data.pubkey != pubkey }
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .noteDeleted)
+            .compactMap { $0.object as? String}
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] eventId in
+                guard let self else { return }
+                
+                parsedPosts = parsedPosts.filter { $0.post.id != eventId }
+                newPostObjects = newPostObjects.filter { $0.post.id != eventId }
             }
             .store(in: &cancellables)
         

@@ -9,6 +9,7 @@ import Foundation
 import LinkPresentation
 import Kingfisher
 import NostrSDK
+import LightningDevKit
 
 extension PostRequestResult: MetadataCoding {
     func getSortedUsers() -> [ParsedUser] {
@@ -33,7 +34,7 @@ extension PostRequestResult: MetadataCoding {
     func createParsedUser(_ user: PrimalUser) -> ParsedUser { .init(
         data: user,
         profileImage: mediaMetadata.flatMap { $0.resources } .first(where: { $0.url == user.picture }),
-        followers: userFollowers[user.pubkey] ?? userScore[user.pubkey]
+        followers: userFollowers[user.pubkey] ?? 0
     )}
     
     func process(contentStyle: ParsedContentTextStyle) -> [ParsedContent] {
@@ -110,9 +111,9 @@ extension String {
             let mentionText = nsString.substring(with: matchRange)
             
             let naventString: String = {
-                if mentionText.hasPrefix("nostr:") { return mentionText }
-                if mentionText.hasPrefix("@") { return "nostr:\(mentionText.dropFirst())" }
-                return "nostr:\(mentionText)"
+                if mentionText.hasPrefix("nostr:") { return mentionText.dropFirst(6).string }
+                if mentionText.hasPrefix("@") { return mentionText.dropFirst().string }
+                return mentionText
             }()
                 
             if let mentionId = naventString.eventIdFromNEvent(), let mention = mentions.first(where: { $0.post.id == mentionId }) {
@@ -178,44 +179,13 @@ extension String {
     }
 }
 
-extension String {
+extension String: @retroactive MetadataCoding {
     func eventIdFromNEvent() -> String? {
-        guard case .mention(let mention) = parse_mentions().first else { return nil }
-            
-        return mention.ref.id
+        (try? decodedMetadata(from: self))?.eventId ?? self.noteIdToHex()
     }
     
     func invoiceFromString() -> Invoice? {
-        guard case .invoice(let invoice) = parse_mentions().first else { return nil }
-        return invoice
-    }
-    
-    func parse_mentions() -> [Block] {
-        var out: [Block] = []
-        
-        var bs = blocks()
-        bs.num_blocks = 0;
-        
-        blocks_init(&bs)
-        
-        let bytes = self.utf8CString
-        let _ = bytes.withUnsafeBufferPointer { p in
-            damus_parse_content(&bs, p.baseAddress)
-        }
-        
-        var i = 0
-        while (i < bs.num_blocks) {
-            let block = bs.blocks[i]
-            
-            if let converted = convert_block(block, tags: []) {
-                out.append(converted)
-            }
-            
-            i += 1
-        }
-        
-        blocks_free(&bs)
-        
-        return out
+        guard let invoice = Bolt11Invoice.fromStr(s: self).getValue() else { return nil }
+        return Invoice(description: "", amount: invoice.amountMilliSatoshis(), string: self, expiry: invoice.expiryTime(), created_at: invoice.timestamp())
     }
 }

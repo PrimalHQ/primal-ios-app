@@ -82,10 +82,10 @@ private extension OnboardingStartViewController {
         tagLabel.textAlignment = .center
         
         let contentStack = UIStackView(arrangedSubviews: [
-            logoParent,     SpacerView(height: 8),
-            tagLabel,       SpacerView(height: 32),
-            signinButton,   SpacerView(height: 12),
-            signupButton,   SpacerView(height: 24),
+            logoParent,     SpacerView(height: 8, priority: .defaultLow),
+            tagLabel,       SpacerView(height: 32, priority: .defaultLow),
+            signinButton,   SpacerView(height: 12, priority: .defaultLow),
+            signupButton,   SpacerView(height: 24, priority: .defaultLow),
             termsBothLines
         ])
         contentStack.axis = .vertical
@@ -108,7 +108,11 @@ private extension OnboardingStartViewController {
         
         view.constrainToSize(width: 375, height: 800)
         self.view.addSubview(view)
-        view.centerToSuperview()
+        view.centerToSuperview(axis: .horizontal)
+        let centerYC = view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+        centerYC.priority = .defaultHigh
+        centerYC.isActive = true
+        view.bottomAnchor.constraint(lessThanOrEqualTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
         let scale = UIScreen.main.bounds.width / 375
         

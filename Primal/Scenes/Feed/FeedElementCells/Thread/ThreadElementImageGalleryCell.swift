@@ -40,6 +40,19 @@ class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCe
     override func update(_ content: ParsedContent) {
         imageAspectConstraint?.isActive = false
         imageAspectConstraint = nil
+        
+        DispatchQueue.main.async {
+            self.mainImages.resources = content.mediaResources
+            self.mainImages.thumbnails = content.videoThumbnails
+        }
+        
+        guard content.mediaResources.count == 1 else {
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: content.mediaResources.aspectForGallery())
+            aspect.priority = .defaultHigh
+            aspect.isActive = true
+            imageAspectConstraint = aspect
+            return
+        }
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
@@ -72,11 +85,6 @@ class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCe
                 aspect.isActive = true
                 imageAspectConstraint = aspect
             }
-        }
-        
-        DispatchQueue.main.async {
-            self.mainImages.thumbnails = content.videoThumbnails
-            self.mainImages.resources = content.mediaResources
         }
     }
 }

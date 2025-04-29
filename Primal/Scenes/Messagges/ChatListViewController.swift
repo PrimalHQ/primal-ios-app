@@ -112,7 +112,7 @@ private extension ChatListViewController {
     func getAllChats() {
         let type = selectedType
         manager.getAllChats(type) { [weak self] chats in
-            let chats = chats.filter { !MuteManager.instance.isMuted($0.user.data.pubkey) }
+            let chats = chats.filter { !MuteManager.instance.isMutedUser($0.user.data.pubkey) }
             
             if self?.selectedType != type { return }
             
@@ -148,7 +148,7 @@ private extension ChatListViewController {
             didReachEnd = chats.isEmpty
             isLoading = false
             
-            chats = chats.filter { !MuteManager.instance.isMuted($0.user.data.pubkey) }
+            chats = chats.filter { !MuteManager.instance.isMutedUser($0.user.data.pubkey) }
             
             if startFromZero {
                 self.chats = chats

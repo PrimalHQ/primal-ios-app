@@ -186,6 +186,16 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
+    func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
+        let isTabBarHidden = vStack.transform != .identity
+        
+        if isTabBarHidden {
+            view.showToast(message, icon: icon, extraPadding: 0)
+        } else {
+            vStack.showToast(message, icon: icon, extraPadding: 95)
+        }
+    }
+    
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
         let nav: UINavigationController = navForTab(tab)
         let currentTab = navForTab(currentTab)
@@ -242,6 +252,11 @@ final class MainTabBarController: UIViewController, Themeable {
 private extension MainTabBarController {
     func setup() {
         IdentityManager.instance.requestUserProfile()
+        
+        if let userDefaults = UserDefaults(suiteName: "group.primal") {
+            userDefaults.set(IdentityManager.instance.userHexPubkey, forKey: "currentUserPubkey")
+            userDefaults.synchronize()
+        }
         
         updateTheme()
         updateChildren = true
@@ -315,11 +330,12 @@ private extension MainTabBarController {
         DispatchQueue.main.async { [self] in
             RootViewController.instance.$navigateTo
                 .filter { $0 != nil }
+                .delay(for: 0.5, scheduler: RunLoop.main)
                 .sink { [weak self] to in
                     guard let self, let to else { return }
                     RootViewController.instance.navigateTo = nil
                     
-                    let (vc, tab) : (UIViewController?, MainTab) = {
+                    let (vc, tab) : (UIViewController?, MainTab?) = {
                         switch to {
                         case .profile(let pubkey):
                             return (ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), .home)
@@ -345,16 +361,25 @@ private extension MainTabBarController {
                             return (PremiumViewController(), .home)
                         case .legends:
                             return (LegendListController(), .home)
+                        case .newPost(let text, let files):
+                            let newPost = AdvancedEmbedPostViewController()
+                            newPost.manager.textView.text = text
+                            newPost.manager.addMedia(files)
+                            return (newPost, nil)
                         }
                     }()
                                         
-                    self.switchToTab(tab, open: vc)
-                    if vc == nil {
-                        self.navForTab(tab).popToRootViewController(animated: true)
-                    }
-                    
-                    if self.presentedViewController as? SFSafariViewController != nil{
-                        self.dismiss(animated: true)
+                    if let tab {
+                        self.switchToTab(tab, open: vc)
+                        if vc == nil {
+                            self.navForTab(tab).popToRootViewController(animated: true)
+                        }
+                        
+                        if self.presentedViewController as? SFSafariViewController != nil{
+                            self.dismiss(animated: true)
+                        }
+                    } else if let vc {
+                        (self.presentedViewController ?? self).present(vc, animated: true)
                     }
                 }
                 .store(in: &cancellables)
@@ -415,6 +440,10 @@ private extension MainTabBarController {
         if nav.viewControllers.count > 1 {
             nav.popToRootViewController(animated: true)
             return
+        }
+        
+        if tab == .home, let child: HomeFeedChildController = nav.viewControllers.first?.findInChildren() {
+            child.feed.addAllFuturePosts()
         }
 
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {

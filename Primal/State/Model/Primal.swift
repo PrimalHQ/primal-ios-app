@@ -33,19 +33,21 @@ struct PrimalNoteStatus: Codable, Hashable {
 
 struct PrimalZapDefaultSettings: Codable, Hashable {
     var amount: Int
-    var message: String
+    var message: String?
 }
 
 struct PrimalZapListSettings: Codable, Hashable {
     var emoji: String
     var amount: Int
-    var message: String
+    var message: String?
 }
 
 struct PrimalSettingsContent: Codable, Hashable {
     var description: String? = "Sync app settings"
     var theme: String?
     var notifications: PrimalSettingsNotifications?
+    var pushNotifications: PrimalSettingsPushNotifications?
+    var notificationsAdditional: PrimalSettingsAdditionalNotifications?
     var zapDefault: PrimalZapDefaultSettings?
     var zapConfig: [PrimalZapListSettings]?
     
@@ -79,6 +81,24 @@ struct PrimalSettingsContent: Codable, Hashable {
     }
 }
 
+struct PrimalSettingsPushNotifications: Codable, Hashable {
+    var NEW_FOLLOWS: Bool = true
+    var ZAPS: Bool = true
+    var REACTIONS: Bool = true
+    var REPLIES: Bool = true
+    var REPOSTS: Bool = true
+    var MENTIONS: Bool = true
+    var DIRECT_MESSAGES: Bool = true
+    var WALLET_TRANSACTIONS: Bool = true
+}
+
+struct PrimalSettingsAdditionalNotifications: Codable, Hashable {
+    var ignore_events_with_too_many_mentions = true
+    var only_show_dm_notifications_from_users_i_follow = true
+    var only_show_reactions_from_users_i_follow: Bool? = false
+    var show_wallet_push_notifications_above_sats: Int? = 1
+}
+
 struct PrimalSettingsNotifications: Codable, Hashable {
     var NEW_USER_FOLLOWED_YOU: Bool
 
@@ -98,6 +118,9 @@ struct PrimalSettingsNotifications: Codable, Hashable {
     var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED: Bool
     var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED: Bool
     var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO: Bool
+    
+    var YOUR_POST_WAS_HIGHLIGHTED: Bool?
+    var YOUR_POST_WAS_BOOKMARKED: Bool?
 }
 
 struct PrimalPagination: Codable, Hashable {
@@ -116,7 +139,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     let tags: [[String]]
     
     init?(json: JSON) {
-        guard var settingsContent: PrimalSettingsContent = try? JSONDecoder().decode(PrimalSettingsContent.self, from: (json.objectValue?["content"]?.stringValue ?? "{}").data(using: .utf8)!) else {
+        guard var settingsContent: PrimalSettingsContent = json.objectValue?["content"]?.stringValue?.decode() else {
             print("Error decoding PrimalSettingsContent to json")
             return nil
         }

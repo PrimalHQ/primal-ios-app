@@ -111,8 +111,8 @@ extension ArticleListController: ArticleCellDelegate {
             RootViewController.instance.view.showToast("Copied!")
         case .report:
             break // TODO: Something?
-        case .mute:
-            MuteManager.instance.toggleMute(post.user.data.pubkey)
+        case .muteUser:
+            MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
         case .bookmark:
             BookmarkManager.instance.bookmark(post)
         case .unbookmark:
@@ -133,19 +133,10 @@ extension ArticleListController: UITableViewDelegate {
     }
 }
 
-extension Article {
-    var url: URL? {
-        guard
-            let npub = event.pubkey.hexToNpub(),
-            let noteid = event.id.hexToNoteId()
-        else { return nil }
-    
-        let urlString = "https://highlighter.com/\(npub)/\(noteid)"
-    
-        return URL(string: urlString)
-    }
-    
+extension Article {    
     var asParsedContent: ParsedContent {
-        .init(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
+        let post = ParsedContent(post: .init(nostrPost: event, nostrPostStats: stats), user: user)
+        post.article = self
+        return post
     }
 }

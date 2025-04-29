@@ -35,6 +35,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     
     @Published var oldDraft: NoteDraft?
     
+    var extractReferences = true
+    
     let defaultPostButtonTitle: String
     
     var tokens: [UserToken] {
@@ -67,6 +69,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         }
     }
     
+    @Published var embeddedElements: [PostEmbedPreview] = []
     @Published private var currentlyEditingToken: EditingToken?
     
     let returnPressed = PassthroughSubject<Void, Never>()
@@ -145,6 +148,10 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             currentText = currentText.appending("\n" + url) as NSString
         }
         
+        for element in embeddedElements {
+            currentText = currentText.appending("\n" + element.embedText()) as NSString
+        }
+        
         return currentText as String
     }
     
@@ -219,11 +226,18 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         ]), at: range.location)
     }
     
+    var currentDraftText: String {
+        (textView.text ?? "")
+            + embeddedElements
+                .map { "\n" + $0.embedText() }
+                .joined()
+    }
+    
     var currentDraft: NoteDraft {
         NoteDraft(
             replyingTo: replyingTo?.universalID ?? "",
             userPubkey: IdentityManager.instance.userHexPubkey,
-            text: textView.text ?? "",
+            text: currentDraftText,
             uploadedAssets: media.compactMap { $0.state.url },
             taggedUsers: tokens.map({ token in
                     .init(
@@ -243,7 +257,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                 callback(false)
                 return
             }
-        } else if textView.text.isEmpty == true {
+        } else if draft.text.isEmpty {
             callback(false)
             return
         }
@@ -299,12 +313,13 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         textView.text = ""
         media = []
+        embeddedElements = []
     }
     
     func post(callback: @escaping (Bool, NostrObject?) -> Void) {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo) else {
+        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, embeddedElements: embeddedElements) else {
             callback(false, nil)
             return
         }
@@ -376,6 +391,104 @@ private extension PostingTextViewManager {
         currentlyEditingToken = .init(range: nsRange, text: word)
     }
     
+    func findAndExtractMedia() {
+        var text = textView.text ?? ""
+        let attributedText = NSMutableAttributedString(attributedString: textView.attributedText)
+        
+        for url in text.extractURLs() where url.isImageURL || url.isVideoURL {
+            media.append(.init(state: .uploaded(url)))
+            
+            if let range = text.range(of: url) {
+                let nsRange = NSRange(range, in: text)
+                
+                attributedText.replaceCharacters(in: nsRange, with: "")
+                text = text.replacingCharacters(in: range, with: "")
+            }
+        }
+        
+        if text != textView.text {
+            textView.attributedText = attributedText
+        }
+    }
+    
+    func findAndExtractReferences() {
+        guard extractReferences else { return }
+        
+        let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(lnbc[a-z0-9]{40,})"
+
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
+        
+        var text = textView.text ?? ""
+        
+        let attributedText = NSMutableAttributedString(attributedString: textView.attributedText)
+        
+        let foundTexts = regex.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
+            .compactMap { Range($0.range, in: text) }
+            .map { text[$0].string }
+        
+        for foundText in foundTexts {
+            if extractReference(foundText), let range = text.range(of: foundText) {
+                attributedText.replaceCharacters(in: NSRange(range, in: text), with: "")
+                text = text.replacingCharacters(in: range, with: "")
+            }
+        }
+     
+        if text != textView.text {
+            textView.attributedText = attributedText
+        }
+    }
+    
+    func extractReference(_ ref: String) -> Bool {
+        if ref.hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
+            embeddedElements.append(.invoice(invoice, ref))
+            return true
+        }
+        
+        guard let metadata = try? decodedMetadata(from: ref) else { return false }
+        
+        if let eventId = metadata.eventId {
+            fetchEmbeddedNote(eventId)
+            return true
+        }
+        
+        if let pubkey = metadata.pubkey, let identifier = metadata.identifier {
+            SocketRequest(name: "long_form_content_thread_view", payload: [
+                "pubkey": .string(pubkey),
+                "identifier": .string(identifier),
+                "kind": .number(Double(metadata.kind ?? UInt32(NostrKind.longForm.rawValue))),
+                "limit": 1,
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+            ])
+            .publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard let content = res.getArticles().first(where: { $0.identifier == identifier && ($0.event.kind == Int(metadata.kind ?? 30023)) }) else { return }
+                
+                self?.embeddedElements.append(.article(content))
+            }
+            .store(in: &cancellables)
+            return true
+        }
+        
+        return false
+    }
+    
+    func fetchEmbeddedNote(_ eventId: String) {
+        SocketRequest(name: "events", payload: [
+            "event_ids": [.string(eventId)],
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "extended_response": true
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] res in
+            if let post = res.process(contentStyle: .regular).first(where: { $0.post.id == eventId }) {
+                self?.embeddedElements.append(.post(post))
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
     func rangeOfMention(in textView: UITextView, from position: UITextPosition) -> UITextRange? {
         var startPosition = position
         
@@ -400,6 +513,8 @@ private extension PostingTextViewManager {
     func connectPublishers() {
         didChangeEvent.sink { [weak self] _ in
             self?.processFocusedWordForMention()
+            self?.findAndExtractReferences()
+            self?.findAndExtractMedia()
         }
         .store(in: &cancellables)
         
@@ -491,21 +606,14 @@ private extension PostingTextViewManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] draft in
                 guard let self, let draft else { return }
-                if textView.text?.isEmpty == false, let text = textView.text {
-                    let vc = (RootViewController.instance.presentedViewController ?? RootViewController.instance)
-                    let alert = UIAlertController(title: "Discard the draft and start a new note?", message: nil, preferredStyle: .alert)
-                    alert.addAction(.init(title: "Cancel", style: .cancel))
-                    alert.addAction(.init(title: "OK", style: .destructive, handler: { [weak self] _ in
-                        self?.reset()
-                        self?.textView.text = text
-                        self?.textView.selectedRange = .init(location: 0, length: 0)
-                    }))
-                    vc.show(alert, sender: nil)
+                
+                if let text = textView.text, !text.isEmpty, !draft.isPosting, text != draft.text {
+                    textView.text = draft.text + text
+                } else {
+                    textView.text = draft.text
                 }
                 
                 oldDraft = draft
-                
-                textView.text = draft.text
                 isEmpty = draft.text.isEmpty
                 isPosting = draft.isPosting
                 
@@ -517,7 +625,7 @@ private extension PostingTextViewManager {
                     )
                 })
                 
-                media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) }
+                media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) } + (draft.isPosting ? [] : media)
                 
                 didChangeEvent.send(textView)
             }

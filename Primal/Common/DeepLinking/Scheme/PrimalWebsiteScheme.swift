@@ -27,6 +27,8 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             guard let metadata = try? decodedMetadata(from: id) else {
                 if let decoded = try? bech32_decode(id) {
                     notify(.primalNoteLink, hex_encode(decoded.data))
+                } else {
+                    notify(.primalNoteLink, id)
                 }
                 return
             }
@@ -46,7 +48,11 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         }
         
         if pathL.hasPrefix("/p/") {
-            notify(.primalProfileLink, id)
+            guard let metadata = try? decodedMetadata(from: id), let pubkey = metadata.pubkey else {
+                notify(.primalProfileLink, id)
+                return
+            }
+            RootViewController.instance.navigateTo = .profile(pubkey)
             return
         }
         
@@ -62,6 +68,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         let staticPages: [String: DeeplinkNavigation] = [
             "home": .tab(.home),
             "reads": .tab(.reads),
+            "wallet": .tab(.wallet),
             "notifications": .tab(.notifications),
             "explore": .tab(.explore),
             "dms": .messages,

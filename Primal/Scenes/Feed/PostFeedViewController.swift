@@ -27,19 +27,19 @@ class PostFeedViewController: NoteViewController {
     }
     
     override func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
-        guard case .mute = event, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else {
+        guard case .muteUser = event, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else {
             super.postCellDidTap(cell, event)
             return
         }
         
         let pubkey = post.user.data.pubkey
-        guard !MuteManager.instance.isMuted(pubkey) else {
-            super.postCellDidTap(cell, .mute)
+        guard !MuteManager.instance.isMutedUser(pubkey) else {
+            super.postCellDidTap(cell, .muteUser)
             return
         }
         
         feed.parsedPosts = feed.parsedPosts.filter { $0.user.data.pubkey != pubkey }
-        super.postCellDidTap(cell, .mute)
+        super.postCellDidTap(cell, .muteUser)
     }
     
     override func updateTheme() {

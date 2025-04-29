@@ -26,6 +26,7 @@ struct Profile: Identifiable, Equatable {
     var rawData: String
     
     var profileCount: ProfileCount? // Not column but association
+    var pictureMedia: MediaResource? // Not column but association
 }
 
 extension Profile: Codable, FetchableRecord, MutablePersistableRecord {
@@ -63,16 +64,14 @@ extension Profile: Codable, FetchableRecord, MutablePersistableRecord {
         try container.encode(website, forKey: .website)
         try container.encode(rawData, forKey: .rawData)
         // Do not encode 'profileCount' to exclude it from database writes
+        // Do not encode 'pictureMedia' to exclude it from database writes
     }
 }
 
 extension Profile {
     static let profileLastVisit = hasOne(ProfileLastVisit.self)
     static let profileCount = hasOne(ProfileCount.self)
-    
-    var countRequest: QueryInterfaceRequest<ProfileCount> {
-        request(for: Profile.profileCount)
-    }
+    static let pictureMedia = belongsTo(MediaResource.self, using: ForeignKey(["picture"], to: ["url"]))
 }
 
 extension DerivableRequest<Profile> {

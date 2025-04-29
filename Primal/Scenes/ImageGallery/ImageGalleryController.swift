@@ -31,6 +31,7 @@ class ImageGalleryController: UIViewController {
         
         if all.count > 1 {
             progress.numberOfPages = all.count
+            progress.currentPage = urls.firstIndex(of: current) ?? 0
             view.addSubview(progress)
             progress.pinToSuperview(edges: .bottom, padding: 0, safeArea: true).centerToSuperview(axis: .horizontal)
         }

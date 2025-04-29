@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import AVFoundation
+import FLAnimatedImage
 
 protocol PostingImageCollectionViewDelegate: AnyObject {
     func didTapImage(resource: PostingAsset)
@@ -69,17 +71,27 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            if let image = r.resource?.thumbnailImage {
+            if let thumnail = r.resource?.animatedImage {
+                cell.imageView.animatedImage = thumnail
+            } else if let image = r.resource?.thumbnailImage {
                 cell.imageView.image = image
+                cell.playerView.isHidden = true
             } else {
-                cell.imageView.image = nil
                 if case .uploaded(let url) = r.state {
                     if url.isVideoURL {
                         Connection.regular.requestCache(name: "get_media_metadata", payload: ["urls": [.string(url)]]) { result in
                             guard 
                                 let resource: MediaMetadata = result.first?.objectValue?["content"]?.stringValue?.decode(),
                                 let thumbnail = resource.thumbnails?.first?.value
-                            else { return }
+                            else {
+                                DispatchQueue.main.async {
+                                    guard let url = URL(string: url) else { return }
+                                    cell.playerView.playerLayer.player = AVPlayer(url: url)
+                                    cell.playerView.playerLayer.player?.isMuted = true
+                                    cell.playerView.isHidden = false
+                                }
+                                return
+                            }
                             
                             DispatchQueue.main.async {
                                 cell.imageView.kf.setImage(with: URL(string: thumbnail))
@@ -128,7 +140,9 @@ final class PostingImageCell: UICollectionViewCell {
     
     weak var delegate: PostingImageCellDelegate?
     
-    let imageView = UIImageView()
+    let imageView = FLAnimatedImageView()
+    let playerView = PlayerView()
+    let playButton = UIImageView(image: .videoPlay)
     let xButton = UIButton()
     
     let loadingParent = UIView()
@@ -141,6 +155,26 @@ final class PostingImageCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 8
+        
+        contentView.addSubview(playerView)
+        playerView.pinToSuperview()
+        playerView.layer.cornerRadius = 8
+        playerView.layer.masksToBounds = true
+        
+        playerView.addSubview(playButton)
+        playButton.centerToSuperview()
+        playerView.isHidden = true
+        
+        playerView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self, let player = playerView.playerLayer.player else { return }
+            if player.rate == 0 {
+                player.play()
+                playButton.isHidden = true
+            } else {
+                player.pause()
+                playButton.isHidden = false
+            }
+        }))
         
         contentView.addSubview(loadingParent)
         loadingParent.pinToSuperview()
@@ -159,5 +193,13 @@ final class PostingImageCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        imageView.image = nil
+        playerView.isHidden = true
+        playButton.isHidden = false
     }
 }

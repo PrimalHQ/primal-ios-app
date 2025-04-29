@@ -66,6 +66,8 @@ class UserImageView: UIView, Themeable {
         animatedImageView.contentMode = .scaleAspectFill
         animatedImageView.layer.masksToBounds = true
         
+        contentMode = .scaleAspectFill
+        
         constrainToAspect(1, priority: .required)
         heightC = heightAnchor.constraint(equalToConstant: height)
         heightC?.isActive = true

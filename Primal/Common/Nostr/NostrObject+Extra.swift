@@ -86,19 +86,11 @@ extension NostrObject {
         createNostrLikeEvent(reference: reference)
     }
     
-    static func post(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-        createNostrPostEvent(content, mentionedPubkeys: mentionedPubkeys)
-    }
-    
     static func repost(_ post: PrimalFeedPost) -> NostrObject? {
         createNostrRepostEvent(post)
     }
     
-    static func reply(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-        createNostrReplyEvent(content, post: post, mentionedPubkeys: mentionedPubkeys)
-    }
-    
-    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?) -> NostrObject? {
+    static func post(_ draft: NoteDraft, postingText: String, replyingToObject: PrimalFeedPost?, embeddedElements: [PostEmbedPreview]) -> NostrObject? {
         var allTags: [[String]] = []
 
         /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
@@ -109,6 +101,8 @@ extension NostrObject {
         /// The tag to the root of the reply chain goes first.
         /// The tag to the reply event being responded to goes last.
         
+        var pubkeysToTag = Set<String>(draft.taggedUsers.map { $0.userPubkey })
+        
         if let post = replyingToObject {
             if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
                 allTags.append(root)
@@ -118,29 +112,43 @@ extension NostrObject {
                 allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
             }
             
-            allTags.append(["p", post.pubkey])
+            pubkeysToTag.insert(post.pubkey)
+            pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
         }
         
-        let mentionedPubkeys = draft.taggedUsers.map { $0.userPubkey }
-        allTags += mentionedPubkeys.map { ["p", $0] }
+        for include in embeddedElements {
+            switch include {
+            case .highlight(let article, let highlight):
+                let articleID = article.asParsedContent.post.universalID
+                allTags.append(["e", highlight.event.id, "", "mention"])
+                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "mention"])
+
+                pubkeysToTag.insert(article.event.pubkey)
+            case .post(let post):
+                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "mention"])
+                
+                pubkeysToTag.insert(post.user.data.pubkey)
+                pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .article(let article):
+                let quotingObject = article.asParsedContent.post
+                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
+                
+                pubkeysToTag.insert(article.user.data.pubkey)
+                pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .invoice(_):
+                break
+            }
+        }
+
+        guard let keypair = getKeypair(), let privkey = keypair.hexVariant.privkey else { return nil }
         
-        allTags += draft.text.extractHashtags().map({ ["t", $0] })
+        pubkeysToTag.remove(keypair.hexVariant.pubkey) // Don't tag yourself
+        
+        allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
+        allTags += draft.text.extractHashtags().map({ ["t", $0.dropFirst().string] })
+        
+        return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: postingText, kind: 1, tags: allTags, createdAt: Int64(Date().timeIntervalSince1970))
 
-        return createNostrObject(content: postingText, kind: 1, tags: allTags)
-    }
-    
-    static func postHighlight(_ content: String, highlight: NostrContent, article: Article, mentionedPubkeys: [String]) -> NostrObject? {
-        var allTags: [[String]] = []
-
-        let articleID = article.asParsedContent.post.universalID
-        allTags.append(["e", highlight.id, "", "highlight"])
-        allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "article"])
-
-        allTags.append(["p", article.event.pubkey])
-        allTags += mentionedPubkeys.map { ["p", $0] }
-        allTags += content.extractHashtags().map({ ["t", $0] })
-
-        return createNostrObject(content: content, kind: 1, tags: allTags)
     }
     
     static func purchasePrimalPremium(pickedName: String, transaction: Transaction, verification: String) -> NostrObject? {
@@ -187,14 +195,28 @@ extension NostrObject {
             ["context", content],
             ["alt", "This is a highlight created in https://primal.net iOS application"],
             ["a", article.asParsedContent.post.universalID],
-            ["p", article.event.pubkey]
+            ["p", article.event.pubkey, "", "mention"]
         ])
     }
     
-    static func delete(_ highlights: [Highlight]) -> NostrObject? {
-        createNostrObject(content: "Removing highlight", kind: NostrKind.eventDeletion.rawValue, tags: highlights.map {
+    static func deleteHighlights(_ highlights: [Highlight]) -> NostrObject? {
+        createNostrObject(content: "Removing highlight", kind: NostrKind.eventDeletion.rawValue, tags: [["k", NostrKind.highlight.rawValue.string]] + highlights.map {
             ["e", $0.event.id]
         })
+    }
+    
+    static func deleteNote(_ note: ParsedContent) -> NostrObject? {
+        createNostrObject(content: "Removing Note", kind: NostrKind.eventDeletion.rawValue, tags: [
+            ["k", NostrKind.text.rawValue.string],
+            ["e", note.post.id]
+        ])
+    }
+    
+    static func reportNote(_ report: ReportReason, _ note: ParsedContent) -> NostrObject? {
+        createNostrObject(content: "", kind: 1984, tags: [
+            ["e", note.post.id, report.rawValue],
+            ["p", note.user.data.pubkey]
+        ])
     }
     
     static func relays(_ relays: [String: RelayInfo]) -> NostrObject? {
@@ -205,6 +227,11 @@ extension NostrObject {
         }
         
         return createNostrObject(content: "", kind: 10002, tags: relayTags)
+    }
+    
+    static func blossomSettings(servers: [String]) -> NostrObject? {
+        let tags: [[String]] = [["alt", "File servers used by the user"]] + servers.map({ ["server", $0] })
+        return createNostrObject(content: "", kind: NostrKind.blossom.rawValue, tags: tags)
     }
     
     static func getSettings() -> NostrObject? {
@@ -227,8 +254,8 @@ extension NostrObject {
         createNostrPublicZapEvent(comment, target: target, relays: relays)
     }
 
-    static func muteList(_ mutedPubkeys: [String]) -> NostrObject? {
-        createNostrMuteListEvent(mutedPubkeys)
+    static func muteList(_ mutedTags: [[String]]) -> NostrObject? {
+        createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: mutedTags)
     }
     
     static func followedMuteLists(content: String, tags: [[String]]) -> NostrObject? {
@@ -308,6 +335,11 @@ extension NostrObject {
         
         return createNostrObject(content: note, kind: 9734, tags: tags)
     }
+    
+    static func notificationsEnableEvent(token: String) -> NostrObject? {       
+        guard let contentString = ["token": token].encodeToString() else { return nil }
+        return createNostrObject(content: contentString, kind: 1337)
+    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()
@@ -341,12 +373,6 @@ fileprivate func createNostrLikeEvent(reference: PostingReferenceObject) -> Nost
     return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey]])
 }
 
-fileprivate func createNostrPostEvent(_ content: String, mentionedPubkeys: [String] = []) -> NostrObject? {
-    createNostrObject(content: content, kind: 1, tags:
-        mentionedPubkeys.map({ ["p", $0, "", "mention"] }) + content.extractHashtags().map({ ["t", $0] })
-    )
-}
-
 fileprivate func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? {
     let nostrContent = post.toRepostNostrContent()
     guard let jsonData = try? JSONEncoder().encode(nostrContent) else {
@@ -356,33 +382,6 @@ fileprivate func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? 
     let jsonStr = String(data: jsonData, encoding: .utf8)!
     
     return createNostrObject(content: jsonStr, kind: 6, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
-}
-
-fileprivate func createNostrReplyEvent(_ content: String, post: PrimalFeedPost, mentionedPubkeys: [String]) -> NostrObject? {
-    var allTags: [[String]] = []
-
-    /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
-    /// with clients that support replies but have not been updated to understand tag markers.
-    ///
-    /// https://github.com/nostr-protocol/nips/blob/master/10.md
-    ///
-    /// The tag to the root of the reply chain goes first.
-    /// The tag to the reply event being responded to goes last.
-    if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
-        allTags.append(root)
-        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
-    } else {
-        // For top level replies (those replying directly to the root event), only the "root" marker should be used.
-        allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
-    }
-
-    allTags.append(["p", post.pubkey])
-
-    allTags += mentionedPubkeys.map { ["p", $0] }
-    
-    allTags += content.extractHashtags().map({ ["t", $0] })
-
-    return createNostrObject(content: content, kind: 1, tags: allTags)
 }
 
 fileprivate func createNostrGetSettingsEvent() -> NostrObject? {
@@ -468,12 +467,6 @@ fileprivate func createNostrPublicZapEvent(_ comment: String = "", target: ZapTa
     let tags = createZapTags(target, relays)
     
     return createNostrObject(content: comment, kind: 9734, tags: tags)
-}
-
-fileprivate func createNostrMuteListEvent(_ mutedPubkeys: [String]) -> NostrObject? {
-    let tags = mutedPubkeys.map({ pubkey in ["p", pubkey] })
-
-    return createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: tags)
 }
 
 fileprivate func createNostrBookmarkListEvent(_ bookmarks: [Tag]) -> NostrObject? {

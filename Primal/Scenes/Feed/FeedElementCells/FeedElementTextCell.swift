@@ -74,6 +74,7 @@ private extension FeedElementTextCell {
         
         nantesDelegate.cell = self
         
+        mainLabel.enabledTextCheckingTypes = [.phoneNumber]
         mainLabel.numberOfLines = 0
         mainLabel.delegate = nantesDelegate
         mainLabel.labelTappedBlock = { [weak self] in

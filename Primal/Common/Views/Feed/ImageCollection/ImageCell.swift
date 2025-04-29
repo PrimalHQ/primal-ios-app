@@ -10,7 +10,7 @@ import FLAnimatedImage
 import Kingfisher
 
 protocol ImageCellDelegate: AnyObject {
-    func imagePreviewTappedFromCell(_ cell: ImageCell)
+    func imagePreviewTappedFromCell(_ cell: UICollectionViewCell, originalURL: String)
 }
 
 enum DownsamplingOption {
@@ -53,7 +53,7 @@ final class ImageCell: UICollectionViewCell, ImageMenuHandler, UIContextMenuInte
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         animator.addCompletion {
-            self.delegate?.imagePreviewTappedFromCell(self)
+            self.delegate?.imagePreviewTappedFromCell(self, originalURL: self.url)
         }
     }
     

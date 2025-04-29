@@ -31,12 +31,6 @@ private extension String {
     static let hideArticleHighlightsKey = "hideArticleHighlightsKey"
 }
 
-extension Notification.Name {
-    static var articleSettingsUpdated: Notification.Name {
-        return Notification.Name("articleSettingsUpdated")
-    }
-}
-
 struct ArticleSettings {
     static var hideArticleHighlights: Bool {
         get { UserDefaults.standard.bool(forKey: .hideArticleHighlightsKey) }
@@ -340,7 +334,7 @@ private extension ArticleViewController {
             guard let webView = self?.highlightedWebView else { return }
             webView.selectedText { [weak self] text in
                 guard let self, let text, let highlight = highlight(text: text) else { return }
-                present(NewHighlightPostViewController(article: content, highlight: highlight), animated: true)
+                present(AdvancedEmbedPostViewController(including: .highlight(content, highlight)), animated: true)
             }
         }), for: .touchUpInside)
         
@@ -364,7 +358,7 @@ private extension ArticleViewController {
             webView.selectedText { text in
                 guard let text, !text.isEmpty else { return }
                 UIPasteboard.general.string = text
-                self?.view.showToast("Copied!")
+                self?.mainTabBarController?.showToast("Copied!")
                 webView.clearSelection()
             }
         }), for: .touchUpInside)
@@ -373,7 +367,7 @@ private extension ArticleViewController {
     func populateContent() {
         topInfoView.update(content)
         
-        let parsedContent = ParsedContent(post: .init(nostrPost: content.event, nostrPostStats: content.stats), user: content.user)
+        let parsedContent = content.asParsedContent
         parsedContent.zaps = content.zaps
         topInfoView.zapEmbededController.posts = [parsedContent]
         infoVC.posts = [parsedContent]
@@ -491,7 +485,7 @@ private extension ArticleViewController {
             ("Copy Raw Data", "MenuCopyData", .postEvent(.copy(.rawData)), []),
             ("Copy Article ID", "MenuCopyNoteID", .postEvent(.copy(.noteID)), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .postEvent(.copy(.userPubkey)), []),
-            ("Mute User", "blockIcon", .postEvent(.mute), .destructive),
+            ("Mute User", "blockIcon", .postEvent(.muteUser), .destructive),
             ("Report user", "warningIcon", .postEvent(.report), .destructive)
         ]
 
@@ -504,7 +498,7 @@ private extension ArticleViewController {
                     commentsVC.performEvent(postAction, withPost: post, inCell: nil)
                     
                     switch postAction {
-                    case .mute:
+                    case .muteUser:
                         navigationController?.popViewController(animated: false)
                     default:
                         break

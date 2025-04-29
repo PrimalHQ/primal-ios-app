@@ -103,7 +103,12 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         threeDotsButton.showsMenuAsPrimaryAction = true
 
-        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+        let tapArea = UIView()
+        contentView.addSubview(tapArea)
+        tapArea
+            .pin(to: profileImageView, edges: [.leading, .vertical])
+            .pin(to: separatorLabel, edges: .trailing)
+        tapArea.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .profile)
         }))
     }
@@ -153,27 +158,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         }
         repostedByOverlayButton.isHidden = parsedContent.reposted == nil
         
-        
-        let postInfo = parsedContent.postInfo
-        let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
-        
-        let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
-        let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
-        
-        let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
-            ("Share Note", "MenuShare", .share, []),
-            ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
-            postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
-            ("Copy Note Text", "MenuCopyText", .copy(.content), []),
-            ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
-            ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
-            ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
-            ("Broadcast", "MenuBroadcast", .broadcast, []),
-            (muteTitle, "blockIcon", .mute, .destructive),
-            ("Report user", "warningIcon", .report, .destructive)
-        ]
-
-        threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
+        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, imageName, action, attributes) in
             UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
@@ -197,5 +182,46 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
         }
+    }
+}
+
+extension ParsedContent {
+    func actionsData() -> [(String, String, PostCellEvent, UIMenuElement.Attributes)] {
+        let postInfo = postInfo
+        let userMuteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
+        
+        let bookmarkAction = ("Add Bookmark", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        
+        var actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = []
+        
+        if postInfo.isPostMuted {
+            actionsData.append(("Unmute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
+        }
+        
+        let mainData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
+            ("Share Note", "MenuShare", .share, []),
+            postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
+            ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
+            ("Copy Note Text", "MenuCopyText", .copy(.content), []),
+            ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
+            ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
+        ]
+        actionsData.append(contentsOf: mainData)
+        
+        if user.data.pubkey != IdentityManager.instance.userHexPubkey {
+            actionsData.append((userMuteTitle, "blockIcon", .muteUser, .destructive))
+        }
+        
+        if user.data.pubkey != IdentityManager.instance.userHexPubkey {
+            if !postInfo.isPostMuted {
+                actionsData.append(("Mute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
+            }
+            actionsData.append(("Report Content", "warningIcon", .report, .destructive))
+        } else {
+            actionsData.append(("Request Delete", "MenuTrash", .requestDelete, .destructive))
+        }
+            
+        return actionsData
     }
 }

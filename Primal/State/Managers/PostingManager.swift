@@ -92,6 +92,7 @@ final class PostingManager {
         
         var notifiedEvs: Set<String> = []
         postedEvent.sink { obj in
+            if obj.kind != NostrKind.text.rawValue { return }
             if notifiedEvs.contains(obj.id) { return }
             notifiedEvs.insert(obj.id)
             
@@ -188,76 +189,6 @@ final class PostingManager {
         })
     }
     
-    func sendPostEvent(_ content: String, mentionedPubkeys: [String], _ callback: @escaping (Bool) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.post(content, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            print("Posting failed for id: \(ev.id)")
-            callback(false)
-        })
-    }
-    
-    func sendReplyEvent(_ content: String, mentionedPubkeys: [String], post: PrimalFeedPost, _ callback: @escaping (Bool, NostrObject?) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.reply(content, post: post, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false, nil)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        userReplied.insert(post.universalID)
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true, ev)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            self.userReplied.remove(post.universalID)
-            callback(false, nil)
-        })
-    }
-    
-    func sendPostHighlightEvent(_ content: String, mentionedPubkeys: [String], highlight: NostrContent, article: Article, _ callback: @escaping (Bool) -> Void) {
-        if LoginManager.instance.method() != .nsec { return }
-
-        guard var ev = NostrObject.postHighlight(content, highlight: highlight, article: article, mentionedPubkeys: mentionedPubkeys) else {
-            callback(false)
-            return
-        }
-        
-        if let lastPostedEvent, lastPostedEvent.content == ev.content {
-            ev = lastPostedEvent
-        }
-        lastPostedEvent = ev
-        
-        RelaysPostbox.instance.request(ev, successHandler: { _ in
-            callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
-        }, errorHandler: {
-            callback(false)
-        })
-    }
-    
     func sendHighlightEvent(_ content: String, article: Article, _ callback: @escaping (Bool) -> Void) -> NostrObject? {
         if LoginManager.instance.method() != .nsec { return nil }
 
@@ -294,7 +225,7 @@ final class PostingManager {
     func deleteHighlightEvents(_ highlights: [Highlight], _ callback: @escaping (Bool) -> Void) {
         if LoginManager.instance.method() != .nsec { return }
         
-        guard let ev = NostrObject.delete(highlights) else {
+        guard let ev = NostrObject.deleteHighlights(highlights) else {
             callback(false)
             return
         }

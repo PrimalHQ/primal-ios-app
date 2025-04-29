@@ -103,6 +103,14 @@ final class Connection {
     
     var messageReceived = PassthroughSubject<Void, Never>()
 
+    var cantConnectPublisher: AnyPublisher<Bool, Never> {
+        Publishers.Merge(
+            isConnectedPublisher.filter({ $0 }),
+            isConnectedPublisher.debounce(for: 6, scheduler: RunLoop.main).filter({ !$0 })
+        )
+        .map({ !$0 })
+        .eraseToAnyPublisher()
+    }
     let isConnectedPublisher = CurrentValueSubject<Bool, Never>(false)
     
     private(set) var isConnected: Bool = false {
@@ -182,7 +190,7 @@ final class Connection {
         }
     }
     
-    func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
+    func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {        
         let subId = "ios_" + UUID().uuidString
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
@@ -285,7 +293,7 @@ final class Connection {
     }
     
     func autoConnectReset() {
-        DispatchQueue.main.async {
+        Self.dispatchQueue.async {
             self.timeToReconnect = 1
             
             self.autoReconnect()
@@ -302,7 +310,7 @@ final class Connection {
         if isReconnecting { return }
         
         isReconnecting = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(2)) {
             self.isReconnecting = false
         }
         
@@ -313,7 +321,7 @@ final class Connection {
         
         print("CONNECTION - \(Self.wallet === self ? "WALLET" : "REG") \(timeToReconnect) \(Date())")
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
+        Self.dispatchQueue.asyncAfter(deadline: .now() + .seconds(timeToReconnect)) { [weak self] in
             self?.autoReconnect()
         }
     }

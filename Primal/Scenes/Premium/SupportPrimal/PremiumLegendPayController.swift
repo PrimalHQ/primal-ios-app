@@ -136,7 +136,7 @@ class PremiumLegendPayController: UIViewController {
         action.addAction(.init(handler: { [weak self] _ in
             guard let invoice = self?.invoice else { return }
             UIPasteboard.general.string = invoice
-            RootViewController.instance.showToast("Copied")
+            RootViewController.instance.view.showToast("Copied", extraPadding: 0)
         }), for: .touchUpInside)
         
         balanceView.animateBalanceChange = false

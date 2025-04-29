@@ -42,6 +42,16 @@ class SizeReloadingCollectionView: UICollectionView {
     }
 }
 
+protocol AnimatingImageProvider {
+    var imageViewsForAnimation: [UIImageView] { get }
+}
+extension ImageCell: AnimatingImageProvider {
+    var imageViewsForAnimation: [UIImageView] { [imageView] }
+}
+extension MultipleImageGalleryCell {
+    var imageViewsForAnimation: [UIImageView] { imageViews.map { $0.display } }
+}
+
 final class ImageGalleryView: UIView {
     weak var imageDelegate: ImageCollectionViewDelegate?
     
@@ -51,20 +61,15 @@ final class ImageGalleryView: UIView {
 
     var noDownsampling = false
     var userPubkey = ""
-    var resources: [MediaMetadata.Resource] {
+    var resources: [MediaMetadata.Resource] = [] {
         didSet {
-            progress.isHidden = resources.count < 2
-            progress.currentPage = 0
-            progress.numberOfPages = resources.count
-            
             collection.reloadData()
         }
     }
     
     var thumbnails: [String: String] = [:]
 
-    init(resources: [MediaMetadata.Resource] = []) {
-        self.resources = resources
+    init() {
         super.init(frame: .zero)
         collection.dataSource = self
         collection.delegate = self
@@ -72,6 +77,9 @@ final class ImageGalleryView: UIView {
         collection.register(ImageCell.self, forCellWithReuseIdentifier: "image")
         collection.register(VideoCell.self, forCellWithReuseIdentifier: "video")
         collection.register(YoutubeVideoCell.self, forCellWithReuseIdentifier: "youtube")
+        collection.register(DoubleImageGalleryCell.self, forCellWithReuseIdentifier: "double")
+        collection.register(TripleImageGalleryCell.self, forCellWithReuseIdentifier: "triple")
+        collection.register(QuadrupleImageGalleryCell.self, forCellWithReuseIdentifier: "quadruple")
         
         collection.layer.cornerRadius = 8
         collection.layer.masksToBounds = true
@@ -89,8 +97,8 @@ final class ImageGalleryView: UIView {
     
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
     
-    func currentImageCell() -> ImageCell? {
-        collection.visibleCells.compactMap({ $0 as? ImageCell }).first
+    func currentImageCell() -> AnimatingImageProvider? {
+        collection.visibleCells.compactMap({ $0 as? AnimatingImageProvider }).first
     }
     
     func currentVideoCell() -> VideoCell? {
@@ -104,7 +112,8 @@ final class ImageGalleryView: UIView {
 
 extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        imageDelegate?.didTapMediaInCollection(self, resource: resources[indexPath.item])
+        guard let first = resources.first, resources.count == 1 else { return }
+        imageDelegate?.didTapMediaInCollection(self, resource: first)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -141,10 +150,17 @@ extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
 
 extension ImageGalleryView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        resources.count
+        1
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard resources.count == 1 else {
+            let identifier = resources.count > 3 ? "quadruple" : (resources.count > 2 ? "triple" : "double")
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
+            (cell as? MultipleImageGalleryCell)?.setup(resources: resources, thumbnails: thumbnails, downsampling: .none, userPubkey: userPubkey, delegate: self)
+            return cell
+        }
+        
         let r = resources[indexPath.item]
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdForURL(r.url), for: indexPath)
@@ -174,12 +190,16 @@ extension ImageGalleryView: UICollectionViewDataSource {
                 }
             }
         } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
+            (cell as? ImageCell)?.url = r.url
             CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
+                guard let cell = cell as? ImageCell, cell.url == r.url else { return }
+                
                 switch result {
                 case .success(let image):
-                    (cell as? ImageCell)?.imageView.animatedImage = image
+                    cell.imageView.animatedImage = image
+                    cell.delegate = self
                 case .failure:
-                    (cell as? ImageCell)?.setup(
+                    cell.setup(
                         url: r.url(for: .medium),
                         downsampling: .none,
                         originalUrl: r.url,
@@ -213,8 +233,8 @@ extension ImageGalleryView: UICollectionViewDataSource {
 }
 
 extension ImageGalleryView: ImageCellDelegate {
-    func imagePreviewTappedFromCell(_ cell: ImageCell) {
-        guard let media = resources[safe: collection.indexPath(for: cell)?.item] else { return }
-        imageDelegate?.didTapMediaInCollection(self, resource: media)
+    func imagePreviewTappedFromCell(_ cell: UICollectionViewCell, originalURL: String) {
+        guard let resource = resources.first(where: { $0.url == originalURL }) else { return }
+        imageDelegate?.didTapMediaInCollection(self, resource: resource)
     }
 }

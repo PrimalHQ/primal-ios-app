@@ -44,12 +44,6 @@ final class PremiumOnboardingHomeViewController: UIViewController, Themeable {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-    }
 }
 
 private extension PremiumOnboardingHomeViewController {
@@ -66,6 +60,7 @@ private extension PremiumOnboardingHomeViewController {
         let learnView = LearnAboutPremiumView()
         
         let princeInfoView = PremiumPriceInfoView()
+        let termsAndConditions = TermsAndConditionsView()
         
         let secondLabel = ThemeableLabel("Start by reserving your Primal Name:", textColor: { .foreground3 }, font: .appFont(withSize: 16, weight: .regular))
         
@@ -73,16 +68,16 @@ private extension PremiumOnboardingHomeViewController {
         let cancel = ThemeableButton().setTheme { $0.configuration = .bigCancel() }
         
         let midStack = UIStackView(axis: .vertical, [
-            introLabel, SpacerView(height: 20),
-            learnView, SpacerView(height: 40),
+            introLabel, SpacerView(height: 20, priority: .defaultLow),
+            learnView, SpacerView(height: 40, priority: .defaultLow),
             princeInfoView
         ])
         midStack.alignment = .center
         
         let botStack = UIStackView(axis: .vertical, [
-            secondLabel, SpacerView(height: 16),
-            action, SpacerView(height: 20),
-            cancel
+            secondLabel, SpacerView(height: 16, priority: .defaultLow),
+            action, SpacerView(height: 20, priority: .defaultLow),
+            termsAndConditions
         ])
         
         let mainStack = UIStackView(axis: .vertical, [
@@ -94,7 +89,7 @@ private extension PremiumOnboardingHomeViewController {
         view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .horizontal, padding: 36)
-            .pinToSuperview(edges: .top, padding: 92)
+            .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
         midStack.alignment = .center

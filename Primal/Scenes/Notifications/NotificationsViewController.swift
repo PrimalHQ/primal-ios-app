@@ -36,7 +36,7 @@ final class NotificationsViewController: PrimalPageController {
         navigationItem.rightBarButtonItem = customSearchButton(scope: .myNotifications)
         
         postButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(NewPostViewController(), animated: true)
+            self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)

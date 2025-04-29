@@ -6,11 +6,27 @@ import Foundation
 import Combine
 import GenericJSON
 
-extension NSNotification.Name {
-    static let userMuted: NSNotification.Name = .init(rawValue: "userMutedNotification")
-}
-
 final class MuteManager {
+    
+    enum Option {
+        case user(pubkey: String)
+        case thread(eventId: String)
+        case word(String)
+        case hashtag(String)
+        
+        func tag() -> [String] {
+            switch self {
+            case .user(pubkey: let pubkey):
+                return ["p", pubkey]
+            case .thread(eventId: let eventId):
+                return ["e", eventId]
+            case .word(let word):
+                return ["word", word]
+            case .hashtag(let hashtag):
+                return ["t", hashtag]
+            }
+        }
+    }
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -22,26 +38,36 @@ final class MuteManager {
         
         complexPublisher
             .sink(receiveValue: { [weak self] pubkey in
-                self?.muteList = []
+                self?.muteTags = []
                 self?.requestMuteList()
             })
             .store(in: &cancellables)
     }
-    private(set) var muteList: Set<String> = []
+    
+    private(set) var muteTags: Set<[String]> = []
 
     static let instance = MuteManager()
 
-    func isMuted(_ pubkey: String) -> Bool { muteList.contains(pubkey) }
-
-    func toggleMute(_ pubkey: String, callback: (() -> Void)? = nil) {
-        if isMuted(pubkey) {
-            muteList.remove(pubkey)
+    func isMutedUser(_ pubkey: String) -> Bool { isMuted(.user(pubkey: pubkey)) }
+    
+    func isMuted(_ option: Option) -> Bool { muteTags.contains(option.tag()) }
+    
+    func toggleMuteUser(_ pubkey: String, callback: (() -> Void)? = nil) {
+        toggleMuted(.user(pubkey: pubkey), callback: callback)
+    }
+    
+    func toggleMuted(_ option: Option, callback: (() -> Void)? = nil) {
+        if isMuted(option) {
+            muteTags.remove(option.tag())
         } else {
-            muteList.insert(pubkey)
-            NotificationCenter.default.post(name: .userMuted, object: pubkey)
+            muteTags.insert(option.tag())
+            switch option {
+            case .user(let pubkey):
+                notify(.userMuted, pubkey)
+            case .word, .hashtag, .thread: break
+            }
         }
-
-        updateMuteList(muteList, callback: callback)
+        updateMuteList(muteTags, callback: callback)
     }
 
     func requestMuteList(callback: (() -> Void)? = nil) {
@@ -63,9 +89,7 @@ final class MuteManager {
                     let nostrContent = NostrContent(json: response)
 
                     for tag in nostrContent.tags {
-                        if let pubkey = tag[safe: 1] {
-                            self.muteList.insert(pubkey)
-                        }
+                        self.muteTags.insert(tag)
                     }
                 case .categoryList, .mediaMetadata, .userScore, .metadata:
                     // Ignore apps who don't use default NIP standard for mute lists
@@ -81,10 +105,10 @@ final class MuteManager {
         }
     }
 
-    func updateMuteList(_ muteList: Set<String>, callback: (() -> Void)? = nil) {
+    func updateMuteList(_ muteTags: Set<[String]>, callback: (() -> Void)? = nil) {
         if LoginManager.instance.method() != .nsec { return }
 
-        guard let muteListEvent = NostrObject.muteList(Array(muteList)) else {
+        guard let muteListEvent = NostrObject.muteList(Array(muteTags)) else {
             print("MuteManager: updateMuteList: Unable to create mutelist event")
             return
         }

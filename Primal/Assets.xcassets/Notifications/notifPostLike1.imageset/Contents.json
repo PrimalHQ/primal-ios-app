@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "your post was liked.svg",
+      "filename" : "liked - light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "liked - dark.svg",
       "idiom" : "universal"
     }
   ],

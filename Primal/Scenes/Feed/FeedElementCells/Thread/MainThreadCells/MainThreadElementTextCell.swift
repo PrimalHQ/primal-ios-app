@@ -126,3 +126,24 @@ extension MainThreadElementTextCell: UITextViewDelegate {
         return false
     }
 }
+
+class MainThreadCellTextView: UITextView {
+    let maxWidth: CGFloat = UIScreen.main.bounds.width - 24
+    
+    override var attributedText: NSAttributedString! {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        var size = attributedText.boundingRect(
+            with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        ).size
+        
+        size.height += 20
+        return size
+    }
+}

@@ -179,7 +179,7 @@ extension PremiumManageContentController: PremiumManageContentDataCellDelegate {
                 .sink { [weak self] res in
                     if res.message == nil {
                         self?.requestUpdate()
-                        RootViewController.instance.view.showToast("Rebroadcasting started", extraPadding: 20)
+                        RootViewController.instance.view.showToast("Rebroadcasting started", extraPadding: 0)
                     }
                 }
                 .store(in: &self.cancellables)

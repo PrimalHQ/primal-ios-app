@@ -1,4 +1,5 @@
 {
+  "originHash" : "c8f5483697d9dbc59f577541602f4496982dce6182551522a65214b48ccb7a8a",
   "pins" : [
     {
       "identity" : "cryptoswift",
@@ -73,12 +74,21 @@
       }
     },
     {
+      "identity" : "ldk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lightningdevkit/ldk-swift/",
+      "state" : {
+        "revision" : "b36f37fc216ae83eb8fdc625ae3c85ea4158a7d6",
+        "version" : "0.0.125"
+      }
+    },
+    {
       "identity" : "lottie-spm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-spm.git",
       "state" : {
-        "revision" : "60ea4f82fba8b4cb21a75665a889e86ed4d81c6e",
-        "version" : "4.2.0"
+        "revision" : "8c6edf4f0fa84fe9c058600a4295eb0c01661c69",
+        "version" : "4.5.1"
       }
     },
     {
@@ -154,5 +164,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

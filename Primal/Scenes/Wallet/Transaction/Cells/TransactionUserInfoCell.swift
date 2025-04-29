@@ -7,6 +7,8 @@
 
 import UIKit
 import FLAnimatedImage
+import Nantes
+import SafariServices
 
 class TransactionUserInfoCell: UITableViewCell {
     let background = UIView()
@@ -16,7 +18,7 @@ class TransactionUserInfoCell: UITableViewCell {
     let mainLabel = UILabel()
     let checkbox = VerifiedView()
     let subtitleLabel = UILabel()
-    let messageLabel = UILabel()
+    let messageLabel = NantesLabel()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,7 +67,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
         }
         
         messageLabel.text = message
-        messageLabel.isHidden = messageLabel.text?.isEmpty != false
+        messageLabel.isHidden = message?.isEmpty != false
         
         mainLabel.textColor = .foreground
         messageLabel.textColor = .foreground
@@ -103,7 +105,43 @@ private extension TransactionUserInfoCell {
         
         mainLabel.font = .appFont(withSize: 18, weight: .bold)
         subtitleLabel.font = .appFont(withSize: 16, weight: .regular)
-        messageLabel.font = .appFont(withSize: 16, weight: .regular)
         messageLabel.numberOfLines = 0
+        messageLabel.delegate = self
+        messageLabel.isUserInteractionEnabled = true
+        messageLabel.linkAttributes = [.foregroundColor: UIColor.accent2]
+        messageLabel.tintColor = .accent2
+    }
+    
+//    func createAttributedTextWithLinks(from text: String) -> NSAttributedString {
+//        let attributedString = NSMutableAttributedString(string: text, attributes: [
+//            .font: UIFont.appFont(withSize: 16, weight: .regular),
+//            .foregroundColor: UIColor.foreground
+//        ])
+//
+//        do {
+//            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+//
+//            let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.count))
+//
+//            for match in matches {
+//                let range = match.range(at: 0)
+//                
+//                if let url = match.url {
+//                    attributedString.addAttributes([
+//                        .link: url
+//                    ], range: range)
+//                }
+//            }
+//        } catch {
+//            print("Error creating data detector: \(error)")
+//        }
+//
+//        return attributedString
+//    }
+}
+
+extension TransactionUserInfoCell: NantesLabelDelegate {
+    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
+        RootViewController.instance.present(SFSafariViewController(url: link), animated: true)
     }
 }

@@ -208,11 +208,11 @@ private extension EditProfileViewController {
         addPhotoButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             ImagePickerManager(self) { [weak self] result in
-                guard let self = self, let (image, isPNG) = result.image else { return }
+                guard let self = self, let (image, imageType) = result.image else { return }
                 self.avatarView.image = image
                 self.isUploadingAvatar = true
                 
-                UploadAssetRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+                UploadAssetRequest(image: image, type: imageType).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                     switch $0 {
                     case .failure(let error):
                         self?.avatarView.image = UIImage(named: "Profile")
@@ -241,12 +241,12 @@ private extension EditProfileViewController {
         addBannerButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self else { return }
             ImagePickerManager(self) { [weak self] result in
-                guard let self = self, let (image, isPNG) = result.image else { return }
+                guard let self = self, let (image, imageType) = result.image else { return }
                 
                 self.bannerImageView.image = image
                 self.didUploadBanner = true
                 
-                UploadAssetRequest(image: image, isPNG: isPNG).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
+                UploadAssetRequest(image: image, type: imageType).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
                     switch $0 {
                     case .failure(let error):
                         self?.bannerImageView.image = nil

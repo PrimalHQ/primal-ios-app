@@ -77,7 +77,8 @@ private extension SettingsMainViewController {
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
-        let muted = SettingsOptionButton(title: "Muted Accounts")
+        let muted = SettingsOptionButton(title: "Muted Content")
+        let mediaUploads = SettingsOptionButton(title: "Media Uploads")
         let notifications = SettingsOptionButton(title: "Notifications")
         let devMode = SettingsOptionButton(title: "Dev Mode")
         devMode.isHidden = true
@@ -86,7 +87,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -143,6 +144,8 @@ private extension SettingsMainViewController {
         notifications.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsNotificationsViewController(), animated: true)
         }), for: .touchUpInside)
+        
+        mediaUploads.addAction(.init(handler: { [weak self] _ in self?.show(SettingsMediaUploadsController(), sender: nil) }), for: .touchUpInside)
         
         zaps.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)

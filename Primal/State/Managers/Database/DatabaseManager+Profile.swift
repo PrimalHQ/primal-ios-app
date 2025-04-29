@@ -38,24 +38,45 @@ extension DatabaseManager {
         .eraseToAnyPublisher()
     }
     
+    
     func getProfilePublisher(_ pubkey: String) -> AnyPublisher<ParsedUser, any Error> {
         dbWriter.readPublisher { db in
-            try Profile.all().filterPubkeys([pubkey]).fetchOne(db)
+            let sql = "SELECT \"profile\".*, \"mediaResource\".* FROM \"profile\" LEFT JOIN \"mediaResource\" ON \"mediaResource\".\"url\" = \"profile\".\"picture\" WHERE \"profile\".\"pubkey\" = ?"
+            return try Row.fetchOne(db, sql: sql, arguments: [pubkey])
         }
-        .map { profile in
-            if let profile {
-                return ParsedUser(profile: profile)
+        .map { (row: Row?) in
+            guard let row = row, var profile = try? Profile(row: row) else {
+                // No profile found, return a default ParsedUser
+                return ParsedUser(data: .init(pubkey: pubkey), profileImage: nil)
             }
-            return ParsedUser(data: .init(pubkey: pubkey), profileImage: nil)
+            profile.pictureMedia = .initFromRow(row)
+            return ParsedUser(profile: profile)
         }
         .eraseToAnyPublisher()
     }
     
     func getProfilesPublisher(_ pubkeys: [String]) -> AnyPublisher<[ParsedUser], any Error> {
         dbWriter.readPublisher { db in
-            try Profile.all().filterPubkeys(pubkeys).including(optional: Profile.profileCount).fetchAll(db)
+            let sql = """
+                SELECT "profile".*, "profileCount".*, "mediaResource".*
+                FROM "profile"
+                LEFT JOIN "profileCount" ON "profileCount"."profilePubkey" = "profile"."pubkey"
+                LEFT JOIN "mediaResource" ON "mediaResource"."url" = "profile"."picture"
+                WHERE "profile"."pubkey" IN (\(Array(repeating: "?", count: pubkeys.count).joined(separator: ",")))
+                """
+            return try Row.fetchAll(db, sql: sql, arguments: .init(pubkeys))
         }
-        .map { $0.map({ ParsedUser(profile: $0) }) }
+        
+        .map { (rows: [Row]) in
+            return rows.compactMap { row in
+                guard var profile = try? Profile(row: row) else {
+                    return nil
+                }
+                profile.pictureMedia = .initFromRow(row)
+                profile.profileCount = .init(row: row)
+                return .init(profile: profile)
+            }
+        }
         .eraseToAnyPublisher()
     }
     
@@ -94,6 +115,6 @@ extension PrimalUser {
 
 extension ParsedUser {
     convenience init(profile: Profile) {
-        self.init(data: profile.primalUser, followers: profile.profileCount?.followers)
+        self.init(data: profile.primalUser, profileImage: profile.pictureMedia?.toNativeForm(), followers: profile.profileCount?.followers)
     }
 }

@@ -113,7 +113,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil else { return }
+        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
@@ -137,11 +137,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
-            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
-        } else {
-            playVideoOnScroll()
+        if FullScreenVideoPlayerController.instance == nil {
+            if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
+                VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+            } else {
+                playVideoOnScroll()
+            }
         }
+        
         cachedContentOffset = scrollView.contentOffset
         
         let newPosition = scrollView.contentOffset.y
@@ -275,10 +278,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         
         guard let infoSub = urlString.split(separator: "//").last else { return }
         let info = String(infoSub)
+        let normalizedInfo = info.removingPercentEncoding ?? info
         
-        if urlString.hasPrefix("hashtag"), info.isHashtag {
+        if urlString.hasPrefix("hashtag"), normalizedInfo.isHashtag {
             let advancedSearch = AdvancedSearchManager()
-            advancedSearch.includeWordsText = info
+            advancedSearch.includeWordsText = normalizedInfo
             let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearch.feed))
             showViewController(feed)
             return
@@ -322,22 +326,20 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
         
         var url = url
-        if urlString.isValidURL {
-            if urlString.lowercased().hasPrefix("http://") {
-                url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
-            } else if !url.absoluteString.lowercased().hasPrefix("https://") {
-                url = .init(string: "https://" + url.absoluteString) ?? url
-            }
-            
-            if url.host()?.contains("primal.net") == true {
-                PrimalWebsiteScheme().openURL(url)
-                return
-            }
-            
-            let safari = SFSafariViewController(url: url)
-            present(safari, animated: true)
+        if urlString.lowercased().hasPrefix("http://") {
+            url = .init(string: "https://" + urlString.dropFirst(7)) ?? url
+        } else if !url.absoluteString.lowercased().hasPrefix("https://") {
+            url = .init(string: "https://" + url.absoluteString) ?? url
+        }
+        
+        if url.host()?.contains("primal.net") == true {
+            PrimalWebsiteScheme().openURL(url)
             return
         }
+        
+        let safari = SFSafariViewController(url: url)
+        present(safari, animated: true)
+        return
     }
     
     func postCellDidTap(_ cell: PostCell, _ event: PostCellEvent) {
@@ -413,13 +415,16 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            RootViewController.instance.showToast("Copied!")
-        case .broadcast:
-            break // TODO: Something?
+            mainTabBarController?.showToast("Copied!")
         case .report:
-            break // TODO: Something?
-        case .mute:
-            MuteManager.instance.toggleMute(post.user.data.pubkey)
+            present(PopupReportContentController(post), animated: true)
+        case .muteUser:
+            MuteManager.instance.toggleMuteUser(post.user.data.pubkey)
+        case .toggleMutePost:
+            MuteManager.instance.toggleMuted(.thread(eventId: post.post.id))
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                (cell as? FeedElementBaseCell)?.update(post)
+            }
         case .bookmark:
             BookmarkManager.instance.bookmark(post)
             (cell as? FeedElementBaseCell)?.update(post)
@@ -428,6 +433,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             (cell as? FeedElementBaseCell)?.update(post)
         case .articleTag(let tag):
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
+        case .requestDelete:
+            requestDelete(post)
         }
     }
     
@@ -608,6 +615,25 @@ private extension NoteViewController {
             }
         }
     }
+    
+    func requestDelete(_ post: ParsedContent) {
+        let alert = UIAlertController(title: "Delete note?", message: "This will issue a \"request delete\" command to the relays where the note was published.", preferredStyle: .alert)
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+            guard let deleteEvent = NostrObject.deleteNote(post) else { return }
+            
+            PostingManager.instance.sendEvent(deleteEvent) { success in
+                guard success else { return }
+                
+                DispatchQueue.main.async {
+                    notify(.noteDeleted, post.post.id)
+                    
+                    RootViewController.instance.showToast("Note Deleted")
+                }
+            }
+        }))
+        present(alert, animated: true)
+    }
 }
 
 extension NoteViewController: FeedElementCellDelegate {
@@ -620,7 +646,9 @@ extension NoteViewController: FeedElementCellDelegate {
 
 extension NoteViewController: PostCellDelegate {
     func postCellDidTapRepost(_ cell: ElementReactionsCell) {
-        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.post else { return }
+        guard let indexPath = table.indexPath(for: cell), let parsedPost = postForIndexPath(indexPath) else { return }
+        
+        let post = parsedPost.post
         
         let popup = PopupMenuViewController()
         
@@ -632,31 +660,13 @@ extension NoteViewController: PostCellDelegate {
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
             
-            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue {
-                guard let noteRef = bech32_note_id(post.universalID) else { return }
+            let new = AdvancedEmbedPostViewController()
 
-                let new = NewPostViewController()
-                new.textView.text = "\n\nnostr:\(noteRef)"
-                self.present(new, animated: true)
-                return
-            }
-            
-            var metadata = Metadata()
-            metadata.eventId = post.id
-            let hint = RelayHintManager.instance.getRelayHint(post.id)
-            if !hint.isEmpty { metadata.relays = [hint] }
-            
-            let replacement: String
-            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
-                replacement = "\nnostr:\(identifier)"
+            if post.kind == NostrKind.longForm.rawValue || post.kind == NostrKind.shortenedArticle.rawValue, let article = parsedPost.article {
+                new.manager.embeddedElements.append(.article(article))
             } else {
-                guard let noteRef = bech32_note_id(post.universalID) else { return }
-
-                replacement = "\n\nnostr:\(noteRef)"
+                new.manager.embeddedElements.append(.post(parsedPost))
             }
-            
-            let new = NewPostViewController()
-            new.textView.text = replacement
             self.present(new, animated: true)
         }))
         
@@ -673,8 +683,15 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
-        if let imageCell = cell.mainImages.currentImageCell() {
+        let current = cell.mainImages.currentImageCell()
+        if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            return
+        } else if let multiCell = current as? MultipleImageGalleryCell,
+                  let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+                  let imageView = multiCell.imageViews[safe: index]?.display
+        {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
@@ -691,8 +708,15 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
-        if let imageCell = cell.postPreview.mainImages.currentImageCell() {
+        let current = cell.postPreview.mainImages.currentImageCell()
+        if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            return
+        } else if let multiCell = current as? MultipleImageGalleryCell,
+                  let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+                  let imageView = multiCell.imageViews[safe: index]?.display
+        {
+            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
@@ -735,7 +759,7 @@ extension NoteViewController: PostCellDelegate {
             items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
-                self?.view.showToast("Copied!")
+                self?.mainTabBarController?.showToast("Copied!")
             })
             
             if zap.message.isValidURL, let url = URL(string: zap.message) {

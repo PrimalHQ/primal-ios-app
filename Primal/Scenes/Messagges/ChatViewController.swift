@@ -471,6 +471,10 @@ private extension ChatViewController {
         
         chatManager.notifyReadStatus(pubkey: user.data.pubkey)
     }
+    
+    func showToast(_ text: String) {
+        inputParent.showToast(text, extraPadding: inputParent.frame.height)
+    }
 }
 
 extension ChatViewController: UITableViewDataSource {
@@ -533,7 +537,7 @@ extension ChatViewController: ChatMessageCellDelegate {
         else { return }
         
         UIPasteboard.general.string = invoice.string
-        view.showToast("Copied!")
+        showToast("Copied!")
     }
     
     func payInvoiceForMessageCell(_ cell: ChatMessageCell) {
@@ -554,25 +558,28 @@ extension ChatViewController: ChatMessageCellDelegate {
         else { return nil }
         
         var items: [UIAction] = [
-            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
+            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
                 UIPasteboard.general.string = message.message.text
+                self?.showToast("Copied!")
             }
         ]
         
         if !message.id.isEmpty {
-            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
+            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
                 UIPasteboard.general.string = message.id
+                self?.showToast("Copied!")
             })
         }
         
         if message.user.data.pubkey != IdentityManager.instance.userHexPubkey {
             items.append(contentsOf: [
-                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(named: "MenuCopyText")) { action in
+                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
                     UIPasteboard.general.string = message.user.data.pubkey
+                    self?.showToast("Copied!")
                 },
                 UIAction(title: "Mute user", image: UIImage(named: "blockIcon"), handler: { [weak self] _ in
                     let pubkey = message.user.data.pubkey
-                    MuteManager.instance.toggleMute(pubkey) {
+                    MuteManager.instance.toggleMuteUser(pubkey) {
                         self?.navigationController?.popViewController(animated: true)
                     }
                 })

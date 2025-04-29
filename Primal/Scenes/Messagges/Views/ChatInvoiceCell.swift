@@ -51,25 +51,19 @@ class ChatInvoiceCell: ChatMessageCell {
         updateForInvoice(invoice)
     }
     
-    var cachedAmount: Int64?
+    var cachedAmount: UInt64?
     var cachedIsMine: Bool = true
     func updateForInvoice(_ invoice: Invoice) {
-        switch invoice.description {
-        case .description(let string):
-            descriptionLabel.text = string
-            descriptionLabel.isHidden = string.isEmpty
-        case .description_hash(_):
-            descriptionLabel.isHidden = true
-        }
+        descriptionLabel.text = invoice.description
+        descriptionLabel.isHidden = descriptionLabel.text?.isEmpty != false
         
-        switch invoice.amount {
-        case .any:
-            amountLabel.isHidden = true
-        case .specific(let amount):
+        if let amount = invoice.amount {
             let satAmount = amount / 1000
             cachedAmount = satAmount
             amountLabel.isHidden = false
             amountLabel.attributedText = amountString(satAmount)
+        } else {
+            amountLabel.isHidden = true
         }
         
         expireLabel.text = invoice.expirationText
@@ -127,7 +121,7 @@ private extension ChatInvoiceCell {
         }), for: .touchUpInside)
     }
     
-    func amountString(_ sats: Int64) -> NSAttributedString {
+    func amountString(_ sats: UInt64) -> NSAttributedString {
         let st = NSMutableAttributedString(string: "\(sats.localized()) sats ", attributes: [
             .font: UIFont.appFont(withSize: 24, weight: .semibold),
             .foregroundColor: cachedIsMine ? UIColor.white : UIColor.foreground

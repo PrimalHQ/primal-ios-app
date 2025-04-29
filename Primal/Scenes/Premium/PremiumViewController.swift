@@ -13,10 +13,6 @@ private extension String {
     static var lastVisitedPremiumKey = "lastVisitedPremiumKey1"
 }
 
-extension NSNotification.Name {
-    static let visitPremiumNotification = NSNotification.Name("visitPremiumNotification")
-}
-
 extension UserDefaults {
     var lastVisitedPremium: [String: Date] {
         get {
@@ -33,7 +29,7 @@ extension UserDefaults {
         }
         set {
             lastVisitedPremium[IdentityManager.instance.userHexPubkey] = newValue
-            NotificationCenter.default.post(name: .visitPremiumNotification, object: nil)
+            notify(.visitPremiumNotification)
         }
     }
 }

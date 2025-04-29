@@ -19,17 +19,17 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     let border = SpacerView(height: 1)
     let newIndicator = UIView().constrainToSize(8)
     
-    let andOthersLabel = UILabel()
-    lazy var firstRow = UIStackView([nameLabel, andOthersLabel])
-    lazy var titleStack = UIStackView(axis: .vertical, [firstRow, titleLabel])
-    
     let mainParent = UIView()
     let auxParent = UIView()
+    
+    let reactionLabel = UILabel()
     
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     lazy var bottomBarStandIn = UIView()
-    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, postPreview, bottomBarStandIn])
+    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, articleView, postPreview, bottomBarStandIn])
+    
+    var firstRowLeftC: NSLayoutConstraint?
     
     var notificationCellDelegate: NotificationCellDelegate? {
         get { delegate as? NotificationCellDelegate }
@@ -55,32 +55,39 @@ final class NotificationCell: PostCell, ElementReactionsCell {
             postContentStack.isHidden = true
         }
         
+        if let reaction = notification.mainNotification.data.reactionType, reaction != "+" {
+            reactionLabel.text = reaction.emojiString
+            reactionLabel.isHidden = false
+            iconView.alpha = 0.01
+        } else {
+            reactionLabel.isHidden = true
+            iconView.alpha = 1
+        }
+        
         iconView.image = notification.icon
         iconLabel.attributedText = notification.iconText
         
+        firstRowLeftC?.constant = notification.mainNotification.type.isReply ? -40 : 0
+        
         avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
-        titleLabel.attributedText = notification.titleText
-        nameLabel.attributedText = notification.userNameText
+        titleLabel.attributedText = notification.fullTitleText
         
         if notification.users.count <= 1 {
-            andOthersLabel.isHidden = true
             auxParent.isHidden = false
             mainParent.isHidden = true
-            if titleStack.superview != auxParent {
-                titleStack.removeFromSuperview()
-                auxParent.addSubview(titleStack)
-                titleStack.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
+            if titleLabel.superview != auxParent {
+                titleLabel.removeFromSuperview()
+                auxParent.addSubview(titleLabel)
+                titleLabel.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
             }
         } else {
-            andOthersLabel.attributedText = notification.andOthersText
-            andOthersLabel.isHidden = false
             auxParent.isHidden = true
             mainParent.isHidden = false
-            if titleStack.superview != mainParent {
-                titleStack.removeFromSuperview()
-                mainParent.addSubview(titleStack)
-                titleStack.pinToSuperview()
+            if titleLabel.superview != mainParent {
+                titleLabel.removeFromSuperview()
+                mainParent.addSubview(titleLabel)
+                titleLabel.pinToSuperview()
             }
         }
         
@@ -89,6 +96,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         notificationCellDelegate = delegate
         
         newIndicator.isHidden = !isNew
+        
+        postPreview.updateTheme()
     }
     
     override func update(_ parsedContent: ParsedContent) {
@@ -113,8 +122,13 @@ private extension NotificationCell {
         let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
         
         let firstRow = UIStackView([avatarStack, auxParent, UIView(), timeLabel])
+        let firstRowParent = UIView()
+        firstRowParent.addSubview(firstRow)
+        firstRow.pinToSuperview(edges: [.vertical, .trailing])
+        firstRowLeftC = firstRow.leadingAnchor.constraint(equalTo: firstRowParent.leadingAnchor)
+        firstRowLeftC?.isActive = true
         
-        let contentStack = UIStackView(arrangedSubviews: [firstRow, mainParent, postContentStack])
+        let contentStack = UIStackView(arrangedSubviews: [firstRowParent, mainParent, postContentStack])
         let mainStack = UIStackView(arrangedSubviews: [iconStack, contentStack])
         
         iconView.centerToView(avatarStack, axis: .vertical)
@@ -124,13 +138,8 @@ private extension NotificationCell {
         
         iconView.tintColor = .init(rgb: 0x52CE0A)
         
-        titleStack.alignment = .leading
-        
-        titleLabel.numberOfLines = 1
+        titleLabel.numberOfLines = 0
         iconLabel.textAlignment = .center
-        
-        nameLabel.setContentHuggingPriority(.required, for: .horizontal)
-        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         timeLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize - 1, weight: .regular)
         timeLabel.textColor = .foreground4
@@ -147,6 +156,9 @@ private extension NotificationCell {
         let bottomC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         bottomC.priority = .defaultHigh
         bottomC.isActive = true
+        
+        contentView.addSubview(reactionLabel)
+        reactionLabel.centerToView(iconView)
         
         contentView.addSubview(newIndicator)
         newIndicator.pinToSuperview(edges: [.top, .trailing], padding: 10)
@@ -190,15 +202,24 @@ private extension NotificationCell {
 }
 
 extension GroupedNotification {
+    var fullTitleText: NSAttributedString {
+        let string = NSMutableAttributedString(attributedString: userNameText)
+        if users.count > 1 {
+            string.append(andOthersText)
+        }
+        string.append(titleText)
+        return string
+    }
+    
     var userNameText: NSAttributedString {
-        NSAttributedString(string: users.first?.data.firstIdentifier ?? "", attributes: [
+        NSAttributedString(string: (users.first?.data.firstIdentifier ?? "") + " ", attributes: [
             .foregroundColor: UIColor.foreground,
             .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .bold)
         ])
     }
     
     var andOthersText: NSAttributedString {
-        NSAttributedString(string: " and \(users.count - 1) other" + (users.count == 2 ? "\n" : "s\n"), attributes: [
+        NSAttributedString(string: "and \(users.count - 1) other" + (users.count == 2 ? " " : "s "), attributes: [
             .foregroundColor: UIColor.foreground,
             .font: UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         ])
@@ -215,9 +236,10 @@ extension GroupedNotification {
         guard let post else { return nil }
         switch mainNotification.type {
         case .YOUR_POST_WAS_LIKED:
+            let color = mainNotification.data.reactionType == "+" ? UIColor(rgb: 0xBC1870) : UIColor.foreground
             return .init(string: post.post.likes.shortened(), attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .medium),
-                .foregroundColor: UIColor(rgb: 0xBC1870)
+                .foregroundColor: color
             ])
         case .YOUR_POST_WAS_REPOSTED:
             return .init(string: post.post.reposts.shortened(), attributes: [
@@ -243,7 +265,14 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_ZAPPED:
             return "zapped your note"
         case .YOUR_POST_WAS_LIKED:
-            return "liked your note"
+            if mainNotification.data.reactionType == "+" {
+                return "liked your note"
+            }
+            return "reacted to your note"
+        case  .YOUR_POST_WAS_HIGHLIGHTED:
+            return "highlighted your article"
+        case .YOUR_POST_WAS_BOOKMARKED:
+            return "bookmarked your note"
         case .YOUR_POST_WAS_REPOSTED:
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
@@ -275,40 +304,51 @@ extension GroupedNotification {
 }
 
 extension NotificationType {
-    var icon: UIImage? { UIImage(named: iconName) }
-    
-    var iconName: String {
+    var icon: UIImage? {
         switch self {
         case .NEW_USER_FOLLOWED_YOU:
-            return "notifFollow"
+            return .notifFollow
         case .YOUR_POST_WAS_ZAPPED:
-            return "notifPostZap1"
+            return .notifPostZap1
         case .YOUR_POST_WAS_LIKED:
-            return "notifPostLike1"
+            return .notifPostLike1
         case .YOUR_POST_WAS_REPOSTED:
-            return "notifPostRepost1"
+            return .notifPostRepost1
         case .YOUR_POST_WAS_REPLIED_TO:
-            return "notifPostReply1"
+            return nil
         case .YOU_WERE_MENTIONED_IN_POST:
-            return "notifUserMention"
+            return .notifUserMention
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
-            return "notifPostMention"
+            return .notifPostMention
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
-            return "notifUserZap"
+            return .notifUserZap
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:
-            return "notifUserLike"
+            return .notifUserLike
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED:
-            return "notifUserRepost"
+            return .notifUserRepost
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
-            return "notifUserReply"
+            return nil
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
-            return "notifPostZap"
+            return .notifPostZap
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
-            return "notifPostLike"
+            return .notifPostLike
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
-            return "notifPostRepost"
+            return .notifPostRepost
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
-            return "notifPostReply"
+            return nil
+        case .YOUR_POST_WAS_HIGHLIGHTED:
+            return .notifHighlight
+        case .YOUR_POST_WAS_BOOKMARKED:
+            return .notifBookmark
+        }
+    }
+    
+    var isReply: Bool {
+        switch self {
+        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+            return true
+        default:
+            return false
         }
     }
 }

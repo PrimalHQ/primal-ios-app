@@ -15,7 +15,7 @@ final class UnmuteUserCell: UITableViewCell, Themeable {
     let profileImage = VerifiedImageView()
     let nameLabel = UILabel()
     let usernameLabel = UILabel()
-    let unmuteButton = UnmuteUserButton()
+    let unmuteButton = UIButton(configuration: .capsule14Grey("unmute"))
     let border = SpacerView(height: 1)
     
     weak var delegate: UnmuteUserCellDelegate?
@@ -36,7 +36,7 @@ final class UnmuteUserCell: UITableViewCell, Themeable {
         usernameLabel.textColor = .foreground5
         border.backgroundColor = .background3
         
-        unmuteButton.updateTheme()
+        unmuteButton.configuration = .capsule14Grey("unmute")
     }
 }
 
@@ -53,20 +53,19 @@ private extension UnmuteUserCell {
             .pinToSuperview(edges: .vertical, padding: 12)
         
         contentView.addSubview(border)
-        border.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom)
+        border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom)
         
         hStack.spacing = 8
         hStack.alignment = .center
         
         vStack.axis = .vertical
-        vStack.spacing = 4
         
         profileImage.constrainToSize(36).imageView.layer.cornerRadius = 18
         
         nameLabel.font = .appFont(withSize: 14, weight: .bold)
         nameLabel.adjustsFontSizeToFitWidth = true
         
-        usernameLabel.font = .appFont(withSize: 12, weight: .regular)
+        usernameLabel.font = .appFont(withSize: 14, weight: .regular)
         usernameLabel.adjustsFontSizeToFitWidth = true
         
         unmuteButton.constrainToSize(width: 88, height: 36)

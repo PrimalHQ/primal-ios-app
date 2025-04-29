@@ -92,14 +92,14 @@ struct MediaMetadata: Codable, Hashable {
         
         struct Variant: Codable, Hashable {
             var a: Int
-            var h: Int
-            var w: Int
+            var h: CGFloat
+            var w: CGFloat
             var s: String
             var media_url: String
             var dur: Double?
             
-            var height: Int { h }
-            var width: Int { w }
+            var height: CGFloat { h }
+            var width: CGFloat { w }
             var url: URL? { URL(string: media_url) }
             var animated: Bool { a != 1 }
             var size: MediaSize { .init(rawValue: s) ?? .medium }

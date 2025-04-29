@@ -21,11 +21,12 @@ struct ThreadFeedItem: Hashable {
 enum ThreadFeedCellType: Hashable {
     case article(Article)
     case threadElement(ThreadFeedItem)
+    case loading
 }
 
 class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ThreadFeedCellType>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var articles: [Article] = [] { didSet { updateCells() } }
-    var cells: [ThreadFeedCellType] = []
+    var cells: [ThreadFeedCellType] = [.loading]
     var cellCount: Int { cells.count }
     let threadID: String
     
@@ -38,6 +39,9 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
             let cell: UITableViewCell
             
             switch item {
+            case .loading:
+                cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
+                (cell as? SkeletonLoaderCell)?.loaderView.play()
             case .article(let article):
                 cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
                 if let cell = cell as? ArticleCell {
@@ -73,6 +77,8 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         registerThreadCells(tableView)
         
         weakSelf = self
+        
+        updateCells()
     }
     
     private func registerThreadCells(_ tableView: UITableView) {
@@ -156,6 +162,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         tableView.register(ChildThreadElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID + ThreadPosition.child.rawValue)
         
         tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
+        tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
     }
     
     func setPosts(_ posts: [ParsedContent]) {

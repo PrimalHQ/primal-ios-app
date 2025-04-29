@@ -127,11 +127,18 @@ struct ParsedRepost: Hashable {
     var user: ParsedUser? { users.first }
 }
 
-extension ParsedUser {
+extension ParsedUser: MetadataCoding {
     func webURL() -> String {
         if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: data.pubkey) {
             return "https://primal.net/\(name)"
         }
+        
+        var metadata = Metadata()
+        metadata.pubkey = data.pubkey
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
+            return "https://primal.net/p/\(identifier)"
+        }
+
         return "https://primal.net/p/\(data.npub)"
     }
     
@@ -309,8 +316,28 @@ extension ParsedContent {
         return result
     }
     
-    func noteId() -> String {
-        (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
+    func noteId(extended: Bool) -> String {
+        var metadata = Metadata()
+        let hint = RelayHintManager.instance.getRelayHint(post.id)
+        if extended && !hint.isEmpty {
+            metadata.relays = [hint]
+        }
+        
+        if post.kind == NostrKind.longForm.rawValue {
+            metadata.kind = UInt32(post.kind)
+            metadata.pubkey = user.data.pubkey
+            metadata.identifier = post.tags.first(where: { $0.first == "d" })?[safe: 1]
+            
+            if let identifier = try? encodedIdentifier(with: metadata, identifierType: .address) {
+                return identifier
+            }
+        }
+        
+        metadata.eventId = post.id
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .event) {
+            return identifier
+        }
+        return (post.kind == NostrKind.longForm.rawValue ? getATagID() : nil) ?? bech32_note_id(post.id) ?? post.id
     }
     
     func webURL() -> String {
@@ -319,7 +346,7 @@ extension ParsedContent {
             let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: user.data.pubkey),
             let dTag = post.tags.first(where: { $0.first == "d" })?[safe: 1]
         else {
-            return "https://primal.net/e/\(noteId())"
+            return "https://primal.net/e/\(noteId(extended: false))"
         }
         return "https://primal.net/\(name)/\(dTag)"
     }

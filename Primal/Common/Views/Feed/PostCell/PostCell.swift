@@ -212,7 +212,7 @@ class PostCell: UITableViewCell {
     
     func updateMenu(_ content: ParsedContent) {
         let postInfo = content.postInfo
-        let muteTitle = postInfo.isMuted ? "Unmute User" : "Mute User"
+        let muteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
         
         let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
         let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
@@ -225,8 +225,7 @@ class PostCell: UITableViewCell {
             ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
             ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),
-            ("Broadcast", "MenuBroadcast", .broadcast, []),
-            (muteTitle, "blockIcon", .mute, .destructive),
+            (muteTitle, "blockIcon", .muteUser, .destructive),
             ("Report user", "warningIcon", .report, .destructive)
         ]
 

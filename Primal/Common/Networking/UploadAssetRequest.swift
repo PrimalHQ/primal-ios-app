@@ -10,6 +10,7 @@ import NWWebSocket
 import UIKit
 import Network
 import GenericJSON
+import BlossomUploader
 
 enum UploadError: Error {
     case unableToProcess
@@ -25,26 +26,7 @@ class UploadAssetRequest {
     var url: String?
     var message: String?
     
-    private var individualProgress: [String: CGFloat] = [:] {
-        didSet {
-            progress = max(0.05, individualProgress.values.reduce(0, +) / CGFloat(individualProgress.count))
-            print(progress)
-        }
-    }
-    
-    private var individualCompletion: [String: Bool] = [:] {
-        didSet {
-            print(individualCompletion)
-            if individualCompletion.values.reduce(true, { $0 && $1 }) {
-                socket.delegate = self
-                socket.connect()
-            }
-        }
-    }
-    
-    lazy var socket = NWWebSocket(url: PrimalEndpointsManager.uploadURL, connectAutomatically: false, connectionQueue: ChunkUploader.dispatchQueue)
-    
-    var uploaders: [ChunkUploader] = []
+    lazy var uploadService = IosPrimalBlossomUploadService(blossomResolver: self, signatureHandler: self)
     
     init(asset: ImagePickerResult) {
         pickedAsset = asset
@@ -52,8 +34,8 @@ class UploadAssetRequest {
         uploadAsset()
     }
     
-    convenience init(image: UIImage, isPNG: Bool = true) {
-        self.init(asset: .image((image, isPNG)))
+    convenience init(image: UIImage, type: ImageType = .png) {
+        self.init(asset: .image((image, type)))
     }
     
     var promise: ((Result<String, Error>) -> Void)?
@@ -71,105 +53,83 @@ class UploadAssetRequest {
     }
     
     func uploadAsset() {
-        guard let data = {
+        guard let url: URL = {
             switch pickedAsset {
-            case .image((let image, let isPNG)):
-                return isPNG ? image.pngData() : image.jpegData(compressionQuality: 0.9)
+            case .image((let image, let type)):
+                let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                switch type {
+                case .png:
+                    guard let data = image.pngData() else { return nil }
+                    do {
+                        try data.write(to: tmpURL)
+                        return tmpURL
+                    } catch {
+                        return nil
+                    }
+                case .jpeg:
+                    guard let data = image.jpegData(compressionQuality: 0.9) else { return nil }
+                    do {
+                        try data.write(to: tmpURL)
+                        return tmpURL
+                    } catch {
+                        return nil
+                    }
+                case .gif(let data):
+                    do {
+                        try data.write(to: tmpURL)
+                        return tmpURL
+                    } catch {
+                        return nil
+                    }
+                }
             case .video(let galleryVideo):
-                return try? Data(contentsOf: galleryVideo.url)
+                return galleryVideo.url
             }
-        }() else { return }
-        
-        let uploadId = UUID().uuidString
-        let sha = data.hash256()
-        
-        let array = data.chunked(size: 1000000).splitInSubArrays(into: 5)
-        
-        var offset = 0
-        uploaders = array.map {
-            let oldOffset = offset
-            offset += $0.reduce(0, { $0 + $1.count })
-            return ChunkUploader(chunks: $0, uploadId: uploadId, startingOffset: oldOffset, fileLength: data.count)
+        }() else {
+            promise?(.failure(UploadError.unableToProcess))
+            return
         }
         
-        for uploader in uploaders {
-            uploader.$progress.receive(on: DispatchQueue.main).sink { [weak self] progress in
-                self?.individualProgress[uploader.id] = progress
+        Task {
+            do {
+                let result = try await self.uploadService.upload(path: url.path(), userId: IdentityManager.instance.userHexPubkey, onProgress: { [weak self] first, second in
+                    self?.progress = Double(truncating: first) / Double(truncating: second)
+                })
+                
+                guard let success = result as? UploadResult.Success else {
+                    if let failure = result as? UploadResult.Failed {
+                        print(failure.error.description())
+                    }
+                    throw UploadError.unableToCompleteUpload
+                }
+                                
+                self.promise?(.success(success.remoteUrl))
+            } catch {
+                self.promise?(.failure(error))
             }
-            .store(in: &cancellables)
-            
-            uploader.$completed.receive(on: DispatchQueue.main).sink { [weak self] completed in
-                self?.individualCompletion[uploader.id] = completed
-            }
-            .store(in: &cancellables)
-        }
-        
-        sendComplete = { [weak self] in
-            guard let encoded = NostrObject.uploadComplete(fileLength: data.count, uploadID: uploadId, sha256: sha)?.encodeToString() else { return }
-            
-            let requestString = #"["REQ", "\#(UUID().uuidString)", { "cache": ["upload_complete", { "event_from_user": \#(encoded) }]}]"#
-            
-            self?.socket.send(string: requestString)
         }
     }
-    
-    var sendComplete: () -> () = { }
 }
 
-extension UploadAssetRequest: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection: WebSocketConnection) {
-        sendComplete()
+extension UploadAssetRequest: NostrNostrEventSignatureHandler {
+    func verifySignature(nostrEvent: NostrNostrEvent) -> Bool {
+        true
     }
     
-    func webSocketDidDisconnect(connection: WebSocketConnection, closeCode: NWProtocolWebSocket.CloseCode, reason: Data?) {
-        print("Disconnect")
-    }
-    
-    func webSocketViabilityDidChange(connection: WebSocketConnection, isViable: Bool) {
-        print("webSocketViabilityDidChange: \(isViable)")
-    }
-    
-    func webSocketDidAttemptBetterPathMigration(result: Result<WebSocketConnection, NWError>) {
+    func __signNostrEvent(unsignedNostrEvent: NostrNostrUnsignedEvent) async throws -> NostrSignResult {
+        let tags = NostrExtensions().mapAsListOfListOfStrings(tags: unsignedNostrEvent.tags)
         
-    }
-    
-    func webSocketDidReceiveError(connection: WebSocketConnection, error: NWError) {
-        print("webSocketDidReceiveError: \(error)")
-    }
-    
-    func webSocketDidReceivePong(connection: WebSocketConnection) {
-        
-    }
-    
-    func webSocketDidReceiveMessage(connection: WebSocketConnection, string: String) {
-        print("message: \(string)")
-        
-        guard
-            let response: JSON = string.decode(),
-            let type = response.arrayValue?.first?.stringValue?.uppercased()
-        else { return }
-        
-        if type == "EOSE" {
-            if let url {
-                promise?(.success(url))
-            } else {
-                if let message {
-                    promise?(.failure(UploadError.serverError(message)))
-                } else {
-                    promise?(.failure(UploadError.unableToCompleteUpload))
-                }
-            }
-        } else if type == "EVENT" {
-            guard let event = response.arrayValue?.last?.objectValue, let url = event["content"]?.stringValue else { return }
-            
-            self.url = url
-        } else if let message = response.arrayValue?.last?.stringValue {
-            self.message = message
+        guard let new = NostrObject.create(content: unsignedNostrEvent.content, kind: Int(unsignedNostrEvent.kind), tags: tags) else {
+            throw UploadError.unableToCompleteUpload
         }
         
+        return NostrExtensions().buildNostrSignResult(id: new.id, pubKey: new.pubkey, createdAt: new.created_at, kind: Int32(new.kind), tags: new.tags, content: new.content, sig: new.sig)
     }
     
-    func webSocketDidReceiveMessage(connection: WebSocketConnection, data: Data) {
-        print("message: \(data)")
+}
+
+extension UploadAssetRequest: BlossomServerListProvider {
+    func __provideBlossomServerList(userId: String) async throws -> [String] {
+        BlossomServerManager.instance.serversForUser(pubkey: userId) ?? [.blossomDefaultServer]
     }
 }
