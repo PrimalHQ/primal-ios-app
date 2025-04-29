@@ -123,15 +123,30 @@ extension PostRequestResult {
     }
 }
 
+struct NewInvoice {
+    let amount: Int
+    let string: String
+    let expiry: UInt64
+    let payment_hash: Data
+    let created_at: UInt64
+}
+
 extension String {
     func extractInvoices() -> [Invoice] {
-        return parse_mentions().compactMap { block in
-            switch block {
-            case .invoice(let invoice):
-                return invoice
-            default:
-                return nil
+        var invoices: [Invoice] = []
+        let text = self
+        if let invoiceMentionRegex = try? NSRegularExpression(pattern: .lightningInvoicePattern, options: []) {
+            invoiceMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
+                guard let matchRange = match?.range else { return }
+                    
+                let mentionText = (text as NSString).substring(with: matchRange)
+                
+                if let invoice = mentionText.invoiceFromString() {
+                    invoices.append(invoice)
+                }
             }
         }
+        
+        return invoices
     }
 }

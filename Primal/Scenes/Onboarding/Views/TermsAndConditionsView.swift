@@ -56,22 +56,17 @@ final class TermsAndConditionsView: UIStackView, Themeable {
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        if whiteOverride {
-            firstRow.textColor = .white
-            and.textColor = .white
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: UIFont.appFont(withSize: 15, weight: .bold),
-                .foregroundColor: UIColor.white,
-                .underlineStyle: NSUnderlineStyle.single.rawValue
-            ]
-            
-            termsButton.setAttributedTitle(NSAttributedString(string: "Terms of Service", attributes: attributes), for: .normal)
-            privacyButton.setAttributedTitle(NSAttributedString(string: "Privacy Policy", attributes: attributes), for: .normal)
-            return
-        }
+        let color = whiteOverride ? UIColor.white : .foreground3
         
-        firstRow.textColor = .foreground3
-        and.textColor = .foreground3
-        [termsButton, privacyButton].forEach { $0.setTitleColor(.accent2, for: .normal) }
+        firstRow.textColor = color
+        and.textColor = color
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.appFont(withSize: 15, weight: .bold),
+            .foregroundColor: color,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        
+        termsButton.setAttributedTitle(NSAttributedString(string: "Terms of Service", attributes: attributes), for: .normal)
+        privacyButton.setAttributedTitle(NSAttributedString(string: "Privacy Policy", attributes: attributes), for: .normal)
     }
 }
