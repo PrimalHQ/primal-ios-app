@@ -127,6 +127,10 @@ final class NotificationFeedViewController: NoteViewController {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         if notifications.isEmpty || mainTabBarController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
             refresh()
