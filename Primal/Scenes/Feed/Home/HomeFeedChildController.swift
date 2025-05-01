@@ -9,16 +9,7 @@ import Combine
 import UIKit
 
 class HomeFeedChildController: PostFeedViewController {
-    var onLoad: (() -> ())? {
-        didSet {
-            if !posts.isEmpty, let onLoad {
-                DispatchQueue.main.async {
-                    onLoad()
-                    self.onLoad = nil
-                }
-            }
-        }
-    }
+    var onLoad: (() -> ())? { didSet { callOnLoad() } }
     
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
@@ -68,6 +59,12 @@ class HomeFeedChildController: PostFeedViewController {
         }), for: .valueChanged)
         
         setupPublishers()
+        
+        callOnLoad()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
+            self?.callOnLoad()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,6 +73,15 @@ class HomeFeedChildController: PostFeedViewController {
         menuContainer = findParent()
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    func callOnLoad() {
+        if !posts.isEmpty, let onLoad {
+            DispatchQueue.main.async {
+                onLoad()
+                self.onLoad = nil
+            }
+        }
     }
     
     func updatePosts(old: Int, new: Int, users: [ParsedUser]) {

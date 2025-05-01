@@ -52,7 +52,6 @@ final class SettingsEditMediaUploadsController: UIViewController, SettingsContro
 extension SettingsEditMediaUploadsController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         sendCompletion()
-        textField.resignFirstResponder()
         return false
     }
 }
@@ -65,6 +64,8 @@ private extension SettingsEditMediaUploadsController {
             return
         }
         
+        blossomServerInput.input.resignFirstResponder()
+        navigationController?.popViewController(animated: true)
         completion(text)
     }
     
@@ -99,14 +100,6 @@ private extension SettingsEditMediaUploadsController {
         scroll.addSubview(stack)
         stack.pinToSuperview(padding: 24)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -48).isActive = true
-        
-        [blossomServerInput].forEach { view in
-            view.input.delegate = self
-            view.action.addAction(.init(handler: { [weak self] _ in
-                guard let self else { return }
-                _ = textFieldShouldReturn(view.input.input)
-            }), for: .touchUpInside)
-        }
         
         view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.blossomServerInput.input.resignFirstResponder()

@@ -324,7 +324,7 @@ extension WalletHomeViewController: AnimatableFirstViewController {
 
 private extension RootViewController {
     func animateFromIntro() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             if self.introVC != nil {
                 print("ERROR")
                 self.introVC!.willMove(toParent: nil)
