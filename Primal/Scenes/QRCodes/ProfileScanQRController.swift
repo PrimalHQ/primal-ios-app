@@ -50,6 +50,7 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
     func search(_ text: String) {
         guard !didOpenQRCode else { return }
         
+        let origText = text
         let text: String = String(text.split(separator: ":").last ?? "") // Eliminate junk text ("nostr:", etc.)
         
         var pubkey: String?
@@ -61,7 +62,12 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
             pubkey = resPubkey
         }
         
-        guard let pubkey else { return }
+        guard let pubkey else {
+            if let url = URL(string: origText) {
+                PrimalWebsiteScheme().openURL(url)
+            }
+            return
+        }
         
         didOpenQRCode = true
         

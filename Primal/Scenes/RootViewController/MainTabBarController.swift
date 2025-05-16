@@ -366,6 +366,8 @@ private extension MainTabBarController {
                             newPost.manager.textView.text = text
                             newPost.manager.addMedia(files)
                             return (newPost, nil)
+                        case .promoCode(let code):
+                            return (OnboardingParentViewController(.redeemCode(code)), nil)
                         }
                     }()
                                         

@@ -28,6 +28,7 @@ enum DeeplinkNavigation {
     case premium
     case legends
     case newPost(text: String, files: [URL])
+    case promoCode(String)
 }
 
 final class RootViewController: UIViewController {

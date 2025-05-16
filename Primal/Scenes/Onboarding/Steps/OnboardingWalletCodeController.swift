@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 22.3.24..
 //
 
+import Combine
 import UIKit
 
 class OnboardingWalletCodeController: WalletActivationCodeController, OnboardingViewController {
@@ -52,7 +53,7 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     }
     
     override func showSummary(_ newAddress: String) {
-        onboardingParent?.resetCrossfade(OnboardingWalletFinalController())
+        onboardingParent?.resetCrossfade(OnboardingWalletFinalController(session: session))
     }
     
     override var userProfile: NostrProfile? {
@@ -70,9 +71,21 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     }
 }
 
-final class OnboardingWalletFinalController: UIViewController, OnboardingViewController {
+final class OnboardingWalletFinalController: UIViewController, OnboardingViewController, PromotionCodeChecker {
     let titleLabel = UILabel()
     let backButton = UIButton()
+    
+    var cancellables: Set<AnyCancellable> = []
+   
+    let session: OnboardingSession
+    init(session: OnboardingSession) {
+        self.session = session
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,5 +113,19 @@ final class OnboardingWalletFinalController: UIViewController, OnboardingViewCon
         
         view.addSubview(confButton)
         confButton.pinToSuperview(edges: .horizontal, padding: 36).pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if let promoCode = session.promoCode {
+            activatePromotionCode(promoCode) { [weak self] message in
+                if let message {
+                    self?.view.showToast(message)
+                } else {
+                    self?.view.showToast("Promo code activated!")
+                }
+            }
+        }
     }
 }

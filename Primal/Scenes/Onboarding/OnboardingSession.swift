@@ -45,6 +45,8 @@ class OnboardingSession {
     
     @Published var defaultRelays: [String] = bootstrap_relays
     
+    var promoCode: String?
+    
     var usersToFollow: Set<String> = []
     
     var cancellables: Set<AnyCancellable> = []

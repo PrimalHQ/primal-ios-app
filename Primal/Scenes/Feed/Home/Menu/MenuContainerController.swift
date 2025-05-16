@@ -172,10 +172,11 @@ private extension MenuContainerController {
         let premium = MenuItemButton(title: "PREMIUM", imageName: "menuSidebarPremium")
         let messages = MenuItemButton(title: "MESSAGES", imageName: "menuSidebarMessages")
         let bookmarks = MenuItemButton(title: "BOOKMARKS", imageName: "menuSidebarBookmarks")
+        let redeemCode = MenuItemButton(title: "REDEEM CODE", imageName: "barcode")
         let settings = MenuItemButton(title: "SETTINGS", imageName: "menuSidebarSettings")
         let signOut = MenuItemButton(title: "SIGN OUT", imageName: "menuSidebarSignout")
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, redeemCode, settings, signOut])
         [
             profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
@@ -299,6 +300,9 @@ private extension MenuContainerController {
         messages.addAction(.init(handler: { [unowned self] _ in showViewController(MessagesViewController()) }), for: .touchUpInside)
         bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
         premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
+        redeemCode.addAction(.init(handler: { [unowned self] _ in
+            present(OnboardingParentViewController(.redeemCode()), animated: true)
+        }), for: .touchUpInside)
         
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
@@ -473,7 +477,7 @@ final class MenuItemButton: UIButton, Themeable {
             .font: UIFont.appFont(withSize: 18.2, weight: .regular),
             .kern: 0.2
         ]))
-        config.image = UIImage(named: imageName)
+        config.image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
         config.imagePadding = 12
         config.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
         config.baseForegroundColor = .foreground2
