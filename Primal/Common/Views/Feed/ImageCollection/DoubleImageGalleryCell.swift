@@ -97,11 +97,12 @@ class InteractiveImageView: UIView, ImageMenuHandler, UIContextMenuInteractionDe
         guard
             url == originalURL,
             let blossomInfo = BlossomServerManager.instance.serversForUser(pubkey: userPubkey),
-            let firstServer = blossomInfo.first,
-            let pathComponent = URL(string: originalURL)?.pathExtension
+            let lastServer = blossomInfo.last,
+            let pathComponent = URL(string: originalURL)?.path()
         else { return }
         
-        let serverURL = blossomInfo.first(where: { !currentURL.contains($0) }) ?? firstServer
+        let currentIndex = blossomInfo.firstIndex(where: { currentURL.contains($0) }) ?? 0
+        let serverURL = blossomInfo[safe: currentIndex + 1] ?? lastServer
         guard var finalURL = URL(string: serverURL) else { return }
         finalURL.append(path: pathComponent)
         

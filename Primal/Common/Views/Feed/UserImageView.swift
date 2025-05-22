@@ -22,6 +22,8 @@ class UserImageView: UIView, Themeable {
     
     var cachedLegendTheme: LegendTheme?
     
+    var url = ""
+    
     var legendGradientSize: CGFloat {
         height + {
             if height >= 100 { return 12 }
@@ -116,18 +118,15 @@ class UserImageView: UIView, Themeable {
         
         updateGlow(user)
         
+        let url = user.profileImage.url(for: height < 100 ? .small : .medium)
+        
         guard
             !disableAnimated,
             !feed || ContentDisplaySettings.animatedAvatars,
             user.data.picture.hasSuffix("gif"),
             let url = user.profileImage.url(for: .small)
         else {
-            animatedImageView.kf.setImage(with: user.profileImage.url(for: height < 100 ? .small : .medium), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: .init(width: height, height: height))),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
-                .transition(.fade(0.2))
-            ])
+            loadImage(url: url, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)
             return
         }
         
@@ -141,8 +140,64 @@ class UserImageView: UIView, Themeable {
                 guard self?.tag == oldTag else { return }
                 self?.animatedImageView.animatedImage = image
             case .failure(let error):
-                print(error)
+                self?.loadImage(url: url, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)
             }
+        }
+    }
+    
+    func loadImage(url: URL?, originalURL: String, userPubkey: String) {
+        self.url = originalURL
+        
+        animatedImageView.kf.setImage(with: url, options: [
+            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .transition(.fade(0.2)),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ]) { [weak self] result in
+            guard case .failure = result else { return }
+            self?.attemptOriginalLoad(originalURL: originalURL, userPubkey: userPubkey)
+        }
+    }
+    
+    func attemptOriginalLoad(originalURL: String, userPubkey: String) {
+        guard url == originalURL else { return }
+        animatedImageView.kf.setImage(with: URL(string: originalURL), options: [
+            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .transition(.fade(0.2)),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ]) { [weak self] result in
+            guard case .failure = result else { return }
+            self?.attemptBlossomLoad(currentURL: originalURL, originalURL: originalURL, userPubkey: userPubkey)
+        }
+    }
+    
+    func attemptBlossomLoad(currentURL: String, originalURL: String, userPubkey: String) {
+        guard
+            url == originalURL,
+            let blossomInfo = BlossomServerManager.instance.serversForUser(pubkey: userPubkey),
+            let lastServer = blossomInfo.last,
+            let pathComponent = URL(string: originalURL)?.path()
+        else { return }
+        
+        let currentIndex = blossomInfo.firstIndex(where: { currentURL.contains($0) }) ?? 0
+        let serverURL = blossomInfo[safe: currentIndex + 1] ?? lastServer
+        guard var finalURL = URL(string: serverURL) else { return }
+        finalURL.append(path: pathComponent)
+        
+        if finalURL.absoluteString == currentURL {
+            print("REACHED THE END OF BLOSSOM LIST")
+            return
+        }
+        
+        animatedImageView.kf.setImage(with: finalURL, options: [
+            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .transition(.fade(0.2)),
+            .scaleFactor(UIScreen.main.scale),
+            .cacheOriginalImage
+        ]) { [weak self] result in
+            guard case .failure = result else { return }
+            self?.attemptBlossomLoad(currentURL: finalURL.absoluteString, originalURL: originalURL, userPubkey: userPubkey)
         }
     }
     
