@@ -110,11 +110,8 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
             )
         } else {
             switch content.notFound {
-            case nil:
+            case nil, .note:
                 infoView.isHidden = true
-            case .note:
-                infoView.isHidden = false
-                infoView.set(kind: .file, text: "Mentioned note not found.")
             case .article:
                 infoView.isHidden = false
                 infoView.set(kind: .file, text: "Mentioned article not found.")

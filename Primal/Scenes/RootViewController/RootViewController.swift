@@ -40,8 +40,6 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
-    let noConnectionView = NoConnectionView()
-    
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
     var smoothScrollSpeed: Int = 100
@@ -92,26 +90,7 @@ final class RootViewController: UIViewController {
             }
         }.store(in: &cancellables)
         
-        didFinishInit = true
-        
-        view.addSubview(noConnectionView)
-        noConnectionView
-            .pinToSuperview(edges: .horizontal, padding: 12)
-            .pinToSuperview(edges: .top, padding: 60, safeArea: true)
-            .constrainToSize(height: 44)
-        
-        
-        let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
-        let delay3SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(3), scheduler: RunLoop.main).map({ _ in false })
-        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay3SecondsForegroundPublisher)
-        
-        Publishers.CombineLatest(
-            Publishers.Merge(Just(false), didJustEnterForegroundPublisher),
-            Connection.regular.cantConnectPublisher.removeDuplicates()
-        ).receive(on: DispatchQueue.main).sink { [weak self] didJustEnterForeground, cantConnect in
-            self?.noConnectionView.hasConnection = didJustEnterForeground || !cantConnect
-        }
-        .store(in: &cancellables)
+        didFinishInit = true        
         
         let notesDeeplink = NotificationCenter.default.publisher(for: .primalNoteLink)
             .compactMap { $0.object as? String }

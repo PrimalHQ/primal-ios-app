@@ -223,16 +223,29 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
-        if post.post.id == self.id {
-            switch event {
-            case .images(let resource):
-                guard let cell, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath), !resource.url.isVideoURL else { break }
-                let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
-                present(ImageGalleryController(current: resource.url, all: allImages), animated: false)
-                return
-            default: break
-            }
-        }
+//        if post.post.id == self.id {
+//            switch event {
+//            case .images(let resource):
+//                guard let cell, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath), !resource.url.isVideoURL else { break }
+//                let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+//                let gallery = ImageGalleryController(current: resource.url, all: allImages)
+//                
+//                if
+//                    let imageVC = gallery.pageViewController.viewControllers?.compactMap({ $0 as? ImageFullScreenViewController }).first,
+//                    imageVC.image == nil,
+//                    let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+//                    let image = (cell as? ElementImageGalleryCell)?.mainImages.currentImageCell()?.imageViewsForAnimation[safe: index]?.image
+//                {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+//                        imageVC.imageView.image = image
+//                    }
+//                }
+//                
+//                present(gallery, animated: false)
+//                return
+//            default: break
+//            }
+//        }
         super.performEvent(event, withPost: post, inCell: cell)
     }
 }

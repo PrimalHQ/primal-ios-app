@@ -150,7 +150,7 @@ extension ImageGalleryView: UICollectionViewDelegateFlowLayout {
 
 extension ImageGalleryView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        1
+        resources.isEmpty ? 0 : 1
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -189,7 +189,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
                     cell.thumbnailImage.kf.setImage(with: url)
                 }
             }
-        } else if r.url.hasSuffix("gif"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
+        } else if r.url.hasSuffix("gif") || r.url.hasSuffix("gifv"), let url = r.url(for: .medium), ContentDisplaySettings.autoPlayVideos {
             (cell as? ImageCell)?.url = r.url
             CachingManager.instance.fetchAnimatedImage(url) { [weak self] result in
                 guard let cell = cell as? ImageCell, cell.url == r.url else { return }

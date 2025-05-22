@@ -31,6 +31,7 @@ protocol FeedElementCellDelegate: AnyObject {
 }
 
 protocol NoteFeedDatasource: UITableViewDataSource {
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement?
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent?
     func setPosts(_ posts: [ParsedContent])
     
@@ -57,6 +58,12 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -72,6 +79,11 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
         registerCells(tableView)
         
         defaultRowAnimation = .fade
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

@@ -75,7 +75,7 @@ extension String : Identifiable {
     }
     
     var isImageURLPathComponent: Bool {
-        hasSuffix(".jpg") || hasSuffix(".jpeg") || hasSuffix(".webp") || hasSuffix(".png") || hasSuffix(".gif") || hasSuffix("format=png")
+        hasSuffix(".jpg") || hasSuffix(".jpeg") || hasSuffix(".webp") || hasSuffix(".png") || hasSuffix(".gif") || hasSuffix(".gifv") || hasSuffix("format=png")
     }
     
     var isVideoURL: Bool {

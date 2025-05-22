@@ -79,6 +79,12 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -134,6 +140,11 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
         defaultRowAnimation = .fade
         
         updateCells()
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .feedElement(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

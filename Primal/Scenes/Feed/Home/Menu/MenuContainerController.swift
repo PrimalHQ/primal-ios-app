@@ -168,13 +168,19 @@ private extension MenuContainerController {
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
         
-        let profile = MenuItemButton(title: "PROFILE", imageName: "menuSidebarProfile")
-        let premium = MenuItemButton(title: "PREMIUM", imageName: "menuSidebarPremium")
-        let messages = MenuItemButton(title: "MESSAGES", imageName: "menuSidebarMessages")
-        let bookmarks = MenuItemButton(title: "BOOKMARKS", imageName: "menuSidebarBookmarks")
-        let redeemCode = MenuItemButton(title: "REDEEM CODE", imageName: "barcode")
-        let settings = MenuItemButton(title: "SETTINGS", imageName: "menuSidebarSettings")
-        let signOut = MenuItemButton(title: "SIGN OUT", imageName: "menuSidebarSignout")
+        let profile = MenuItemButton(title: "PROFILE", image: .menuSidebarProfile)
+        let premium = MenuItemButton(title: "PREMIUM", image: .menuSidebarPremium)
+        let messages = MenuItemButton(title: "MESSAGES", image: .menuSidebarMessages)
+        let bookmarks = MenuItemButton(title: "BOOKMARKS", image: .menuSidebarBookmarks)
+        let redeemCode = MenuItemButton(title: "REDEEM CODE", image: .barcode.scalePreservingAspectRatio(size: 18))
+        let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
+        let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
+        
+        AppDelegate.shared.$contentSettings.receive(on: DispatchQueue.main)
+            .sink { settings in
+                redeemCode.isHidden = !(settings?.show_primal_support ?? true)
+            }
+            .store(in: &cancellables)
         
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, redeemCode, settings, signOut])
         [
@@ -457,11 +463,11 @@ private extension MenuContainerController {
 
 final class MenuItemButton: UIButton, Themeable {
     let title: String
-    let imageName: String
+    let image: UIImage?
     
-    init(title: String, imageName: String) {
+    init(title: String, image: UIImage?) {
         self.title = title
-        self.imageName = imageName
+        self.image = image
         super.init(frame: .zero)
         
         updateTheme()
@@ -477,7 +483,7 @@ final class MenuItemButton: UIButton, Themeable {
             .font: UIFont.appFont(withSize: 18.2, weight: .regular),
             .kern: 0.2
         ]))
-        config.image = UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate)
+        config.image = image?.withRenderingMode(.alwaysTemplate)
         config.imagePadding = 12
         config.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
         config.baseForegroundColor = .foreground2

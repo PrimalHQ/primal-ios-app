@@ -33,6 +33,12 @@ class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, A
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -49,6 +55,11 @@ class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, A
         registerCustomCells(tableView)
         
         defaultRowAnimation = .none
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

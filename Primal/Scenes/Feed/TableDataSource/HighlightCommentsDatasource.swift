@@ -29,6 +29,13 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
             case .webPreview(_, let metadata):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
                 (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+            case .postPreview(let embedded):
+                let cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
+                if let cell = cell as? RegularFeedElementCell {
+                    cell.update(embedded)
+                    cell.delegate = delegate
+                }
+                return cell
             default:
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
             }
@@ -48,13 +55,18 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
         defaultRowAnimation = .none
     }
     
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 0 else { return nil }
+        return cells[safe: indexPath.row]?.element
+    }
+    
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         guard indexPath.section == 0 else { return nil }
         return cells[safe: indexPath.row]?.content
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        var tmp = convertPostsToCells(posts).map { (content, elements) in
+        let tmp = convertPostsToCells(posts).map { (content, elements) in
             (content, elements.filter({
                 switch $0 {
                 case .reactions:

@@ -327,38 +327,9 @@ class NoteProcessor: MetadataCoding {
             }
         }
         
-        if referencedPosts.count == 1, let (mentionText, mention) = referencedPosts.first {
-            p.embeddedPost = mention
+        for (mentionText, mention) in referencedPosts {
+            p.embeddedPosts.append(mention)
             itemsToRemove.append(mentionText)
-        }
-        
-        if referencedPosts.isEmpty && highlights.isEmpty {
-            let flatTags = post.tags.flatMap { $0 }
-            for mention in mentions {
-                if flatTags.contains(mention.post.id) {
-                    var stringFound = false
-                    if let noteMentionRegex = try? NSRegularExpression(pattern: .noteMentionPattern, options: []) {
-                        noteMentionRegex.enumerateMatches(in: text, options: [], range: NSRange(text.startIndex..., in: text)) { match, _, _ in
-                            if !stringFound, let matchRange = match?.range {
-                                itemsToRemove.append((text as NSString).substring(with: matchRange))
-                                stringFound = true
-                            }
-                        }
-                    }
-                    
-                    if stringFound && mention.post.kind == NostrKind.text.rawValue {
-                        p.embeddedPost = mention
-                        break
-                    }
-                }
-                
-                if let noteRef = bech32_note_id(mention.post.id), text.contains(noteRef) {
-                    let searchString = "nostr:\(noteRef)"
-                    itemsToRemove.append(searchString)
-                    p.embeddedPost = mention
-                    break
-                }
-            }
         }
         
         for media in response.mediaMetadata where media.event_id == post.id {
@@ -475,7 +446,7 @@ class NoteProcessor: MetadataCoding {
         p.zaps = parsedZaps.filter { $0.postId == post.id || $0.postId == post.universalID }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
-        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
+//        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
         p.httpUrls = shortenedUrls.flatMap { nsText.positions(of: $0.0, reference: $0.1) }
         p.highlights = highlights.flatMap { nsText.positions(of: $0.replacement, reference: $0.highlight.post.id)}
         p.highlightEvents = highlights.map { $0.highlight }

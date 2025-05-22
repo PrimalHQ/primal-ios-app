@@ -41,9 +41,7 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
-        if let post = content.embeddedPost {
-            postPreview.update(post)
-        }
+        postPreview.update(content)
         postPreview.updateTheme()
     }
 }

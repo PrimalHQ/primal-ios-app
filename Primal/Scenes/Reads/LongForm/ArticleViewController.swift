@@ -11,6 +11,7 @@ import Ink
 import WebKit
 import SafariServices
 import Down
+import NostrSDK
 
 enum LongFormContentSegment {
     case text(String)
@@ -41,7 +42,7 @@ struct ArticleSettings {
     }
 }
 
-class ArticleViewController: UIViewController, Themeable, AnimatedChromeController {
+class ArticleViewController: UIViewController, Themeable, AnimatedChromeController, MetadataCoding {
     let scrollView = UIScrollView()
     lazy var navExtension = LongFormNavExtensionView(content.user)
     let contentStack = UIStackView(axis: .vertical, [])
@@ -303,7 +304,7 @@ private extension ArticleViewController {
         }), for: .touchUpInside)
         
         commentZapPill.zapButton.addAction(.init(handler: { [weak self] _ in
-            guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostCell else { return }
+            guard let self, let infoCell = infoVC.table.cellForRow(at: .init(row: 0, section: 0)) as? PostReactionsCell else { return }
             infoVC.performEvent(.longTapZap, withPost: content.asParsedContent, inCell: infoCell)
         }), for: .touchUpInside)
         
@@ -445,9 +446,12 @@ private extension ArticleViewController {
                 
                 guard
                     let user: ParsedUser = {
-                        guard let npub = mentionText.split(separator: ":").last?.string else { return nil }
+                        guard
+                            let mention = mentionText.split(separator: ":").last?.string,
+                            let pubkey = (try? decodedMetadata(from: mention).pubkey) ?? mention.npubToPubkey()
+                        else { return nil }
                         
-                        return content.mentionedUsers.first(where: { $0.data.npub == npub }) ?? .init(data: .init(pubkey: HexKeypair.npubToHexPubkey(npub) ?? npub))
+                        return content.mentionedUsers.first(where: { $0.data.pubkey == pubkey }) ?? .init(data: .init(pubkey: pubkey))
                     }()
                 else { return }
                 

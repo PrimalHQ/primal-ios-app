@@ -105,7 +105,7 @@ class PostCell: UITableViewCell {
             replyingToView.isHidden = true
         }
         
-        if let embeded = content.embeddedPost, embeded.post.kind == content.post.kind {
+        if let embeded = content.embeddedPosts.first, embeded.post.kind == content.post.kind {
             postPreview.update(embeded)
             postPreview.isHidden = false
         } else {

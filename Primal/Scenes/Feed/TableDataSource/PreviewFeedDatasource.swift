@@ -39,6 +39,12 @@ class PreviewFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Previ
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -56,6 +62,11 @@ class PreviewFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Previ
         tableView.register(FeedPreviewCell.self, forCellReuseIdentifier: "preview")
         
         defaultRowAnimation = .none
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

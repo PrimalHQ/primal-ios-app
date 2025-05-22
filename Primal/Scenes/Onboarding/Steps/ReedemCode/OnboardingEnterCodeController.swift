@@ -30,11 +30,13 @@ class OnboardingEnterCodeController: UIViewController, OnboardingViewController,
     @Published var checking = false
     @Published var currentText = ""
     
-    convenience init(startingCode: String) {
+    convenience init(startingCode: String, error: String? = nil) {
         self.init(nibName: nil, bundle: nil)
         
         codeInput.text = startingCode
         currentText = startingCode
+        
+        errorMessage.text = error
     }
     
     override func viewDidLoad() {
@@ -95,11 +97,11 @@ private extension OnboardingEnterCodeController {
         codeInput.autocorrectionType = .no
         
         errorMessage.constrainToSize(height: 22)
-        errorMessage.isHidden = true
         errorMessage.layer.cornerRadius = 11
         errorMessage.layer.masksToBounds = true
         errorMessage.backgroundColor = .init(rgb: 0xE20505)
         errorMessage.textColor = .white
+        errorMessage.isHidden = errorMessage.text?.isEmpty != false
         errorMessage.font = .appFont(withSize: 14, weight: .regular)
         
         codeInput.addAction(.init(handler: { [weak self] _ in

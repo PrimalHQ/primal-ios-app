@@ -339,9 +339,9 @@ extension PostEmbedPreview {
          
             return highlightText + "\n" + articleText
         case .article(let article):
-            return article.asParsedContent.noteId(extended: true)
+            return "nostr:" + article.asParsedContent.noteId(extended: true)
         case .post(let post):
-            return post.noteId(extended: true)
+            return "nostr:" + post.noteId(extended: true)
         case .invoice(_, let text):
             return text
         }

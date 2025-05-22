@@ -42,7 +42,7 @@ struct ServerContentSettings: Codable {
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
-    static var contentSettings: ServerContentSettings?
+    @Published var contentSettings: ServerContentSettings?
     
     static var shared: AppDelegate!
     
@@ -84,9 +84,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         SocketRequest(name: "client_config", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
-            .sink { res in
-                guard let settings: ServerContentSettings = res.events.compactMap({ $0["content"]?.stringValue?.decode() }).first else { return }
-                Self.contentSettings = settings
+            .sink { [weak self] res in
+                guard let self, let settings: ServerContentSettings = res.events.compactMap({ $0["content"]?.stringValue?.decode() }).first else { return }
+                contentSettings = settings
             }
             .store(in: &cancellables)
         

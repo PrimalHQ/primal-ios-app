@@ -77,7 +77,7 @@ final class FeedManager {
     func updateTheme() {
         (newPostObjects + parsedPosts).forEach {
             $0.buildContentString(style: contentStyle)
-            $0.embeddedPost?.buildContentString(style: .embedded)
+            $0.embeddedPosts.first?.buildContentString(style: .embedded)
         }
     }
     

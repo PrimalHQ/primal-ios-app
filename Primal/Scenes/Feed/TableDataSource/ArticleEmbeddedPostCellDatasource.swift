@@ -28,6 +28,9 @@ class ArticleEmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiff
         defaultRowAnimation = .none
     }
     
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? { nil }
+    
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? { cells[safe: indexPath.row] }
     
     private func registerCells(_ tableView: UITableView) {
@@ -67,6 +70,12 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
                 case .reactions:
                     (cell as? FeedElementReactionsCell)?.bottomBorder.removeFromSuperview()
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -83,6 +92,11 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
         registerCells(tableView)
         
         defaultRowAnimation = .none
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

@@ -23,8 +23,8 @@ final class OnboardingMainButton: UIButton {
         setTitleColor(.white.withAlphaComponent(0.5), for: .highlighted)
         titleLabel?.font = .appFont(withSize: 18, weight: .semibold)
         backgroundColor = .black.withAlphaComponent(0.81)
-        layer.cornerRadius = 24
-        constrainToSize(height: 48)
+        layer.cornerRadius = 28
+        constrainToSize(height: 56)
     }
     
     required init?(coder: NSCoder) {
@@ -81,7 +81,7 @@ private extension OnboardingStartViewController {
             logoParent,         SpacerView(height: 25, priority: .defaultHigh),
             signinButton,       SpacerView(height: 10, priority: .defaultHigh),
             signupButton,       SpacerView(height: 10, priority: .defaultHigh),
-            redeemCodeButton,   SpacerView(height: 18, priority: .defaultHigh),
+//            redeemCodeButton,   SpacerView(height: 18, priority: .defaultHigh),
             termsBothLines
         ])
         contentStack.axis = .vertical

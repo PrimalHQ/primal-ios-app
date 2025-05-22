@@ -1147,6 +1147,10 @@ Classes:
 - Name: "BlossomUploaderBlobDescriptor"
   SwiftName: "BlobDescriptor"
   Properties:
+  - Name: "nip94"
+    PropertyKind: "Instance"
+    SwiftName: "nip94"
+    Type: "NSArray<NSArray<NSString *> *> * _Nullable"
   - Name: "sha256"
     PropertyKind: "Instance"
     SwiftName: "sha256"
@@ -1168,9 +1172,9 @@ Classes:
     SwiftName: "url"
     Type: "NSString * _Nonnull"
   Methods:
-  - Selector: "initWithUrl:sha256:sizeInBytes:type:uploaded:"
+  - Selector: "initWithUrl:sha256:sizeInBytes:type:uploaded:nip94:"
     MethodKind: "Instance"
-    SwiftName: "init(url:sha256:sizeInBytes:type:uploaded:)"
+    SwiftName: "init(url:sha256:sizeInBytes:type:uploaded:nip94:)"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
@@ -1182,9 +1186,11 @@ Classes:
       Type: "NSString * _Nullable"
     - Position: 4
       Type: "int64_t"
-  - Selector: "doCopyUrl:sha256:sizeInBytes:type:uploaded:"
+    - Position: 5
+      Type: "NSArray<NSArray<NSString *> *> * _Nullable"
+  - Selector: "doCopyUrl:sha256:sizeInBytes:type:uploaded:nip94:"
     MethodKind: "Instance"
-    SwiftName: "doCopy(url:sha256:sizeInBytes:type:uploaded:)"
+    SwiftName: "doCopy(url:sha256:sizeInBytes:type:uploaded:nip94:)"
     ResultType: "BlossomUploaderBlobDescriptor * _Nonnull"
     Parameters:
     - Position: 0
@@ -1197,6 +1203,8 @@ Classes:
       Type: "NSString * _Nullable"
     - Position: 4
       Type: "int64_t"
+    - Position: 5
+      Type: "NSArray<NSArray<NSString *> *> * _Nullable"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"
@@ -1366,6 +1374,10 @@ Classes:
 - Name: "BlossomUploaderUploadResultSuccess"
   SwiftName: "UploadResult.Success"
   Properties:
+  - Name: "nip94"
+    PropertyKind: "Instance"
+    SwiftName: "nip94"
+    Type: "BlossomUploaderNostrNip94Metadata * _Nullable"
   - Name: "originalFileSize"
     PropertyKind: "Instance"
     SwiftName: "originalFileSize"
@@ -1379,9 +1391,9 @@ Classes:
     SwiftName: "remoteUrl"
     Type: "NSString * _Nonnull"
   Methods:
-  - Selector: "initWithRemoteUrl:originalFileSize:originalHash:"
+  - Selector: "initWithRemoteUrl:originalFileSize:originalHash:nip94:"
     MethodKind: "Instance"
-    SwiftName: "init(remoteUrl:originalFileSize:originalHash:)"
+    SwiftName: "init(remoteUrl:originalFileSize:originalHash:nip94:)"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
@@ -1389,9 +1401,11 @@ Classes:
       Type: "int64_t"
     - Position: 2
       Type: "NSString * _Nonnull"
-  - Selector: "doCopyRemoteUrl:originalFileSize:originalHash:"
+    - Position: 3
+      Type: "BlossomUploaderNostrNip94Metadata * _Nullable"
+  - Selector: "doCopyRemoteUrl:originalFileSize:originalHash:nip94:"
     MethodKind: "Instance"
-    SwiftName: "doCopy(remoteUrl:originalFileSize:originalHash:)"
+    SwiftName: "doCopy(remoteUrl:originalFileSize:originalHash:nip94:)"
     ResultType: "BlossomUploaderUploadResultSuccess * _Nonnull"
     Parameters:
     - Position: 0
@@ -1400,6 +1414,8 @@ Classes:
       Type: "int64_t"
     - Position: 2
       Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "BlossomUploaderNostrNip94Metadata * _Nullable"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"
@@ -1550,6 +1566,16 @@ Classes:
     Parameters:
     - Position: 0
       Type: "NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> * _Nonnull"
+- Name: "BlossomUploaderBlobDescriptorKt"
+  SwiftName: "BlobDescriptorKt"
+  Methods:
+  - Selector: "toNip94Metadata:"
+    MethodKind: "Class"
+    SwiftName: "toNip94Metadata(_:)"
+    ResultType: "BlossomUploaderNostrNip94Metadata * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<NSArray<NSString *> *> * _Nonnull"
 - Name: "BlossomUploaderBlossomUtilsKt"
   SwiftName: "BlossomUtilsKt"
   Methods:
@@ -1562,6 +1588,417 @@ Classes:
       Type: "NSString * _Nullable"
     - Position: 1
       Type: "NSArray<NSString *> * _Nonnull"
+- Name: "BlossomUploaderNostrNip94Metadata"
+  SwiftName: "NostrNip94Metadata"
+  Properties:
+  - Name: "alt"
+    PropertyKind: "Instance"
+    SwiftName: "alt"
+    Type: "NSString * _Nullable"
+  - Name: "blurhash"
+    PropertyKind: "Instance"
+    SwiftName: "blurhash"
+    Type: "NSString * _Nullable"
+  - Name: "dim"
+    PropertyKind: "Instance"
+    SwiftName: "dim"
+    Type: "NSString * _Nullable"
+  - Name: "fallback"
+    PropertyKind: "Instance"
+    SwiftName: "fallback"
+    Type: "NSString * _Nullable"
+  - Name: "i"
+    PropertyKind: "Instance"
+    SwiftName: "i"
+    Type: "NSString * _Nullable"
+  - Name: "image"
+    PropertyKind: "Instance"
+    SwiftName: "image"
+    Type: "NSString * _Nullable"
+  - Name: "m"
+    PropertyKind: "Instance"
+    SwiftName: "m"
+    Type: "NSString * _Nullable"
+  - Name: "magnet"
+    PropertyKind: "Instance"
+    SwiftName: "magnet"
+    Type: "NSString * _Nullable"
+  - Name: "ox"
+    PropertyKind: "Instance"
+    SwiftName: "ox"
+    Type: "NSString * _Nullable"
+  - Name: "service"
+    PropertyKind: "Instance"
+    SwiftName: "service"
+    Type: "NSString * _Nullable"
+  - Name: "size"
+    PropertyKind: "Instance"
+    SwiftName: "size"
+    Type: "BlossomUploaderLong * _Nullable"
+  - Name: "summary"
+    PropertyKind: "Instance"
+    SwiftName: "summary"
+    Type: "NSString * _Nullable"
+  - Name: "thumb"
+    PropertyKind: "Instance"
+    SwiftName: "thumb"
+    Type: "NSString * _Nullable"
+  - Name: "url"
+    PropertyKind: "Instance"
+    SwiftName: "url"
+    Type: "NSString * _Nullable"
+  - Name: "x"
+    PropertyKind: "Instance"
+    SwiftName: "x"
+    Type: "NSString * _Nullable"
+  Methods:
+  - Selector: "initWithUrl:m:x:ox:size:dim:magnet:i:blurhash:thumb:image:summary:alt:fallback:service:"
+    MethodKind: "Instance"
+    SwiftName: "init(url:m:x:ox:size:dim:magnet:i:blurhash:thumb:image:summary:alt:fallback:service:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nullable"
+    - Position: 1
+      Type: "NSString * _Nullable"
+    - Position: 2
+      Type: "NSString * _Nullable"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "BlossomUploaderLong * _Nullable"
+    - Position: 5
+      Type: "NSString * _Nullable"
+    - Position: 6
+      Type: "NSString * _Nullable"
+    - Position: 7
+      Type: "NSString * _Nullable"
+    - Position: 8
+      Type: "NSString * _Nullable"
+    - Position: 9
+      Type: "NSString * _Nullable"
+    - Position: 10
+      Type: "NSString * _Nullable"
+    - Position: 11
+      Type: "NSString * _Nullable"
+    - Position: 12
+      Type: "NSString * _Nullable"
+    - Position: 13
+      Type: "NSString * _Nullable"
+    - Position: 14
+      Type: "NSString * _Nullable"
+  - Selector: "doCopyUrl:m:x:ox:size:dim:magnet:i:blurhash:thumb:image:summary:alt:fallback:service:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(url:m:x:ox:size:dim:magnet:i:blurhash:thumb:image:summary:alt:fallback:service:)"
+    ResultType: "BlossomUploaderNostrNip94Metadata * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nullable"
+    - Position: 1
+      Type: "NSString * _Nullable"
+    - Position: 2
+      Type: "NSString * _Nullable"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "BlossomUploaderLong * _Nullable"
+    - Position: 5
+      Type: "NSString * _Nullable"
+    - Position: 6
+      Type: "NSString * _Nullable"
+    - Position: 7
+      Type: "NSString * _Nullable"
+    - Position: 8
+      Type: "NSString * _Nullable"
+    - Position: 9
+      Type: "NSString * _Nullable"
+    - Position: 10
+      Type: "NSString * _Nullable"
+    - Position: 11
+      Type: "NSString * _Nullable"
+    - Position: 12
+      Type: "NSString * _Nullable"
+    - Position: 13
+      Type: "NSString * _Nullable"
+    - Position: 14
+      Type: "NSString * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderNostrNostrEvent"
+  SwiftName: "NostrNostrEvent"
+  Properties:
+  - Name: "content"
+    PropertyKind: "Instance"
+    SwiftName: "content"
+    Type: "NSString * _Nonnull"
+  - Name: "createdAt"
+    PropertyKind: "Instance"
+    SwiftName: "createdAt"
+    Type: "int64_t"
+  - Name: "id"
+    PropertyKind: "Instance"
+    SwiftName: "id"
+    Type: "NSString * _Nonnull"
+  - Name: "kind"
+    PropertyKind: "Instance"
+    SwiftName: "kind"
+    Type: "int32_t"
+  - Name: "pubKey"
+    PropertyKind: "Instance"
+    SwiftName: "pubKey"
+    Type: "NSString * _Nonnull"
+  - Name: "sig"
+    PropertyKind: "Instance"
+    SwiftName: "sig"
+    Type: "NSString * _Nonnull"
+  - Name: "tags"
+    PropertyKind: "Instance"
+    SwiftName: "tags"
+    Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+  Methods:
+  - Selector: "initWithId:pubKey:createdAt:kind:tags:content:sig:"
+    MethodKind: "Instance"
+    SwiftName: "init(id:pubKey:createdAt:kind:tags:content:sig:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "int64_t"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+    - Position: 5
+      Type: "NSString * _Nonnull"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+  - Selector: "doCopyId:pubKey:createdAt:kind:tags:content:sig:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(id:pubKey:createdAt:kind:tags:content:sig:)"
+    ResultType: "BlossomUploaderNostrNostrEvent * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "int64_t"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+    - Position: 5
+      Type: "NSString * _Nonnull"
+    - Position: 6
+      Type: "NSString * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderNostrNostrEventCompanion"
+  SwiftName: "NostrNostrEvent.Companion"
+  Methods:
+  - Selector: "serializer"
+    MethodKind: "Instance"
+    SwiftName: "serializer()"
+    ResultType: "id<BlossomUploaderKotlinx_serialization_coreKSerializer> _Nonnull"
+- Name: "BlossomUploaderNostrNostrUnsignedEvent"
+  SwiftName: "NostrNostrUnsignedEvent"
+  Properties:
+  - Name: "content"
+    PropertyKind: "Instance"
+    SwiftName: "content"
+    Type: "NSString * _Nonnull"
+  - Name: "createdAt"
+    PropertyKind: "Instance"
+    SwiftName: "createdAt"
+    Type: "int64_t"
+  - Name: "kind"
+    PropertyKind: "Instance"
+    SwiftName: "kind"
+    Type: "int32_t"
+  - Name: "pubKey"
+    PropertyKind: "Instance"
+    SwiftName: "pubKey"
+    Type: "NSString * _Nonnull"
+  - Name: "tags"
+    PropertyKind: "Instance"
+    SwiftName: "tags"
+    Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+  Methods:
+  - Selector: "initWithPubKey:createdAt:tags:kind:content:"
+    MethodKind: "Instance"
+    SwiftName: "init(pubKey:createdAt:tags:kind:content:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "int64_t"
+    - Position: 2
+      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+  - Selector: "doCopyPubKey:createdAt:tags:kind:content:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(pubKey:createdAt:tags:kind:content:)"
+    ResultType: "BlossomUploaderNostrNostrUnsignedEvent * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "int64_t"
+    - Position: 2
+      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderNostrNostrUnsignedEventCompanion"
+  SwiftName: "NostrNostrUnsignedEvent.Companion"
+  Methods:
+  - Selector: "serializer"
+    MethodKind: "Instance"
+    SwiftName: "serializer()"
+    ResultType: "id<BlossomUploaderKotlinx_serialization_coreKSerializer> _Nonnull"
+- Name: "BlossomUploaderNostrSignResult"
+  SwiftName: "NostrSignResult"
+- Name: "BlossomUploaderNostrSignResultSigned"
+  SwiftName: "NostrSignResult.Signed"
+  Properties:
+  - Name: "event"
+    PropertyKind: "Instance"
+    SwiftName: "event"
+    Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
+  Methods:
+  - Selector: "initWithEvent:"
+    MethodKind: "Instance"
+    SwiftName: "init(event:)"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
+  - Selector: "doCopyEvent:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(event:)"
+    ResultType: "BlossomUploaderNostrSignResultSigned * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderNostrSignResultRejected"
+  SwiftName: "NostrSignResult.Rejected"
+  Properties:
+  - Name: "error"
+    PropertyKind: "Instance"
+    SwiftName: "error"
+    Type: "BlossomUploaderNostrSignatureException * _Nonnull"
+  Methods:
+  - Selector: "initWithError:"
+    MethodKind: "Instance"
+    SwiftName: "init(error:)"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrSignatureException * _Nonnull"
+  - Selector: "doCopyError:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(error:)"
+    ResultType: "BlossomUploaderNostrSignResultRejected * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrSignatureException * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "BlossomUploaderNostrSignatureException"
+  SwiftName: "NostrSignatureException"
+  Methods:
+  - Selector: "initWithMessage:cause:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:cause:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nullable"
+    - Position: 1
+      Type: "BlossomUploaderKotlinThrowable * _Nullable"
+  - Selector: "init"
+    MethodKind: "Instance"
+    SwiftName: "init()"
+    Availability: "nonswift"
+  - Selector: "initWithMessage:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:)"
+    Availability: "nonswift"
+  - Selector: "initWithCause:"
+    MethodKind: "Instance"
+    SwiftName: "init(cause:)"
+    Availability: "nonswift"
 - Name: "BlossomUploaderKotlinx_serialization_coreSerialKind"
   SwiftName: "Kotlinx_serialization_coreSerialKind"
   Methods:
@@ -2577,269 +3014,6 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "init(cause:)"
     Availability: "nonswift"
-- Name: "BlossomUploaderNostrNostrEvent"
-  SwiftName: "NostrNostrEvent"
-  Properties:
-  - Name: "content"
-    PropertyKind: "Instance"
-    SwiftName: "content"
-    Type: "NSString * _Nonnull"
-  - Name: "createdAt"
-    PropertyKind: "Instance"
-    SwiftName: "createdAt"
-    Type: "int64_t"
-  - Name: "id"
-    PropertyKind: "Instance"
-    SwiftName: "id"
-    Type: "NSString * _Nonnull"
-  - Name: "kind"
-    PropertyKind: "Instance"
-    SwiftName: "kind"
-    Type: "int32_t"
-  - Name: "pubKey"
-    PropertyKind: "Instance"
-    SwiftName: "pubKey"
-    Type: "NSString * _Nonnull"
-  - Name: "sig"
-    PropertyKind: "Instance"
-    SwiftName: "sig"
-    Type: "NSString * _Nonnull"
-  - Name: "tags"
-    PropertyKind: "Instance"
-    SwiftName: "tags"
-    Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-  Methods:
-  - Selector: "initWithId:pubKey:createdAt:kind:tags:content:sig:"
-    MethodKind: "Instance"
-    SwiftName: "init(id:pubKey:createdAt:kind:tags:content:sig:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "int64_t"
-    - Position: 3
-      Type: "int32_t"
-    - Position: 4
-      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-    - Position: 5
-      Type: "NSString * _Nonnull"
-    - Position: 6
-      Type: "NSString * _Nonnull"
-  - Selector: "doCopyId:pubKey:createdAt:kind:tags:content:sig:"
-    MethodKind: "Instance"
-    SwiftName: "doCopy(id:pubKey:createdAt:kind:tags:content:sig:)"
-    ResultType: "BlossomUploaderNostrNostrEvent * _Nonnull"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "int64_t"
-    - Position: 3
-      Type: "int32_t"
-    - Position: 4
-      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-    - Position: 5
-      Type: "NSString * _Nonnull"
-    - Position: 6
-      Type: "NSString * _Nonnull"
-  - Selector: "isEqual:"
-    MethodKind: "Instance"
-    SwiftName: "isEqual(_:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "id _Nullable"
-  - Selector: "hash"
-    MethodKind: "Instance"
-    SwiftName: "hash()"
-    ResultType: "NSUInteger"
-  - Selector: "description"
-    MethodKind: "Instance"
-    SwiftName: "description()"
-    ResultType: "NSString * _Nonnull"
-- Name: "BlossomUploaderNostrNostrEventCompanion"
-  SwiftName: "NostrNostrEvent.Companion"
-  Methods:
-  - Selector: "serializer"
-    MethodKind: "Instance"
-    SwiftName: "serializer()"
-    ResultType: "id<BlossomUploaderKotlinx_serialization_coreKSerializer> _Nonnull"
-- Name: "BlossomUploaderNostrNostrUnsignedEvent"
-  SwiftName: "NostrNostrUnsignedEvent"
-  Properties:
-  - Name: "content"
-    PropertyKind: "Instance"
-    SwiftName: "content"
-    Type: "NSString * _Nonnull"
-  - Name: "createdAt"
-    PropertyKind: "Instance"
-    SwiftName: "createdAt"
-    Type: "int64_t"
-  - Name: "kind"
-    PropertyKind: "Instance"
-    SwiftName: "kind"
-    Type: "int32_t"
-  - Name: "pubKey"
-    PropertyKind: "Instance"
-    SwiftName: "pubKey"
-    Type: "NSString * _Nonnull"
-  - Name: "tags"
-    PropertyKind: "Instance"
-    SwiftName: "tags"
-    Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-  Methods:
-  - Selector: "initWithPubKey:createdAt:tags:kind:content:"
-    MethodKind: "Instance"
-    SwiftName: "init(pubKey:createdAt:tags:kind:content:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "int64_t"
-    - Position: 2
-      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-    - Position: 3
-      Type: "int32_t"
-    - Position: 4
-      Type: "NSString * _Nonnull"
-  - Selector: "doCopyPubKey:createdAt:tags:kind:content:"
-    MethodKind: "Instance"
-    SwiftName: "doCopy(pubKey:createdAt:tags:kind:content:)"
-    ResultType: "BlossomUploaderNostrNostrUnsignedEvent * _Nonnull"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "int64_t"
-    - Position: 2
-      Type: "NSArray<NSArray<BlossomUploaderKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
-    - Position: 3
-      Type: "int32_t"
-    - Position: 4
-      Type: "NSString * _Nonnull"
-  - Selector: "isEqual:"
-    MethodKind: "Instance"
-    SwiftName: "isEqual(_:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "id _Nullable"
-  - Selector: "hash"
-    MethodKind: "Instance"
-    SwiftName: "hash()"
-    ResultType: "NSUInteger"
-  - Selector: "description"
-    MethodKind: "Instance"
-    SwiftName: "description()"
-    ResultType: "NSString * _Nonnull"
-- Name: "BlossomUploaderNostrNostrUnsignedEventCompanion"
-  SwiftName: "NostrNostrUnsignedEvent.Companion"
-  Methods:
-  - Selector: "serializer"
-    MethodKind: "Instance"
-    SwiftName: "serializer()"
-    ResultType: "id<BlossomUploaderKotlinx_serialization_coreKSerializer> _Nonnull"
-- Name: "BlossomUploaderNostrSignResult"
-  SwiftName: "NostrSignResult"
-- Name: "BlossomUploaderNostrSignResultSigned"
-  SwiftName: "NostrSignResult.Signed"
-  Properties:
-  - Name: "event"
-    PropertyKind: "Instance"
-    SwiftName: "event"
-    Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
-  Methods:
-  - Selector: "initWithEvent:"
-    MethodKind: "Instance"
-    SwiftName: "init(event:)"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
-  - Selector: "doCopyEvent:"
-    MethodKind: "Instance"
-    SwiftName: "doCopy(event:)"
-    ResultType: "BlossomUploaderNostrSignResultSigned * _Nonnull"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
-  - Selector: "isEqual:"
-    MethodKind: "Instance"
-    SwiftName: "isEqual(_:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "id _Nullable"
-  - Selector: "hash"
-    MethodKind: "Instance"
-    SwiftName: "hash()"
-    ResultType: "NSUInteger"
-  - Selector: "description"
-    MethodKind: "Instance"
-    SwiftName: "description()"
-    ResultType: "NSString * _Nonnull"
-- Name: "BlossomUploaderNostrSignResultRejected"
-  SwiftName: "NostrSignResult.Rejected"
-  Properties:
-  - Name: "error"
-    PropertyKind: "Instance"
-    SwiftName: "error"
-    Type: "BlossomUploaderNostrSignatureException * _Nonnull"
-  Methods:
-  - Selector: "initWithError:"
-    MethodKind: "Instance"
-    SwiftName: "init(error:)"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrSignatureException * _Nonnull"
-  - Selector: "doCopyError:"
-    MethodKind: "Instance"
-    SwiftName: "doCopy(error:)"
-    ResultType: "BlossomUploaderNostrSignResultRejected * _Nonnull"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrSignatureException * _Nonnull"
-  - Selector: "isEqual:"
-    MethodKind: "Instance"
-    SwiftName: "isEqual(_:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "id _Nullable"
-  - Selector: "hash"
-    MethodKind: "Instance"
-    SwiftName: "hash()"
-    ResultType: "NSUInteger"
-  - Selector: "description"
-    MethodKind: "Instance"
-    SwiftName: "description()"
-    ResultType: "NSString * _Nonnull"
-- Name: "BlossomUploaderNostrSignatureException"
-  SwiftName: "NostrSignatureException"
-  Methods:
-  - Selector: "initWithMessage:cause:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:cause:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nullable"
-    - Position: 1
-      Type: "BlossomUploaderKotlinThrowable * _Nullable"
-  - Selector: "init"
-    MethodKind: "Instance"
-    SwiftName: "init()"
-    Availability: "nonswift"
-  - Selector: "initWithMessage:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:)"
-    Availability: "nonswift"
-  - Selector: "initWithCause:"
-    MethodKind: "Instance"
-    SwiftName: "init(cause:)"
-    Availability: "nonswift"
 - Name: "BlossomUploaderKotlinx_serialization_jsonJsonElement"
   SwiftName: "Kotlinx_serialization_jsonJsonElement"
 - Name: "BlossomUploaderKotlinx_serialization_jsonJsonElementCompanion"
@@ -3394,6 +3568,26 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 1
       Type: "void (^ _Nonnull)(NSArray<NSString *> * _Nullable, NSError * _Nullable)"
+- Name: "BlossomUploaderNostrNostrEventSignatureHandler"
+  SwiftName: "NostrNostrEventSignatureHandler"
+  Methods:
+  - Selector: "signNostrEventUnsignedNostrEvent:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__signNostrEvent(unsignedNostrEvent:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrNostrUnsignedEvent * _Nonnull"
+    - Position: 1
+      Type: "void (^ _Nonnull)(BlossomUploaderNostrSignResult * _Nullable, NSError * _Nullable)"
+  - Selector: "verifySignatureNostrEvent:"
+    MethodKind: "Instance"
+    SwiftName: "verifySignature(nostrEvent:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"
 - Name: "BlossomUploaderKotlinx_serialization_coreKSerializer"
   SwiftName: "Kotlinx_serialization_coreKSerializer"
   Properties:
@@ -4546,23 +4740,3 @@ Protocols:
     Parameters:
     - Position: 0
       Type: "int32_t"
-- Name: "BlossomUploaderNostrNostrEventSignatureHandler"
-  SwiftName: "NostrNostrEventSignatureHandler"
-  Methods:
-  - Selector: "signNostrEventUnsignedNostrEvent:completionHandler:"
-    MethodKind: "Instance"
-    SwiftName: "__signNostrEvent(unsignedNostrEvent:completionHandler:)"
-    SwiftPrivate: true
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrNostrUnsignedEvent * _Nonnull"
-    - Position: 1
-      Type: "void (^ _Nonnull)(BlossomUploaderNostrSignResult * _Nullable, NSError * _Nullable)"
-  - Selector: "verifySignatureNostrEvent:"
-    MethodKind: "Instance"
-    SwiftName: "verifySignature(nostrEvent:)"
-    ResultType: "BOOL"
-    Parameters:
-    - Position: 0
-      Type: "BlossomUploaderNostrNostrEvent * _Nonnull"

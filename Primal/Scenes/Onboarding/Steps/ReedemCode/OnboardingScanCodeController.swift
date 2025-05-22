@@ -24,7 +24,7 @@ final class OnboardingScanCodeController: UIViewController, QRCaptureController,
     
     let cover = UIImageView(image: .qrCodeMaskLoading)
     
-    var checking = false
+    var checking: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +68,7 @@ final class OnboardingScanCodeController: UIViewController, QRCaptureController,
     }
     
     var isRunning = false
-    
+    var isScanning = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -101,17 +101,16 @@ extension OnboardingScanCodeController: AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 
-        guard let text = metadataObj.stringValue, !checking, let code = text.split(separator: "/").last?.string, code.count == 8 else { return }
+        guard let text = metadataObj.stringValue, let code = text.split(separator: "/").last?.string, code.count == 8, checking != code else { return }
             
-        checking = true
+        checking = code
         
         checkPromotionCode(code) { [weak self] result in
-            self?.checking = false
-            
             switch result {
             case .success(let info):
                 self?.onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code), animated: true)
             case .failure(let message):
+                self?.onboardingParent?.pushViewController(OnboardingEnterCodeController(startingCode: code, error: message), animated: true)
                 return
             }
         }

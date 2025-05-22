@@ -60,6 +60,7 @@ final class ImageFullScreenViewController: UIViewController {
         
     var widthConstraint: NSLayoutConstraint?
     var heightConstraint: NSLayoutConstraint?
+    var imageConstraint: NSLayoutConstraint?
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -101,12 +102,12 @@ final class ImageFullScreenViewController: UIViewController {
         
         if imageView.image == nil, let image = startImageView.image {
             imageView.image = image
-            setInsetForZoomedIn(viewSize: view.frame.size)
             
             let s = image.size
-            let aspectC = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
-            aspectC.priority = .defaultHigh
-            aspectC.isActive = true
+            imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
+            imageConstraint?.isActive = true
+            
+            setInsetForZoomedIn(viewSize: view.frame.size)
         }
         
         var cs: [NSLayoutConstraint] = []
@@ -200,8 +201,10 @@ private extension ImageFullScreenViewController {
         imageView.kf.setImage(with: URL(string: url)) { [weak self] res in
             guard let self, case .success(let result) = res else { return }
             
+            imageConstraint?.isActive = false
             let s = result.image.size
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height).isActive = true
+            imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
+            imageConstraint?.isActive = true
             
             if view.window != nil {
                 setInsetForZoomedIn(viewSize: view.frame.size)

@@ -231,9 +231,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         
         for postToPreload in postsToPreload {
             preloadPost(postToPreload)
-            if let embeddedPost = postToPreload.embeddedPost {
+            if let embeddedPost = postToPreload.embeddedPosts.first {
                 preloadPost(embeddedPost)
-                if let embEmbeddedPost = embeddedPost.embeddedPost {
+                if let embEmbeddedPost = embeddedPost.embeddedPosts.first {
                     preloadPost(embEmbeddedPost)
                 }
             }
@@ -358,8 +358,13 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let cell = cell as? ElementImageGalleryCell else { return }
             postCellDidTapImages(cell, resource: resource)
         case .embeddedImages(let resource):
-            guard let cell = cell as? ElementPostPreviewCell else { return }
-            postCellDidTapEmbeddedImages(cell, resource: resource)
+            guard
+                let cell = cell as? ElementPostPreviewCell,
+                let index = table.indexPath(for: cell),
+                let element = dataSource.elementForIndexPath(index),
+                case .postPreview(let embedded) = element
+            else { return }
+            postCellDidTapEmbeddedImages(cell, embeddedPost: embedded, resource: resource)
         case .profile:
             showViewController(ProfileViewController(profile: post.user))
         case .post:
@@ -390,10 +395,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 thread.animateBarsToVisible()
             }
         case .embeddedPost:
-            let emb = post.embeddedPost ?? post
-            if emb.post.kind != 20 {
-                open(post: emb)
-            }
+            guard
+                let cell,
+                let index = table.indexPath(for: cell),
+                let element = dataSource.elementForIndexPath(index),
+                case .postPreview(let emb) = element,
+                emb.post.kind != 20 // Disable Olas kind opening
+            else { return }
+            open(post: emb)
         case .repostedProfile:
             guard let profile = post.reposted?.user else { return }
             showViewController(ProfileViewController(profile: profile))
@@ -698,22 +707,22 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
     }
     
-    func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, resource: MediaMetadata.Resource) {
-        guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath)?.embeddedPost else { return }
+    func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, embeddedPost: ParsedContent, resource: MediaMetadata.Resource) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
         
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)
             return
         }
         
-        let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = embeddedPost.mediaResources.map { $0.url } .filter { $0.isImageURL }
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
-                  let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
+                  let index = embeddedPost.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
             ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)

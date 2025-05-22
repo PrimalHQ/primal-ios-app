@@ -70,6 +70,7 @@ final class LoginManager {
         cachedMethod = nil
         IdentityManager.instance.clear()
         
+        PostingManager.instance.reset()
         WalletManager.instance.reset(IdentityManager.instance.userHexPubkey)
         KingfisherManager.shared.cache.clearMemoryCache()
         RelaysPostbox.instance.disconnect()
