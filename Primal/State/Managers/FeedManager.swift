@@ -99,47 +99,47 @@ final class FeedManager {
 //        requestThread(postId: threadId)
         
         
-        let repo = IosRepositoryFactory.shared.createFeedRepository()
+        let repo = IosRepositoryFactory.shared.createFeedRepository(cachingPrimalApiClient: )
         
         let userId = IdentityManager.instance.userHexPubkey
         
-        Task {
-            do {
-                try await repo.fetchConversation(userId: userId, noteId: threadId)
-                print("fetched")
-            } catch {
-                print(error)
-            }
-        }
+//        Task {
+//            do {
+//                try await repo.fetchConversation(userId: userId, noteId: threadId)
+//                print("fetched")
+//            } catch {
+//                print(error)
+//            }
+//        }
         
-        threadSub = repo
-            .observeConversation(userId: userId, noteId: threadId)
-            .toPublisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] obj in
-                if obj.isEmpty { return }
-                
-                let result = PostRequestResult()
-                result.posts = obj.compactMap { $0.rawNostrEvent.decode() }
-                obj.forEach {
-                    guard
-                        let authorRaw = $0.author.rawNostrEvent,
-                        let json: JSON = authorRaw.decode()
-                    else { return }
-                    
-                    let nostrUser = NostrContent(json: json)
-                    if var user = PrimalUser(nostrUser: nostrUser) {
-                        user.rawData = authorRaw
-                        result.users[nostrUser.pubkey] = user
-                    }
-                }
-                
-                self?.threadSub = nil
-                self?.postsEmitter.send(result)
-                
-//                first.nostrUris.first?.referencedUser.
-//                PrimalShared.FeedPost
-            }
+//        threadSub = repo
+//            .observeConversation(userId: userId, noteId: threadId)
+//            .toPublisher()
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] obj in
+//                if obj.isEmpty { return }
+//                
+//                let result = PostRequestResult()
+//                result.posts = obj.compactMap { $0.rawNostrEvent.decode() }
+//                obj.forEach {
+//                    guard
+//                        let authorRaw = $0.author.rawNostrEvent,
+//                        let json: JSON = authorRaw.decode()
+//                    else { return }
+//                    
+//                    let nostrUser = NostrContent(json: json)
+//                    if var user = PrimalUser(nostrUser: nostrUser) {
+//                        user.rawData = authorRaw
+//                        result.users[nostrUser.pubkey] = user
+//                    }
+//                }
+//                
+//                self?.threadSub = nil
+//                self?.postsEmitter.send(result)
+//                
+////                first.nostrUris.first?.referencedUser.
+////                PrimalShared.FeedPost
+//            }
     }
     
     func updateTheme() {
