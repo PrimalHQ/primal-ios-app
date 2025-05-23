@@ -46,6 +46,8 @@ final class FeedManager {
         }
     }
     
+    var pager: IosPagingPresenter<FeedPost>?
+    
     var addFuturePostsDirectly: () -> Bool = { true }
     
     static var lastLocallyLoadedLatestFeedUserPubkey: String?
@@ -61,8 +63,39 @@ final class FeedManager {
         self.newFeed = newFeed
         initSubscriptions()
         initFuturePublishersAndObservers()
-//
-//        let repo = IosRepositoryFactory.shared.createFeedRepository()
+
+        let repo = IosRepositoryFactory.shared.createFeedRepository(cachingPrimalApiClient: PrimalApiClientFactory.shared.getDefault(serverType: PrimalServerType.caching))
+        let pager = repo.feedBySpecTest(userId: IdentityManager.instance.userHexPubkey, feedSpec: newFeed.spec, allowMutedThreads: true)
+        
+        Task { [weak self] in
+            for await _ in pager.invalidations {
+                var allItems: [FeedPost] = []
+                for i in 0..<pager.itemCount() {
+                    if let item = pager.item(index: i) {
+                        allItems.append(item)
+                    }
+                }
+                
+                let result = PostRequestResult()
+                result.posts = allItems.compactMap { $0.rawNostrEvent.decode() }
+                allItems.forEach {
+                    guard
+                        let authorRaw = $0.author.rawNostrEvent,
+                        let json: JSON = authorRaw.decode()
+                    else { return }
+                    
+                    let nostrUser = NostrContent(json: json)
+                    if var user = PrimalUser(nostrUser: nostrUser) {
+                        user.rawData = authorRaw
+                        result.users[nostrUser.pubkey] = user
+                    }
+                }
+                
+                self?.postsEmitter.send(result)
+                
+                if !allItems.isEmpty { return }
+            }
+        }
 //        let feedFlow = repo.feedBySpec(userId: IdentityManager.instance.userHexPubkey, feedSpec: newFeed.spec)
 //        
 //        collectionTask = Task { [weak self] in
@@ -76,16 +109,19 @@ final class FeedManager {
 //        }
 
         
-        if newFeed.name == "Latest" {
-            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
-            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
-            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
-                paginationInfo = loaded.pagination
-                postsEmitter.send(loaded)
-                return
-            }
-        }
-        refresh()
+        
+        
+        
+//        if newFeed.name == "Latest" {
+//            let isDifferentFromLast = FeedManager.lastLocallyLoadedLatestFeedUserPubkey != IdentityManager.instance.userHexPubkey
+//            FeedManager.lastLocallyLoadedLatestFeedUserPubkey = IdentityManager.instance.userHexPubkey
+//            if isDifferentFromLast, let loaded = HomeFeedLocalLoadingManager.savedFeed {
+//                paginationInfo = loaded.pagination
+//                postsEmitter.send(loaded)
+//                return
+//            }
+//        }
+//        refresh()
     }
     
     deinit {
@@ -99,47 +135,47 @@ final class FeedManager {
 //        requestThread(postId: threadId)
         
         
-        let repo = IosRepositoryFactory.shared.createFeedRepository(cachingPrimalApiClient: )
+        let repo = IosRepositoryFactory.shared.createFeedRepository(cachingPrimalApiClient: PrimalApiClientFactory.shared.getDefault(serverType: PrimalServerType.caching))
         
         let userId = IdentityManager.instance.userHexPubkey
         
-//        Task {
-//            do {
-//                try await repo.fetchConversation(userId: userId, noteId: threadId)
-//                print("fetched")
-//            } catch {
-//                print(error)
-//            }
-//        }
+        Task {
+            do {
+                try await repo.fetchConversation(userId: userId, noteId: threadId)
+                print("fetched")
+            } catch {
+                print(error)
+            }
+        }
         
-//        threadSub = repo
-//            .observeConversation(userId: userId, noteId: threadId)
-//            .toPublisher()
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] obj in
-//                if obj.isEmpty { return }
-//                
-//                let result = PostRequestResult()
-//                result.posts = obj.compactMap { $0.rawNostrEvent.decode() }
-//                obj.forEach {
-//                    guard
-//                        let authorRaw = $0.author.rawNostrEvent,
-//                        let json: JSON = authorRaw.decode()
-//                    else { return }
-//                    
-//                    let nostrUser = NostrContent(json: json)
-//                    if var user = PrimalUser(nostrUser: nostrUser) {
-//                        user.rawData = authorRaw
-//                        result.users[nostrUser.pubkey] = user
-//                    }
-//                }
-//                
-//                self?.threadSub = nil
-//                self?.postsEmitter.send(result)
-//                
-////                first.nostrUris.first?.referencedUser.
-////                PrimalShared.FeedPost
-//            }
+        threadSub = repo
+            .observeConversation(userId: userId, noteId: threadId)
+            .toPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] obj in
+                if obj.isEmpty { return }
+                
+                let result = PostRequestResult()
+                result.posts = obj.compactMap { $0.rawNostrEvent.decode() }
+                obj.forEach {
+                    guard
+                        let authorRaw = $0.author.rawNostrEvent,
+                        let json: JSON = authorRaw.decode()
+                    else { return }
+                    
+                    let nostrUser = NostrContent(json: json)
+                    if var user = PrimalUser(nostrUser: nostrUser) {
+                        user.rawData = authorRaw
+                        result.users[nostrUser.pubkey] = user
+                    }
+                }
+                
+                self?.threadSub = nil
+                self?.postsEmitter.send(result)
+                
+//                first.nostrUris.first?.referencedUser.
+//                PrimalShared.FeedPost
+            }
     }
     
     func updateTheme() {
@@ -462,3 +498,64 @@ private extension FeedManager {
         return ("feed", .object(payload))
     }
 }
+
+final class FeedDataSource: NSObject,
+                            UICollectionViewDataSource,
+                            UICollectionViewDataSourcePrefetching {
+
+    private let pager: IosPagingPresenter<FeedPost>
+    private unowned let collectionView: UICollectionView
+
+    init(pager: IosPagingPresenter<FeedPost>,
+         collectionView: UICollectionView) {
+        self.pager = pager
+        self.collectionView = collectionView
+        super.init()
+
+        collectionView.dataSource = self
+        collectionView.prefetchDataSource = self
+        observeInvalidations()
+        observeLoadStates()
+    }
+
+    // MARK: data source ----------
+
+    func collectionView(_ cv: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        Int(pager.itemCount())
+    }
+
+    func collectionView(_ cv: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = cv.dequeueReusableCell(withReuseIdentifier: "FeedCell", for: indexPath)
+        return cell
+    }
+
+    // MARK: prefetch ----------
+
+    func collectionView(_ cv: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        // Access upcoming indices to hint Paging to fetch the next page.
+        indexPaths.forEach { pager.access(index: Int32($0.row)) }
+    }
+
+    // MARK: react to signals ----------
+
+    private func observeInvalidations() {
+        Task {
+            for await _ in pager.invalidations {
+                collectionView.reloadData()   // or apply diffable snapshot
+            }
+        }
+    }
+
+    private func observeLoadStates() {
+        Task {
+            for await states in pager.loadStates {
+                let append = states?.append
+                
+                // show error view, etc.
+            }
+        }
+    }
+}
+
