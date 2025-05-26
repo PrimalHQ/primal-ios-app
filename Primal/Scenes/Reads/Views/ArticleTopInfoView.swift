@@ -44,7 +44,12 @@ class ArticleTopInfoView: UIView, Themeable {
     
     func update(_ content: Article) {
         let date = Date(timeIntervalSince1970: content.event.created_at)
-        dateLabel.text = date.shortFormatString()
+        
+        if let clientTag = content.event.tags.first(where: { $0.first == "client" })?[safe: 1] {
+            dateLabel.text = "\(date.shortFormatString()) • via \(clientTag)"
+        } else {
+            dateLabel.text = date.shortFormatString()
+        }
         
         if let image = content.image {
             mainImageURL = image

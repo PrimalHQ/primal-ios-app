@@ -1575,6 +1575,311 @@
           },
           {
             "kind": "TypeDecl",
+            "name": "Nostr",
+            "printedName": "Nostr",
+            "children": [
+              {
+                "kind": "TypeDecl",
+                "name": "SignResult",
+                "printedName": "SignResult",
+                "children": [
+                  {
+                    "kind": "TypeDecl",
+                    "name": "__Sealed",
+                    "printedName": "__Sealed",
+                    "children": [
+                      {
+                        "kind": "Var",
+                        "name": "rejected",
+                        "printedName": "rejected",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type) -> (BlossomUploader.NostrSignResult.Rejected) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(BlossomUploader.NostrSignResult.Rejected) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "Rejected",
+                                    "printedName": "BlossomUploader.NostrSignResult.Rejected",
+                                    "usr": "c:objc(cs)BlossomUploaderNostrSignResultRejected"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO8rejectedyAISo0abdeF8RejectedCcAImF",
+                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO8rejectedyAISo0abdeF8RejectedCcAImF",
+                        "moduleName": "BlossomUploader",
+                        "fixedbinaryorder": 0
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "signed",
+                        "printedName": "signed",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type) -> (BlossomUploader.NostrSignResult.Signed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(BlossomUploader.NostrSignResult.Signed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "Signed",
+                                    "printedName": "BlossomUploader.NostrSignResult.Signed",
+                                    "usr": "c:objc(cs)BlossomUploaderNostrSignResultSigned"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO6signedyAISo0abdeF6SignedCcAImF",
+                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO6signedyAISo0abdeF6SignedCcAImF",
+                        "moduleName": "BlossomUploader",
+                        "fixedbinaryorder": 1
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "hashValue",
+                        "printedName": "hashValue",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Int",
+                            "printedName": "Swift.Int",
+                            "usr": "s:Si"
+                          }
+                        ],
+                        "declKind": "Var",
+                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivp",
+                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivp",
+                        "moduleName": "BlossomUploader",
+                        "implicit": true,
+                        "accessors": [
+                          {
+                            "kind": "Accessor",
+                            "name": "Get",
+                            "printedName": "Get()",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Int",
+                                "printedName": "Swift.Int",
+                                "usr": "s:Si"
+                              }
+                            ],
+                            "declKind": "Accessor",
+                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivg",
+                            "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivg",
+                            "moduleName": "BlossomUploader",
+                            "implicit": true,
+                            "accessorKind": "get"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "hash",
+                        "printedName": "hash(into:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Void",
+                            "printedName": "()"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Hasher",
+                            "printedName": "Swift.Hasher",
+                            "paramValueOwnership": "InOut",
+                            "usr": "s:s6HasherV"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO4hash4intoys6HasherVz_tF",
+                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO4hash4intoys6HasherVz_tF",
+                        "moduleName": "BlossomUploader",
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "==",
+                        "printedName": "==(_:_:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Bool",
+                            "printedName": "Swift.Bool",
+                            "usr": "s:Sb"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO2eeoiySbAI_AItFZ",
+                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO2eeoiySbAI_AItFZ",
+                        "moduleName": "BlossomUploader",
+                        "static": true,
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      }
+                    ],
+                    "declKind": "Enum",
+                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO",
+                    "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO",
+                    "moduleName": "BlossomUploader",
+                    "declAttributes": [
+                      "AccessControl",
+                      "Frozen"
+                    ],
+                    "isFromExtension": true,
+                    "isEnumExhaustive": true,
+                    "conformances": [
+                      {
+                        "kind": "Conformance",
+                        "name": "Copyable",
+                        "printedName": "Copyable",
+                        "usr": "s:s8CopyableP",
+                        "mangledName": "$ss8CopyableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Escapable",
+                        "printedName": "Escapable",
+                        "usr": "s:s9EscapableP",
+                        "mangledName": "$ss9EscapableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Hashable",
+                        "printedName": "Hashable",
+                        "usr": "s:SH",
+                        "mangledName": "$sSH"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Equatable",
+                        "printedName": "Equatable",
+                        "usr": "s:SQ",
+                        "mangledName": "$sSQ"
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "Enum",
+                "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO",
+                "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO",
+                "moduleName": "BlossomUploader",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "conformances": [
+                  {
+                    "kind": "Conformance",
+                    "name": "Copyable",
+                    "printedName": "Copyable",
+                    "usr": "s:s8CopyableP",
+                    "mangledName": "$ss8CopyableP"
+                  },
+                  {
+                    "kind": "Conformance",
+                    "name": "Escapable",
+                    "printedName": "Escapable",
+                    "usr": "s:s9EscapableP",
+                    "mangledName": "$ss9EscapableP"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Enum",
+            "usr": "s:15BlossomUploader4SkieO5NostrO",
+            "mangledName": "$s15BlossomUploader4SkieO5NostrO",
+            "moduleName": "BlossomUploader",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              }
+            ]
+          },
+          {
+            "kind": "TypeDecl",
             "name": "KotlinxSerializationCore",
             "printedName": "KotlinxSerializationCore",
             "children": [
@@ -4073,311 +4378,6 @@
             "declKind": "Enum",
             "usr": "s:15BlossomUploader4SkieO4OkioO",
             "mangledName": "$s15BlossomUploader4SkieO4OkioO",
-            "moduleName": "BlossomUploader",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "conformances": [
-              {
-                "kind": "Conformance",
-                "name": "Copyable",
-                "printedName": "Copyable",
-                "usr": "s:s8CopyableP",
-                "mangledName": "$ss8CopyableP"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Escapable",
-                "printedName": "Escapable",
-                "usr": "s:s9EscapableP",
-                "mangledName": "$ss9EscapableP"
-              }
-            ]
-          },
-          {
-            "kind": "TypeDecl",
-            "name": "Nostr",
-            "printedName": "Nostr",
-            "children": [
-              {
-                "kind": "TypeDecl",
-                "name": "SignResult",
-                "printedName": "SignResult",
-                "children": [
-                  {
-                    "kind": "TypeDecl",
-                    "name": "__Sealed",
-                    "printedName": "__Sealed",
-                    "children": [
-                      {
-                        "kind": "Var",
-                        "name": "rejected",
-                        "printedName": "rejected",
-                        "children": [
-                          {
-                            "kind": "TypeFunc",
-                            "name": "Function",
-                            "printedName": "(BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type) -> (BlossomUploader.NostrSignResult.Rejected) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                            "children": [
-                              {
-                                "kind": "TypeFunc",
-                                "name": "Function",
-                                "printedName": "(BlossomUploader.NostrSignResult.Rejected) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                "children": [
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "__Sealed",
-                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                                  },
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "Rejected",
-                                    "printedName": "BlossomUploader.NostrSignResult.Rejected",
-                                    "usr": "c:objc(cs)BlossomUploaderNostrSignResultRejected"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "TypeNominal",
-                                "name": "Metatype",
-                                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type",
-                                "children": [
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "__Sealed",
-                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ],
-                        "declKind": "EnumElement",
-                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO8rejectedyAISo0abdeF8RejectedCcAImF",
-                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO8rejectedyAISo0abdeF8RejectedCcAImF",
-                        "moduleName": "BlossomUploader",
-                        "fixedbinaryorder": 0
-                      },
-                      {
-                        "kind": "Var",
-                        "name": "signed",
-                        "printedName": "signed",
-                        "children": [
-                          {
-                            "kind": "TypeFunc",
-                            "name": "Function",
-                            "printedName": "(BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type) -> (BlossomUploader.NostrSignResult.Signed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                            "children": [
-                              {
-                                "kind": "TypeFunc",
-                                "name": "Function",
-                                "printedName": "(BlossomUploader.NostrSignResult.Signed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                "children": [
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "__Sealed",
-                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                                  },
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "Signed",
-                                    "printedName": "BlossomUploader.NostrSignResult.Signed",
-                                    "usr": "c:objc(cs)BlossomUploaderNostrSignResultSigned"
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "TypeNominal",
-                                "name": "Metatype",
-                                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed.Type",
-                                "children": [
-                                  {
-                                    "kind": "TypeNominal",
-                                    "name": "__Sealed",
-                                    "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ],
-                        "declKind": "EnumElement",
-                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO6signedyAISo0abdeF6SignedCcAImF",
-                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO6signedyAISo0abdeF6SignedCcAImF",
-                        "moduleName": "BlossomUploader",
-                        "fixedbinaryorder": 1
-                      },
-                      {
-                        "kind": "Var",
-                        "name": "hashValue",
-                        "printedName": "hashValue",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Int",
-                            "printedName": "Swift.Int",
-                            "usr": "s:Si"
-                          }
-                        ],
-                        "declKind": "Var",
-                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivp",
-                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivp",
-                        "moduleName": "BlossomUploader",
-                        "implicit": true,
-                        "accessors": [
-                          {
-                            "kind": "Accessor",
-                            "name": "Get",
-                            "printedName": "Get()",
-                            "children": [
-                              {
-                                "kind": "TypeNominal",
-                                "name": "Int",
-                                "printedName": "Swift.Int",
-                                "usr": "s:Si"
-                              }
-                            ],
-                            "declKind": "Accessor",
-                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivg",
-                            "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO9hashValueSivg",
-                            "moduleName": "BlossomUploader",
-                            "implicit": true,
-                            "accessorKind": "get"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "Function",
-                        "name": "hash",
-                        "printedName": "hash(into:)",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Void",
-                            "printedName": "()"
-                          },
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Hasher",
-                            "printedName": "Swift.Hasher",
-                            "paramValueOwnership": "InOut",
-                            "usr": "s:s6HasherV"
-                          }
-                        ],
-                        "declKind": "Func",
-                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO4hash4intoys6HasherVz_tF",
-                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO4hash4intoys6HasherVz_tF",
-                        "moduleName": "BlossomUploader",
-                        "implicit": true,
-                        "funcSelfKind": "NonMutating"
-                      },
-                      {
-                        "kind": "Function",
-                        "name": "==",
-                        "printedName": "==(_:_:)",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Bool",
-                            "printedName": "Swift.Bool",
-                            "usr": "s:Sb"
-                          },
-                          {
-                            "kind": "TypeNominal",
-                            "name": "__Sealed",
-                            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                          },
-                          {
-                            "kind": "TypeNominal",
-                            "name": "__Sealed",
-                            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-                          }
-                        ],
-                        "declKind": "Func",
-                        "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO2eeoiySbAI_AItFZ",
-                        "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO2eeoiySbAI_AItFZ",
-                        "moduleName": "BlossomUploader",
-                        "static": true,
-                        "implicit": true,
-                        "funcSelfKind": "NonMutating"
-                      }
-                    ],
-                    "declKind": "Enum",
-                    "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO",
-                    "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO",
-                    "moduleName": "BlossomUploader",
-                    "declAttributes": [
-                      "AccessControl",
-                      "Frozen"
-                    ],
-                    "isFromExtension": true,
-                    "isEnumExhaustive": true,
-                    "conformances": [
-                      {
-                        "kind": "Conformance",
-                        "name": "Copyable",
-                        "printedName": "Copyable",
-                        "usr": "s:s8CopyableP",
-                        "mangledName": "$ss8CopyableP"
-                      },
-                      {
-                        "kind": "Conformance",
-                        "name": "Escapable",
-                        "printedName": "Escapable",
-                        "usr": "s:s9EscapableP",
-                        "mangledName": "$ss9EscapableP"
-                      },
-                      {
-                        "kind": "Conformance",
-                        "name": "Hashable",
-                        "printedName": "Hashable",
-                        "usr": "s:SH",
-                        "mangledName": "$sSH"
-                      },
-                      {
-                        "kind": "Conformance",
-                        "name": "Equatable",
-                        "printedName": "Equatable",
-                        "usr": "s:SQ",
-                        "mangledName": "$sSQ"
-                      }
-                    ]
-                  }
-                ],
-                "declKind": "Enum",
-                "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO",
-                "mangledName": "$s15BlossomUploader4SkieO5NostrO10SignResultO",
-                "moduleName": "BlossomUploader",
-                "declAttributes": [
-                  "AccessControl"
-                ],
-                "conformances": [
-                  {
-                    "kind": "Conformance",
-                    "name": "Copyable",
-                    "printedName": "Copyable",
-                    "usr": "s:s8CopyableP",
-                    "mangledName": "$ss8CopyableP"
-                  },
-                  {
-                    "kind": "Conformance",
-                    "name": "Escapable",
-                    "printedName": "Escapable",
-                    "usr": "s:s9EscapableP",
-                    "mangledName": "$ss9EscapableP"
-                  }
-                ]
-              }
-            ],
-            "declKind": "Enum",
-            "usr": "s:15BlossomUploader4SkieO5NostrO",
-            "mangledName": "$s15BlossomUploader4SkieO5NostrO",
             "moduleName": "BlossomUploader",
             "declAttributes": [
               "AccessControl"
@@ -24672,6 +24672,89 @@
           {
             "kind": "TypeNominal",
             "name": "__Sealed",
+            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "GenericTypeParam",
+            "printedName": "τ_0_0"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOx_tSo0abghI0CRbzlF",
+        "mangledName": "$s15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOx_tSo0abghI0CRbzlF",
+        "moduleName": "BlossomUploader",
+        "genericSig": "<τ_0_0 where τ_0_0 : BlossomUploader.NostrSignResult>",
+        "sugared_genericSig": "<__Sealed where __Sealed : BlossomUploader.NostrSignResult>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Sealed",
+                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
+                "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "τ_0_0?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOSgxSg_tSo0abghI0CRbzlF",
+        "mangledName": "$s15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOSgxSg_tSo0abghI0CRbzlF",
+        "moduleName": "BlossomUploader",
+        "genericSig": "<τ_0_0 where τ_0_0 : BlossomUploader.NostrSignResult>",
+        "sugared_genericSig": "<__Sealed where __Sealed : BlossomUploader.NostrSignResult>",
+        "declAttributes": [
+          "AccessControl",
+          "DisfavoredOverload"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "__Sealed",
             "printedName": "BlossomUploader.Skie.KotlinxSerializationCore.SerialKind.__Sealed",
             "usr": "s:15BlossomUploader4SkieO24KotlinxSerializationCoreO10SerialKindO8__SealedO"
           },
@@ -25253,89 +25336,6 @@
           {
             "kind": "TypeNominal",
             "name": "__Sealed",
-            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-            "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-          },
-          {
-            "kind": "TypeNominal",
-            "name": "GenericTypeParam",
-            "printedName": "τ_0_0"
-          }
-        ],
-        "declKind": "Func",
-        "usr": "s:15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOx_tSo0abghI0CRbzlF",
-        "mangledName": "$s15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOx_tSo0abghI0CRbzlF",
-        "moduleName": "BlossomUploader",
-        "genericSig": "<τ_0_0 where τ_0_0 : BlossomUploader.NostrSignResult>",
-        "sugared_genericSig": "<__Sealed where __Sealed : BlossomUploader.NostrSignResult>",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "funcSelfKind": "NonMutating"
-      },
-      {
-        "kind": "Function",
-        "name": "onEnum",
-        "printedName": "onEnum(of:)",
-        "children": [
-          {
-            "kind": "TypeNominal",
-            "name": "Optional",
-            "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed?",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "__Sealed",
-                "printedName": "BlossomUploader.Skie.Nostr.SignResult.__Sealed",
-                "usr": "s:15BlossomUploader4SkieO5NostrO10SignResultO8__SealedO"
-              }
-            ],
-            "usr": "s:Sq"
-          },
-          {
-            "kind": "TypeNominal",
-            "name": "Optional",
-            "printedName": "τ_0_0?",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "usr": "s:Sq"
-          }
-        ],
-        "declKind": "Func",
-        "usr": "s:15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOSgxSg_tSo0abghI0CRbzlF",
-        "mangledName": "$s15BlossomUploader6onEnum2ofAA4SkieO5NostrO10SignResultO8__SealedOSgxSg_tSo0abghI0CRbzlF",
-        "moduleName": "BlossomUploader",
-        "genericSig": "<τ_0_0 where τ_0_0 : BlossomUploader.NostrSignResult>",
-        "sugared_genericSig": "<__Sealed where __Sealed : BlossomUploader.NostrSignResult>",
-        "declAttributes": [
-          "AccessControl",
-          "DisfavoredOverload"
-        ],
-        "funcSelfKind": "NonMutating"
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "BlossomUploader",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "Function",
-        "name": "onEnum",
-        "printedName": "onEnum(of:)",
-        "children": [
-          {
-            "kind": "TypeNominal",
-            "name": "__Sealed",
             "printedName": "BlossomUploader.Skie.KotlinxSerializationJson.JsonElement.__Sealed",
             "usr": "s:15BlossomUploader4SkieO24KotlinxSerializationJsonO0F7ElementO8__SealedO"
           },
@@ -25483,6 +25483,16 @@
           "DisfavoredOverload"
         ],
         "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BlossomUploader",
+        "declAttributes": [
+          "RawDocComment"
+        ]
       },
       {
         "kind": "Import",

@@ -61,6 +61,11 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             return
         }
         
+        if pathL.hasPrefix("/rc/") {
+            RootViewController.instance.navigateTo = .promoCode(id)
+            return
+        }
+        
         let pathComponents = path.split(separator: "/")
         guard let firstComponent = pathComponents.first else { return }
         let name = String(firstComponent)

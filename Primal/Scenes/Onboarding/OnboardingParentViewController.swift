@@ -18,6 +18,7 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
         case start
         case login
         case signup
+        case redeemCode(String? = nil)
     }
     
     var viewControllerStack: [UIViewController]
@@ -32,6 +33,12 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
             viewControllerStack = [OnboardingSigninController()]
         case .signup:
             viewControllerStack = [OnboardingDisplayNameController()]
+        case .redeemCode(let code):
+            if let code {
+                viewControllerStack = [OnboardingEnterCodeController(startingCode: code)]
+            } else {
+                viewControllerStack = [OnboardingScanCodeController()]
+            }
         }
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self

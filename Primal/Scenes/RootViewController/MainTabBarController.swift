@@ -36,6 +36,8 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
+    
+    let noConnectionView = NoConnectionView()
 
     lazy var buttons = tabs.map { _ in UIButton() }
     
@@ -275,6 +277,12 @@ private extension MainTabBarController {
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
+        view.addSubview(noConnectionView)
+        noConnectionView
+            .pinToSuperview(edges: .horizontal, padding: 12)
+            .pinToSuperview(edges: .top, padding: 60, safeArea: true)
+            .constrainToSize(height: 44)
+        
         let background = ThemeableView().setTheme { $0.backgroundColor = .background }
         buttonStackParent.addSubview(background)
         background.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -100)
@@ -327,6 +335,18 @@ private extension MainTabBarController {
         }
         .store(in: &cancellables)
         
+        let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
+        let delay3SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(3), scheduler: RunLoop.main).map({ _ in false })
+        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay3SecondsForegroundPublisher)
+        
+        Publishers.CombineLatest(
+            didJustEnterForegroundPublisher.prepend(false),
+            Connection.regular.cantConnectPublisher.removeDuplicates()
+        ).receive(on: DispatchQueue.main).sink { [weak self] didJustEnterForeground, cantConnect in
+            self?.noConnectionView.hasConnection = didJustEnterForeground || !cantConnect
+        }
+        .store(in: &cancellables)
+        
         DispatchQueue.main.async { [self] in
             RootViewController.instance.$navigateTo
                 .filter { $0 != nil }
@@ -366,6 +386,8 @@ private extension MainTabBarController {
                             newPost.manager.textView.text = text
                             newPost.manager.addMedia(files)
                             return (newPost, nil)
+                        case .promoCode(let code):
+                            return (OnboardingParentViewController(.redeemCode(code)), nil)
                         }
                     }()
                                         

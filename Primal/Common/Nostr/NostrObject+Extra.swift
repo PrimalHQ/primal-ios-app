@@ -340,6 +340,11 @@ extension NostrObject {
         guard let contentString = ["token": token].encodeToString() else { return nil }
         return createNostrObject(content: contentString, kind: 1337)
     }
+    
+    static func activatePromoCode(code: String) -> NostrObject? {
+        guard let contentString = ["promo_code": code].encodeToString() else { return nil }
+        return createNostrObject(content: contentString, kind: NostrKind.settings.rawValue, tags: [["d", "Primal-iOS-App"]])   
+    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()

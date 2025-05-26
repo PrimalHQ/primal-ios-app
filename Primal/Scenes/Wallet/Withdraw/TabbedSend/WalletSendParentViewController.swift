@@ -90,6 +90,11 @@ extension WalletSearchController {
             return
         }
         
+        if let url = URL(string: text), url.isPrimalURL {
+            PrimalWebsiteScheme().openURL(url)
+            return
+        }
+        
         PrimalWalletRequest(type: .parseLNURL(text)).publisher().receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 guard let self else { return }

@@ -72,7 +72,7 @@ private extension PremiumHomeViewController {
             }
         }))
         
-        renewLabel.isHidden = !(AppDelegate.contentSettings?.show_primal_support ?? true)
+        renewLabel.isHidden = !(AppDelegate.shared.contentSettings?.show_primal_support ?? true)
         
         let action = LegendaryRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
         action.addAction(.init(handler: { [unowned self] _ in

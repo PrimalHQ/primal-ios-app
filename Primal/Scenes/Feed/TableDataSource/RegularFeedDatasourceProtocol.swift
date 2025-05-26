@@ -18,7 +18,7 @@ enum NoteFeedElement: Hashable {
     case zapGallery([ParsedZap])
     case imageGallery
     case webPreview(WebPreviewType, LinkMetadata)
-    case postPreview
+    case postPreview(ParsedContent)
     case zapPreview
     case article
     case info
@@ -107,7 +107,13 @@ extension RegularFeedDatasourceProtocol {
             if let invoice = content.invoice { parts.append(.invoice) }
             if let article = content.article { parts.append(.article) }
             
-            if content.embeddedPost != nil { parts.append(.postPreview)}
+            if short, let embedded = content.embeddedPosts.first {
+                parts.append(.postPreview(embedded))
+            } else {
+                for embedded in content.embeddedPosts {
+                    parts.append(.postPreview(embedded))
+                }
+            }
             
             for (index, data) in content.linkPreviews.enumerated() {
                 if short && index > 1 { break } // Only show two link previews short view

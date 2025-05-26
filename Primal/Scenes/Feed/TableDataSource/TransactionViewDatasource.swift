@@ -104,6 +104,12 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -149,6 +155,11 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
             }
             .store(in: &cancellables)
         }
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

@@ -17,6 +17,8 @@ class LoadArticleController: UIViewController, Themeable {
     
     let loadingSpinner = LoadingSpinnerView()
     
+    var didLoad = false
+    
     var cancellables: Set<AnyCancellable> = []
     
     init(kind: Int, identifier: String, pubkey: String) {
@@ -57,6 +59,11 @@ private extension LoadArticleController {
     }
     
     func load() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            guard let self, !didLoad else { return }
+            load()
+        }
+        
         SocketRequest(name: "long_form_content_thread_view", payload: [
             "pubkey": .string(pubkey),
             "identifier": .string(identifier),
@@ -67,12 +74,14 @@ private extension LoadArticleController {
         .publisher()
         .receive(on: DispatchQueue.main)
         .sink { [weak self] res in
-            guard let self, let content = res.getArticles().first(where: {
+            guard let self, !didLoad, let content = res.getArticles().first(where: {
                 $0.event.pubkey == self.pubkey &&
                 $0.event.tags.contains(["d", self.identifier]) &&
                 $0.event.kind == Int32(self.kind)
             })
             else { return }
+            
+            self.didLoad = true
             
             let articleVC = ArticleViewController(content: content)
             articleVC.willMove(toParent: self)

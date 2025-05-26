@@ -109,15 +109,33 @@ final class WalletSendSmallActionBlackButton: UIButton {
     init(title: String, icon: UIImage?) {
         super.init(frame: .zero)
         
-        titleLabel?.font = .appFont(withSize: 16, weight: .regular)
-        setTitle(title, for: .normal)
-        setTitleColor(.init(rgb: 0xAAAAAA), for: .normal)
-        setImage(icon, for: .normal)
-        tintColor = .init(rgb: 0xAAAAAA)
-        backgroundColor = .black
-        layer.cornerRadius = 20
-        imageEdgeInsets = .init(top: 0, left: -16, bottom: 0, right: 0)
-        titleEdgeInsets = .init(top: 0, left: 8, bottom: 0, right: 0)
+        
+        var config = UIButton.Configuration.filled()
+        config.title = title
+        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = .appFont(withSize: 16, weight: .regular)
+            outgoing.foregroundColor = .init(rgb: 0xAAAAAA)
+            return outgoing
+        }
+        config.image = icon
+        config.imagePadding = 8
+        config.imagePlacement = .leading
+        config.baseBackgroundColor = .black
+        config.baseForegroundColor = .init(rgb: 0xAAAAAA)
+        config.cornerStyle = .capsule
+        config.titleLineBreakMode = .byTruncatingTail
+
+        configuration = config
+//        titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+//        setTitle(title, for: .normal)
+//        setTitleColor(.init(rgb: 0xAAAAAA), for: .normal)
+//        setImage(icon, for: .normal)
+//        tintColor = .init(rgb: 0xAAAAAA)
+//        backgroundColor = .black
+//        layer.cornerRadius = 20
+//        imageEdgeInsets = .init(top: 0, left: -16, bottom: 0, right: 0)
+//        titleEdgeInsets = .init(top: 0, left: 8, bottom: 0, right: 0)
         
         constrainToSize(height: 40)
     }

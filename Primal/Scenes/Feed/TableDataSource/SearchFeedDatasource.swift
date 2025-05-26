@@ -39,6 +39,12 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
                 switch element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -56,6 +62,11 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
         tableView.register(SearchPremiumCell.self, forCellReuseIdentifier: "premium")
         
         defaultRowAnimation = .none
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
+        return element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

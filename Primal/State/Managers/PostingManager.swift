@@ -105,6 +105,12 @@ final class PostingManager {
         .store(in: &cancellables)
     }
     
+    func reset() {
+        userReposts = []
+        userReplied = []
+        userLikes = []
+    }
+    
     static let instance: PostingManager = PostingManager()
     
     @Published var userReposts: Set<String> = []

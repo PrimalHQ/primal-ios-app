@@ -47,4 +47,9 @@ extension URL {
         let host = host()
         return host == "vimeo.com" || host == "www.vimeo.com"
     }
+    
+    var isPrimalURL: Bool {
+        let host = host()
+        return host == "primal.net" || host == "www.primal.net"
+    }
 }

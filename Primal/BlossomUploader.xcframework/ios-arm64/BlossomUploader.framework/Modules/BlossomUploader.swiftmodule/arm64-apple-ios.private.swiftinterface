@@ -100,6 +100,11 @@ public enum Skie {
     }
   }
   public typealias Primal_core__networking_upload = BlossomUploader.Skie.NetworkingUpload
+  public enum Nostr {
+    public enum SignResult {
+    }
+  }
+  public typealias Primal_domain__nostr = BlossomUploader.Skie.Nostr
   public enum KotlinxSerializationCore {
     public enum SerialKind {
     }
@@ -120,11 +125,6 @@ public enum Skie {
     }
   }
   public typealias com_squareup_okio__okio = BlossomUploader.Skie.Okio
-  public enum Nostr {
-    public enum SignResult {
-    }
-  }
-  public typealias Primal_domain__nostr = BlossomUploader.Skie.Nostr
   public enum KotlinxSerializationJson {
     public enum JsonElement {
     }
@@ -787,6 +787,19 @@ extension BlossomUploader.Skie.NetworkingUpload.UploadResult {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed where __Sealed : BlossomUploader.UploadResult
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.NetworkingUpload.UploadResult.__Sealed? where __Sealed : BlossomUploader.UploadResult
+extension BlossomUploader.Skie.Nostr.SignResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case rejected(BlossomUploader.NostrSignResult.Rejected)
+    case signed(BlossomUploader.NostrSignResult.Signed)
+    public static func == (a: BlossomUploader.Skie.Nostr.SignResult.__Sealed, b: BlossomUploader.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed where __Sealed : BlossomUploader.NostrSignResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed? where __Sealed : BlossomUploader.NostrSignResult
 extension BlossomUploader.Skie.KotlinxSerializationCore.SerialKind {
   @frozen public enum __Sealed : Swift.Hashable {
     case polymorphicKind(BlossomUploader.Kotlinx_serialization_corePolymorphicKind)
@@ -889,19 +902,6 @@ extension BlossomUploader.Skie.Okio.BufferedSink {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Okio.BufferedSink.__Sealed where __Sealed : BlossomUploader.OkioBufferedSink
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Okio.BufferedSink.__Sealed? where __Sealed : BlossomUploader.OkioBufferedSink
-extension BlossomUploader.Skie.Nostr.SignResult {
-  @frozen public enum __Sealed : Swift.Hashable {
-    case rejected(BlossomUploader.NostrSignResult.Rejected)
-    case signed(BlossomUploader.NostrSignResult.Signed)
-    public static func == (a: BlossomUploader.Skie.Nostr.SignResult.__Sealed, b: BlossomUploader.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-public func onEnum<__Sealed>(of sealed: __Sealed) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed where __Sealed : BlossomUploader.NostrSignResult
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> BlossomUploader.Skie.Nostr.SignResult.__Sealed? where __Sealed : BlossomUploader.NostrSignResult
 extension BlossomUploader.Skie.KotlinxSerializationJson.JsonElement {
   @frozen public enum __Sealed : Swift.Hashable {
     case jsonPrimitive(BlossomUploader.Kotlinx_serialization_jsonJsonPrimitive)

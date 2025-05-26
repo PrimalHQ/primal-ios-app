@@ -77,7 +77,7 @@ final class ParsedContent: Hashable {
     
     var hashtags: [ParsedElement] = []
     var mentions: [ParsedElement] = []
-    var notes: [ParsedElement] = []
+//    var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
     var highlights: [ParsedElement] = []
     var zaps: [ParsedZap] = []
@@ -95,7 +95,7 @@ final class ParsedContent: Hashable {
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
     
-    var embeddedPost: ParsedContent?
+    var embeddedPosts: [ParsedContent] = []
     var embeddedZap: ParsedFeedZap?
     var reposted: ParsedRepost?
     
@@ -255,18 +255,18 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for element in notes where element.position + element.length <= result.length {
-            guard let url = URL(string: "note://\(element.reference)") else {
-                result.addAttributes([
-                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
-                ], range: .init(location: element.position, length: element.length))
-                continue
-            }
-            result.addAttributes([
-                .foregroundColor: UIColor.accent2,
-                .link: url
-            ], range: .init(location: element.position, length: element.length))
-        }
+//        for element in notes where element.position + element.length <= result.length {
+//            guard let url = URL(string: "note://\(element.reference)") else {
+//                result.addAttributes([
+//                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
+//                ], range: .init(location: element.position, length: element.length))
+//                continue
+//            }
+//            result.addAttributes([
+//                .foregroundColor: UIColor.accent2,
+//                .link: url
+//            ], range: .init(location: element.position, length: element.length))
+//        }
         
         for element in mentions where element.position + element.length <= result.length {
             guard let url = URL(string: "mention://\(element.reference)") else {
@@ -309,9 +309,9 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-        for (index, element) in notes.reversed().enumerated() where element.position + element.length <= result.length {
-            result.replaceCharacters(in: .init(location: element.position, length: element.length), with: "Mentioned Note \(index + 1)")
-        }
+//        for (index, element) in notes.reversed().enumerated() where element.position + element.length <= result.length {
+//            result.replaceCharacters(in: .init(location: element.position, length: element.length), with: "Mentioned Note \(index + 1)")
+//        }
      
         return result
     }
@@ -382,7 +382,7 @@ extension ParsedContent {
         let new = ParsedContent(post: post, user: user)
         new.hashtags = hashtags
         new.mentions = mentions
-        new.notes = notes
+//        new.notes = notes
         new.httpUrls = httpUrls
         
         new.mediaResources = mediaResources
@@ -397,7 +397,7 @@ extension ParsedContent {
         
         new.zaps = zaps
         
-        new.embeddedPost = embeddedPost
+        new.embeddedPosts = embeddedPosts
         new.reposted = reposted
         new.embeddedZap = embeddedZap
         new.customEvent = customEvent

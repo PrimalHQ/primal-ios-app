@@ -53,6 +53,12 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
                 switch item.element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .postPreview(let embedded):
+                    if let cell = cell as? RegularFeedElementCell {
+                        cell.update(embedded)
+                        cell.delegate = delegate
+                    }
+                    return cell
                 default:
                     break
                 }
@@ -196,6 +202,15 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         snapshot.appendSections([.feed])
         snapshot.appendItems(cells)
         apply(snapshot, animatingDifferences: false)
+    }
+    
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        if articles.isEmpty, indexPath.section != 0 { return nil }
+        if !articles.isEmpty, indexPath.section != 1 { return nil }
+        
+        guard let data = cells[safe: indexPath.row], case .threadElement(let element) = data else { return nil }
+
+        return element.element
     }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {

@@ -87,6 +87,7 @@ enum NostrKind: Int {
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605
+    case promoCodeInfo = 10_000_701
     
     case shortenedArticle = 10_030_023
 }

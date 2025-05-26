@@ -29,7 +29,7 @@ class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     
     override func update(_ parsedContent: ParsedContent) {
         mainLabel.attributedText = parsedContent.attributedTextShort
-        mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPost == nil) ? 12 : 6
+        mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPosts.isEmpty) ? 12 : 6
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
         
