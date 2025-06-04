@@ -16,6 +16,7 @@ class YoutubeWebView: WKWebView, WKUIDelegate {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    // This is to enable opening youtube app from the youtube button
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         guard let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) else { return nil }
         UIApplication.shared.open(url)
