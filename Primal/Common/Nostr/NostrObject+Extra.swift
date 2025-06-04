@@ -345,6 +345,15 @@ extension NostrObject {
         guard let contentString = ["promo_code": code].encodeToString() else { return nil }
         return createNostrObject(content: contentString, kind: NostrKind.settings.rawValue, tags: [["d", "Primal-iOS-App"]])   
     }
+    
+    static func nwcRequest(_ request: String, secret: String, serverPubkey: String) -> NostrObject? {
+        guard
+            let base64 = encryptDirectMessage(request, privkey: secret, pubkey: serverPubkey),
+            let pubkey = HexKeypair.privkeyToPubkey(secret)
+        else { return nil }
+        
+        return createNostrObjectAndSign(pubkey: pubkey, privkey: secret, content: base64, kind: 23194, tags: [["p", serverPubkey]])
+    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()

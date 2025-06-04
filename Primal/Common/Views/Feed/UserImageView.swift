@@ -123,7 +123,7 @@ class UserImageView: UIView, Themeable {
         guard
             !disableAnimated,
             !feed || ContentDisplaySettings.animatedAvatars,
-            user.data.picture.hasSuffix("gif"),
+            user.data.picture.hasSuffix("gif") || user.data.picture.hasSuffix(".gifv"),
             let url = user.profileImage.url(for: .small)
         else {
             loadImage(url: url, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)

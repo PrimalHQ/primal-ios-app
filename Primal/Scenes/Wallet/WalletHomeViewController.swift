@@ -75,16 +75,10 @@ final class WalletHomeViewController: UIViewController, Themeable {
         }
     }
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        
-        setup()
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setup()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             self.animationsOn = true
@@ -94,8 +88,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        WalletManager.instance.refreshBalance()
-        WalletManager.instance.recheckTransactions()
+        WalletManager.instance.recheck()
         WalletManager.instance.loadNewExchangeRate()
         
         ICloudKeychainManager.instance.$userPubkey
@@ -190,7 +183,7 @@ extension WalletHomeViewController: UITableViewDataSource {
             }
             
             if indexPath.section >= tableData.count - 1 {
-                WalletManager.instance.loadMoreTransactions()
+                WalletManager.instance.impl.loadMoreTransactions()
             }
             
             return cell
@@ -277,7 +270,11 @@ extension WalletHomeViewController: UITableViewDelegate {
 
 extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
     func activateWalletPressed() {
-        show(WalletActivateViewController(), sender: nil)
+        if WalletManager.instance.primal == nil {
+            WalletManager.instance.setUsePrimalWallet()
+        } else {
+            show(WalletActivateViewController(), sender: nil)
+        }
     }
     
     func buySatsPressed() {
@@ -325,12 +322,11 @@ private extension WalletHomeViewController {
         let refresh = UIRefreshControl()
         refresh.addAction(.init(handler: { _ in
             if WalletManager.instance.userHasWallet != true {
-                WalletManager.instance.refreshHasWallet()
+                WalletManager.instance.primal?.refreshHasWallet()
                 return
             }
             
-            WalletManager.instance.refreshTransactions()
-            WalletManager.instance.refreshBalance()
+            WalletManager.instance.refresh()
         }), for: .valueChanged)
         table.refreshControl = refresh
         

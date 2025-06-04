@@ -159,31 +159,32 @@ extension WKWebView {
         
         if url.isTidalURL, let embedURL = url.tidalEmbedURL {
             load(URLRequest(url: embedURL))
-//            embedCode = """
-//            <iframe src="\(embedURL)" width="\(size.width - 10)" height="\(size.height)" allow="encrypted-media" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" title="TIDAL Embed Player" />
-//            """
+            //            embedCode = """
+            //            <iframe src="\(embedURL)" width="\(size.width - 10)" height="\(size.height)" allow="encrypted-media" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" title="TIDAL Embed Player" />
+            //            """
             return
         }
         
         if url.isSpotifyURL, let embedURL = url.spotifyEmbedURL {
             load(URLRequest(url: embedURL))
             return
-//            embedCode = """
-//            <div class="embed-container">
-//            <iframe style="border-radius:12px" src="\(embedURL)" width="100%" height="\(size.height)" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
-//            </iframe>
-//            </div>
-//            """
+            //            embedCode = """
+            //            <div class="embed-container">
+            //            <iframe style="border-radius:12px" src="\(embedURL)" width="100%" height="\(size.height)" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+            //            </iframe>
+            //            </div>
+            //            """
         }
         
         if url.isRumbleURL, let embedURL = URL(string: "https://rumble.com/embed/v66s2gs/?pub=4&autoplay=1") {
             load(URLRequest(url: embedURL))
             return
-//            embedCode = url.rumbleEmbedCode
+            //            embedCode = url.rumbleEmbedCode
         }
-        if url.isYoutubeURL, let id = url.youtubeID, let embedURL = URL(string: "https://www.youtube.com/embed/\(id)?autoplay=1") {
-            load(URLRequest(url: embedURL))
-            return
+        if url.isYoutubeURL, let id = url.youtubeID, let embedURL = URL(string: "https://www.youtube.com/embed/\(id)?autoplay=1&rel=0&showinfo=0&modestbranding=1") {
+            embedCode = """
+            <iframe src="\(embedURL)" width="\(size.width)" height="\(size.height - 10)" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            """
         }
         
         guard let embedCode else { return }
@@ -214,6 +215,6 @@ extension WKWebView {
         </html>
         """
 
-        loadHTMLString(embedHTML, baseURL: nil)
+        loadHTMLString(embedHTML, baseURL: URL(string: "https://primal.net/embed/"))
     }
 }

@@ -203,8 +203,7 @@ private extension WalletInAppPurchaseController {
                                 self?.present(WalletTransferSummaryController(.failure(navTitle: "Payment Failed", title: "Unable to send", message: "We were not able to send sats to your wallet. Please contact us at support@primal.net and we will assist you.")), animated: true)
                             } else {
                                 self?.dismiss(animated: true) {
-                                    WalletManager.instance.refreshBalance()
-                                    WalletManager.instance.refreshTransactions()
+                                    WalletManager.instance.refresh()
                                 }
                             }
                         }.store(in: &self!.cancellables)

@@ -360,7 +360,10 @@
 		B9370EB82DD65EB0004A9760 /* OnboardingEnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EB72DD65EB0004A9760 /* OnboardingEnterCodeController.swift */; };
 		B9370EBA2DD76D01004A9760 /* OnboardingPreviewCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EB92DD76D01004A9760 /* OnboardingPreviewCodeController.swift */; };
 		B9370EBD2DD79EF5004A9760 /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */; };
-		B9370EBE2DD79EF5004A9760 /* BlossomUploader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B9370EBE2DD79EF5004A9760 /* BlossomUploader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B9370EE72DE5EE40004A9760 /* PrimalWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EE62DE5EE39004A9760 /* PrimalWalletManager.swift */; };
+		B9370EE92DE6173E004A9760 /* NWCWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EE82DE6173A004A9760 /* NWCWalletManager.swift */; };
+		B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
 		B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429212BD2866D00746FBC /* thread-zap-medium.json */; };
@@ -1064,6 +1067,9 @@
 		B9370EB72DD65EB0004A9760 /* OnboardingEnterCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingEnterCodeController.swift; sourceTree = "<group>"; };
 		B9370EB92DD76D01004A9760 /* OnboardingPreviewCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPreviewCodeController.swift; sourceTree = "<group>"; };
 		B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlossomUploader.xcframework; sourceTree = "<group>"; };
+		B9370EE62DE5EE39004A9760 /* PrimalWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletManager.swift; sourceTree = "<group>"; };
+		B9370EE82DE6173A004A9760 /* NWCWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCWalletManager.swift; sourceTree = "<group>"; };
+		B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNWCQRScanController.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
 		B94429212BD2866D00746FBC /* thread-zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "thread-zap-medium.json"; sourceTree = "<group>"; };
@@ -1728,6 +1734,7 @@
 				B906AB142C9B52A40089813F /* Database */,
 				B9009B6A2B1F458B002B0613 /* SmallManagers */,
 				B94A0E2E2ABA228700DEBFE1 /* TextViewManagers */,
+				B9370EE52DE5EDFC004A9760 /* WalletManager */,
 				93F27DA32A27EA04004ADA55 /* FollowManager.swift */,
 				93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */,
 				93F27DA92A27FB41004ADA55 /* PostingManager.swift */,
@@ -1735,7 +1742,6 @@
 				939329452A66E82E00B96AAA /* LoginManager.swift */,
 				C1AF0026036532D4652C7322 /* MuteManager.swift */,
 				B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */,
-				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
 				B94F2BD72ADDAF000041181B /* InAppPurchaseManager.swift */,
 				B9B290542B4C46890069C87F /* SmartContactsManager.swift */,
 				B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */,
@@ -2058,6 +2064,7 @@
 			isa = PBXGroup;
 			children = (
 				B9C6D2432CB00F3600B2EEBE /* PrimalPageController */,
+				B91E56DF2CB97D7000C14809 /* AdvancedSearch */,
 				B9A36BDF2B8F9A8800D4465D /* AccountSwitching */,
 				B91E57052CC7ECC100C14809 /* Bookmarks */,
 				B99E7BD12B238A6800756F40 /* ImageGallery */,
@@ -2066,11 +2073,10 @@
 				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
-				B91E56DF2CB97D7000C14809 /* AdvancedSearch */,
-				B99E038A2C0567FA006CCECB /* Reads */,
 				9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */,
 				B9F9331B2B88F6C40064B495 /* Premium */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
+				B99E038A2C0567FA006CCECB /* Reads */,
 				B9009B582B0FCF3B002B0613 /* QRCodes */,
 				B94F2BB72AD410FA0041181B /* Wallet */,
 				B94A0E222AA8C7C500DEBFE1 /* Messagges */,
@@ -2504,6 +2510,7 @@
 		B9318F632B62ADC20044B6AA /* InputControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */,
 				B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */,
 				B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */,
 				B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */,
@@ -2530,6 +2537,16 @@
 				B9370EB92DD76D01004A9760 /* OnboardingPreviewCodeController.swift */,
 			);
 			path = ReedemCode;
+			sourceTree = "<group>";
+		};
+		B9370EE52DE5EDFC004A9760 /* WalletManager */ = {
+			isa = PBXGroup;
+			children = (
+				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
+				B9370EE62DE5EE39004A9760 /* PrimalWalletManager.swift */,
+				B9370EE82DE6173A004A9760 /* NWCWalletManager.swift */,
+			);
+			path = WalletManager;
 			sourceTree = "<group>";
 		};
 		B944292F2BD81F5900746FBC /* ZapGallery */ = {
@@ -3757,7 +3774,9 @@
 				B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */,
 				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* NostrProfile.swift in Sources */,
+				B9370EE92DE6173E004A9760 /* NWCWalletManager.swift in Sources */,
 				B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */,
+				B9370EE72DE5EE40004A9760 /* PrimalWalletManager.swift in Sources */,
 				B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */,
 				B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */,
 				B9E67E942D076F6F006BB397 /* RegularFeedDatasource.swift in Sources */,
@@ -3806,6 +3825,7 @@
 				B9E67ECB2D130075006BB397 /* HighlightCommentElementUserCell.swift in Sources */,
 				9E8DE4D629F7DA7C0028D3C3 /* BorderedTextField.swift in Sources */,
 				B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */,
+				B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
 				B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */,
 				B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */,
@@ -4183,7 +4203,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.57;
+				MARKETING_VERSION = 2.2.58;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4230,7 +4250,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.57;
+				MARKETING_VERSION = 2.2.58;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

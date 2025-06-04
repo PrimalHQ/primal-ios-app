@@ -30,7 +30,7 @@ class ThreadElementYoutubePreviewCell: ThreadElementBaseCell, RegularFeedElement
         webViewConfiguration.allowsInlineMediaPlayback = true
         webViewConfiguration.mediaTypesRequiringUserActionForPlayback = []
 
-        let view = WKWebView(frame: .zero, configuration: webViewConfiguration)
+        let view = YoutubeWebView(frame: .zero, configuration: webViewConfiguration)
         view.scrollView.contentInsetAdjustmentBehavior = .never
         return view
     }()
