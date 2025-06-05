@@ -150,6 +150,8 @@ public enum Skie {
   }
   public typealias org_jetbrains_kotlinx__kotlinx_io_core = PrimalShared.Skie.KotlinxIoCore
   public enum Nostr {
+    public enum ZapResult {
+    }
     public enum ZapTarget {
     }
     public enum SignResult {
@@ -485,7 +487,7 @@ extension PrimalShared.NwcApi {
 }
 extension PrimalShared.NostrZapper {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func zap(data: PrimalShared.ZapRequestData) async throws
+  public func zap(data: PrimalShared.ZapRequestData) async throws -> PrimalShared.ZapResult
 }
 extension PrimalShared.PrimalApiClient {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -556,7 +558,7 @@ extension PrimalShared.EventInteractionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func repostEvent(userId: Swift.String, eventId: Swift.String, eventKind: Swift.Int32, eventAuthorId: Swift.String, eventRawNostrEvent: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func zapEvent(userId: Swift.String, amountInSats: Swift.UInt64, comment: Swift.String, target: PrimalShared.ZapTarget, zapRequestEvent: PrimalShared.NostrEvent) async throws
+  public func zapEvent(userId: Swift.String, amountInSats: Swift.UInt64, comment: Swift.String, target: PrimalShared.ZapTarget, zapRequestEvent: PrimalShared.NostrEvent) async throws -> PrimalShared.ZapResult
 }
 extension PrimalShared.EventRelayHintsRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -2240,6 +2242,19 @@ extension PrimalShared.Skie.KotlinxIoCore.Sink {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSink
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSink
+extension PrimalShared.Skie.Nostr.ZapResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failure(PrimalShared.ZapResult.Failure)
+    case success(PrimalShared.ZapResult.Success)
+    public static func == (a: PrimalShared.Skie.Nostr.ZapResult.__Sealed, b: PrimalShared.Skie.Nostr.ZapResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed where __Sealed : PrimalShared.ZapResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed? where __Sealed : PrimalShared.ZapResult
 extension PrimalShared.Skie.Nostr.ZapTarget {
   @frozen public enum __Sealed : Swift.Hashable {
     case event(PrimalShared.ZapTarget.Event)

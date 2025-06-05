@@ -5508,6 +5508,62 @@ Classes:
   - Selector: "init"
     MethodKind: "Instance"
     SwiftName: "init()"
+- Name: "PrimalSharedZapResult"
+  SwiftName: "ZapResult"
+- Name: "PrimalSharedZapResultSuccess"
+  SwiftName: "ZapResult.Success"
+  Methods:
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapResultFailure"
+  SwiftName: "ZapResult.Failure"
+  Properties:
+  - Name: "error"
+    PropertyKind: "Instance"
+    SwiftName: "error"
+    Type: "PrimalSharedKotlinException * _Nonnull"
+  Methods:
+  - Selector: "initWithError:"
+    MethodKind: "Instance"
+    SwiftName: "init(error:)"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinException * _Nonnull"
+  - Selector: "doCopyError:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(error:)"
+    ResultType: "PrimalSharedZapResultFailure * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinException * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
 - Name: "PrimalSharedZapRequestData"
   SwiftName: "ZapRequestData"
   Properties:
@@ -5683,38 +5739,6 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "serializer()"
     ResultType: "id<PrimalSharedKotlinx_serialization_coreKSerializer> _Nonnull"
-- Name: "PrimalSharedZapException"
-  SwiftName: "ZapException"
-  Properties:
-  - Name: "cause"
-    PropertyKind: "Instance"
-    SwiftName: "cause"
-    Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Name: "message"
-    PropertyKind: "Instance"
-    SwiftName: "message"
-    Type: "NSString * _Nullable"
-  Methods:
-  - Selector: "initWithMessage:cause:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:cause:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nullable"
-    - Position: 1
-      Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Selector: "init"
-    MethodKind: "Instance"
-    SwiftName: "init()"
-    Availability: "nonswift"
-  - Selector: "initWithMessage:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:)"
-    Availability: "nonswift"
-  - Selector: "initWithCause:"
-    MethodKind: "Instance"
-    SwiftName: "init(cause:)"
-    Availability: "nonswift"
 - Name: "PrimalSharedNostrEventKind"
   SwiftBridge: "NostrEventKind"
   SwiftName: "__NostrEventKind"
@@ -7626,6 +7650,38 @@ Classes:
   - Selector: "initWithMessage:cause:"
     MethodKind: "Instance"
     SwiftName: "init(message:cause:)"
+    Availability: "nonswift"
+  - Selector: "initWithCause:"
+    MethodKind: "Instance"
+    SwiftName: "init(cause:)"
+    Availability: "nonswift"
+- Name: "PrimalSharedZapException"
+  SwiftName: "ZapException"
+  Properties:
+  - Name: "cause"
+    PropertyKind: "Instance"
+    SwiftName: "cause"
+    Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Name: "message"
+    PropertyKind: "Instance"
+    SwiftName: "message"
+    Type: "NSString * _Nullable"
+  Methods:
+  - Selector: "initWithMessage:cause:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:cause:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nullable"
+    - Position: 1
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "init"
+    MethodKind: "Instance"
+    SwiftName: "init()"
+    Availability: "nonswift"
+  - Selector: "initWithMessage:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:)"
     Availability: "nonswift"
   - Selector: "initWithCause:"
     MethodKind: "Instance"
@@ -23142,7 +23198,7 @@ Protocols:
     - Position: 0
       Type: "PrimalSharedZapRequestData * _Nonnull"
     - Position: 1
-      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+      Type: "void (^ _Nonnull)(PrimalSharedZapResult * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedNostrEventSignatureHandler"
   SwiftName: "NostrEventSignatureHandler"
   Methods:
@@ -23465,7 +23521,7 @@ Protocols:
     - Position: 4
       Type: "PrimalSharedNostrEvent * _Nonnull"
     - Position: 5
-      Type: "void (^ _Nonnull)(NSError * _Nullable)"
+      Type: "void (^ _Nonnull)(PrimalSharedZapResult * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedEventRelayHintsRepository"
   SwiftName: "EventRelayHintsRepository"
   Methods:

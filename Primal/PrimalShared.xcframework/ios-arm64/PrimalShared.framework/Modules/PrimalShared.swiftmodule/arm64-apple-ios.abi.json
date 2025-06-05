@@ -7540,6 +7540,281 @@
             "children": [
               {
                 "kind": "TypeDecl",
+                "name": "ZapResult",
+                "printedName": "ZapResult",
+                "children": [
+                  {
+                    "kind": "TypeDecl",
+                    "name": "__Sealed",
+                    "printedName": "__Sealed",
+                    "children": [
+                      {
+                        "kind": "Var",
+                        "name": "failure",
+                        "printedName": "failure",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapResult.__Sealed.Type) -> (PrimalShared.ZapResult.Failure) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapResult.Failure) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "Failure",
+                                    "printedName": "PrimalShared.ZapResult.Failure",
+                                    "usr": "c:objc(cs)PrimalSharedZapResultFailure"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO7failureyAISo0abeF7FailureCcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO7failureyAISo0abeF7FailureCcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 0
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "success",
+                        "printedName": "success",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapResult.__Sealed.Type) -> (PrimalShared.ZapResult.Success) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapResult.Success) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "Success",
+                                    "printedName": "PrimalShared.ZapResult.Success",
+                                    "usr": "c:objc(cs)PrimalSharedZapResultSuccess"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO7successyAISo0abeF7SuccessCcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO7successyAISo0abeF7SuccessCcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 1
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "hashValue",
+                        "printedName": "hashValue",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Int",
+                            "printedName": "Swift.Int",
+                            "usr": "s:Si"
+                          }
+                        ],
+                        "declKind": "Var",
+                        "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO9hashValueSivp",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO9hashValueSivp",
+                        "moduleName": "PrimalShared",
+                        "implicit": true,
+                        "accessors": [
+                          {
+                            "kind": "Accessor",
+                            "name": "Get",
+                            "printedName": "Get()",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Int",
+                                "printedName": "Swift.Int",
+                                "usr": "s:Si"
+                              }
+                            ],
+                            "declKind": "Accessor",
+                            "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO9hashValueSivg",
+                            "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO9hashValueSivg",
+                            "moduleName": "PrimalShared",
+                            "implicit": true,
+                            "accessorKind": "get"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "hash",
+                        "printedName": "hash(into:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Void",
+                            "printedName": "()"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Hasher",
+                            "printedName": "Swift.Hasher",
+                            "paramValueOwnership": "InOut",
+                            "usr": "s:s6HasherV"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO4hash4intoys6HasherVz_tF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO4hash4intoys6HasherVz_tF",
+                        "moduleName": "PrimalShared",
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "==",
+                        "printedName": "==(_:_:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Bool",
+                            "printedName": "Swift.Bool",
+                            "usr": "s:Sb"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                            "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                            "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO2eeoiySbAI_AItFZ",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO2eeoiySbAI_AItFZ",
+                        "moduleName": "PrimalShared",
+                        "static": true,
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      }
+                    ],
+                    "declKind": "Enum",
+                    "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO",
+                    "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO",
+                    "moduleName": "PrimalShared",
+                    "declAttributes": [
+                      "AccessControl",
+                      "Frozen"
+                    ],
+                    "isFromExtension": true,
+                    "isEnumExhaustive": true,
+                    "conformances": [
+                      {
+                        "kind": "Conformance",
+                        "name": "Copyable",
+                        "printedName": "Copyable",
+                        "usr": "s:s8CopyableP",
+                        "mangledName": "$ss8CopyableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Escapable",
+                        "printedName": "Escapable",
+                        "usr": "s:s9EscapableP",
+                        "mangledName": "$ss9EscapableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Hashable",
+                        "printedName": "Hashable",
+                        "usr": "s:SH",
+                        "mangledName": "$sSH"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Equatable",
+                        "printedName": "Equatable",
+                        "usr": "s:SQ",
+                        "mangledName": "$sSQ"
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "Enum",
+                "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO",
+                "mangledName": "$s12PrimalShared4SkieO5NostrO9ZapResultO",
+                "moduleName": "PrimalShared",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "conformances": [
+                  {
+                    "kind": "Conformance",
+                    "name": "Copyable",
+                    "printedName": "Copyable",
+                    "usr": "s:s8CopyableP",
+                    "mangledName": "$ss8CopyableP"
+                  },
+                  {
+                    "kind": "Conformance",
+                    "name": "Escapable",
+                    "printedName": "Escapable",
+                    "usr": "s:s9EscapableP",
+                    "mangledName": "$ss9EscapableP"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeDecl",
                 "name": "ZapTarget",
                 "printedName": "ZapTarget",
                 "children": [
@@ -53628,6 +53903,89 @@
           {
             "kind": "TypeNominal",
             "name": "__Sealed",
+            "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+            "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "GenericTypeParam",
+            "printedName": "τ_0_0"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:12PrimalShared6onEnum2ofAA4SkieO5NostrO9ZapResultO8__SealedOx_tSo0abhI0CRbzlF",
+        "mangledName": "$s12PrimalShared6onEnum2ofAA4SkieO5NostrO9ZapResultO8__SealedOx_tSo0abhI0CRbzlF",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ZapResult>",
+        "sugared_genericSig": "<__Sealed where __Sealed : PrimalShared.ZapResult>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Sealed",
+                "printedName": "PrimalShared.Skie.Nostr.ZapResult.__Sealed",
+                "usr": "s:12PrimalShared4SkieO5NostrO9ZapResultO8__SealedO"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "τ_0_0?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:12PrimalShared6onEnum2ofAA4SkieO5NostrO9ZapResultO8__SealedOSgxSg_tSo0abhI0CRbzlF",
+        "mangledName": "$s12PrimalShared6onEnum2ofAA4SkieO5NostrO9ZapResultO8__SealedOSgxSg_tSo0abhI0CRbzlF",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ZapResult>",
+        "sugared_genericSig": "<__Sealed where __Sealed : PrimalShared.ZapResult>",
+        "declAttributes": [
+          "AccessControl",
+          "DisfavoredOverload"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "__Sealed",
             "printedName": "PrimalShared.Skie.Nostr.ZapTarget.__Sealed",
             "usr": "s:12PrimalShared4SkieO5NostrO9ZapTargetO8__SealedO"
           },
@@ -57063,8 +57421,9 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
+                "name": "ZapResult",
+                "printedName": "PrimalShared.ZapResult",
+                "usr": "c:objc(cs)PrimalSharedZapResult"
               },
               {
                 "kind": "TypeNominal",
@@ -57074,8 +57433,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:So23PrimalSharedNostrZapperP0aB0E3zap4dataySo0aB14ZapRequestDataC_tYaKF",
-            "mangledName": "$sSo23PrimalSharedNostrZapperP0aB0E3zap4dataySo0aB14ZapRequestDataC_tYaKF",
+            "usr": "s:So23PrimalSharedNostrZapperP0aB0E3zap4dataSo0aB9ZapResultCSo0abG11RequestDataC_tYaKF",
+            "mangledName": "$sSo23PrimalSharedNostrZapperP0aB0E3zap4dataSo0aB9ZapResultCSo0abG11RequestDataC_tYaKF",
             "moduleName": "PrimalShared",
             "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.NostrZapper>",
             "sugared_genericSig": "<Self where Self : PrimalShared.NostrZapper>",
@@ -58407,8 +58766,9 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
+                "name": "ZapResult",
+                "printedName": "PrimalShared.ZapResult",
+                "usr": "c:objc(cs)PrimalSharedZapResult"
               },
               {
                 "kind": "TypeNominal",
@@ -58442,8 +58802,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:So38PrimalSharedEventInteractionRepositoryP0aB0E03zapC06userId12amountInSats7comment6target0f7RequestC0ySS_s6UInt64VSSSo0aB9ZapTargetCSo0ab5NostrC0CtYaKF",
-            "mangledName": "$sSo38PrimalSharedEventInteractionRepositoryP0aB0E03zapC06userId12amountInSats7comment6target0f7RequestC0ySS_s6UInt64VSSSo0aB9ZapTargetCSo0ab5NostrC0CtYaKF",
+            "usr": "s:So38PrimalSharedEventInteractionRepositoryP0aB0E03zapC06userId12amountInSats7comment6target0f7RequestC0So0aB9ZapResultCSS_s6UInt64VSSSo0abO6TargetCSo0ab5NostrC0CtYaKF",
+            "mangledName": "$sSo38PrimalSharedEventInteractionRepositoryP0aB0E03zapC06userId12amountInSats7comment6target0f7RequestC0So0aB9ZapResultCSS_s6UInt64VSSSo0abO6TargetCSo0ab5NostrC0CtYaKF",
             "moduleName": "PrimalShared",
             "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.EventInteractionRepository>",
             "sugared_genericSig": "<Self where Self : PrimalShared.EventInteractionRepository>",

@@ -183,7 +183,12 @@ extension NWCWalletManager: WalletImplementation {
             userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
         )
         
-        try await zapper.zap(data: data)
+        let res = try await zapper.zap(data: data)
+        
+        if let error = res as? ZapResult.Failure {
+            print(error.description())
+            
+        }
     }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
