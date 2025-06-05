@@ -705,6 +705,11 @@ func bech32_note_id(_ evid: String) -> String? {
     return bech32_encode(hrp: "note", bytes)
 }
 
+func bech32_lnurl(_ url: String) -> String? {
+    guard let data = url.data(using: .utf8) else { return nil}
+    return bech32_encode(hrp: "lnurl", [UInt8](data))
+}
+
 func bech32_article_id(_ evid: String) -> String? {
     guard let bytes = hex_decode(evid) else { return nil }
     return bech32_encode(hrp: "naddr", bytes)

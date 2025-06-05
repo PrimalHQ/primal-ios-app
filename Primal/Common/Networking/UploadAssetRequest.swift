@@ -10,7 +10,7 @@ import NWWebSocket
 import UIKit
 import Network
 import GenericJSON
-import BlossomUploader
+import PrimalShared
 
 enum UploadError: Error {
     case unableToProcess
@@ -111,21 +111,20 @@ class UploadAssetRequest {
     }
 }
 
-extension UploadAssetRequest: NostrNostrEventSignatureHandler {
-    func verifySignature(nostrEvent: NostrNostrEvent) -> Bool {
+extension UploadAssetRequest: NostrEventSignatureHandler {
+    func verifySignature(nostrEvent: NostrEvent) -> Bool {
         true
     }
     
-    func __signNostrEvent(unsignedNostrEvent: NostrNostrUnsignedEvent) async throws -> NostrSignResult {
+    func __signNostrEvent(unsignedNostrEvent: NostrUnsignedEvent) async throws -> SignResult {
         let tags = NostrExtensions().mapAsListOfListOfStrings(tags: unsignedNostrEvent.tags)
-        
+
         guard let new = NostrObject.create(content: unsignedNostrEvent.content, kind: Int(unsignedNostrEvent.kind), tags: tags) else {
             throw UploadError.unableToCompleteUpload
         }
-        
+
         return NostrExtensions().buildNostrSignResult(id: new.id, pubKey: new.pubkey, createdAt: new.created_at, kind: Int32(new.kind), tags: new.tags, content: new.content, sig: new.sig)
     }
-    
 }
 
 extension UploadAssetRequest: BlossomServerListProvider {

@@ -188,8 +188,9 @@ private extension SettingsWalletViewController {
         primalWallet.switchView.addAction(.init(handler: { [weak self, weak primalWallet] _ in
             guard let primalWallet else { return }
             let usePrimalWallet = primalWallet.switchView.isOn
-            self?.usePrimalWallet = usePrimalWallet
             WalletManager.instance.setUsePrimalWallet(usePrimalWallet)
+            self?.updateNWCStack()
+            self?.usePrimalWallet = usePrimalWallet
         }), for: .valueChanged)
         
         walletStart.switchView.addAction(.init(handler: { [weak walletStart] _ in

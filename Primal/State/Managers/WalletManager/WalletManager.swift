@@ -68,13 +68,16 @@ enum WalletError: Error {
     case inAppPurchaseServerError
     case noLud
     case noWallet
+    case notSupported
     
     var message: String {
         switch self {
+        case .notSupported:
+            return "That action is not supported by NWC"
         case .noWallet:
             return "Your wallet is not set up properly, go to Settings > Wallet to set it up."
         case .noLud:
-            return "Your account doesn't have lud6 or lud16 set up."
+            return "This account doesn't have lud06 or lud16 set up."
         case .serverError(let message):
             return message
         case .inAppPurchaseServerError:

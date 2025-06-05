@@ -359,8 +359,6 @@
 		B9370EB62DD64DBF004A9760 /* OnboardingScanCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EB52DD64DBF004A9760 /* OnboardingScanCodeController.swift */; };
 		B9370EB82DD65EB0004A9760 /* OnboardingEnterCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EB72DD65EB0004A9760 /* OnboardingEnterCodeController.swift */; };
 		B9370EBA2DD76D01004A9760 /* OnboardingPreviewCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EB92DD76D01004A9760 /* OnboardingPreviewCodeController.swift */; };
-		B9370EBD2DD79EF5004A9760 /* BlossomUploader.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */; };
-		B9370EBE2DD79EF5004A9760 /* BlossomUploader.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9370EE72DE5EE40004A9760 /* PrimalWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EE62DE5EE39004A9760 /* PrimalWalletManager.swift */; };
 		B9370EE92DE6173E004A9760 /* NWCWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EE82DE6173A004A9760 /* NWCWalletManager.swift */; };
 		B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */; };
@@ -523,6 +521,8 @@
 		B9C6D2452CB00F6300B2EEBE /* PrimalPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */; };
 		B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */; };
 		B9C6D24A2CB43DE500B2EEBE /* ExplorePeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2492CB43DE500B2EEBE /* ExplorePeopleViewController.swift */; };
+		B9CC1AD42DF0A2290020BFC2 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9CC1AD22DF0A21C0020BFC2 /* PrimalShared.xcframework */; };
+		B9CC1AD52DF0A2290020BFC2 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9CC1AD22DF0A21C0020BFC2 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
 		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
 		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
@@ -664,7 +664,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9370EBE2DD79EF5004A9760 /* BlossomUploader.xcframework in Embed Frameworks */,
+				B9CC1AD52DF0A2290020BFC2 /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1066,7 +1066,6 @@
 		B9370EB52DD64DBF004A9760 /* OnboardingScanCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingScanCodeController.swift; sourceTree = "<group>"; };
 		B9370EB72DD65EB0004A9760 /* OnboardingEnterCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingEnterCodeController.swift; sourceTree = "<group>"; };
 		B9370EB92DD76D01004A9760 /* OnboardingPreviewCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPreviewCodeController.swift; sourceTree = "<group>"; };
-		B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlossomUploader.xcframework; sourceTree = "<group>"; };
 		B9370EE62DE5EE39004A9760 /* PrimalWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletManager.swift; sourceTree = "<group>"; };
 		B9370EE82DE6173A004A9760 /* NWCWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCWalletManager.swift; sourceTree = "<group>"; };
 		B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNWCQRScanController.swift; sourceTree = "<group>"; };
@@ -1227,6 +1226,7 @@
 		B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPageController.swift; sourceTree = "<group>"; };
 		B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedViewController.swift; sourceTree = "<group>"; };
 		B9C6D2492CB43DE500B2EEBE /* ExplorePeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleViewController.swift; sourceTree = "<group>"; };
+		B9CC1AD22DF0A21C0020BFC2 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
 		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
@@ -1367,9 +1367,9 @@
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
+				B9CC1AD42DF0A2290020BFC2 /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
-				B9370EBD2DD79EF5004A9760 /* BlossomUploader.xcframework in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
@@ -1501,7 +1501,7 @@
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
-				B9370EBB2DD79EEE004A9760 /* BlossomUploader.xcframework */,
+				B9CC1AD22DF0A21C0020BFC2 /* PrimalShared.xcframework */,
 				939330FB29A3E370003954C2 /* Preview Content */,
 				9310AB0629AAF06B0038B6F4 /* Launch Screen.storyboard */,
 			);
