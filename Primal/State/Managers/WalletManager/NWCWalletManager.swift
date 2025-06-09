@@ -22,13 +22,10 @@ import PrimalShared
 
 extension PrimalUser {
     var decodedLNURL: String? {
-        var lud16 = self.lud16
         if lud16.isEmpty {
             if lud06.isEmpty { return nil }
             
-            guard let decoded = try? bech32_decode(lud06) else { return nil }
-            
-            print(decoded)
+            return decode_lnurl(lud06)?.absoluteString
         }
         
         let parts = lud16.components(separatedBy: "@")
@@ -53,9 +50,9 @@ extension PrimalUser {
 
 class NWCWalletManager {
     
-    @Published var balance: Int = 10000
+    @Published var balance: Int = 0
     
-    let userHasWallet: Bool? = true
+    @Published var userHasWallet: Bool? = true
     
     let relay: String
     let serverPubkey: String
@@ -64,8 +61,6 @@ class NWCWalletManager {
     var maxBalance: Int = 10000
     
     private let urlSession: URLSession = .shared
-    
-//    let connection: NWCRelayConnection
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -77,17 +72,15 @@ class NWCWalletManager {
             let u = URL(string: url),
             let items = URLComponents(url: u, resolvingAgainstBaseURL: false)?.queryItems,
             let relay = items.first(where: { $0.name == "relay" })?.value,
-//            let relayURL = URL(string: relay),
+            //            let relayURL = URL(string: relay),
             let secret = items.first(where: { $0.name == "secret" })?.value,
             let secretPubkey = HexKeypair.privkeyToPubkey(secret),
             let serverPubkey = u.host
         else { return nil }
-
+        
         self.serverPubkey = serverPubkey
         self.relay = relay
         self.secret = secret
-//        connection = .init(relayURL)
-//        connection.connect()
         
         let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
         
@@ -95,51 +88,8 @@ class NWCWalletManager {
         zapper = NwcClientFactory.shared.createNwcNostrZapper(nwcData: data)
         print("NWC: \(url)")
         
-        Task {
-            do {
-                let res = try await client.getBalance()
-                print(res)
-            } catch {
-                print(error)
-            }
-        }
-        
-//        connection.subject
-//            .sink {
-//                print("NWC: \($0)")
-//                
-//                guard
-//                    case .message(let msg) = $0,
-//                    case .string(let string) = msg,
-//                    let json: JSON = string.decode(),
-//                    let content = json.arrayValue?.last?.objectValue?["content"]?.stringValue,
-//                    let decodedMessage = decryptDirectMessage(content, privkey: secret, pubkey: serverPubkey)
-//                else { return }
-//                
-//                print("NWC: \(decodedMessage)")
-//            }
-//            .store(in: &cancellables)
-//        
-//        sendRequest(#"{ "method": "get_info", "params": {} }"#)
+        refreshBalance()
     }
-    
-//    func sendRequest(_ request: String) {
-//        guard
-//            let event = NostrObject.nwcRequest(request, secret: secret, serverPubkey: serverPubkey),
-//            let eventString = event.encodeToString()
-//        else { return }
-//        
-//        let filterMessage = """
-//["REQ", "ios_filter_req", { "kinds": [23195], "#e": ["\(event.id)"] }]
-//"""
-//        print("NWC: \(event)")
-//
-//        connection.send(.string(filterMessage))
-//        
-//        
-//        let eventMessage = #"["EVENT", \#(eventString)]"#
-//        connection.send(.string(eventMessage))
-//    }
 }
 
 extension NWCWalletManager: WalletImplementation {
@@ -162,18 +112,6 @@ extension NWCWalletManager: WalletImplementation {
     func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
         guard let address = user.decodedLNURL else { throw WalletError.noLud }
         
-        let event = zap.toJSON()
-        let dataJson: [String: JSON] = [
-            "zapperUserId": .string(IdentityManager.instance.userHexPubkey),
-            "targetUserId": .string(user.pubkey),
-            "lnUrlDecoded": .string(address),
-            "zapAmountInSats": .number(Double(sats)),
-            "zapComment": .string(note),
-            "userZapRequestEvent": event
-        ]
-        
-        print(dataJson)
-        
         let data = ZapRequestData(
             zapperUserId: IdentityManager.instance.userHexPubkey,
             targetUserId: user.pubkey,
@@ -187,7 +125,6 @@ extension NWCWalletManager: WalletImplementation {
         
         if let error = res as? ZapResult.Failure {
             print(error.description())
-            
         }
     }
     
@@ -203,11 +140,7 @@ extension NWCWalletManager: WalletImplementation {
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws {
         // TODO: Mozda nece moci throw error
-        var amount = KotlinLong(value: Int64(sats))
-        
-        let res = try await client.payInvoice(params: .init(invoice: lnurl, amount: amount))
-        
-        print(res.description)
+        throw WalletError.notSupported
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws {
@@ -220,9 +153,14 @@ extension NWCWalletManager: WalletImplementation {
             return try await zapUser(user, sats: sats, note: note, zap: zap)
         }
         
-        guard let address = user.decodedLNURL else { throw WalletError.noLud }
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
+        }
         
-        try await sendInvoice(address, satsOverride: sats, messageOverride: note)
+        guard let zap = NostrObject.zap(target: .profile(user.pubkey), relays: relays) else { throw WalletError.signingError }
+        
+        try await zapUser(user, sats: sats, note: note, zap: zap)
     }
     
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
@@ -233,5 +171,15 @@ extension NWCWalletManager: WalletImplementation {
         
     }
     
-    
+    func refreshBalance() {
+        Task { @MainActor [weak self] in
+            do {
+                guard let res = (try await self?.client.getBalance() as? NwcResultSuccess<GetBalanceResponsePayload>)?.result else { return }
+                
+                self?.balance = Int(res.balance / 1_000)
+            } catch {
+                print(error)
+            }
+        }
+    }
 }

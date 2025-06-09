@@ -11,8 +11,14 @@ import GenericJSON
 
 class ExploreUsersFeedManager: UserFeedManager {
     init() {
-        super.init(request: FeedManagerRequest(name: "explore_people", body: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]))
+        super.init(request: FeedManagerRequest(name: "follow_lists", body: [:]))
     }
+}
+
+struct UserList {
+    var name: String
+    var image: String?
+    var imageData: MediaResource?
 }
 
 class UserFeedManager: BaseFeedManager {
@@ -28,12 +34,13 @@ class UserFeedManager: BaseFeedManager {
         baseDelegate = self
         
         requestResultEmitter
-            .map { $0.getSortedUsers() }
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] users in
+            .sink { [weak self] result in
+                let userLists: [[String: JSON]] = result.events.filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.followList.rawValue })
+                
                 guard let self else { return }
-                self.users = oldUsers + users
-                self.oldUsers = self.users
+//                self.users = oldUsers + users
+//                self.oldUsers = self.users
             }
             .store(in: &cancellables)
     }

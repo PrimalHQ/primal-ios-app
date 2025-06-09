@@ -69,9 +69,12 @@ enum WalletError: Error {
     case noLud
     case noWallet
     case notSupported
+    case signingError
     
     var message: String {
         switch self {
+        case .signingError:
+            return "Unable to sign events"
         case .notSupported:
             return "That action is not supported by NWC"
         case .noWallet:
@@ -121,6 +124,7 @@ protocol WalletImplementation {
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws
     
     func loadMoreTransactions()
+    func refreshBalance()
 }
 
 extension PrimalWalletManager: WalletImplementation {
@@ -185,6 +189,7 @@ final class WalletManager {
         parsedTransactions = []     // Required because of the notification code, otherwise a notification would show when switching accounts
         
         if UserDefaults.standard.useNwcWallet[pubkey] == true {
+            isLoadingWallet = false
             if let nwcString = UserDefaults.standard.nwcSettings[pubkey] {
                 impl = NWCWalletManager(url: nwcString) ?? DummyWalletImplementation()
             } else {
@@ -238,7 +243,7 @@ final class WalletManager {
     
     func refresh() {
         // TODO: resolve refresh
-        primal?.refreshBalance()
+        impl.refreshBalance()
         primal?.refreshTransactions()
     }
     
@@ -402,6 +407,10 @@ class DummyWalletImplementation: WalletImplementation {
     }
     
     func loadMoreTransactions() {
+        
+    }
+    
+    func refreshBalance() {
         
     }
 }

@@ -5534,21 +5534,21 @@ Classes:
   - Name: "error"
     PropertyKind: "Instance"
     SwiftName: "error"
-    Type: "PrimalSharedKotlinException * _Nonnull"
+    Type: "PrimalSharedZapError * _Nonnull"
   Methods:
   - Selector: "initWithError:"
     MethodKind: "Instance"
     SwiftName: "init(error:)"
     Parameters:
     - Position: 0
-      Type: "PrimalSharedKotlinException * _Nonnull"
+      Type: "PrimalSharedZapError * _Nonnull"
   - Selector: "doCopyError:"
     MethodKind: "Instance"
     SwiftName: "doCopy(error:)"
     ResultType: "PrimalSharedZapResultFailure * _Nonnull"
     Parameters:
     - Position: 0
-      Type: "PrimalSharedKotlinException * _Nonnull"
+      Type: "PrimalSharedZapError * _Nonnull"
   - Selector: "isEqual:"
     MethodKind: "Instance"
     SwiftName: "isEqual(_:)"
@@ -5907,6 +5907,10 @@ Classes:
   - Name: "apphandler"
     PropertyKind: "Class"
     SwiftName: "appHandler"
+    Type: "PrimalSharedNostrEventKind * _Nonnull"
+  - Name: "starterpack"
+    PropertyKind: "Class"
+    SwiftName: "starterPack"
     Type: "PrimalSharedNostrEventKind * _Nonnull"
   - Name: "primaleventstats"
     PropertyKind: "Class"
@@ -7655,102 +7659,188 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "init(cause:)"
     Availability: "nonswift"
-- Name: "PrimalSharedZapException"
-  SwiftName: "ZapException"
+- Name: "PrimalSharedZapError"
+  SwiftName: "ZapError"
+- Name: "PrimalSharedZapErrorInvalidZap"
+  SwiftName: "ZapError.InvalidZap"
+  Properties:
+  - Name: "message"
+    PropertyKind: "Instance"
+    SwiftName: "message"
+    Type: "NSString * _Nonnull"
+  Methods:
+  - Selector: "initWithMessage:"
+    MethodKind: "Instance"
+    SwiftName: "init(message:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "doCopyMessage:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(message:)"
+    ResultType: "PrimalSharedZapErrorInvalidZap * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapErrorFailedToFetchZapPayRequest"
+  SwiftName: "ZapError.FailedToFetchZapPayRequest"
   Properties:
   - Name: "cause"
     PropertyKind: "Instance"
     SwiftName: "cause"
     Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Name: "message"
-    PropertyKind: "Instance"
-    SwiftName: "message"
-    Type: "NSString * _Nullable"
   Methods:
-  - Selector: "initWithMessage:cause:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:cause:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nullable"
-    - Position: 1
-      Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Selector: "init"
-    MethodKind: "Instance"
-    SwiftName: "init()"
-    Availability: "nonswift"
-  - Selector: "initWithMessage:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:)"
-    Availability: "nonswift"
   - Selector: "initWithCause:"
     MethodKind: "Instance"
     SwiftName: "init(cause:)"
-    Availability: "nonswift"
-- Name: "PrimalSharedZapRequestException"
-  SwiftName: "ZapRequestException"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "doCopyCause:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(cause:)"
+    ResultType: "PrimalSharedZapErrorFailedToFetchZapPayRequest * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapErrorFailedToFetchZapInvoice"
+  SwiftName: "ZapError.FailedToFetchZapInvoice"
   Properties:
   - Name: "cause"
     PropertyKind: "Instance"
     SwiftName: "cause"
     Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Name: "message"
-    PropertyKind: "Instance"
-    SwiftName: "message"
-    Type: "NSString * _Nullable"
   Methods:
-  - Selector: "initWithMessage:cause:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:cause:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nullable"
-    - Position: 1
-      Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Selector: "init"
-    MethodKind: "Instance"
-    SwiftName: "init()"
-    Availability: "nonswift"
-  - Selector: "initWithMessage:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:)"
-    Availability: "nonswift"
   - Selector: "initWithCause:"
     MethodKind: "Instance"
     SwiftName: "init(cause:)"
-    Availability: "nonswift"
-- Name: "PrimalSharedZapFailureException"
-  SwiftName: "ZapFailureException"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "doCopyCause:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(cause:)"
+    ResultType: "PrimalSharedZapErrorFailedToFetchZapInvoice * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapErrorFailedToSignEvent"
+  SwiftName: "ZapError.FailedToSignEvent"
+  Methods:
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapErrorFailedToPublishEvent"
+  SwiftName: "ZapError.FailedToPublishEvent"
+  Methods:
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedZapErrorUnknown"
+  SwiftName: "ZapError.Unknown"
   Properties:
   - Name: "cause"
     PropertyKind: "Instance"
     SwiftName: "cause"
     Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Name: "message"
-    PropertyKind: "Instance"
-    SwiftName: "message"
-    Type: "NSString * _Nullable"
   Methods:
-  - Selector: "initWithMessage:cause:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:cause:)"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nullable"
-    - Position: 1
-      Type: "PrimalSharedKotlinThrowable * _Nullable"
-  - Selector: "init"
-    MethodKind: "Instance"
-    SwiftName: "init()"
-    Availability: "nonswift"
-  - Selector: "initWithMessage:"
-    MethodKind: "Instance"
-    SwiftName: "init(message:)"
-    Availability: "nonswift"
   - Selector: "initWithCause:"
     MethodKind: "Instance"
     SwiftName: "init(cause:)"
-    Availability: "nonswift"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "doCopyCause:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(cause:)"
+    ResultType: "PrimalSharedZapErrorUnknown * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedKotlinThrowable * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
 - Name: "PrimalSharedConstantsKt"
   SwiftName: "ConstantsKt"
   Properties:
@@ -7893,6 +7983,13 @@ Classes:
   - Selector: "findFirstContextTag:"
     MethodKind: "Class"
     SwiftName: "findFirstContextTag(_:)"
+    ResultType: "NSString * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> *> * _Nonnull"
+  - Selector: "findFirstDescription:"
+    MethodKind: "Class"
+    SwiftName: "findFirstDescription(_:)"
     ResultType: "NSString * _Nullable"
     Parameters:
     - Position: 0
@@ -12034,6 +12131,182 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "description()"
     ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedFollowPack"
+  SwiftName: "FollowPack"
+  Properties:
+  - Name: "authorId"
+    PropertyKind: "Instance"
+    SwiftName: "authorId"
+    Type: "NSString * _Nonnull"
+  - Name: "authorProfileData"
+    PropertyKind: "Instance"
+    SwiftName: "authorProfileData"
+    Type: "PrimalSharedFollowPackProfileData * _Nullable"
+  - Name: "coverCdnImage"
+    PropertyKind: "Instance"
+    SwiftName: "coverCdnImage"
+    Type: "PrimalSharedCdnImage * _Nullable"
+  - Name: "description_"
+    PropertyKind: "Instance"
+    SwiftName: "description_"
+    Type: "NSString * _Nullable"
+  - Name: "identifier"
+    PropertyKind: "Instance"
+    SwiftName: "identifier"
+    Type: "NSString * _Nonnull"
+  - Name: "profiles"
+    PropertyKind: "Instance"
+    SwiftName: "profiles"
+    Type: "NSArray<PrimalSharedFollowPackProfileData *> * _Nonnull"
+  - Name: "profilesCount"
+    PropertyKind: "Instance"
+    SwiftName: "profilesCount"
+    Type: "int32_t"
+  - Name: "title"
+    PropertyKind: "Instance"
+    SwiftName: "title"
+    Type: "NSString * _Nonnull"
+  - Name: "updatedAt"
+    PropertyKind: "Instance"
+    SwiftName: "updatedAt"
+    Type: "int64_t"
+  Methods:
+  - Selector: "initWithIdentifier:title:coverCdnImage:description:authorId:authorProfileData:profilesCount:profiles:updatedAt:"
+    MethodKind: "Instance"
+    SwiftName: "init(identifier:title:coverCdnImage:description:authorId:authorProfileData:profilesCount:profiles:updatedAt:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
+      Type: "PrimalSharedFollowPackProfileData * _Nullable"
+    - Position: 6
+      Type: "int32_t"
+    - Position: 7
+      Type: "NSArray<PrimalSharedFollowPackProfileData *> * _Nonnull"
+    - Position: 8
+      Type: "int64_t"
+  - Selector: "doCopyIdentifier:title:coverCdnImage:description:authorId:authorProfileData:profilesCount:profiles:updatedAt:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(identifier:title:coverCdnImage:description:authorId:authorProfileData:profilesCount:profiles:updatedAt:)"
+    ResultType: "PrimalSharedFollowPack * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 3
+      Type: "NSString * _Nullable"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
+      Type: "PrimalSharedFollowPackProfileData * _Nullable"
+    - Position: 6
+      Type: "int32_t"
+    - Position: 7
+      Type: "NSArray<PrimalSharedFollowPackProfileData *> * _Nonnull"
+    - Position: 8
+      Type: "int64_t"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
+- Name: "PrimalSharedFollowPackProfileData"
+  SwiftName: "FollowPackProfileData"
+  Properties:
+  - Name: "avatarCdnImage"
+    PropertyKind: "Instance"
+    SwiftName: "avatarCdnImage"
+    Type: "PrimalSharedCdnImage * _Nullable"
+  - Name: "displayName"
+    PropertyKind: "Instance"
+    SwiftName: "displayName"
+    Type: "NSString * _Nonnull"
+  - Name: "followersCount"
+    PropertyKind: "Instance"
+    SwiftName: "followersCount"
+    Type: "int32_t"
+  - Name: "internetIdentifier"
+    PropertyKind: "Instance"
+    SwiftName: "internetIdentifier"
+    Type: "NSString * _Nullable"
+  - Name: "primalPremiumInfo"
+    PropertyKind: "Instance"
+    SwiftName: "primalPremiumInfo"
+    Type: "PrimalSharedPrimalPremiumInfo * _Nullable"
+  - Name: "profileId"
+    PropertyKind: "Instance"
+    SwiftName: "profileId"
+    Type: "NSString * _Nonnull"
+  Methods:
+  - Selector: "initWithProfileId:displayName:internetIdentifier:followersCount:avatarCdnImage:primalPremiumInfo:"
+    MethodKind: "Instance"
+    SwiftName: "init(profileId:displayName:internetIdentifier:followersCount:avatarCdnImage:primalPremiumInfo:)"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nullable"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 5
+      Type: "PrimalSharedPrimalPremiumInfo * _Nullable"
+  - Selector: "doCopyProfileId:displayName:internetIdentifier:followersCount:avatarCdnImage:primalPremiumInfo:"
+    MethodKind: "Instance"
+    SwiftName: "doCopy(profileId:displayName:internetIdentifier:followersCount:avatarCdnImage:primalPremiumInfo:)"
+    ResultType: "PrimalSharedFollowPackProfileData * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nullable"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "PrimalSharedCdnImage * _Nullable"
+    - Position: 5
+      Type: "PrimalSharedPrimalPremiumInfo * _Nullable"
+  - Selector: "isEqual:"
+    MethodKind: "Instance"
+    SwiftName: "isEqual(_:)"
+    ResultType: "BOOL"
+    Parameters:
+    - Position: 0
+      Type: "id _Nullable"
+  - Selector: "hash"
+    MethodKind: "Instance"
+    SwiftName: "hash()"
+    ResultType: "NSUInteger"
+  - Selector: "description"
+    MethodKind: "Instance"
+    SwiftName: "description()"
+    ResultType: "NSString * _Nonnull"
 - Name: "PrimalSharedExploreTrendingTopic"
   SwiftName: "ExploreTrendingTopic"
   Properties:
@@ -16008,6 +16281,17 @@ Classes:
       Type: "PrimalSharedOkioByteString * _Nonnull"
     - Position: 1
       Type: "int64_t"
+  - Selector: "indexOfBytes:fromIndex:toIndex:"
+    MethodKind: "Instance"
+    SwiftName: "indexOf(bytes:fromIndex:toIndex:)"
+    ResultType: "int64_t"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedOkioByteString * _Nonnull"
+    - Position: 1
+      Type: "int64_t"
+    - Position: 2
+      Type: "int64_t"
   - Selector: "indexOfElementTargetBytes:"
     MethodKind: "Instance"
     SwiftName: "indexOfElement(targetBytes:)"
@@ -19895,9 +20179,41 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__46__fetchPopularUsersDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__46__fetchFollowListDispatchReceiver:profileId:identifier:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__46__fetchPopularUsers(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__46__fetchFollowList(dispatchReceiver:profileId:identifier:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedExploreRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__47__fetchFollowListsDispatchReceiver:since:until:limit:offset:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__47__fetchFollowLists(dispatchReceiver:since:until:limit:offset:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedExploreRepository> _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedLong * _Nullable"
+    - Position: 2
+      Type: "PrimalSharedLong * _Nullable"
+    - Position: 3
+      Type: "int32_t"
+    - Position: 4
+      Type: "PrimalSharedInt * _Nullable"
+    - Position: 5
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__48__fetchPopularUsersDispatchReceiver:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__48__fetchPopularUsers(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19905,9 +20221,9 @@ Classes:
       Type: "id<PrimalSharedExploreRepository> _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__47__fetchTrendingPeopleDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__49__fetchTrendingPeopleDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__47__fetchTrendingPeople(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__49__fetchTrendingPeople(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19917,9 +20233,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__48__fetchTrendingTopicsDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__50__fetchTrendingTopicsDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__48__fetchTrendingTopics(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__50__fetchTrendingTopics(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19927,9 +20243,9 @@ Classes:
       Type: "id<PrimalSharedExploreRepository> _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__49__fetchTrendingZapsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__51__fetchTrendingZapsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__49__fetchTrendingZaps(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__51__fetchTrendingZaps(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19939,9 +20255,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__50__searchUsersDispatchReceiver:query:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__52__searchUsersDispatchReceiver:query:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__50__searchUsers(dispatchReceiver:query:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__52__searchUsers(dispatchReceiver:query:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19953,9 +20269,9 @@ Classes:
       Type: "int32_t"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__51__addDvmFeedLocallyDispatchReceiver:userId:dvmFeed:specKind:suspendHandler:"
+  - Selector: "Skie_Suspend__53__addDvmFeedLocallyDispatchReceiver:userId:dvmFeed:specKind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__51__addDvmFeedLocally(dispatchReceiver:userId:dvmFeed:specKind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__53__addDvmFeedLocally(dispatchReceiver:userId:dvmFeed:specKind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19969,9 +20285,9 @@ Classes:
       Type: "PrimalSharedFeedSpecKind * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__52__addFeedLocallyDispatchReceiver:userId:feedSpec:title:description:feedSpecKind:feedKind:suspendHandler:"
+  - Selector: "Skie_Suspend__54__addFeedLocallyDispatchReceiver:userId:feedSpec:title:description:feedSpecKind:feedKind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__52__addFeedLocally(dispatchReceiver:userId:feedSpec:title:description:feedSpecKind:feedKind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__54__addFeedLocally(dispatchReceiver:userId:feedSpec:title:description:feedSpecKind:feedKind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -19991,9 +20307,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 7
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__53__fetchAndPersistArticleFeedsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__55__fetchAndPersistArticleFeedsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__53__fetchAndPersistArticleFeeds(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__55__fetchAndPersistArticleFeeds(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20003,9 +20319,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__54__fetchAndPersistDefaultFeedsDispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:"
+  - Selector: "Skie_Suspend__56__fetchAndPersistDefaultFeedsDispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__54__fetchAndPersistDefaultFeeds(dispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__56__fetchAndPersistDefaultFeeds(dispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20019,9 +20335,9 @@ Classes:
       Type: "NSArray<PrimalSharedPrimalFeed *> * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__55__fetchAndPersistNoteFeedsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__57__fetchAndPersistNoteFeedsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__55__fetchAndPersistNoteFeeds(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__57__fetchAndPersistNoteFeeds(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20031,9 +20347,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__56__fetchDefaultFeedsDispatchReceiver:userId:specKind:suspendHandler:"
+  - Selector: "Skie_Suspend__58__fetchDefaultFeedsDispatchReceiver:userId:specKind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__56__fetchDefaultFeeds(dispatchReceiver:userId:specKind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__58__fetchDefaultFeeds(dispatchReceiver:userId:specKind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20045,9 +20361,9 @@ Classes:
       Type: "PrimalSharedFeedSpecKind * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__57__fetchRecommendedDvmFeedsDispatchReceiver:userId:specKind:suspendHandler:"
+  - Selector: "Skie_Suspend__59__fetchRecommendedDvmFeedsDispatchReceiver:userId:specKind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__57__fetchRecommendedDvmFeeds(dispatchReceiver:userId:specKind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__59__fetchRecommendedDvmFeeds(dispatchReceiver:userId:specKind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20059,9 +20375,9 @@ Classes:
       Type: "PrimalSharedFeedSpecKind * _Nullable"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__58__persistLocallyAndRemotelyUserFeedsDispatchReceiver:userId:specKind:feeds:suspendHandler:"
+  - Selector: "Skie_Suspend__60__persistLocallyAndRemotelyUserFeedsDispatchReceiver:userId:specKind:feeds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__58__persistLocallyAndRemotelyUserFeeds(dispatchReceiver:userId:specKind:feeds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__60__persistLocallyAndRemotelyUserFeeds(dispatchReceiver:userId:specKind:feeds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20075,9 +20391,9 @@ Classes:
       Type: "NSArray<PrimalSharedPrimalFeed *> * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__59__persistNewDefaultFeedsDispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:"
+  - Selector: "Skie_Suspend__61__persistNewDefaultFeedsDispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__59__persistNewDefaultFeeds(dispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__61__persistNewDefaultFeeds(dispatchReceiver:userId:specKind:givenDefaultFeeds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20091,9 +20407,9 @@ Classes:
       Type: "NSArray<PrimalSharedPrimalFeed *> * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__60__persistRemotelyAllLocalUserFeedsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__62__persistRemotelyAllLocalUserFeedsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__60__persistRemotelyAllLocalUserFeeds(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__62__persistRemotelyAllLocalUserFeeds(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20103,9 +20419,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__61__removeFeedLocallyDispatchReceiver:userId:feedSpec:suspendHandler:"
+  - Selector: "Skie_Suspend__63__removeFeedLocallyDispatchReceiver:userId:feedSpec:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__61__removeFeedLocally(dispatchReceiver:userId:feedSpec:suspendHandler:)"
+    SwiftName: "Skie_Suspend__63__removeFeedLocally(dispatchReceiver:userId:feedSpec:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20117,9 +20433,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__62__cacheEventsDispatchReceiver:nostrEvents:primalEvents:suspendHandler:"
+  - Selector: "Skie_Suspend__64__cacheEventsDispatchReceiver:nostrEvents:primalEvents:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__62__cacheEvents(dispatchReceiver:nostrEvents:primalEvents:suspendHandler:)"
+    SwiftName: "Skie_Suspend__64__cacheEvents(dispatchReceiver:nostrEvents:primalEvents:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20131,9 +20447,9 @@ Classes:
       Type: "NSArray<PrimalSharedPrimalEvent *> * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__63__cacheNostrEventsDispatchReceiver:events:suspendHandler:"
+  - Selector: "Skie_Suspend__65__cacheNostrEventsDispatchReceiver:events:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__63__cacheNostrEvents(dispatchReceiver:events:suspendHandler:)"
+    SwiftName: "Skie_Suspend__65__cacheNostrEvents(dispatchReceiver:events:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20143,9 +20459,9 @@ Classes:
       Type: "PrimalSharedKotlinArray<PrimalSharedNostrEvent *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__64__cacheNostrEventsDispatchReceiver:events:suspendHandler:"
+  - Selector: "Skie_Suspend__66__cacheNostrEventsDispatchReceiver:events:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__64__cacheNostrEvents(dispatchReceiver:events:suspendHandler:)"
+    SwiftName: "Skie_Suspend__66__cacheNostrEvents(dispatchReceiver:events:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20155,9 +20471,9 @@ Classes:
       Type: "NSArray<PrimalSharedNostrEvent *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__65__cachePrimalEventsDispatchReceiver:events:suspendHandler:"
+  - Selector: "Skie_Suspend__67__cachePrimalEventsDispatchReceiver:events:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__65__cachePrimalEvents(dispatchReceiver:events:suspendHandler:)"
+    SwiftName: "Skie_Suspend__67__cachePrimalEvents(dispatchReceiver:events:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20167,9 +20483,9 @@ Classes:
       Type: "PrimalSharedKotlinArray<PrimalSharedPrimalEvent *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__66__cachePrimalEventsDispatchReceiver:events:suspendHandler:"
+  - Selector: "Skie_Suspend__68__cachePrimalEventsDispatchReceiver:events:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__66__cachePrimalEvents(dispatchReceiver:events:suspendHandler:)"
+    SwiftName: "Skie_Suspend__68__cachePrimalEvents(dispatchReceiver:events:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20179,9 +20495,9 @@ Classes:
       Type: "NSArray<PrimalSharedPrimalEvent *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__67__loadEventLinksDispatchReceiver:noteId:types:suspendHandler:"
+  - Selector: "Skie_Suspend__69__loadEventLinksDispatchReceiver:noteId:types:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__67__loadEventLinks(dispatchReceiver:noteId:types:suspendHandler:)"
+    SwiftName: "Skie_Suspend__69__loadEventLinks(dispatchReceiver:noteId:types:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20193,9 +20509,9 @@ Classes:
       Type: "NSArray<PrimalSharedEventUriType *> * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__68__fetchFollowConversationsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__70__fetchFollowConversationsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__68__fetchFollowConversations(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__70__fetchFollowConversations(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20205,9 +20521,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__69__fetchNewConversationMessagesDispatchReceiver:userId:conversationUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__71__fetchNewConversationMessagesDispatchReceiver:userId:conversationUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__69__fetchNewConversationMessages(dispatchReceiver:userId:conversationUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__71__fetchNewConversationMessages(dispatchReceiver:userId:conversationUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20219,9 +20535,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__70__fetchNonFollowsConversationsDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__72__fetchNonFollowsConversationsDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__70__fetchNonFollowsConversations(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__72__fetchNonFollowsConversations(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20231,9 +20547,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__71__markAllMessagesAsReadDispatchReceiver:authorization:suspendHandler:"
+  - Selector: "Skie_Suspend__73__markAllMessagesAsReadDispatchReceiver:authorization:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__71__markAllMessagesAsRead(dispatchReceiver:authorization:suspendHandler:)"
+    SwiftName: "Skie_Suspend__73__markAllMessagesAsRead(dispatchReceiver:authorization:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20243,9 +20559,9 @@ Classes:
       Type: "PrimalSharedNostrEvent * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__72__markConversationAsReadDispatchReceiver:authorization:conversationUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__74__markConversationAsReadDispatchReceiver:authorization:conversationUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__72__markConversationAsRead(dispatchReceiver:authorization:conversationUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__74__markConversationAsRead(dispatchReceiver:authorization:conversationUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20257,9 +20573,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__73__sendMessageDispatchReceiver:userId:receiverId:text:suspendHandler:"
+  - Selector: "Skie_Suspend__75__sendMessageDispatchReceiver:userId:receiverId:text:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__73__sendMessage(dispatchReceiver:userId:receiverId:text:suspendHandler:)"
+    SwiftName: "Skie_Suspend__75__sendMessage(dispatchReceiver:userId:receiverId:text:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20273,9 +20589,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__74__fetchAndPersistMuteListDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__76__fetchAndPersistMuteListDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__74__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__76__fetchAndPersistMuteList(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20285,23 +20601,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__75__muteHashtagAndPersistMuteListDispatchReceiver:userId:hashtag:suspendHandler:"
+  - Selector: "Skie_Suspend__77__muteHashtagAndPersistMuteListDispatchReceiver:userId:hashtag:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__75__muteHashtagAndPersistMuteList(dispatchReceiver:userId:hashtag:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedMutedItemRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__76__muteThreadAndPersistMuteListDispatchReceiver:userId:postId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__76__muteThreadAndPersistMuteList(dispatchReceiver:userId:postId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__77__muteHashtagAndPersistMuteList(dispatchReceiver:userId:hashtag:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20313,9 +20615,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__77__muteUserAndPersistMuteListDispatchReceiver:userId:mutedUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__78__muteThreadAndPersistMuteListDispatchReceiver:userId:postId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__77__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__78__muteThreadAndPersistMuteList(dispatchReceiver:userId:postId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20327,9 +20629,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__78__muteWordAndPersistMuteListDispatchReceiver:userId:word:suspendHandler:"
+  - Selector: "Skie_Suspend__79__muteUserAndPersistMuteListDispatchReceiver:userId:mutedUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__78__muteWordAndPersistMuteList(dispatchReceiver:userId:word:suspendHandler:)"
+    SwiftName: "Skie_Suspend__79__muteUserAndPersistMuteList(dispatchReceiver:userId:mutedUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20341,9 +20643,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__79__unmuteHashtagAndPersistMuteListDispatchReceiver:userId:hashtag:suspendHandler:"
+  - Selector: "Skie_Suspend__80__muteWordAndPersistMuteListDispatchReceiver:userId:word:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__79__unmuteHashtagAndPersistMuteList(dispatchReceiver:userId:hashtag:suspendHandler:)"
+    SwiftName: "Skie_Suspend__80__muteWordAndPersistMuteList(dispatchReceiver:userId:word:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20355,9 +20657,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__80__unmuteThreadAndPersistMuteListDispatchReceiver:userId:postId:suspendHandler:"
+  - Selector: "Skie_Suspend__81__unmuteHashtagAndPersistMuteListDispatchReceiver:userId:hashtag:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__80__unmuteThreadAndPersistMuteList(dispatchReceiver:userId:postId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__81__unmuteHashtagAndPersistMuteList(dispatchReceiver:userId:hashtag:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20369,9 +20671,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__81__unmuteUserAndPersistMuteListDispatchReceiver:userId:unmutedUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__82__unmuteThreadAndPersistMuteListDispatchReceiver:userId:postId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__81__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__82__unmuteThreadAndPersistMuteList(dispatchReceiver:userId:postId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20383,9 +20685,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__82__unmuteWordAndPersistMuteListDispatchReceiver:userId:word:suspendHandler:"
+  - Selector: "Skie_Suspend__83__unmuteUserAndPersistMuteListDispatchReceiver:userId:unmutedUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__82__unmuteWordAndPersistMuteList(dispatchReceiver:userId:word:suspendHandler:)"
+    SwiftName: "Skie_Suspend__83__unmuteUserAndPersistMuteList(dispatchReceiver:userId:unmutedUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20397,9 +20699,23 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__83__markAllNotificationsAsSeenDispatchReceiver:authorization:suspendHandler:"
+  - Selector: "Skie_Suspend__84__unmuteWordAndPersistMuteListDispatchReceiver:userId:word:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__83__markAllNotificationsAsSeen(dispatchReceiver:authorization:suspendHandler:)"
+    SwiftName: "Skie_Suspend__84__unmuteWordAndPersistMuteList(dispatchReceiver:userId:word:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedMutedItemRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__85__markAllNotificationsAsSeenDispatchReceiver:authorization:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__85__markAllNotificationsAsSeen(dispatchReceiver:authorization:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20409,9 +20725,9 @@ Classes:
       Type: "PrimalSharedNostrEvent * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__84__deletePostByIdDispatchReceiver:postId:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__86__deletePostByIdDispatchReceiver:postId:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__84__deletePostById(dispatchReceiver:postId:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__86__deletePostById(dispatchReceiver:postId:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20423,9 +20739,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__85__fetchConversationDispatchReceiver:userId:noteId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__87__fetchConversationDispatchReceiver:userId:noteId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__85__fetchConversation(dispatchReceiver:userId:noteId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__87__fetchConversation(dispatchReceiver:userId:noteId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20439,9 +20755,9 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__86__fetchFeedPageSnapshotDispatchReceiver:userId:feedSpec:notes:until:since:order:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__88__fetchFeedPageSnapshotDispatchReceiver:userId:feedSpec:notes:until:since:order:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__86__fetchFeedPageSnapshot(dispatchReceiver:userId:feedSpec:notes:until:since:order:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__88__fetchFeedPageSnapshot(dispatchReceiver:userId:feedSpec:notes:until:since:order:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20463,9 +20779,9 @@ Classes:
       Type: "int32_t"
     - Position: 8
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__87__fetchRepliesDispatchReceiver:userId:noteId:suspendHandler:"
+  - Selector: "Skie_Suspend__89__fetchRepliesDispatchReceiver:userId:noteId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__87__fetchReplies(dispatchReceiver:userId:noteId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__89__fetchReplies(dispatchReceiver:userId:noteId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20477,9 +20793,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__88__findAllPostsByIdsDispatchReceiver:postIds:suspendHandler:"
+  - Selector: "Skie_Suspend__90__findAllPostsByIdsDispatchReceiver:postIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__88__findAllPostsByIds(dispatchReceiver:postIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__90__findAllPostsByIds(dispatchReceiver:postIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20489,9 +20805,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__89__findConversationDispatchReceiver:userId:noteId:suspendHandler:"
+  - Selector: "Skie_Suspend__91__findConversationDispatchReceiver:userId:noteId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__89__findConversation(dispatchReceiver:userId:noteId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__91__findConversation(dispatchReceiver:userId:noteId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20503,9 +20819,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__90__findNewestPostsDispatchReceiver:userId:feedDirective:allowMutedThreads:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__92__findNewestPostsDispatchReceiver:userId:feedDirective:allowMutedThreads:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__90__findNewestPosts(dispatchReceiver:userId:feedDirective:allowMutedThreads:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__92__findNewestPosts(dispatchReceiver:userId:feedDirective:allowMutedThreads:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20521,9 +20837,9 @@ Classes:
       Type: "int32_t"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__91__findPostsByIdDispatchReceiver:postId:suspendHandler:"
+  - Selector: "Skie_Suspend__93__findPostsByIdDispatchReceiver:postId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__91__findPostsById(dispatchReceiver:postId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__93__findPostsById(dispatchReceiver:postId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20533,9 +20849,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__92__removeFeedSpecDispatchReceiver:userId:feedSpec:suspendHandler:"
+  - Selector: "Skie_Suspend__94__removeFeedSpecDispatchReceiver:userId:feedSpec:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__92__removeFeedSpec(dispatchReceiver:userId:feedSpec:suspendHandler:)"
+    SwiftName: "Skie_Suspend__94__removeFeedSpec(dispatchReceiver:userId:feedSpec:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20547,9 +20863,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__93__replaceFeedDispatchReceiver:userId:feedSpec:snapshot:suspendHandler:"
+  - Selector: "Skie_Suspend__95__replaceFeedDispatchReceiver:userId:feedSpec:snapshot:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__93__replaceFeed(dispatchReceiver:userId:feedSpec:snapshot:suspendHandler:)"
+    SwiftName: "Skie_Suspend__95__replaceFeed(dispatchReceiver:userId:feedSpec:snapshot:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20563,9 +20879,9 @@ Classes:
       Type: "PrimalSharedFeedPageSnapshot * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__94__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__96__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__94__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__96__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20575,9 +20891,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__95__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__97__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__95__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__97__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20587,9 +20903,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__96__fetchProfileDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__98__fetchProfileDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__96__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__98__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20599,9 +20915,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__97__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
+  - Selector: "Skie_Suspend__99__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__97__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
+    SwiftName: "Skie_Suspend__99__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20611,9 +20927,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__98__fetchProfilesDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__100__fetchProfilesDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__98__fetchProfiles(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__100__fetchProfiles(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20623,9 +20939,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__99__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__101__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__99__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__101__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20639,9 +20955,9 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__100__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__102__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__100__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__102__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20651,9 +20967,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__101__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__103__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__101__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__103__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20663,9 +20979,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__102__findProfileStatsDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__104__findProfileStatsDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__102__findProfileStats(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__104__findProfileStats(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20675,9 +20991,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__103__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__105__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__103__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__105__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20689,9 +21005,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__104__reportAbuseDispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:"
+  - Selector: "Skie_Suspend__106__reportAbuseDispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__104__reportAbuse(dispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__106__reportAbuse(dispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20709,9 +21025,9 @@ Classes:
       Type: "NSString * _Nullable"
     - Position: 6
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__105__importEventsDispatchReceiver:events:suspendHandler:"
+  - Selector: "Skie_Suspend__107__importEventsDispatchReceiver:events:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__105__importEvents(dispatchReceiver:events:suspendHandler:)"
+    SwiftName: "Skie_Suspend__107__importEvents(dispatchReceiver:events:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20721,9 +21037,9 @@ Classes:
       Type: "NSArray<PrimalSharedNostrEvent *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__106__signPublishImportNostrEventDispatchReceiver:unsignedNostrEvent:outboxRelays:suspendHandler:"
+  - Selector: "Skie_Suspend__108__signPublishImportNostrEventDispatchReceiver:unsignedNostrEvent:outboxRelays:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__106__signPublishImportNostrEvent(dispatchReceiver:unsignedNostrEvent:outboxRelays:suspendHandler:)"
+    SwiftName: "Skie_Suspend__108__signPublishImportNostrEvent(dispatchReceiver:unsignedNostrEvent:outboxRelays:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20735,9 +21051,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__107__deleteArticleByATagDispatchReceiver:articleATag:suspendHandler:"
+  - Selector: "Skie_Suspend__109__deleteArticleByATagDispatchReceiver:articleATag:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__107__deleteArticleByATag(dispatchReceiver:articleATag:suspendHandler:)"
+    SwiftName: "Skie_Suspend__109__deleteArticleByATag(dispatchReceiver:articleATag:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20747,25 +21063,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__108__fetchArticleAndCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
+  - Selector: "Skie_Suspend__110__fetchArticleAndCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__108__fetchArticleAndComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedArticleRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "NSString * _Nonnull"
-    - Position: 4
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__109__fetchArticleHighlightsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__109__fetchArticleHighlights(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__110__fetchArticleAndComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20779,61 +21079,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__110__getArticleByATagDispatchReceiver:aTag:suspendHandler:"
+  - Selector: "Skie_Suspend__111__fetchArticleHighlightsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__110__getArticleByATag(dispatchReceiver:aTag:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedArticleRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__111__observeArticleDispatchReceiver:articleId:articleAuthorId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__111__observeArticle(dispatchReceiver:articleId:articleAuthorId:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedArticleRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__112__observeArticleByCommentIdDispatchReceiver:commentNoteId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__112__observeArticleByCommentId(dispatchReceiver:commentNoteId:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedArticleRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__113__observeArticleByEventIdDispatchReceiver:eventId:articleAuthorId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__113__observeArticleByEventId(dispatchReceiver:eventId:articleAuthorId:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedArticleRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__114__observeArticleCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__114__observeArticleComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__111__fetchArticleHighlights(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20847,9 +21095,77 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__115__getHighlightByIdDispatchReceiver:highlightId:suspendHandler:"
+  - Selector: "Skie_Suspend__112__getArticleByATagDispatchReceiver:aTag:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__115__getHighlightById(dispatchReceiver:highlightId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__112__getArticleByATag(dispatchReceiver:aTag:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__113__observeArticleDispatchReceiver:articleId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__113__observeArticle(dispatchReceiver:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__114__observeArticleByCommentIdDispatchReceiver:commentNoteId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__114__observeArticleByCommentId(dispatchReceiver:commentNoteId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__115__observeArticleByEventIdDispatchReceiver:eventId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__115__observeArticleByEventId(dispatchReceiver:eventId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__116__observeArticleCommentsDispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__116__observeArticleComments(dispatchReceiver:userId:articleId:articleAuthorId:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedArticleRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__117__getHighlightByIdDispatchReceiver:highlightId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__117__getHighlightById(dispatchReceiver:highlightId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20859,9 +21175,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__116__publishAndSaveHighlightDispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:"
+  - Selector: "Skie_Suspend__118__publishAndSaveHighlightDispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__116__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)"
+    SwiftName: "Skie_Suspend__118__publishAndSaveHighlight(dispatchReceiver:userId:content:referencedEventATag:referencedEventAuthorTag:context:alt:createdAt:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20883,9 +21199,9 @@ Classes:
       Type: "int64_t"
     - Position: 8
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__117__publishDeleteHighlightDispatchReceiver:userId:highlightId:suspendHandler:"
+  - Selector: "Skie_Suspend__119__publishDeleteHighlightDispatchReceiver:userId:highlightId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__117__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__119__publishDeleteHighlight(dispatchReceiver:userId:highlightId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20897,9 +21213,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__118__clearUserDataDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__120__clearUserDataDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__118__clearUserData(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__120__clearUserData(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20909,9 +21225,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__119__headMediaDispatchReceiver:authorization:fileMetadata:suspendHandler:"
+  - Selector: "Skie_Suspend__121__headMediaDispatchReceiver:authorization:fileMetadata:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__119__headMedia(dispatchReceiver:authorization:fileMetadata:suspendHandler:)"
+    SwiftName: "Skie_Suspend__121__headMedia(dispatchReceiver:authorization:fileMetadata:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20923,9 +21239,9 @@ Classes:
       Type: "PrimalSharedFileMetadata * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__120__headUploadDispatchReceiver:authorization:fileMetadata:suspendHandler:"
+  - Selector: "Skie_Suspend__122__headUploadDispatchReceiver:authorization:fileMetadata:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__120__headUpload(dispatchReceiver:authorization:fileMetadata:suspendHandler:)"
+    SwiftName: "Skie_Suspend__122__headUpload(dispatchReceiver:authorization:fileMetadata:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20937,41 +21253,9 @@ Classes:
       Type: "PrimalSharedFileMetadata * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__121__putMediaDispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:"
+  - Selector: "Skie_Suspend__123__putMediaDispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__121__putMedia(dispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedBlossomApi> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "PrimalSharedFileMetadata * _Nonnull"
-    - Position: 3
-      Type: "id<PrimalSharedOkioBufferedSource> _Nonnull"
-    - Position: 4
-      Type: "void (^ _Nullable)(PrimalSharedInt * _Nonnull, PrimalSharedInt * _Nonnull)"
-    - Position: 5
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__122__putMirrorDispatchReceiver:authorization:fileUrl:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__122__putMirror(dispatchReceiver:authorization:fileUrl:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedBlossomApi> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__123__putUploadDispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__123__putUpload(dispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:)"
+    SwiftName: "Skie_Suspend__123__putMedia(dispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20987,9 +21271,41 @@ Classes:
       Type: "void (^ _Nullable)(PrimalSharedInt * _Nonnull, PrimalSharedInt * _Nonnull)"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__124__provideBlossomServerListDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__124__putMirrorDispatchReceiver:authorization:fileUrl:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__124__provideBlossomServerList(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__124__putMirror(dispatchReceiver:authorization:fileUrl:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedBlossomApi> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__125__putUploadDispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__125__putUpload(dispatchReceiver:authorization:fileMetadata:bufferedSource:onProgress:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedBlossomApi> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedFileMetadata * _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedOkioBufferedSource> _Nonnull"
+    - Position: 4
+      Type: "void (^ _Nullable)(PrimalSharedInt * _Nonnull, PrimalSharedInt * _Nonnull)"
+    - Position: 5
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__126__provideBlossomServerListDispatchReceiver:userId:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__126__provideBlossomServerList(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -20999,9 +21315,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__125__uploadDispatchReceiver:path:userId:onProgress:suspendHandler:"
+  - Selector: "Skie_Suspend__127__uploadDispatchReceiver:path:userId:onProgress:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__125__upload(dispatchReceiver:path:userId:onProgress:suspendHandler:)"
+    SwiftName: "Skie_Suspend__127__upload(dispatchReceiver:path:userId:onProgress:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21015,9 +21331,9 @@ Classes:
       Type: "void (^ _Nullable)(PrimalSharedInt * _Nonnull, PrimalSharedInt * _Nonnull)"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__126__uploadDispatchReceiver:path:userId:onSignRequested:onProgress:suspendHandler:"
+  - Selector: "Skie_Suspend__128__uploadDispatchReceiver:path:userId:onSignRequested:onProgress:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__126__upload(dispatchReceiver:path:userId:onSignRequested:onProgress:suspendHandler:)"
+    SwiftName: "Skie_Suspend__128__upload(dispatchReceiver:path:userId:onSignRequested:onProgress:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21033,9 +21349,9 @@ Classes:
       Type: "void (^ _Nullable)(PrimalSharedInt * _Nonnull, PrimalSharedInt * _Nonnull)"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__127__signNostrEventDispatchReceiver:unsignedNostrEvent:suspendHandler:"
+  - Selector: "Skie_Suspend__129__signNostrEventDispatchReceiver:unsignedNostrEvent:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__127__signNostrEvent(dispatchReceiver:unsignedNostrEvent:suspendHandler:)"
+    SwiftName: "Skie_Suspend__129__signNostrEvent(dispatchReceiver:unsignedNostrEvent:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21045,9 +21361,9 @@ Classes:
       Type: "PrimalSharedNostrUnsignedEvent * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__128__publishNostrEventDispatchReceiver:nostrEvent:outboxRelays:suspendHandler:"
+  - Selector: "Skie_Suspend__130__publishNostrEventDispatchReceiver:nostrEvent:outboxRelays:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__128__publishNostrEvent(dispatchReceiver:nostrEvent:outboxRelays:suspendHandler:)"
+    SwiftName: "Skie_Suspend__130__publishNostrEvent(dispatchReceiver:nostrEvent:outboxRelays:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21059,9 +21375,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__129__createOrNullDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__131__createOrNullDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__129__createOrNull(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__131__createOrNull(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21071,9 +21387,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__130__hasNextDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__132__hasNextDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__130__hasNext(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__132__hasNext(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21081,9 +21397,9 @@ Classes:
       Type: "PrimalSharedSkieColdFlowIterator<id> * _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__131__upgradeDispatchReceiver:input:output:engineContext:userContext:suspendHandler:"
+  - Selector: "Skie_Suspend__133__upgradeDispatchReceiver:input:output:engineContext:userContext:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__131__upgrade(dispatchReceiver:input:output:engineContext:userContext:suspendHandler:)"
+    SwiftName: "Skie_Suspend__133__upgrade(dispatchReceiver:input:output:engineContext:userContext:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21099,9 +21415,9 @@ Classes:
       Type: "id<PrimalSharedKotlinCoroutineContext> _Nonnull"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__132__flushDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__134__flushDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__132__flush(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__134__flush(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21109,9 +21425,9 @@ Classes:
       Type: "id<PrimalSharedKtor_ioByteWriteChannel> _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__133__flushAndCloseDispatchReceiver:suspendHandler:"
+  - Selector: "Skie_Suspend__135__flushAndCloseDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__133__flushAndClose(dispatchReceiver:suspendHandler:)"
+    SwiftName: "Skie_Suspend__135__flushAndClose(dispatchReceiver:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -21119,9 +21435,9 @@ Classes:
       Type: "id<PrimalSharedKtor_ioByteWriteChannel> _Nonnull"
     - Position: 1
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__134__writeToDispatchReceiver:channel:suspendHandler:"
+  - Selector: "Skie_Suspend__136__writeToDispatchReceiver:channel:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__134__writeTo(dispatchReceiver:channel:suspendHandler:)"
+    SwiftName: "Skie_Suspend__136__writeTo(dispatchReceiver:channel:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -23594,6 +23910,34 @@ Protocols:
 - Name: "PrimalSharedExploreRepository"
   SwiftName: "ExploreRepository"
   Methods:
+  - Selector: "fetchFollowListProfileId:identifier:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchFollowList(profileId:identifier:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(PrimalSharedFollowPack * _Nullable_result, NSError * _Nullable)"
+  - Selector: "fetchFollowListsSince:until:limit:offset:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchFollowLists(since:until:limit:offset:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedLong * _Nullable"
+    - Position: 1
+      Type: "PrimalSharedLong * _Nullable"
+    - Position: 2
+      Type: "int32_t"
+    - Position: 3
+      Type: "PrimalSharedInt * _Nullable"
+    - Position: 4
+      Type: "void (^ _Nonnull)(NSArray<PrimalSharedFollowPack *> * _Nullable, NSError * _Nullable)"
   - Selector: "fetchPopularUsersWithCompletionHandler:"
     MethodKind: "Instance"
     SwiftName: "__fetchPopularUsers(completionHandler:)"
@@ -23630,6 +23974,19 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 1
       Type: "void (^ _Nonnull)(NSArray<PrimalSharedExploreZapNoteData *> * _Nullable, NSError * _Nullable)"
+  - Selector: "getFollowLists"
+    MethodKind: "Instance"
+    SwiftName: "getFollowLists()"
+    ResultType: "PrimalSharedSkieKotlinFlow<PrimalSharedPaging_commonPagingData<PrimalSharedFollowPack *> *> * _Nonnull"
+  - Selector: "observeFollowListProfileId:identifier:"
+    MethodKind: "Instance"
+    SwiftName: "observeFollowList(profileId:identifier:)"
+    ResultType: "PrimalSharedSkieKotlinOptionalFlow<PrimalSharedFollowPack *> * _Nonnull"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
   - Selector: "observeTrendingTopics"
     MethodKind: "Instance"
     SwiftName: "observeTrendingTopics()"
@@ -24851,6 +25208,17 @@ Protocols:
     - Position: 0
       Type: "PrimalSharedOkioByteString * _Nonnull"
     - Position: 1
+      Type: "int64_t"
+  - Selector: "indexOfBytes:fromIndex:toIndex:"
+    MethodKind: "Instance"
+    SwiftName: "indexOf(bytes:fromIndex:toIndex:)"
+    ResultType: "int64_t"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedOkioByteString * _Nonnull"
+    - Position: 1
+      Type: "int64_t"
+    - Position: 2
       Type: "int64_t"
   - Selector: "indexOfElementTargetBytes:"
     MethodKind: "Instance"

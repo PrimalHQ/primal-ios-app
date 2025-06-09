@@ -8413,6 +8413,485 @@
                     "mangledName": "$ss9EscapableP"
                   }
                 ]
+              },
+              {
+                "kind": "TypeDecl",
+                "name": "ZapError",
+                "printedName": "ZapError",
+                "children": [
+                  {
+                    "kind": "TypeDecl",
+                    "name": "__Sealed",
+                    "printedName": "__Sealed",
+                    "children": [
+                      {
+                        "kind": "Var",
+                        "name": "failedToFetchZapInvoice",
+                        "printedName": "failedToFetchZapInvoice",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.FailedToFetchZapInvoice) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.FailedToFetchZapInvoice) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "FailedToFetchZapInvoice",
+                                    "printedName": "PrimalShared.ZapError.FailedToFetchZapInvoice",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorFailedToFetchZapInvoice"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO013failedToFetchE7InvoiceyAISo0abef6FailedijeK0CcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO013failedToFetchE7InvoiceyAISo0abef6FailedijeK0CcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 0
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "failedToFetchZapPayRequest",
+                        "printedName": "failedToFetchZapPayRequest",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.FailedToFetchZapPayRequest) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.FailedToFetchZapPayRequest) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "FailedToFetchZapPayRequest",
+                                    "printedName": "PrimalShared.ZapError.FailedToFetchZapPayRequest",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorFailedToFetchZapPayRequest"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO013failedToFetchE10PayRequestyAISo0abef6FailedijekL0CcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO013failedToFetchE10PayRequestyAISo0abef6FailedijekL0CcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 1
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "failedToPublishEvent",
+                        "printedName": "failedToPublishEvent",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.FailedToPublishEvent) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.FailedToPublishEvent) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "FailedToPublishEvent",
+                                    "printedName": "PrimalShared.ZapError.FailedToPublishEvent",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorFailedToPublishEvent"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO20failedToPublishEventyAISo0abef6FailedijK0CcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO20failedToPublishEventyAISo0abef6FailedijK0CcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 2
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "failedToSignEvent",
+                        "printedName": "failedToSignEvent",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.FailedToSignEvent) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.FailedToSignEvent) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "FailedToSignEvent",
+                                    "printedName": "PrimalShared.ZapError.FailedToSignEvent",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorFailedToSignEvent"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO17failedToSignEventyAISo0abef6FailedijK0CcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO17failedToSignEventyAISo0abef6FailedijK0CcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 3
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "invalidZap",
+                        "printedName": "invalidZap",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.InvalidZap) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.InvalidZap) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "InvalidZap",
+                                    "printedName": "PrimalShared.ZapError.InvalidZap",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorInvalidZap"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO07invalidE0yAISo0abef7InvalidE0CcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO07invalidE0yAISo0abef7InvalidE0CcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 4
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "unknown",
+                        "printedName": "unknown",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(PrimalShared.Skie.Nostr.ZapError.__Sealed.Type) -> (PrimalShared.ZapError.Unknown) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "children": [
+                              {
+                                "kind": "TypeFunc",
+                                "name": "Function",
+                                "printedName": "(PrimalShared.ZapError.Unknown) -> PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  },
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "Unknown",
+                                    "printedName": "PrimalShared.ZapError.Unknown",
+                                    "usr": "c:objc(cs)PrimalSharedZapErrorUnknown"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Metatype",
+                                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed.Type",
+                                "children": [
+                                  {
+                                    "kind": "TypeNominal",
+                                    "name": "__Sealed",
+                                    "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "declKind": "EnumElement",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO7unknownyAISo0abeF7UnknownCcAImF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO7unknownyAISo0abeF7UnknownCcAImF",
+                        "moduleName": "PrimalShared",
+                        "fixedbinaryorder": 5
+                      },
+                      {
+                        "kind": "Var",
+                        "name": "hashValue",
+                        "printedName": "hashValue",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Int",
+                            "printedName": "Swift.Int",
+                            "usr": "s:Si"
+                          }
+                        ],
+                        "declKind": "Var",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO9hashValueSivp",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO9hashValueSivp",
+                        "moduleName": "PrimalShared",
+                        "implicit": true,
+                        "accessors": [
+                          {
+                            "kind": "Accessor",
+                            "name": "Get",
+                            "printedName": "Get()",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Int",
+                                "printedName": "Swift.Int",
+                                "usr": "s:Si"
+                              }
+                            ],
+                            "declKind": "Accessor",
+                            "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO9hashValueSivg",
+                            "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO9hashValueSivg",
+                            "moduleName": "PrimalShared",
+                            "implicit": true,
+                            "accessorKind": "get"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "hash",
+                        "printedName": "hash(into:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Void",
+                            "printedName": "()"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Hasher",
+                            "printedName": "Swift.Hasher",
+                            "paramValueOwnership": "InOut",
+                            "usr": "s:s6HasherV"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO4hash4intoys6HasherVz_tF",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO4hash4intoys6HasherVz_tF",
+                        "moduleName": "PrimalShared",
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      },
+                      {
+                        "kind": "Function",
+                        "name": "==",
+                        "printedName": "==(_:_:)",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Bool",
+                            "printedName": "Swift.Bool",
+                            "usr": "s:Sb"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "__Sealed",
+                            "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                            "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+                          }
+                        ],
+                        "declKind": "Func",
+                        "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO2eeoiySbAI_AItFZ",
+                        "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO2eeoiySbAI_AItFZ",
+                        "moduleName": "PrimalShared",
+                        "static": true,
+                        "implicit": true,
+                        "funcSelfKind": "NonMutating"
+                      }
+                    ],
+                    "declKind": "Enum",
+                    "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO",
+                    "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO",
+                    "moduleName": "PrimalShared",
+                    "declAttributes": [
+                      "AccessControl",
+                      "Frozen"
+                    ],
+                    "isFromExtension": true,
+                    "isEnumExhaustive": true,
+                    "conformances": [
+                      {
+                        "kind": "Conformance",
+                        "name": "Copyable",
+                        "printedName": "Copyable",
+                        "usr": "s:s8CopyableP",
+                        "mangledName": "$ss8CopyableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Escapable",
+                        "printedName": "Escapable",
+                        "usr": "s:s9EscapableP",
+                        "mangledName": "$ss9EscapableP"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Hashable",
+                        "printedName": "Hashable",
+                        "usr": "s:SH",
+                        "mangledName": "$sSH"
+                      },
+                      {
+                        "kind": "Conformance",
+                        "name": "Equatable",
+                        "printedName": "Equatable",
+                        "usr": "s:SQ",
+                        "mangledName": "$sSQ"
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "Enum",
+                "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO",
+                "mangledName": "$s12PrimalShared4SkieO5NostrO8ZapErrorO",
+                "moduleName": "PrimalShared",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "conformances": [
+                  {
+                    "kind": "Conformance",
+                    "name": "Copyable",
+                    "printedName": "Copyable",
+                    "usr": "s:s8CopyableP",
+                    "mangledName": "$ss8CopyableP"
+                  },
+                  {
+                    "kind": "Conformance",
+                    "name": "Escapable",
+                    "printedName": "Escapable",
+                    "usr": "s:s9EscapableP",
+                    "mangledName": "$ss9EscapableP"
+                  }
+                ]
               }
             ],
             "declKind": "Enum",
@@ -35774,6 +36253,44 @@
           },
           {
             "kind": "Var",
+            "name": "starterPack",
+            "printedName": "starterPack",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(PrimalShared.NostrEventKind.Type) -> PrimalShared.NostrEventKind",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NostrEventKind",
+                    "printedName": "PrimalShared.NostrEventKind",
+                    "usr": "s:12PrimalShared14NostrEventKindO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "PrimalShared.NostrEventKind.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NostrEventKind",
+                        "printedName": "PrimalShared.NostrEventKind",
+                        "usr": "s:12PrimalShared14NostrEventKindO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:12PrimalShared14NostrEventKindO11starterPackyA2CmF",
+            "mangledName": "$s12PrimalShared14NostrEventKindO11starterPackyA2CmF",
+            "moduleName": "PrimalShared",
+            "fixedbinaryorder": 40
+          },
+          {
+            "kind": "Var",
             "name": "primalEventStats",
             "printedName": "primalEventStats",
             "children": [
@@ -35808,7 +36325,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO06primalD5StatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO06primalD5StatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 40
+            "fixedbinaryorder": 41
           },
           {
             "kind": "Var",
@@ -35846,7 +36363,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO14primalNetStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO14primalNetStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 41
+            "fixedbinaryorder": 42
           },
           {
             "kind": "Var",
@@ -35884,7 +36401,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO25primalExploreLegendCountsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO25primalExploreLegendCountsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 42
+            "fixedbinaryorder": 43
           },
           {
             "kind": "Var",
@@ -35922,7 +36439,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalDefaultSettingsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalDefaultSettingsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 43
+            "fixedbinaryorder": 44
           },
           {
             "kind": "Var",
@@ -35960,7 +36477,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO22primalUserProfileStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO22primalUserProfileStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 44
+            "fixedbinaryorder": 45
           },
           {
             "kind": "Var",
@@ -35998,7 +36515,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO016primalReferencedD0yA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO016primalReferencedD0yA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 45
+            "fixedbinaryorder": 46
           },
           {
             "kind": "Var",
@@ -36036,7 +36553,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO16primalUserScoresyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO16primalUserScoresyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 46
+            "fixedbinaryorder": 47
           },
           {
             "kind": "Var",
@@ -36074,7 +36591,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO12primalRelaysyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO12primalRelaysyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 47
+            "fixedbinaryorder": 48
           },
           {
             "kind": "Var",
@@ -36112,7 +36629,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO18primalNotificationyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO18primalNotificationyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 48
+            "fixedbinaryorder": 49
           },
           {
             "kind": "Var",
@@ -36150,7 +36667,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO28primalNotificationsSeenUntilyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO28primalNotificationsSeenUntilyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 49
+            "fixedbinaryorder": 50
           },
           {
             "kind": "Var",
@@ -36188,7 +36705,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO12primalPagingyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO12primalPagingyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 50
+            "fixedbinaryorder": 51
           },
           {
             "kind": "Var",
@@ -36226,7 +36743,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO18primalMediaMappingyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO18primalMediaMappingyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 51
+            "fixedbinaryorder": 52
           },
           {
             "kind": "Var",
@@ -36264,7 +36781,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO06primalD9UserStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO06primalD9UserStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 52
+            "fixedbinaryorder": 53
           },
           {
             "kind": "Var",
@@ -36302,7 +36819,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO40primalDirectMessagesConversationsSummaryyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO40primalDirectMessagesConversationsSummaryyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 53
+            "fixedbinaryorder": 54
           },
           {
             "kind": "Var",
@@ -36340,7 +36857,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO17primalCdnResourceyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO17primalCdnResourceyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 54
+            "fixedbinaryorder": 55
           },
           {
             "kind": "Var",
@@ -36378,7 +36895,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO25primalSimpleUploadRequestyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO25primalSimpleUploadRequestyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 55
+            "fixedbinaryorder": 56
           },
           {
             "kind": "Var",
@@ -36416,7 +36933,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalUploadResponseyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalUploadResponseyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 56
+            "fixedbinaryorder": 57
           },
           {
             "kind": "Var",
@@ -36454,7 +36971,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO23primalDefaultRelaysListyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO23primalDefaultRelaysListyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 57
+            "fixedbinaryorder": 58
           },
           {
             "kind": "Var",
@@ -36492,7 +37009,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalIsUserFollowingyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalIsUserFollowingyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 58
+            "fixedbinaryorder": 59
           },
           {
             "kind": "Var",
@@ -36530,7 +37047,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO17primalLinkPreviewyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO17primalLinkPreviewyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 59
+            "fixedbinaryorder": 60
           },
           {
             "kind": "Var",
@@ -36568,7 +37085,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO27primalNotificationsSummary2yA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO27primalNotificationsSummary2yA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 60
+            "fixedbinaryorder": 61
           },
           {
             "kind": "Var",
@@ -36606,7 +37123,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO25primalUserFollowersCountsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO25primalUserFollowersCountsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 61
+            "fixedbinaryorder": 62
           },
           {
             "kind": "Var",
@@ -36644,7 +37161,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO32primalDirectMessagesUnreadCount2yA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO32primalDirectMessagesUnreadCount2yA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 62
+            "fixedbinaryorder": 63
           },
           {
             "kind": "Var",
@@ -36682,7 +37199,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO26primalChunkedUploadRequestyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO26primalChunkedUploadRequestyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 63
+            "fixedbinaryorder": 64
           },
           {
             "kind": "Var",
@@ -36720,7 +37237,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalUserRelaysListyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalUserRelaysListyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 64
+            "fixedbinaryorder": 65
           },
           {
             "kind": "Var",
@@ -36758,7 +37275,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO15primalRelayHintyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO15primalRelayHintyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 65
+            "fixedbinaryorder": 66
           },
           {
             "kind": "Var",
@@ -36796,7 +37313,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO24primalLongFormWordsCountyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO24primalLongFormWordsCountyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 66
+            "fixedbinaryorder": 67
           },
           {
             "kind": "Var",
@@ -36834,7 +37351,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalBroadcastResultyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalBroadcastResultyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 67
+            "fixedbinaryorder": 68
           },
           {
             "kind": "Var",
@@ -36872,7 +37389,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO26primalLongFormContentFeedsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO26primalLongFormContentFeedsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 68
+            "fixedbinaryorder": 69
           },
           {
             "kind": "Var",
@@ -36910,7 +37427,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO17primalSubSettingsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO17primalSubSettingsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 69
+            "fixedbinaryorder": 70
           },
           {
             "kind": "Var",
@@ -36948,7 +37465,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO27primalDvmFeedFollowsActionsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO27primalDvmFeedFollowsActionsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 70
+            "fixedbinaryorder": 71
           },
           {
             "kind": "Var",
@@ -36986,7 +37503,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO33primalExplorePeopleNewFollowStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO33primalExplorePeopleNewFollowStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 71
+            "fixedbinaryorder": 72
           },
           {
             "kind": "Var",
@@ -37024,7 +37541,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO15primalUserNamesyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO15primalUserNamesyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 72
+            "fixedbinaryorder": 73
           },
           {
             "kind": "Var",
@@ -37062,7 +37579,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalDvmFeedMetadatayA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalDvmFeedMetadatayA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 73
+            "fixedbinaryorder": 74
           },
           {
             "kind": "Var",
@@ -37100,7 +37617,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalTrendingTopicsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalTrendingTopicsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 74
+            "fixedbinaryorder": 75
           },
           {
             "kind": "Var",
@@ -37138,7 +37655,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO18primalClientConfigyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO18primalClientConfigyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 75
+            "fixedbinaryorder": 76
           },
           {
             "kind": "Var",
@@ -37176,7 +37693,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO27primalUserMediaStorageStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO27primalUserMediaStorageStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 76
+            "fixedbinaryorder": 77
           },
           {
             "kind": "Var",
@@ -37214,7 +37731,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalUserUploadInfoyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalUserUploadInfoyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 77
+            "fixedbinaryorder": 78
           },
           {
             "kind": "Var",
@@ -37252,7 +37769,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO27primalContentBroadcastStatsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO27primalContentBroadcastStatsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 78
+            "fixedbinaryorder": 79
           },
           {
             "kind": "Var",
@@ -37290,7 +37807,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO28primalContentBroadcastStatusyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO28primalContentBroadcastStatusyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 79
+            "fixedbinaryorder": 80
           },
           {
             "kind": "Var",
@@ -37328,7 +37845,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalLegendProfilesyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalLegendProfilesyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 80
+            "fixedbinaryorder": 81
           },
           {
             "kind": "Var",
@@ -37366,7 +37883,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO17primalPremiumInfoyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO17primalPremiumInfoyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 81
+            "fixedbinaryorder": 82
           },
           {
             "kind": "Var",
@@ -37404,7 +37921,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO23primalLegendLeaderboardyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO23primalLegendLeaderboardyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 82
+            "fixedbinaryorder": 83
           },
           {
             "kind": "Var",
@@ -37442,7 +37959,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO24primalPremiumLeaderboardyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO24primalPremiumLeaderboardyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 83
+            "fixedbinaryorder": 84
           },
           {
             "kind": "Var",
@@ -37480,7 +37997,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO30primalRecommendedBlossomServeryA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO30primalRecommendedBlossomServeryA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 84
+            "fixedbinaryorder": 85
           },
           {
             "kind": "Var",
@@ -37518,7 +38035,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalWalletOperationyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalWalletOperationyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 85
+            "fixedbinaryorder": 86
           },
           {
             "kind": "Var",
@@ -37556,7 +38073,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO19primalWalletBalanceyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO19primalWalletBalanceyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 86
+            "fixedbinaryorder": 87
           },
           {
             "kind": "Var",
@@ -37594,7 +38111,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO26primalWalletDepositInvoiceyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO26primalWalletDepositInvoiceyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 87
+            "fixedbinaryorder": 88
           },
           {
             "kind": "Var",
@@ -37632,7 +38149,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO24primalWalletDepositLnUrlyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO24primalWalletDepositLnUrlyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 88
+            "fixedbinaryorder": 89
           },
           {
             "kind": "Var",
@@ -37670,7 +38187,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO24primalWalletTransactionsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO24primalWalletTransactionsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 89
+            "fixedbinaryorder": 90
           },
           {
             "kind": "Var",
@@ -37708,7 +38225,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO24primalWalletExchangeRateyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO24primalWalletExchangeRateyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 90
+            "fixedbinaryorder": 91
           },
           {
             "kind": "Var",
@@ -37746,7 +38263,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO18primalWalletIsUseryA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO18primalWalletIsUseryA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 91
+            "fixedbinaryorder": 92
           },
           {
             "kind": "Var",
@@ -37784,7 +38301,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO20primalWalletUserInfoyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO20primalWalletUserInfoyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 92
+            "fixedbinaryorder": 93
           },
           {
             "kind": "Var",
@@ -37822,7 +38339,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO30primalWalletInAppPurchaseQuoteyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO30primalWalletInAppPurchaseQuoteyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 93
+            "fixedbinaryorder": 94
           },
           {
             "kind": "Var",
@@ -37860,7 +38377,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO25primalWalletInAppPurchaseyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO25primalWalletInAppPurchaseyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 94
+            "fixedbinaryorder": 95
           },
           {
             "kind": "Var",
@@ -37898,7 +38415,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO22primalWalletActivationyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO22primalWalletActivationyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 95
+            "fixedbinaryorder": 96
           },
           {
             "kind": "Var",
@@ -37936,7 +38453,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO23primalWalletParsedLnUrlyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO23primalWalletParsedLnUrlyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 96
+            "fixedbinaryorder": 97
           },
           {
             "kind": "Var",
@@ -37974,7 +38491,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO27primalWalletParsedLnInvoiceyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO27primalWalletParsedLnInvoiceyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 97
+            "fixedbinaryorder": 98
           },
           {
             "kind": "Var",
@@ -38012,7 +38529,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO22primalWalletMiningFeesyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO22primalWalletMiningFeesyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 98
+            "fixedbinaryorder": 99
           },
           {
             "kind": "Var",
@@ -38050,7 +38567,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO26primalWalletOnChainAddressyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO26primalWalletOnChainAddressyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 99
+            "fixedbinaryorder": 100
           },
           {
             "kind": "Var",
@@ -38088,7 +38605,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalWalletUpdatedAtyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalWalletUpdatedAtyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 100
+            "fixedbinaryorder": 101
           },
           {
             "kind": "Var",
@@ -38126,7 +38643,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO32primalWalletNwcConnectionCreatedyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO32primalWalletNwcConnectionCreatedyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 101
+            "fixedbinaryorder": 102
           },
           {
             "kind": "Var",
@@ -38164,7 +38681,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO29primalWalletNwcConnectionListyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO29primalWalletNwcConnectionListyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 102
+            "fixedbinaryorder": 103
           },
           {
             "kind": "Var",
@@ -38202,7 +38719,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO29primalMembershipNameAvailableyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO29primalMembershipNameAvailableyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 103
+            "fixedbinaryorder": 104
           },
           {
             "kind": "Var",
@@ -38240,7 +38757,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO41primalMembershipLegendPaymentInstructionsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO41primalMembershipLegendPaymentInstructionsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 104
+            "fixedbinaryorder": 105
           },
           {
             "kind": "Var",
@@ -38278,7 +38795,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO31primalMembershipPurchaseMonitoryA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO31primalMembershipPurchaseMonitoryA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 105
+            "fixedbinaryorder": 106
           },
           {
             "kind": "Var",
@@ -38316,7 +38833,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO22primalMembershipStatusyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO22primalMembershipStatusyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 106
+            "fixedbinaryorder": 107
           },
           {
             "kind": "Var",
@@ -38354,7 +38871,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO23primalMembershipHistoryyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO23primalMembershipHistoryyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 107
+            "fixedbinaryorder": 108
           },
           {
             "kind": "Var",
@@ -38392,7 +38909,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO22primalPromoCodeDetailsyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO22primalPromoCodeDetailsyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 108
+            "fixedbinaryorder": 109
           },
           {
             "kind": "Var",
@@ -38430,7 +38947,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO14primalAppStateyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO14primalAppStateyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 109
+            "fixedbinaryorder": 110
           },
           {
             "kind": "Var",
@@ -38468,7 +38985,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO21primalLongFormContentyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO21primalLongFormContentyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 110
+            "fixedbinaryorder": 111
           },
           {
             "kind": "Var",
@@ -38506,7 +39023,7 @@
             "usr": "s:12PrimalShared14NostrEventKindO7unknownyA2CmF",
             "mangledName": "$s12PrimalShared14NostrEventKindO7unknownyA2CmF",
             "moduleName": "PrimalShared",
-            "fixedbinaryorder": 111
+            "fixedbinaryorder": 112
           },
           {
             "kind": "Var",
@@ -54152,6 +54669,89 @@
           {
             "kind": "TypeNominal",
             "name": "__Sealed",
+            "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+            "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "GenericTypeParam",
+            "printedName": "τ_0_0"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:12PrimalShared6onEnum2ofAA4SkieO5NostrO8ZapErrorO8__SealedOx_tSo0abhI0CRbzlF",
+        "mangledName": "$s12PrimalShared6onEnum2ofAA4SkieO5NostrO8ZapErrorO8__SealedOx_tSo0abhI0CRbzlF",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ZapError>",
+        "sugared_genericSig": "<__Sealed where __Sealed : PrimalShared.ZapError>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "__Sealed",
+                "printedName": "PrimalShared.Skie.Nostr.ZapError.__Sealed",
+                "usr": "s:12PrimalShared4SkieO5NostrO8ZapErrorO8__SealedO"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "τ_0_0?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:12PrimalShared6onEnum2ofAA4SkieO5NostrO8ZapErrorO8__SealedOSgxSg_tSo0abhI0CRbzlF",
+        "mangledName": "$s12PrimalShared6onEnum2ofAA4SkieO5NostrO8ZapErrorO8__SealedOSgxSg_tSo0abhI0CRbzlF",
+        "moduleName": "PrimalShared",
+        "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ZapError>",
+        "sugared_genericSig": "<__Sealed where __Sealed : PrimalShared.ZapError>",
+        "declAttributes": [
+          "AccessControl",
+          "DisfavoredOverload"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PrimalShared",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "onEnum",
+        "printedName": "onEnum(of:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "__Sealed",
             "printedName": "PrimalShared.Skie.KotlinxSerializationJson.JsonElement.__Sealed",
             "usr": "s:12PrimalShared4SkieO24KotlinxSerializationJsonO0F7ElementO8__SealedO"
           },
@@ -59082,6 +59682,148 @@
         "name": "ExploreRepository",
         "printedName": "ExploreRepository",
         "children": [
+          {
+            "kind": "Function",
+            "name": "fetchFollowList",
+            "printedName": "fetchFollowList(profileId:identifier:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PrimalShared.FollowPack?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "FollowPack",
+                    "printedName": "PrimalShared.FollowPack",
+                    "usr": "c:objc(cs)PrimalSharedFollowPack"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedExploreRepositoryP0aB0E15fetchFollowList9profileId10identifierSo0abF4PackCSgSS_SStYaKF",
+            "mangledName": "$sSo29PrimalSharedExploreRepositoryP0aB0E15fetchFollowList9profileId10identifierSo0abF4PackCSgSS_SStYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ExploreRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ExploreRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchFollowLists",
+            "printedName": "fetchFollowLists(since:until:limit:offset:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[PrimalShared.FollowPack]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "FollowPack",
+                    "printedName": "PrimalShared.FollowPack",
+                    "usr": "c:objc(cs)PrimalSharedFollowPack"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PrimalShared.KotlinLong?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "KotlinLong",
+                    "printedName": "PrimalShared.KotlinLong",
+                    "usr": "c:objc(cs)PrimalSharedLong"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PrimalShared.KotlinLong?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "KotlinLong",
+                    "printedName": "PrimalShared.KotlinLong",
+                    "usr": "c:objc(cs)PrimalSharedLong"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int32",
+                "printedName": "Swift.Int32",
+                "usr": "s:s5Int32V"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PrimalShared.KotlinInt?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "KotlinInt",
+                    "printedName": "PrimalShared.KotlinInt",
+                    "usr": "c:objc(cs)PrimalSharedInt"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:So29PrimalSharedExploreRepositoryP0aB0E16fetchFollowLists5since5until5limit6offsetSaySo0abF4PackCGSo0aB4LongCSg_ANs5Int32VSo0aB3IntCSgtYaKF",
+            "mangledName": "$sSo29PrimalSharedExploreRepositoryP0aB0E16fetchFollowLists5since5until5limit6offsetSaySo0abF4PackCGSo0aB4LongCSg_ANs5Int32VSo0aB3IntCSgtYaKF",
+            "moduleName": "PrimalShared",
+            "genericSig": "<τ_0_0 where τ_0_0 : PrimalShared.ExploreRepository>",
+            "sugared_genericSig": "<Self where Self : PrimalShared.ExploreRepository>",
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13",
+            "intro_tvOS": "13",
+            "intro_watchOS": "6",
+            "declAttributes": [
+              "AccessControl",
+              "Available",
+              "Available",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
           {
             "kind": "Function",
             "name": "fetchPopularUsers",

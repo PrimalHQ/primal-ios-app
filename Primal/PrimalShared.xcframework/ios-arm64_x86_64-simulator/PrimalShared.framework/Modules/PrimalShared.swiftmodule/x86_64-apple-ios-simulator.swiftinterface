@@ -156,6 +156,8 @@ public enum Skie {
     }
     public enum SignResult {
     }
+    public enum ZapError {
+    }
   }
   public typealias Primal_domain__nostr = PrimalShared.Skie.Nostr
   public enum KotlinxSerializationJson {
@@ -571,6 +573,10 @@ extension PrimalShared.EventRepository {
   public func fetchEventZaps(userId: Swift.String, eventId: Swift.String, limit: Swift.Int32) async throws
 }
 extension PrimalShared.ExploreRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowList(profileId: Swift.String, identifier: Swift.String) async throws -> PrimalShared.FollowPack?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowLists(since: PrimalShared.KotlinLong?, until: PrimalShared.KotlinLong?, limit: Swift.Int32, offset: PrimalShared.KotlinInt?) async throws -> [PrimalShared.FollowPack]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func fetchPopularUsers() async throws -> [PrimalShared.UserProfileSearchItem]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -1277,6 +1283,7 @@ extension PrimalShared.__Ktor_utilsWeekDay {
   case applicationSpecificData
   case appRecommendation
   case appHandler
+  case starterPack
   case primalEventStats
   case primalNetStats
   case primalExploreLegendCounts
@@ -2282,6 +2289,23 @@ extension PrimalShared.Skie.Nostr.SignResult {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.SignResult.__Sealed where __Sealed : PrimalShared.SignResult
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.SignResult.__Sealed? where __Sealed : PrimalShared.SignResult
+extension PrimalShared.Skie.Nostr.ZapError {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failedToFetchZapInvoice(PrimalShared.ZapError.FailedToFetchZapInvoice)
+    case failedToFetchZapPayRequest(PrimalShared.ZapError.FailedToFetchZapPayRequest)
+    case failedToPublishEvent(PrimalShared.ZapError.FailedToPublishEvent)
+    case failedToSignEvent(PrimalShared.ZapError.FailedToSignEvent)
+    case invalidZap(PrimalShared.ZapError.InvalidZap)
+    case unknown(PrimalShared.ZapError.Unknown)
+    public static func == (a: PrimalShared.Skie.Nostr.ZapError.__Sealed, b: PrimalShared.Skie.Nostr.ZapError.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapError.__Sealed where __Sealed : PrimalShared.ZapError
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapError.__Sealed? where __Sealed : PrimalShared.ZapError
 extension PrimalShared.Skie.KotlinxSerializationJson.JsonElement {
   @frozen public enum __Sealed : Swift.Hashable {
     case jsonPrimitive(PrimalShared.Kotlinx_serialization_jsonJsonPrimitive)
