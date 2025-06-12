@@ -57,6 +57,7 @@ class NWCWalletManager {
     let relay: String
     let serverPubkey: String
     let secret: String
+    let address: String?
     
     var maxBalance: Int = 10000
     
@@ -81,6 +82,7 @@ class NWCWalletManager {
         self.serverPubkey = serverPubkey
         self.relay = relay
         self.secret = secret
+        address = items.first(where: { $0.name == "lud16" })?.value
         
         let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
         
@@ -94,19 +96,11 @@ class NWCWalletManager {
 
 extension NWCWalletManager: WalletImplementation {
     var balancePublisher: AnyPublisher<Int, Never> { $balance.eraseToAnyPublisher() }
-    
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { Just(true).eraseToAnyPublisher() }
+    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { Just(false).eraseToAnyPublisher() }
     
     func sendInvoice(_ address: String, satsOverride: Int?, messageOverride: String?) async throws {
-        var amount: KotlinLong? = nil
-        if let satsOverride {
-            amount = KotlinLong(value: Int64(satsOverride * 1000))
-        }
-        
-//        let res = try await client.payInvoice(params: .init(invoice: address, amount: amount))
-        
-//        print(res)
-//        sendRequest(reqString)
+        throw WalletError.notSupported
     }
     
     func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {

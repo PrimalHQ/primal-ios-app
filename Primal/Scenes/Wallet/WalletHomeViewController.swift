@@ -132,7 +132,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
     
     func updateBuySatsButton() {
-        guard WalletManager.instance.userHasWallet == true else {
+        guard WalletManager.instance.primal?.userHasWallet == true else {
             navigationItem.rightBarButtonItem = nil
             return
         }

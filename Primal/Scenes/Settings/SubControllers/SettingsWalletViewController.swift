@@ -72,7 +72,7 @@ private extension SettingsWalletViewController {
             ].forEach { nwcStack.addArrangedSubview($0) }
             
             info.relayLabel.text = nwc.relay
-            info.addressLabel.text = "LOADING..."
+            info.addressLabel.text = nwc.address ?? "Unknown address"
             
             disconnectButton.addAction(.init(handler: { [weak self] _ in
                 WalletManager.instance.disconnectNWCWallet()

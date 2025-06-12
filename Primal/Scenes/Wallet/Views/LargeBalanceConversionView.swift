@@ -439,7 +439,10 @@ private extension LargeBalanceConversionView {
         if type == 0 {
             addSubview(label)
             label.pin(to: largeAmountLabel, edges: [.vertical, .trailing])
-            label.layoutIfNeeded()
+            
+            if label.window != nil {
+                label.layoutIfNeeded()                
+            }
         } else if type == 1 {
             largeAmountLabel.addSubview(label)
             label.frame = largeAmountLabel.bounds

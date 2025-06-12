@@ -9,6 +9,13 @@ import UIKit
 import SwiftUI
 
 extension UIView {
+    func takeScreenshot() -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(bounds: bounds)
+        return renderer.image { context in
+            drawHierarchy(in: bounds, afterScreenUpdates: true)
+        }
+    }
+    
     func shake() {
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.timingFunction = CAMediaTimingFunction(name: .linear)

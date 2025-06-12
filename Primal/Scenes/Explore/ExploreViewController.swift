@@ -20,8 +20,8 @@ final class ExploreViewController: PrimalPageController {
     
     init() {
         super.init(tabs: [
-            ("FEEDS", { ExploreFeedsViewController() }),
             ("PEOPLE", { ExplorePeopleViewController() }),
+            ("FEEDS", { ExploreFeedsViewController() }),
             ("ZAPS", { ExploreZapsViewController() }),
             ("MEDIA", { ExploreMediaController() }),
             ("TOPICS", { ExploreTopicsViewController() })

@@ -12,11 +12,11 @@ class ExplorePeopleViewController: UIViewController, Themeable {
     private var cancellables: Set<AnyCancellable> = []
     private let feedManager = ExploreUsersFeedManager()
     
-    private var users: [ParsedUser] = [] {
+    private var userLists: [UserList] = [] {
         didSet {
             table.reloadData()
-            loadingView.isHidden = !users.isEmpty
-            if !users.isEmpty {
+            loadingView.isHidden = !userLists.isEmpty
+            if !userLists.isEmpty {
                 loadingView.pause()
             }
         }
@@ -31,10 +31,10 @@ class ExplorePeopleViewController: UIViewController, Themeable {
         
         setup()
         
-        feedManager.$users
+        feedManager.$userLists
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] users in
-                self?.users = users
+            .sink(receiveValue: { [weak self] userLists in
+                self?.userLists = userLists
                 self?.table.refreshControl?.endRefreshing()
             })
             .store(in: &cancellables)
@@ -52,8 +52,8 @@ class ExplorePeopleViewController: UIViewController, Themeable {
         table.reloadData()
         
         DispatchQueue.main.async { [self] in
-            loadingView.isHidden = !users.isEmpty
-            if users.isEmpty {
+            loadingView.isHidden = !userLists.isEmpty
+            if userLists.isEmpty {
                 loadingView.play()
             }
         }
@@ -82,36 +82,25 @@ private extension ExplorePeopleViewController {
 }
 
 extension ExplorePeopleViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { users.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { userLists.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? ExplorePeopleCell {
-            cell.updateForUser(users[indexPath.row])
-            cell.delegate = self
+            cell.updateForUserList(userLists[indexPath.row])
         }
+        
+        if indexPath.item > userLists.count - 10 {
+            feedManager.requestNewPage()
+        }
+        
         return cell
     }
 }
 
 extension ExplorePeopleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let user = users[safe: indexPath.row] else { return }
-        show(ProfileViewController(profile: user), sender: nil)
-    }
-}
-
-extension ExplorePeopleViewController: ProfileFollowCellDelegate {
-    func followButtonPressedInCell(_ cell: UITableViewCell) {
-        guard
-            let index = table.indexPath(for: cell)?.row,
-            let user: ParsedUser = users[safe: index]
-        else { return }
-        
-        if FollowManager.instance.isFollowing(user.data.pubkey) {
-            FollowManager.instance.sendUnfollowEvent(user.data.pubkey)
-        } else {
-            FollowManager.instance.sendFollowEvent(user.data.pubkey)
-        }
+        guard let userList = userLists[safe: indexPath.row] else { return }
+        show(UserListViewController(list: userList), sender: nil)
     }
 }

@@ -41,12 +41,49 @@ extension UIImage {
         return doc.uiImage(dimension: dimension, scale: 3)
     }
     
-    func gifData() -> Data? {
+    static func concatenateImagesVertically(images: [UIImage], background: UIColor) -> UIImage? {
+        guard !images.isEmpty else { return nil }
+
+        // Calculate total size
+        let totalWidth = images.map { $0.size.width }.max() ?? 0
+        let totalHeight = images.reduce(0) { $0 + $1.size.height }
+        let size = CGSize(width: totalWidth, height: totalHeight)
+        // Create graphics context
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
         
+        background.setFill()
+        UIRectFill(.init(origin: .zero, size: size))
         
-        return nil
+        var currentY: CGFloat = 0
+        for image in images {
+            let xOffset = (totalWidth - image.size.width) / 2
+            image.draw(at: CGPoint(x: xOffset, y: currentY))
+            currentY += image.size.height
+        }
+
+        // Capture final image
+        let concatenatedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return concatenatedImage
     }
     
+    func trimBottomPixels(pixelsToTrim: CGFloat) -> UIImage {
+        guard size.height > pixelsToTrim / scale else { return self }
+        
+        guard
+            let cgImage,
+            let newCGImage = cgImage.cropping(to: CGRect(
+                x: 0,
+                y: 0,
+                width: CGFloat(cgImage.width),
+                height: CGFloat(cgImage.height) - pixelsToTrim
+            ))
+        else { return self }
+
+        return UIImage(cgImage: newCGImage, scale: scale, orientation: imageOrientation)
+    }
+
     func detectQRCode() -> String? {
         guard let ciImage = CIImage.init(image: self) else { return nil }
         

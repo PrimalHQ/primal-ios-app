@@ -116,6 +116,7 @@ protocol WalletImplementation {
     
     var balancePublisher: AnyPublisher<Int, Never> { get }
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { get }
+    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { get }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws
@@ -128,6 +129,7 @@ protocol WalletImplementation {
 }
 
 extension PrimalWalletManager: WalletImplementation {
+    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { $isLoadingWallet.eraseToAnyPublisher() }
     var balancePublisher: AnyPublisher<Int, Never> { $balance.eraseToAnyPublisher() }
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { $userHasWallet.eraseToAnyPublisher() }
     var transactionsPublisher: AnyPublisher<[WalletTransaction], Never> { $transactions.eraseToAnyPublisher() }
@@ -186,40 +188,31 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        parsedTransactions = []     // Required because of the notification code, otherwise a notification would show when switching accounts
-        
         if UserDefaults.standard.useNwcWallet[pubkey] == true {
-            isLoadingWallet = false
             if let nwcString = UserDefaults.standard.nwcSettings[pubkey] {
                 impl = NWCWalletManager(url: nwcString) ?? DummyWalletImplementation()
             } else {
                 impl = DummyWalletImplementation()
             }
+            parsedTransactions = []
         } else {
             impl = PrimalWalletManager()
-            
-            let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
-            balance = oldBalance
-            if oldBalance > 0 {
-                userHasWallet = true
-            }
-
             let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
             parsedTransactions = oldTransactions
-            userZapped = [:]
-            isLoadingWallet = oldTransactions.isEmpty
         }
 
         updateCancellables = [
             impl.balancePublisher.assign(to: \.balance, onWeak: self),
-            impl.userHasWalletPublisher.assign(to: \.userHasWallet, onWeak: self)
+            impl.userHasWalletPublisher.assign(to: \.userHasWallet, onWeak: self),
+            impl.isLoadingWalletPublisher.assign(to: \.isLoadingWallet, onWeak: self)
         ]
+        
+        userZapped = [:]
+        premiumState = nil
                 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.refreshPremiumState()
         }
-        
-        premiumState = nil
     }
     
     func setUsePrimalWallet(_ usePrimal: Bool = true) {
@@ -372,6 +365,7 @@ private extension WalletManager {
 }
 
 class DummyWalletImplementation: WalletImplementation {
+    
     var balance: Int = 0
     
     var userHasWallet: Bool? = false
@@ -383,6 +377,8 @@ class DummyWalletImplementation: WalletImplementation {
     var balancePublisher: AnyPublisher<Int, Never> { Just(0).eraseToAnyPublisher() }
     
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { Just(false).eraseToAnyPublisher() }
+    
+    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { Just(false).eraseToAnyPublisher() }
     
     var transactionsPublisher: AnyPublisher<[WalletTransaction], Never> { Just([]).eraseToAnyPublisher() }
     

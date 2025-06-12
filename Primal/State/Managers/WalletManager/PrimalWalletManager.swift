@@ -15,6 +15,7 @@ class PrimalWalletManager {
     @Published var balance: Int = 0
     @Published var maxBalance: Int = 0
     @Published var transactions: [WalletTransaction] = []
+    @Published var isLoadingWallet = true
     
     private var isLoadingTransactions = false
     private var update: ContinousConnection?
@@ -22,6 +23,17 @@ class PrimalWalletManager {
     
     init() {
         setupPublishers()
+        
+        let pubkey = IdentityManager.instance.userHexPubkey
+        
+        let oldBalance = UserDefaults.standard.oldWalletAmount[pubkey] ?? 0
+        balance = oldBalance
+        if oldBalance > 0 {
+            userHasWallet = true
+        }
+
+        let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
+        isLoadingWallet = oldTransactions.isEmpty
         
         refreshHasWallet()
     }
@@ -70,7 +82,7 @@ class PrimalWalletManager {
         PrimalWalletRequest(type: .isUser).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] val in
-                WalletManager.instance.isLoadingWallet = false
+                self?.isLoadingWallet = false
                 self?.userHasWallet = self?.userHasWallet == true || val.kycLevel == KYCLevel.email || val.kycLevel == KYCLevel.idDocument
             }
             .store(in: &cancellables)
@@ -169,15 +181,16 @@ private extension PrimalWalletManager {
     func setupPublishers() {
         $userHasWallet
             .filter { $0 == true }
-            .flatMap { _ in
-                WalletManager.instance.isLoadingWallet = true
+            .receive(on: DispatchQueue.main)
+            .flatMap { [weak self] _ in
+                self?.isLoadingWallet = true
                 return Publishers.Zip(
                     PrimalWalletRequest(type: .balance).publisher(),
                     PrimalWalletRequest(type: .transactions()).publisher()
                 )
             }
             .sink(receiveValue: { [weak self] balanceRes, transactionsRes in
-                WalletManager.instance.isLoadingWallet = false
+                self?.isLoadingWallet = false
                 
                 guard let string = balanceRes.balance?.amount else { return }
                 

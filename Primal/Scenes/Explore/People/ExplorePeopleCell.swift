@@ -10,21 +10,22 @@ import FLAnimatedImage
 import Kingfisher
 
 final class ExplorePeopleCell: UITableViewCell, Themeable {
-    let avatar = UserImageView(height: 64)
+    let avatar = UserImageView(height: 24)
     
-    let name = UILabel()
-    let subname = UILabel()
-    let desc = UILabel()
+    let avatarStack = SimpleAvatarView(size: 32, spacing: -3, maxAvatarCount: 5)
+    
+    let titleLabel = UILabel()
+    
+    let userNameLabel = UILabel()
+    
+    let largeImageView = UIImageView()
+    
+    let updatedAtLabel = UILabel()
+    let userCountLabel = UILabel()
 
-    let followCount = UILabel()
-    let followDesc = UILabel()
-    
-    let action = ExplorePeopleCellButton()
     let checkbox = VerifiedView().constrainToSize(18)
     
     let background = UIView()
-    
-    weak var delegate: ProfileFollowCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -35,44 +36,42 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForUser(_ user: ParsedUser) {
-        name.text = user.data.firstIdentifier
-        desc.text = user.data.about
+    func updateForUserList(_ userList: UserList) {
+        avatarStack.setUsers(userList.list)
+        
+        let user = userList.user
+        
+        userNameLabel.text = user.data.firstIdentifier
         
         if CheckNip05Manager.instance.isVerified(user.data) {
-            subname.text = user.data.parsedNip
-            subname.isHidden = user.data.parsedNip.isEmpty
             checkbox.user = user.data
         } else {
-            subname.isHidden = true
             checkbox.isHidden = true
         }
         
-        desc.isHidden = user.data.about.isEmpty
-        
-        followCount.text = (user.followers ?? 0).localized()
-        
-        action.isFollowing = FollowManager.instance.isFollowing(user.data.pubkey)
-        
-        action.alpha = user.isCurrentUser ? 0.01 : 1
-        action.isEnabled = !user.isCurrentUser
-        
         avatar.setUserImage(user, feed: true)
+        
+        userCountLabel.text = "\(userList.list.count) users"
+        updatedAtLabel.text = "updated \(userList.updatedAt.timeAgoDisplay(addAgo: true))"
+        
+        largeImageView.kf.setImage(with: userList.imageData.url(for: .medium), options: [
+            .cacheOriginalImage,
+            .processor(DownsamplingImageProcessor(size: CGSize(width: contentView.frame.width - 56, height: 120))),
+            .scaleFactor(UIScreen.main.scale),
+        ])
+        
+        titleLabel.text = userList.name
         
         updateTheme()
     }
     
     func updateTheme() {
-        name.textColor = .foreground
-        subname.textColor = .foreground4
-        desc.textColor = .foreground
+        userNameLabel.textColor = .foreground3
+        titleLabel.textColor = .foreground
         
-        followCount.textColor = .foreground
-        followDesc.textColor = .foreground5
+        [updatedAtLabel, userCountLabel].forEach { $0.textColor = .foreground4 }
         
         background.backgroundColor = .background5
-        
-        action.updateTheme()
     }
 }
 
@@ -80,90 +79,92 @@ private extension ExplorePeopleCell {
     func setup() {
         selectionStyle = .none
         
-        let nameRow = UIStackView([name, checkbox, UIView()])
-        nameRow.setCustomSpacing(4, after: name)
+        let nameRow = UIStackView([avatar, userNameLabel, checkbox, UIView()])
+        nameRow.setCustomSpacing(4, after: userNameLabel)
+        nameRow.setCustomSpacing(8, after: avatar)
         nameRow.alignment = .center
-        let mainVStack = UIStackView(axis: .vertical, [nameRow, subname, desc])
-        mainVStack.setCustomSpacing(4, after: name)
-        mainVStack.setCustomSpacing(8, after: subname)
         
-        let firstRow = UIStackView([avatar, mainVStack])
-        firstRow.alignment = .top
-        firstRow.spacing = 12
-        
-        let secondRow = UIStackView([action, followCount, followDesc, UIView()])
-        secondRow.setCustomSpacing(12, after: action)
+        let smallVStack = UIStackView(axis: .vertical, [userCountLabel, updatedAtLabel])
+        let secondRow = UIStackView([avatarStack, smallVStack])
         secondRow.spacing = 4
         secondRow.alignment = .center
+        
+        let inlineVStack = UIStackView(axis: .vertical, [
+            titleLabel, SpacerView(height: 10),
+            nameRow,    SpacerView(height: 20),
+            secondRow
+        ])
+        inlineVStack.isLayoutMarginsRelativeArrangement = true
+        inlineVStack.insetsLayoutMarginsFromSafeArea = false
+        inlineVStack.layoutMargins = .init(top: 12, left: 12, bottom: 12, right: 12)
+        
+        let mainStack = UIStackView(axis: .vertical, [largeImageView, inlineVStack])
         
         contentView.addSubview(background)
         background.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .bottom, padding: 16).pinToSuperview(edges: .top)
         
-        background.addSubview(firstRow)
-        firstRow.pinToSuperview(edges: [.horizontal, .top], padding: 12)
+        background.addSubview(mainStack)
+        mainStack.pinToSuperview()
         
-        background.addSubview(secondRow)
-        secondRow.pinToSuperview(edges: [.horizontal, .bottom], padding: 12)
-        
-        let joinC = firstRow.bottomAnchor.constraint(equalTo: secondRow.topAnchor)
-        joinC.priority = .defaultLow
-        
-        NSLayoutConstraint.activate([
-            action.topAnchor.constraint(greaterThanOrEqualTo: avatar.bottomAnchor, constant: 18),
-            followCount.topAnchor.constraint(greaterThanOrEqualTo: desc.bottomAnchor, constant: 8)
-        ])
+        largeImageView.constrainToSize(height: 120)
+        largeImageView.contentMode = .scaleAspectFill
+        largeImageView.clipsToBounds = true
         
         background.layer.cornerRadius = 8
+        background.layer.masksToBounds = true
         
-        avatar.contentMode = .scaleAspectFill
-        avatar.layer.cornerRadius = 32
-        avatar.layer.masksToBounds = true
+        userNameLabel.font = .appFont(withSize: 14, weight: .semibold)
         
-        name.font = .appFont(withSize: 18, weight: .semibold)
-        subname.font = .appFont(withSize: 14, weight: .regular)
-        desc.font = .appFont(withSize: 14, weight: .regular)
-        desc.numberOfLines = 2
+        titleLabel.font = .appFont(withSize: 20, weight: .semibold)
         
-        followCount.font = .appFont(withSize: 14, weight: .bold)
-        followDesc.font = .appFont(withSize: 14, weight: .regular)
-        
-        followDesc.text = "Followers"
-        
-        action.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            self.action.isFollowing.toggle()
-            self.delegate?.followButtonPressedInCell(self)
-        }), for: .touchUpInside)
+        [updatedAtLabel, userCountLabel].forEach {
+            $0.font = .appFont(withSize: 12, weight: .regular)
+            $0.textAlignment = .right
+        }
         
         updateTheme()
     }
 }
 
-final class ExplorePeopleCellButton: UIButton, Themeable {
-    var isFollowing = true {
-        didSet {
-            updateTheme()
-        }
-    }
+final class SimpleAvatarView: UIView {
+    lazy var avatarViews = (1...maxAvatarCount).map { _ in UserImageView(height: size) }
     
-    init() {
+    let maxAvatarCount: Int
+    let size: CGFloat
+    let spacing: CGFloat
+    
+    init(size: CGFloat = 32, spacing: CGFloat = 4, maxAvatarCount: Int = 6) {
+        self.size = size
+        self.spacing = spacing
+        self.maxAvatarCount = maxAvatarCount
         super.init(frame: .zero)
         
-        constrainToSize(width: 64, height: 28)
-        
-        titleLabel?.font = .appFont(withSize: 12, weight: .semibold)
-        layer.cornerRadius = 14
+        setup()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateTheme() {
-        setTitle(isFollowing ? "unfollow" : "follow", for: .normal)
-        setTitleColor(isFollowing ? .foreground : .background2, for: .normal)
-        setTitleColor((isFollowing ? UIColor.foreground : .background2).withAlphaComponent(0.5), for: .highlighted)
+    func setUsers(_ users: [ParsedUser]) {
+        for view in avatarViews { view.isHidden = true }
         
-        backgroundColor = isFollowing ? .background2 : .foreground
+        zip(avatarViews, users).forEach { view, user in
+            view.isHidden = false
+            view.setUserImage(user)
+        }
+    }
+}
+
+private extension SimpleAvatarView {
+    func setup() {
+        let stack = UIStackView(arrangedSubviews: avatarViews)
+                
+        stack.spacing = spacing
+        
+        addSubview(stack)
+        stack.pinToSuperview()
+        
+        constrainToSize(height: size)
     }
 }
