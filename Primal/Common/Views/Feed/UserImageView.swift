@@ -154,7 +154,8 @@ class UserImageView: UIView, Themeable {
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
+           
             self?.attemptOriginalLoad(originalURL: originalURL, userPubkey: userPubkey)
         }
     }
@@ -167,7 +168,7 @@ class UserImageView: UIView, Themeable {
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
             self?.attemptBlossomLoad(currentURL: originalURL, originalURL: originalURL, userPubkey: userPubkey)
         }
     }
@@ -196,7 +197,7 @@ class UserImageView: UIView, Themeable {
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
             self?.attemptBlossomLoad(currentURL: finalURL.absoluteString, originalURL: originalURL, userPubkey: userPubkey)
         }
     }

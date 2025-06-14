@@ -269,7 +269,6 @@
 		B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */; };
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
-		B919628C2D01EF6B001C19D3 /* PremiumPrimalOGHomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B919628B2D01EF6B001C19D3 /* PremiumPrimalOGHomeController.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
 		B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */; };
 		B91BB95D2B3B3854003F6B2A /* ErrorMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */; };
@@ -978,7 +977,6 @@
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
-		B919628B2D01EF6B001C19D3 /* PremiumPrimalOGHomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPrimalOGHomeController.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
 		B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUsersMutelistRequest.swift; sourceTree = "<group>"; };
 		B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageCell.swift; sourceTree = "<group>"; };
@@ -2889,7 +2887,6 @@
 				B91E571F2CDD441D00C14809 /* LearnMore */,
 				B91E571B2CDBC17E00C14809 /* PremiumSearchNameController.swift */,
 				B91E571D2CDBCBE000C14809 /* PremiumBuySubscriptionController.swift */,
-				B919628B2D01EF6B001C19D3 /* PremiumPrimalOGHomeController.swift */,
 				B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */,
 			);
 			path = Onboarding;
@@ -3957,7 +3954,6 @@
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
 				B9C6D2342CA3276E00B2EEBE /* ExploreFeedsViewController.swift in Sources */,
-				B919628C2D01EF6B001C19D3 /* PremiumPrimalOGHomeController.swift in Sources */,
 				930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */,
 				933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */,
 				93B7FE7C2A0AB139005AE313 /* AnyEncodable.swift in Sources */,
@@ -4211,7 +4207,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.5;
+				MARKETING_VERSION = 2.3.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4258,7 +4254,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.3.5;
+				MARKETING_VERSION = 2.3.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

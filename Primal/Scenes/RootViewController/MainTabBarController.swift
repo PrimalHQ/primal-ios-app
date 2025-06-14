@@ -500,6 +500,12 @@ final class NumberedNotificationIndicator: UIView, Themeable {
         }
     }
     
+    var color: () -> UIColor = { .accent } {
+        didSet {
+            updateTheme()
+        }
+    }
+    
     private let label = UILabel()
     
     init(number: Int = 0) {
@@ -539,7 +545,7 @@ final class NumberedNotificationIndicator: UIView, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .accent
+        backgroundColor = color()
     }
 }
 

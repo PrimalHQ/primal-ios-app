@@ -78,7 +78,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         self.init(threadId: post.post.id)
         mainObject = post.post
         inputManager.replyingTo = mainObject
-        posts = [post]
+        feed.parsedPosts = [post]
         
         updateReplyToLabel()
     }

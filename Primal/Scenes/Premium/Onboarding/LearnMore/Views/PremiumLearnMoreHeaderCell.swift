@@ -25,8 +25,8 @@ class PremiumLearnMoreHeaderCell: UITableViewCell {
         botC.isActive = true
         
         let feature = PremiumTableHeaderTitleView(title: "Feature")
-        let free = PremiumTableHeaderCenteredTitleView(title: "Free").constrainToSize(width: 69)
-        let premium = PremiumTableHeaderCenteredTitleView(title: "Premium").constrainToSize(width: 82)
+        let free = PremiumTableHeaderCenteredTitleView(title: "Premium").constrainToSize(width: 69)
+        let premium = PremiumTableHeaderCenteredTitleView(title: "Pro").constrainToSize(width: 82)
         
         let stack = UIStackView([feature, free, premium])
         parentView.addSubview(stack)

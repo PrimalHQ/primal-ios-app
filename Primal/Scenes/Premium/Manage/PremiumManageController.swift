@@ -41,7 +41,7 @@ class PremiumManageController: UIViewController {    let state: PremiumState
         } else if !state.recurring {
             bottomOptions.append(contentsOf: [
                 .init(title: "Extend Your Subscription", handler: { [unowned self] _ in
-                    show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
+                    show(PremiumBuySubscriptionController(pickedName: state.name, kind: .premium, state: .extendSubscription), sender: nil)
                 }),
                 .init(title: "Become a Legend", handler: { [weak self] _ in
                     self?.show(PremiumBecomeLegendController(), sender: nil)

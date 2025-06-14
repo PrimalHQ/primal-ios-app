@@ -356,12 +356,7 @@ private extension EditProfileViewController {
             DatabaseManager.instance.saveProfiles([newProfile])
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                IdentityManager.instance.requestUserProfile()
-            }
-            
-            if let profileVC = self?.navigationController?.viewControllers.first(where: { ($0 as? ProfileViewController)?.profile.data.pubkey == self?.profile.pubkey }) as? ProfileViewController {
-                
-                profileVC.profile = .init(data: newProfile)
+                IdentityManager.instance.requestUserProfile(local: false)
             }
             
             self?.navigationController?.popViewController(animated: true)

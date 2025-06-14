@@ -333,12 +333,28 @@ private extension MenuContainerController {
             NotificationCenter.default.publisher(for: .visitPremiumNotification).map { _ in WalletManager.instance.premiumState },
             WalletManager.instance.$premiumState.debounce(for: 1, scheduler: RunLoop.main)
         )
-            .map {
-                if UserDefaults.standard.currentUserLastPremiumVisit.timeIntervalSinceNow > -7*24*3600 { return 0 }
-                return ($0?.isExpired ?? true) ? 1 : 0
+        .receive(on: DispatchQueue.main)
+        .sink(receiveValue: { [weak self] state in
+            guard let self, let state, state.isLegend, UserDefaults.standard.currentUserLastPremiumVisit.timeIntervalSinceNow < -7*24*3600 else {
+                self?.premiumIndicator.number = 0
+                return
             }
-            .assign(to: \.number, on: premiumIndicator)
-            .store(in: &cancellables)
+            
+            if state.isExpired {
+                premiumIndicator.number = 1
+                premiumIndicator.color = { .accent }
+                return
+            }
+            
+            if UserDefaults.standard.didVisitPremiumAfterProUpdate {
+                premiumIndicator.number = 0
+                return
+            }
+            
+            premiumIndicator.number = 1
+            premiumIndicator.color = { .pro }
+        })
+        .store(in: &cancellables)
     }
     
     func update(_ user: ParsedUser) {

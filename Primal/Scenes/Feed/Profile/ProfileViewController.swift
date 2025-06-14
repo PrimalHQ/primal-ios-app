@@ -29,7 +29,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     
     var profile: ParsedUser {
         didSet {
-            if profileDataSource?.profile.data != profile.data {
+            if profileDataSource?.profile.data.id != profile.data.id {
                 profileDataSource?.profile = profile
             }
             navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
@@ -139,6 +139,10 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         })
         
         SmartContactsManager.instance.addContact(profile)
+        
+        if profile.data.pubkey == IdentityManager.instance.userHexPubkey {
+            IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).assign(to: \.profile, onWeak: self).store(in: &cancellables)
+        }
         
         setup()
     }
@@ -402,15 +406,6 @@ extension ProfileViewController: MutedUserCellDelegate {
 extension ProfileViewController: ProfileInfoCellDelegate {
     func premiumPillPressed() {
         present(ProfilePremiumCardController(user: profile), animated: false)
-//        guard let custom = PremiumCustomizationManager.instance.getPremiumInfo(pubkey: profile.data.pubkey), custom.tier != "free" else { return }
-//        
-//        if custom.cohort_1 == "Legend" {
-//            if WalletManager.instance.hasLegend { return }
-//            show(PremiumViewController(startingScreen: .buyLegend), sender: nil)
-//            return
-//        }
-//        if WalletManager.instance.hasPremium { return }
-//        show(PremiumViewController(startingScreen: .primalOG), sender: nil)
     }
     
     func followersPressed() {

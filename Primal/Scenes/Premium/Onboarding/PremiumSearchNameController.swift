@@ -18,8 +18,11 @@ class PremiumSearchNameController: UIViewController {
     
     let callback: (String) -> Void
     
-    init(title: String, callback: @escaping (String) -> Void) {
+    let buttonTint: UIColor
+    
+    init(title: String, buttonTint: UIColor = .accent, callback: @escaping (String) -> Void) {
         self.callback = callback
+        self.buttonTint = buttonTint
         super.init(nibName: nil, bundle: nil)
         self.title = title
     }
@@ -48,6 +51,8 @@ private extension PremiumSearchNameController {
         navigationItem.leftBarButtonItem = customBackButton
         view.backgroundColor = .background
         
+        let buttonTint = buttonTint
+        
         nameInput.constrainToSize(height: 48)
         nameInput.layer.cornerRadius = 24
         nameInput.font = .appFont(withSize: 20, weight: .semibold)
@@ -63,7 +68,7 @@ private extension PremiumSearchNameController {
         
         let table = PremiumSearchTableView()
         
-        let action = LargeRoundedButton(title: "Search")
+        let action = UIButton(configuration: .pill(text: "Search", foregroundColor: .white, backgroundColor: buttonTint, font: .appFont(withSize: 18, weight: .semibold))).constrainToSize(height: 48)
         let keyboardSpacer = KeyboardSizingView()
         keyboardSpacer.updateHeightCancellable().store(in: &cancellables)
         
@@ -106,12 +111,10 @@ private extension PremiumSearchNameController {
             let name = self.searchText
             
             action.isEnabled = false
-            action.title = "Searching..."
             
             Connection.wallet.requestCache(name: "membership_name_available", payload: ["name": .string(name)]) { [weak self] result in
                 DispatchQueue.main.async {
                     action.isEnabled = true
-                    action.title = "Search"
                     
                     guard
                         let dicResponse: [String: Bool] = result.first?.objectValue?["content"]?.stringValue?.decode(),
