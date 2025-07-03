@@ -52,8 +52,8 @@ extension Sequence where Iterator.Element: Hashable {
 }
 
 extension Sequence {
-    func uniqueByFilter<T: Hashable>(_ filter: (Element) -> T) -> [Element] {
-        var seen: [T: Bool] = [:]
-        return self.filter { seen.updateValue(true, forKey: filter($0)) == nil }
+    func uniqueByFilter<T: Hashable>(_ filterF: (Element) -> T) -> [Element] {
+        var seen: Set<T> = []
+        return filter { seen.insert(filterF($0)).inserted }
     }
 }

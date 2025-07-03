@@ -243,14 +243,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func preloadPost(_ post: ParsedContent) {
         preloadedPosts.insert(post.post.id)
                 
-        if let url = post.mediaResources.first?.url(for: .medium) {
+        if let url = post.mediaResources.first?.url(for: post.mediaResources.count > 1 ? .small : .medium) {
             if url.isImageURL {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             } else if let thumbnailURL = post.videoThumbnails[url.absoluteString] ?? post.videoThumbnails.first?.value, let tURL = URL(string: thumbnailURL) {
                 KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
             }
         }
-        for preview in post.linkPreviews {
+        for preview in post.linkPreviews.prefix(2) {
             if preview.url.isTwitterURL {
                 LinkPreviewManager.instance.preload(preview.url)
             } else if let url = preview.imagesData.first?.url(for: .small), url.isImageURL {
@@ -332,8 +332,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             url = .init(string: "https://" + url.absoluteString) ?? url
         }
         
-        if url.host()?.contains("primal.net") == true {
-            PrimalWebsiteScheme().openURL(url)
+        let primalScheme = PrimalWebsiteScheme()
+        if primalScheme.canOpenURL(url) {
+            primalScheme.openURL(url)
             return
         }
         

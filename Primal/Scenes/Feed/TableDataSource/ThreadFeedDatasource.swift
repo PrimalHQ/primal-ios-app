@@ -25,10 +25,11 @@ enum ThreadFeedCellType: Hashable {
 }
 
 class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, ThreadFeedCellType>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
-    var articles: [Article] = [] { didSet { updateCells() } }
+    var articles: [Article] = [] { didSet { updateCells(animate: false) } }
     var cells: [ThreadFeedCellType] = [.loading]
     var cellCount: Int { cells.count }
-    let threadID: String
+    
+    var threadID: String
     
     @Published var cellHeightArray: [CGFloat] = []
     
@@ -84,7 +85,9 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         
         weakSelf = self
         
-        updateCells()
+        defaultRowAnimation = .fade
+        
+        updateCells(animate: false)
     }
     
     private func registerThreadCells(_ tableView: UITableView) {
@@ -172,6 +175,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
     }
     
     func setPosts(_ posts: [ParsedContent]) {
+        self.setPosts(posts, animate: false)
+    }
+    
+    func setPosts(_ posts: [ParsedContent], animate: Bool) {
         let mainPosition = posts.firstIndex(where: { $0.post.id == threadID }) ?? 0
         
         cells = convertPostsToCells(posts, short: false).enumerated().flatMap({ index, content in
@@ -188,10 +195,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
             return parts.map { ThreadFeedCellType.threadElement($0) }
         })
         
-        updateCells()
+        updateCells(animate: animate)
     }
     
-    func updateCells() {
+    func updateCells(animate: Bool) {
         var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ThreadFeedCellType>()
         
         if !articles.isEmpty {
@@ -201,7 +208,8 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         
         snapshot.appendSections([.feed])
         snapshot.appendItems(cells)
-        apply(snapshot, animatingDifferences: false)
+        
+        apply(snapshot, animatingDifferences: animate)
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
@@ -231,6 +239,6 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
                 return false
             }
         } ?? 0
-        return .init(row: index, section: 0)
+        return .init(row: index, section: articles.isEmpty ? 0 : 1)
     }
 }

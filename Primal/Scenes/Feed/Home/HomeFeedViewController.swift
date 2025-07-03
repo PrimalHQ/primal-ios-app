@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import AVKit
 
 extension UIButton.Configuration {
     static func navChevronButton(title: String) -> UIButton.Configuration {

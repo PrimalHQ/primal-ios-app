@@ -43,7 +43,9 @@ class ExplorePeopleViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        feedManager.refresh()
+        if userLists.isEmpty {
+            feedManager.refresh()
+        }
         
         updateTheme()
     }

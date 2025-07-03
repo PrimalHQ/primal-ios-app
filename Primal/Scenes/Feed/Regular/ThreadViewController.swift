@@ -27,7 +27,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         (dataSource as? ThreadFeedDatasource)?.mainPostIndexPath ?? .init(row: 0, section: 0)
     }
     
-    private var didMoveToMain = false
+    @Published private var didMoveToMain = false
     @Published private var didLoadView = false
     @Published private var didLoadData = false
     
@@ -75,20 +75,36 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         let post = post.copy()
         post.buildContentString(style: .enlarged)
         
-        self.init(threadId: post.post.id)
+        self.init(threadId: post.post.id, startingPosts: [post])
         mainObject = post.post
         inputManager.replyingTo = mainObject
-        feed.parsedPosts = [post]
         
         updateReplyToLabel()
     }
     
-    init(threadId: String) {
+    convenience init(posts: [ParsedContent], main: ParsedContent) {
+        let post = main.copy()
+        
+        post.buildContentString(style: .enlarged)
+        
+        self.init(threadId: post.post.id, startingPosts: posts.map { $0.post.id == post.post.id ? post : $0 })
+        mainObject = post.post
+        inputManager.replyingTo = mainObject
+        
+        updateReplyToLabel()
+    }
+    
+    init(threadId: String, startingPosts: [ParsedContent] = []) {
         id = threadId
         super.init(feed: FeedManager(threadId: threadId))
         
+        feed.parsedPosts = startingPosts
+        feed.requestThread(postId: threadId, includeParent: startingPosts.count < 2)
+        
         inputManager.extractReferences = false
         dataSource = ThreadFeedDatasource(threadID: threadId, tableView: table, delegate: self)
+        
+        posts = startingPosts
         setup()
     }
     
@@ -105,6 +121,13 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         navigationController?.setNavigationBarHidden(false, animated: animated)
 
         mainTabBarController?.showTabBarBorder = false
+        
+        if !didLoadView, posts.count > 1 {
+            // If we don't dispatch system adds animation automatically
+            DispatchQueue.main.async { [self] in
+                table.scrollToRow(at: mainPostIndex, at: .top, animated: false)
+            }
+        }
         
         didLoadView = true
     }
@@ -151,22 +174,31 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override func open(post: ParsedContent) -> NoteViewController {
         guard post.post.id != id else { return self }
         
-        guard let index = posts.firstIndex(where: { $0.post == post.post }) else {
+        guard let index = posts.firstIndex(where: { $0.post.id == post.post.id }) else {
             return super.open(post: post)
         }
         
-        if index < mainPositionInThread {
-            for vc in navigationController?.viewControllers ?? [] {
-                guard let thread = vc as? ThreadViewController else { continue }
-                if thread.id == post.post.id {
-                    thread.didMoveToMain = false
-                    navigationController?.popToViewController(vc, animated: true)
-                    return thread
-                }
+        for vc in navigationController?.viewControllers ?? [] {
+            guard let thread = vc as? ThreadViewController else { continue }
+            if thread.id == post.post.id {
+                thread.didMoveToMain = false
+                navigationController?.popToViewController(vc, animated: true)
+                return thread
             }
         }
         
-        return super.open(post: post)
+        let mainIndex = mainPositionInThread
+        if index < mainIndex {
+            // is parent
+            let thread = ThreadViewController(posts: Array(posts.prefix(upTo: index + 2)), main: post)
+            showViewController(thread)
+            return thread
+        }
+          
+        let parents = posts.prefix(upTo: mainIndex + 1)
+        let thread = ThreadViewController(posts: parents + [post], main: post)
+        showViewController(thread)
+        return thread
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -222,31 +254,9 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         inputParent.transform = .init(translationX: 0, y: -transform)
     }
     
-    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
-//        if post.post.id == self.id {
-//            switch event {
-//            case .images(let resource):
-//                guard let cell, let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath), !resource.url.isVideoURL else { break }
-//                let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
-//                let gallery = ImageGalleryController(current: resource.url, all: allImages)
-//                
-//                if
-//                    let imageVC = gallery.pageViewController.viewControllers?.compactMap({ $0 as? ImageFullScreenViewController }).first,
-//                    imageVC.image == nil,
-//                    let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
-//                    let image = (cell as? ElementImageGalleryCell)?.mainImages.currentImageCell()?.imageViewsForAnimation[safe: index]?.image
-//                {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-//                        imageVC.imageView.image = image
-//                    }
-//                }
-//                
-//                present(gallery, animated: false)
-//                return
-//            default: break
-//            }
-//        }
-        super.performEvent(event, withPost: post, inCell: cell)
+    var wasDragged = false
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        wasDragged = true
     }
 }
 
@@ -272,7 +282,7 @@ private extension ThreadViewController {
         
         inputManager.post { [weak self] success, event in
             guard success, let event, let self else {
-                self?.feed.requestThread(postId: self?.id ?? "")
+                self?.feed.requestThread(postId: self?.id ?? "", includeParent: false)
                 return
             }
             
@@ -295,7 +305,7 @@ private extension ThreadViewController {
                     didMoveToMain = false
 
                     guard let post else {
-                        feed.requestThread(postId: self.id)
+                        feed.requestThread(postId: self.id, includeParent: false)
                         return
                     }
                     
@@ -347,6 +357,7 @@ private extension ThreadViewController {
     
     func addPublishers() {
         feed.$parsedPosts.receive(on: DispatchQueue.main).sink { [weak self] parsed in
+            let parsed = parsed.uniqueByFilter({ $0.post.id })
             guard let self, let mainPost = parsed.first(where: { $0.post.id == self.id }) else { return }
             
             mainPost.buildContentString(style: .enlarged)
@@ -377,6 +388,7 @@ private extension ThreadViewController {
                 else { return }
                 
                 self.articles = [article]
+                didLoadData = true
             }
             .store(in: &cancellables)
         
@@ -405,6 +417,10 @@ private extension ThreadViewController {
                 }
                 let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - adjustedTopBarHeight - contentSize)
                 self.table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: botInset, right: 0)
+                
+                if !wasDragged, posts.count > 1 {
+                    table.scrollToRow(at: mainPostIndex, at: .top, animated: false)
+                }
             }
 
         Publishers.CombineLatest($didLoadData, $didLoadView)
@@ -635,7 +651,7 @@ private extension ThreadViewController {
         usersTableView.isHidden = true
         
         refreshControl.addAction(.init(handler: { [unowned self] _ in
-            feed.requestThread(postId: id)
+            feed.requestThread(postId: id, includeParent: true)
         }), for: .valueChanged)
         
         NSLayoutConstraint.activate([

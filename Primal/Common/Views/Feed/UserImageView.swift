@@ -118,7 +118,7 @@ class UserImageView: UIView, Themeable {
         
         updateGlow(user)
         
-        let url = user.profileImage.url(for: height < 100 ? .small : .medium)
+        let url = user.profileImage.url(for: height < 120 ? .small : .medium)
         
         guard
             !disableAnimated,

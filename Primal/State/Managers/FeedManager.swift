@@ -71,7 +71,6 @@ final class FeedManager {
     init(threadId: String) {
         contentStyle = .threadChildren
         initSubscriptions()
-        requestThread(postId: threadId)
     }
     
     func updateTheme() {
@@ -120,12 +119,16 @@ final class FeedManager {
         sendNewPageRequest()
     }
         
-    func requestThread(postId: String, limit: Int32 = 100) {
-        parsedPosts.removeAll()
+    func requestThread(postId: String, limit: Int32 = 100, includeParent: Bool) {
+        if parsedPosts.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { [weak self] in
+                guard let self, parsedPosts.isEmpty else { return }
+                requestThread(postId: postId, limit: limit, includeParent: includeParent)
+            }
+        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { [weak self] in
-            guard let self, parsedPosts.isEmpty else { return }
-            requestThread(postId: postId, limit: limit)
+        if includeParent {
+            parsedPosts.removeAll()
         }
         
         SocketRequest(
@@ -134,7 +137,8 @@ final class FeedManager {
             payload: .object([
                 "event_id": .string(postId),
                 "limit": .number(Double(limit)),
-                "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+                "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+                "include_parent_posts": .bool(includeParent)
             ])
         )
         .publisher()
