@@ -161,14 +161,14 @@ final class Connection {
         
         socket.connect()
         
-//        DispatchQueue.main.async {
-//            SocketRequest(name: "set_primal_protocol", payload: ["compression": "zlib"])
-//                .publisher()
-//                .sink(receiveValue: { result in
-//                    print(result)
-//                })
-//                .store(in: &self.cancellables)
-//        }
+        DispatchQueue.main.async {
+            SocketRequest(name: "set_primal_protocol", payload: ["compression": "zlib"])
+                .publisher()
+                .sink(receiveValue: { result in
+                    print(result)
+                })
+                .store(in: &self.cancellables)
+        }
     }
     
     private func disconnect() {
