@@ -58,6 +58,8 @@ final class InAppPurchaseManager: NSObject {
     
     static let monthlyPremiumId = "monthlyPremium"
     static let yearlyPremiumId = "yearlyPremium"
+    static let monthlyProId = "monthlyProSub"
+    static let yearlyProId = "yearlyProSub"
     
     //MARK: - Private
     fileprivate let productIds: Set<String> = ["MINSATS"]
@@ -145,7 +147,7 @@ final class InAppPurchaseManager: NSObject {
     }
     
     func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product])->Void)) {
-        let productIds = [Self.monthlyPremiumId, Self.yearlyPremiumId]
+        let productIds = [Self.monthlyPremiumId, Self.yearlyPremiumId, Self.monthlyProId, Self.yearlyProId]
         
         Task { @MainActor in
             do {

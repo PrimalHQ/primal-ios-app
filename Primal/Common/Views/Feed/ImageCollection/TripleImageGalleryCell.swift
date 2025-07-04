@@ -76,7 +76,7 @@ final class TripleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
             
             imageView.playIcon.isHidden = true
             if image.url.isImageURL == true {
-                imageView.loadImage(url: image.url(for: .medium), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
+                imageView.loadImage(url: image.url(for: .small), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
             } else if let thumbnail = thumbnails[image.url] {
                 imageView.loadImage(url: URL(string: thumbnail), downsampling: downsampling, originalURL: image.url, userPubkey: userPubkey)
                 imageView.playIcon.isHidden = false

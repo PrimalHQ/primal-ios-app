@@ -15,9 +15,9 @@ class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     
     var useShortText: Bool { true }
         
-    let selectionTextView = MainThreadCellTextView()
+    let selectionTextView = UITextView()
     
-    let mainLabel = UILabel()
+    var heightC: NSLayoutConstraint?
     
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
@@ -28,8 +28,14 @@ class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
-        mainLabel.attributedText = parsedContent.attributedText
+//        mainLabel.attributedText = parsedContent.attributedText
         selectionTextView.attributedText = parsedContent.attributedText
+        
+        heightC?.isActive = false
+        
+        heightC = selectionTextView.heightAnchor.constraint(equalToConstant: parsedContent.attributedText.heightForWidth(UIScreen.main.bounds.width - 24) + 20)
+        heightC?.priority = .defaultHigh
+        heightC?.isActive = true
         
         updateTheme()
     }
@@ -37,23 +43,23 @@ class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     override func updateTheme() {
         super.updateTheme()
         
-        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+//        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
     }
 }
 
 private extension MainThreadElementTextCell {
     func setup() {
-        secondRow.addSubview(mainLabel)
-        mainLabel
-            .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .bottom, padding: 5)
-            .pinToSuperview(edges: .top, padding: 8)
+//        secondRow.addSubview(mainLabel)
+//        mainLabel
+//            .pinToSuperview(edges: .horizontal)
+//            .pinToSuperview(edges: .bottom, padding: 5)
+//            .pinToSuperview(edges: .top, padding: 8)
         
         secondRow.addSubview(selectionTextView)
         selectionTextView
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)
-            .pinToSuperview(edges: .bottom, padding: 0)
+            .pinToSuperview(edges: .bottom, padding: -5)
     
         selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]
@@ -61,9 +67,9 @@ private extension MainThreadElementTextCell {
         selectionTextView.isScrollEnabled = false
         selectionTextView.delegate = self
         
-        mainLabel.alpha = 0.01
-        mainLabel.numberOfLines = 0
-        mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+//        mainLabel.alpha = 0.01
+//        mainLabel.numberOfLines = 0
+//        mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
     }
 }
 
@@ -124,26 +130,5 @@ extension MainThreadElementTextCell: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         delegate?.postCellDidTap(self, .url(URL))
         return false
-    }
-}
-
-class MainThreadCellTextView: UITextView {
-    let maxWidth: CGFloat = UIScreen.main.bounds.width - 24
-    
-    override var attributedText: NSAttributedString! {
-        didSet {
-            invalidateIntrinsicContentSize()
-        }
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        var size = attributedText.boundingRect(
-            with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            context: nil
-        ).size
-        
-        size.height += 20
-        return size
     }
 }

@@ -8,6 +8,8 @@
 import Combine
 import Foundation
 
+struct TimeoutError: Error { }
+
 extension Publisher where Failure == Never {
     func assign<Root: AnyObject>(
             to keyPath: ReferenceWritableKeyPath<Root, Output>,
@@ -25,6 +27,14 @@ extension Publisher where Self.Failure == Never {
                 await receiveValue(value)
             }
         }
+    }
+    
+    func timeoutDefaultValue(duration: Int, _ defaultValue: Output) -> AnyPublisher<Output, Never> {
+        self
+            .mapError({ _ in TimeoutError() })
+            .timeout(.seconds(duration), scheduler: DispatchQueue.main, customError: { TimeoutError() })
+            .catch({ _ in  Just(defaultValue) })
+            .eraseToAnyPublisher()
     }
 }
 

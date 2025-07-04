@@ -118,12 +118,12 @@ class UserImageView: UIView, Themeable {
         
         updateGlow(user)
         
-        let url = user.profileImage.url(for: height < 100 ? .small : .medium)
+        let url = user.profileImage.url(for: height < 120 ? .small : .medium)
         
         guard
             !disableAnimated,
             !feed || ContentDisplaySettings.animatedAvatars,
-            user.data.picture.hasSuffix("gif"),
+            user.data.picture.hasSuffix("gif") || user.data.picture.hasSuffix(".gifv"),
             let url = user.profileImage.url(for: .small)
         else {
             loadImage(url: url, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)
@@ -148,26 +148,27 @@ class UserImageView: UIView, Themeable {
     func loadImage(url: URL?, originalURL: String, userPubkey: String) {
         self.url = originalURL
         
-        animatedImageView.kf.setImage(with: url, options: [
+        animatedImageView.kf.setImage(with: url, placeholder: UIImage.profile, options: [
             .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
+           
             self?.attemptOriginalLoad(originalURL: originalURL, userPubkey: userPubkey)
         }
     }
     
     func attemptOriginalLoad(originalURL: String, userPubkey: String) {
         guard url == originalURL else { return }
-        animatedImageView.kf.setImage(with: URL(string: originalURL), options: [
+        animatedImageView.kf.setImage(with: URL(string: originalURL), placeholder: UIImage.profile, options: [
             .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
             self?.attemptBlossomLoad(currentURL: originalURL, originalURL: originalURL, userPubkey: userPubkey)
         }
     }
@@ -190,13 +191,13 @@ class UserImageView: UIView, Themeable {
             return
         }
         
-        animatedImageView.kf.setImage(with: finalURL, options: [
+        animatedImageView.kf.setImage(with: finalURL, placeholder: UIImage.profile, options: [
             .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
         ]) { [weak self] result in
-            guard case .failure = result else { return }
+            guard case .failure(let error) = result, !error.isTaskCancelled && !error.isNotCurrentTask else { return }
             self?.attemptBlossomLoad(currentURL: finalURL.absoluteString, originalURL: originalURL, userPubkey: userPubkey)
         }
     }

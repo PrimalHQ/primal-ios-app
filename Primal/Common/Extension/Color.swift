@@ -13,6 +13,8 @@ extension UIColor {
         Theme.current.isDarkTheme ? .init(rgb: 0x2E3726) : .init(rgb: 0xE8F3E8)
     }
     
+    static let pro = UIColor(rgb: 0xE47C00)
+    
     convenience init(rgb: UInt) {
         self.init(
             red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,

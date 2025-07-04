@@ -158,8 +158,8 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         }
         repostedByOverlayButton.isHidden = parsedContent.reposted == nil
         
-        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, imageName, action, attributes) in
-            UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
+        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, image, action, attributes) in
+            UIAction(title: title, image: image, attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
             }
@@ -186,40 +186,41 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
 }
 
 extension ParsedContent {
-    func actionsData() -> [(String, String, PostCellEvent, UIMenuElement.Attributes)] {
+    func actionsData() -> [(String, UIImage, PostCellEvent, UIMenuElement.Attributes)] {
         let postInfo = postInfo
         let userMuteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
         
-        let bookmarkAction = ("Add Bookmark", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
-        let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        let bookmarkAction = ("Add Bookmark", UIImage.menuBookmark, PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
+        let unbookmarkAction = ("Remove Bookmark", UIImage.menuBookmarkFilled, PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
         
-        var actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = []
+        var actionsData: [(String, UIImage, PostCellEvent, UIMenuElement.Attributes)] = []
         
         if postInfo.isPostMuted {
-            actionsData.append(("Unmute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
+            actionsData.append(("Unmute Thread", .menuMuteThread, .toggleMutePost, .destructive))
         }
         
-        let mainData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
-            ("Share Note", "MenuShare", .share, []),
+        let mainData: [(String, UIImage, PostCellEvent, UIMenuElement.Attributes)] = [
+            ("Share Note", .menuShare, .share, []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
-            ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
-            ("Copy Note Text", "MenuCopyText", .copy(.content), []),
-            ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
-            ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
+            ("Share as Image", .menuShareAs, .shareAsImage, []),
+            ("Copy Note Link", .menuCopyLink, .copy(.link), []),
+            ("Copy Note Text", .menuCopyText, .copy(.content), []),
+            ("Copy Note ID", .menuCopyNoteID, .copy(.noteID), []),
+            ("Copy Raw Data", .menuCopyData, .copy(.rawData), []),
         ]
         actionsData.append(contentsOf: mainData)
         
         if user.data.pubkey != IdentityManager.instance.userHexPubkey {
-            actionsData.append((userMuteTitle, "blockIcon", .muteUser, .destructive))
+            actionsData.append((userMuteTitle, .blockIcon, .muteUser, .destructive))
         }
         
         if user.data.pubkey != IdentityManager.instance.userHexPubkey {
             if !postInfo.isPostMuted {
-                actionsData.append(("Mute Thread", "MenuMuteThread", .toggleMutePost, .destructive))
+                actionsData.append(("Mute Thread", .menuMuteThread, .toggleMutePost, .destructive))
             }
-            actionsData.append(("Report Content", "warningIcon", .report, .destructive))
+            actionsData.append(("Report Content", .warningIcon, .report, .destructive))
         } else {
-            actionsData.append(("Request Delete", "MenuTrash", .requestDelete, .destructive))
+            actionsData.append(("Request Delete", .menuTrash, .requestDelete, .destructive))
         }
             
         return actionsData

@@ -94,6 +94,6 @@ extension PremiumManageSubscriptionController: PremiumManageSubscriptionHeaderCe
             return
         }
         // Buy
-        show(PremiumBuySubscriptionController(pickedName: state.name, state: .buySubscription), sender: nil)
+        show(PremiumBuySubscriptionController(pickedName: state.name, kind: .premium, state: .buySubscription), sender: nil)
     }
 }

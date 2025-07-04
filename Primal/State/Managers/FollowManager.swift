@@ -68,7 +68,6 @@ final class FollowManager {
         pubkeysToFollow.insert(pubkey)
         
         followChanged.send((pubkey, true))
-        
     }
     
     func sendUnfollowEvent(_ pubkey: String) {

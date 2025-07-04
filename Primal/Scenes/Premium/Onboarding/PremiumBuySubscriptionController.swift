@@ -10,10 +10,27 @@ import UIKit
 import FLAnimatedImage
 import StoreKit
 
-class PremiumBuySubscriptionController: UIViewController {
+enum SubscriptionKind {
+    case premium, pro
     
+    var color: UIColor {
+        switch self {
+        case .pro:      return .pro
+        case .premium:  return .accent
+        }
+    }
+    
+    var textColor: UIColor {
+        switch self {
+        case .pro:      return .pro
+        case .premium:  return .accent2
+        }
+    }
+}
+
+class PremiumBuySubscriptionController: UIViewController {
     enum State {
-        case onboardingFinish, extendSubscription, buySubscription
+        case onboardingFinish, extendSubscription, buySubscription, upgradeToPro
     }
     
     var cancellables: Set<AnyCancellable> = []
@@ -22,9 +39,11 @@ class PremiumBuySubscriptionController: UIViewController {
     
     let pickedName: String
     let state: State
-    init(pickedName: String, state: State) {
+    let kind: SubscriptionKind
+    init(pickedName: String, kind: SubscriptionKind, state: State) {
         self.pickedName = pickedName
         self.state = state
+        self.kind = kind
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,6 +72,8 @@ private extension PremiumBuySubscriptionController {
             title = "Extend Subscription"
         case .buySubscription:
             title = "Buy Subscription"
+        case .upgradeToPro:
+            title = "Get Pro Now"
         }
         
         let table = PremiumSearchTableView()
@@ -60,38 +81,40 @@ private extension PremiumBuySubscriptionController {
         let contentStack = UIStackView(axis: .vertical, [])
         contentStack.distribution = .equalSpacing
         
-        let yearlyButton = PurchasePremiumButton(title: "Get Annual Plan")
-        let monthlyButton = PurchasePremiumButton(title: "Get Monthly Plan")
-        
-        let learnMoreButton = AccentUIButton(title: "Learn about Premium", font: .appFont(withSize: 16, weight: .regular))
-//        let promoCodeButton = AccentUIButton(title: "Have a promo code?", font: .appFont(withSize: 14, weight: .regular))
-//        let actionStack = UIStackView([learnMoreButton, SpacerView(width: 1, color: .foreground6), promoCodeButton])
-//        actionStack.constrainToSize(height: 20)
-//        learnMoreButton.widthAnchor.constraint(equalTo: promoCodeButton.widthAnchor).isActive = true
+        let yearlyButton = PurchasePremiumButton(title: "Get Annual Plan", kind: kind)
+        let monthlyButton = PurchasePremiumButton(title: "Get Monthly Plan", kind: kind)
+        let learnMoreButton = UIButton()
+        switch kind {
+        case .premium:
+            learnMoreButton.configuration = .accent("Learn about Primal Premium", font: .appFont(withSize: 16, weight: .regular))
+        case .pro:
+            learnMoreButton.configuration = .coloredButton("Learn about Primal Pro", color: .pro)
+        }
         
         let mainStack = UIStackView(axis: .vertical, [
             UIView(),
             table,
-            learnMoreButton, SpacerView(height: 28),
-            yearlyButton, SpacerView(height: 16),
-            monthlyButton, SpacerView(height: 24),
+            learnMoreButton, SpacerView(height: 28, priority: .defaultLow),
+            yearlyButton, SpacerView(height: 8, priority: .defaultLow), SpacerView(height: 8, priority: .required),
+            monthlyButton, SpacerView(height: 24, priority: .defaultLow),
             TermsAndConditionsView()
         ])
         
         if state == .extendSubscription {
-            mainStack.insertArrangedSubview(SpacerView(height: 16), at: 2)
+            mainStack.insertArrangedSubview(SpacerView(height: 16, priority: .defaultLow), at: 2)
             let label = UILabel("Your subscription will be extended by the number of months you buy.", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
             label.textAlignment = .center
             label.numberOfLines = 0
             mainStack.insertArrangedSubview(label, at: 2)
-            mainStack.insertArrangedSubview(SpacerView(height: 16), at: 2)
+            mainStack.insertArrangedSubview(SpacerView(height: 16, priority: .defaultLow), at: 2)
         } else {
-            mainStack.insertArrangedSubview(SpacerView(height: 30), at: 2)
+            mainStack.insertArrangedSubview(SpacerView(height: 30, priority: .defaultLow), at: 2)
         }
         
         if let userStack = userStackView() {
             mainStack.insertArrangedSubview(userStack, at: 1)
-            mainStack.setCustomSpacing(24, after: userStack)
+            mainStack.insertArrangedSubview(SpacerView(height: 16, priority: .defaultLow), at: 2)
+            mainStack.insertArrangedSubview(SpacerView(height: 8, priority: .defaultLow), at: 2)
         }
         
         view.addSubview(mainStack)
@@ -104,18 +127,28 @@ private extension PremiumBuySubscriptionController {
         table.profileRow.infoLabel.text = "primal.net/" + pickedName
         
         learnMoreButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(PremiumLearnMoreController(), sender: nil)
+            guard let self else { return }
+            switch kind {
+            case .pro:
+                show(PremiumLearnMoreController(startingTab: .pro), sender: nil)
+            case .premium:
+                show(PremiumLearnMoreController(startingTab: .premium), sender: nil)
+            }
         }), for: .touchUpInside)
         
         InAppPurchaseManager.shared.fetchPremiumSubscriptions { [weak self] products in
-            if let monthly = products.first(where: { $0.id == InAppPurchaseManager.monthlyPremiumId }) {
+            let isPro = self?.kind == .pro
+            let monthlyId = isPro ? InAppPurchaseManager.monthlyProId : InAppPurchaseManager.monthlyPremiumId
+            let yearlyId = isPro ? InAppPurchaseManager.yearlyProId : InAppPurchaseManager.yearlyPremiumId
+            
+            if let monthly = products.first(where: { $0.id == monthlyId }) {
                 monthlyButton.priceLabel.text = monthly.displayPrice
                 
                 monthlyButton.addAction(.init(handler: { _ in
                     self?.purchaseSubscription(product: monthly)
                 }), for: .touchUpInside)
             }
-            if let yearly = products.first(where: { $0.id == InAppPurchaseManager.yearlyPremiumId }) {
+            if let yearly = products.first(where: { $0.id == yearlyId }) {
                 yearlyButton.priceLabel.text = yearly.displayPrice
                 
                 yearlyButton.addAction(.init(handler: { _ in
@@ -205,12 +238,17 @@ private extension PremiumBuySubscriptionController {
         nameStack.alignment = .center
         nameStack.spacing = 6
                 
-        let userStack = UIStackView(axis: .vertical, [image, SpacerView(height: 16), nameStack])
+        let userStack = UIStackView(axis: .vertical, [image, SpacerView(height: 16, priority: .defaultLow), nameStack])
         userStack.alignment = .center
         
-        if state == .onboardingFinish {
-            userStack.setCustomSpacing(24, after: nameStack)
-            userStack.addArrangedSubview(UILabel("Your Primal Name is available!", color: .init(rgb: 0x52CE0A), font: .appFont(withSize: 16, weight: .semibold)))
+        if state == .onboardingFinish || state == .upgradeToPro {
+            userStack.addArrangedSubview(SpacerView(height: 8, priority: .defaultLow))
+            userStack.addArrangedSubview(SpacerView(height: 8, priority: .required))
+            userStack.addArrangedSubview(UILabel(
+                state == .upgradeToPro ? "Your Legend status is one click away" : "Your Primal Name is available!",
+                color: .init(rgb: 0x52CE0A),
+                font: .appFont(withSize: 16, weight: .semibold)
+            ))
         }
         
         return userStack
@@ -227,7 +265,7 @@ class PurchasePremiumButton: MyButton {
         }
     }
     
-    init(title: String) {
+    init(title: String, kind: SubscriptionKind) {
         super.init(frame: .zero)
         
         addSubview(titleLabel)
@@ -239,7 +277,7 @@ class PurchasePremiumButton: MyButton {
         
         constrainToSize(height: 58)
         layer.cornerRadius = 29
-        backgroundColor = .accent
+        backgroundColor = kind.color
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

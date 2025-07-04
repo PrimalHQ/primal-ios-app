@@ -78,11 +78,11 @@ class PremiumSupportPrimalController: UIViewController {
             guard let self else { return }
             
             if let state {
-                show(PremiumBuySubscriptionController(pickedName: state.name, state: .extendSubscription), sender: nil)
+                show(PremiumBuySubscriptionController(pickedName: state.name, kind: .premium, state: .extendSubscription), sender: nil)
             } else {
                 guard let nav = navigationController else { return }
                 nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
-                    nav.pushViewController(PremiumBuySubscriptionController(pickedName: name, state: .onboardingFinish), animated: true)
+                    nav.pushViewController(PremiumBuySubscriptionController(pickedName: name, kind: .premium, state: .onboardingFinish), animated: true)
                 }), animated: true)
             }
         }))

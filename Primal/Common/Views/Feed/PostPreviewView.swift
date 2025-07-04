@@ -57,21 +57,20 @@ final class PostPreviewView: UIView, Themeable {
         profileImageView.setUserImage(content.user)
         
         imageAspectConstraint?.isActive = false
-        if let first = content.mediaResources.first?.variants.first {
-            let aspect = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.width)) / CGFloat(max(1, first.height)))
-            aspect.priority = .defaultHigh
-            aspect.isActive = true
-            imageAspectConstraint = aspect
+        if content.mediaResources.count == 1 {
+            if let first = content.mediaResources.first?.variants.first {
+                imageAspectConstraint = mainImages.widthAnchor.constraint(equalTo: mainImages.heightAnchor, multiplier: CGFloat(max(1, first.width)) / CGFloat(max(1, first.height)))
+            } else {
+                let url = content.mediaResources.first?.url
+                let multiplier: CGFloat = url?.isVideoURL == true ? 9 / 16 : 1
+                
+                imageAspectConstraint = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
+            }
         } else {
-            let url = content.mediaResources.first?.url
-            
-            let multiplier: CGFloat = url?.isVideoURL == true ? 9 / 16 : 1
-            
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: multiplier)
-            aspect.priority = .defaultHigh
-            aspect.isActive = true
-            imageAspectConstraint = aspect
+            imageAspectConstraint = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: content.mediaResources.aspectForGallery())
         }
+        imageAspectConstraint?.priority = .defaultHigh
+        imageAspectConstraint?.isActive = true
         
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails

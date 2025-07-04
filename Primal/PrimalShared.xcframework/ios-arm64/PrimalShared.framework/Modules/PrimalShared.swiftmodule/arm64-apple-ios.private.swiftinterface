@@ -1,0 +1,2680 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -O -module-name PrimalShared
+// swift-module-flags-ignorable:  -interface-compiler-version 6.1.2
+import Combine
+import Foundation
+@_exported import PrimalShared
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension PrimalShared.SkieSwiftFlowProtocol {
+  public func toPublisher() -> some Combine.Publisher<Self.Element, _Concurrency.CancellationError>
+  
+}
+extension Combine.Publisher where Self.Failure == _Concurrency.CancellationError {
+  public func sink(receiveValue: @escaping (Self.Output) -> Swift.Void) -> Combine.AnyCancellable
+}
+public enum Skie {
+  public enum KotlinxCoroutinesCore {
+    public enum Runnable {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreRunnable
+    }
+    public enum Flow {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreFlow
+    }
+    public enum StateFlow {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreStateFlow
+    }
+    public enum SharedFlow {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreSharedFlow
+    }
+    public enum MutableSharedFlow {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreMutableSharedFlow
+    }
+    public enum MutableStateFlow {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreMutableStateFlow
+    }
+    public enum SelectClause0 {
+    }
+    public enum SelectClause {
+    }
+    public enum SelectInstance {
+    }
+    public enum SelectClause1 {
+    }
+    public enum SelectClause2 {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_coroutines_core = PrimalShared.Skie.KotlinxCoroutinesCore
+  public enum RuntimeKotlin {
+    public enum SkieColdFlowIterator {
+      public typealias __Kotlin = PrimalShared.SkieColdFlowIterator
+    }
+    public enum SkieKotlinFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinFlow
+    }
+    public enum SkieKotlinMutableSharedFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinMutableSharedFlow
+    }
+    public enum SkieKotlinMutableStateFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinMutableStateFlow
+    }
+    public enum SkieKotlinOptionalFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinOptionalFlow
+    }
+    public enum SkieKotlinOptionalMutableSharedFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinOptionalMutableSharedFlow
+    }
+    public enum SkieKotlinOptionalMutableStateFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinOptionalMutableStateFlow
+    }
+    public enum SkieKotlinOptionalSharedFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinOptionalSharedFlow
+    }
+    public enum SkieKotlinOptionalStateFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinOptionalStateFlow
+    }
+    public enum SkieKotlinSharedFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinSharedFlow
+    }
+    public enum SkieKotlinStateFlow {
+      public typealias __Kotlin = PrimalShared.SkieKotlinStateFlow
+    }
+    public enum Skie_CancellationHandler {
+      public typealias __Kotlin = PrimalShared.Skie_CancellationHandler
+    }
+    public enum Skie_DispatcherDelegate {
+      public typealias __Kotlin = PrimalShared.Skie_DispatcherDelegate
+    }
+    public enum Skie_SuspendHandler {
+      public typealias __Kotlin = PrimalShared.Skie_SuspendHandler
+    }
+    public enum Skie_SuspendResult {
+      public typealias __Kotlin = PrimalShared.Skie_SuspendResult
+      public enum Success {
+        public typealias __Kotlin = PrimalShared.Skie_SuspendResult.Success
+      }
+      public enum Error {
+        public typealias __Kotlin = PrimalShared.Skie_SuspendResult.Error
+      }
+      public enum Canceled {
+        public typealias __Kotlin = PrimalShared.Skie_SuspendResult.Canceled
+      }
+    }
+  }
+  public typealias co_touchlab_skie__runtime_kotlin = PrimalShared.Skie.RuntimeKotlin
+  public enum KtorUtils {
+    public enum Pipeline {
+    }
+  }
+  public typealias io_ktor__ktor_utils = PrimalShared.Skie.KtorUtils
+  public enum NetworkingPrimal {
+    public enum PrimalSocketSubscription {
+    }
+    public enum NostrIncomingMessage {
+    }
+  }
+  public typealias Primal_core__networking_primal = PrimalShared.Skie.NetworkingPrimal
+  public enum NetworkingNwc {
+    public enum NwcResult {
+    }
+    public enum NwcMethod {
+    }
+  }
+  public typealias Primal_core__networking_nwc = PrimalShared.Skie.NetworkingNwc
+  public enum KtorHttp {
+    public enum OutgoingContent {
+    }
+  }
+  public typealias io_ktor__ktor_http = PrimalShared.Skie.KtorHttp
+  public enum KotlinxSerializationCore {
+    public enum SerialKind {
+    }
+    public enum SerializersModule {
+    }
+    public enum PolymorphicKind {
+    }
+    public enum PrimitiveKind {
+    }
+    public enum StructureKind {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_serialization_core = PrimalShared.Skie.KotlinxSerializationCore
+  public enum KotlinxIoCore {
+    public enum Source {
+    }
+    public enum Sink {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_io_core = PrimalShared.Skie.KotlinxIoCore
+  public enum Nostr {
+    public enum ZapResult {
+    }
+    public enum ZapTarget {
+    }
+    public enum SignResult {
+    }
+    public enum ZapError {
+    }
+  }
+  public typealias Primal_domain__nostr = PrimalShared.Skie.Nostr
+  public enum KotlinxSerializationJson {
+    public enum JsonElement {
+    }
+    public enum JsonPrimitive {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_serialization_json = PrimalShared.Skie.KotlinxSerializationJson
+  public enum Primal {
+    public enum NotificationSettingsType {
+      public enum PushNotifications {
+      }
+      public enum Preferences {
+      }
+      public enum TabNotifications {
+      }
+    }
+  }
+  public typealias Primal_domain__primal = PrimalShared.Skie.Primal
+  public enum KotlinxDatetime {
+    public enum DateTimeFormat {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_datetime = PrimalShared.Skie.KotlinxDatetime
+  public enum NetworkingUpload {
+    public enum UploadResult {
+    }
+  }
+  public typealias Primal_core__networking_upload = PrimalShared.Skie.NetworkingUpload
+  public enum Okio {
+    public enum BufferedSource {
+    }
+    public enum BufferedSink {
+    }
+  }
+  public typealias com_squareup_okio__okio = PrimalShared.Skie.Okio
+  public enum PagingCommon {
+    public enum LoadState {
+    }
+  }
+  public typealias androidx_paging__paging_common = PrimalShared.Skie.PagingCommon
+}
+@_hasMissingDesignatedInitializers public class SkieSwiftFlowIterator<T> : _Concurrency.AsyncIteratorProtocol {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func next() async -> T?
+  @objc deinit
+  public typealias Element = T
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncIteratorProtocol, Failure) public typealias __AsyncIteratorProtocol_Failure = Swift.Never
+}
+public protocol SkieSwiftFlowProtocol<Element> : _Concurrency.AsyncSequence {
+  associatedtype Element
+  associatedtype Delegate : PrimalShared.Kotlinx_coroutines_coreFlow
+  @_spi(SKIE) var delegate: Self.Delegate { get }
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreFlow
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreFlow
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinOptionalFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinOptionalFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftSharedFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreSharedFlow
+  final public var replayCache: [T] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalSharedFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreSharedFlow
+  final public var replayCache: [T?] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinOptionalSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinOptionalSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftMutableSharedFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreMutableSharedFlow
+  final public var subscriptionCount: PrimalShared.SkieSwiftStateFlow<PrimalShared.KotlinInt> {
+    get
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T) async throws
+  final public func tryEmit(value: T) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftMutableSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftMutableSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinMutableSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinMutableSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreMutableSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalMutableSharedFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreMutableSharedFlow
+  final public var subscriptionCount: PrimalShared.SkieSwiftStateFlow<PrimalShared.KotlinInt> {
+    get
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T?) async throws
+  final public func tryEmit(value: T?) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinOptionalMutableSharedFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreMutableSharedFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftStateFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreStateFlow
+  final public var value: T {
+    get
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinStateFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalStateFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreStateFlow
+  final public var value: T? {
+    get
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinOptionalStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinOptionalStateFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftMutableStateFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreMutableStateFlow
+  final public var value: T {
+    get
+    set(value)
+  }
+  final public var replayCache: [T] {
+    get
+  }
+  final public var subscriptionCount: PrimalShared.SkieSwiftStateFlow<PrimalShared.KotlinInt> {
+    get
+  }
+  final public func compareAndSet(expect: T, update: T) -> Swift.Bool
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T) async throws
+  final public func tryEmit(value: T) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftMutableStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftMutableStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinMutableStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinMutableStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T>
+  public typealias Element = T
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinMutableStateFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreMutableStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class SkieSwiftOptionalMutableStateFlow<T> : PrimalShared.SkieSwiftFlowProtocol, Swift._ObjectiveCBridgeable {
+  @_spi(SKIE) final public let delegate: any PrimalShared.Kotlinx_coroutines_coreMutableStateFlow
+  final public var value: T? {
+    get
+    set(value)
+  }
+  final public var replayCache: [T?] {
+    get
+  }
+  final public var subscriptionCount: PrimalShared.SkieSwiftStateFlow<PrimalShared.KotlinInt> {
+    get
+  }
+  final public func compareAndSet(expect: T?, update: T?) -> Swift.Bool
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  final public func emit(value: T?) async throws
+  final public func tryEmit(value: T?) -> Swift.Bool
+  final public func resetReplayCache()
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalMutableStateFlow<T>?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>, result: inout PrimalShared.SkieSwiftOptionalMutableStateFlow<T>?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>?) -> Self
+  final public func _bridgeToObjectiveC() -> PrimalShared.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>
+  final public func makeAsyncIterator() -> PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias AsyncIterator = PrimalShared.SkieSwiftFlowIterator<T?>
+  public typealias Element = T?
+  public typealias _ObjectiveCType = PrimalShared.SkieKotlinOptionalMutableStateFlow<Swift.AnyObject>
+  public typealias Delegate = any PrimalShared.Kotlinx_coroutines_coreMutableStateFlow
+  @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, macOS 15.0, *)
+  @_implements(_Concurrency.AsyncSequence, Failure) public typealias __AsyncSequence_Failure = Swift.Never
+  @objc deinit
+}
+extension PrimalShared.RetryKt {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public static func retryNetworkCall(retries: Swift.Int32, delay: Swift.Int64, onBeforeDelay: ((PrimalShared.NetworkException) -> Swift.Void)?, onBeforeTry: ((PrimalShared.KotlinInt) -> Swift.Void)?, block: any PrimalShared.KotlinSuspendFunction0) async throws -> Any?
+}
+public func __retryNetworkCall(retries: Swift.Int32, delay: Swift.Int64, onBeforeDelay: ((PrimalShared.NetworkException) -> Swift.Void)?, onBeforeTry: ((PrimalShared.KotlinInt) -> Swift.Void)?, block: any PrimalShared.KotlinSuspendFunction0, completionHandler: @escaping (Any?, (any Swift.Error)?) -> Swift.Void)
+@available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+public func retryNetworkCall(retries: Swift.Int32, delay: Swift.Int64, onBeforeDelay: ((PrimalShared.NetworkException) -> Swift.Void)?, onBeforeTry: ((PrimalShared.KotlinInt) -> Swift.Void)?, block: any PrimalShared.KotlinSuspendFunction0) async throws -> Any?
+extension PrimalShared.LightningAddressChecker {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func validateLightningAddress(lud16: Swift.String) async throws
+}
+extension PrimalShared.Kotlinx_coroutines_coreJob {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func join() async throws
+}
+extension PrimalShared.Skie.KtorUtils.Pipeline {
+  public struct __Suspend<TSubject, TContext> where TSubject : AnyObject, TContext : AnyObject {
+    public let __kotlinObject: PrimalShared.Ktor_utilsPipeline<TSubject, TContext>
+    public init(_ __kotlinObject: PrimalShared.Ktor_utilsPipeline<TSubject, TContext>)
+  }
+}
+public func skie<TSubject, TContext>(_ kotlinObject: PrimalShared.Ktor_utilsPipeline<TSubject, TContext>) -> PrimalShared.Skie.KtorUtils.Pipeline.__Suspend<TSubject, TContext> where TSubject : AnyObject, TContext : AnyObject
+extension PrimalShared.Skie.KtorUtils.Pipeline.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func execute(context: TContext, subject: TSubject) async throws -> TSubject
+}
+extension PrimalShared.KotlinSuspendFunction2 {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func invoke(p1: Any?, p2: Any?) async throws -> Any?
+}
+extension PrimalShared.Ktor_client_coreHttpClientCall {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func body(info: PrimalShared.Ktor_utilsTypeInfo) async throws -> Any
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func bodyNullable(info: PrimalShared.Ktor_utilsTypeInfo) async throws -> Any?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getResponseContent() async throws -> any PrimalShared.Ktor_ioByteReadChannel
+}
+extension PrimalShared.Ktor_ioByteReadChannel {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func awaitContent(min: Swift.Int32) async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.Ktor_client_coreHttpClientEngine {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func execute(data: PrimalShared.Ktor_client_coreHttpRequestData) async throws -> PrimalShared.Ktor_client_coreHttpResponseData
+}
+extension PrimalShared.NwcApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getBalance() async throws -> PrimalShared.NwcResult<PrimalShared.GetBalanceResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getInfo() async throws -> PrimalShared.NwcResult<PrimalShared.GetInfoResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func listTransactions(params: PrimalShared.ListTransactionsParams) async throws -> PrimalShared.NwcResult<PrimalShared.ListTransactionsResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func lookupInvoice(params: PrimalShared.LookupInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.LookupInvoiceResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func makeInvoice(params: PrimalShared.MakeInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.MakeInvoiceResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func multiPayInvoice(params: [PrimalShared.PayInvoiceParams]) async throws -> PrimalShared.NwcResult<Foundation.NSArray>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func multiPayKeysend(params: [PrimalShared.PayKeysendParams]) async throws -> PrimalShared.NwcResult<Foundation.NSArray>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func payInvoice(params: PrimalShared.PayInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.PayInvoiceResponsePayload>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func payKeysend(params: PrimalShared.PayKeysendParams) async throws -> PrimalShared.NwcResult<PrimalShared.PayKeysendResponsePayload>
+}
+extension PrimalShared.NostrZapper {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func zap(data: PrimalShared.ZapRequestData) async throws -> PrimalShared.ZapResult
+}
+extension PrimalShared.PrimalApiClient {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func closeSubscription(subscriptionId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func query(message: PrimalShared.PrimalCacheFilter) async throws -> PrimalShared.PrimalQueryResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribe(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.Kotlinx_coroutines_coreFlow {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func collect(collector: any PrimalShared.Kotlinx_coroutines_coreFlowCollector) async throws
+}
+extension PrimalShared.Kotlinx_coroutines_coreFlowCollector {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func emit(value: Any?) async throws
+}
+extension PrimalShared.Skie.NetworkingPrimal.PrimalSocketSubscription {
+  public struct __Suspend<T> where T : AnyObject {
+    public let __kotlinObject: PrimalShared.PrimalSocketSubscription<T>
+    public init(_ __kotlinObject: PrimalShared.PrimalSocketSubscription<T>)
+  }
+}
+public func skie<T>(_ kotlinObject: PrimalShared.PrimalSocketSubscription<T>) -> PrimalShared.Skie.NetworkingPrimal.PrimalSocketSubscription.__Suspend<T> where T : AnyObject
+extension PrimalShared.Skie.NetworkingPrimal.PrimalSocketSubscription.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unsubscribe() async throws
+}
+extension PrimalShared.KotlinSuspendFunction1 {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func invoke(p1: Any?) async throws -> Any?
+}
+extension PrimalShared.NostrSocketClient {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func close() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func ensureSocketConnectionOrThrow() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendAUTH(signedEvent: [Swift.String : PrimalShared.Kotlinx_serialization_jsonJsonElement]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendCLOSE(subscriptionId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendCOUNT(data: [Swift.String : PrimalShared.Kotlinx_serialization_jsonJsonElement]) async throws -> Swift.String
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendEVENT(signedEvent: [Swift.String : PrimalShared.Kotlinx_serialization_jsonJsonElement]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendREQ(subscriptionId: Swift.String, data: [Swift.String : PrimalShared.Kotlinx_serialization_jsonJsonElement]) async throws
+}
+extension PrimalShared.KotlinSuspendFunction0 {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func invoke() async throws -> Any?
+}
+extension PrimalShared.PublicBookmarksRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addToBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistBookmarks(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isBookmarked(tagValue: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFromBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
+}
+extension PrimalShared.EventInteractionRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteEvent(userId: Swift.String, eventIdentifier: Swift.String, eventKind: PrimalShared.NostrEventKind, content: Swift.String, relayHint: Swift.String?) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func likeEvent(userId: Swift.String, eventId: Swift.String, eventAuthorId: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func repostEvent(userId: Swift.String, eventId: Swift.String, eventKind: Swift.Int32, eventAuthorId: Swift.String, eventRawNostrEvent: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func zapEvent(userId: Swift.String, amountInSats: Swift.UInt64, comment: Swift.String, target: PrimalShared.ZapTarget, zapRequestEvent: PrimalShared.NostrEvent) async throws -> PrimalShared.ZapResult
+}
+extension PrimalShared.EventRelayHintsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findRelaysByIds(eventIds: [Swift.String]) async throws -> [PrimalShared.EventRelayHints]
+}
+extension PrimalShared.EventRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchEventActions(eventId: Swift.String, kind: Swift.Int32) async throws -> [PrimalShared.NostrEventAction]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchEventZaps(userId: Swift.String, eventId: Swift.String, limit: Swift.Int32) async throws
+}
+extension PrimalShared.ExploreRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowList(profileId: Swift.String, identifier: Swift.String) async throws -> PrimalShared.FollowPack?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowLists(since: PrimalShared.KotlinLong?, until: PrimalShared.KotlinLong?, limit: Swift.Int32, offset: PrimalShared.KotlinInt?) async throws -> [PrimalShared.FollowPack]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchPopularUsers() async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingPeople(userId: Swift.String) async throws -> [PrimalShared.ExplorePeopleData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingTopics() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingZaps(userId: Swift.String) async throws -> [PrimalShared.ExploreZapNoteData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func searchUsers(query: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.UserProfileSearchItem]
+}
+extension PrimalShared.FeedsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addDvmFeedLocally(userId: Swift.String, dvmFeed: PrimalShared.DvmFeed, specKind: PrimalShared.FeedSpecKind) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addFeedLocally(userId: Swift.String, feedSpec: Swift.String, title: Swift.String, description: Swift.String, feedSpecKind: PrimalShared.FeedSpecKind, feedKind: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistArticleFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistNoteFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind) async throws -> [PrimalShared.PrimalFeed]?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchRecommendedDvmFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind?) async throws -> [PrimalShared.DvmFeed]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistLocallyAndRemotelyUserFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, feeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistNewDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistRemotelyAllLocalUserFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFeedLocally(userId: Swift.String, feedSpec: Swift.String) async throws
+}
+extension PrimalShared.CachingImportRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheEvents(nostrEvents: [PrimalShared.NostrEvent], primalEvents: [PrimalShared.PrimalEvent]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheNostrEvents(events: PrimalShared.KotlinArray<PrimalShared.NostrEvent>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheNostrEvents(events: [PrimalShared.NostrEvent]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cachePrimalEvents(events: PrimalShared.KotlinArray<PrimalShared.PrimalEvent>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cachePrimalEvents(events: [PrimalShared.PrimalEvent]) async throws
+}
+extension PrimalShared.EventUriRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func loadEventLinks(noteId: Swift.String, types: [PrimalShared.EventUriType]) async throws -> [PrimalShared.EventLink]
+}
+extension PrimalShared.ChatRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNewConversationMessages(userId: Swift.String, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNonFollowsConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllMessagesAsRead(authorization: PrimalShared.NostrEvent) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markConversationAsRead(authorization: PrimalShared.NostrEvent, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendMessage(userId: Swift.String, receiverId: Swift.String, text: Swift.String) async throws
+}
+extension PrimalShared.MutedItemRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistMuteList(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteUserAndPersistMuteList(userId: Swift.String, mutedUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteUserAndPersistMuteList(userId: Swift.String, unmutedUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
+}
+extension PrimalShared.NotificationRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllNotificationsAsSeen(authorization: PrimalShared.NostrEvent) async throws
+}
+extension PrimalShared.FeedRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePostById(postId: Swift.String, userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchConversation(userId: Swift.String, noteId: Swift.String, limit: Swift.Int32) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFeedPageSnapshot(userId: Swift.String, feedSpec: Swift.String, notes: Swift.String?, until: PrimalShared.KotlinLong?, since: PrimalShared.KotlinLong?, order: Swift.String?, limit: Swift.Int32) async throws -> PrimalShared.FeedPageSnapshot
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchReplies(userId: Swift.String, noteId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAllPostsByIds(postIds: [Swift.String]) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findConversation(userId: Swift.String, noteId: Swift.String) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findNewestPosts(userId: Swift.String, feedDirective: Swift.String, allowMutedThreads: Swift.Bool, limit: Swift.Int32) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findPostsById(postId: Swift.String) async throws -> PrimalShared.FeedPost?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFeedSpec(userId: Swift.String, feedSpec: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func replaceFeed(userId: Swift.String, feedSpec: Swift.String, snapshot: PrimalShared.FeedPageSnapshot) async throws
+}
+extension PrimalShared.ProfileRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowers(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowing(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfile(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfileId(primalName: Swift.String) async throws -> Swift.String?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfiles(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchUserProfileFollowedBy(profileId: Swift.String, userId: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileData(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileDataOrNull(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileStats(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileStats]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isUserFollowing(userId: Swift.String, targetUserId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func reportAbuse(userId: Swift.String, reportType: PrimalShared.ReportType, profileId: Swift.String, eventId: Swift.String?, articleId: Swift.String?) async throws
+}
+extension PrimalShared.NostrEventImporter {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func importEvents(events: [PrimalShared.NostrEvent]) async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.PrimalPublisher {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func signPublishImportNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent, outboxRelays: [Swift.String]) async throws -> PrimalShared.PrimalPublishResult
+}
+extension PrimalShared.ArticleRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteArticleByATag(articleATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleAndComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleHighlights(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getArticleByATag(aTag: Swift.String) async throws -> PrimalShared.Article?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticle(articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByCommentId(commentNoteId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByEventId(eventId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.HighlightRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getHighlightById(highlightId: Swift.String) async throws -> PrimalShared.Highlight?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func publishAndSaveHighlight(userId: Swift.String, content: Swift.String, referencedEventATag: Swift.String?, referencedEventAuthorTag: Swift.String?, context: Swift.String?, alt: Swift.String, createdAt: Swift.Int64) async throws -> PrimalShared.Nevent
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func publishDeleteHighlight(userId: Swift.String, highlightId: Swift.String) async throws
+}
+extension PrimalShared.UserDataCleanupRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearUserData(userId: Swift.String) async throws
+}
+extension PrimalShared.BlossomApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func headMedia(authorization: Swift.String, fileMetadata: PrimalShared.FileMetadata) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func headUpload(authorization: Swift.String, fileMetadata: PrimalShared.FileMetadata) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putMedia(authorization: Swift.String, fileMetadata: PrimalShared.FileMetadata, bufferedSource: any PrimalShared.OkioBufferedSource, onProgress: ((PrimalShared.KotlinInt, PrimalShared.KotlinInt) -> Swift.Void)?) async throws -> PrimalShared.BlobDescriptor
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putMirror(authorization: Swift.String, fileUrl: Swift.String) async throws -> PrimalShared.BlobDescriptor
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func putUpload(authorization: Swift.String, fileMetadata: PrimalShared.FileMetadata, bufferedSource: any PrimalShared.OkioBufferedSource, onProgress: ((PrimalShared.KotlinInt, PrimalShared.KotlinInt) -> Swift.Void)?) async throws -> PrimalShared.BlobDescriptor
+}
+extension PrimalShared.BlossomServerListProvider {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func provideBlossomServerList(userId: Swift.String) async throws -> [Swift.String]
+}
+extension PrimalShared.IosPrimalBlossomUploadService {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upload(path: Swift.String, userId: Swift.String, onProgress: ((PrimalShared.KotlinInt, PrimalShared.KotlinInt) -> Swift.Void)?) async throws -> PrimalShared.UploadResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upload(path: Swift.String, userId: Swift.String, onSignRequested: @escaping (PrimalShared.NostrUnsignedEvent) -> PrimalShared.NostrEvent, onProgress: ((PrimalShared.KotlinInt, PrimalShared.KotlinInt) -> Swift.Void)?) async throws -> PrimalShared.UploadResult
+}
+extension PrimalShared.NostrEventSignatureHandler {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func signNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent) async throws -> PrimalShared.SignResult
+}
+extension PrimalShared.NostrEventPublisher {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func publishNostrEvent(nostrEvent: PrimalShared.NostrEvent, outboxRelays: [Swift.String]) async throws
+}
+extension PrimalShared.NostrZapperFactory {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createOrNull(userId: Swift.String) async throws -> (any PrimalShared.NostrZapper)?
+}
+extension PrimalShared.Skie.RuntimeKotlin.SkieColdFlowIterator {
+  public struct __Suspend<E> where E : AnyObject {
+    public let __kotlinObject: PrimalShared.SkieColdFlowIterator<E>
+    public init(_ __kotlinObject: PrimalShared.SkieColdFlowIterator<E>)
+  }
+}
+public func skie<E>(_ kotlinObject: PrimalShared.SkieColdFlowIterator<E>) -> PrimalShared.Skie.RuntimeKotlin.SkieColdFlowIterator.__Suspend<E> where E : AnyObject
+extension PrimalShared.Skie.RuntimeKotlin.SkieColdFlowIterator.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func hasNext() async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.Ktor_httpOutgoingContent.ProtocolUpgrade {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upgrade(input: any PrimalShared.Ktor_ioByteReadChannel, output: any PrimalShared.Ktor_ioByteWriteChannel, engineContext: any PrimalShared.KotlinCoroutineContext, userContext: any PrimalShared.KotlinCoroutineContext) async throws -> any PrimalShared.Kotlinx_coroutines_coreJob
+}
+extension PrimalShared.Ktor_ioByteWriteChannel {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func flush() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func flushAndClose() async throws
+}
+extension PrimalShared.Ktor_httpOutgoingContent.WriteChannelContent {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func writeTo(channel: any PrimalShared.Ktor_ioByteWriteChannel) async throws
+}
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftFlow<T>) -> PrimalShared.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T> where T : AnyObject
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftOptionalFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftOptionalFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T> where T : AnyObject
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftSharedFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftOptionalSharedFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftOptionalSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftMutableSharedFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+}
+extension PrimalShared.SkieSwiftMutableSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+}
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableSharedFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalMutableSharedFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftOptionalMutableSharedFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+}
+extension PrimalShared.SkieSwiftOptionalMutableSharedFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableSharedFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableSharedFlow<T>)
+}
+public func SkieKotlinStateFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinStateFlow<T> where T : AnyObject
+public func SkieKotlinStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinStateFlow<T> where T : AnyObject
+public func SkieKotlinStateFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftStateFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftOptionalStateFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftOptionalStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+public func SkieKotlinMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftMutableStateFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftMutableStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+}
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableStateFlow<T> where T : AnyObject
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+public func SkieKotlinOptionalMutableStateFlow<T>(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>) -> PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType> where T : Swift._ObjectiveCBridgeable
+extension PrimalShared.SkieSwiftOptionalMutableStateFlow where T : AnyObject {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+extension PrimalShared.SkieSwiftOptionalMutableStateFlow where T : Swift._ObjectiveCBridgeable {
+  convenience public init(_ flow: PrimalShared.SkieKotlinMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieKotlinOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T._ObjectiveCType>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftMutableStateFlow<T>)
+  convenience public init(_ flow: PrimalShared.SkieSwiftOptionalMutableStateFlow<T>)
+}
+@frozen public enum KotlinKVariance : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case invariant
+  case `in`
+  case out
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__KotlinKVariance, result: inout PrimalShared.KotlinKVariance?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__KotlinKVariance, result: inout PrimalShared.KotlinKVariance?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__KotlinKVariance?) -> PrimalShared.KotlinKVariance
+  public func _bridgeToObjectiveC() -> PrimalShared.__KotlinKVariance
+  public typealias _ObjectiveCType = PrimalShared.__KotlinKVariance
+  public static func == (a: PrimalShared.KotlinKVariance, b: PrimalShared.KotlinKVariance) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.KotlinKVariance]
+  nonisolated public static var allCases: [PrimalShared.KotlinKVariance] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.KotlinKVariance {
+  public func toKotlinEnum() -> PrimalShared.__KotlinKVariance
+}
+extension PrimalShared.__KotlinKVariance {
+  public func toSwiftEnum() -> PrimalShared.KotlinKVariance
+}
+@frozen public enum Ktor_utilsMonth : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case january
+  case february
+  case march
+  case april
+  case may
+  case june
+  case july
+  case august
+  case september
+  case october
+  case november
+  case december
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var value: Swift.String {
+    get
+  }
+  public static var companion: PrimalShared.__Ktor_utilsMonth.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth?) -> PrimalShared.Ktor_utilsMonth
+  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsMonth
+  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsMonth
+  public typealias Companion = PrimalShared.__Ktor_utilsMonth.Companion
+  public static func == (a: PrimalShared.Ktor_utilsMonth, b: PrimalShared.Ktor_utilsMonth) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Ktor_utilsMonth]
+  nonisolated public static var allCases: [PrimalShared.Ktor_utilsMonth] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Ktor_utilsMonth {
+  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsMonth
+}
+extension PrimalShared.__Ktor_utilsMonth {
+  public func toSwiftEnum() -> PrimalShared.Ktor_utilsMonth
+}
+@frozen public enum Ktor_utilsWeekDay : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case monday
+  case tuesday
+  case wednesday
+  case thursday
+  case friday
+  case saturday
+  case sunday
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var value: Swift.String {
+    get
+  }
+  public static var companion: PrimalShared.__Ktor_utilsWeekDay.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay?) -> PrimalShared.Ktor_utilsWeekDay
+  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsWeekDay
+  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsWeekDay
+  public typealias Companion = PrimalShared.__Ktor_utilsWeekDay.Companion
+  public static func == (a: PrimalShared.Ktor_utilsWeekDay, b: PrimalShared.Ktor_utilsWeekDay) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Ktor_utilsWeekDay]
+  nonisolated public static var allCases: [PrimalShared.Ktor_utilsWeekDay] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Ktor_utilsWeekDay {
+  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsWeekDay
+}
+extension PrimalShared.__Ktor_utilsWeekDay {
+  public func toSwiftEnum() -> PrimalShared.Ktor_utilsWeekDay
+}
+@frozen public enum NostrEventKind : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case metadata
+  case shortTextNote
+  case recommendRelay
+  case followList
+  case encryptedDirectMessages
+  case eventDeletion
+  case shortTextNoteRepost
+  case reaction
+  case badgeAward
+  case genericRepost
+  case pictureNote
+  case channelCreation
+  case channelMetadata
+  case channelMessage
+  case channelHideMessage
+  case channelMuteUser
+  case fileMetadata
+  case reporting
+  case zapRequest
+  case zap
+  case highlight
+  case muteList
+  case pinList
+  case relayListMetadata
+  case bookmarksList
+  case blossomServerList
+  case walletInfo
+  case clientAuthentication
+  case nwcRequest
+  case nwcResponse
+  case nostrConnect
+  case blossomUploadBlob
+  case categorizedPeopleList
+  case categorizedBookmarkList
+  case profileBadges
+  case badgeDefinition
+  case longFormContent
+  case applicationSpecificData
+  case appRecommendation
+  case appHandler
+  case starterPack
+  case primalEventStats
+  case primalNetStats
+  case primalExploreLegendCounts
+  case primalDefaultSettings
+  case primalUserProfileStats
+  case primalReferencedEvent
+  case primalUserScores
+  case primalRelays
+  case primalNotification
+  case primalNotificationsSeenUntil
+  case primalPaging
+  case primalMediaMapping
+  case primalEventUserStats
+  case primalDirectMessagesConversationsSummary
+  case primalCdnResource
+  case primalSimpleUploadRequest
+  case primalUploadResponse
+  case primalDefaultRelaysList
+  case primalIsUserFollowing
+  case primalLinkPreview
+  case primalNotificationsSummary2
+  case primalUserFollowersCounts
+  case primalDirectMessagesUnreadCount2
+  case primalChunkedUploadRequest
+  case primalUserRelaysList
+  case primalRelayHint
+  case primalLongFormWordsCount
+  case primalBroadcastResult
+  case primalLongFormContentFeeds
+  case primalSubSettings
+  case primalDvmFeedFollowsActions
+  case primalExplorePeopleNewFollowStats
+  case primalUserNames
+  case primalDvmFeedMetadata
+  case primalTrendingTopics
+  case primalClientConfig
+  case primalUserMediaStorageStats
+  case primalUserUploadInfo
+  case primalContentBroadcastStats
+  case primalContentBroadcastStatus
+  case primalLegendProfiles
+  case primalPremiumInfo
+  case primalLegendLeaderboard
+  case primalPremiumLeaderboard
+  case primalRecommendedBlossomServer
+  case primalWalletOperation
+  case primalWalletBalance
+  case primalWalletDepositInvoice
+  case primalWalletDepositLnUrl
+  case primalWalletTransactions
+  case primalWalletExchangeRate
+  case primalWalletIsUser
+  case primalWalletUserInfo
+  case primalWalletInAppPurchaseQuote
+  case primalWalletInAppPurchase
+  case primalWalletActivation
+  case primalWalletParsedLnUrl
+  case primalWalletParsedLnInvoice
+  case primalWalletMiningFees
+  case primalWalletOnChainAddress
+  case primalWalletUpdatedAt
+  case primalWalletNwcConnectionCreated
+  case primalWalletNwcConnectionList
+  case primalMembershipNameAvailable
+  case primalMembershipLegendPaymentInstructions
+  case primalMembershipPurchaseMonitor
+  case primalMembershipStatus
+  case primalMembershipHistory
+  case primalPromoCodeDetails
+  case primalAppState
+  case primalLongFormContent
+  case unknown
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var value: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__NostrEventKind.Companion {
+    get
+  }
+  public func isNotPrimalEventKind() -> Swift.Bool
+  public func isNotUnknown() -> Swift.Bool
+  public func isPrimalEventKind() -> Swift.Bool
+  public func isUnknown() -> Swift.Bool
+  public func asKindTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__NostrEventKind, result: inout PrimalShared.NostrEventKind?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NostrEventKind, result: inout PrimalShared.NostrEventKind?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NostrEventKind?) -> PrimalShared.NostrEventKind
+  public func _bridgeToObjectiveC() -> PrimalShared.__NostrEventKind
+  public typealias _ObjectiveCType = PrimalShared.__NostrEventKind
+  public typealias Companion = PrimalShared.__NostrEventKind.Companion
+  public static func == (a: PrimalShared.NostrEventKind, b: PrimalShared.NostrEventKind) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.NostrEventKind]
+  nonisolated public static var allCases: [PrimalShared.NostrEventKind] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.NostrEventKind {
+  public func toKotlinEnum() -> PrimalShared.__NostrEventKind
+}
+extension PrimalShared.__NostrEventKind {
+  public func toSwiftEnum() -> PrimalShared.NostrEventKind
+}
+@frozen public enum ReportType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case nudity
+  case profanity
+  case illegal
+  case spam
+  case impersonation
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType?) -> PrimalShared.ReportType
+  public func _bridgeToObjectiveC() -> PrimalShared.__ReportType
+  public typealias _ObjectiveCType = PrimalShared.__ReportType
+  public static func == (a: PrimalShared.ReportType, b: PrimalShared.ReportType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.ReportType]
+  nonisolated public static var allCases: [PrimalShared.ReportType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.ReportType {
+  public func toKotlinEnum() -> PrimalShared.__ReportType
+}
+extension PrimalShared.__ReportType {
+  public func toSwiftEnum() -> PrimalShared.ReportType
+}
+extension PrimalShared.Nip19TLV {
+  public typealias Type_ = PrimalShared.__Bridge__Nip19TLV_Type_
+}
+extension PrimalShared.__Bridge__Nip19TLV_Type_ {
+  public func toKotlinEnum() -> PrimalShared.Nip19TLV.__Type_
+}
+extension PrimalShared.Nip19TLV.__Type_ {
+  public func toSwiftEnum() -> PrimalShared.Nip19TLV.Type_
+}
+@frozen public enum __Bridge__Nip19TLV_Type_ : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case special
+  case relay
+  case author
+  case kind
+  public var id: Swift.Int8 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.Nip19TLV.__Type_, result: inout PrimalShared.Nip19TLV.Type_?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.Nip19TLV.__Type_, result: inout PrimalShared.Nip19TLV.Type_?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.Nip19TLV.__Type_?) -> PrimalShared.__Bridge__Nip19TLV_Type_
+  public func _bridgeToObjectiveC() -> PrimalShared.Nip19TLV.__Type_
+  public typealias _ObjectiveCType = PrimalShared.Nip19TLV.__Type_
+  public static func == (a: PrimalShared.__Bridge__Nip19TLV_Type_, b: PrimalShared.__Bridge__Nip19TLV_Type_) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.__Bridge__Nip19TLV_Type_]
+  nonisolated public static var allCases: [PrimalShared.__Bridge__Nip19TLV_Type_] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@frozen public enum ReactionType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case zaps
+  case likes
+  case reposts
+  case replies
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ReactionType, result: inout PrimalShared.ReactionType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReactionType, result: inout PrimalShared.ReactionType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReactionType?) -> PrimalShared.ReactionType
+  public func _bridgeToObjectiveC() -> PrimalShared.__ReactionType
+  public typealias _ObjectiveCType = PrimalShared.__ReactionType
+  public static func == (a: PrimalShared.ReactionType, b: PrimalShared.ReactionType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.ReactionType]
+  nonisolated public static var allCases: [PrimalShared.ReactionType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.ReactionType {
+  public func toKotlinEnum() -> PrimalShared.__ReactionType
+}
+extension PrimalShared.__ReactionType {
+  public func toSwiftEnum() -> PrimalShared.ReactionType
+}
+extension PrimalShared.Bech32 {
+  public typealias Encoding = PrimalShared.__Bridge__Bech32_Encoding
+}
+extension PrimalShared.__Bridge__Bech32_Encoding {
+  public func toKotlinEnum() -> PrimalShared.Bech32.__Encoding
+}
+extension PrimalShared.Bech32.__Encoding {
+  public func toSwiftEnum() -> PrimalShared.Bech32.Encoding
+}
+@frozen public enum __Bridge__Bech32_Encoding : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case bech32
+  case bech32m
+  case beck32WithoutChecksum
+  public var constant: Swift.Int32 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.Bech32.__Encoding, result: inout PrimalShared.Bech32.Encoding?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.Bech32.__Encoding, result: inout PrimalShared.Bech32.Encoding?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.Bech32.__Encoding?) -> PrimalShared.__Bridge__Bech32_Encoding
+  public func _bridgeToObjectiveC() -> PrimalShared.Bech32.__Encoding
+  public typealias _ObjectiveCType = PrimalShared.Bech32.__Encoding
+  public static func == (a: PrimalShared.__Bridge__Bech32_Encoding, b: PrimalShared.__Bridge__Bech32_Encoding) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.__Bridge__Bech32_Encoding]
+  nonisolated public static var allCases: [PrimalShared.__Bridge__Bech32_Encoding] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@frozen public enum PrimalServerType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case caching
+  case upload
+  case wallet
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__PrimalServerType, result: inout PrimalShared.PrimalServerType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalServerType, result: inout PrimalShared.PrimalServerType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalServerType?) -> PrimalShared.PrimalServerType
+  public func _bridgeToObjectiveC() -> PrimalShared.__PrimalServerType
+  public typealias _ObjectiveCType = PrimalShared.__PrimalServerType
+  public static func == (a: PrimalShared.PrimalServerType, b: PrimalShared.PrimalServerType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.PrimalServerType]
+  nonisolated public static var allCases: [PrimalShared.PrimalServerType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.PrimalServerType {
+  public func toKotlinEnum() -> PrimalShared.__PrimalServerType
+}
+extension PrimalShared.__PrimalServerType {
+  public func toSwiftEnum() -> PrimalShared.PrimalServerType
+}
+@frozen public enum BookmarkType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case note
+  case article
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType?) -> PrimalShared.BookmarkType
+  public func _bridgeToObjectiveC() -> PrimalShared.__BookmarkType
+  public typealias _ObjectiveCType = PrimalShared.__BookmarkType
+  public static func == (a: PrimalShared.BookmarkType, b: PrimalShared.BookmarkType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.BookmarkType]
+  nonisolated public static var allCases: [PrimalShared.BookmarkType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.BookmarkType {
+  public func toKotlinEnum() -> PrimalShared.__BookmarkType
+}
+extension PrimalShared.__BookmarkType {
+  public func toSwiftEnum() -> PrimalShared.BookmarkType
+}
+@frozen public enum PrimalScope : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case follows
+  case tribe
+  case network
+  case global
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__PrimalScope, result: inout PrimalShared.PrimalScope?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalScope, result: inout PrimalShared.PrimalScope?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalScope?) -> PrimalShared.PrimalScope
+  public func _bridgeToObjectiveC() -> PrimalShared.__PrimalScope
+  public typealias _ObjectiveCType = PrimalShared.__PrimalScope
+  public static func == (a: PrimalShared.PrimalScope, b: PrimalShared.PrimalScope) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.PrimalScope]
+  nonisolated public static var allCases: [PrimalShared.PrimalScope] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.PrimalScope {
+  public func toKotlinEnum() -> PrimalShared.__PrimalScope
+}
+extension PrimalShared.__PrimalScope {
+  public func toSwiftEnum() -> PrimalShared.PrimalScope
+}
+@frozen public enum PrimalTimeframe : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case trending
+  case zapped
+  case popular
+  case latest
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__PrimalTimeframe, result: inout PrimalShared.PrimalTimeframe?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalTimeframe, result: inout PrimalShared.PrimalTimeframe?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PrimalTimeframe?) -> PrimalShared.PrimalTimeframe
+  public func _bridgeToObjectiveC() -> PrimalShared.__PrimalTimeframe
+  public typealias _ObjectiveCType = PrimalShared.__PrimalTimeframe
+  public static func == (a: PrimalShared.PrimalTimeframe, b: PrimalShared.PrimalTimeframe) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.PrimalTimeframe]
+  nonisolated public static var allCases: [PrimalShared.PrimalTimeframe] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.PrimalTimeframe {
+  public func toKotlinEnum() -> PrimalShared.__PrimalTimeframe
+}
+extension PrimalShared.__PrimalTimeframe {
+  public func toSwiftEnum() -> PrimalShared.PrimalTimeframe
+}
+@frozen public enum EventUriType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case image
+  case video
+  case audio
+  case pdf
+  case youTube
+  case rumble
+  case spotify
+  case tidal
+  case gitHub
+  case other
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType?) -> PrimalShared.EventUriType
+  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriType
+  public typealias _ObjectiveCType = PrimalShared.__EventUriType
+  public static func == (a: PrimalShared.EventUriType, b: PrimalShared.EventUriType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.EventUriType]
+  nonisolated public static var allCases: [PrimalShared.EventUriType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.EventUriType {
+  public func toKotlinEnum() -> PrimalShared.__EventUriType
+}
+extension PrimalShared.__EventUriType {
+  public func toSwiftEnum() -> PrimalShared.EventUriType
+}
+@frozen public enum EventUriNostrType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case zap
+  case note
+  case profile
+  case article
+  case highlight
+  case unsupported
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType?) -> PrimalShared.EventUriNostrType
+  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriNostrType
+  public typealias _ObjectiveCType = PrimalShared.__EventUriNostrType
+  public static func == (a: PrimalShared.EventUriNostrType, b: PrimalShared.EventUriNostrType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.EventUriNostrType]
+  nonisolated public static var allCases: [PrimalShared.EventUriNostrType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.EventUriNostrType {
+  public func toKotlinEnum() -> PrimalShared.__EventUriNostrType
+}
+extension PrimalShared.__EventUriNostrType {
+  public func toSwiftEnum() -> PrimalShared.EventUriNostrType
+}
+@frozen public enum FeedSpecKind : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case reads
+  case notes
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var settingsKey: Swift.String {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind?) -> PrimalShared.FeedSpecKind
+  public func _bridgeToObjectiveC() -> PrimalShared.__FeedSpecKind
+  public typealias _ObjectiveCType = PrimalShared.__FeedSpecKind
+  public static func == (a: PrimalShared.FeedSpecKind, b: PrimalShared.FeedSpecKind) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.FeedSpecKind]
+  nonisolated public static var allCases: [PrimalShared.FeedSpecKind] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.FeedSpecKind {
+  public func toKotlinEnum() -> PrimalShared.__FeedSpecKind
+}
+extension PrimalShared.__FeedSpecKind {
+  public func toSwiftEnum() -> PrimalShared.FeedSpecKind
+}
+@frozen public enum ConversationRelation : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case follows
+  case other
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__ConversationRelation.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation?) -> PrimalShared.ConversationRelation
+  public func _bridgeToObjectiveC() -> PrimalShared.__ConversationRelation
+  public typealias _ObjectiveCType = PrimalShared.__ConversationRelation
+  public typealias Companion = PrimalShared.__ConversationRelation.Companion
+  public static func == (a: PrimalShared.ConversationRelation, b: PrimalShared.ConversationRelation) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.ConversationRelation]
+  nonisolated public static var allCases: [PrimalShared.ConversationRelation] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.ConversationRelation {
+  public func toKotlinEnum() -> PrimalShared.__ConversationRelation
+}
+extension PrimalShared.__ConversationRelation {
+  public func toSwiftEnum() -> PrimalShared.ConversationRelation
+}
+@frozen public enum NotificationType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case newUserFollowedYou
+  case yourPostWasZapped
+  case yourPostWasLiked
+  case yourPostWasReposted
+  case yourPostWasRepliedTo
+  case youWereMentionedInPost
+  case yourPostWasMentionedInPost
+  case postYouWereMentionedInWasZapped
+  case postYouWereMentionedInWasLiked
+  case postYouWereMentionedInWasReposted
+  case postYouWereMentionedInWasRepliedTo
+  case postYourPostWasMentionedInWasZapped
+  case postYourPostWasMentionedInWasLiked
+  case postYourPostWasMentionedInWasReposted
+  case postYourPostWasMentionedInWasRepliedTo
+  case yourPostWasHighlighted
+  case yourPostWasBookmarked
+  public var collapsable: Swift.Bool {
+    get
+  }
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var type: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__NotificationType.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType?) -> PrimalShared.NotificationType
+  public func _bridgeToObjectiveC() -> PrimalShared.__NotificationType
+  public typealias _ObjectiveCType = PrimalShared.__NotificationType
+  public typealias Companion = PrimalShared.__NotificationType.Companion
+  public static func == (a: PrimalShared.NotificationType, b: PrimalShared.NotificationType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.NotificationType]
+  nonisolated public static var allCases: [PrimalShared.NotificationType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.NotificationType {
+  public func toKotlinEnum() -> PrimalShared.__NotificationType
+}
+extension PrimalShared.__NotificationType {
+  public func toSwiftEnum() -> PrimalShared.NotificationType
+}
+@frozen public enum NotificationSettingsSection : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case pushNotifications
+  case notificationsInTab
+  case preferences
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__NotificationSettingsSection, result: inout PrimalShared.NotificationSettingsSection?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationSettingsSection, result: inout PrimalShared.NotificationSettingsSection?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationSettingsSection?) -> PrimalShared.NotificationSettingsSection
+  public func _bridgeToObjectiveC() -> PrimalShared.__NotificationSettingsSection
+  public typealias _ObjectiveCType = PrimalShared.__NotificationSettingsSection
+  public static func == (a: PrimalShared.NotificationSettingsSection, b: PrimalShared.NotificationSettingsSection) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.NotificationSettingsSection]
+  nonisolated public static var allCases: [PrimalShared.NotificationSettingsSection] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.NotificationSettingsSection {
+  public func toKotlinEnum() -> PrimalShared.__NotificationSettingsSection
+}
+extension PrimalShared.__NotificationSettingsSection {
+  public func toSwiftEnum() -> PrimalShared.NotificationSettingsSection
+}
+extension PrimalShared.Mime {
+  public typealias Type_ = PrimalShared.__Bridge__Mime_Type_
+}
+extension PrimalShared.__Bridge__Mime_Type_ {
+  public func toKotlinEnum() -> PrimalShared.Mime.__Type_
+}
+extension PrimalShared.Mime.__Type_ {
+  public func toSwiftEnum() -> PrimalShared.Mime.Type_
+}
+@frozen public enum __Bridge__Mime_Type_ : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case application
+  case audio
+  case font
+  case image
+  case model
+  case text
+  case video
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.Mime.__Type_, result: inout PrimalShared.Mime.Type_?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.Mime.__Type_, result: inout PrimalShared.Mime.Type_?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.Mime.__Type_?) -> PrimalShared.__Bridge__Mime_Type_
+  public func _bridgeToObjectiveC() -> PrimalShared.Mime.__Type_
+  public typealias _ObjectiveCType = PrimalShared.Mime.__Type_
+  public static func == (a: PrimalShared.__Bridge__Mime_Type_, b: PrimalShared.__Bridge__Mime_Type_) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.__Bridge__Mime_Type_]
+  nonisolated public static var allCases: [PrimalShared.__Bridge__Mime_Type_] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@frozen public enum BignumSign : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case positive
+  case negative
+  case zero
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public func not() -> PrimalShared.BignumSign
+  public func toInt() -> Swift.Int32
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__BignumSign, result: inout PrimalShared.BignumSign?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BignumSign, result: inout PrimalShared.BignumSign?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BignumSign?) -> PrimalShared.BignumSign
+  public func _bridgeToObjectiveC() -> PrimalShared.__BignumSign
+  public typealias _ObjectiveCType = PrimalShared.__BignumSign
+  public static func == (a: PrimalShared.BignumSign, b: PrimalShared.BignumSign) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.BignumSign]
+  nonisolated public static var allCases: [PrimalShared.BignumSign] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.BignumSign {
+  public func toKotlinEnum() -> PrimalShared.__BignumSign
+}
+extension PrimalShared.__BignumSign {
+  public func toSwiftEnum() -> PrimalShared.BignumSign
+}
+@frozen public enum BignumRoundingMode : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case floor
+  case ceiling
+  case awayFromZero
+  case towardsZero
+  case none
+  case roundHalfAwayFromZero
+  case roundHalfTowardsZero
+  case roundHalfCeiling
+  case roundHalfFloor
+  case roundHalfToEven
+  case roundHalfToOdd
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__BignumRoundingMode, result: inout PrimalShared.BignumRoundingMode?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BignumRoundingMode, result: inout PrimalShared.BignumRoundingMode?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BignumRoundingMode?) -> PrimalShared.BignumRoundingMode
+  public func _bridgeToObjectiveC() -> PrimalShared.__BignumRoundingMode
+  public typealias _ObjectiveCType = PrimalShared.__BignumRoundingMode
+  public static func == (a: PrimalShared.BignumRoundingMode, b: PrimalShared.BignumRoundingMode) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.BignumRoundingMode]
+  nonisolated public static var allCases: [PrimalShared.BignumRoundingMode] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.BignumRoundingMode {
+  public func toKotlinEnum() -> PrimalShared.__BignumRoundingMode
+}
+extension PrimalShared.__BignumRoundingMode {
+  public func toSwiftEnum() -> PrimalShared.BignumRoundingMode
+}
+@frozen public enum Paging_commonLoadType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case refresh
+  case prepend
+  case append
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType?) -> PrimalShared.Paging_commonLoadType
+  public func _bridgeToObjectiveC() -> PrimalShared.__Paging_commonLoadType
+  public typealias _ObjectiveCType = PrimalShared.__Paging_commonLoadType
+  public static func == (a: PrimalShared.Paging_commonLoadType, b: PrimalShared.Paging_commonLoadType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Paging_commonLoadType]
+  nonisolated public static var allCases: [PrimalShared.Paging_commonLoadType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Paging_commonLoadType {
+  public func toKotlinEnum() -> PrimalShared.__Paging_commonLoadType
+}
+extension PrimalShared.__Paging_commonLoadType {
+  public func toSwiftEnum() -> PrimalShared.Paging_commonLoadType
+}
+extension PrimalShared.Skie.NetworkingNwc.NwcResult {
+  @frozen public enum __Sealed<T> : Swift.Hashable where T : AnyObject {
+    case failure(PrimalShared.NwcResultFailure<T>)
+    case success(PrimalShared.NwcResultSuccess<T>)
+    public static func == (a: PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>, b: PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<T, __Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T> where T : AnyObject, __Sealed : PrimalShared.NwcResult<T>
+@_disfavoredOverload public func onEnum<T, __Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>? where T : AnyObject, __Sealed : PrimalShared.NwcResult<T>
+extension PrimalShared.Skie.NetworkingNwc.NwcMethod {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case getBalance(PrimalShared.NwcMethod.GetBalance)
+    case getInfo(PrimalShared.NwcMethod.GetInfo)
+    case listTransactions(PrimalShared.NwcMethod.ListTransactions)
+    case lookupInvoice(PrimalShared.NwcMethod.LookupInvoice)
+    case makeInvoice(PrimalShared.NwcMethod.MakeInvoice)
+    case multiPayInvoice(PrimalShared.NwcMethod.MultiPayInvoice)
+    case multiPayKeysend(PrimalShared.NwcMethod.MultiPayKeysend)
+    case payInvoice(PrimalShared.NwcMethod.PayInvoice)
+    case payKeysend(PrimalShared.NwcMethod.PayKeysend)
+    case paymentReceived(PrimalShared.NwcMethod.PaymentReceived)
+    case paymentSent(PrimalShared.NwcMethod.PaymentSent)
+    public static func == (a: PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed, b: PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed where __Sealed : PrimalShared.NwcMethod
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed? where __Sealed : PrimalShared.NwcMethod
+extension PrimalShared.Skie.KtorHttp.OutgoingContent {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case byteArrayContent(PrimalShared.Ktor_httpOutgoingContent.ByteArrayContent)
+    case contentWrapper(PrimalShared.Ktor_httpOutgoingContent.ContentWrapper)
+    case noContent(PrimalShared.Ktor_httpOutgoingContent.NoContent)
+    case protocolUpgrade(PrimalShared.Ktor_httpOutgoingContent.ProtocolUpgrade)
+    case readChannelContent(PrimalShared.Ktor_httpOutgoingContent.ReadChannelContent)
+    case writeChannelContent(PrimalShared.Ktor_httpOutgoingContent.WriteChannelContent)
+    public static func == (a: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed, b: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed where __Sealed : PrimalShared.Ktor_httpOutgoingContent
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed? where __Sealed : PrimalShared.Ktor_httpOutgoingContent
+extension PrimalShared.Skie.KotlinxSerializationCore.SerialKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case polymorphicKind(PrimalShared.Kotlinx_serialization_corePolymorphicKind)
+    case primitiveKind(PrimalShared.Kotlinx_serialization_corePrimitiveKind)
+    case cONTEXTUAL(PrimalShared.Kotlinx_serialization_coreSerialKind.CONTEXTUAL)
+    case eNUM(PrimalShared.Kotlinx_serialization_coreSerialKind.ENUM)
+    case structureKind(PrimalShared.Kotlinx_serialization_coreStructureKind)
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationCore.SerialKind.__Sealed, b: PrimalShared.Skie.KotlinxSerializationCore.SerialKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationCore.SerialKind.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_coreSerialKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationCore.SerialKind.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_coreSerialKind
+extension PrimalShared.Skie.KotlinxSerializationCore.SerializersModule {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed, b: PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_coreSerializersModule
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_coreSerializersModule
+extension PrimalShared.Skie.KotlinxSerializationCore.PolymorphicKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case oPEN(PrimalShared.Kotlinx_serialization_corePolymorphicKind.OPEN)
+    case sEALED(PrimalShared.Kotlinx_serialization_corePolymorphicKind.SEALED)
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed, b: PrimalShared.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_corePolymorphicKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationCore.PolymorphicKind.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_corePolymorphicKind
+extension PrimalShared.Skie.KotlinxSerializationCore.PrimitiveKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case bOOLEAN(PrimalShared.Kotlinx_serialization_corePrimitiveKind.BOOLEAN)
+    case bYTE(PrimalShared.Kotlinx_serialization_corePrimitiveKind.BYTE)
+    case cHAR(PrimalShared.Kotlinx_serialization_corePrimitiveKind.CHAR)
+    case dOUBLE(PrimalShared.Kotlinx_serialization_corePrimitiveKind.DOUBLE)
+    case fLOAT(PrimalShared.Kotlinx_serialization_corePrimitiveKind.FLOAT)
+    case iNT(PrimalShared.Kotlinx_serialization_corePrimitiveKind.INT)
+    case lONG(PrimalShared.Kotlinx_serialization_corePrimitiveKind.LONG)
+    case sHORT(PrimalShared.Kotlinx_serialization_corePrimitiveKind.SHORT)
+    case sTRING(PrimalShared.Kotlinx_serialization_corePrimitiveKind.STRING)
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed, b: PrimalShared.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_corePrimitiveKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationCore.PrimitiveKind.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_corePrimitiveKind
+extension PrimalShared.Skie.KotlinxSerializationCore.StructureKind {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case cLASS(PrimalShared.Kotlinx_serialization_coreStructureKind.CLASS)
+    case lIST(PrimalShared.Kotlinx_serialization_coreStructureKind.LIST)
+    case mAP(PrimalShared.Kotlinx_serialization_coreStructureKind.MAP)
+    case oBJECT(PrimalShared.Kotlinx_serialization_coreStructureKind.OBJECT)
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationCore.StructureKind.__Sealed, b: PrimalShared.Skie.KotlinxSerializationCore.StructureKind.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationCore.StructureKind.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_coreStructureKind
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationCore.StructureKind.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_coreStructureKind
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0 {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed, b: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause0
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause0
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause {
+  @frozen public enum __Sealed {
+    case selectClause0(any PrimalShared.Kotlinx_coroutines_coreSelectClause0)
+    case selectClause1(any PrimalShared.Kotlinx_coroutines_coreSelectClause1)
+    case selectClause2(any PrimalShared.Kotlinx_coroutines_coreSelectClause2)
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed, b: PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectInstance
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectInstance
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1 {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed, b: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause1
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause1
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2 {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed, b: PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause2
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause2
+extension PrimalShared.Skie.KotlinxIoCore.Source {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSource
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSource
+extension PrimalShared.Skie.KotlinxIoCore.Sink {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSink
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSink
+extension PrimalShared.Skie.Nostr.ZapResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failure(PrimalShared.ZapResult.Failure)
+    case success(PrimalShared.ZapResult.Success)
+    public static func == (a: PrimalShared.Skie.Nostr.ZapResult.__Sealed, b: PrimalShared.Skie.Nostr.ZapResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed where __Sealed : PrimalShared.ZapResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapResult.__Sealed? where __Sealed : PrimalShared.ZapResult
+extension PrimalShared.Skie.Nostr.ZapTarget {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case event(PrimalShared.ZapTarget.Event)
+    case profile(PrimalShared.ZapTarget.Profile)
+    case replaceableEvent(PrimalShared.ZapTarget.ReplaceableEvent)
+    public static func == (a: PrimalShared.Skie.Nostr.ZapTarget.__Sealed, b: PrimalShared.Skie.Nostr.ZapTarget.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapTarget.__Sealed where __Sealed : PrimalShared.ZapTarget
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapTarget.__Sealed? where __Sealed : PrimalShared.ZapTarget
+extension PrimalShared.Skie.Nostr.SignResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case rejected(PrimalShared.SignResult.Rejected)
+    case signed(PrimalShared.SignResult.Signed)
+    public static func == (a: PrimalShared.Skie.Nostr.SignResult.__Sealed, b: PrimalShared.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.SignResult.__Sealed where __Sealed : PrimalShared.SignResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.SignResult.__Sealed? where __Sealed : PrimalShared.SignResult
+extension PrimalShared.Skie.Nostr.ZapError {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failedToFetchZapInvoice(PrimalShared.ZapError.FailedToFetchZapInvoice)
+    case failedToFetchZapPayRequest(PrimalShared.ZapError.FailedToFetchZapPayRequest)
+    case failedToPublishEvent(PrimalShared.ZapError.FailedToPublishEvent)
+    case failedToSignEvent(PrimalShared.ZapError.FailedToSignEvent)
+    case invalidZap(PrimalShared.ZapError.InvalidZap)
+    case unknown(PrimalShared.ZapError.Unknown)
+    public static func == (a: PrimalShared.Skie.Nostr.ZapError.__Sealed, b: PrimalShared.Skie.Nostr.ZapError.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapError.__Sealed where __Sealed : PrimalShared.ZapError
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapError.__Sealed? where __Sealed : PrimalShared.ZapError
+extension PrimalShared.Skie.KotlinxSerializationJson.JsonElement {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case jsonPrimitive(PrimalShared.Kotlinx_serialization_jsonJsonPrimitive)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationJson.JsonElement.__Sealed, b: PrimalShared.Skie.KotlinxSerializationJson.JsonElement.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationJson.JsonElement.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonElement
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationJson.JsonElement.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonElement
+extension PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case jsonNull(PrimalShared.Kotlinx_serialization_jsonJsonNull)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed, b: PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonPrimitive
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonPrimitive
+extension PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case authMessage(PrimalShared.NostrIncomingMessage.AuthMessage)
+    case countMessage(PrimalShared.NostrIncomingMessage.CountMessage)
+    case eoseMessage(PrimalShared.NostrIncomingMessage.EoseMessage)
+    case eventMessage(PrimalShared.NostrIncomingMessage.EventMessage)
+    case eventsMessage(PrimalShared.NostrIncomingMessage.EventsMessage)
+    case noticeMessage(PrimalShared.NostrIncomingMessage.NoticeMessage)
+    case okMessage(PrimalShared.NostrIncomingMessage.OkMessage)
+    public static func == (a: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed, b: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed where __Sealed : PrimalShared.NostrIncomingMessage
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed? where __Sealed : PrimalShared.NostrIncomingMessage
+extension PrimalShared.Skie.Primal.NotificationSettingsType {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case preferences(PrimalShared.NotificationSettingsType.Preferences)
+    case pushNotifications(PrimalShared.NotificationSettingsType.PushNotifications)
+    case tabNotifications(PrimalShared.NotificationSettingsType.TabNotifications)
+    public static func == (a: PrimalShared.Skie.Primal.NotificationSettingsType.__Sealed, b: PrimalShared.Skie.Primal.NotificationSettingsType.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal.NotificationSettingsType.__Sealed where __Sealed : PrimalShared.NotificationSettingsType
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal.NotificationSettingsType.__Sealed? where __Sealed : PrimalShared.NotificationSettingsType
+extension PrimalShared.Skie.Primal.NotificationSettingsType.PushNotifications {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case directMessages(PrimalShared.NotificationSettingsType.PushNotificationsDirectMessages)
+    case mentions(PrimalShared.NotificationSettingsType.PushNotificationsMentions)
+    case newFollows(PrimalShared.NotificationSettingsType.PushNotificationsNewFollows)
+    case reactions(PrimalShared.NotificationSettingsType.PushNotificationsReactions)
+    case replies(PrimalShared.NotificationSettingsType.PushNotificationsReplies)
+    case reposts(PrimalShared.NotificationSettingsType.PushNotificationsReposts)
+    case walletTransactions(PrimalShared.NotificationSettingsType.PushNotificationsWalletTransactions)
+    case zaps(PrimalShared.NotificationSettingsType.PushNotificationsZaps)
+    public static func == (a: PrimalShared.Skie.Primal.NotificationSettingsType.PushNotifications.__Sealed, b: PrimalShared.Skie.Primal.NotificationSettingsType.PushNotifications.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal.NotificationSettingsType.PushNotifications.__Sealed where __Sealed : PrimalShared.NotificationSettingsType.PushNotifications
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal.NotificationSettingsType.PushNotifications.__Sealed? where __Sealed : PrimalShared.NotificationSettingsType.PushNotifications
+extension PrimalShared.Skie.Primal.NotificationSettingsType.Preferences {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case dMsFromFollows(PrimalShared.NotificationSettingsType.PreferencesDMsFromFollows)
+    case hellThread(PrimalShared.NotificationSettingsType.PreferencesHellThread)
+    case reactionsFromFollows(PrimalShared.NotificationSettingsType.PreferencesReactionsFromFollows)
+    public static func == (a: PrimalShared.Skie.Primal.NotificationSettingsType.Preferences.__Sealed, b: PrimalShared.Skie.Primal.NotificationSettingsType.Preferences.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal.NotificationSettingsType.Preferences.__Sealed where __Sealed : PrimalShared.NotificationSettingsType.Preferences
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal.NotificationSettingsType.Preferences.__Sealed? where __Sealed : PrimalShared.NotificationSettingsType.Preferences
+extension PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case mentions(PrimalShared.NotificationSettingsType.TabNotificationsMentions)
+    case newFollows(PrimalShared.NotificationSettingsType.TabNotificationsNewFollows)
+    case reactions(PrimalShared.NotificationSettingsType.TabNotificationsReactions)
+    case replies(PrimalShared.NotificationSettingsType.TabNotificationsReplies)
+    case reposts(PrimalShared.NotificationSettingsType.TabNotificationsReposts)
+    case zaps(PrimalShared.NotificationSettingsType.TabNotificationsZaps)
+    public static func == (a: PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed, b: PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed where __Sealed : PrimalShared.NotificationSettingsType.TabNotifications
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed? where __Sealed : PrimalShared.NotificationSettingsType.TabNotifications
+extension PrimalShared.Skie.KotlinxDatetime.DateTimeFormat {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed, b: PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed where __Sealed : PrimalShared.Kotlinx_datetimeDateTimeFormat
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed? where __Sealed : PrimalShared.Kotlinx_datetimeDateTimeFormat
+extension PrimalShared.Skie.NetworkingUpload.UploadResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failed(PrimalShared.UploadResult.Failed)
+    case success(PrimalShared.UploadResult.Success)
+    public static func == (a: PrimalShared.Skie.NetworkingUpload.UploadResult.__Sealed, b: PrimalShared.Skie.NetworkingUpload.UploadResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingUpload.UploadResult.__Sealed where __Sealed : PrimalShared.UploadResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingUpload.UploadResult.__Sealed? where __Sealed : PrimalShared.UploadResult
+extension PrimalShared.Skie.Okio.BufferedSource {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.OkioBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.Okio.BufferedSource.__Sealed, b: PrimalShared.Skie.Okio.BufferedSource.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Okio.BufferedSource.__Sealed where __Sealed : PrimalShared.OkioBufferedSource
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Okio.BufferedSource.__Sealed? where __Sealed : PrimalShared.OkioBufferedSource
+extension PrimalShared.Skie.Okio.BufferedSink {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.OkioBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.Okio.BufferedSink.__Sealed, b: PrimalShared.Skie.Okio.BufferedSink.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Okio.BufferedSink.__Sealed where __Sealed : PrimalShared.OkioBufferedSink
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Okio.BufferedSink.__Sealed? where __Sealed : PrimalShared.OkioBufferedSink
+extension PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case canceled(PrimalShared.Skie_SuspendResult.Canceled)
+    case error(PrimalShared.Skie_SuspendResult.Error)
+    case success(PrimalShared.Skie_SuspendResult.Success)
+    public static func == (a: PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed, b: PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed where __Sealed : PrimalShared.Skie_SuspendResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed? where __Sealed : PrimalShared.Skie_SuspendResult
+extension PrimalShared.Skie.PagingCommon.LoadState {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case error(PrimalShared.Paging_commonLoadState.Error)
+    case loading(PrimalShared.Paging_commonLoadState.Loading)
+    case notLoading(PrimalShared.Paging_commonLoadState.NotLoading)
+    public static func == (a: PrimalShared.Skie.PagingCommon.LoadState.__Sealed, b: PrimalShared.Skie.PagingCommon.LoadState.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed where __Sealed : PrimalShared.Paging_commonLoadState
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed? where __Sealed : PrimalShared.Paging_commonLoadState
+public var MAX_RELAY_HINTS: Swift.Int32 {
+  get
+}
+extension Swift.String {
+  public func asAltTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asContextTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asEventIdTag(relayHint: Swift.String?, marker: Swift.String?, authorPubkey: Swift.String?) -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asHashtagTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asIdentifierTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asPubkeyTag(relayHint: Swift.String?, optional: Swift.String?) -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asReplaceableEventTag(relayHint: Swift.String?, marker: Swift.String?) -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asServerTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asSha256Tag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func asWordTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+  public func parseEventTags(marker: Swift.String?) -> Swift.Set<Swift.AnyHashable>
+  public func parseHashtagTags() -> [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]
+  public func parsePubkeyTags(marker: Swift.String?) -> Swift.Set<Swift.AnyHashable>
+  public func parseReplaceableEventTags(marker: Swift.String?) -> Swift.Set<Swift.AnyHashable>
+  public func assureValidNsec() -> Swift.String
+  public func bech32ToHexOrThrow() -> Swift.String
+  public func bechToBytesOrThrow(hrp: Swift.String?) throws -> PrimalShared.KotlinByteArray
+  public func extractKeyPairFromPrivateKeyOrThrow() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
+  public func hexToNoteHrp() -> Swift.String
+  public func hexToNpubHrp() -> Swift.String
+  public func hexToNsecHrp() -> Swift.String
+  public func urlToLnUrlHrp() -> Swift.String
+  public func parseHashtags() -> [Swift.String]
+  public func decodeLNUrlOrNull() -> Swift.String?
+  public func parseAsLNUrlOrNull() -> Swift.String?
+  public func clearAtSignFromNostrUris() -> Swift.String
+  public func extractEventId() -> Swift.String?
+  public func extractNoteId() -> Swift.String?
+  public func extractProfileId() -> Swift.String?
+  public func isNAddr() -> Swift.Bool
+  public func isNAddrUri() -> Swift.Bool
+  public func isNEvent() -> Swift.Bool
+  public func isNEventUri() -> Swift.Bool
+  public func isNProfile() -> Swift.Bool
+  public func isNProfileUri() -> Swift.Bool
+  public func isNPub() -> Swift.Bool
+  public func isNPubUri() -> Swift.Bool
+  public func isNostrUri() -> Swift.Bool
+  public func isNote() -> Swift.Bool
+  public func isNoteUri() -> Swift.Bool
+  public func nostrUriToBytes() -> PrimalShared.KotlinByteArray?
+  public func nostrUriToNoteId() -> Swift.String?
+  public func nostrUriToNoteIdAndRelay() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
+  public func nostrUriToPubkey() -> Swift.String?
+  public func nostrUriToPubkeyAndRelay() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
+  public func parseNostrUris() -> [Swift.String]
+  public func takeAsNaddrOrNull() -> PrimalShared.Naddr?
+  public func takeAsNaddrStringOrNull() -> Swift.String?
+  public func takeAsNeventOrNull() -> PrimalShared.Nevent?
+  public func takeAsNoteHexIdOrNull() -> Swift.String?
+  public func takeAsProfileHexIdOrNull() -> Swift.String?
+  public func withNostrPrefix() -> Swift.String
+  public func asEllipsizedNpub() -> Swift.String
+  public func formatNip05Identifier() -> Swift.String
+  public func isValidHex() -> Swift.Bool
+  public func parseIncomingMessage() -> PrimalShared.NostrIncomingMessage?
+  public func extractAdvancedSearchQuery() -> Swift.String?
+  public func extractPubkeyFromFeedSpec(prefix: Swift.String?, suffix: Swift.String?) -> Swift.String?
+  public func extractSimpleSearchQuery() -> Swift.String?
+  public func extractTopicFromFeedSpec() -> Swift.String?
+  public func isAdvancedSearchFeedSpec() -> Swift.Bool
+  public func isAudioSpec() -> Swift.Bool
+  public func isImageSpec() -> Swift.Bool
+  public func isNotesBookmarkFeedSpec() -> Swift.Bool
+  public func isNotesFeedSpec() -> Swift.Bool
+  public func isPremiumFeedSpec() -> Swift.Bool
+  public func isProfileAuthoredNoteRepliesFeedSpec() -> Swift.Bool
+  public func isProfileAuthoredNotesFeedSpec() -> Swift.Bool
+  public func isProfileNotesFeedSpec() -> Swift.Bool
+  public func isPubkeyFeedSpec(prefix: Swift.String?, suffix: Swift.String?) -> Swift.Bool
+  public func isReadsFeedSpec() -> Swift.Bool
+  public func isSearchFeedSpec() -> Swift.Bool
+  public func isSimpleSearchFeedSpec() -> Swift.Bool
+  public func isUserNotesFeedSpec() -> Swift.Bool
+  public func isUserNotesLwrFeedSpec() -> Swift.Bool
+  public func isVideoSpec() -> Swift.Bool
+  public func resolveFeedSpecKind() -> PrimalShared.FeedSpecKind?
+  public func supportsNoteReposts() -> Swift.Bool
+  public func supportsUpwardsNotesPagination() -> Swift.Bool
+}
+extension Swift.Int64 {
+  public func asExpirationTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
+}
+public func authorNameUiFriendly(displayName: Swift.String?, name: Swift.String?, pubkey: Swift.String) -> Swift.String
+public func usernameUiFriendly(displayName: Swift.String?, name: Swift.String?, pubkey: Swift.String) -> Swift.String
+public var exploreMediaFeedSpec: Swift.String {
+  get
+}
+public func buildAdvancedSearchNotesFeedSpec(query: Swift.String) -> Swift.String
+public func buildAdvancedSearchNotificationsFeedSpec(query: Swift.String) -> Swift.String
+public func buildAdvancedSearchReadsFeedSpec(query: Swift.String) -> Swift.String
+public func buildArticleBookmarksFeedSpec(userId: Swift.String) -> Swift.String
+public func buildLatestNotesUserFeedSpec(userId: Swift.String) -> Swift.String
+public func buildNotesBookmarksFeedSpec(userId: Swift.String) -> Swift.String
+public func buildReadsTopicFeedSpec(hashtag: Swift.String) -> Swift.String
+public var FEED_KIND_DVM: Swift.String {
+  get
+}
+public var FEED_KIND_PRIMAL: Swift.String {
+  get
+}
+public var FEED_KIND_SEARCH: Swift.String {
+  get
+}
+public var FEED_KIND_USER: Swift.String {
+  get
+}
+public var DEFAULT_ZAP_CONFIG: [PrimalShared.ContentZapConfigItem] {
+  get
+}
+public var DEFAULT_ZAP_DEFAULT: PrimalShared.ContentZapDefault {
+  get
+}
+public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
+extension PrimalShared.KotlinKVariance : Swift.Sendable {}
+extension PrimalShared.KotlinKVariance : Swift.BitwiseCopyable {}
+extension PrimalShared.Ktor_utilsMonth : Swift.Sendable {}
+extension PrimalShared.Ktor_utilsMonth : Swift.BitwiseCopyable {}
+extension PrimalShared.Ktor_utilsWeekDay : Swift.Sendable {}
+extension PrimalShared.Ktor_utilsWeekDay : Swift.BitwiseCopyable {}
+extension PrimalShared.NostrEventKind : Swift.Sendable {}
+extension PrimalShared.NostrEventKind : Swift.BitwiseCopyable {}
+extension PrimalShared.ReportType : Swift.Sendable {}
+extension PrimalShared.ReportType : Swift.BitwiseCopyable {}
+extension PrimalShared.__Bridge__Nip19TLV_Type_ : Swift.Sendable {}
+extension PrimalShared.__Bridge__Nip19TLV_Type_ : Swift.BitwiseCopyable {}
+extension PrimalShared.ReactionType : Swift.Sendable {}
+extension PrimalShared.ReactionType : Swift.BitwiseCopyable {}
+extension PrimalShared.__Bridge__Bech32_Encoding : Swift.Sendable {}
+extension PrimalShared.__Bridge__Bech32_Encoding : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalServerType : Swift.Sendable {}
+extension PrimalShared.PrimalServerType : Swift.BitwiseCopyable {}
+extension PrimalShared.BookmarkType : Swift.Sendable {}
+extension PrimalShared.BookmarkType : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalScope : Swift.Sendable {}
+extension PrimalShared.PrimalScope : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalTimeframe : Swift.Sendable {}
+extension PrimalShared.PrimalTimeframe : Swift.BitwiseCopyable {}
+extension PrimalShared.EventUriType : Swift.Sendable {}
+extension PrimalShared.EventUriType : Swift.BitwiseCopyable {}
+extension PrimalShared.EventUriNostrType : Swift.Sendable {}
+extension PrimalShared.EventUriNostrType : Swift.BitwiseCopyable {}
+extension PrimalShared.FeedSpecKind : Swift.Sendable {}
+extension PrimalShared.FeedSpecKind : Swift.BitwiseCopyable {}
+extension PrimalShared.ConversationRelation : Swift.Sendable {}
+extension PrimalShared.ConversationRelation : Swift.BitwiseCopyable {}
+extension PrimalShared.NotificationType : Swift.Sendable {}
+extension PrimalShared.NotificationType : Swift.BitwiseCopyable {}
+extension PrimalShared.NotificationSettingsSection : Swift.Sendable {}
+extension PrimalShared.NotificationSettingsSection : Swift.BitwiseCopyable {}
+extension PrimalShared.__Bridge__Mime_Type_ : Swift.Sendable {}
+extension PrimalShared.__Bridge__Mime_Type_ : Swift.BitwiseCopyable {}
+extension PrimalShared.BignumSign : Swift.Sendable {}
+extension PrimalShared.BignumSign : Swift.BitwiseCopyable {}
+extension PrimalShared.BignumRoundingMode : Swift.Sendable {}
+extension PrimalShared.BignumRoundingMode : Swift.BitwiseCopyable {}
+extension PrimalShared.Paging_commonLoadType : Swift.Sendable {}
+extension PrimalShared.Paging_commonLoadType : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectInstance.__Sealed : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause1.__Sealed : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.KotlinxDatetime.DateTimeFormat.__Sealed : Swift.BitwiseCopyable {}

@@ -40,6 +40,8 @@ enum NostrKind: Int {
     
     case handlerInfo = 31_990
     
+    case followList = 39_089
+    
     case ack = 10_000_098
     case noteStats = 10_000_100
     case netStats = 10_000_101

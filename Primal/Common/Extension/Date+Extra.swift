@@ -8,31 +8,36 @@
 import Foundation
 
 extension Date {
-    func timeAgoDisplay() -> String {
+    func timeAgoDisplay(addAgo: Bool = false) -> String {
         let seconds = Date().timeIntervalSince(self)
         
         let years = Int(seconds / 31622400)
         if years > 0 {
+            if addAgo { return "\(years)y ago" }
             return "\(years)y"
         }
         
         let months = Int(seconds / 2678400)
         if months > 0 {
+            if addAgo { return "\(months)mo ago" }
             return "\(months)mo"
         }
         
         let days = Int(seconds / 86400)
         if days > 0 {
+            if addAgo { return "\(days)d ago" }
             return "\(days)d"
         }
         
         let hours = Int(seconds / 3600)
         if hours > 0 {
+            if addAgo { return  "\(hours)h ago" }
             return "\(hours)h"
         }
         
         let minutes = Int(seconds / 60)
         if minutes > 0 {
+            if addAgo { return "\(minutes)m ago" }
             return "\(minutes)m"
         }
         

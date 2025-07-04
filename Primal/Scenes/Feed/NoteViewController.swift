@@ -243,14 +243,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func preloadPost(_ post: ParsedContent) {
         preloadedPosts.insert(post.post.id)
                 
-        if let url = post.mediaResources.first?.url(for: .medium) {
+        if let url = post.mediaResources.first?.url(for: post.mediaResources.count > 1 ? .small : .medium) {
             if url.isImageURL {
                 KingfisherManager.shared.retrieveImage(with: url, completionHandler: nil)
             } else if let thumbnailURL = post.videoThumbnails[url.absoluteString] ?? post.videoThumbnails.first?.value, let tURL = URL(string: thumbnailURL) {
                 KingfisherManager.shared.retrieveImage(with: tURL, completionHandler: nil)
             }
         }
-        for preview in post.linkPreviews {
+        for preview in post.linkPreviews.prefix(2) {
             if preview.url.isTwitterURL {
                 LinkPreviewManager.instance.preload(preview.url)
             } else if let url = preview.imagesData.first?.url(for: .small), url.isImageURL {
@@ -332,8 +332,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             url = .init(string: "https://" + url.absoluteString) ?? url
         }
         
-        if url.host()?.contains("primal.net") == true {
-            PrimalWebsiteScheme().openURL(url)
+        let primalScheme = PrimalWebsiteScheme()
+        if primalScheme.canOpenURL(url) {
+            primalScheme.openURL(url)
             return
         }
         
@@ -421,6 +422,32 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             show(NoteReactionsParentController(.reposts, noteId: post.post.id), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
+            present(activityViewController, animated: true, completion: nil)
+        case .shareAsImage:
+            guard
+                let cell,
+                let indexPath = table.indexPath(for: cell)
+            else { return }
+            
+            var allIndexes: [IndexPath] = []
+            var iterator = indexPath
+            iterator.item += 1
+            while let nextPost = dataSource.postForIndexPath(iterator), post.post.id == nextPost.post.id {
+                allIndexes.append(iterator)
+                iterator.item += 1
+            }
+            
+            let allCells = [cell] + allIndexes.compactMap { table.cellForScreenshot(at: $0) }
+            var allImages = allCells.compactMap { $0.contentView.takeScreenshot() }
+            
+            if let threadVC = self as? ThreadViewController, post.post.id == threadVC.id, let trimmed = allImages.popLast()?.trimBottomPixels(pixelsToTrim: 200) {
+                // We don't need reaction buttons for the main thread post
+                allImages.append(trimmed)
+            }
+            
+            guard let image = UIImage.concatenateImagesVertically(images: allImages, background: .background) else { return }
+            
+            let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)

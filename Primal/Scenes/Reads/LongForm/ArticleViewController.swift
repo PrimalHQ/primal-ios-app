@@ -165,7 +165,7 @@ private extension ArticleViewController {
     }
     
     var parts: [LongFormContentSegment] {
-        content.event.content.escapedHtml().splitLongFormParts(mentions: content.mentions)
+        content.event.content.splitLongFormParts(mentions: content.mentions)
     }
     
     var textParts: [String] {
@@ -552,7 +552,7 @@ private extension ArticleViewController {
 
 extension ArticleViewController: ArticleImageViewDelegate {
     var allImages: [String] {
-        let parts = content.event.content.escapedHtml().splitLongFormParts(mentions: [])
+        let parts = content.event.content.splitLongFormParts(mentions: [])
         let allImages = parts.compactMap {
             switch $0 {
             case .image(let string):    return string

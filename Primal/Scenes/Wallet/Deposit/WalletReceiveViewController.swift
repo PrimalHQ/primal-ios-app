@@ -362,6 +362,11 @@ private extension WalletReceiveViewController {
         nfcButton.addAction(.init(handler: { [weak self] _ in
             self?.showErrorMessage("NFC is coming soon")
         }), for: .touchUpInside)
+        
+        guard WalletManager.instance.primal == nil else { return }
+        
+        selectionStackParent.isHidden = true
+        detailsButton.isHidden = true
     }
     
     func descLabel(_ text: String) -> UILabel {

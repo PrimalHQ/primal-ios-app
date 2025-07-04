@@ -84,7 +84,7 @@ extension String : Identifiable {
     
     var isVideoButNotYoutubePathComponent: Bool {
         let lowercased = lowercased()
-        return lowercased.hasSuffix(".mov") || lowercased.hasSuffix(".mp4")
+        return lowercased.hasSuffix(".mov") || lowercased.hasSuffix(".mp4") || lowercased.hasSuffix(".3gp")
     }
     
     var isYoutubeVideoURL: Bool {
@@ -263,21 +263,16 @@ extension String : Identifiable {
         }
         return text
     }
-    
-    func escapedHtml() -> String {
-        return self
-//        var newString = self
-//        let htmlEscapes = [
-//            "&": "&amp;",
-//            "<": "&lt;",
-//            "\"": "&quot;",
-//            "'": "&#39;"
-//        ]
-//        
-//        for (key, value) in htmlEscapes {
-//            newString = newString.replacingOccurrences(of: key, with: value)
-//        }
-//        
-//        return newString
+}
+
+extension NSAttributedString {
+    func heightForWidth(_ width: CGFloat) -> CGFloat {
+        let size = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let rect = boundingRect(
+            with: size,
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+        return ceil(rect.height)
     }
 }

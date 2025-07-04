@@ -59,25 +59,17 @@ private extension PremiumHomeViewController {
         renewLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
             switch extraLabelAction {
-            case .cancel:
-                if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
-                    if UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                    }
-                }
-            case .support:
-                show(PremiumSupportPrimalController(state: state), sender: nil)
+            case .goPro:
+                show(PremiumOnboardingHomeViewController(), sender: nil)
             case .nothing:
                 return
             }
         }))
         
-        renewLabel.isHidden = !(AppDelegate.shared.contentSettings?.show_primal_support ?? true)
-        
         let action = LegendaryRoundedButton(title: state.isExpired ? "Renew Subscription" : "Manage Premium")
         action.addAction(.init(handler: { [unowned self] _ in
             if state.isExpired == true {
-                show(PremiumBuySubscriptionController(pickedName: state.name, state: .buySubscription), sender: nil)
+                show(PremiumBuySubscriptionController(pickedName: state.name, kind: .premium, state: .buySubscription), sender: nil)
                 return
             }
             show(PremiumManageController(state: state), sender: nil)
@@ -149,12 +141,12 @@ private extension PremiumHomeViewController {
         return userStack
     }
     
-    enum ExtraLabelAction { case cancel, nothing, support }
+    enum ExtraLabelAction { case nothing, goPro }
     var extraLabelAction: ExtraLabelAction {
         if state.isExpired || state.isLegend {
             return .nothing
         }
-        return .support
+        return .goPro
     }
     
     func actionLabelString() -> NSAttributedString {
@@ -162,49 +154,12 @@ private extension PremiumHomeViewController {
         paragraph.lineSpacing = 6
         paragraph.alignment = .center
         
-        if state.isLegend {
-//            let mutable = NSMutableAttributedString(string: "Your contribution to Primal: ", attributes: [
-//                .font: UIFont.appFont(withSize: 14, weight: .regular),
-//                .foregroundColor: UIColor.foreground3,
-//                .paragraphStyle: paragraph
-//            ])
-//                        
-//            let btc = Double(state.donated_btc ?? "") ?? 0
-//            let sats = Int(btc * .BTC_TO_SAT)
-//            
-//            mutable.append(.init(string: "\(sats.localized()) sats", attributes: [
-//                .font: UIFont.appFont(withSize: 14, weight: .bold),
-//                .foregroundColor: UIColor.foreground,
-//                .paragraphStyle: paragraph
-//            ]))
-//            
-//            var beggingText = "Want to contribute?"
-//            
-//            if sats > 0 {
-//                mutable.append(.init(string: "\nThank you for you support! 💜🫂", attributes: [
-//                    .font: UIFont.appFont(withSize: 14, weight: .regular),
-//                    .foregroundColor: UIColor.foreground3,
-//                    .paragraphStyle: paragraph
-//                ]))
-//                beggingText = "Want to contribute more?"
-//            }
-//            
-//            mutable.append(.init(string: "\n\(beggingText)", attributes: [
-//                .font: UIFont.appFont(withSize: 14, weight: .regular),
-//                .foregroundColor: UIColor.accent2,
-//                .paragraphStyle: paragraph
-//            ]))
-//            
-//            
-//            return mutable
-        }
-        
         let strings: (String, String?) = {
             if state.isLegend { return ("", nil) }
             if state.isExpired {
                 return ("Your Primal Premium subscription has expired.\nYou can renew it below:", nil)
             }
-            return ("Are you enjoying Primal?\nIf so, see how you can ", "support us.")
+            return ("Want to get more out of Primal?\nCheck out ", "Primal Pro")
         }()
         
         let mutable = NSMutableAttributedString(string: strings.0, attributes: [
@@ -215,7 +170,7 @@ private extension PremiumHomeViewController {
         if let accent = strings.1 {
             mutable.append(.init(string: accent, attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.accent2,
+                .foregroundColor: UIColor.pro,
                 .paragraphStyle: paragraph
             ]))
         }

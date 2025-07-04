@@ -8,6 +8,22 @@
 import UIKit
 import WebKit
 
+class YoutubeWebView: WKWebView, WKUIDelegate {
+    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frame, configuration: configuration)
+        uiDelegate = self
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // This is to enable opening youtube app from the youtube button
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        guard let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) else { return nil }
+        UIApplication.shared.open(url)
+        return nil
+    }
+}
+
 class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell, WebPreviewCell {
     static var cellID: String { "FeedElementYoutubePreviewCell" }
     
@@ -30,7 +46,7 @@ class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell
         webViewConfiguration.allowsInlineMediaPlayback = true
         webViewConfiguration.mediaTypesRequiringUserActionForPlayback = []
 
-        let view = WKWebView(frame: .zero, configuration: webViewConfiguration)
+        let view = YoutubeWebView(frame: .zero, configuration: webViewConfiguration)
         view.scrollView.contentInsetAdjustmentBehavior = .never
         return view
     }()
@@ -46,7 +62,6 @@ class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell
             .pinToSuperview(edges: .bottom, padding: 0)
             .pinToSuperview(edges: .horizontal, padding: 16)
         webView.alpha = 0
-        webView.navigationDelegate = self
         
         contentView.addSubview(linkPreview)
         linkPreview
@@ -151,21 +166,5 @@ class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell
         thumbnailView.kf.setImage(with: metadata?.url(for: .small) ?? URL(string: imageString), placeholder: UIImage(named: "webPreviewIcon"), options: [
             .transition(.fade(0.2))
         ])
-    }
-}
-
-extension FeedElementYoutubePreviewCell: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
-        guard let url = navigationAction.request.url else { return .cancel }
-        
-        if url.absoluteString.contains("/embed/") { return .allow }
-        
-        if UIApplication.shared.canOpenURL(url) {
-            Task {
-                await UIApplication.shared.open(url)
-            }
-        }
-        
-        return .cancel
     }
 }

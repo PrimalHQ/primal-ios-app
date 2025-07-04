@@ -35,7 +35,7 @@ class SearchNoteFeedController: NoteFeedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Search Results"
+        title = feed.newFeed?.name ?? "Search Results"
         
         saveButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let feed = self.feed.newFeed else { return }

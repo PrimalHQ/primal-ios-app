@@ -139,7 +139,7 @@ extension RegularFeedDatasourceProtocol {
             if !content.zaps.isEmpty { parts.append(.zapGallery(content.zaps)) }
             
             parts.append(.reactions)
-            return (content, parts)
+            return (content, parts.uniqueByFilter({ $0 })) // We use unique parts so that the table doesn't crash when the same post is embedded twice
         })
     }
 }

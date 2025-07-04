@@ -51,8 +51,8 @@ class MainThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
         
         threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
         
-        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, imageName, action, attributes) in
-            UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
+        threeDotsButton.menu = .init(children: parsedContent.actionsData().map { (title, image, action, attributes) in
+            UIAction(title: title, image: image, attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
             }

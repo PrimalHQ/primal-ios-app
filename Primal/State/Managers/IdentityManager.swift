@@ -348,6 +348,9 @@ final class IdentityManager {
         if let parsedUser {
             parsedUser.data.lud16 = data.lud16 ?? parsedUser.data.lud16
             parsedUser.data.nip05 = data.nip05 ?? parsedUser.data.nip05
+            parsedUser.data.website = data.website ?? parsedUser.data.website
+            parsedUser.data.about = data.about ?? parsedUser.data.about
+            self.parsedUser = parsedUser
         }
         
         RelaysPostbox.instance.connect(bootstrap_relays)

@@ -11,6 +11,7 @@ import StoreKit
 
 private extension String {
     static var lastVisitedPremiumKey = "lastVisitedPremiumKey1"
+    static let didVisitPremiumAfterProUpdateKey = "didVisitPremiumAfterProUpdateKey"
 }
 
 extension UserDefaults {
@@ -23,12 +24,22 @@ extension UserDefaults {
         }
     }
     
+    var didVisitPremiumAfterProUpdate: Bool {
+        get {
+            bool(forKey: .didVisitPremiumAfterProUpdateKey)
+        }
+        set {
+            set(newValue, forKey: .didVisitPremiumAfterProUpdateKey)
+        }
+    }
+    
     var currentUserLastPremiumVisit: Date {
         get {
             lastVisitedPremium[IdentityManager.instance.userHexPubkey] ?? .distantPast
         }
         set {
             lastVisitedPremium[IdentityManager.instance.userHexPubkey] = newValue
+            didVisitPremiumAfterProUpdate = true
             notify(.visitPremiumNotification)
         }
     }
@@ -43,23 +54,10 @@ extension PremiumState: Equatable {
 final class PremiumViewController: UIPageViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
-    enum StartingScreen {
-        case home, buyLegend, primalOG
-    }
-    
-    enum RootState {
-        case home(PremiumState?)
-        case custom(UIViewController)
-    }
-    
-    let startingScreen: StartingScreen
-    init(startingScreen: StartingScreen = .home) {
-        self.startingScreen = startingScreen
+    init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         
-        if startingScreen == .home {
-            WalletManager.instance.refreshPremiumState()
-        }
+        WalletManager.instance.refreshPremiumState()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -70,40 +68,24 @@ final class PremiumViewController: UIPageViewController, Themeable {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = customBackButton
         
-        Publishers.Merge3(
-            triggerRefresh.map { RootState.home(WalletManager.instance.premiumState) },
-            WalletManager.instance.$premiumState.removeDuplicates().dropFirst().map { RootState.home($0) },
-            Just({
-                switch startingScreen {
-                case .home:
-                    return RootState.home(WalletManager.instance.premiumState)
-                case .buyLegend:
-                    return RootState.custom(PremiumBecomeLegendController())
-                case .primalOG:
-                    return RootState.custom(PremiumPrimalOGHomeController())
-                }
-            }())
+        Publishers.Merge(
+            triggerRefresh.map { WalletManager.instance.premiumState },
+            WalletManager.instance.$premiumState.removeDuplicates()
         )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 guard let self else { return }
                 
-                switch state {
-                case .home(let state):
-                    if let state {
-                        if state.isExpired {
-                            title = "Premium Expired"
-                        } else {
-                            title = "Premium"
-                        }
-                        
-                        setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
+                if let state {
+                    if state.isExpired {
+                        title = "Premium Expired"
                     } else {
-                        setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)
+                        title = "Premium"
                     }
-                case .custom(let vc):
-                    setViewControllers([vc], direction: .forward, animated: false)
-                    title = vc.title
+                    
+                    setViewControllers([PremiumHomeViewController(state: state)], direction: .forward, animated: false)
+                } else {
+                    setViewControllers([PremiumOnboardingHomeViewController()], direction: .forward, animated: false)
                 }
             }
             .store(in: &cancellables)

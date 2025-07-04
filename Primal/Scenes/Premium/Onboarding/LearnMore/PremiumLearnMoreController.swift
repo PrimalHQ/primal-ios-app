@@ -6,20 +6,40 @@
 //
 
 import UIKit
+import Combine
 
 class PremiumLearnMoreController: PrimalPageController {
     enum Tab: Int {
-        case why = 0
-        case features = 1
-        case faq = 2
+        case premium = 0
+        case pro = 1
+        case features = 2
+        case faq = 3
     }
     
-    init(startingTab: Tab = .why) {
+    var cancellables: Set<AnyCancellable> = []
+    
+    init(startingTab: Tab = .premium) {
         super.init(tabs: [
-            ("WHY PREMIUM", { PremiumLearnMoreWhyController() }),
+            ("PREMIUM", { PremiumLearnMoreWhyController() }),
+            ("PRO", { PremiumLearnMoreProController() }),
             ("FEATURES", { PremiumLearnMoreFeaturesController() }),
             ("FAQ", { PremiumLearnMoreFAQController() })
         ], startingTab: startingTab.rawValue)
+        
+        $currentTab.sink { [weak self] tab in
+            guard let self, let tab = Tab(rawValue: tab) else { return }
+            switch tab {
+            case .premium:
+                title = "Primal Premium"
+            case .pro:
+                title = "Primal Pro"
+            case .features:
+                title = "Premium & Pro Features"
+            case .faq:
+                title = "Premium & Pro FAQ"
+            }
+        }
+        .store(in: &cancellables)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -27,7 +47,6 @@ class PremiumLearnMoreController: PrimalPageController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Primal Premium"
         navigationItem.leftBarButtonItem = customBackButton
         
         tabSelectionView.distribution = .fill

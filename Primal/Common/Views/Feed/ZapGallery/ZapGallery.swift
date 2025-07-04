@@ -68,7 +68,11 @@ class SmallZapGalleryView: UIView, ZapGallery {
             
             addSubview($0)
         }
-        stack.pinToSuperview()
+        stack.pinToSuperview(edges: [.horizontal, .top])
+        let botC = stack.bottomAnchor.constraint(equalTo: bottomAnchor)
+        botC.priority = .defaultHigh
+        botC.isActive = true
+        
         animationStack.pinToSuperview(edges: [.horizontal, .top])
         
         animationStack.isUserInteractionEnabled = false
@@ -83,15 +87,11 @@ class SmallZapGalleryView: UIView, ZapGallery {
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func setZaps(_ zaps: [ParsedZap]) {
-        defer {
-            self.zaps = zaps
-            update()
-            playSkeleton()
-        }
+        self.zaps = zaps
+        update(stack: stack, zaps: zaps)
+        playSkeleton()
         
         guard
-            !zaps.isEmpty, 
-            self.zaps.isEmpty,
             let animatingId = WalletManager.instance.animatingZap.value?.receiptId,
             zaps.contains(where: { $0.receiptId == animatingId })
         else { return }
@@ -99,10 +99,8 @@ class SmallZapGalleryView: UIView, ZapGallery {
         var oldZaps = zaps
         oldZaps.removeAll(where: { $0.receiptId == animatingId })
         
-        if oldZaps.isEmpty { return }
-        
-        self.zaps = oldZaps
-        update()
+        update(stack: animationStack, zaps: oldZaps)
+        animateStacks()
     }
     
     private var zaps: [ParsedZap] = []
@@ -119,22 +117,8 @@ class SmallZapGalleryView: UIView, ZapGallery {
         }
     }
         
-    func update() {
-        animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        stack.arrangedSubviews.forEach {
-            $0.removeFromSuperview()
-            if animatingChanges {
-                animationStack.addArrangedSubview($0)
-                if singleLine {
-                    $0.pinToSuperview(edges: .horizontal)
-                }
-            }
-        }
-        defer {
-            if animatingChanges {
-                animateStacks()
-            }
-        }
+    func update(stack: UIStackView, zaps: [ParsedZap]) {
+        stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         if singleLine {
             let hStack = UIStackView()
@@ -212,155 +196,129 @@ class SmallZapGalleryView: UIView, ZapGallery {
     
     func animateStacks() {
         layoutIfNeeded()
-        animationStack.layoutIfNeeded()
-        
-        print("ANIMATING")
         
         var zapAnimations: [String: () -> ()] = [:]
-
-        for view in animationStack.arrangedSubviews {
-            guard let stack = view as? UIStackView else { continue }
-
-            for view in stack.arrangedSubviews {
-                guard let zapView = view as? ZapGalleryChildView else {
+        
+        let animationZapViews: [ZapGalleryChildView] = animationStack.findAllSubviews()
+        for zapView in animationZapViews {
+            let receiptId = zapView.zap.receiptId
+            guard let newPill = findPillInStack(receiptId: receiptId) else {
+                // Fade out animation
+                zapAnimations[receiptId] = {
                     UIView.animate(withDuration: 6 / 30) {
-                        view.alpha = 0.01
+                        zapView.alpha = 0.01
                     }
-                    continue
                 }
-
-                let receiptId = zapView.zap.receiptId
-                guard let newPill = findPillInStack(receiptId: receiptId) else {
-                    // Fade out animation
-                    zapAnimations[receiptId] = {
-                        UIView.animate(withDuration: 6 / 30) {
-                            zapView.alpha = 0.01
-                        }
-                    }
-                    continue
-                }
+                continue
+            }
                 
-                if let textPill = zapView as? ZapPillTextView, newPill as? ZapPillTextView == nil {
-                    // Transform and translate text pill into regular pill
-                    
-                    let animatingPill = ZapPillTextView(zap: textPill.zap)
-                    addSubview(animatingPill)
-                    animatingPill.pin(to: textPill, edges: [.leading, .top])
-                    layoutIfNeeded()
-                    
-                    let label = UILabel()
-                    label.font = animatingPill.label.font
-                    label.textColor = animatingPill.label.textColor
-                    label.text = animatingPill.label.text
-                    
-                    animatingPill.addSubview(label)
-                    label.pinToSuperview(edges: .trailing, padding: 10).centerToSuperview(axis: .vertical)
-                    
-                    animatingPill.layoutIfNeeded()
-                    
-                    // Translate animation
-                    zapAnimations[receiptId] = {
-                        newPill.alpha = 0.01
-                        textPill.alpha = 0.01
-                        
-                        let newOrigin = newPill.convert(CGPoint.zero, to: self)
-                        let oldOrigin = textPill.convert(CGPoint.zero, to: self)
-                        
-                        var deltaY = newOrigin.y - oldOrigin.y
-                        if deltaY > 5 { // Hardcode Y translation because for some reason it is not correct
-                            deltaY = 32
-                        }
-
-                        UIView.animate(withDuration: 3 / 30) {
-                            label.alpha = 0
-                            
-                            animatingPill.zapIcon.alpha = 0
-                            animatingPill.zapIcon.isHidden = true
-                            
-                            if newPill as? ZapAvatarView != nil {
-                                animatingPill.amountLabel.alpha = 0
-                                animatingPill.amountLabel.isHidden = true
-                            }
-                        }
-                        
-                        UIView.animate(withDuration: 12 / 30) {
-                            animatingPill.label.isHidden = true
-                            if newPill as? ZapAvatarView != nil {
-                                animatingPill.endSpacer.isHidden = true
-                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x - 6, y: deltaY)
-                            } else {
-                                animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
-                            }
-                        } completion: { _ in
-                            newPill.alpha = 1
-                            animatingPill.removeFromSuperview()
-                        }
-                    }
-                    continue
-                }
-
+            if let textPill = zapView as? ZapPillTextView, newPill as? ZapPillTextView == nil {
+                // Transform and translate text pill into regular pill
+                
+                let animatingPill = ZapPillTextView(zap: textPill.zap)
+                addSubview(animatingPill)
+                animatingPill.pin(to: textPill, edges: [.leading, .top])
+                
+                let label = UILabel()
+                label.font = animatingPill.label.font
+                label.textColor = animatingPill.label.textColor
+                label.text = animatingPill.label.text
+                
+                animatingPill.addSubview(label)
+                label.pinToSuperview(edges: .trailing, padding: 10).centerToSuperview(axis: .vertical)
+                
+                animatingPill.layoutIfNeeded()
+                
                 // Translate animation
                 zapAnimations[receiptId] = {
+                    newPill.alpha = 0.01
+                    textPill.alpha = 0.01
+                    
                     let newOrigin = newPill.convert(CGPoint.zero, to: self)
-                    let oldOrigin = zapView.convert(CGPoint.zero, to: self)
+                    let oldOrigin = textPill.convert(CGPoint.zero, to: self)
                     
                     var deltaY = newOrigin.y - oldOrigin.y
                     if deltaY > 5 { // Hardcode Y translation because for some reason it is not correct
                         deltaY = 32
                     }
 
-                    newPill.alpha = 0.01
-
+                    UIView.animate(withDuration: 3 / 30) {
+                        label.alpha = 0
+                        
+                        animatingPill.zapIcon.alpha = 0
+                        animatingPill.zapIcon.isHidden = true
+                        
+                        if newPill as? ZapAvatarView != nil {
+                            animatingPill.amountLabel.alpha = 0
+                            animatingPill.amountLabel.isHidden = true
+                        }
+                    }
+                    
                     UIView.animate(withDuration: 12 / 30) {
-                        zapView.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                        animatingPill.label.isHidden = true
+                        if newPill as? ZapAvatarView != nil {
+                            animatingPill.endSpacer.isHidden = true
+                            animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x - 6, y: deltaY)
+                        } else {
+                            animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                        }
                     } completion: { _ in
                         newPill.alpha = 1
+                        animatingPill.removeFromSuperview()
                     }
+                }
+                continue
+            }
+
+            // Translate animation
+            zapAnimations[receiptId] = {
+                let newOrigin = newPill.convert(CGPoint.zero, to: self)
+                let oldOrigin = zapView.convert(CGPoint.zero, to: self)
+                
+                var deltaY = newOrigin.y - oldOrigin.y
+                if deltaY > 5 { // Hardcode Y translation because for some reason it is not correct
+                    deltaY = 32
+                }
+
+                newPill.alpha = 0.01
+
+                UIView.animate(withDuration: 12 / 30) {
+                    zapView.transform = .init(translationX: newOrigin.x - oldOrigin.x, y: deltaY)
+                } completion: { _ in
+                    newPill.alpha = 1
                 }
             }
         }
         
-        for view in stack.arrangedSubviews {
-            guard let hStack = view as? UIStackView else { continue }
-            
-            for view in hStack.arrangedSubviews {
-                guard let pill = view as? ZapPillView else {
-                    view.alpha = 0.01
-                    UIView.animate(withDuration: 6 / 30, delay: 3 / 30) {
-                        view.alpha = 1
-                    }
-                    continue
+        
+        let regularZapViews: [ZapPillView] = stack.findAllSubviews()
+        for pill in regularZapViews where zapAnimations[pill.zap.receiptId] == nil {
+            zapAnimations[pill.zap.receiptId] = {
+                pill.alpha = 0.01
+                pill.transform = .init(translationX: 300, y: 0)
+                
+                var background: UIView?
+                if pill.zap.user.isCurrentUser {
+                    let view = UIView()
+                    pill.insertSubview(view, at: 0)
+                    view.pinToSuperview()
+                    view.backgroundColor = .init(rgb: 0xFFA02F)
+                    view.layer.cornerRadius = 11
+                    background = view
                 }
                 
-                guard zapAnimations[pill.zap.receiptId] == nil else { continue }
-                    
-                zapAnimations[pill.zap.receiptId] = {
-                    pill.alpha = 0.01
-                    pill.transform = .init(translationX: 300, y: 0)
-                    
-                    var background: UIView?
-                    if pill.zap.user.isCurrentUser {
-                        let view = UIView()
-                        pill.insertSubview(view, at: 0)
-                        view.pinToSuperview()
-                        view.backgroundColor = .init(rgb: 0xFFA02F)
-                        view.layer.cornerRadius = 11
-                        background = view
-                    }
-                    
-                    UIView.animate(withDuration: 6 / 30, delay: 3 / 30) {
-                        pill.alpha = 1
-                    }
-                    
-                    UIView.animate(withDuration: 12 / 30, delay: 3 / 30, options: [.curveEaseInOut]) {
-                        pill.transform = .identity
-                    } completion: { _ in
-                        if let background {
-                            UIView.animate(withDuration: 12 / 30, delay: 0, options: [.curveEaseOut]) {
-                                background.alpha = 0
-                            } completion: { _ in
-                                background.removeFromSuperview()
-                            }
+                UIView.animate(withDuration: 6 / 30, delay: 3 / 30) {
+                    pill.alpha = 1
+                }
+                
+                UIView.animate(withDuration: 12 / 30, delay: 3 / 30, options: [.curveEaseInOut]) {
+                    pill.transform = .identity
+                } completion: { _ in
+                    if let background {
+                        UIView.animate(withDuration: 12 / 30, delay: 0, options: [.curveEaseOut]) {
+                            background.alpha = 0
+                        } completion: { _ in
+                            background.removeFromSuperview()
                         }
                     }
                 }
