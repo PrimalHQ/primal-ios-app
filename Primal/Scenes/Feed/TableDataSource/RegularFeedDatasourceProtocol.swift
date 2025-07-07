@@ -118,15 +118,15 @@ extension RegularFeedDatasourceProtocol {
             for (index, data) in content.linkPreviews.enumerated() {
                 if short && index > 1 { break } // Only show two link previews short view
                 
-                if data.url.isYoutubeURL {
+                if data.url.isYoutubeVideoURL {
                     parts.append(.webPreview(.youtube, data))
                 } else if data.url.isTwitterURL {
                     parts.append(.webPreview(.system, data))
                 } else if data.url.isGithubURL || data.url.isRumbleURL {
                     parts.append(.webPreview(.large, data))
-                } else if data.url.isSpotifyURL {
+                } else if data.url.isSpotifyMusicURL {
                     parts.append(.webPreview(.music, data))
-                } else if data.url.isTidalURL {
+                } else if data.url.isTidalMusicURL {
                     parts.append(.webPreview(.tidal, data))
                 } else {
                     parts.append(.webPreview(.small, data))
