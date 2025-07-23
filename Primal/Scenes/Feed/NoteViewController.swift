@@ -30,7 +30,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
-    let table = UITableView()
+    let table = SafeTableView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -47,6 +47,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     @Published var posts: [ParsedContent] = [] {
         didSet {
+            if view.window == nil { return }
+            
             dataSource.setPosts(posts)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -77,7 +79,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        table.reloadData()
+        DispatchQueue.main.async {
+            self.dataSource.setPosts(self.posts)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -113,7 +117,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
+        guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
@@ -780,7 +784,7 @@ extension NoteViewController: PostCellDelegate {
         
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
         
-        present(FullScreenVideoPlayerController(player), animated: true) 
+        present(FullScreenVideoPlayerController(player), animated: true)
     }
     
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {

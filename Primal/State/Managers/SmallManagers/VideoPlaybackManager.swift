@@ -60,6 +60,10 @@ class VideoPlayer: NSObject {
         }
     }
     
+    deinit {
+        
+    }
+    
     func play() {
         shouldPause = false
         isPlaying = true
@@ -95,7 +99,8 @@ class VideoPlayer: NSObject {
         if let url = URL(string: url) {
             let item = AVPlayerItem(url: url)
             looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
-            item.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+            
+            looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         }
         didInitPlayer = true
         return queuePlayer
@@ -104,7 +109,7 @@ class VideoPlayer: NSObject {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard
             keyPath == "status", 
-            let item = object as? AVPlayerItem,
+            let item = object as? AVPlayerLooper,
             case .failed = item.status
         else { return }
         
@@ -113,26 +118,38 @@ class VideoPlayer: NSObject {
         attemptBlossomLoad()
     }
     
-    
+    @objc private func playerItemFailed(_ notification: Notification) {
+        if let error = notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? NSError {
+            print("AVPlayerItemFailedToPlayToEndTime: \(error.localizedDescription)")
+        }
+        attemptBlossomLoad()
+    }
+
     func attemptBlossomLoad() {
-        guard
-            let blossomInfo = BlossomServerManager.instance.serversForUser(pubkey: userPubkey),
-            let firstServer = blossomInfo.first,
-            let pathComponent = URL(string: originalURL)?.pathExtension
+        guard let finalURL: URL = { () -> URL? in
+            guard
+                let blossomInfo = BlossomServerManager.instance.serversForUser(pubkey: userPubkey),
+                let firstServer = blossomInfo.first,
+                let pathComponent = URL(string: originalURL)?.pathExtension
+            else { return URL(string: originalURL) }
+            
+            let serverURL = blossomInfo.first(where: { !url.contains($0) }) ?? firstServer
+            guard var finalURL = URL(string: serverURL) else { return URL(string: originalURL) }
+            finalURL.append(path: pathComponent)
+            return finalURL
+        }()
         else { return }
-        
-        let serverURL = blossomInfo.first(where: { !url.contains($0) }) ?? firstServer
-        guard var finalURL = URL(string: serverURL) else { return }
-        finalURL.append(path: pathComponent)
         
         if finalURL.absoluteString == url {
             print("REACHED THE END OF BLOSSOM LIST")
             return
         }
         
-        guard let url = URL(string: url), let queuePlayer = avPlayer as? AVQueuePlayer else { return }
-        let item = AVPlayerItem(url: url)
+        guard let queuePlayer = avPlayer as? AVQueuePlayer else { return }
+        
+        let item = AVPlayerItem(url: finalURL)
+        url = finalURL.absoluteString
         looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
-        item.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
     }
 }

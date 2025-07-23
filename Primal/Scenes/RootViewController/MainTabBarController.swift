@@ -73,11 +73,7 @@ final class MainTabBarController: UIViewController, Themeable {
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
-    var continousConnection: ContinousConnection? {
-        didSet {
-            oldValue?.end()
-        }
-    }
+    var continousConnection: ContinousConnection?
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()

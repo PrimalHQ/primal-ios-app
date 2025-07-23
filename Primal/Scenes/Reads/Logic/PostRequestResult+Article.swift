@@ -121,6 +121,7 @@ extension PostRequestResult {
                         postId: primalZapEvent.event_id,
                         amountSats: primalZapEvent.amount_sats,
                         message: zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                        createdAt: primalZapEvent.created_at,
                         user: createParsedUser(user)
                     )
                 },

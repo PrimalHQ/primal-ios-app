@@ -57,6 +57,7 @@ class ZapFeedManager: BaseFeedManager {
                             postId: primalZapEvent.event_id,
                             amountSats: primalZapEvent.amount_sats,
                             message: result.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                            createdAt: primalZapEvent.created_at,
                             user: user
                         ),
                         zappedObject: zappedObject

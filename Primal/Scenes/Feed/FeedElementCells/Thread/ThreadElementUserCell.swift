@@ -56,7 +56,7 @@ class ThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
     
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: 24)
-    let checkbox = VerifiedView()
+    let checkbox = VerifiedView().constrainToSize(FontSizeSelection.current.contentFontSize)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()

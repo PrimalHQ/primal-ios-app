@@ -42,6 +42,7 @@ class NoteProcessor: MetadataCoding {
             postId: primalZapEvent.event_id,
             amountSats: primalZapEvent.amount_sats,
             message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+            createdAt: primalZapEvent.created_at,
             user: parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
         )
     }
@@ -68,6 +69,7 @@ class NoteProcessor: MetadataCoding {
                     postId: primalZapEvent.event_id,
                     amountSats: primalZapEvent.amount_sats,
                     message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                    createdAt: primalZapEvent.created_at,
                     user: response.createParsedUser(user)
                 )
             },
@@ -100,6 +102,7 @@ class NoteProcessor: MetadataCoding {
                     postId: primalZapEvent.event_id,
                     amountSats: primalZapEvent.amount_sats,
                     message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                    createdAt: primalZapEvent.created_at,
                     user: user
                 ),
                 zappedObject: zappedObject
@@ -146,6 +149,7 @@ class NoteProcessor: MetadataCoding {
                     postId: postId,
                     amountSats: amount,
                     message: message,
+                    createdAt: event["created_at"]?.doubleValue ?? 0,
                     user: user
                 ),
                 zappedObject: otherUser

@@ -22,7 +22,7 @@ extension UIButton.Configuration {
 
 class NewPostViewController: UIViewController {
     let textView = UITextView()
-    let imageView = UIImageView(image: UIImage(named: "Profile"))
+    let imageView = UserImageView(height: 52)
     
     let usersTableView = UITableView()
     let imagesCollectionView = PostingImageCollectionView()
@@ -116,7 +116,7 @@ private extension NewPostViewController {
         
         let imageParent = UIView()
         imageParent.addSubview(imageView)
-        imageView.constrainToSize(52).pinToSuperview(edges: [.horizontal, .top])
+        imageView.pinToSuperview(edges: [.horizontal, .top])
                 
         let contentStack = UIStackView(arrangedSubviews: [imageParent, textView])
         contentStack.spacing = 10
@@ -196,14 +196,10 @@ private extension NewPostViewController {
     }
     
     func setupBindings() {        
-        IdentityManager.instance.$user.receive(on: DispatchQueue.main).sink { [weak self] user in
+        IdentityManager.instance.$parsedUser.receive(on: DispatchQueue.main).sink { [weak self] user in
             guard let self, let user else { return }
             
-            self.imageView.kf.setImage(with: URL(string: user.picture), placeholder: UIImage(named: "Profile"), options: [
-                .processor(DownsamplingImageProcessor(size: CGSize(width: 52, height: 52))),
-                .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage
-            ])
+            self.imageView.setUserImage(user)
         }
         .store(in: &cancellables)
         

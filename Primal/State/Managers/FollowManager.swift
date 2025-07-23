@@ -139,20 +139,6 @@ final class FollowManager {
         RelaysPostbox.instance.request(ev)
     }
     
-    private func follow(_ pubkey: String) {
-        sendBatchFollowEvent([pubkey])
-    }
-    
-    private func unfollow(_ pubkey: String) {
-        guard let index = IdentityManager.instance.userContacts.set.firstIndex(of: pubkey) else { return }
-        
-        IdentityManager.instance.userContacts.set.remove(at: index)
-            
-        guard let ev = NostrObject.contacts(IdentityManager.instance.userContacts.set) else { return }
-            
-        RelaysPostbox.instance.request(ev)
-    }
-    
     private func makeBootstrapRelays() -> [String: RelayInfo] {
         var relays: [String: RelayInfo] = [:]
         

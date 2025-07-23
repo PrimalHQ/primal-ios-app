@@ -212,18 +212,3 @@ private extension WalletInAppPurchaseController {
         }), for: .touchUpInside)
     }
 }
-
-final class PullBarView: UIView {
-    init() {
-        super.init(frame: .zero)
-        let pullBar = UIView()
-        pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
-        addSubview(pullBar)
-        pullBar.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal).constrainToSize(width: 60, height: 5)
-        pullBar.layer.cornerRadius = 2.5
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}

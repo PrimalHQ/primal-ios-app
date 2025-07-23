@@ -46,6 +46,9 @@ class UserImageView: UIView, Themeable {
         }()
     }
     
+    var livePill = UIView()
+    var liveLabel = UILabel()
+    
     var showLegendGlow: Bool
     init(height: CGFloat, showLegendGlow: Bool = true) {
         self.height = height
@@ -67,6 +70,23 @@ class UserImageView: UIView, Themeable {
         animatedImageView.pinToSuperview()
         animatedImageView.contentMode = .scaleAspectFill
         animatedImageView.layer.masksToBounds = true
+        
+        addSubview(livePill)
+        livePill.centerToSuperview(axis: .horizontal)
+        livePill.isHidden = true
+        
+        livePill.addSubview(liveLabel)
+        liveLabel.centerToSuperview()
+        
+        liveLabel.text = "LIVE"
+        liveLabel.textColor = .white
+        
+        livePill.backgroundColor = .accent
+        NSLayoutConstraint.activate([
+            livePill.heightAnchor.constraint(equalTo: liveLabel.heightAnchor, multiplier: 1.3),
+            livePill.widthAnchor.constraint(equalTo: liveLabel.widthAnchor, multiplier: 1.3),
+            livePill.centerYAnchor.constraint(equalTo: bottomAnchor, constant: -1)
+        ])
         
         contentMode = .scaleAspectFill
         
@@ -116,6 +136,32 @@ class UserImageView: UIView, Themeable {
     func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
         tag = tag + 1
         
+        if let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
+            legendaryGradient.isHidden = false
+            legendaryBackgroundCircleView.isHidden = false
+            legendaryGradient.setLegendGradient(.sunfire)
+            legendaryGradient.colors = [.accent, .accent, .accent]
+            
+            if !live.image.isEmpty {
+                animatedImageView.kf.setImage(with: URL(string: live.image), placeholder: UIImage.profile, options: [
+                    .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+                    .transition(.fade(0.2)),
+                    .scaleFactor(UIScreen.main.scale),
+                    .cacheOriginalImage
+                ])
+            } else if let imageURL = user.profileImage.url(for: .small) {
+                loadImage(url: imageURL, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)
+            } else {
+                animatedImageView.image = .profile
+            }
+            
+            livePill.isHidden = false
+            legendaryGradient.startPulsing()
+            return
+        }
+        
+        livePill.isHidden = true
+        legendaryGradient.stopPulsing()
         updateGlow(user)
         
         let url = user.profileImage.url(for: height < 120 ? .small : .medium)
@@ -214,5 +260,9 @@ class UserImageView: UIView, Themeable {
         heightC?.constant = height
         gradientHeightC?.constant = legendGradientSize
         backgroundCircleHeightC?.constant = legendBackgroundCircleSize
+        
+        let liveFontSize = max(height / 5, 8)
+        liveLabel.font = .appFont(withSize: liveFontSize, weight: .regular)
+        livePill.layer.cornerRadius = liveFontSize * 1.3 / 2
     }
 }

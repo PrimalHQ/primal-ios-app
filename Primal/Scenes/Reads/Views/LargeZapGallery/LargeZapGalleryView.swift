@@ -34,6 +34,8 @@ class LargeZapGalleryView: UIView, ZapGallery {
     
     var zapPillTapCallback: () -> ()
     
+    var zappingType = "article"
+    
     private func zapPillButton(title: String) -> UIButton {
         let button = UIButton(configuration: .zapPillButton(title)).constrainToSize(height: 28)
         button.addAction(.init(handler: { [weak self] _ in
@@ -108,7 +110,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
                 return
             }
         } else {
-            stack.addArrangedSubview(zapPillButton(title: "Be the first to zap this article!"))
+            stack.addArrangedSubview(zapPillButton(title: "Be the first to zap this \(zappingType)!"))
             return
         }
         
