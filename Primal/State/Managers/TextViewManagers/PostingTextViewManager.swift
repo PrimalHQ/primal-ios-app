@@ -414,7 +414,7 @@ private extension PostingTextViewManager {
     func findAndExtractReferences() {
         guard extractReferences else { return }
         
-        let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(lnbc[a-z0-9]{40,})"
+        let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(\(String.lightningInvoicePattern))"
 
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
         
@@ -439,7 +439,7 @@ private extension PostingTextViewManager {
     }
     
     func extractReference(_ ref: String) -> Bool {
-        if ref.hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
+        if ref.lowercased().hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
             embeddedElements.append(.invoice(invoice, ref))
             return true
         }
