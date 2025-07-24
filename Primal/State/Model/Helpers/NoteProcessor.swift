@@ -10,7 +10,7 @@ import NostrSDK
 import GenericJSON
 
 public extension String {
-    static let lightningInvoicePattern = "lnbc[a-z0-9]{40,}"
+    static let lightningInvoicePattern = "(?i)lnbc[a-z0-9]{40,}"
     static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
