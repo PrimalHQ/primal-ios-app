@@ -54,7 +54,7 @@ class LiveVideoPlayerController: UIViewController {
         let asset = AVURLAsset(url: live.liveURL)
         
         player = AVPlayer(playerItem: .init(asset: asset))
-        liveVideoPlayer.playerLayer.player = player
+        liveVideoPlayer.player = player
         player.play()
         
         super.init(nibName: nil, bundle: nil)
@@ -91,8 +91,6 @@ class LiveVideoPlayerController: UIViewController {
         safeAreaConstraint = safeAreaSpacer.heightAnchor.constraint(equalToConstant: RootViewController.instance.view.window?.safeAreaInsets.top ?? 0)
         safeAreaConstraint?.isActive = true
         
-        liveVideoPlayer.playerLayer.videoGravity = .resizeAspectFill
-        
         view.backgroundColor = .background
         
         commentsVC.willMove(toParent: self)
@@ -105,6 +103,8 @@ class LiveVideoPlayerController: UIViewController {
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         view.addGestureRecognizer(panGesture)
+        
+        liveVideoPlayer.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -175,5 +175,27 @@ private extension LiveVideoPlayerController {
         let heightC = liveVideoPlayer.widthAnchor.constraint(equalTo: liveVideoPlayer.heightAnchor, multiplier: aspect)
         heightC.priority = .defaultHigh
         heightC.isActive = true
+    }
+}
+
+extension LiveVideoPlayerController: LivePlayerViewDelegate {
+    func livePlayerViewPerformAction(_ action: LivePlayerViewAction) {
+        switch action {
+        case .dismiss:
+            dismiss(animated: true)
+        case .fullscreen:
+            let playerVC = AVPlayerViewController()
+            playerVC.delegate = self
+            playerVC.player = player
+            present(playerVC, animated: true)        }
+    }
+}
+
+extension LiveVideoPlayerController: AVPlayerViewControllerDelegate {
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        // The system pauses when returning from full screen, we need to 'resume' manually.
+        coordinator.animate(alongsideTransition: nil) { [weak self] transitionContext in
+            self?.player.play()
+        }
     }
 }

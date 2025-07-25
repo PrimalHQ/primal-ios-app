@@ -124,7 +124,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 60 > max(300, frame.width) {
+            if currentWidth + 70 > max(320, frame.width) {
                 break
             }
             

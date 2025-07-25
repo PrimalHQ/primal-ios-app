@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 final class PlaceholderTextView: SelfSizingTextView {
     
@@ -36,12 +37,20 @@ final class PlaceholderTextView: SelfSizingTextView {
         }
     }
     
+    @Published private(set) var isEmpty = true
+    
     var didBeginEditing: (UITextView) -> () = { _ in }
     var didEndEditing: (UITextView) -> () = { _ in }
     var didChange: (UITextView) -> () = { _ in }
     
     override var text: String! {
         set {
+            if isFirstResponder {
+                super.text = newValue
+                textColor = mainTextColor
+                return
+            }
+            
             let newValue = (newValue?.isEmpty != false ? placeholderText : newValue) ?? ""
             super.text = newValue
             textColor = newValue == placeholderText ? placeholderTextColor : mainTextColor
@@ -85,6 +94,8 @@ extension PlaceholderTextView: UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
+        isEmpty = realText.isEmpty
+
         didChange(self)
         invalidateIntrinsicContentSize()
     }

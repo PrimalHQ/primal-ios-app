@@ -17,7 +17,7 @@ class LiveVideoChatController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    lazy var infoVC = LongFormEmbeddedPostController<LiveVideoZapsPostCell>()
+    lazy var infoVC = EmbeddedPostController<LiveVideoZapsPostCell>()
     
     let live: ParsedLiveEvent
     let user: ParsedUser
@@ -76,7 +76,7 @@ class LiveVideoChatController: UIViewController {
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, padding: 8)
         
-        input.backgroundView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12).isActive = true
         commentsTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
         
         infoVC.didMove(toParent: self)
@@ -105,8 +105,16 @@ class LiveVideoChatController: UIViewController {
             }
         }
         .store(in: &cancellables)
+        
+        input.textView.$isEmpty.removeDuplicates().sink { [weak self] isEmpty in
+            self?.input.showSendButton = !isEmpty
+        }
+        .store(in: &cancellables)
+        
+        input.sendButton.addAction(.init(handler: { [weak self] _ in
+            self?.sendComment()
+        }), for: .touchUpInside)
     }
-    
 }
 
 extension LiveVideoChatController: UITableViewDataSource {
@@ -127,6 +135,16 @@ extension LiveVideoChatController: UITableViewDataSource {
 }
 
 private extension LiveVideoChatController {
+    func sendComment() {
+        guard
+            let text = input.textView.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty,
+            let ev = NostrObject.liveComment(live: live, comment: text)
+        else { return }
+        
+        input.textView.text = ""
+        
+        PostingManager.instance.sendEvent(ev, { _ in })
+    }
     
     func addZaps(_ zaps: [ParsedZap]) {
         post.zaps.append(contentsOf: zaps)

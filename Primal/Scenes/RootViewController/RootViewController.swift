@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import Combine
 import Kingfisher
+import AVKit
 
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
@@ -125,7 +126,7 @@ final class RootViewController: UIViewController {
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if presentedViewController as? ImageGalleryController != nil {
+        if presentedViewController as? ImageGalleryController != nil || presentedViewController?.presentedViewController as? AVPlayerViewController != nil {
             return .allButUpsideDown
         }
         return .portrait

@@ -1,5 +1,5 @@
 //
-//  LongFormEmbeddedPostController.swift
+//  EmbeddedPostController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 18.6.24..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LongFormEmbeddedPostController<T: FeedElementBaseCell>: NoteViewController {
+class EmbeddedPostController<T: FeedElementBaseCell>: NoteViewController {
     override var barsMaxTransform: CGFloat { 0 }
     override var adjustedTopBarHeight: CGFloat { 0 }
     
@@ -33,7 +33,7 @@ class LongFormEmbeddedPostController<T: FeedElementBaseCell>: NoteViewController
             self.table.contentInset = .zero
         }
         
-        dataSource = ArticleEmbeddedPostCellDatasource<T>(tableView: table, delegate: self)
+        dataSource = EmbeddedPostCellDatasource<T>(tableView: table, delegate: self)
         
         if let content {
             posts = [content]
@@ -57,7 +57,10 @@ class LongFormEmbeddedPostController<T: FeedElementBaseCell>: NoteViewController
     override func setBarsToTransform(_ transform: CGFloat) { return }
     
     override func updateTheme() {
-        super.updateTheme()
+        navigationBorder.backgroundColor = .background3
+        
+        view.backgroundColor = .clear
+        table.backgroundColor = .clear
         
         table.reloadData()
     }

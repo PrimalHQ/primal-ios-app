@@ -41,6 +41,7 @@ class LongFormZapsPostCell: FeedElementBaseCell, RegularFeedElementCell {
         botC.isActive = true
         
         backgroundColor = .clear
+        contentView.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

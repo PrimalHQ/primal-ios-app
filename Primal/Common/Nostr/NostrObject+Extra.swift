@@ -354,6 +354,14 @@ extension NostrObject {
         
         return createNostrObjectAndSign(pubkey: pubkey, privkey: secret, content: base64, kind: 23194, tags: [["p", serverPubkey]])
     }
+    
+    static func liveComment(live: ParsedLiveEvent, comment: String) -> NostrObject? {
+        let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
+        return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
+            ["a", "\(NostrKind.live.rawValue):\(live.pubkey):\(live.dTag)", relay, "root"],
+            ["client", "Primal-iOS-App"]
+        ])
+    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()

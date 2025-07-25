@@ -52,7 +52,7 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
     
     let commentZapPill = CommentZapPill()
     
-    lazy var infoVC = LongFormEmbeddedPostController<PostReactionsCell>()
+    lazy var infoVC = EmbeddedPostController<PostReactionsCell>()
     lazy var commentsVC = LongFormCommentsController(content: content)
     lazy var chromeManager = ArticleChromeManager(viewController: self, extraTopView: navExtension, extraBottomView: commentZapPill, bottomBarHeight: 130)
     

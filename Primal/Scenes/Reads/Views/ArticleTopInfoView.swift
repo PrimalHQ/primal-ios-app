@@ -10,7 +10,7 @@ import UIKit
 class ArticleTopInfoView: UIView, Themeable {
     let summary = LongFormQuoteView()
     let imageView = UIImageView()
-    let zapEmbededController = LongFormEmbeddedPostController<LongFormZapsPostCell>()
+    let zapEmbededController = EmbeddedPostController<LongFormZapsPostCell>()
     
     lazy var titleLabel = ThemeableLabel().setTheme { [weak self] in
         let paragraphStyle = NSMutableParagraphStyle()

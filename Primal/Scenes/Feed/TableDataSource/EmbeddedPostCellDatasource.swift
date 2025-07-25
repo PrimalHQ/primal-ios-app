@@ -1,5 +1,5 @@
 //
-//  ArticleEmbeddedPostCellDatasource.swift
+//  EmbeddedPostCellDatasource.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 16.12.24..
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArticleEmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiffableDataSource<TwoSectionFeed, ParsedContent>, NoteFeedDatasource {
+class EmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiffableDataSource<TwoSectionFeed, ParsedContent>, NoteFeedDatasource {
     var cells: [ParsedContent] = []
     var cellCount: Int { cells.count }
     
