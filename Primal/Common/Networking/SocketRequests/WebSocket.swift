@@ -41,6 +41,7 @@ final class WebSocket: NSObject, URLSessionWebSocketDelegate {
 //        options.setAdditionalHeaders([("User-Agent", ua)])
         
         let task = session.webSocketTask(with: url)
+        task.maximumMessageSize = 50_000_000
         task.delegate = self
         return task
     }()
@@ -65,6 +66,7 @@ final class WebSocket: NSObject, URLSessionWebSocketDelegate {
         
         // reset after disconnecting to be ready for reconnecting
         let task = session.webSocketTask(with: url)
+        task.maximumMessageSize = 50_000_000
         task.delegate = self
         webSocketTask = task
         

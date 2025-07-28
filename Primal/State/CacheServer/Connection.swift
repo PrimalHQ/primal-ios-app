@@ -106,7 +106,7 @@ final class Connection {
     var cantConnectPublisher: AnyPublisher<Bool, Never> {
         Publishers.Merge(
             isConnectedPublisher.filter({ $0 }),
-            isConnectedPublisher.debounce(for: 6, scheduler: RunLoop.main).filter({ !$0 })
+            isConnectedPublisher.debounce(for: 10, scheduler: RunLoop.main).filter({ !$0 })
         )
         .map({ !$0 })
         .eraseToAnyPublisher()
