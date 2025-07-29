@@ -111,7 +111,11 @@ final class FollowManager {
     func resetDefaultRelays() {
         SocketRequest(name: "get_default_relays", payload: nil).publisher()
             .sink { result in
-                guard let relays = result.messageArray else { return }
+                guard var relays = result.messageArray else { return }
+                
+                if WalletManager.instance.hasPremium {
+                    relays.append(.premiumRelayURL)
+                }
                 
                 var newRelays: [String: RelayInfo] = [:]
                 relays.forEach { newRelays[$0] = .init(read: true, write: true) }

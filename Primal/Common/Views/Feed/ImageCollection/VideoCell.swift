@@ -179,6 +179,11 @@ final class PlayerView: UIView {
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
     
+    var player: AVPlayer? {
+        get { playerLayer.player }
+        set { playerLayer.player = newValue }
+    }
+    
     init() {
         super.init(frame: .zero)
         playerLayer.videoGravity = .resizeAspectFill

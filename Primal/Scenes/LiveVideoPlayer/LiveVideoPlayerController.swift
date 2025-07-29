@@ -119,6 +119,10 @@ class LiveVideoPlayerController: UIViewController {
             pipController.startPictureInPicture()
             Self.currentlyLivePip = pipController
         }
+        
+        if let mainTabBarController: MainTabBarController = RootViewController.instance.findInChildren() {
+            mainTabBarController.liveVideoController = self
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -132,6 +136,16 @@ class LiveVideoPlayerController: UIViewController {
         super.viewWillDisappear(animated)
         
         Self.currentlyLivePip = nil
+        
+        if
+            let mainTabBarController: MainTabBarController = RootViewController.instance.findInChildren(),
+            AVPictureInPictureController.isPictureInPictureSupported(),
+            let pipController = AVPictureInPictureController(playerLayer: mainTabBarController.livePlayer.liveVideoView.playerLayer)
+        {
+            pipController.startPictureInPicture()
+            Self.currentlyLivePip = pipController
+        }
+        
     }
     
     func chatControllerRequestsMoreSpace() {
@@ -159,7 +173,9 @@ private extension LiveVideoPlayerController {
         case .ended, .cancelled:
             let velocity = gesture.velocity(in: self.view)
             if delta > 350 || velocity.y > 500 {
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true) { [weak self] in
+                    self?.view.transform = .identity
+                }
             } else {
                 UIView.animate(withDuration: 0.3) {
                     self.view.transform = .identity

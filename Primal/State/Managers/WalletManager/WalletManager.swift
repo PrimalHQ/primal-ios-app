@@ -163,10 +163,10 @@ final class WalletManager {
     
     var maxBalance: Int { impl.maxBalance }
     
-    var hasPremium: Bool { premiumState != nil }
+    var hasPremium: Bool { premiumState?.isExpired == false }
     var hasLegend: Bool { premiumState?.isLegend == true }
     var hasPremiumPublisher: AnyPublisher<Bool, Never> {
-        $premiumState.map { $0 != nil }.eraseToAnyPublisher()
+        $premiumState.map { $0?.isExpired == false }.eraseToAnyPublisher()
     }
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()

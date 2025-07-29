@@ -36,15 +36,12 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
-    
     let noConnectionView = NoConnectionView()
-
     lazy var buttons = tabs.map { _ in UIButton() }
-    
     let notificationIndicator = NotificationsIndicator()
     
     private let buttonStackParent = UIView()
-    private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
+    private(set) lazy var vStack = UIStackView(arrangedSubviews: [livePlayer, navigationBorder, buttonStackParent, safeAreaSpacer])
     private let safeAreaSpacer = UIView()
     private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
         $0.backgroundColor = .background
@@ -67,9 +64,13 @@ final class MainTabBarController: UIViewController, Themeable {
 
     private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
     
+    var livePlayer = LiveVideoEmbeddedView()
+    
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
 
     var cancellables: Set<AnyCancellable> = []
+    
+    var childSafeAreaInsets = UIEdgeInsets.zero { didSet { children.forEach { $0.additionalSafeAreaInsets = childSafeAreaInsets } } }
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
@@ -102,10 +103,27 @@ final class MainTabBarController: UIViewController, Themeable {
     var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
     
     var showTabBarBorder: Bool {
-        get { !navigationBorder.isHidden }
+        get { navigationBorder.alpha > 0.1 }
         set {
             navigationBorder.alpha = newValue ? 1 : 0
             circleBorderView.alpha = newValue ? 1 : 0
+            livePlayer.isHidden = !newValue || liveVideoController == nil
+            
+            updateChildSafeAreaInsets()
+        }
+    }
+    
+    var liveVideoController: LiveVideoPlayerController? {
+        didSet {
+            livePlayer.isHidden = !showTabBarBorder || liveVideoController == nil
+            if let liveVideoController {
+                livePlayer.setup(player: liveVideoController.player, live: liveVideoController.live)
+            } else {
+                livePlayer.removePlayer()
+                LiveVideoPlayerController.currentlyLivePip = nil
+            }
+            
+            updateChildSafeAreaInsets()
         }
     }
 
@@ -206,6 +224,7 @@ final class MainTabBarController: UIViewController, Themeable {
         
         if nav == currentTab { return }
         
+        nav.additionalSafeAreaInsets = childSafeAreaInsets
         nav.beginAppearanceTransition(true, animated: true)
         currentTab.beginAppearanceTransition(false, animated: true)
         
@@ -248,6 +267,10 @@ final class MainTabBarController: UIViewController, Themeable {
 }
 
 private extension MainTabBarController {
+    func updateChildSafeAreaInsets() {
+        childSafeAreaInsets = .init(top: 0, left: 0, bottom: liveVideoController == nil || !showTabBarBorder ? 0 : 60, right: 0)
+    }
+    
     func setup() {
         IdentityManager.instance.requestUserProfile()
         
@@ -416,6 +439,16 @@ private extension MainTabBarController {
                 self?.menuButtonPressedForTab(tab)
             }), for: .touchUpInside)
         }
+        
+        livePlayer.isHidden = true
+        livePlayer.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let live = self?.liveVideoController else { return }
+            self?.present(live, animated: true)
+        }))
+        livePlayer.addGestureRecognizer(BindableSwipeGestureRecognizer(direction: .up, action: { [weak self] in
+            guard let live = self?.liveVideoController else { return }
+            self?.present(live, animated: true)
+        }))
     }
     
     func addCircleWalletButton() {

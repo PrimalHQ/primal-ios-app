@@ -76,7 +76,7 @@ class LivePlayerView: UIView {
         controlsView.addSubview(botRightStack)
         botRightStack.pinToSuperview(edges: .trailing, padding: 8).pinToSuperview(edges: .bottom, padding: 8)
         
-        let liveStack = UIStackView([liveDot, UILabel("Live", color: .white, font: .appFont(withSize: 12, weight: .regular))])
+        let liveStack = UIStackView([liveDot, UIImageView(image: .liveIcon)])
         liveStack.alignment = .center
         liveStack.spacing = 6
         controlsView.addSubview(liveStack)
@@ -153,10 +153,11 @@ class LivePlayerView: UIView {
     }
     
     func setCancellables() {
+        cancellables = []
         
         // Is playing
         player?.publisher(for: \.timeControlStatus, options: [.initial, .new])
-            .map { $0 == .playing ? UIImage.liveVideoPause : UIImage.videoPlay }
+            .map { $0 == .playing ? UIImage.liveVideoPause : UIImage.liveVideoPlay }
             .map { UIButton.Configuration.simpleImage($0) }
             .receive(on: DispatchQueue.main)
             .assign(to: \.configuration, on: playPauseButton)
