@@ -14,7 +14,10 @@ final class WalletTransferSummaryController: UIViewController {
         case success(title: String, description: String)
         
         static func paymentSuccess(amount: Int, address: String) -> State {
-            .success(title: "Success, payment sent!", description: "\(amount.localized()) sats sent to \(address).")
+            if address.count > 30 {
+                return .success(title: "Success, payment sent!", description: "\(amount.localized()) sats")
+            }
+            return .success(title: "Success, payment sent!", description: "\(amount.localized()) sats sent to \(address).")
         }
         static func walletActivated(newAddress: String) -> State {
             .success(

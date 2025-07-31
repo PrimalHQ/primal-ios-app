@@ -23,18 +23,20 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
     var qrCodeFrameView = UIView()
     let previewView = CapturePreviewView()
     
-    let importImageButton = WalletSendSmallActionBlackButton(title: "Scan Image", icon: UIImage(named: "walletImageIcon"))
+    let importImageButton = WalletSendSmallActionBlackButton(title: "Scan Image", icon: .walletImageIcon)
     
     var cancellables: Set<AnyCancellable> = []
     
-    let cover = UIImageView(image: UIImage(named: "qrCodeMaskLoading"))
+    let cover = UIImageView(image: .qrCodeMaskLoading)
+    let markers = UIImageView(image: .qrScanEdgeMarkers)
+    let edgeMarkers: [UIRectEdge] = [.top, .bottom, .left, .right]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let image = UIImageView(image: UIImage(named: "qrCodeMask"))
+        let image = UIImageView(image: .qrCodeMask)
         view.addSubview(image)
-        image.pinToSuperview(safeArea: true)
+        image.pinToSuperview()
         image.contentMode = .scaleAspectFill
         image.alpha = 0.8
         
@@ -48,7 +50,7 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         
         view.addSubview(cover)
         cover.contentMode = .scaleAspectFill
-        cover.pinToSuperview(safeArea: true)
+        cover.pinToSuperview()
 
         qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
         qrCodeFrameView.layer.borderWidth = 2
@@ -56,8 +58,12 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
         
         view.bringSubviewToFront(image)
         
+        view.addSubview(markers)
+        markers.contentMode = .scaleAspectFill
+        markers.pinToSuperview()
+        
         view.addSubview(importImageButton)
-        importImageButton.pinToSuperview(edges: .bottom, padding: 40).centerToSuperview(axis: .horizontal).constrainToSize(width: 164)
+        importImageButton.pinToSuperview(edges: .bottom, padding: 40, safeArea: true).centerToSuperview(axis: .horizontal).constrainToSize(width: 164)
         
         importImageButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
@@ -70,9 +76,14 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
     
     var isRunning = false
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        markers.pulse()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         
         guard !isRunning else { return }
         

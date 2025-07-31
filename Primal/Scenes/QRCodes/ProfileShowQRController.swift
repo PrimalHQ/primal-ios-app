@@ -118,10 +118,13 @@ private extension ProfileShowQRController {
         addNavigationBar("")
         backButton.isHidden = false
         
-        qrParent.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            guard let text = self?.user?.data.npub else { return }
+        copyView.dimmingView = qrParent
+        
+        qrParent.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self, weak qrParent] in
+            guard let text = self?.user?.data.npub, let qrParent else { return }
             UIPasteboard.general.string = text
-            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+            
+            qrParent.showDimmedToastCentered("Copied!")
         }))
         
         action.addAction(.init(handler: { [weak self] _ in

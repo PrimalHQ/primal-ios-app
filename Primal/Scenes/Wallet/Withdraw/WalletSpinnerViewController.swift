@@ -35,7 +35,12 @@ final class WalletSpinnerViewController: UIViewController {
         message.font = .appFont(withSize: 18, weight: .regular)
         message.numberOfLines = 0
         message.textAlignment = .center
-        message.text = "\(sats.localized()) sats to \(address)."
+        
+        if address.count > 30 {
+            message.text = "\(sats.localized()) sats"
+        } else {
+            message.text = "\(sats.localized()) sats to \(address)."
+        }
         
         let stack = UIStackView(axis: .vertical, [
             navTitle, SpacerView(height: 160),

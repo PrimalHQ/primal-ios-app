@@ -175,5 +175,9 @@ extension UIImage {
 
         return gradientImage ?? self
     }
+    
+    static var nonZapPaymentDynamic: UIImage {
+        nonZapPayment.withTintColor(.accent, renderingMode: .alwaysOriginal)
+    }
 }
 

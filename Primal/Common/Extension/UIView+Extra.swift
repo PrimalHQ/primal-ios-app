@@ -51,7 +51,7 @@ extension UIView {
         layer.removeAnimation(forKey: "pulse")
         layer.removeAnimation(forKey: "pulseOpacity")
     }
-
+    
     @discardableResult
     func dropShadow(scale: Bool = true) -> Self {
         layer.masksToBounds = false
@@ -112,6 +112,25 @@ extension UIView {
     
     func resetAnchorPoint() {
         setAnchorPoint(.init(x: 0.5, y: 0.5))
+    }
+    
+    // MARK: -- Simple Animations
+    
+    func shake() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.duration = 0.6
+        animation.values = [-20, 20, -20, 20, -10, 10, -5, 5, 0]
+        layer.add(animation, forKey: "shake")
+    }
+    
+    func pulse() {
+        let animation = CAKeyframeAnimation(keyPath: "transform.scale")
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        animation.duration = 2
+        animation.values = [1.0, 1.02, 0.99, 1.0]
+        animation.repeatCount = .infinity
+        layer.add(animation, forKey: "pulse")
     }
     
     // MARK: - Constraints

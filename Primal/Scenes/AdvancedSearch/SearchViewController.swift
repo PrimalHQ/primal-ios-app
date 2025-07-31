@@ -144,7 +144,7 @@ private extension SearchViewController {
             return
         }
         
-        if lowerCased.hasPrefix("lnurl") || lowerCased.hasPrefix("lnbc") {
+        if (lowerCased.hasPrefix("lnurl") || lowerCased.hasPrefix("lnbc")) && lowerCased.count > 20 {
             search(userSearchText)
             return
         }

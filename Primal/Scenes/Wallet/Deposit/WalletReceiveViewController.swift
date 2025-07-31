@@ -280,7 +280,8 @@ private extension WalletReceiveViewController {
                 guard let self else { return }
                 
                 UIPasteboard.general.string = invoice
-                view.showToast("Copied!", extraPadding: 0)
+                
+                qrCodeParent.showDimmedToastCentered("Copied!")
             }),
             detailsButton
         ])
@@ -315,7 +316,7 @@ private extension WalletReceiveViewController {
             guard let text = self?.ludLabel.text else { return }
             
             UIPasteboard.general.string = text
-            self?.view.showToast("Copied!", extraPadding: 0)
+            qrCodeParent.showDimmedToastCentered("Copied!")
         }))
         
         let mainStackParent = UIView()

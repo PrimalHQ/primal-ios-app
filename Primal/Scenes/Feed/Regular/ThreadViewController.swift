@@ -126,6 +126,12 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
             // If we don't dispatch system adds animation automatically
             DispatchQueue.main.async { [self] in
                 table.scrollToRow(at: mainPostIndex, at: .top, animated: false)
+                DispatchQueue.main.async { [self] in
+                    table.reloadData()
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(24)) { [self] in
+                    table.reloadData()
+                }
             }
         }
         
@@ -138,6 +144,8 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         navigationController?.setNavigationBarHidden(false, animated: animated)
         
         mainTabBarController?.showTabBarBorder = false
+        
+        table.reloadData()
         
         bottomBarHeight = 116 + view.safeAreaInsets.bottom
         
@@ -418,7 +426,7 @@ private extension ThreadViewController {
                 let botInset = barsMaxTransform + max(0, table.frame.height - barsMaxTransform - adjustedTopBarHeight - contentSize)
                 self.table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: botInset, right: 0)
                 
-                if !wasDragged, posts.count > 1 {
+                if !wasDragged, posts.count > 1, table.window != nil {
                     table.scrollToRow(at: mainPostIndex, at: .top, animated: false)
                 }
             }
@@ -444,7 +452,7 @@ private extension ThreadViewController {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent)
+        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent.prepend(textInputView))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isEditing, textView in
                 self?.placeholderLabel.isHidden = isEditing || !textView.text.isEmpty
@@ -577,7 +585,7 @@ private extension ThreadViewController {
         
         placeholderLabel
             .pinToSuperview(edges: .horizontal, padding: 21)
-            .pinToSuperview(edges: .top, padding: 10)
+            .pinToSuperview(edges: .top, padding: 12)
         
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
