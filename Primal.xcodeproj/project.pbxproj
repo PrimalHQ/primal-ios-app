@@ -520,6 +520,7 @@
 		B9C672E92E2FF89C00243B45 /* LiveVideoChatZapCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */; };
 		B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */; };
 		B9C673142E327CB200243B45 /* AVPlayer+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */; };
+		B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */; };
 		B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */; };
 		B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */; };
 		B9C6D2342CA3276E00B2EEBE /* ExploreFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */; };
@@ -1238,6 +1239,7 @@
 		B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoChatZapCell.swift; sourceTree = "<group>"; };
 		B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoChatInputView.swift; sourceTree = "<group>"; };
 		B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayer+Extra.swift"; sourceTree = "<group>"; };
+		B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoEmbeddedView.swift; sourceTree = "<group>"; };
 		B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+ProfileCounts.swift"; sourceTree = "<group>"; };
 		B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTopicsViewController.swift; sourceTree = "<group>"; };
 		B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFeedsViewController.swift; sourceTree = "<group>"; };
@@ -2940,6 +2942,7 @@
 				B9C672E62E2FE43700243B45 /* LiveVideoChatMessageCell.swift */,
 				B9C672DF2E2FB5EC00243B45 /* LiveCommentsHeaderView.swift */,
 				B9C672DA2E2535B500243B45 /* LivePlayerView.swift */,
+				B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3835,6 +3838,7 @@
 				B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */,
 				B99E03A82C0DF2ED006CCECB /* PostReactionsCell.swift in Sources */,
 				B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */,
+				B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */,
 				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
@@ -4272,7 +4276,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4320,7 +4324,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.1;
+				MARKETING_VERSION = 2.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
