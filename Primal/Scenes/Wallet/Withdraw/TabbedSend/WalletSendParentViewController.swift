@@ -218,10 +218,13 @@ final class WalletSendParentViewController: UIViewController, WalletSearchContro
         
         switch tab {
         case .nostr:
+            pickVC.additionalSafeAreaInsets = .init(top: 0, left: 0, bottom: 88, right: 0)
             pageController.setViewControllers([pickVC], direction: .reverse, animated: animated)
         case .scan:
+            scanVC.additionalSafeAreaInsets = .init(top: 0, left: 0, bottom: 88, right: 0)
             pageController.setViewControllers([scanVC], direction: oldTab == .nostr ? .forward : .reverse, animated: animated)
         case .keyboard:
+            keyboardVC.additionalSafeAreaInsets = .init(top: 0, left: 0, bottom: 88, right: 0)
             pageController.setViewControllers([keyboardVC], direction: .forward, animated: animated)
         }
         oldTab = tab
@@ -256,20 +259,21 @@ final class WalletSendParentViewController: UIViewController, WalletSearchContro
 private extension WalletSendParentViewController {
     func setup() {
         let tabBackground = UIView()
-        tabBackground.backgroundColor = .background
+        tabBackground.backgroundColor = .background.withAlphaComponent(0.4)
         let buttonStack = UIStackView([nostrButton, scanButton, keyboardButton])
         buttonStack.distribution = .equalSpacing
         
         tabBackground.addSubview(buttonStack)
         buttonStack.pinToSuperview(edges: .top, padding: 16).centerToSuperview(axis: .horizontal)
         buttonStack.widthAnchor.constraint(equalTo: tabBackground.widthAnchor, multiplier: 0.25, constant: 56 * 3).isActive = true
-        
-        let stack = UIStackView(axis: .vertical, [pageController.view, tabBackground])
-        
+                
         addChild(pageController)
-        view.addSubview(stack)
-        stack.pinToSuperview()
+        view.addSubview(pageController.view)
+        pageController.view.pinToSuperview()
         pageController.didMove(toParent: self)
+        
+        view.addSubview(tabBackground)
+        tabBackground.pinToSuperview(edges: [.horizontal, .bottom])
         
         tabBackground.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -88).isActive = true
         

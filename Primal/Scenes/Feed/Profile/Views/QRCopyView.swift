@@ -27,6 +27,8 @@ class QRCopyView: MyButton {
     private let copy = UIImageView(image: UIImage(named: "whiteCopy"))
     private let label = UILabel()
     
+    weak var dimmingView: UIView?
+    
     init() {
         super.init(frame: .zero)
         
@@ -43,7 +45,12 @@ class QRCopyView: MyButton {
         addAction(.init(handler: { [weak self] _ in
             guard let text = self?.text, !text.isEmpty else { return }
             UIPasteboard.general.string = text
-            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+            
+            if let dimmingView = self?.dimmingView {
+                dimmingView.showDimmedToastCentered("Copied!")
+            } else {
+                RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+            }
         }), for: .touchUpInside)
     }
     

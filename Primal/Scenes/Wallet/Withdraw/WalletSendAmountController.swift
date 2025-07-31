@@ -29,9 +29,9 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
             case .address(let address, let invoice, let user):
                 if address.isBitcoinAddress {
-                    return address.split(separator: "?").first?.string ?? address
+                    return "Onchain transaction"
                 }
-                return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
+                return user?.data.lud16 ?? invoice?.lninvoice.description ?? "Lightning Invoice"
             }
         }
         
@@ -162,7 +162,8 @@ private extension WalletSendAmountController {
                 self?.show(ProfileViewController(profile: user), sender: nil)
             })
         } else {
-            profilePictureView.image = destination.address.isBitcoinAddress ? UIImage(named: "onchainPayment") : UIImage(named: "nonZapPayment")
+            profilePictureView.image = destination.address.isBitcoinAddress ? .onchainPayment : .nonZapPaymentDynamic
+            profilePictureView.animatedImageView.clipsToBounds = false
         }
         
         nipLabel.text = destination.address

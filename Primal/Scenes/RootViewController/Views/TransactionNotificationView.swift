@@ -61,7 +61,7 @@ final class TransactionNotificationView: UIView {
             nameLabel.text = "Bitcoin"
         } else {
             profileImage.removeUserImage()
-            profileImage.animatedImageView.image = UIImage(named: "nonZapPayment")
+            profileImage.animatedImageView.image = .nonZapPaymentOld
             profileImage.animatedImageView.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }

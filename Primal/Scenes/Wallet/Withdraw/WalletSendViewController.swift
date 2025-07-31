@@ -35,16 +35,28 @@ final class WalletSendViewController: UIViewController, Themeable {
             }
         }
         
+        var addressDisplay: String {
+            switch self {
+            case let .user(user, _):
+                return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+            case .address(let address, let invoice, let user, _):
+                if address.isBitcoinAddress {
+                    return "Bitcoin Address"
+                }
+                return user?.data.lud16 ?? "Lightning Invoice"
+            }
+        }
+        
         var startingAmount: Int {
             switch self {
             case .user(_, let amount):                              return amount
-            case .address(let address, let parsed, _, let startingAmount):
+            case .address(_, let parsed, _, let startingAmount):
                 return startingAmount ?? (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
         }
         
         var name: String? {
-            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
+            user?.data.name
         }
         
         var message: String {
@@ -246,10 +258,11 @@ private extension WalletSendViewController {
             })
         } else {
             if destination.address.isBitcoinAddress {
-                profilePictureView.image = UIImage(named: "onchainPayment")
+                profilePictureView.image = .onchainPayment
                 messageInput.placeholderText = "Add note to self"
             } else {
-                profilePictureView.image = UIImage(named: "nonZapPayment")
+                profilePictureView.image = .nonZapPaymentDynamic
+                profilePictureView.animatedImageView.clipsToBounds = false
                 messageInput.placeholderText = "message"
             }
         }
@@ -257,7 +270,7 @@ private extension WalletSendViewController {
         feeView.isHidden = !destination.address.isBitcoinAddress
         feeView.alpha = 0.01
         
-        nipLabel.text = destination.address
+        nipLabel.text = destination.addressDisplay
         nipLabel.font = .appFont(withSize: 16, weight: .regular)
         nipLabel.textAlignment = .center
         

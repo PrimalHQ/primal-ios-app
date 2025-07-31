@@ -99,7 +99,7 @@ final class PostingManager {
             let isRoot = !obj.tags.contains(where: { tag in tag[safe: 3] == "root" })
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                RootViewController.instance.showToast("\(isRoot ? "Note" : "Reply") Published")
+                RootViewController.instance.finalChild.view.showDimmedToastTop("\(isRoot ? "Note" : "Reply") Published")
             }
         }
         .store(in: &cancellables)

@@ -452,7 +452,7 @@ private extension ThreadViewController {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent)
+        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent.prepend(textInputView))
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isEditing, textView in
                 self?.placeholderLabel.isHidden = isEditing || !textView.text.isEmpty
@@ -585,7 +585,7 @@ private extension ThreadViewController {
         
         placeholderLabel
             .pinToSuperview(edges: .horizontal, padding: 21)
-            .pinToSuperview(edges: .top, padding: 10)
+            .pinToSuperview(edges: .top, padding: 12)
         
         textInputView
             .pinToSuperview(edges: .horizontal, padding: 16)
