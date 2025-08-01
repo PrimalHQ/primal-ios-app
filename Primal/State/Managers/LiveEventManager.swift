@@ -10,7 +10,7 @@ import GenericJSON
 import Combine
 
 struct ParsedLiveEvent: Hashable {
-    var liveURL: URL
+    var liveURL: String
     
     var creatorPubkey: String
     var dTag: String
@@ -39,14 +39,13 @@ class LiveEventManager {
             let creatorPubkey = event["pubkey"]?.stringValue,
             let tags = event["tags"]?.arrayValue,
             let dTag = tags.tagValueForKey("d"),
-            let live = tags.tagValueForKey("streaming"),
-            let liveURL = URL(string: live)
+            let live = tags.tagValueForKey("streaming")
         else { return }
         
         let pubkey = tags.tagValueForKeyWithRole("p", role: "host") ?? creatorPubkey
             
         liveEvents[pubkey] = .init(
-            liveURL: liveURL,
+            liveURL: live,
             creatorPubkey: creatorPubkey,
             dTag: dTag,
             title: tags.tagValueForKey("title") ?? "",

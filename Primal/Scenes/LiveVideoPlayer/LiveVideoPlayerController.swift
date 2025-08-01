@@ -33,7 +33,7 @@ class LiveVideoPlayerController: UIViewController {
     
     let liveVideoPlayer = LivePlayerView()
     
-    let player: AVPlayer
+    let player: VideoPlayer
     
     let live: ParsedLiveEvent
     let user: ParsedUser
@@ -50,17 +50,16 @@ class LiveVideoPlayerController: UIViewController {
     init(live: ParsedLiveEvent, user: ParsedUser) {
         self.live = live
         self.user = user
+        player = VideoPlayer(url: live.liveURL, originalURL: "", userPubkey: "", isLive: true)
         
-        let asset = AVURLAsset(url: live.liveURL)
-        
-        player = AVPlayer(playerItem: .init(asset: asset))
-        liveVideoPlayer.player = player
-        player.play()
+        VideoPlaybackManager.instance.currentlyPlaying = player
+        liveVideoPlayer.player = player.avPlayer
         
         super.init(nibName: nil, bundle: nil)
         
         modalPresentationStyle = .overFullScreen
         
+        guard let asset = player.avPlayer.currentItem?.asset as? AVURLAsset else { return }
         Task { [weak self] in
             do {
                 for variant in try await asset.load(.variants) {
@@ -202,7 +201,7 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
         case .fullscreen:
             let playerVC = AVPlayerViewController()
             playerVC.delegate = self
-            playerVC.player = player
+            playerVC.player = player.avPlayer
             present(playerVC, animated: true)        }
     }
 }

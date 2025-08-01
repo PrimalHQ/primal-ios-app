@@ -16,42 +16,6 @@ extension UIView {
         }
     }
     
-    func shake() {
-        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
-        animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        animation.duration = 0.6
-        animation.values = [-20, 20, -20, 20, -10, 10, -5, 5, 0]
-        layer.add(animation, forKey: "shake")
-    }
-    
-    func startPulsing() {
-        let pulseAnimation = CABasicAnimation(keyPath: "transform.scale")
-        pulseAnimation.toValue = 1.07
-        pulseAnimation.fromValue = 1.0
-        pulseAnimation.duration = 0.8
-        pulseAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        pulseAnimation.autoreverses = true
-        pulseAnimation.repeatCount = .infinity
-        pulseAnimation.isRemovedOnCompletion = false
-
-        // Optional: Add slight opacity pulse too
-        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
-        opacityAnimation.fromValue = 1.0
-        opacityAnimation.toValue = 0.8
-        opacityAnimation.duration = 0.8
-        opacityAnimation.autoreverses = true
-        opacityAnimation.repeatCount = .infinity
-        opacityAnimation.isRemovedOnCompletion = false
-
-        layer.add(pulseAnimation, forKey: "pulse")
-        layer.add(opacityAnimation, forKey: "pulseOpacity")
-    }
-    
-    func stopPulsing() {
-        layer.removeAnimation(forKey: "pulse")
-        layer.removeAnimation(forKey: "pulseOpacity")
-    }
-    
     @discardableResult
     func dropShadow(scale: Bool = true) -> Self {
         layer.masksToBounds = false
@@ -131,6 +95,34 @@ extension UIView {
         animation.values = [1.0, 1.02, 0.99, 1.0]
         animation.repeatCount = .infinity
         layer.add(animation, forKey: "pulse")
+    }
+    
+    func startPulsing() {
+        let pulseAnimation = CABasicAnimation(keyPath: "transform.scale")
+        pulseAnimation.toValue = 1.07
+        pulseAnimation.fromValue = 1.0
+        pulseAnimation.duration = 0.8
+        pulseAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        pulseAnimation.autoreverses = true
+        pulseAnimation.repeatCount = .infinity
+        pulseAnimation.isRemovedOnCompletion = false
+
+        // Optional: Add slight opacity pulse too
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = 1.0
+        opacityAnimation.toValue = 0.8
+        opacityAnimation.duration = 0.8
+        opacityAnimation.autoreverses = true
+        opacityAnimation.repeatCount = .infinity
+        opacityAnimation.isRemovedOnCompletion = false
+
+        layer.add(pulseAnimation, forKey: "pulse")
+        layer.add(opacityAnimation, forKey: "pulseOpacity")
+    }
+    
+    func stopPulsing() {
+        layer.removeAnimation(forKey: "pulse")
+        layer.removeAnimation(forKey: "pulseOpacity")
     }
     
     // MARK: - Constraints

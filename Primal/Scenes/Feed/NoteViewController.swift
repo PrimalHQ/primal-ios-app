@@ -96,7 +96,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        if !VideoPlaybackManager.instance.isLive {
+            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        }
         
         if animated {
             if prevTransform != 0 {
@@ -117,6 +119,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
+        if VideoPlaybackManager.instance.currentlyPlaying?.isLive == true { return }
         guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
@@ -141,7 +144,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if FullScreenVideoPlayerController.instance == nil {
+        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
             if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
                 VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
             } else {

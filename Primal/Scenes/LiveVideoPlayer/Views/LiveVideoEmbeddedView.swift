@@ -18,10 +18,7 @@ class LiveVideoEmbeddedView: UIView, Themeable {
     let playButton = UIButton(configuration: .simpleImage(.embedPlayerPause)).constrainToSize(width: 36)
     let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(width: 36)
     
-    var player: AVPlayer? {
-        get { liveVideoView.player }
-        set { liveVideoView.player = newValue }
-    }
+    var player: VideoPlayer?
     
     var playPauseCancellable: AnyCancellable?
     
@@ -47,7 +44,7 @@ class LiveVideoEmbeddedView: UIView, Themeable {
         updateTheme()
         
         playButton.addAction(.init(handler: { [weak self] _ in
-            if self?.player?.rate ?? 0 > 0.5 {
+            if self?.player?.isPlaying == true {
                 self?.player?.pause()
             } else {
                 self?.player?.play()
@@ -79,8 +76,10 @@ class LiveVideoEmbeddedView: UIView, Themeable {
         playPauseCancellable = nil
     }
     
-    func setup(player: AVPlayer, live: ParsedLiveEvent) {
+    func setup(player: VideoPlayer, live: ParsedLiveEvent) {
         self.player = player
+        let player = player.avPlayer
+        liveVideoView.player = player
         
         titleLabel.text = live.title.trimmingCharacters(in: .whitespacesAndNewlines)
         subtitleLabel.text = live.summary.trimmingCharacters(in: .whitespacesAndNewlines)

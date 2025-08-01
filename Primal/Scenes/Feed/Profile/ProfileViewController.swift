@@ -305,8 +305,6 @@ private extension ProfileViewController {
     @objc func profilePicTapped() {
         guard !profile.data.picture.isEmpty else { return }
         if let live = LiveEventManager.instance.liveEvent(for: profile.data.pubkey) {
-            VideoPlaybackManager.instance.currentlyPlaying = nil
-            
             present(LiveVideoPlayerController(live: live, user: profile), animated: true)
             return
         }

@@ -32,6 +32,8 @@ final class VideoPlaybackManager {
             currentlyPlaying?.avPlayer.play()
         }
     }
+    
+    var isLive: Bool { currentlyPlaying?.isLive == true && currentlyPlaying?.isPlaying == true }
 }
 
 class VideoPlayer: NSObject {
@@ -48,11 +50,13 @@ class VideoPlayer: NSObject {
     var url: String
     var userPubkey: String
     var originalURL: String
+    var isLive: Bool
     
-    init(url: String, originalURL: String, userPubkey: String) {
+    init(url: String, originalURL: String, userPubkey: String, isLive: Bool = false) {
         self.url = url
         self.originalURL = originalURL
         self.userPubkey = userPubkey
+        self.isLive = isLive
         super.init()
         
         if ContentDisplaySettings.autoPlayVideos {
@@ -94,14 +98,19 @@ class VideoPlayer: NSObject {
     }
     
     private func playerWithURL(_ url: String) -> AVPlayer {
+        guard let url = URL(string: url) else { return AVPlayer() }
+        
+        if isLive {
+            return AVPlayer(url: url)
+        }
+        
         let queuePlayer = AVQueuePlayer()
         
-        if let url = URL(string: url) {
-            let item = AVPlayerItem(url: url)
-            looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
-            
-            looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
-        }
+        
+        let item = AVPlayerItem(url: url)
+        looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+        
+        looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         didInitPlayer = true
         return queuePlayer
     }
