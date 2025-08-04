@@ -560,7 +560,7 @@ extension ArticleViewController: ArticleImageViewDelegate {
             }
         }
         
-        if let mainImageURL = topInfoView.mainImageURL {
+        if let mainImageURL = topInfoView.mainImageURL?.trimmingCharacters(in: .whitespacesAndNewlines), !mainImageURL.isEmpty {
             return [mainImageURL] + allImages
         }
         return allImages
