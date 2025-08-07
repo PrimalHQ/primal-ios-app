@@ -138,7 +138,7 @@ extension String {
             switch $0 {
             case .image, .post: return [$0]
             case .text(let text):
-                let regexPattern = #"!\[([^\]]*)\]\(([^)]+)\)"#
+                let regexPattern = #"\[(?:!\[[^\]]*\]\(([^)]+)\))\]\([^)]+\)|!\[[^\]]*\]\(([^)]+)\)"#
                 guard let regex = try? NSRegularExpression(pattern: regexPattern, options: []) else {
                     return [.text(text + referenceLinksText)]
                 }
@@ -150,9 +150,18 @@ extension String {
                 
                 regex.enumerateMatches(in: text, options: [], range: NSRange(startIndex..., in: text)) { match, _, _ in
                     guard let match else { return }
-                                        
-                    if let urlRange = Range(match.range(at: 2), in: text) {
-                        let url = String(text[urlRange])
+                    
+                    var nsRange = match.range(at: 1)
+                    if nsRange.location == NSNotFound {
+                        nsRange = match.range(at: 2)
+                    }
+                    
+                    if nsRange.location != NSNotFound , let urlRange = Range(nsRange, in: text) {
+                        var url = String(text[urlRange])
+                        
+                        if url.contains(" \""), let first = url.split(separator: " \"").first {
+                            url = String(first)
+                        }
                         
                         let prevTextRange = NSRange(location: prevRangeStart, length: match.range.location - prevRangeStart)
                         let prevText = nsString.substring(with: prevTextRange).trimmingCharacters(in: .whitespacesAndNewlines)

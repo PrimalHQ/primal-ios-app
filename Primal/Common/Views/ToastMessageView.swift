@@ -69,38 +69,24 @@ extension UIView {
         }
     }
     
-    func showDimmedToastTop(_ text: String, image: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
+    func showToastTop(_ text: String, image: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
         let view = ToastMessageView(text: text, image: image, theme: Theme.sunriseWave.theme)
         
-        let background = UIView()
-        background.addSubview(view)
+        addSubview(view)
         view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .top, padding: 30, safeArea: true)
-        
-        addSubview(background)
-        background.pinToSuperview()
-        
-        background.isUserInteractionEnabled = false
-        background.backgroundColor = .black.withAlphaComponent(0.5)
-        background.alpha = 0
-        background.layer.cornerRadius = layer.cornerRadius
         view.alpha = 0
         view.transform = .init(translationX: 0, y: -50)
         
-        UIView.animate(withDuration: 0.2) {
-            background.alpha = 1
-            
-            UIView.animate(withDuration: 0.3) {
-                view.alpha = 1
-                view.transform = .identity
-            } completion: { _ in
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(durationSeconds)) {
-                    UIView.animate(withDuration: 0.3) {
-                        view.alpha = 0
-                        view.transform = .init(translationX: 0, y: -50)
-                        background.alpha = 0
-                    } completion: { _ in
-                        background.removeFromSuperview()
-                    }
+        UIView.animate(withDuration: 0.3) {
+            view.alpha = 1
+            view.transform = .identity
+        } completion: { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(durationSeconds)) {
+                UIView.animate(withDuration: 0.3) {
+                    view.alpha = 0
+                    view.transform = .init(translationX: 0, y: -50)
+                } completion: { _ in
+                    view.removeFromSuperview()
                 }
             }
         }

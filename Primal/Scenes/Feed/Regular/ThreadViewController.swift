@@ -36,6 +36,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     let textInputLoadingIndicator = LoadingSpinnerView().constrainToSize(30)
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
+    private let inputParentBackgroundExtender = UIView()
     private let inputBackground = UIView()
     private let keyboardSizer = KeyboardSizingView()
     
@@ -239,6 +240,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         textInputView.textColor = .foreground
         
         inputParent.backgroundColor = .background
+        inputParentBackgroundExtender.backgroundColor = .background
         inputBackground.backgroundColor = .background3
         
         updateReplyToLabel()
@@ -547,6 +549,11 @@ private extension ThreadViewController {
         
         view.addSubview(inputParent)
         inputParent.pinToSuperview(edges: .horizontal)
+        
+        inputParent.addSubview(inputParentBackgroundExtender)
+        inputParentBackgroundExtender.pinToSuperview(edges: .horizontal).constrainToSize(height: 200)
+        inputParentBackgroundExtender.topAnchor.constraint(equalTo: inputParent.bottomAnchor).isActive = true
+        
         inputParent.bottomAnchor.constraint(lessThanOrEqualTo: keyboardSizer.topAnchor).isActive = true
         let botC = inputParent.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
         botC.priority = .defaultHigh

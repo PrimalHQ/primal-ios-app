@@ -370,8 +370,8 @@ private extension MainTabBarController {
         .store(in: &cancellables)
         
         let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
-        let delay3SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(3), scheduler: RunLoop.main).map({ _ in false })
-        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay3SecondsForegroundPublisher)
+        let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
+        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay5SecondsForegroundPublisher)
         
         Publishers.CombineLatest(
             didJustEnterForegroundPublisher.prepend(false),
