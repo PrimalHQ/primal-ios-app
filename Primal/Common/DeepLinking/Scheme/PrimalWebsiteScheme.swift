@@ -10,6 +10,8 @@ import Foundation
 import NostrSDK
 
 final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
+    static var shared = PrimalWebsiteScheme()
+    
     var cancellables: Set<AnyCancellable> = []
     
     func canOpenURL(_ url: URL) -> Bool {

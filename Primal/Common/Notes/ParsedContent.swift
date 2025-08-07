@@ -143,6 +143,8 @@ extension ParsedUser: MetadataCoding {
     }
     
     var isCurrentUser: Bool { data.isCurrentUser }
+    
+    var followersSafe: Int { followers ?? 0 }
 }
 
 enum ParsedContentTextStyle {

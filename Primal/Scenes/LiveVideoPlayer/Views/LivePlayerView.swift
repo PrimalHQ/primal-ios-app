@@ -139,17 +139,21 @@ class LivePlayerView: UIView {
                     self.controlsView.alpha = 1
                 }
             } else {
-                UIView.animate(withDuration: 0.2) {
-                    self.controlsView.alpha = 0
-                } completion: { _ in
-                    self.controlsView.isHidden = true
-                }
+                self.hideControls()
             }
         }))
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func hideControls() {
+        UIView.animate(withDuration: 0.2) {
+            self.controlsView.alpha = 0
+        } completion: { _ in
+            self.controlsView.isHidden = true
+        }        
     }
     
     func setCancellables() {

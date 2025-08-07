@@ -137,3 +137,13 @@ extension Double {
         return nf.string(from: self as NSNumber) ?? ""
     }
 }
+
+extension CGFloat {
+    func interpolatingBetween(start: CGFloat, end: CGFloat) -> CGFloat {
+        start + (end - start) * self.clamp(0, 1)
+    }
+    
+    func squareInterpolatingBetween(start: CGFloat, end: CGFloat) -> CGFloat {
+        start + (end - start) * self.clamp(0, 1) * self.clamp(0, 1)
+    }    
+}

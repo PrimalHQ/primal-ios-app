@@ -74,7 +74,7 @@ struct SocketRequest {
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
                     DatabaseManager.instance.saveMediaResources(pendingResult.mediaMetadata.flatMap { $0.resources })
-                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
+//                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore) Not sure if this is good
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))

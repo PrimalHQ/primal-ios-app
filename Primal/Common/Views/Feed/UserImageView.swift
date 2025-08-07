@@ -46,8 +46,7 @@ class UserImageView: UIView, Themeable {
         }()
     }
     
-    var livePill = UIView()
-    var liveLabel = UILabel()
+    lazy var livePill = UserImageLivePill(userImageHeight: height)
     
     var showLegendGlow: Bool
     init(height: CGFloat, showLegendGlow: Bool = true) {
@@ -73,20 +72,8 @@ class UserImageView: UIView, Themeable {
         
         addSubview(livePill)
         livePill.centerToSuperview(axis: .horizontal)
+        livePill.centerYAnchor.constraint(equalTo: bottomAnchor).isActive = true
         livePill.isHidden = true
-        
-        livePill.addSubview(liveLabel)
-        liveLabel.centerToSuperview()
-        
-        liveLabel.text = "LIVE"
-        liveLabel.textColor = .white
-        
-        livePill.backgroundColor = .accent
-        NSLayoutConstraint.activate([
-            livePill.heightAnchor.constraint(equalTo: liveLabel.heightAnchor, multiplier: 1.3),
-            livePill.widthAnchor.constraint(equalTo: liveLabel.widthAnchor, multiplier: 1.3),
-            livePill.centerYAnchor.constraint(equalTo: bottomAnchor, constant: -1)
-        ])
         
         contentMode = .scaleAspectFill
         
@@ -136,11 +123,16 @@ class UserImageView: UIView, Themeable {
     func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
         tag = tag + 1
         
-        if let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
-            legendaryGradient.isHidden = false
-            legendaryBackgroundCircleView.isHidden = false
-            legendaryGradient.setLegendGradient(.sunfire)
-            legendaryGradient.colors = [.accent, .accent, .accent]
+        updateGlow(user)
+        
+        // Only show live indicator for ImageViews larger than 30
+        if height > 30, let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
+            if legendaryGradient.isHidden {
+                legendaryGradient.isHidden = false
+                legendaryBackgroundCircleView.isHidden = false
+                legendaryGradient.setLegendGradient(.sunfire)
+                legendaryGradient.colors = [.accent, .accent, .accent]
+            }
             
             if !live.image.isEmpty {
                 animatedImageView.kf.setImage(with: URL(string: live.image), placeholder: UIImage.profile, options: [
@@ -162,7 +154,6 @@ class UserImageView: UIView, Themeable {
         
         livePill.isHidden = true
         legendaryGradient.stopPulsing()
-        updateGlow(user)
         
         let url = user.profileImage.url(for: height < 120 ? .small : .medium)
         
@@ -261,8 +252,72 @@ class UserImageView: UIView, Themeable {
         gradientHeightC?.constant = legendGradientSize
         backgroundCircleHeightC?.constant = legendBackgroundCircleSize
         
-        let liveFontSize = max(height / 5, 8)
-        liveLabel.font = .appFont(withSize: liveFontSize, weight: .regular)
-        livePill.layer.cornerRadius = liveFontSize * 1.3 / 2
+        livePill.userImageHeight = height
+    }
+}
+
+class UserImageLivePill: UIView {
+    let dotView = UIView()
+    let liveLabel = UILabel("Live", color: .white, font: .appFont(withSize: 12, weight: .heavy))
+    lazy var stack = UIStackView([dotView, liveLabel])
+    
+    let dotHeightC: NSLayoutConstraint
+    
+    var userImageHeight: CGFloat { didSet { updateHeight() } }
+    
+    var dotHeight: CGFloat {
+        return 4 + heightProgress * 4
+    }
+    
+    var heightProgress: CGFloat { (height - 12) / 7 }
+    
+    var height: CGFloat {
+        12 + 7 * (1 - ((74 - userImageHeight) / 50).clamp(0, 1))
+    }
+    
+    var width: CGFloat {
+        32 + 20 * heightProgress
+    }
+    
+    init(userImageHeight: CGFloat) {
+        dotView.constrainToAspect(1)
+        dotHeightC = dotView.heightAnchor.constraint(equalToConstant: 4)
+        dotHeightC.isActive = true
+        self.userImageHeight = userImageHeight
+        
+        super.init(frame: .zero)
+        
+        translatesAutoresizingMaskIntoConstraints = false
+        
+        updateHeight()
+        
+        backgroundColor = .init(rgb: 0x111111)
+        dotView.backgroundColor = .init(rgb: 0xEE0000)
+        
+        addSubview(stack)
+        stack.centerToSuperview()
+        stack.alignment = .center
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateHeight() {
+        liveLabel.font = .appFont(withSize: 8 + heightProgress * 4, weight: .heavy)
+        
+        dotHeightC.constant = dotHeight
+        dotView.layer.cornerRadius = dotHeight / 2
+        layer.cornerRadius = height / 2
+        
+        stack.spacing = 2 + heightProgress * 2
+        
+        invalidateIntrinsicContentSize()
+        
+        transform = .init(translationX: 0, y: -1 - heightProgress * 3)
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        return .init(width: width, height: height)
     }
 }

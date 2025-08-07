@@ -27,6 +27,15 @@ class ParsedLiveComment {
     }
 }
 
+struct LiveDismissGestureState {
+    var totalVerticalDistance: CGFloat
+    var videoVerticalMove: CGFloat
+    var totalHorizontalDistance: CGFloat
+    var finalHorizontalScale: CGFloat
+    var finalVerticalScale: CGFloat
+    var initialTouchPoint: CGPoint
+}
+
 class LiveVideoPlayerController: UIViewController {
     
     static var currentlyLivePip: AVPictureInPictureController?
@@ -41,9 +50,13 @@ class LiveVideoPlayerController: UIViewController {
     let safeAreaSpacer = UIView()
     var safeAreaConstraint: NSLayoutConstraint?
     
+    let contentBackgroundView = UIView()
+    let contentView = UIView()
+    
     var cancellables: Set<AnyCancellable> = []
     
-    var initialTouchPoint = CGPoint.zero
+    var videoAspect = CGFloat.zero
+    var dismissGestureState: LiveDismissGestureState?
     
     private lazy var commentsVC = LiveVideoChatController(live: live, user: user)
     
@@ -79,6 +92,20 @@ class LiveVideoPlayerController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        liveVideoPlayer.backgroundColor = .background
+        safeAreaSpacer.backgroundColor = .background
+        contentBackgroundView.backgroundColor = .background
+        
+        contentBackgroundView.addSubview(contentView)
+        contentView.pinToSuperview()
+        contentView.addSubview(commentsVC.view)
+        commentsVC.view.pinToSuperview()
+        
+        commentsVC.willMove(toParent: self)
+        addChild(commentsVC)
+        view.addSubview(contentBackgroundView)
+        commentsVC.didMove(toParent: self)
+        
         let videoStack = UIStackView(axis: .vertical, [safeAreaSpacer, liveVideoPlayer])
         
         view.addSubview(videoStack)
@@ -90,15 +117,8 @@ class LiveVideoPlayerController: UIViewController {
         safeAreaConstraint = safeAreaSpacer.heightAnchor.constraint(equalToConstant: RootViewController.instance.view.window?.safeAreaInsets.top ?? 0)
         safeAreaConstraint?.isActive = true
         
-        view.backgroundColor = .background
-        
-        commentsVC.willMove(toParent: self)
-        addChild(commentsVC)
-        view.addSubview(commentsVC.view)
-        commentsVC.didMove(toParent: self)
-        
-        commentsVC.view.pinToSuperview(edges: [.bottom, .horizontal])
-        commentsVC.view.topAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor).isActive = true
+        contentBackgroundView.pinToSuperview(edges: [.bottom, .horizontal])
+        contentBackgroundView.topAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor).isActive = true
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         view.addGestureRecognizer(panGesture)
@@ -127,6 +147,8 @@ class LiveVideoPlayerController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        liveVideoPlayer.setAnchorPoint(.init(x: 0, y: 0.5))
+        
         safeAreaConstraint?.constant = view.window?.safeAreaInsets.top ?? 0
         UIView.animate(withDuration: 0.1, animations: { self.view.layoutIfNeeded() })
     }
@@ -154,30 +176,97 @@ class LiveVideoPlayerController: UIViewController {
     func chatControllerRequestsNormalSize() {
         safeAreaSpacer.isHidden = false
     }
+    
+    func setTransition(progress: CGFloat) {
+        guard let dgs = dismissGestureState else { return }
+        view.transform = .init(translationX: 0, y: progress * dgs.totalVerticalDistance)
+        
+        safeAreaSpacer.transform = .init(translationX: 0, y: -progress * dgs.totalVerticalDistance - progress.interpolatingBetween(start: 0, end: 200))
+    
+        contentBackgroundView.transform = .init(translationX: 0, y: progress.interpolatingBetween(start: 0, end: dgs.videoVerticalMove - 140))
+        contentBackgroundView.alpha = progress.interpolatingBetween(start: 75, end: 0).clamp(0, 1)
+        contentView.alpha = progress.interpolatingBetween(start: 3, end: -1).clamp(0, 1)
+        
+        liveVideoPlayer.transform = CGAffineTransform(
+                translationX: -dgs.totalHorizontalDistance + progress.interpolatingBetween(start: 0, end: 4),
+                y: progress.interpolatingBetween(start: 0, end: dgs.videoVerticalMove)
+            )
+            .scaledBy(
+                x: progress.interpolatingBetween(start: 1, end: dgs.finalHorizontalScale),
+                y: progress.interpolatingBetween(start: 1, end: dgs.finalVerticalScale)
+            )
+    }
+    
+    func resetDismissTransition() {
+        view.transform = .identity
+        liveVideoPlayer.transform = .init(translationX: -view.bounds.width / 2, y: 0)
+        safeAreaSpacer.transform = .identity
+        contentBackgroundView.transform = .identity
+        contentBackgroundView.alpha = 1
+        contentView.alpha = 1
+        
+        guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
+
+        main.livePlayer.liveVideoView.alpha = 1
+    }
 }
+
+
 
 private extension LiveVideoPlayerController {
     @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let touchPoint = gesture.location(in: view?.window)
         
-        let delta = touchPoint.y - initialTouchPoint.y
+        if case .began = gesture.state {
+            guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
+            
+            main.livePlayer.liveVideoView.alpha = 0.01
+            
+            let small = main.livePlayer.liveVideoView.convert(main.livePlayer.liveVideoView.bounds, to: nil)
+            let large = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: nil)
+            
+            dismissGestureState = .init(
+                totalVerticalDistance: (small.midY - large.midY) / 2,
+                videoVerticalMove: (small.midY - large.midY) / 2,
+                totalHorizontalDistance: large.width / 2,
+                finalHorizontalScale: small.width / large.width,
+                finalVerticalScale: small.height / large.height,
+                initialTouchPoint: touchPoint
+            )
+            
+            liveVideoPlayer.hideControls()
+            return
+        }
+        
+        guard let dgs = dismissGestureState else { return }
+        
+        
+        let delta = touchPoint.y - dgs.initialTouchPoint.y
+        
+        var percent = delta / (dgs.totalVerticalDistance)
+        percent = percent.clamp(0, 1)
+        
+        print(delta)
         
         switch gesture.state {
-        case .began:
-            initialTouchPoint = touchPoint
-        case .changed:
-            if touchPoint.y > initialTouchPoint.y {
-                view.transform = .init(translationX: 0, y: delta)
-            }
+        case .changed, .began:
+            setTransition(progress: percent)
         case .ended, .cancelled:
             let velocity = gesture.velocity(in: self.view)
-            if delta > 350 || velocity.y > 500 {
-                self.dismiss(animated: true) { [weak self] in
-                    self?.view.transform = .identity
+            if delta > 200 || velocity.y > 400 {
+                UIView.animate(withDuration: 0.4) {
+                    self.setTransition(progress: 1)
+                } completion: { _ in
+                    let main: MainTabBarController? = self.presentingViewController?.findInChildren()
+                    main?.livePlayer.liveVideoView.alpha = 1
+                    
+                    self.dismiss(animated: false) { [weak self] in
+                        self?.resetDismissTransition()
+                    }
                 }
             } else {
                 UIView.animate(withDuration: 0.3) {
-                    self.view.transform = .identity
+                    self.resetDismissTransition()
                 }
             }
         default:
@@ -187,6 +276,7 @@ private extension LiveVideoPlayerController {
 
     @MainActor
     func setVideoAspectRatio(_ aspect: CGFloat) {
+        videoAspect = aspect
         let heightC = liveVideoPlayer.widthAnchor.constraint(equalTo: liveVideoPlayer.heightAnchor, multiplier: aspect)
         heightC.priority = .defaultHigh
         heightC.isActive = true

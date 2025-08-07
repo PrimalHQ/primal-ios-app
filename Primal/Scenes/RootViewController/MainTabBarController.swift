@@ -115,7 +115,10 @@ final class MainTabBarController: UIViewController, Themeable {
     
     var liveVideoController: LiveVideoPlayerController? {
         didSet {
-            livePlayer.isHidden = !showTabBarBorder || liveVideoController == nil
+            if oldValue != liveVideoController {
+                oldValue?.player.pause()
+            }
+            
             if let liveVideoController {
                 livePlayer.setup(player: liveVideoController.player, live: liveVideoController.live)
             } else {
@@ -124,6 +127,18 @@ final class MainTabBarController: UIViewController, Themeable {
             }
             
             updateChildSafeAreaInsets()
+            
+            if liveVideoController == nil {
+                UIView.animate(withDuration: 0.2) {
+                    self.livePlayer.transform = .init(translationX: 0, y: 100)
+                    self.view.layoutIfNeeded()
+                } completion: { _ in
+                    self.livePlayer.transform = .identity
+                    self.livePlayer.isHidden = true
+                }
+            } else {
+                livePlayer.isHidden = !showTabBarBorder || liveVideoController == nil
+            }
         }
     }
 
@@ -441,14 +456,58 @@ private extension MainTabBarController {
         }
         
         livePlayer.isHidden = true
-        livePlayer.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+        
+        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
             guard let live = self?.liveVideoController else { return }
             self?.present(live, animated: true)
-        }))
-        livePlayer.addGestureRecognizer(BindableSwipeGestureRecognizer(direction: .up, action: { [weak self] in
-            guard let live = self?.liveVideoController else { return }
-            self?.present(live, animated: true)
-        }))
+        })
+        let livePan = BindablePanGestureRecognizer(action: { [weak self] gesture in
+            guard let self, let liveVideoController else { return }
+            let touchPoint = gesture.location(in: view?.window)
+            
+            if case .began = gesture.state {
+                present(liveVideoController, animated: false) {
+                    liveVideoController.setTransition(progress: 1)
+                    liveVideoController.view.alpha = 1
+                }
+                liveVideoController.view.alpha = 0.01
+                liveVideoController.dismissGestureState?.initialTouchPoint = touchPoint
+                return
+            }
+            
+            guard let dgs = liveVideoController.dismissGestureState else { return }
+            
+            let delta = dgs.initialTouchPoint.y - touchPoint.y
+            
+            print(delta)
+            
+            var percent = delta / (dgs.totalVerticalDistance)
+            percent = percent.clamp(0, 1)
+            
+            switch gesture.state {
+            case .changed, .began:
+                liveVideoController.setTransition(progress: 1 - percent)
+            case .ended, .cancelled:
+                let velocity = gesture.velocity(in: self.view)
+                if delta > 200 || velocity.y < -400 {
+                    UIView.animate(withDuration: 0.3) {
+                        liveVideoController.resetDismissTransition()
+                    }
+                } else {
+                    UIView.animate(withDuration: 0.4) {
+                        liveVideoController.setTransition(progress: 1)
+                    } completion: { _ in
+                        liveVideoController.dismiss(animated: false) { [weak liveVideoController] in
+                            liveVideoController?.resetDismissTransition()
+                        }
+                    }
+                }
+            default:
+                break
+            }
+        })
+        
+        [liveTap, livePan].forEach { livePlayer.addGestureRecognizer($0) }
     }
     
     func addCircleWalletButton() {

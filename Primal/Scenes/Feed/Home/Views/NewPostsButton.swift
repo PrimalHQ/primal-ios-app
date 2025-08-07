@@ -9,11 +9,11 @@ import FLAnimatedImage
 import UIKit
 
 final class NewPostsButton: MyButton, Themeable {
-    private let avatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
-    private let label = UILabel()
+    private let noteAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
+    private let noteLabel = UILabel()
     
     lazy var avatarStack = UIStackView()
-    lazy var stack = UIStackView([avatarStack, label])
+    lazy var stack = UIStackView([avatarStack, noteLabel])
     
     override var isPressed: Bool {
         didSet {
@@ -27,7 +27,7 @@ final class NewPostsButton: MyButton, Themeable {
         backgroundColor = .accent
         layer.cornerRadius = 20
         
-        avatars.forEach { avatar in
+        noteAvatars.forEach { avatar in
             let parent = UIView()
             let background = UIView()
             background.backgroundColor = .init(rgb: 0xAAAAAA)
@@ -55,18 +55,18 @@ final class NewPostsButton: MyButton, Themeable {
         
         constrainToSize(height: 40)
         
-        label.font = .appFont(withSize: 14, weight: .regular)
-        label.textColor = .white
+        noteLabel.font = .appFont(withSize: 14, weight: .regular)
+        noteLabel.textColor = .white
     }
     
     func setCount(_ count: Int, users: [ParsedUser]) {
         if count == 1 {
-            label.text = "1 new note"
+            noteLabel.text = "1 new note"
         } else {
-            label.text = "\(count) new notes"
+            noteLabel.text = "\(count) new notes"
         }
         
-        for avatar in avatars {
+        for avatar in noteAvatars {
             avatar.superview?.isHidden = true
         }
         
@@ -74,7 +74,7 @@ final class NewPostsButton: MyButton, Themeable {
         
         let uniqueUsers = users.uniqueByFilter { $0.data.id }
         
-        zip((1...count), zip(uniqueUsers, avatars)).forEach { (_, arg1) in
+        zip((1...count), zip(uniqueUsers, noteAvatars)).forEach { (_, arg1) in
             let (user, avatar) = arg1
             avatar.superview?.isHidden = false
             avatar.setUserImage(user)

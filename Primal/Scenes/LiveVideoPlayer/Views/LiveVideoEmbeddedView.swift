@@ -18,16 +18,43 @@ class LiveVideoEmbeddedView: UIView, Themeable {
     let playButton = UIButton(configuration: .simpleImage(.embedPlayerPause)).constrainToSize(width: 36)
     let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(width: 36)
     
+    lazy var textStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
+    let textStackParent = UIView()
+    let gradientView = UIImageView(image: .liveTextGradientCover)
+    
+    var maxTitleDelta: CGFloat = 0
+    var maxSubtitleDelta: CGFloat = 0
+    var currentDelta: CGFloat = 0 {
+        didSet {
+            titleLabel.transform = .init(translationX: -min(maxTitleDelta, currentDelta), y: 0)
+            subtitleLabel.transform = .init(translationX: -min(maxSubtitleDelta, currentDelta), y: 0)
+        }
+    }
+    
     var player: VideoPlayer?
     
     var playPauseCancellable: AnyCancellable?
+    private var titleDisplayLink: CADisplayLink? {
+        didSet {
+            oldValue?.remove(from: .main, forMode: .default)
+            titleDisplayLink?.add(to: .main, forMode: .default)
+        }
+    }
     
     init() {
         super.init(frame: .zero)
         
-        let textStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
         textStack.spacing = 2
-        let mainStack = UIStackView([liveVideoView, textStack, playButton, closeButton])
+        textStack.alignment = .leading
+        textStackParent.addSubview(textStack)
+        textStack.pinToSuperview(edges: [.vertical, .leading])
+        
+        textStackParent.addSubview(gradientView)
+        gradientView.pinToSuperview(edges: [.trailing, .vertical])
+        
+        textStackParent.clipsToBounds = true
+        
+        let mainStack = UIStackView([liveVideoView, textStackParent, playButton, closeButton])
         mainStack.alignment = .center
         
         addSubview(mainStack)
@@ -66,6 +93,7 @@ class LiveVideoEmbeddedView: UIView, Themeable {
         titleLabel.textColor = .foreground
         subtitleLabel.textColor = .foreground4
         
+        gradientView.tintColor = .background4
         playButton.backgroundColor = .background4
         closeButton.backgroundColor = .background4
         backgroundColor = .background4
@@ -90,5 +118,83 @@ class LiveVideoEmbeddedView: UIView, Themeable {
             .map { UIButton.Configuration.simpleImage($0) }
             .receive(on: DispatchQueue.main)
             .assign(to: \.configuration, on: playButton)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            guard let self, titleLabel.frame.width > textStackParent.frame.width || subtitleLabel.frame.width > textStackParent.frame.width else { return }
+            
+            maxTitleDelta = max(0, titleLabel.frame.width - textStackParent.frame.width + 20)
+            maxSubtitleDelta = max(0, subtitleLabel.frame.width - textStackParent.frame.width + 20)
+            
+            startUpdatingLabels()
+        }
+    }
+    
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        
+        startUpdatingLabels()
+    }
+    
+    func startUpdatingLabels() {
+        guard maxTitleDelta > 0 || maxSubtitleDelta > 0 else {
+            currentDelta = 0
+            isPaused = false
+            elapsed = 0
+            titleLabel.transform = .identity
+            subtitleLabel.transform = .identity
+            titleDisplayLink = nil
+            return
+        }
+        
+        titleDisplayLink = .init(target: self, selector: #selector(updateLabelAnimation))
+    }
+
+    var maxDelta: CGFloat { max(maxTitleDelta, maxSubtitleDelta) }
+    var animationDuration: CGFloat { maxDelta / 50 }
+    
+    private var elapsed: CGFloat = 0
+    var direction: CGFloat = -1
+    var isPaused = false
+    
+    @objc private func updateLabelAnimation(link: CADisplayLink) {
+        let dt = CGFloat(link.duration)
+        elapsed += dt
+        
+        if isPaused {
+            if elapsed < 2 {
+                return
+            }
+            isPaused = false
+            elapsed = 0
+        }
+        
+        var progress = elapsed / animationDuration
+        if progress >= 1 {
+            // Switch direction
+            direction *= -1
+            elapsed = 0
+            progress = 0
+            
+            isPaused = true // Pause after reaching start/end position
+        }
+        
+        if direction < 0 {
+            let delta = maxDelta * -progress
+            
+            let titleOffset = delta.clamp(-maxTitleDelta, 0)
+            titleLabel.transform = CGAffineTransform(translationX: titleOffset, y: 0)
+            let subtitleOffset = delta.clamp(-maxSubtitleDelta, 0)
+            subtitleLabel.transform = CGAffineTransform(translationX: subtitleOffset, y: 0)
+        } else {
+            let moveDelta = maxDelta * progress
+            
+            let titleDelta = -maxTitleDelta + moveDelta
+            let subtitleDelta = -maxSubtitleDelta + moveDelta
+            
+            let titleOffset = titleDelta.clamp(-maxTitleDelta, 0)
+            titleLabel.transform = CGAffineTransform(translationX: titleOffset, y: 0)
+            let subtitleOffset = subtitleDelta.clamp(-maxSubtitleDelta, 0)
+            subtitleLabel.transform = CGAffineTransform(translationX: subtitleOffset, y: 0)
+        }
     }
 }

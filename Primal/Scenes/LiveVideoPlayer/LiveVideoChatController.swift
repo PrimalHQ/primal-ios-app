@@ -8,16 +8,27 @@
 import Combine
 import UIKit
 import GenericJSON
+import Nantes
+import SafariServices
 
-class LiveVideoChatController: UIViewController {
+class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
+    func reloadZaps() {
+        table.reloadData()
+        self.heightConstraint?.constant = (posts.first?.zaps.count ?? 0) > 0 ? 64 : 30
+    }
+}
+
+class LiveVideoChatController: UIViewController, Themeable {
     
+    let infoParent = UIView()
     let header = LiveCommentsHeaderView()
     let commentsTable = SafeTableView()
     let input = LiveVideoChatInputView()
+    let spacer = KeyboardSizingView()
     
     var cancellables: Set<AnyCancellable> = []
     
-    lazy var infoVC = EmbeddedPostController<LiveVideoZapsPostCell>()
+    lazy var zapsInfoVC = LiveZapsInfoVC()
     
     let live: ParsedLiveEvent
     let user: ParsedUser
@@ -47,18 +58,14 @@ class LiveVideoChatController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .background
+        infoParent.addSubview(zapsInfoVC.view)
+        zapsInfoVC.view.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .top).pinToSuperview(edges: .bottom, padding: 12)
         
-        let infoParent = UIView()
-        infoParent.addSubview(infoVC.view)
-        infoVC.view.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .top).pinToSuperview(edges: .bottom, padding: 12)
+        zapsInfoVC.willMove(toParent: self)
+        addChild(zapsInfoVC)
+        zapsInfoVC.didMove(toParent: self)
         
-        infoVC.willMove(toParent: self)
-        addChild(infoVC)
-        
-        infoVC.posts = [post]
-        
-        let spacer = KeyboardSizingView()
+        zapsInfoVC.posts = [post]
         
         let stack = UIStackView(axis: .vertical, [
             PullBarView(color: .foreground4.withAlphaComponent(0.8)),
@@ -79,8 +86,6 @@ class LiveVideoChatController: UIViewController {
         input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12).isActive = true
         commentsTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
         
-        infoVC.didMove(toParent: self)
-        
         commentsTable.backgroundColor = .background
         commentsTable.dataSource = self
         commentsTable.register(LiveVideoChatMessageCell.self, forCellReuseIdentifier: "cell")
@@ -96,7 +101,7 @@ class LiveVideoChatController: UIViewController {
         
         KeyboardManager.instance.isShowingKeyboard.sink { [weak self] isShowing in
             self?.header.small = isShowing
-            self?.infoVC.view.superview?.isHidden = isShowing
+            self?.zapsInfoVC.view.superview?.isHidden = isShowing
             
             if isShowing {
                 self?.videoController?.chatControllerRequestsMoreSpace()
@@ -115,6 +120,17 @@ class LiveVideoChatController: UIViewController {
             self?.sendComment()
         }), for: .touchUpInside)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateTheme()
+    }
+    
+    func updateTheme() {
+        view.backgroundColor = .background4
+        spacer.backgroundColor = .background
+    }
 }
 
 extension LiveVideoChatController: UITableViewDataSource {
@@ -127,10 +143,25 @@ extension LiveVideoChatController: UITableViewDataSource {
         cell.transform = tableView.transform
         if comment.zapAmount > 0 {
             (cell as? LiveVideoChatZapCell)?.updateForComment(comment)
+            (cell as? LiveVideoChatZapCell)?.commentLabel.delegate = self
         } else {
             (cell as? LiveVideoChatMessageCell)?.updateForComment(comment)
+            (cell as? LiveVideoChatMessageCell)?.commentLabel.delegate = self
         }
         return cell
+    }
+}
+
+extension LiveVideoChatController: NantesLabelDelegate {
+    func attributedLabel(_ label: NantesLabel, didSelectLink link: URL) {
+        let handler = PrimalWebsiteScheme.shared
+        if handler.canOpenURL(link) {
+            dismiss(animated: true) {
+                handler.openURL(link)
+            }
+        } else {
+            present(SFSafariViewController(url: link), animated: true)
+        }
     }
 }
 
@@ -153,7 +184,7 @@ private extension LiveVideoChatController {
             
             return $0.createdAt < $1.createdAt
         })
-        self.infoVC.table.reloadData()
+        self.zapsInfoVC.reloadZaps()
     }
     
     func jsonToZapComment(_ json: JSON) -> ParsedLiveComment? {

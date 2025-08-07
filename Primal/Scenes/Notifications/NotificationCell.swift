@@ -251,7 +251,7 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_ZAPPED:
             return .init(string: post.post.satszapped.shortened(), attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .medium),
-                .foregroundColor: UIColor(rgb: 0xFFA02F)
+                .foregroundColor: UIColor.gold
             ])
         default:
             return nil

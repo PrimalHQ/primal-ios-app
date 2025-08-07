@@ -119,7 +119,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        if VideoPlaybackManager.instance.currentlyPlaying?.isLive == true { return }
+        if let current = VideoPlaybackManager.instance.currentlyPlaying, current.isLive && current.isPlaying { return }
         guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }

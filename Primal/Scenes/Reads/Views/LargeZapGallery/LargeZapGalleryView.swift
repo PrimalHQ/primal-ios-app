@@ -290,7 +290,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
                         let view = UIView()
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()
-                        view.backgroundColor = .init(rgb: 0xFFA02F)
+                        view.backgroundColor = .gold
                         background = view
                     }
                     
