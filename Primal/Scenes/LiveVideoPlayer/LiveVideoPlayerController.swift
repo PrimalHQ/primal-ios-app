@@ -41,6 +41,8 @@ class LiveVideoPlayerController: UIViewController {
     static var currentlyLivePip: AVPictureInPictureController?
     
     let liveVideoPlayer = LivePlayerView()
+    let horizontalVideoPlayer = LargeLivePlayerView()
+    let horizontalVideoParent = UIView()
     
     let player: VideoPlayer
     
@@ -55,10 +57,14 @@ class LiveVideoPlayerController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    var videoAspect = CGFloat.zero
+    var videoAspect: CGFloat = 16/9
     var dismissGestureState: LiveDismissGestureState?
     
     private lazy var commentsVC = LiveVideoChatController(live: live, user: user)
+    
+    var currentTransitionProgress: CGFloat = 0
+    @Published var currentVideoRotation: UIDeviceOrientation = .portrait
+    var isDismissingInteractively: Bool { currentTransitionProgress != 0 }
     
     init(live: ParsedLiveEvent, user: ParsedUser) {
         self.live = live
@@ -112,7 +118,19 @@ class LiveVideoPlayerController: UIViewController {
         videoStack.pinToSuperview(edges: [.top, .horizontal])
         let heightC = liveVideoPlayer.heightAnchor.constraint(equalTo: liveVideoPlayer.widthAnchor, multiplier: 9 / 16)
         heightC.priority = .defaultLow
-        NSLayoutConstraint.activate([heightC, liveVideoPlayer.heightAnchor.constraint(lessThanOrEqualTo: liveVideoPlayer.widthAnchor)])
+        
+        view.addSubview(horizontalVideoParent)
+        horizontalVideoParent.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical).constrainToAspect(1)
+        
+        horizontalVideoParent.addSubview(horizontalVideoPlayer)
+        horizontalVideoPlayer.pinToSuperview(edges: .horizontal).centerToSuperview()
+        horizontalVideoParent.isHidden = true
+        
+        NSLayoutConstraint.activate([
+            heightC,
+            horizontalVideoPlayer.heightAnchor.constraint(equalTo: view.widthAnchor),
+            liveVideoPlayer.heightAnchor.constraint(lessThanOrEqualTo: liveVideoPlayer.widthAnchor),
+        ])
         
         safeAreaConstraint = safeAreaSpacer.heightAnchor.constraint(equalToConstant: RootViewController.instance.view.window?.safeAreaInsets.top ?? 0)
         safeAreaConstraint?.isActive = true
@@ -124,6 +142,23 @@ class LiveVideoPlayerController: UIViewController {
         view.addGestureRecognizer(panGesture)
         
         liveVideoPlayer.delegate = self
+        horizontalVideoPlayer.delegate = self
+        
+        Timer.publish(every: 300, on: .main, in: .default).prepend(Date())
+            .sink { [weak self] _ in
+                guard let live = self?.live, let event = NostrObject.liveWatchEvent(live: live) else { return }
+                
+                PostingManager.instance.sendEvent(event, { _ in })
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)
+            .compactMap { _ in UIDevice.current.orientation }
+            .filter { $0 == .portrait || $0.isLandscape }
+            .sink { [weak self] orientation in
+                self?.rotateVideoPlayer(for: orientation)
+            }
+            .store(in: &cancellables)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -147,7 +182,8 @@ class LiveVideoPlayerController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        liveVideoPlayer.setAnchorPoint(.init(x: 0, y: 0.5))
+        liveVideoPlayer.anchorPoint = (.init(x: 0, y: 0.5))
+        liveVideoPlayer.transform = .init(translationX: -view.frame.width / 2, y: 0)
         
         safeAreaConstraint?.constant = view.window?.safeAreaInsets.top ?? 0
         UIView.animate(withDuration: 0.1, animations: { self.view.layoutIfNeeded() })
@@ -179,6 +215,9 @@ class LiveVideoPlayerController: UIViewController {
     
     func setTransition(progress: CGFloat) {
         guard let dgs = dismissGestureState else { return }
+        
+        currentTransitionProgress = progress
+        
         view.transform = .init(translationX: 0, y: progress * dgs.totalVerticalDistance)
         
         safeAreaSpacer.transform = .init(translationX: 0, y: -progress * dgs.totalVerticalDistance - progress.interpolatingBetween(start: 0, end: 200))
@@ -204,6 +243,7 @@ class LiveVideoPlayerController: UIViewController {
         contentBackgroundView.transform = .identity
         contentBackgroundView.alpha = 1
         contentView.alpha = 1
+        currentTransitionProgress = 0
         
         guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
 
@@ -214,8 +254,58 @@ class LiveVideoPlayerController: UIViewController {
 
 
 private extension LiveVideoPlayerController {
+    private func rotateVideoPlayer(for orientation: UIDeviceOrientation) {
+        guard currentTransitionProgress < 0.01 else { return }
+        
+        let big = view.frame
+        let small = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: view)
+        
+        let bigAdjustedHeight = big.width * videoAspect
+        
+        if currentVideoRotation == .portrait { // For the initial animation
+            horizontalVideoParent.transform = .init(scaleX: small.width / bigAdjustedHeight, y: small.height / big.width).translatedBy(x: 0, y: (-big.height / 2 + small.midY) * big.width / small.height)
+        }
+                
+        currentVideoRotation = orientation
+        
+        liveVideoPlayer.hideControls()
+        horizontalVideoPlayer.hideControls()
+        
+        switch orientation {
+        case .portrait:
+            UIView.animate(withDuration: 0.3) {
+                self.horizontalVideoParent.transform = .init(scaleX: small.width / bigAdjustedHeight, y: small.height / big.width).translatedBy(x: 0, y: (-big.height / 2 + small.midY) * big.width / small.height)
+            } completion: { _ in
+                self.liveVideoPlayer.playerView.alpha = 1
+                self.horizontalVideoPlayer.player = nil
+                self.horizontalVideoParent.isHidden = true
+            }
+        case .landscapeLeft:
+            horizontalVideoParent.isHidden = false
+            liveVideoPlayer.playerView.alpha = 0
+            horizontalVideoPlayer.player = player.avPlayer
+            
+            UIView.animate(withDuration: 0.3) {
+                self.horizontalVideoParent.transform = .init(rotationAngle: .pi / 2)
+            }
+        case .landscapeRight:
+            horizontalVideoParent.isHidden = false
+            liveVideoPlayer.playerView.alpha = 0
+            horizontalVideoPlayer.player = player.avPlayer
+            
+            UIView.animate(withDuration: 0.3) {
+                self.horizontalVideoParent.transform = .init(rotationAngle: .pi / -2)
+            }
+        case .unknown, .portraitUpsideDown, .faceUp, .faceDown: return
+        @unknown default:                                       return
+        }
+        
+    }
+    
     @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let touchPoint = gesture.location(in: view?.window)
+        
+        guard currentVideoRotation.isPortrait else { return }
         
         if case .began = gesture.state {
             guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
@@ -287,12 +377,15 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
     func livePlayerViewPerformAction(_ action: LivePlayerViewAction) {
         switch action {
         case .dismiss:
+            rotateVideoPlayer(for: .portrait)
             dismiss(animated: true)
         case .fullscreen:
-            let playerVC = AVPlayerViewController()
-            playerVC.delegate = self
-            playerVC.player = player.avPlayer
-            present(playerVC, animated: true)        }
+            if currentVideoRotation == .portrait {
+                rotateVideoPlayer(for: .landscapeLeft)
+            } else {
+                rotateVideoPlayer(for: .portrait)
+            }
+        }
     }
 }
 

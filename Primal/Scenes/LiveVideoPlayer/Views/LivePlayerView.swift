@@ -17,6 +17,23 @@ protocol LivePlayerViewDelegate: AnyObject {
     func livePlayerViewPerformAction(_ action: LivePlayerViewAction)
 }
 
+class LargeLivePlayerView: LivePlayerView {
+    override var horizontalMargin: CGFloat { 36 }
+    override var verticalMargin: CGFloat { 20 }
+    
+    override init() {
+        super.init()
+        
+        fullscreenButton.configuration = .simpleImage(.exitFullScreen)
+        
+        playerLayer.videoGravity = .resizeAspect
+        
+        backgroundColor = .black
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
 class LivePlayerView: UIView {
     let playerView = PlayerView()
     
@@ -51,6 +68,11 @@ class LivePlayerView: UIView {
     var cancellables: Set<AnyCancellable> = []
     var timeObserver: Any?
     
+    // TO BE OVERRIDDEN BY THE CHILD
+    var horizontalMargin: CGFloat { 8 }
+    var verticalMargin: CGFloat { 4 }
+    var buttonSize: CGFloat { 36 }
+    
     init() {
         super.init(frame: .zero)
         
@@ -63,24 +85,25 @@ class LivePlayerView: UIView {
         controlsView.isHidden = true
         controlsView.pinToSuperview()
         
-        let topRightStack = UIStackView([airplayButton, threeDotsButton])
+        let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
         topRightStack.spacing = 4
         controlsView.addSubview(topRightStack)
-        topRightStack.pinToSuperview(edges: .trailing).pinToSuperview(edges: .top, padding: 4)
+        topRightStack.pinToSuperview(edges: .trailing, padding: horizontalMargin)
         
-        controlsView.addSubview(dismissButton)
-        dismissButton.pinToSuperview(edges: .leading, padding: 8).pinToSuperview(edges: .top, padding: 4)
+        controlsView.addSubview(dismissButton.constrainToSize(buttonSize))
+        dismissButton.pinToSuperview(edges: .leading, padding: horizontalMargin).pinToSuperview(edges: .top, padding: verticalMargin)
+        topRightStack.centerToView(dismissButton, axis: .vertical)
         
-        let botRightStack = UIStackView([muteButton, fullscreenButton])
+        let botRightStack = UIStackView([muteButton.constrainToSize(buttonSize), fullscreenButton.constrainToSize(buttonSize)])
         botRightStack.spacing = 4
         controlsView.addSubview(botRightStack)
-        botRightStack.pinToSuperview(edges: .trailing, padding: 8).pinToSuperview(edges: .bottom, padding: 8)
+        botRightStack.pinToSuperview(edges: .trailing, padding: horizontalMargin).pinToSuperview(edges: .bottom, padding: verticalMargin)
         
         let liveStack = UIStackView([liveDot, UIImageView(image: .liveIcon)])
         liveStack.alignment = .center
         liveStack.spacing = 6
         controlsView.addSubview(liveStack)
-        liveStack.pinToSuperview(edges: .leading, padding: 17).centerToView(botRightStack, axis: .vertical)
+        liveStack.centerToView(botRightStack, axis: .vertical).pin(to: dismissButton, edges: .leading)
         
         controlsView.addSubview(playPauseButton)
         playPauseButton.centerToSuperview()
@@ -97,6 +120,9 @@ class LivePlayerView: UIView {
         threeDotsButton.tintColor = .white
         liveDot.backgroundColor = .init(rgb: 0xEE0000)
         liveDot.layer.cornerRadius = 4
+        
+        threeDotsButton.centerToView(fullscreenButton, axis: .horizontal)
+        airplayButton.centerToView(muteButton, axis: .horizontal)
         
         playPauseButton.addAction(.init(handler: { [weak self] _ in
             guard let player = self?.player else { return }
@@ -142,11 +168,11 @@ class LivePlayerView: UIView {
                 self.hideControls()
             }
         }))
+        
+        
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func hideControls() {
         UIView.animate(withDuration: 0.2) {

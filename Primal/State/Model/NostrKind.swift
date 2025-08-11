@@ -34,6 +34,7 @@ enum NostrKind: Int {
     case bookmarks = 10_003
     
     case blossom = 10_063
+    case livePresence = 10_312
     
     case categoryList = 30_000
     case longForm = 30_023

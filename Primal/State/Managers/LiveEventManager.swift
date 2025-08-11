@@ -25,6 +25,8 @@ struct ParsedLiveEvent: Hashable {
     
     var participants: Int
     
+    var starts: Date
+    
     var event: [String: JSON]
 }
 
@@ -34,7 +36,17 @@ class LiveEventManager {
     @Published private var liveEvents: [String: ParsedLiveEvent] = [:]
     @Published private var cachedUsers: [String: ParsedUser] = [:]
     
-    var currentlyLiveFollowing: AnyPublisher<[ParsedUser], Never> {
+    var currentlyLiveFollowing: [ParsedUser] {
+        var users: [ParsedUser] = []
+        for (pubkey, event) in liveEvents {
+            if let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
+                users.append(user)
+            }
+        }
+        return users.sorted(by: { $0.followersSafe > $1.followersSafe })
+    }
+    
+    var currentlyLiveFollowingPublisher: AnyPublisher<[ParsedUser], Never> {
         Publishers.CombineLatest($liveEvents, $cachedUsers)
             .map { events, cachedUsers in
                 var users: [ParsedUser] = []
@@ -61,6 +73,8 @@ class LiveEventManager {
         else { return }
         
         let pubkey = tags.tagValueForKeyWithRole("p", role: "host") ?? creatorPubkey
+        
+        let starts = Double(tags.tagValueForKey("starts") ?? "") ?? Date().timeIntervalSince1970
             
         liveEvents[pubkey] = .init(
             liveURL: live,
@@ -72,6 +86,7 @@ class LiveEventManager {
             status: tags.tagValueForKey("status") ?? "live",
             pubkey: pubkey,
             participants: Int(tags.tagValueForKey("current_participants") ?? "") ?? 1,
+            starts: Date(timeIntervalSince1970: starts),
             event: event
         )
         

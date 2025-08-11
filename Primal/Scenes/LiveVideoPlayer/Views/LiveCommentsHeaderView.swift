@@ -8,9 +8,9 @@
 import UIKit
 
 class LiveCommentsHeaderView: UIStackView {
-    let timeLabel = UILabel("Started 38m ago", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
+    let timeLabel = UILabel("Started", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
     let countIcon = UIImageView(image: .liveViewersCount)
-    let countLabel = UILabel("22", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
+    let countLabel = UILabel("-", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
     lazy var secondInfoRow = UIStackView([timeLabel, SpacerView(width: 12), countIcon, SpacerView(width: 6), countLabel])
     
     let configButton = UIButton(configuration: .simpleImage(.searchConfig))

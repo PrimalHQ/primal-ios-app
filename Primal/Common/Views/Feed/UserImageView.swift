@@ -49,6 +49,7 @@ class UserImageView: UIView, Themeable {
     lazy var livePill = UserImageLivePill(userImageHeight: height)
     
     var showLegendGlow: Bool
+    var showLivePill: Bool = true
     init(height: CGFloat, showLegendGlow: Bool = true) {
         self.height = height
         self.showLegendGlow = showLegendGlow
@@ -126,7 +127,7 @@ class UserImageView: UIView, Themeable {
         updateGlow(user)
         
         // Only show live indicator for ImageViews larger than 30
-        if height > 30, let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
+        if showLivePill, height > 30, let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
             if legendaryGradient.isHidden {
                 legendaryGradient.isHidden = false
                 legendaryBackgroundCircleView.isHidden = false

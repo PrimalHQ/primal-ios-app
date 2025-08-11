@@ -477,10 +477,7 @@ private extension MainTabBarController {
             
             guard let dgs = liveVideoController.dismissGestureState else { return }
             
-            let delta = dgs.initialTouchPoint.y - touchPoint.y
-            
-            print(delta)
-            
+            let delta = dgs.initialTouchPoint.y - touchPoint.y            
             var percent = delta / (dgs.totalVerticalDistance)
             percent = percent.clamp(0, 1)
             
@@ -508,6 +505,12 @@ private extension MainTabBarController {
         })
         
         [liveTap, livePan].forEach { livePlayer.addGestureRecognizer($0) }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher().sink(receiveValue: { res in
+                print(res)
+            }).store(in: &self.cancellables)
+        }
     }
     
     func addCircleWalletButton() {

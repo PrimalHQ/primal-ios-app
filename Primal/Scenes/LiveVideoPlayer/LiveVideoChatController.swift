@@ -125,6 +125,9 @@ class LiveVideoChatController: UIViewController, Themeable {
         super.viewWillAppear(animated)
         
         updateTheme()
+        
+        header.countLabel.text = live.participants.localized()
+        header.timeLabel.text = "Started \(live.starts.timeAgoDisplay(addAgo: true))"
     }
     
     func updateTheme() {
@@ -290,6 +293,11 @@ private extension LiveVideoChatController {
                 
                 if kind == NostrKind.live.rawValue {
                     // TODO: Update the live info
+                    return
+                }
+                
+                if kind == NostrKind.livePresence.rawValue {
+                    // TODO: Update the watcher count
                     return
                 }
                 
