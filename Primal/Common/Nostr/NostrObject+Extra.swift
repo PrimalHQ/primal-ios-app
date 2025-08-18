@@ -355,7 +355,7 @@ extension NostrObject {
         return createNostrObjectAndSign(pubkey: pubkey, privkey: secret, content: base64, kind: 23194, tags: [["p", serverPubkey]])
     }
     
-    static func liveComment(live: ParsedLiveEvent, comment: String) -> NostrObject? {
+    static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
             ["a", "\(NostrKind.live.rawValue):\(live.pubkey):\(live.dTag)", relay, "root"],
@@ -363,7 +363,7 @@ extension NostrObject {
         ])
     }
     
-    static func liveWatchEvent(live: ParsedLiveEvent) -> NostrObject? {
+    static func liveWatchEvent(live: ProcessedLiveEvent) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
 
         return createNostrObject(content: "", kind: 10312, tags: [

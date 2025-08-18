@@ -8,14 +8,14 @@
 import UIKit
 
 protocol LivePreviewFeedCellDelegate: AnyObject {
-    func didSelectLive(_ live: ParsedLiveEvent, user: ParsedUser)
+    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser)
 }
 
 class LivePreviewFeedCell: UITableViewCell {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).constrainToSize(height: 72)
     let border = SpacerView(height: 1, color: .background3)
     
-    var lives: [(ParsedUser, ParsedLiveEvent)] = [] { didSet { collectionView.reloadData() } }
+    var lives: [(ParsedUser, ProcessedLiveEvent)] = [] { didSet { collectionView.reloadData() } }
     
     weak var delegate: LivePreviewFeedCellDelegate?
     
@@ -117,7 +117,7 @@ class LivePreviewFeedCellCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(user: ParsedUser, live: ParsedLiveEvent) {
+    func setup(user: ParsedUser, live: ProcessedLiveEvent) {
         userImage.setUserImage(user)
         textLabel.setText(.init(string: live.title, attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),

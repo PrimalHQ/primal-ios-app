@@ -10,6 +10,11 @@ import GenericJSON
 import Combine
 
 struct ParsedLiveEvent: Hashable {
+    let event: ProcessedLiveEvent
+    let user: ParsedUser
+}
+
+struct ProcessedLiveEvent: Hashable {
     var liveURL: String
     
     var creatorPubkey: String
@@ -33,7 +38,7 @@ struct ParsedLiveEvent: Hashable {
 class LiveEventManager {
     static let instance = LiveEventManager()
     
-    @Published private var liveEvents: [String: ParsedLiveEvent] = [:]
+    @Published private var liveEvents: [String: ProcessedLiveEvent] = [:]
     @Published private var cachedUsers: [String: ParsedUser] = [:]
     
     var currentlyLiveFollowing: [ParsedUser] {
@@ -100,7 +105,7 @@ class LiveEventManager {
             .store(in: &cancellables)
     }
     
-    func liveEvent(for pubkey: String) -> ParsedLiveEvent? {
+    func liveEvent(for pubkey: String) -> ProcessedLiveEvent? {
         return liveEvents[pubkey]
     }
 }

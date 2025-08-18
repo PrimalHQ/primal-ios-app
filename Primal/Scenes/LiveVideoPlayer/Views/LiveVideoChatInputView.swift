@@ -19,7 +19,8 @@ extension UIButton.Configuration {
 }
 
 class LiveVideoChatInputView: UIView {
-    let textView = PlaceholderTextView()
+    let textView = SelfSizingTextView()
+    let placeholderLabel = UILabel("Chat", color: .foreground4, font: .appFont(withSize: 16, weight: .regular))
     let sendButton = UIButton(configuration: .liveSendButton(enabled: false)).constrainToSize(40)
     
     private let backgroundView = UIView()
@@ -65,17 +66,16 @@ class LiveVideoChatInputView: UIView {
         backgroundView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
         backgroundView.heightAnchor.constraint(lessThanOrEqualToConstant: 84).isActive = true
         
+        addSubview(placeholderLabel)
+        
         addSubview(textView)
         textView
             .pinToSuperview(edges: .top, padding: 13)
             .pinToSuperview(edges: .bottom, padding: 11)
             .pin(to: backgroundView, edges: .leading, padding: 10)
             .pin(to: backgroundView, edges: .trailing, padding: 10)
-        textView.backgroundColor = .clear
-        textView.font = .appFont(withSize: 16, weight: .regular)
-        textView.mainTextColor = .foreground
-        textView.placeholderTextColor = .foreground4
-        textView.placeholderText = "Chat..."
+        
+        placeholderLabel.pinToSuperview(edges: .leading, padding: 27).pinToSuperview(edges: .top, padding: 21)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

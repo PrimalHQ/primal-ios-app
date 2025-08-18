@@ -13,12 +13,12 @@ import GenericJSON
 
 class ParsedLiveComment {
     let user: ParsedUser
-    let text: String
+    let text: NSAttributedString
     let event: [String: JSON]
     let zapAmount: Int
     let createdAt: Double
     
-    init(user: ParsedUser, comment: String, event: [String : JSON], zapAmount: Int = 0) {
+    init(user: ParsedUser, comment: NSAttributedString, event: [String : JSON], zapAmount: Int = 0) {
         self.user = user
         self.text = comment
         self.event = event
@@ -46,27 +46,27 @@ class LiveVideoPlayerController: UIViewController {
     
     let player: VideoPlayer
     
-    let live: ParsedLiveEvent
+    let live: ProcessedLiveEvent
     let user: ParsedUser
     
     let safeAreaSpacer = UIView()
     var safeAreaConstraint: NSLayoutConstraint?
     
     let contentBackgroundView = UIView()
-    let contentView = UIView()
+    let contentView = AutoHidingView()
     
     var cancellables: Set<AnyCancellable> = []
     
     var videoAspect: CGFloat = 16/9
     var dismissGestureState: LiveDismissGestureState?
     
-    private lazy var commentsVC = LiveVideoChatController(live: live, user: user)
+    private lazy var commentsVC = LiveVideoChatController(live: .init(event: live, user: user))
     
     var currentTransitionProgress: CGFloat = 0
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
     var isDismissingInteractively: Bool { currentTransitionProgress != 0 }
     
-    init(live: ParsedLiveEvent, user: ParsedUser) {
+    init(live: ProcessedLiveEvent, user: ParsedUser) {
         self.live = live
         self.user = user
         player = VideoPlayer(url: live.liveURL, originalURL: "", userPubkey: "", isLive: true)
@@ -102,9 +102,7 @@ class LiveVideoPlayerController: UIViewController {
         safeAreaSpacer.backgroundColor = .background
         contentBackgroundView.backgroundColor = .background
         
-        contentBackgroundView.addSubview(contentView)
-        contentView.pinToSuperview()
-        contentView.addSubview(commentsVC.view)
+        contentBackgroundView.addSubview(commentsVC.view)
         commentsVC.view.pinToSuperview()
         
         commentsVC.willMove(toParent: self)
@@ -118,6 +116,9 @@ class LiveVideoPlayerController: UIViewController {
         videoStack.pinToSuperview(edges: [.top, .horizontal])
         let heightC = liveVideoPlayer.heightAnchor.constraint(equalTo: liveVideoPlayer.widthAnchor, multiplier: 9 / 16)
         heightC.priority = .defaultLow
+        
+        view.addSubview(contentView)
+        contentView.pin(to: contentBackgroundView)
         
         view.addSubview(horizontalVideoParent)
         horizontalVideoParent.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical).constrainToAspect(1)
@@ -205,6 +206,22 @@ class LiveVideoPlayerController: UIViewController {
         
     }
     
+    func presentLivePopup(_ vc: UIViewController) {
+        vc.willMove(toParent: self)
+        contentView.addSubview(vc.view)
+        vc.view.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -12)
+        addChild(vc)
+        vc.didMove(toParent: self)
+        
+        vc.view.transform = .init(translationX: 0, y: 700)
+        vc.view.alpha = 0
+        
+        UIView.animate(withDuration: 0.5) {
+            vc.view.transform = .identity
+            vc.view.alpha = 1
+        }
+    }
+    
     func chatControllerRequestsMoreSpace() {
         safeAreaSpacer.isHidden = true
     }
@@ -224,7 +241,9 @@ class LiveVideoPlayerController: UIViewController {
     
         contentBackgroundView.transform = .init(translationX: 0, y: progress.interpolatingBetween(start: 0, end: dgs.videoVerticalMove - 140))
         contentBackgroundView.alpha = progress.interpolatingBetween(start: 75, end: 0).clamp(0, 1)
-        contentView.alpha = progress.interpolatingBetween(start: 3, end: -1).clamp(0, 1)
+        commentsVC.view.alpha = progress.interpolatingBetween(start: 3, end: -1).clamp(0, 1)
+        
+        contentView.transform = .init(translationX: 0, y: progress.interpolatingBetween(start: 0, end: 1000))
         
         liveVideoPlayer.transform = CGAffineTransform(
                 translationX: -dgs.totalHorizontalDistance + progress.interpolatingBetween(start: 0, end: 4),
@@ -240,9 +259,10 @@ class LiveVideoPlayerController: UIViewController {
         view.transform = .identity
         liveVideoPlayer.transform = .init(translationX: -view.bounds.width / 2, y: 0)
         safeAreaSpacer.transform = .identity
+        contentView.transform = .identity
         contentBackgroundView.transform = .identity
         contentBackgroundView.alpha = 1
-        contentView.alpha = 1
+        commentsVC.view.alpha = 1
         currentTransitionProgress = 0
         
         guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
@@ -325,6 +345,8 @@ private extension LiveVideoPlayerController {
             )
             
             liveVideoPlayer.hideControls()
+            
+            commentsVC.input.textView.resignFirstResponder()
             return
         }
         

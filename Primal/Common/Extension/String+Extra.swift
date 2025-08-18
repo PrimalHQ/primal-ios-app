@@ -263,6 +263,18 @@ extension String : Identifiable {
         }
         return text
     }
+    
+    func extractUserMentionsAsPubkeys() -> [String] {
+        let mentions = extractMentions()
+        
+        var pubkeys: [String] = []
+        for mention in mentions {
+            if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string, let pubkey = (try? decodedMetadata(from: mentionText).pubkey) ?? mentionText.npubToPubkey() {
+                pubkeys.append(pubkey)
+            }
+        }
+        return pubkeys
+    }
 }
 
 extension NSAttributedString {

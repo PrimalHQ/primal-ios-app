@@ -54,10 +54,7 @@ class LiveVideoChatMessageCell: UITableViewCell {
             .foregroundColor: UIColor.clear,
             .font: UIFont.appFont(withSize: 22, weight: .regular)
         ]))
-        text.append(.init(string: comment.text, attributes: [
-            .foregroundColor: UIColor.foreground3,
-            .font: UIFont.appFont(withSize: 15, weight: .regular)
-        ]))
+        text.append(comment.text)
         
         commentLabel.attributedText = text
     }

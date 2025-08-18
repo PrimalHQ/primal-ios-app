@@ -55,7 +55,6 @@ class LiveVideoChatZapCell: UITableViewCell {
         
         commentLabel.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 0).isActive = true
         
-        commentLabel.numberOfLines = 0
         commentLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         zapInfoLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         userNameLabel.setContentHuggingPriority(.required, for: .horizontal)
@@ -73,15 +72,12 @@ class LiveVideoChatZapCell: UITableViewCell {
         userImage.setUserImage(comment.user)
         userNameLabel.text = comment.user.data.firstIdentifier
         
-        if comment.text.isEmpty {
+        if comment.text.string.isEmpty {
             commentLabel.isHidden = true
             commentLabel.text = ""
         } else {
             commentLabel.isHidden = false
-            commentLabel.attributedText = .init(string: comment.text, attributes: [
-                .foregroundColor: UIColor.foreground3,
-                .font: UIFont.appFont(withSize: 15, weight: .regular)
-            ])
+            commentLabel.attributedText = comment.text
         }
         
         zapAmountLabel.text = comment.zapAmount.localized()

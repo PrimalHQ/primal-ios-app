@@ -163,7 +163,7 @@ class HomeFeedChildController: PostFeedViewController {
 }
 
 extension HomeFeedChildController: LivePreviewFeedCellDelegate {
-    func didSelectLive(_ live: ParsedLiveEvent, user: ParsedUser) {
+    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser) {
         present(LiveVideoPlayerController(live: live, user: user), animated: true)
     }
 }

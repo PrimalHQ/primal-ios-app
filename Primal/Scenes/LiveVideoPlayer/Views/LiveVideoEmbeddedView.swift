@@ -104,7 +104,7 @@ class LiveVideoEmbeddedView: UIView, Themeable {
         playPauseCancellable = nil
     }
     
-    func setup(player: VideoPlayer, live: ParsedLiveEvent) {
+    func setup(player: VideoPlayer, live: ProcessedLiveEvent) {
         self.player = player
         let player = player.avPlayer
         liveVideoView.player = player

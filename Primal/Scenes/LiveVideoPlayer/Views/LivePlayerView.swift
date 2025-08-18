@@ -46,7 +46,6 @@ class LivePlayerView: UIView {
             setCancellables()
         }
     }
-    var currentItem: AVPlayerItem? { player?.currentItem }
     
     let controlsView = UIView()
     
@@ -134,10 +133,8 @@ class LivePlayerView: UIView {
             }
         }), for: .touchUpInside)
         
-        muteButton.addAction(.init(handler: { [weak self] _ in
-            guard let player = self?.player else { return }
-
-            player.isMuted.toggle()
+        muteButton.addAction(.init(handler: { _ in
+            VideoPlaybackManager.instance.isMuted.toggle()
         }), for: .touchUpInside)
         
         seekPastButton.addAction(.init(handler: { [weak self] _ in
