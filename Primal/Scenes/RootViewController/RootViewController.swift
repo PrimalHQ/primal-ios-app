@@ -41,6 +41,35 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
+    var liveVideoController: LiveVideoPlayerController? {
+        didSet {
+            if oldValue != liveVideoController {
+                oldValue?.player.pause()
+            }
+            
+            if let liveVideoController {
+                livePlayer.setup(player: liveVideoController.player, live: liveVideoController.live)
+            } else {
+                livePlayer.removePlayer()
+                LiveVideoPlayerController.currentlyLivePip = nil
+            }
+            
+            if liveVideoController == nil {
+                UIView.animate(withDuration: 0.2) {
+                    self.livePlayer.alpha = 0
+                } completion: { _ in
+                    self.livePlayer.alpha = 1
+                    self.livePlayer.isHidden = true
+                }
+            } else {
+                livePlayer.isHidden = false
+                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 178, height: 100)
+            }
+        }
+    }
+    
+    var livePlayer = LiveVideoEmbeddedView()
+    
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
     var smoothScrollSpeed: Int = 100
@@ -77,6 +106,9 @@ final class RootViewController: UIViewController {
             self?.beginScrollAnimation()
         }), for: .touchUpInside)
         
+        view.addSubview(livePlayer)
+        livePlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
+        livePlayer.isHidden = true
         smoothScrollButton.isHidden = true
         
         _ = WalletManager.instance
@@ -107,6 +139,26 @@ final class RootViewController: UIViewController {
                 self?.navigateTo = $0
             })
             .store(in: &cancellables)
+        
+        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
+            guard let live = self?.liveVideoController else { return }
+            self?.present(live, animated: true)
+        })
+        
+        var oldTranslation = CGPoint.zero
+        let livePan = BindablePanGestureRecognizer(action: { [weak self] gesture in
+            guard let self, let liveVideoController else { return }
+            let translation = gesture.translation(in: nil)
+            
+            if gesture.state == .began {
+                oldTranslation = .zero
+            }
+            
+            livePlayer.frame.origin = .init(x: livePlayer.frame.origin.x + translation.x - oldTranslation.x, y: livePlayer.frame.origin.y + translation.y - oldTranslation.y)
+            oldTranslation = translation
+        })
+        
+        [liveTap, livePan].forEach { livePlayer.addGestureRecognizer($0) }
     }
     
     required init?(coder: NSCoder) {

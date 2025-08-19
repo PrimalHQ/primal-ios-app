@@ -30,7 +30,8 @@ class ParsedLiveComment {
 struct LiveDismissGestureState {
     var totalVerticalDistance: CGFloat
     var videoVerticalMove: CGFloat
-    var totalHorizontalDistance: CGFloat
+    var startHorizontalPosition: CGFloat
+    var finalHorizontalPosition: CGFloat
     var finalHorizontalScale: CGFloat
     var finalVerticalScale: CGFloat
     var initialTouchPoint: CGPoint
@@ -169,19 +170,17 @@ class LiveVideoPlayerController: UIViewController {
         try? AVAudioSession.sharedInstance().setActive(true)
         
         player.play()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        RootViewController.instance.liveVideoController = self
         
         if AVPictureInPictureController.isPictureInPictureSupported(), let pipController = AVPictureInPictureController(playerLayer: liveVideoPlayer.playerLayer) {
             pipController.startPictureInPicture()
             Self.currentlyLivePip = pipController
         }
-        
-        if let mainTabBarController: MainTabBarController = RootViewController.instance.findInChildren() {
-            mainTabBarController.liveVideoController = self
-        }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
         liveVideoPlayer.anchorPoint = (.init(x: 0, y: 0.5))
         liveVideoPlayer.transform = .init(translationX: -view.frame.width / 2, y: 0)
@@ -196,14 +195,12 @@ class LiveVideoPlayerController: UIViewController {
         Self.currentlyLivePip = nil
         
         if
-            let mainTabBarController: MainTabBarController = RootViewController.instance.findInChildren(),
             AVPictureInPictureController.isPictureInPictureSupported(),
-            let pipController = AVPictureInPictureController(playerLayer: mainTabBarController.livePlayer.liveVideoView.playerLayer)
+            let pipController = AVPictureInPictureController(playerLayer: RootViewController.instance.livePlayer.liveVideoView.playerLayer)
         {
             pipController.startPictureInPicture()
             Self.currentlyLivePip = pipController
         }
-        
     }
     
     func presentLivePopup(_ vc: UIViewController) {
@@ -246,7 +243,7 @@ class LiveVideoPlayerController: UIViewController {
         contentView.transform = .init(translationX: 0, y: progress.interpolatingBetween(start: 0, end: 1000))
         
         liveVideoPlayer.transform = CGAffineTransform(
-                translationX: -dgs.totalHorizontalDistance + progress.interpolatingBetween(start: 0, end: 4),
+                translationX: progress.interpolatingBetween(start: dgs.startHorizontalPosition, end: dgs.startHorizontalPosition + dgs.finalHorizontalPosition),
                 y: progress.interpolatingBetween(start: 0, end: dgs.videoVerticalMove)
             )
             .scaledBy(
@@ -265,9 +262,7 @@ class LiveVideoPlayerController: UIViewController {
         commentsVC.view.alpha = 1
         currentTransitionProgress = 0
         
-        guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
-
-        main.livePlayer.liveVideoView.alpha = 1
+        RootViewController.instance.livePlayer.liveVideoView.alpha = 1
     }
 }
 
@@ -328,7 +323,7 @@ private extension LiveVideoPlayerController {
         guard currentVideoRotation.isPortrait else { return }
         
         if case .began = gesture.state {
-            guard let main: MainTabBarController = presentingViewController?.findInChildren() else { return }
+            let main = RootViewController.instance
             
             main.livePlayer.liveVideoView.alpha = 0.01
             
@@ -336,9 +331,10 @@ private extension LiveVideoPlayerController {
             let large = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: nil)
             
             dismissGestureState = .init(
-                totalVerticalDistance: (small.midY - large.midY) / 2,
-                videoVerticalMove: (small.midY - large.midY) / 2,
-                totalHorizontalDistance: large.width / 2,
+                totalVerticalDistance: 500,
+                videoVerticalMove: (small.midY - large.midY) - 500,
+                startHorizontalPosition: -large.width / 2,
+                finalHorizontalPosition: small.minX,
                 finalHorizontalScale: small.width / large.width,
                 finalVerticalScale: small.height / large.height,
                 initialTouchPoint: touchPoint
@@ -369,8 +365,7 @@ private extension LiveVideoPlayerController {
                 UIView.animate(withDuration: 0.4) {
                     self.setTransition(progress: 1)
                 } completion: { _ in
-                    let main: MainTabBarController? = self.presentingViewController?.findInChildren()
-                    main?.livePlayer.liveVideoView.alpha = 1
+                    RootViewController.instance.livePlayer.liveVideoView.alpha = 1
                     
                     self.dismiss(animated: false) { [weak self] in
                         self?.resetDismissTransition()

@@ -41,7 +41,7 @@ final class MainTabBarController: UIViewController, Themeable {
     let notificationIndicator = NotificationsIndicator()
     
     private let buttonStackParent = UIView()
-    private(set) lazy var vStack = UIStackView(arrangedSubviews: [livePlayer, navigationBorder, buttonStackParent, safeAreaSpacer])
+    private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
     private let safeAreaSpacer = UIView()
     private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
         $0.backgroundColor = .background
@@ -63,8 +63,6 @@ final class MainTabBarController: UIViewController, Themeable {
     }
 
     private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
-    
-    var livePlayer = LiveVideoEmbeddedView()
     
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
 
@@ -107,38 +105,6 @@ final class MainTabBarController: UIViewController, Themeable {
         set {
             navigationBorder.alpha = newValue ? 1 : 0
             circleBorderView.alpha = newValue ? 1 : 0
-            livePlayer.isHidden = !newValue || liveVideoController == nil
-            
-            updateChildSafeAreaInsets()
-        }
-    }
-    
-    var liveVideoController: LiveVideoPlayerController? {
-        didSet {
-            if oldValue != liveVideoController {
-                oldValue?.player.pause()
-            }
-            
-            if let liveVideoController {
-                livePlayer.setup(player: liveVideoController.player, live: liveVideoController.live)
-            } else {
-                livePlayer.removePlayer()
-                LiveVideoPlayerController.currentlyLivePip = nil
-            }
-            
-            updateChildSafeAreaInsets()
-            
-            if liveVideoController == nil {
-                UIView.animate(withDuration: 0.2) {
-                    self.livePlayer.transform = .init(translationX: 0, y: 100)
-                    self.view.layoutIfNeeded()
-                } completion: { _ in
-                    self.livePlayer.transform = .identity
-                    self.livePlayer.isHidden = true
-                }
-            } else {
-                livePlayer.isHidden = !showTabBarBorder || liveVideoController == nil
-            }
         }
     }
 
@@ -282,10 +248,6 @@ final class MainTabBarController: UIViewController, Themeable {
 }
 
 private extension MainTabBarController {
-    func updateChildSafeAreaInsets() {
-        childSafeAreaInsets = .init(top: 0, left: 0, bottom: liveVideoController == nil || !showTabBarBorder ? 0 : 60, right: 0)
-    }
-    
     func setup() {
         IdentityManager.instance.requestUserProfile()
         
@@ -454,57 +416,6 @@ private extension MainTabBarController {
                 self?.menuButtonPressedForTab(tab)
             }), for: .touchUpInside)
         }
-        
-        livePlayer.isHidden = true
-        
-        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
-            guard let live = self?.liveVideoController else { return }
-            self?.present(live, animated: true)
-        })
-        let livePan = BindablePanGestureRecognizer(action: { [weak self] gesture in
-            guard let self, let liveVideoController else { return }
-            let touchPoint = gesture.location(in: view?.window)
-            
-            if case .began = gesture.state {
-                present(liveVideoController, animated: false) {
-                    liveVideoController.setTransition(progress: 1)
-                    liveVideoController.view.alpha = 1
-                }
-                liveVideoController.view.alpha = 0.01
-                liveVideoController.dismissGestureState?.initialTouchPoint = touchPoint
-                return
-            }
-            
-            guard let dgs = liveVideoController.dismissGestureState else { return }
-            
-            let delta = dgs.initialTouchPoint.y - touchPoint.y            
-            var percent = delta / (dgs.totalVerticalDistance)
-            percent = percent.clamp(0, 1)
-            
-            switch gesture.state {
-            case .changed, .began:
-                liveVideoController.setTransition(progress: 1 - percent)
-            case .ended, .cancelled:
-                let velocity = gesture.velocity(in: self.view)
-                if delta > 200 || velocity.y < -400 {
-                    UIView.animate(withDuration: 0.3) {
-                        liveVideoController.resetDismissTransition()
-                    }
-                } else {
-                    UIView.animate(withDuration: 0.4) {
-                        liveVideoController.setTransition(progress: 1)
-                    } completion: { _ in
-                        liveVideoController.dismiss(animated: false) { [weak liveVideoController] in
-                            liveVideoController?.resetDismissTransition()
-                        }
-                    }
-                }
-            default:
-                break
-            }
-        })
-        
-        [liveTap, livePan].forEach { livePlayer.addGestureRecognizer($0) }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher().sink(receiveValue: { res in

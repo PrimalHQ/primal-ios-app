@@ -162,12 +162,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         // so if delta is larger than 50 we ignore it
         if abs(delta) > 50 { return }
         
-        if mainTabBarController?.liveVideoController != nil {
-            setBarsToTransform(0)
-            return
-        }
-        
-        
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
         
