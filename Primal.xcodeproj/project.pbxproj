@@ -481,6 +481,7 @@
 		B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
+		B9A335232E54B5FE000B2CA7 /* LivePlayerMoveGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */; };
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
@@ -1210,6 +1211,7 @@
 		B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFullScreenViewController.swift; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
+		B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePlayerMoveGesture.swift; sourceTree = "<group>"; };
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
@@ -2048,6 +2050,7 @@
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
 				9E88349B2A211577005DB548 /* RootAnimatorToSignIn.swift */,
+				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
 			path = RootViewController;
 			sourceTree = "<group>";
@@ -3916,6 +3919,7 @@
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* NoteViewController.swift in Sources */,
 				B9E67ECF2D13201B006BB397 /* URL+Extra.swift in Sources */,
+				B9A335232E54B5FE000B2CA7 /* LivePlayerMoveGesture.swift in Sources */,
 				B9B9E5772CB57F700065DD7C /* ExploreZapsViewController.swift in Sources */,
 				B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */,
 				B9B9E56E2CB462370065DD7C /* ExploreMediaController.swift in Sources */,
@@ -4336,7 +4340,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.12;
+				MARKETING_VERSION = 2.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4385,7 +4389,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.12;
+				MARKETING_VERSION = 2.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

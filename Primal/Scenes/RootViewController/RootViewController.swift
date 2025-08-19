@@ -144,21 +144,9 @@ final class RootViewController: UIViewController {
             guard let live = self?.liveVideoController else { return }
             self?.present(live, animated: true)
         })
+        let move = LivePlayerMoveGesture()
         
-        var oldTranslation = CGPoint.zero
-        let livePan = BindablePanGestureRecognizer(action: { [weak self] gesture in
-            guard let self, let liveVideoController else { return }
-            let translation = gesture.translation(in: nil)
-            
-            if gesture.state == .began {
-                oldTranslation = .zero
-            }
-            
-            livePlayer.frame.origin = .init(x: livePlayer.frame.origin.x + translation.x - oldTranslation.x, y: livePlayer.frame.origin.y + translation.y - oldTranslation.y)
-            oldTranslation = translation
-        })
-        
-        [liveTap, livePan].forEach { livePlayer.addGestureRecognizer($0) }
+        [move, liveTap].forEach { livePlayer.addGestureRecognizer($0) }
     }
     
     required init?(coder: NSCoder) {

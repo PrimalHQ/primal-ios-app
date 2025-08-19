@@ -24,6 +24,7 @@ class LiveVideoEmbeddedView: UIView {
         
         clipsToBounds = true
         layer.cornerRadius = 6
+        backgroundColor = .black
         
         addSubview(liveVideoView)
         liveVideoView.pinToSuperview()
