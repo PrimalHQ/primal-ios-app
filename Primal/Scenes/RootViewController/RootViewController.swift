@@ -44,11 +44,11 @@ final class RootViewController: UIViewController {
     var liveVideoController: LiveVideoPlayerController? {
         didSet {
             if oldValue != liveVideoController {
-                oldValue?.player.pause()
+                oldValue?.player?.pause()
             }
             
-            if let liveVideoController {
-                livePlayer.setup(player: liveVideoController.player, live: liveVideoController.live)
+            if let liveVideoController, let player = liveVideoController.player {
+                livePlayer.setup(player: player, live: liveVideoController.live.event)
             } else {
                 livePlayer.removePlayer()
                 LiveVideoPlayerController.currentlyLivePip = nil
@@ -63,7 +63,7 @@ final class RootViewController: UIViewController {
                 }
             } else {
                 livePlayer.isHidden = false
-                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 178, height: 100)
+                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
             }
         }
     }
@@ -141,6 +141,18 @@ final class RootViewController: UIViewController {
             .store(in: &cancellables)
         
         let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
+            guard let livePlayer = self?.livePlayer else { return }
+            if livePlayer.showChevron {
+                UIView.animate(withDuration: 0.2) {
+                    livePlayer.showChevron = false
+                    if livePlayer.center.x < 0 {
+                        livePlayer.center.x += LivePlayerMoveGesture.hideAdjustment
+                    } else {
+                        livePlayer.center.x -= LivePlayerMoveGesture.hideAdjustment
+                    }
+                }
+                return
+            }
             guard let live = self?.liveVideoController else { return }
             self?.present(live, animated: true)
         })

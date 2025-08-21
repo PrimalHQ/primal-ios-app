@@ -48,6 +48,8 @@ class LargeZapGalleryView: UIView, ZapGallery {
     
     var singleLine: Bool = false
     
+    var lastShownZapIds: [String] = []
+    
     init(zapTapCallback: @escaping () -> ()) {
         zapPillTapCallback = zapTapCallback
         super.init(frame: .zero)
@@ -84,6 +86,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
     }
         
     func update() {
+        
         animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         stack.arrangedSubviews.forEach {
             $0.removeFromSuperview()
@@ -91,8 +94,10 @@ class LargeZapGalleryView: UIView, ZapGallery {
                 animationStack.addArrangedSubview($0)
             }
         }
+        
+        var oldShown = lastShownZapIds
         defer {
-            if animatingChanges {
+            if animatingChanges && oldShown != lastShownZapIds {
                 if zaps.count == 1 {
                     animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 }
@@ -101,9 +106,13 @@ class LargeZapGalleryView: UIView, ZapGallery {
             }
         }
         
+        lastShownZapIds = []
+        
         if let first = zaps.first {
+            
             let hStack = UIStackView(arrangedSubviews: [zapView(first, text: true)])
             stack.addArrangedSubview(hStack)
+            lastShownZapIds.append(first.receiptId)
             
             if zaps.count == 1 {
                 stack.addArrangedSubview(zapPillButton(title: "Zap"))
@@ -129,6 +138,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
             }
             
             hStack.addArrangedSubview(view)
+            lastShownZapIds.append(zap.receiptId)
         }
         
         hStack.addArrangedSubview(zapPillButton(title: "Zap"))

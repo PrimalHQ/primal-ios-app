@@ -77,7 +77,7 @@ class LiveVideoDetailsController: UIViewController, LiveVideoUserDetailsViewCont
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -200)
         
-        let liveDot = SpacerView(width: 6, height: 6, color: .init(rgb: 0xEE0000), priority: .required)
+        let liveDot = SpacerView(width: 6, height: 6, color: .live, priority: .required)
         liveDot.layer.cornerRadius = 3
         let liveStack = UIStackView([liveDot, liveLabel, SpacerView(width: 4), startedLabel, SpacerView(width: 4), countIcon, countLabel])
         liveStack.alignment = .center
@@ -111,7 +111,7 @@ class LiveVideoDetailsController: UIViewController, LiveVideoUserDetailsViewCont
         super.viewWillAppear(animated)
         
         countLabel.text = live.event.participants.localized()
-        startedLabel.text = "Started \(live.event.starts.timeAgoDisplay(addAgo: true))"
+        startedLabel.text = live.startedText
         titleLabel.text = live.event.title
         
         updateFollowButtons()

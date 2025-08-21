@@ -416,6 +416,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .article:
             guard let article = post.article else { return }
             showViewController(ArticleViewController(content: article))
+        case .live:
+            guard let live = post.embeddedLive else { return }
+            present(LiveVideoPlayerController(live: live), animated: true)
         case .payInvoice:
             guard let invoice = post.invoice else { return }
             search(invoice.string)

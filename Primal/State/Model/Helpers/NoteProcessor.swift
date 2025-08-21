@@ -310,7 +310,9 @@ class NoteProcessor: MetadataCoding {
                     return
                 }
                 
-                if kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue {
+                if kind == NostrKind.live.rawValue, let event: [String: JSON] = mention.encodeToString()?.decode(), let processed = ProcessedLiveEvent.fromEvent(event) {
+                    p.embeddedLive = ParsedLiveEvent(event: processed, user: response.createParsedUser(response.users[processed.pubkey] ?? PrimalUser(pubkey: processed.pubkey)))
+                } else if kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue {
                     p.article = Article(
                         id: id,
                         title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",

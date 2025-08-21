@@ -305,7 +305,7 @@ private extension ProfileViewController {
     @objc func profilePicTapped() {
         guard !profile.data.picture.isEmpty else { return }
         if let live = LiveEventManager.instance.liveEvent(for: profile.data.pubkey) {
-            present(LiveVideoPlayerController(live: live, user: profile), animated: true)
+            present(LiveVideoPlayerController(live: .init(event: live, user: profile)), animated: true)
             return
         }
         ImageGalleryController(current: profile.data.picture).present(from: self, imageView: navigationBar.profilePicture.animatedImageView)
@@ -484,5 +484,11 @@ extension ProfileViewController: MediaTripleCellDelegate {
         else { return }
         
         showViewController(ThreadViewController(post: media))
+    }
+}
+
+extension ProfileViewController: LivePreviewFeedCellDelegate {
+    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser) {
+        present(LiveVideoPlayerController(live: .init(event: live, user: user)), animated: true)
     }
 }

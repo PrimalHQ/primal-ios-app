@@ -293,7 +293,7 @@ class UserImageLivePill: UIView {
         updateHeight()
         
         backgroundColor = .init(rgb: 0x111111)
-        dotView.backgroundColor = .init(rgb: 0xEE0000)
+        dotView.backgroundColor = .live
         
         addSubview(stack)
         stack.centerToSuperview()

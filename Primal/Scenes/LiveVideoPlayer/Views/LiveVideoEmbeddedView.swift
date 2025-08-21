@@ -12,8 +12,21 @@ import UIKit
 class LiveVideoEmbeddedView: UIView {
     let liveVideoView = PlayerView()
     
-    let playButton = UIButton(configuration: .simpleImage(.embedPlayerPause)).constrainToSize(width: 32)
-    let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(width: 32)
+    private let playButton = UIButton(configuration: .simpleImage(.embedPlayerPause)).constrainToSize(32)
+    private let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(32)
+    
+    private let leftChevron = UIImageView(image: .livePlayerChevron)
+    private let rightChevron = UIImageView(image: .livePlayerChevron)
+    
+    var showChevron = false {
+        didSet {
+            leftChevron.isHidden = !showChevron
+            rightChevron.isHidden = !showChevron
+            
+            playButton.isHidden = showChevron
+            closeButton.isHidden = showChevron
+        }
+    }
     
     var player: VideoPlayer?
     
@@ -33,6 +46,16 @@ class LiveVideoEmbeddedView: UIView {
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 2)
+        
+        addSubview(leftChevron)
+        leftChevron.pinToSuperview(edges: [.leading, .vertical])
+        leftChevron.transform = .init(rotationAngle: .pi)
+        
+        addSubview(rightChevron)
+        rightChevron.pinToSuperview(edges: [.trailing, .vertical])
+        
+        leftChevron.isHidden = true
+        rightChevron.isHidden = true
                 
         liveVideoView.playerLayer.videoGravity = .resizeAspectFill
         

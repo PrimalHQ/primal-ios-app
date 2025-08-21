@@ -82,6 +82,7 @@ class LivePlayerView: UIView {
         
         addSubview(controlsView)
         controlsView.isHidden = true
+        controlsView.backgroundColor = .black.withAlphaComponent(0.25)
         controlsView.pinToSuperview()
         
         let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
@@ -117,7 +118,7 @@ class LivePlayerView: UIView {
         airplayButton.activeTintColor = .white
         airplayButton.tintColor = .white
         threeDotsButton.tintColor = .white
-        liveDot.backgroundColor = .init(rgb: 0xEE0000)
+        liveDot.backgroundColor = .live
         liveDot.layer.cornerRadius = 4
         
         threeDotsButton.centerToView(fullscreenButton, axis: .horizontal)
@@ -133,8 +134,12 @@ class LivePlayerView: UIView {
             }
         }), for: .touchUpInside)
         
-        muteButton.addAction(.init(handler: { _ in
-            VideoPlaybackManager.instance.isMuted.toggle()
+        muteButton.addAction(.init(handler: { [weak self] _ in
+            if self?.player?.isMuted == true {
+                VideoPlaybackManager.instance.isMuted = false
+            } else {
+                VideoPlaybackManager.instance.isMuted = true
+            }
         }), for: .touchUpInside)
         
         seekPastButton.addAction(.init(handler: { [weak self] _ in
@@ -165,8 +170,6 @@ class LivePlayerView: UIView {
                 self.hideControls()
             }
         }))
-        
-        
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -215,7 +218,7 @@ class LivePlayerView: UIView {
             let difference = CMTimeSubtract(livePosition, currentTime)
             let secondsFromLive = CMTimeGetSeconds(difference)
             
-            self?.liveDot.backgroundColor = secondsFromLive <= 5 ? .init(rgb: 0xEE0000) : .init(rgb: 0xAAAAAA)
+            self?.liveDot.backgroundColor = secondsFromLive <= 5 ? .live : .init(rgb: 0xAAAAAA)
         }
     }
 }

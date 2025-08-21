@@ -18,6 +18,7 @@ class LiveCommentsHeaderView: UIStackView {
     
     let configButton = UIButton(configuration: .simpleImage(.searchConfig))
     let infoButton = UIButton(configuration: .simpleImage(.liveInfo))
+    let closeButton = UIButton(configuration: .simpleImage(.liveCommentsClose))
     
     var small: Bool = false {
         didSet {
@@ -26,6 +27,9 @@ class LiveCommentsHeaderView: UIStackView {
             
             configButton.isHidden = small
             configButton.alpha = small ? 0 : 1
+            
+            infoButton.isHidden = small
+            infoButton.alpha = small ? 0 : 1
             
             layoutMargins = small ? .init(top: 0, left: 16, bottom: 0, right: 4) : .init(top: 8, left: 16, bottom: 12, right: 4)
         }
@@ -39,10 +43,10 @@ class LiveCommentsHeaderView: UIStackView {
         leftStack.spacing = 2
         leftStack.alignment = .leading
         
-        liveIcon.backgroundColor = .init(rgb: 0xEE0000)
+        liveIcon.backgroundColor = .live
         liveIcon.layer.cornerRadius = 3
         
-        let rightStack = UIStackView([configButton, infoButton])
+        let rightStack = UIStackView([configButton, infoButton, closeButton])
         
         [leftStack, UIView(), rightStack].forEach { addArrangedSubview($0) }
         alignment = .top

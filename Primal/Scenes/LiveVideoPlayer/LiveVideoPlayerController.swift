@@ -45,10 +45,9 @@ class LiveVideoPlayerController: UIViewController {
     let horizontalVideoPlayer = LargeLivePlayerView()
     let horizontalVideoParent = UIView()
     
-    let player: VideoPlayer
+    let player: VideoPlayer?
     
-    let live: ProcessedLiveEvent
-    let user: ParsedUser
+    let live: ParsedLiveEvent
     
     let safeAreaSpacer = UIView()
     var safeAreaConstraint: NSLayoutConstraint?
@@ -61,25 +60,32 @@ class LiveVideoPlayerController: UIViewController {
     var videoAspect: CGFloat = 16/9
     var dismissGestureState: LiveDismissGestureState?
     
-    private lazy var commentsVC = LiveVideoChatController(live: .init(event: live, user: user))
+    private lazy var commentsVC = LiveVideoChatController(live: live)
     
     var currentTransitionProgress: CGFloat = 0
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
     var isDismissingInteractively: Bool { currentTransitionProgress != 0 }
     
-    init(live: ProcessedLiveEvent, user: ParsedUser) {
+    init(live: ParsedLiveEvent) {
         self.live = live
-        self.user = user
-        player = VideoPlayer(url: live.liveURL, originalURL: "", userPubkey: "", isLive: true)
+        if let url = live.videoURL {
+            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", isLive: true)
+        } else {
+            player = nil
+        }
         
         VideoPlaybackManager.instance.currentlyPlaying = player
-        liveVideoPlayer.player = player.avPlayer
+        liveVideoPlayer.player = player?.avPlayer
         
         super.init(nibName: nil, bundle: nil)
         
+        DispatchQueue.main.async {
+            self.player?.avPlayer.isMuted = false
+        }
+        
         modalPresentationStyle = .overFullScreen
         
-        guard let asset = player.avPlayer.currentItem?.asset as? AVURLAsset else { return }
+        guard let asset = player?.avPlayer.currentItem?.asset as? AVURLAsset else { return }
         Task { [weak self] in
             do {
                 for variant in try await asset.load(.variants) {
@@ -148,7 +154,7 @@ class LiveVideoPlayerController: UIViewController {
         
         Timer.publish(every: 300, on: .main, in: .default).prepend(Date())
             .sink { [weak self] _ in
-                guard let live = self?.live, let event = NostrObject.liveWatchEvent(live: live) else { return }
+                guard let live = self?.live, let event = NostrObject.liveWatchEvent(live: live.event) else { return }
                 
                 PostingManager.instance.sendEvent(event, { _ in })
             }
@@ -169,7 +175,7 @@ class LiveVideoPlayerController: UIViewController {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         try? AVAudioSession.sharedInstance().setActive(true)
         
-        player.play()
+        player?.play()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -270,7 +276,7 @@ class LiveVideoPlayerController: UIViewController {
 
 private extension LiveVideoPlayerController {
     private func rotateVideoPlayer(for orientation: UIDeviceOrientation) {
-        guard currentTransitionProgress < 0.01 else { return }
+        guard currentTransitionProgress < 0.01, let avPlayer = player?.avPlayer else { return }
         
         let big = view.frame
         let small = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: view)
@@ -298,7 +304,7 @@ private extension LiveVideoPlayerController {
         case .landscapeLeft:
             horizontalVideoParent.isHidden = false
             liveVideoPlayer.playerView.alpha = 0
-            horizontalVideoPlayer.player = player.avPlayer
+            horizontalVideoPlayer.player = avPlayer
             
             UIView.animate(withDuration: 0.3) {
                 self.horizontalVideoParent.transform = .init(rotationAngle: .pi / 2)
@@ -306,7 +312,7 @@ private extension LiveVideoPlayerController {
         case .landscapeRight:
             horizontalVideoParent.isHidden = false
             liveVideoPlayer.playerView.alpha = 0
-            horizontalVideoPlayer.player = player.avPlayer
+            horizontalVideoPlayer.player = avPlayer
             
             UIView.animate(withDuration: 0.3) {
                 self.horizontalVideoParent.transform = .init(rotationAngle: .pi / -2)
@@ -410,7 +416,7 @@ extension LiveVideoPlayerController: AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         // The system pauses when returning from full screen, we need to 'resume' manually.
         coordinator.animate(alongsideTransition: nil) { [weak self] transitionContext in
-            self?.player.play()
+            self?.player?.play()
         }
     }
 }

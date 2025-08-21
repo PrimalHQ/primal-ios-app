@@ -12,40 +12,47 @@ public final class LivePlayerMoveGesture: UIPanGestureRecognizer {
     
     private var oldTranslation = CGPoint.zero
     
-    var botLeftPosition: CGPoint {
+    static let margin: CGFloat = 16
+    static let smallVideoWidth: CGFloat = 199
+    static let bottomBarMargin: CGFloat = 116
+    static let hideAdjustment: CGFloat = smallVideoWidth + margin - 24
+    
+    var liveView: LiveVideoEmbeddedView? { view as? LiveVideoEmbeddedView }
+    
+    static var botLeftPosition: CGPoint {
         let view = RootViewController.instance.view!
 
-        return CGPoint(x: 16 + 178 / 2, y: view.frame.height - view.safeAreaInsets.bottom - 116)
+        return CGPoint(x: margin + smallVideoWidth / 2, y: view.frame.height - view.safeAreaInsets.bottom - bottomBarMargin)
     }
     
-    private let extraSpacing: CGFloat = 1000
+    static private let extraSpacing: CGFloat = 1000
     
-    var edgePositions: [CGPoint] {
+    static var edgePositions: [CGPoint] {
         let view = RootViewController.instance.view!
 
-        let botRight = CGPoint(x: view.frame.width - (16 + 178 / 2), y: view.frame.height - view.safeAreaInsets.bottom - 116)
-        let topLeft = CGPoint(x: 16 + 178 / 2, y: view.safeAreaInsets.top + 116)
-        let topRight = CGPoint(x: view.frame.width - (16 + 178 / 2), y: view.safeAreaInsets.top + 116)
+        let botRight = CGPoint(x: view.frame.width - (margin + smallVideoWidth / 2), y: view.frame.height - view.safeAreaInsets.bottom - bottomBarMargin)
+        let topLeft = CGPoint(x: margin + smallVideoWidth / 2, y: view.safeAreaInsets.top + bottomBarMargin)
+        let topRight = CGPoint(x: view.frame.width - (margin + smallVideoWidth / 2), y: view.safeAreaInsets.top + bottomBarMargin)
         
-        let hiddenBotLeft = botLeftPosition.translated(by: .init(x: -160, y: 0))
-        let hiddenBotRight = botRight.translated(by: .init(x: 160, y: 0))
-        let hiddenTopLeft = topLeft.translated(by: .init(x: -160, y: 0))
-        let hiddenTopRight = topRight.translated(by: .init(x: 160, y: 0))
+        let hiddenBotLeft = botLeftPosition.translated(by: .init(x: -hideAdjustment, y: 0))
+        let hiddenBotRight = botRight.translated(by: .init(x: hideAdjustment, y: 0))
+        let hiddenTopLeft = topLeft.translated(by: .init(x: -hideAdjustment, y: 0))
+        let hiddenTopRight = topRight.translated(by: .init(x: hideAdjustment, y: 0))
         
         return [botLeftPosition, botRight, topLeft, topRight, hiddenBotLeft, hiddenBotRight, hiddenTopLeft, hiddenTopRight]
     }
     
-    var adjustedEdgePositions: [CGPoint] {
+    static var adjustedEdgePositions: [CGPoint] {
         let view = RootViewController.instance.view!
 
-        let botRight = CGPoint(x: view.frame.width - (16 + 178 / 2), y: view.frame.height - view.safeAreaInsets.bottom - 116)
-        let topLeft = CGPoint(x: 16 + 178 / 2, y: view.safeAreaInsets.top + 116)
-        let topRight = CGPoint(x: view.frame.width - (16 + 178 / 2), y: view.safeAreaInsets.top + 116)
+        let botRight = CGPoint(x: view.frame.width - (margin + smallVideoWidth / 2), y: view.frame.height - view.safeAreaInsets.bottom - bottomBarMargin)
+        let topLeft = CGPoint(x: margin + smallVideoWidth / 2, y: view.safeAreaInsets.top + bottomBarMargin)
+        let topRight = CGPoint(x: view.frame.width - (margin + smallVideoWidth / 2), y: view.safeAreaInsets.top + bottomBarMargin)
         
-        let hiddenBotLeft = botLeftPosition.translated(by: .init(x: -160 - extraSpacing, y: 0))
-        let hiddenBotRight = botRight.translated(by: .init(x: 160 + extraSpacing, y: 0))
-        let hiddenTopLeft = topLeft.translated(by: .init(x: -160 - extraSpacing, y: 0))
-        let hiddenTopRight = topRight.translated(by: .init(x: 160 + extraSpacing, y: 0))
+        let hiddenBotLeft = botLeftPosition.translated(by: .init(x: -hideAdjustment - extraSpacing, y: 0))
+        let hiddenBotRight = botRight.translated(by: .init(x: hideAdjustment + extraSpacing, y: 0))
+        let hiddenTopLeft = topLeft.translated(by: .init(x: -hideAdjustment - extraSpacing, y: 0))
+        let hiddenTopRight = topRight.translated(by: .init(x: hideAdjustment + extraSpacing, y: 0))
         
         return [botLeftPosition, botRight, topLeft, topRight, hiddenBotLeft, hiddenBotRight, hiddenTopLeft, hiddenTopRight]
     }
@@ -65,6 +72,8 @@ public final class LivePlayerMoveGesture: UIPanGestureRecognizer {
             oldTranslation = .zero
         case .changed:
             view.frame.origin = .init(x: view.frame.origin.x + translation.x - oldTranslation.x, y: view.frame.origin.y + translation.y - oldTranslation.y)
+            
+            self.liveView?.showChevron = view.center.x < -50 || view.center.x > rootView.frame.width + 50
         case .ended, .cancelled:
             let velocity = velocity(in: nil)
             
@@ -76,19 +85,19 @@ public final class LivePlayerMoveGesture: UIPanGestureRecognizer {
             var target: CGPoint
             
             if view.frame.minX < 0 || view.frame.maxX > rootView.frame.width {
-                target = edgePositions.min(by: {
+                target = Self.edgePositions.min(by: {
                     $0.distance(to: projectedPosition) < $1.distance(to: projectedPosition)
-                }) ?? botLeftPosition
+                }) ?? Self.botLeftPosition
             } else {
-                target = adjustedEdgePositions.min(by: {
+                target = Self.adjustedEdgePositions.min(by: {
                     $0.distance(to: projectedPosition) < $1.distance(to: projectedPosition)
-                }) ?? botLeftPosition
+                }) ?? Self.botLeftPosition
                 
                 // Unadjust positions
                 if target.x < 0 {
-                    target.x += extraSpacing
+                    target.x += Self.extraSpacing
                 } else if target.x > rootView.frame.width {
-                    target.x -= extraSpacing
+                    target.x -= Self.extraSpacing
                 }
             }
             
@@ -101,6 +110,7 @@ public final class LivePlayerMoveGesture: UIPanGestureRecognizer {
                 options: [.curveEaseOut],
                 animations: {
                     view.center = target
+                    self.liveView?.showChevron = target.x < 0 || target.x > rootView.frame.width
                 },
                 completion: nil
             )

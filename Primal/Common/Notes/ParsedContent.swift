@@ -97,6 +97,7 @@ final class ParsedContent: Hashable {
     
     var embeddedPosts: [ParsedContent] = []
     var embeddedZap: ParsedFeedZap?
+    var embeddedLive: ParsedLiveEvent?
     var reposted: ParsedRepost?
     
     var mentionedUsers: [PrimalUser] = []

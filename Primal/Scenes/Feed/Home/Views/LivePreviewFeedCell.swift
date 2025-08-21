@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 protocol LivePreviewFeedCellDelegate: AnyObject {
     func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser)
@@ -29,6 +30,7 @@ class LivePreviewFeedCell: UITableViewCell {
         collectionView.delegate = self
         collectionView.register(LivePreviewFeedCellCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.clipsToBounds = false
         
         if let flow = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             flow.scrollDirection = .horizontal
@@ -73,10 +75,10 @@ extension LivePreviewFeedCell: UICollectionViewDataSource {
 extension LivePreviewFeedCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if lives.count == 1 {
-            return .init(width: frame.width - 16, height: 48)
+            return .init(width: frame.width - 16, height: 58)
         }
         
-        return .init(width: frame.width * 0.8, height: 48)
+        return .init(width: frame.width * 0.8, height: 58)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -90,10 +92,15 @@ class LivePreviewFeedCellCell: UICollectionViewCell {
     let watchersIcon = UIImageView(image: .livePillUser)
     let watcherCountLabel = UILabel("", color: .white, font: .appFont(withSize: 16, weight: .bold))
     let textLabel = HorizontallyScrollingLabel()
-    let liveIcon = UIImageView(image: .livePillLive)
+    let liveIcon = LottieAnimationView(animation: AnimationType.liveIcon.animation).constrainToSize(20)
+    
+    let background = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        contentView.addSubview(background)
+        background.pinToSuperview(edges: .vertical, padding: 5).pinToSuperview(edges: .horizontal)
         
         let userBackground = UIView()
         userBackground.addSubview(userImage)
@@ -106,13 +113,17 @@ class LivePreviewFeedCellCell: UICollectionViewCell {
         mainStack.spacing = 10
         mainStack.alignment = .center
         contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: [.leading, .vertical], padding: 2).pinToSuperview(edges: .trailing, padding: 12)
+        mainStack.pinToSuperview(edges: [.leading], padding: 2).pinToSuperview(edges: .trailing, padding: 12).pinToSuperview(edges: .vertical, padding: 7)
         
         userImage.showLivePill = false
         
         [watchersIcon, watcherCountLabel, liveIcon].forEach { $0.setContentHuggingPriority(.required, for: .horizontal) }
         
-        contentView.layer.cornerRadius = 24
+        liveIcon.loopMode = .loop
+        
+        background.layer.cornerRadius = 24
+        contentView.clipsToBounds = false
+        clipsToBounds = false
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -127,8 +138,38 @@ class LivePreviewFeedCellCell: UICollectionViewCell {
         watcherCountLabel.text = live.participants.localized()
         
         textLabel.backgroundColor = .accent
-        contentView.backgroundColor = .accent
+        background.backgroundColor = .accent
+        
+        background.startPulsingXY()
+        
+        liveIcon.play()
     }
+}
+
+private extension UIView {
+    func startPulsingXY(scaleX: CGFloat = 1.01, scaleY: CGFloat = 1.05) {
+        let pulseAnimation = CAKeyframeAnimation(keyPath: "transform")
+        
+        // Build keyframe transforms
+        let identity = CATransform3DIdentity
+        let scaledUp = CATransform3DMakeScale(scaleX, scaleY, 1)
+        
+        pulseAnimation.values = [
+            identity,    // start
+            scaledUp,    // scale up
+            identity,    // back to normal
+            identity     // pause at normal
+        ]
+        
+        pulseAnimation.keyTimes = [0, 0.25, 0.5, 1]  // 0.5s up, 0.5s down, 1s pause
+        pulseAnimation.duration = 2
+        pulseAnimation.repeatCount = .infinity
+        pulseAnimation.isRemovedOnCompletion = false
+        pulseAnimation.calculationMode = .linear
+        
+        layer.add(pulseAnimation, forKey: "pulseXY")
+    }
+
 }
 
 class HorizontallyScrollingLabel: UIView {

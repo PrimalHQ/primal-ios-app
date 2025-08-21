@@ -482,6 +482,9 @@
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
 		B9A335232E54B5FE000B2CA7 /* LivePlayerMoveGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */; };
+		B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */; };
+		B9A335272E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335262E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift */; };
+		B9A335292E562773000B2CA7 /* liveIconAnimation.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A335282E562773000B2CA7 /* liveIconAnimation.json */; };
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
@@ -1212,6 +1215,9 @@
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
 		B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePlayerMoveGesture.swift; sourceTree = "<group>"; };
+		B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementLivePreviewCell.swift; sourceTree = "<group>"; };
+		B9A335262E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementLivePreviewCell.swift; sourceTree = "<group>"; };
+		B9A335282E562773000B2CA7 /* liveIconAnimation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = liveIconAnimation.json; sourceTree = "<group>"; };
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
@@ -1830,6 +1836,7 @@
 				B9CE4DC12B740A4D0060A1B8 /* loadingDots.json */,
 				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
 				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
+				B9A335282E562773000B2CA7 /* liveIconAnimation.json */,
 				B9CE4DBD2B715DB80060A1B8 /* notificationLightning.json */,
 				B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */,
 				B906AAD92C91C46D0089813F /* smallPillLoader.json */,
@@ -3140,6 +3147,7 @@
 				B9FAC64B2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift */,
 				B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */,
 				B9DAA4602D53DC2C00B00B82 /* FeedElementTidalPreviewCell.swift */,
+				B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */,
 				B9E67E862D076354006BB397 /* FeedElementInfoCell.swift */,
 				B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */,
 				B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */,
@@ -3189,6 +3197,7 @@
 				B9DAA4622D53E48400B00B82 /* ThreadElementTidalPreviewCell.swift */,
 				B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */,
 				B9E67E982D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift */,
+				B9A335262E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift */,
 				B9E67EA02D09D8F9006BB397 /* ThreadElementReactionsCell.swift */,
 			);
 			path = Thread;
@@ -3501,6 +3510,7 @@
 				B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
+				B9A335292E562773000B2CA7 /* liveIconAnimation.json in Resources */,
 				B94429282BD592C400746FBC /* zapGallerySkeleton.json in Resources */,
 				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
@@ -3608,6 +3618,7 @@
 				B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
+				B9A335272E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift in Sources */,
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
 				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */,
@@ -4064,6 +4075,7 @@
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				B9E67E912D07682B006BB397 /* FeedElementArticleCell.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
+				B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */,
 				B99E03AB2C0DFB9F006CCECB /* PostTagsView.swift in Sources */,
 				B9C672E42E2FDDA900243B45 /* SimpleHelperViews.swift in Sources */,
 				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
@@ -4340,7 +4352,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.13;
+				MARKETING_VERSION = 2.5.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4389,7 +4401,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.13;
+				MARKETING_VERSION = 2.5.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -15,11 +15,19 @@ class EmbeddedPostController<T: FeedElementBaseCell>: NoteViewController {
     
     var allowAdvancedInteraction: Bool
     
+    var heightOverride: CGFloat? {
+        didSet {
+            if let heightOverride {
+                heightConstraint?.constant = heightOverride
+            }
+        }
+    }
+    
     override var posts: [ParsedContent] {
         didSet {
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
                 guard let cell = self.table.visibleCells.first else { return }
-                self.heightConstraint?.constant = cell.contentView.frame.height
+                self.heightConstraint?.constant = self.heightOverride ?? cell.contentView.frame.height
             }
         }
     }
@@ -48,7 +56,7 @@ class EmbeddedPostController<T: FeedElementBaseCell>: NoteViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
             guard let cell = self.table.visibleCells.first else { return }
-            self.heightConstraint?.constant = cell.contentView.frame.height
+            self.heightConstraint?.constant = self.heightOverride ?? cell.contentView.frame.height
         }
     }
     

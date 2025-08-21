@@ -15,7 +15,7 @@ import NostrSDK
 class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
     func reloadZaps() {
         table.reloadData()
-        self.heightConstraint?.constant = (posts.first?.zaps.count ?? 0) > 0 ? 64 : 30
+        self.heightConstraint?.constant = 64
     }
 }
 
@@ -68,6 +68,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsInfoVC.didMove(toParent: self)
         
         zapsInfoVC.posts = [post]
+        zapsInfoVC.heightOverride = 64
         
         let stack = UIStackView(axis: .vertical, [
             header,
@@ -138,7 +139,13 @@ class LiveVideoChatController: UIViewController, Themeable {
         header.infoButton.addAction(.init(handler: { [weak self] _ in
             guard let videoVC = self?.parent as? LiveVideoPlayerController else { return }
             
-            videoVC.presentLivePopup(LiveVideoDetailsController(live: .init(event: videoVC.live, user: videoVC.user)))
+            videoVC.presentLivePopup(LiveVideoDetailsController(live: videoVC.live))
+        }), for: .touchUpInside)
+        
+        header.closeButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.post.zaps = []
+            self.zapsInfoVC.reloadZaps()
         }), for: .touchUpInside)
     }
     
@@ -147,9 +154,14 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         updateTheme()
         
-        header.countLabel.text = live.event.participants.localized()
-        header.timeLabel.text = "Started \(live.event.starts.timeAgoDisplay(addAgo: true))"
         header.titleLabel.text = live.event.title
+        header.countLabel.text = live.event.participants.localized()
+        header.timeLabel.text = live.startedText
+        if live.isLive {
+            header.liveIcon.backgroundColor = .live
+        } else {
+            header.liveIcon.backgroundColor = .foreground4
+        }
     }
     
     func updateTheme() {
@@ -207,6 +219,19 @@ private extension LiveVideoChatController {
             return $0.createdAt < $1.createdAt
         })
         self.zapsInfoVC.reloadZaps()
+    }
+    
+    func addZap(_ zap: ParsedZap) {
+        post.zaps.append(zap)
+        post.zaps.sort(by: {
+            guard $0.amountSats == $1.amountSats else { return $0.amountSats > $1.amountSats }
+            
+            return $0.createdAt < $1.createdAt
+        })
+        WalletManager.instance.zapEvent.send(zap)
+        DispatchQueue.main.async {
+            self.zapsInfoVC.reloadZaps()
+        }
     }
     
     func jsonToZapComment(_ json: JSON) -> ParsedLiveComment? {
@@ -334,8 +359,8 @@ private extension LiveVideoChatController {
                         let pubkey = zapReceipt["pubkey"]?.stringValue
                     else { return }
                     
-                    if let amountS = tags.tagValueForKey("amount") {
-                        amount = Int(amountS) ?? amount
+                    if let zapTags = zapReceipt["tags"]?.arrayValue, let amountS = zapTags.tagValueForKey("amount") {
+                        amount = (Int(amountS) ?? amount) / 1000
                     }
                     
                     event = zapReceipt
@@ -354,7 +379,7 @@ private extension LiveVideoChatController {
                     self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content), event: event, zapAmount: amount), at: 0)
                     self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
                     if let zap = self.jsonToZap(.object(event)) {
-                        self.addZaps([zap])
+                        self.addZap(zap)
                     }
                     return
                 }
@@ -363,17 +388,21 @@ private extension LiveVideoChatController {
                     .receive(on: DispatchQueue.main)
                     .sink { [weak self] res in
                         guard let self else { return }
-                        let user = res.getSortedUsers().first
-                        if let user {
+                        
+                        for user in res.getSortedUsers() {
                             userCache[user.data.pubkey] = user
                         }
+                        
                         comments.insert(ParsedLiveComment(
-                            user: user ?? .init(data: .init(pubkey: userPubkey)),
+                            user: userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
                             comment: parsedComment(content),
                             event: event,
                             zapAmount: amount
                         ), at: 0)
                         commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
+                        if let zap = jsonToZap(.object(event)) {
+                            addZap(zap)
+                        }
                     }
                     .store(in: &self.cancellables)
             }
