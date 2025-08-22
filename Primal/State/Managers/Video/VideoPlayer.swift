@@ -1,42 +1,12 @@
 //
-//  VideoPlaybackManager.swift
+//  VideoPlayer.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 29.8.23..
+//  Created by Pavle Stevanović on 22. 8. 2025..
 //
 
 import Foundation
-import AVFoundation
-
-final class VideoPlaybackManager {
-    static let instance = VideoPlaybackManager()
-    
-    @Published var isMuted = true {
-        didSet {
-            if isMuted {
-                try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
-            } else {
-                try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            }
-            currentlyPlaying?.avPlayer.isMuted = isMuted
-        }
-    }
-    
-    var currentlyPlaying: VideoPlayer? {
-        didSet {
-            if oldValue !== currentlyPlaying {
-                oldValue?.pause()
-            }
-            
-            if currentlyPlaying?.isLive == false {
-                currentlyPlaying?.avPlayer.isMuted = isMuted
-            }
-            currentlyPlaying?.avPlayer.play()
-        }
-    }
-    
-    var isLive: Bool { currentlyPlaying?.isLive == true && currentlyPlaying?.isPlaying == true }
-}
+import AVKit
 
 class VideoPlayer: NSObject {
     
@@ -52,13 +22,15 @@ class VideoPlayer: NSObject {
     var url: String
     var userPubkey: String
     var originalURL: String
-    var isLive: Bool
     
-    init(url: String, originalURL: String, userPubkey: String, isLive: Bool = false) {
+    var live: ParsedLiveEvent?
+    var isLive: Bool { live != nil }
+    
+    init(url: String, originalURL: String, userPubkey: String, live: ParsedLiveEvent? = nil) {
         self.url = url
         self.originalURL = originalURL
         self.userPubkey = userPubkey
-        self.isLive = isLive
+        self.live = live
         super.init()
         
         if ContentDisplaySettings.autoPlayVideos {
@@ -73,13 +45,6 @@ class VideoPlayer: NSObject {
     func play() {
         shouldPause = false
         isPlaying = true
-        
-//        avPlayer.isMuted = isMuted
-//        if isMuted {
-//            try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
-//        } else {
-//            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-//        }
         
         VideoPlaybackManager.instance.currentlyPlaying = self
     }
@@ -103,17 +68,19 @@ class VideoPlayer: NSObject {
         guard let url = URL(string: url) else { return AVPlayer() }
         
         if isLive {
-            return AVPlayer(url: url)
+            let player = AVPlayer(url: url)
+            player.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
+            return player
         }
         
         let queuePlayer = AVQueuePlayer()
-        
         
         let item = AVPlayerItem(url: url)
         looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
         
         looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         didInitPlayer = true
+        queuePlayer.isMuted = true
         return queuePlayer
     }
 

@@ -63,6 +63,9 @@ class LiveVideoChatController: UIViewController, Themeable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        zapsLoadingView.isUserInteractionEnabled = false
+        chatLoadingView.isUserInteractionEnabled = false
+        
         infoParent.addSubview(zapsInfoVC.view)
         zapsInfoVC.view.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .top).pinToSuperview(edges: .bottom, padding: 12)
         
@@ -290,7 +293,6 @@ private extension LiveVideoChatController {
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()
-        .receive(on: DispatchQueue.main)
         .sink { [weak self] res in
             guard let self else { return }
             
@@ -303,41 +305,55 @@ private extension LiveVideoChatController {
             pubkeys += commentEvents.flatMap { $0["content"]?.stringValue?.extractUserMentionsAsPubkeys() ?? [] }
             pubkeys = pubkeys.unique().filter({ self.userCache[$0] == nil })
             
-            SocketRequest(name: "user_infos", payload: ["pubkeys": .array(pubkeys.map({ .string($0) }))]).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    guard let self else { return }
-                    
-                    zapsLoadingView.pause()
-                    zapsLoadingView.isHidden = true
-                    chatLoadingView.pause()
-                    chatLoadingView.isHidden = true
-                    
-                    for user in res.getSortedUsers() {
-                        userCache[user.data.pubkey] = user
-                    }
-                    
-                    let zapComments: [ParsedLiveComment] = zapReceipts.compactMap({ self.jsonToZapComment($0.1) })
-                    
-                    let comments: [ParsedLiveComment] = commentEvents
-                        .compactMap({ event in
-                            guard
-                                let userPubkey = event["pubkey"]?.stringValue,
-                                let content = event["content"]?.stringValue
-                            else { return nil }
-                            
-                            return .init(
-                                user: self.userCache[userPubkey] ?? ParsedUser(data: .init(pubkey: userPubkey)),
-                                comment: self.parsedComment(content),
-                                event: event
-                            )
-                        })
-                    
-                    self.comments += (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
-                    addZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
-                    commentsTable.reloadData()
+            let splitPubkeys = pubkeys.splitInSubArrays(into: max(1, pubkeys.count / 50))
+            
+            let publishers = splitPubkeys.map { SocketRequest(name: "user_infos", payload: ["pubkeys": .array($0.map({ .string($0) }))]).publisher().map({ $0.getSortedUsers() }).eraseToAnyPublisher() }
+            let first = publishers.first ?? SocketRequest(name: "user_infos", payload: ["pubkeys": .array(pubkeys.map({ .string($0) }))]).publisher().map({ $0.getSortedUsers() }).eraseToAnyPublisher()
+            
+            let sequenced = publishers.dropFirst()
+                .reduce(first) { acc, next in
+                    acc.append(next).eraseToAnyPublisher()
                 }
-                .store(in: &cancellables)
+                .collect()
+                .map { $0.reduce(Array<ParsedUser>(), +) }
+            
+            DispatchQueue.main.async {
+                sequenced
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] users in
+                        guard let self else { return }
+                        
+                        zapsLoadingView.pause()
+                        zapsLoadingView.isHidden = true
+                        chatLoadingView.pause()
+                        chatLoadingView.isHidden = true
+                        
+                        for user in users {
+                            userCache[user.data.pubkey] = user
+                        }
+                        
+                        let zapComments: [ParsedLiveComment] = zapReceipts.compactMap({ self.jsonToZapComment($0.1) })
+                        
+                        let comments: [ParsedLiveComment] = commentEvents
+                            .compactMap({ event in
+                                guard
+                                    let userPubkey = event["pubkey"]?.stringValue,
+                                    let content = event["content"]?.stringValue
+                                else { return nil }
+                                
+                                return .init(
+                                    user: self.userCache[userPubkey] ?? ParsedUser(data: .init(pubkey: userPubkey)),
+                                    comment: self.parsedComment(content),
+                                    event: event
+                                )
+                            })
+                        
+                        self.comments += (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
+                        addZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
+                        commentsTable.reloadData()
+                    }
+                    .store(in: &self.cancellables)
+            }
         }
         .store(in: &cancellables)
         

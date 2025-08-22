@@ -43,15 +43,15 @@ final class RootViewController: UIViewController {
     
     var liveVideoController: LiveVideoPlayerController? {
         didSet {
-            if oldValue != liveVideoController {
-                oldValue?.player?.pause()
+            if VideoPlaybackManager.instance.currentlyPlaying == oldValue?.player && oldValue != liveVideoController {
+                VideoPlaybackManager.instance.currentlyPlaying = nil
             }
             
             if let liveVideoController, let player = liveVideoController.player {
                 livePlayer.setup(player: player, live: liveVideoController.live.event)
             } else {
                 livePlayer.removePlayer()
-                LiveVideoPlayerController.currentlyLivePip = nil
+                VideoPlaybackManager.instance.currentlyLivePip = nil
             }
             
             if liveVideoController == nil {
@@ -79,6 +79,11 @@ final class RootViewController: UIViewController {
     var didFinishInit = false
     
     @Published var navigateTo: DeeplinkNavigation?
+    
+    var myPip: AVPictureInPictureController? {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else { return nil }
+        return AVPictureInPictureController(playerLayer: livePlayer.playerView.playerLayer)
+    }
     
     private init() {
         super.init(nibName: nil, bundle: nil)

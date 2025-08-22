@@ -95,6 +95,7 @@ class LivePlayerView: UIView {
         bufferingSpinner.loopMode = .loop
         
         addSubview(loadingAnimationView)
+        loadingAnimationView.isUserInteractionEnabled = false
         loadingAnimationView.pinToSuperview()
         loadingAnimationView.loopMode = .loop
         loadingAnimationView.contentMode = .scaleAspectFill
@@ -140,8 +141,8 @@ class LivePlayerView: UIView {
         airplayButton.centerToView(muteButton, axis: .horizontal)
         
         playPauseButton.addAction(.init(handler: { [weak self] _ in
-            guard let player = self?.player?.avPlayer else { return }
-            if player.timeControlStatus == .playing {
+            guard let player = self?.player else { return }
+            if player.isPlaying {
                 player.pause()
                 self?.liveDot.backgroundColor = .init(rgb: 0xAAAAAA)
             } else {

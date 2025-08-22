@@ -24,7 +24,7 @@ final class VideoCell: UICollectionViewCell {
     
     var player: VideoPlayer? {
         didSet {
-            muteUpdater = VideoPlaybackManager.instance.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
+            muteUpdater = VideoPlaybackManager.instance.isMutedPublisher.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
                 self?.muteButton.buttonState = isMuted ? .muted : .unmuted
             })
             

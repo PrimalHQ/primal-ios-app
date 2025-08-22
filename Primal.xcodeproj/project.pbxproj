@@ -258,6 +258,7 @@
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
+		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -996,6 +997,7 @@
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
+		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -1794,6 +1796,7 @@
 		93F27DA22A27E7F5004ADA55 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				B90DB0632E58DDDF00A67D4A /* Video */,
 				B9B9E5652CB442050065DD7C /* FeedManagers */,
 				B9C6D23E2CAC53CD00B2EEBE /* HelperExtensions */,
 				B906AB142C9B52A40089813F /* Database */,
@@ -2356,7 +2359,6 @@
 				B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */,
 				B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */,
 				9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */,
-				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B9009B682B1F4577002B0613 /* CachingManager.swift */,
 				B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */,
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
@@ -2407,6 +2409,15 @@
 				B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */,
 			);
 			path = Database;
+			sourceTree = "<group>";
+		};
+		B90DB0632E58DDDF00A67D4A /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
+				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
+			);
+			path = Video;
 			sourceTree = "<group>";
 		};
 		B914CD752AA62EDC00CD0BD1 /* ImageCollection */ = {
@@ -3821,6 +3832,7 @@
 				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				B91EF0E42CECDE1600299ECF /* UserImageView.swift in Sources */,
+				B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */,
 				9EE07AB92A1CF6CA00FB6C86 /* ThemingManager.swift in Sources */,
 				B91E56F72CC04A8F00C14809 /* FilterSliderView.swift in Sources */,
 				93B7FE7A2A0AB118005AE313 /* AnyDecodable.swift in Sources */,
@@ -4368,7 +4380,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.20;
+				MARKETING_VERSION = 2.5.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4417,7 +4429,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.20;
+				MARKETING_VERSION = 2.5.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
