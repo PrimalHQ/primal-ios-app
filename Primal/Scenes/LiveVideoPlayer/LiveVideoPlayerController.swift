@@ -75,7 +75,7 @@ class LiveVideoPlayerController: UIViewController {
         }
         
         VideoPlaybackManager.instance.currentlyPlaying = player
-        liveVideoPlayer.player = player?.avPlayer
+        liveVideoPlayer.player = player
         
         super.init(nibName: nil, bundle: nil)
         
@@ -202,7 +202,7 @@ class LiveVideoPlayerController: UIViewController {
         
         if
             AVPictureInPictureController.isPictureInPictureSupported(),
-            let pipController = AVPictureInPictureController(playerLayer: RootViewController.instance.livePlayer.liveVideoView.playerLayer)
+            let pipController = AVPictureInPictureController(playerLayer: RootViewController.instance.livePlayer.playerView.playerLayer)
         {
             pipController.startPictureInPicture()
             Self.currentlyLivePip = pipController
@@ -268,7 +268,7 @@ class LiveVideoPlayerController: UIViewController {
         commentsVC.view.alpha = 1
         currentTransitionProgress = 0
         
-        RootViewController.instance.livePlayer.liveVideoView.alpha = 1
+        RootViewController.instance.livePlayer.alpha = 1
     }
 }
 
@@ -276,7 +276,7 @@ class LiveVideoPlayerController: UIViewController {
 
 private extension LiveVideoPlayerController {
     private func rotateVideoPlayer(for orientation: UIDeviceOrientation) {
-        guard currentTransitionProgress < 0.01, let avPlayer = player?.avPlayer else { return }
+        guard currentTransitionProgress < 0.01, let player else { return }
         
         let big = view.frame
         let small = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: view)
@@ -304,7 +304,7 @@ private extension LiveVideoPlayerController {
         case .landscapeLeft:
             horizontalVideoParent.isHidden = false
             liveVideoPlayer.playerView.alpha = 0
-            horizontalVideoPlayer.player = avPlayer
+            horizontalVideoPlayer.player = player
             
             UIView.animate(withDuration: 0.3) {
                 self.horizontalVideoParent.transform = .init(rotationAngle: .pi / 2)
@@ -312,7 +312,7 @@ private extension LiveVideoPlayerController {
         case .landscapeRight:
             horizontalVideoParent.isHidden = false
             liveVideoPlayer.playerView.alpha = 0
-            horizontalVideoPlayer.player = avPlayer
+            horizontalVideoPlayer.player = player
             
             UIView.animate(withDuration: 0.3) {
                 self.horizontalVideoParent.transform = .init(rotationAngle: .pi / -2)
@@ -331,9 +331,9 @@ private extension LiveVideoPlayerController {
         if case .began = gesture.state {
             let main = RootViewController.instance
             
-            main.livePlayer.liveVideoView.alpha = 0.01
+            main.livePlayer.alpha = 0.01
             
-            let small = main.livePlayer.liveVideoView.convert(main.livePlayer.liveVideoView.bounds, to: nil)
+            let small = main.livePlayer.convert(main.livePlayer.bounds, to: nil)
             let large = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: nil)
             
             dismissGestureState = .init(
@@ -371,7 +371,7 @@ private extension LiveVideoPlayerController {
                 UIView.animate(withDuration: 0.4) {
                     self.setTransition(progress: 1)
                 } completion: { _ in
-                    RootViewController.instance.livePlayer.liveVideoView.alpha = 1
+                    RootViewController.instance.livePlayer.alpha = 1
                     
                     self.dismiss(animated: false) { [weak self] in
                         self?.resetDismissTransition()
@@ -408,6 +408,7 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
             } else {
                 rotateVideoPlayer(for: .portrait)
             }
+        default: break
         }
     }
 }

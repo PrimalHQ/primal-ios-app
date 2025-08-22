@@ -368,7 +368,7 @@ extension NostrObject {
 
         return createNostrObject(content: "", kind: 10312, tags: [
             ["a", "\(NostrKind.live.rawValue):\(live.pubkey):\(live.dTag)", relay, "root"],
-            ["hand", "1"], // hand raised flag
+          //  ["hand", "1"], // hand raised flag
             ["client", "Primal-iOS-App"]
         ])
     }

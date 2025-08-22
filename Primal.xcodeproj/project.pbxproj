@@ -485,6 +485,10 @@
 		B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */; };
 		B9A335272E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335262E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift */; };
 		B9A335292E562773000B2CA7 /* liveIconAnimation.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A335282E562773000B2CA7 /* liveIconAnimation.json */; };
+		B9A335382E5778DE000B2CA7 /* liveBufferSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A335372E5778DE000B2CA7 /* liveBufferSpinner.json */; };
+		B9A3353C2E58950D000B2CA7 /* videoLoadingScreen.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A3353B2E58950D000B2CA7 /* videoLoadingScreen.json */; };
+		B9A3353E2E589626000B2CA7 /* ZapGalleryLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A3353D2E589619000B2CA7 /* ZapGalleryLoadingView.swift */; };
+		B9A335402E589C03000B2CA7 /* LiveChatLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A3353F2E589BEB000B2CA7 /* LiveChatLoadingView.swift */; };
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
@@ -1218,6 +1222,10 @@
 		B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementLivePreviewCell.swift; sourceTree = "<group>"; };
 		B9A335262E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementLivePreviewCell.swift; sourceTree = "<group>"; };
 		B9A335282E562773000B2CA7 /* liveIconAnimation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = liveIconAnimation.json; sourceTree = "<group>"; };
+		B9A335372E5778DE000B2CA7 /* liveBufferSpinner.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = liveBufferSpinner.json; sourceTree = "<group>"; };
+		B9A3353B2E58950D000B2CA7 /* videoLoadingScreen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreen.json; sourceTree = "<group>"; };
+		B9A3353D2E589619000B2CA7 /* ZapGalleryLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapGalleryLoadingView.swift; sourceTree = "<group>"; };
+		B9A3353F2E589BEB000B2CA7 /* LiveChatLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatLoadingView.swift; sourceTree = "<group>"; };
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
@@ -1837,6 +1845,7 @@
 				9E40D6ED2A0D22D4008AE854 /* loadingSpinner.json */,
 				9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */,
 				B9A335282E562773000B2CA7 /* liveIconAnimation.json */,
+				B9A335372E5778DE000B2CA7 /* liveBufferSpinner.json */,
 				B9CE4DBD2B715DB80060A1B8 /* notificationLightning.json */,
 				B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */,
 				B906AAD92C91C46D0089813F /* smallPillLoader.json */,
@@ -1845,6 +1854,7 @@
 				B94429212BD2866D00746FBC /* thread-zap-medium.json */,
 				B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */,
 				B9CE4DA82B682C840060A1B8 /* transferSuccess.json */,
+				B9A3353B2E58950D000B2CA7 /* videoLoadingScreen.json */,
 				B9CE4DB82B6D101A0060A1B8 /* walletLightning.json */,
 				B944291F2BD2836800746FBC /* zap-medium.json */,
 				B94429272BD592C400746FBC /* zapGallerySkeleton.json */,
@@ -2971,6 +2981,8 @@
 		B9C672DE2E2FB5DE00243B45 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B9A3353F2E589BEB000B2CA7 /* LiveChatLoadingView.swift */,
+				B9A3353D2E589619000B2CA7 /* ZapGalleryLoadingView.swift */,
 				B9EDA5812E4BC1D2003262E4 /* AutoHidingView.swift */,
 				B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */,
 				B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */,
@@ -3510,6 +3522,8 @@
 				B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
+				B9A335382E5778DE000B2CA7 /* liveBufferSpinner.json in Resources */,
+				B9A3353C2E58950D000B2CA7 /* videoLoadingScreen.json in Resources */,
 				B9A335292E562773000B2CA7 /* liveIconAnimation.json in Resources */,
 				B94429282BD592C400746FBC /* zapGallerySkeleton.json in Resources */,
 				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
@@ -3659,6 +3673,7 @@
 				B9DAA45F2D53C0C900B00B82 /* PremiumListController.swift in Sources */,
 				B9E67E892D07636C006BB397 /* FeedElementPostPreviewCell.swift in Sources */,
 				9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */,
+				B9A3353E2E589626000B2CA7 /* ZapGalleryLoadingView.swift in Sources */,
 				B934ADAB2DAFDD1F0044E5B5 /* SettingsMutedViewController.swift in Sources */,
 				B9DAA4632D53E48400B00B82 /* ThreadElementTidalPreviewCell.swift in Sources */,
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
@@ -4104,6 +4119,7 @@
 				B94429312BD8206200746FBC /* ZapPillView.swift in Sources */,
 				B98DD8E62C667EE800E8369A /* FeedPreviewParentController.swift in Sources */,
 				9E8DE4DC29F7ECA20028D3C3 /* LargeProfileView.swift in Sources */,
+				B9A335402E589C03000B2CA7 /* LiveChatLoadingView.swift in Sources */,
 				9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */,
 				9E25ACBF2A98F9F800F0B395 /* UIImage+Extra.swift in Sources */,
 				B94F2BDA2ADDC1440041181B /* BuySatsCell.swift in Sources */,
@@ -4352,7 +4368,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.16;
+				MARKETING_VERSION = 2.5.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4401,7 +4417,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.16;
+				MARKETING_VERSION = 2.5.20;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

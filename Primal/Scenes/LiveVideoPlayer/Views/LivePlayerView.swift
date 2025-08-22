@@ -8,9 +8,12 @@
 import AVKit
 import Combine
 import UIKit
+import Lottie
 
 enum LivePlayerViewAction {
     case dismiss, fullscreen
+    case quote, share, copyLink, copyID, copyRawData
+    case mute, report, requestDelete
 }
 
 protocol LivePlayerViewDelegate: AnyObject {
@@ -38,10 +41,10 @@ class LivePlayerView: UIView {
     let playerView = PlayerView()
     
     var playerLayer: AVPlayerLayer { playerView.playerLayer }
-    var player: AVPlayer? {
-        get { playerLayer.player }
-        set {
-            playerLayer.player = newValue
+    
+    var player: VideoPlayer? {
+        didSet {
+            playerLayer.player = player?.avPlayer
             
             setCancellables()
         }
@@ -56,6 +59,8 @@ class LivePlayerView: UIView {
     let playPauseButton = UIButton(configuration: .simpleImage(.videoPlay))
     let seekPastButton = UIButton(configuration: .simpleImage(.videoSeekPast))
     let seekFutureButton = UIButton(configuration: .simpleImage(.videoSeekFuture))
+    let bufferingSpinner = LottieAnimationView(animation: AnimationType.liveBuffering.animation).constrainToSize(100)
+    let loadingAnimationView = LottieAnimationView(animation: AnimationType.videoLoading.animation)
     
     let muteButton = UIButton(configuration: .simpleImage(.videoMuted))
     let fullscreenButton = UIButton(configuration: .simpleImage(.fullScreen))
@@ -84,6 +89,16 @@ class LivePlayerView: UIView {
         controlsView.isHidden = true
         controlsView.backgroundColor = .black.withAlphaComponent(0.25)
         controlsView.pinToSuperview()
+        
+        addSubview(bufferingSpinner)
+        bufferingSpinner.centerToSuperview()
+        bufferingSpinner.loopMode = .loop
+        
+        addSubview(loadingAnimationView)
+        loadingAnimationView.pinToSuperview()
+        loadingAnimationView.loopMode = .loop
+        loadingAnimationView.contentMode = .scaleAspectFill
+        loadingAnimationView.setContentCompressionResistancePriority(.init(1), for: .vertical)
         
         let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
         topRightStack.spacing = 4
@@ -125,7 +140,7 @@ class LivePlayerView: UIView {
         airplayButton.centerToView(muteButton, axis: .horizontal)
         
         playPauseButton.addAction(.init(handler: { [weak self] _ in
-            guard let player = self?.player else { return }
+            guard let player = self?.player?.avPlayer else { return }
             if player.timeControlStatus == .playing {
                 player.pause()
                 self?.liveDot.backgroundColor = .init(rgb: 0xAAAAAA)
@@ -135,7 +150,7 @@ class LivePlayerView: UIView {
         }), for: .touchUpInside)
         
         muteButton.addAction(.init(handler: { [weak self] _ in
-            if self?.player?.isMuted == true {
+            if self?.player?.avPlayer.isMuted == true {
                 VideoPlaybackManager.instance.isMuted = false
             } else {
                 VideoPlaybackManager.instance.isMuted = true
@@ -143,11 +158,11 @@ class LivePlayerView: UIView {
         }), for: .touchUpInside)
         
         seekPastButton.addAction(.init(handler: { [weak self] _ in
-            self?.player?.seek15SecondsBackward()
+            self?.player?.avPlayer.seek15SecondsBackward()
         }), for: .touchUpInside)
         
         seekFutureButton.addAction(.init(handler: { [weak self] _ in
-            self?.player?.seek30SecondsForward()
+            self?.player?.avPlayer.seek30SecondsForward()
         }), for: .touchUpInside)
         
         dismissButton.addAction(.init(handler: { [weak self] _ in
@@ -170,6 +185,34 @@ class LivePlayerView: UIView {
                 self.hideControls()
             }
         }))
+        
+        threeDotsButton.showsMenuAsPrimaryAction = true
+        threeDotsButton.menu = .init(children: [
+            UIAction(title: "Quote Stream", image: .quoteIcon24, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.quote)
+            }),
+            UIAction(title: "Share Stream", image: .menuShare, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.share)
+            }),
+            UIAction(title: "Copy Stream Link", image: .menuCopyLink, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.copyLink)
+            }),
+            UIAction(title: "Copy Stream ID", image: .menuCopyNoteID, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.copyID)
+            }),
+            UIAction(title: "Copy Raw Data", image: .menuCopyData, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.copyRawData)
+            }),
+            UIAction(title: "Mute User", image: .menuMute, attributes: .destructive, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.mute)
+            }),
+            UIAction(title: "Report Content", image: .menuReport, attributes: .destructive, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.report)
+            }),
+            UIAction(title: "Request Delete", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
+                self?.delegate?.livePlayerViewPerformAction(.requestDelete)
+            }),
+        ])
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -184,17 +227,57 @@ class LivePlayerView: UIView {
     
     func setCancellables() {
         cancellables = []
+        timeObserver = nil
+        
+        loadingAnimationView.isHidden = false
+        loadingAnimationView.play()
+        
+        guard let player else { return }
+        
+        player.avPlayer.publisher(for: \.timeControlStatus, options: [.initial, .new])
+            .filter { $0 == .playing }
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                UIView.animate(withDuration: 0.25, animations: {
+                    self?.loadingAnimationView.alpha = 0
+                }, completion: { _ in
+                    self?.loadingAnimationView.alpha = 1
+                    self?.loadingAnimationView.pause()
+                    self?.loadingAnimationView.isHidden = true
+                })
+            }
+            .store(in: &cancellables)
         
         // Is playing
-        player?.publisher(for: \.timeControlStatus, options: [.initial, .new])
+        player.avPlayer.publisher(for: \.timeControlStatus, options: [.initial, .new])
             .map { $0 == .playing ? UIImage.liveVideoPause : UIImage.liveVideoPlay }
             .map { UIButton.Configuration.simpleImage($0) }
             .receive(on: DispatchQueue.main)
             .assign(to: \.configuration, on: playPauseButton)
             .store(in: &cancellables)
         
+        Publishers.CombineLatest(
+            player.avPlayer.publisher(for: \.timeControlStatus, options: [.initial, .new]).map { $0 == .playing },
+            player.$isPlaying
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] isActuallyPlaying, isPlaying in
+            guard let self else { return }
+            
+            [playPauseButton, seekPastButton, seekFutureButton].forEach { $0.isHidden = isActuallyPlaying != isPlaying }
+            bufferingSpinner.isHidden = isActuallyPlaying == isPlaying
+            
+            if isActuallyPlaying == isPlaying {
+                bufferingSpinner.pause()
+            } else {
+                bufferingSpinner.play()
+            }
+        }
+        .store(in: &cancellables)
+        
         // Is Muted
-        player?.publisher(for: \.isMuted, options: [.initial, .new])
+        player.avPlayer.publisher(for: \.isMuted, options: [.initial, .new])
             .map { $0 ? UIImage.videoMuted : UIImage.videoUnmuted }
             .map { UIButton.Configuration.simpleImage($0) }
             .receive(on: DispatchQueue.main)
@@ -202,8 +285,8 @@ class LivePlayerView: UIView {
             .store(in: &cancellables)
         
         // time
-        timeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 1), queue: .main) { [weak self] _ in
-            guard let player = self?.player, let item = player.currentItem else { return }
+        timeObserver = player.avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 1), queue: .main) { [weak self] _ in
+            guard let player = self?.player?.avPlayer, let item = player.currentItem else { return }
             
             // Get seekable range
             guard player.rate > 0.5, let range = item.seekableTimeRanges.last?.timeRangeValue else {

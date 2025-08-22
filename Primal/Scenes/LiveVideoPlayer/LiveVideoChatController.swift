@@ -45,6 +45,9 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     lazy var inputManager = LiveChatTextViewManager(textView: input.textView, usersTable: usersTable, sendButton: input.sendButton, live: live)
     
+    let zapsLoadingView = ZapGalleryLoadingView()
+    let chatLoadingView = LiveChatLoadingView()
+    
     init(live: ParsedLiveEvent) {
         self.live = live
         let nostrContent = NostrContent(json: .object(live.event.event))
@@ -64,11 +67,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsInfoVC.view.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .top).pinToSuperview(edges: .bottom, padding: 12)
         
         zapsInfoVC.willMove(toParent: self)
-        addChild(zapsInfoVC)
-        zapsInfoVC.didMove(toParent: self)
-        
-        zapsInfoVC.posts = [post]
-        zapsInfoVC.heightOverride = 64
         
         let stack = UIStackView(axis: .vertical, [
             header,
@@ -84,6 +82,17 @@ class LiveVideoChatController: UIViewController, Themeable {
         stack
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, padding: 8)
+        
+        addChild(zapsInfoVC)
+        zapsInfoVC.didMove(toParent: self)
+        zapsInfoVC.posts = [post]
+        zapsInfoVC.heightOverride = 64
+        
+        view.addSubview(zapsLoadingView)
+        zapsLoadingView.pin(to: zapsInfoVC.view, edges: [.horizontal, .top])
+        
+        view.addSubview(chatLoadingView)
+        chatLoadingView.pin(to: commentsTable)
         
         view.addSubview(usersTable)
         usersTable.pin(to: commentsTable, edges: [.horizontal, .bottom])
@@ -162,6 +171,9 @@ class LiveVideoChatController: UIViewController, Themeable {
         } else {
             header.liveIcon.backgroundColor = .foreground4
         }
+        
+        zapsLoadingView.play()
+        chatLoadingView.play()
     }
     
     func updateTheme() {
@@ -295,6 +307,11 @@ private extension LiveVideoChatController {
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] res in
                     guard let self else { return }
+                    
+                    zapsLoadingView.pause()
+                    zapsLoadingView.isHidden = true
+                    chatLoadingView.pause()
+                    chatLoadingView.isHidden = true
                     
                     for user in res.getSortedUsers() {
                         userCache[user.data.pubkey] = user

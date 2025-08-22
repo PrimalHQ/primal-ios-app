@@ -28,7 +28,9 @@ final class VideoPlaybackManager {
                 oldValue?.pause()
             }
             
-            currentlyPlaying?.avPlayer.isMuted = isMuted
+            if currentlyPlaying?.isLive == false {
+                currentlyPlaying?.avPlayer.isMuted = isMuted
+            }
             currentlyPlaying?.avPlayer.play()
         }
     }
