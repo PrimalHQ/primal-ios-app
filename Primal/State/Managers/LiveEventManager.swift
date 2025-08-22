@@ -8,6 +8,7 @@
 import Foundation
 import GenericJSON
 import Combine
+import NostrSDK
 
 struct ParsedLiveEvent: Hashable {
     let event: ProcessedLiveEvent
@@ -59,7 +60,7 @@ struct ProcessedLiveEvent: Hashable {
         let pubkey = tags.tagValueForKeyWithRole("p", role: "host") ?? creatorPubkey
         
         let starts = Double(tags.tagValueForKey("starts") ?? "") ?? Date().timeIntervalSince1970
-            
+        
         return .init(
             state: state,
             creatorPubkey: creatorPubkey,
@@ -73,6 +74,25 @@ struct ProcessedLiveEvent: Hashable {
             starts: Date(timeIntervalSince1970: starts),
             event: event
         )
+    }
+}
+extension ProcessedLiveEvent: MetadataCoding {
+    var universalID: String {
+        "\(NostrKind.live.rawValue):\(pubkey):\(dTag)"
+    }
+    
+    func noteId() -> String {
+        var metadata = Metadata()
+        let hint = RelayHintManager.instance.getRelayHint(universalID)
+        if !hint.isEmpty {
+            metadata.relays = [hint]
+        }
+        
+        metadata.kind = UInt32(NostrKind.live.rawValue)
+        metadata.pubkey = creatorPubkey
+        metadata.identifier = dTag
+        
+        return (try? encodedIdentifier(with: metadata, identifierType: .address)) ?? bech32_note_id(event["id"]?.stringValue ?? "") ?? event["id"]?.stringValue ?? ""
     }
 }
 

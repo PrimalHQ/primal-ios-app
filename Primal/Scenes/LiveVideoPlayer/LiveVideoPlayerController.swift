@@ -408,7 +408,43 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
             } else {
                 rotateVideoPlayer(for: .portrait)
             }
-        default: break
+        case .quote:
+            let new = AdvancedEmbedPostViewController()
+            new.manager.embeddedElements.append(.live(live))
+            present(new, animated: true)
+        case .copyRawData:
+            UIPasteboard.general.string = live.event.event.encodeToString()
+            liveVideoPlayer.showDimmedToastCentered("Copied!")
+        case .copyID:
+            UIPasteboard.general.string = "nostr:\(live.event.noteId())"
+            liveVideoPlayer.showDimmedToastCentered("Copied!")
+        case .copyLink:
+            break
+        case .mute:
+            let pubkey = live.user.data.pubkey
+            let alert = UIAlertController(title: "Are you sure you want to mute this user?", message: nil, preferredStyle: .alert)
+            if MuteManager.instance.isMutedUser(pubkey) {
+                alert.title = "User is already muted"
+                alert.addAction(.init(title: "OK", style: .default))
+            } else {
+                alert.addAction(.init(title: "Cancel", style: .cancel))
+                alert.addAction(.init(title: "Mute", style: .destructive, handler: { [weak self] _ in
+                    MuteManager.instance.toggleMuteUser(pubkey)
+                    
+                    self?.dismiss(animated: true)
+                    RootViewController.instance.liveVideoController = nil
+                }))
+            }
+            present(alert, animated: true)
+        case .report:
+            // TODO: Report
+            break
+        case .requestDelete:
+            // TODO: Request delete
+            break
+        case .share:
+            // TODO: share
+            break
         }
     }
 }

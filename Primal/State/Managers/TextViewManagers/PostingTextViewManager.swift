@@ -451,11 +451,11 @@ private extension PostingTextViewManager {
             return true
         }
         
-        if let pubkey = metadata.pubkey, let identifier = metadata.identifier {
+        if let pubkey = metadata.pubkey, let identifier = metadata.identifier, metadata.kind == UInt32(NostrKind.longForm.rawValue) {
             SocketRequest(name: "long_form_content_thread_view", payload: [
                 "pubkey": .string(pubkey),
                 "identifier": .string(identifier),
-                "kind": .number(Double(metadata.kind ?? UInt32(NostrKind.longForm.rawValue))),
+                "kind": .number(Double(NostrKind.longForm.rawValue)),
                 "limit": 1,
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
             ])

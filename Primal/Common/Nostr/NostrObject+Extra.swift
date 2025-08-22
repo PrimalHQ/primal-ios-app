@@ -135,6 +135,10 @@ extension NostrObject {
                 
                 pubkeysToTag.insert(article.user.data.pubkey)
                 pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .live(let live):
+                pubkeysToTag.insert(live.event.pubkey)
+                
+                allTags.append(["a", live.event.universalID, RelayHintManager.instance.getRelayHint(live.event.universalID), "mention"])
             case .invoice(_):
                 break
             }
@@ -358,7 +362,7 @@ extension NostrObject {
     static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
-            ["a", "\(NostrKind.live.rawValue):\(live.pubkey):\(live.dTag)", relay, "root"],
+            ["a", live.universalID, relay, "root"],
             ["client", "Primal-iOS-App"]
         ])
     }
@@ -367,7 +371,7 @@ extension NostrObject {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
 
         return createNostrObject(content: "", kind: 10312, tags: [
-            ["a", "\(NostrKind.live.rawValue):\(live.pubkey):\(live.dTag)", relay, "root"],
+            ["a", live.universalID, relay, "root"],
           //  ["hand", "1"], // hand raised flag
             ["client", "Primal-iOS-App"]
         ])
