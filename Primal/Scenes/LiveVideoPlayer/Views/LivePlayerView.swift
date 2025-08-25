@@ -60,7 +60,7 @@ class LivePlayerView: UIView {
     let seekPastButton = UIButton(configuration: .simpleImage(.videoSeekPast))
     let seekFutureButton = UIButton(configuration: .simpleImage(.videoSeekFuture))
     let bufferingSpinner = LottieAnimationView(animation: AnimationType.liveBuffering.animation).constrainToSize(100)
-    let loadingAnimationView = LottieAnimationView(animation: AnimationType.videoLoading.animation)
+    let loadingAnimationView = LottieAnimationView(animation: (Theme.current.isDarkTheme ? AnimationType.videoLoading : AnimationType.videoLoadingLight).animation)
     
     let muteButton = UIButton(configuration: .simpleImage(.videoMuted))
     let fullscreenButton = UIButton(configuration: .simpleImage(.fullScreen))

@@ -170,6 +170,13 @@ final class RootViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var prefersStatusBarHidden: Bool {
+        if let presentedViewController {
+            return presentedViewController.prefersStatusBarHidden
+        }
+        return false
+    }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         guard let style = currentChild?.preferredStatusBarStyle else {
             return Theme.current.statusBarStyle

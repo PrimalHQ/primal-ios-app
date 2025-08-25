@@ -134,7 +134,7 @@ extension Date {
     }
     
     func isOneHourOld() -> Bool {
-        let seconds = -Date().timeIntervalSince(self)
+        let seconds = -timeIntervalSince(.now)
         return seconds < 3600
     }
     

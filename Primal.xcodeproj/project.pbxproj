@@ -259,6 +259,8 @@
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
 		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
+		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
+		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -998,6 +1000,8 @@
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
 		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
+		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
+		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -1858,6 +1862,7 @@
 				B9CE4DAA2B682C8B0060A1B8 /* transferFailed.json */,
 				B9CE4DA82B682C840060A1B8 /* transferSuccess.json */,
 				B9A3353B2E58950D000B2CA7 /* videoLoadingScreen.json */,
+				B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */,
 				B9CE4DB82B6D101A0060A1B8 /* walletLightning.json */,
 				B944291F2BD2836800746FBC /* zap-medium.json */,
 				B94429272BD592C400746FBC /* zapGallerySkeleton.json */,
@@ -3252,6 +3257,7 @@
 				B9EDA5892E4CB61C003262E4 /* LiveVideoUserDetailsViewControllerProtocol.swift */,
 				B9EDA57F2E4B677D003262E4 /* LiveVideoDetailsController.swift */,
 				B9EDA5832E4CA97D003262E4 /* LiveVideoMessageDetailsController.swift */,
+				B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */,
 			);
 			path = LivePopups;
 			sourceTree = "<group>";
@@ -3531,6 +3537,7 @@
 				B94429202BD2836800746FBC /* zap-medium.json in Resources */,
 				B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */,
 				B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */,
+				B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */,
 				9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */,
 				9393313C29A3E5D3003954C2 /* RobotoFlex.ttf in Resources */,
 				B9A335382E5778DE000B2CA7 /* liveBufferSpinner.json in Resources */,
@@ -4064,6 +4071,7 @@
 				B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */,
+				B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */,
 				93E0A81D2A43A97C00C33A08 /* NWCRelayConnection.swift in Sources */,
 				B9009B5C2B0FD390002B0613 /* ProfileShowQRController.swift in Sources */,
 				B94F2BE92AE6BD470041181B /* WalletActivateViewController.swift in Sources */,
@@ -4380,7 +4388,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.22;
+				MARKETING_VERSION = 2.5.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4429,7 +4437,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.22;
+				MARKETING_VERSION = 2.5.23;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

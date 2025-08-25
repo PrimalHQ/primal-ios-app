@@ -417,11 +417,15 @@ private extension MainTabBarController {
             }), for: .touchUpInside)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher().sink(receiveValue: { res in
-                print(res)
-            }).store(in: &self.cancellables)
-        }
+        Timer.publish(every: 180, on: .main, in: .default).autoconnect().prepend(.now)
+            .delay(for: 2, scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
+                    .sink { _ in }
+                    .store(in: &cancellables)
+            }
+            .store(in: &cancellables)
     }
     
     func addCircleWalletButton() {

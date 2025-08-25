@@ -35,7 +35,6 @@ protocol AppTheme {
     
     var extraColorMenu: UIColor { get }
     
-    var menuButtonImage: UIImage? { get }
     var tabBarDotImage: UIImage? { get }
     
     var statusBarStyle: UIStatusBarStyle { get }

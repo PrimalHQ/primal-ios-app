@@ -13,6 +13,12 @@ import NostrSDK
 struct ParsedLiveEvent: Hashable {
     let event: ProcessedLiveEvent
     let user: ParsedUser
+    
+    var title: String {
+        let title = event.title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if title.isEmpty { return user.data.firstIdentifier }
+        return title
+    }
 }
 
 enum LiveState: Hashable {
@@ -94,6 +100,15 @@ extension ProcessedLiveEvent: MetadataCoding {
         
         return (try? encodedIdentifier(with: metadata, identifierType: .address)) ?? bech32_note_id(event["id"]?.stringValue ?? "") ?? event["id"]?.stringValue ?? ""
     }
+    
+    var isLive: Bool {
+        if case .started = state {
+            return true
+        }
+        return false
+    }
+    
+    var eventDate: Date { Date(timeIntervalSince1970: event["created_at"]?.doubleValue ?? 0) }
 }
 
 extension ParsedLiveEvent {
@@ -106,12 +121,7 @@ extension ParsedLiveEvent {
         }
     }
     
-    var isLive: Bool {
-        if case .started = event.state {
-            return true
-        }
-        return false
-    }
+    var isLive: Bool { event.isLive }
     
     var startedText: String {
         if isLive {
@@ -130,7 +140,7 @@ class LiveEventManager {
     var currentlyLiveFollowing: [ParsedUser] {
         var users: [ParsedUser] = []
         for (pubkey, event) in liveEvents {
-            if let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
+            if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
                 users.append(user)
             }
         }
@@ -142,7 +152,7 @@ class LiveEventManager {
             .map { events, cachedUsers in
                 var users: [ParsedUser] = []
                 for (pubkey, event) in events {
-                    if let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
+                    if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
                         users.append(user)
                     }
                 }

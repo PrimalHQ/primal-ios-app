@@ -13,15 +13,15 @@ extension UIButton.Configuration {
         config.image = .sendMessage.withTintColor(enabled ? .foreground : .foreground5)
         config.cornerStyle = .capsule
         config.baseForegroundColor = enabled ? .foreground : .foreground5
-        config.background.backgroundColor = enabled ? .background4 : .foreground6
+        config.background.backgroundColor = enabled ? .accent : .foreground6
         return config
     }
 }
 
-class LiveVideoChatInputView: UIView {
+class LiveVideoChatInputView: UIView, Themeable {
     let textView = SelfSizingTextView()
     let placeholderLabel = UILabel("Chat", color: .foreground4, font: .appFont(withSize: 16, weight: .regular))
-    let sendButton = UIButton(configuration: .liveSendButton(enabled: false)).constrainToSize(40)
+    let sendButton = UIButton(configuration: .liveSendButton(enabled: true)).constrainToSize(40)
     
     private let backgroundView = UIView()
     private lazy var postStack = UIStackView([backgroundView, sendButton])
@@ -48,8 +48,6 @@ class LiveVideoChatInputView: UIView {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .background
-        
         postStack.alignment = .bottom
         postStack.spacing = 8
         
@@ -62,7 +60,6 @@ class LiveVideoChatInputView: UIView {
         
         backgroundView.pinToSuperview(edges: .vertical)
         backgroundView.layer.cornerRadius = 20
-        backgroundView.backgroundColor = .background3
         backgroundView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
         backgroundView.heightAnchor.constraint(lessThanOrEqualToConstant: 84).isActive = true
         
@@ -76,7 +73,16 @@ class LiveVideoChatInputView: UIView {
             .pin(to: backgroundView, edges: .trailing, padding: 10)
         
         placeholderLabel.pinToSuperview(edges: .leading, padding: 27).pinToSuperview(edges: .top, padding: 21)
+        
+        updateTheme()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func updateTheme() {
+        sendButton.configuration = .liveSendButton(enabled: true)
+        backgroundView.backgroundColor = .background3
+        placeholderLabel.textColor = .foreground4
+        backgroundColor = .background
+    }
 }

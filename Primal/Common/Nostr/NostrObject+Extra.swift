@@ -366,16 +366,6 @@ extension NostrObject {
             ["client", "Primal-iOS-App"]
         ])
     }
-    
-    static func liveWatchEvent(live: ProcessedLiveEvent) -> NostrObject? {
-        let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
-
-        return createNostrObject(content: "", kind: 10312, tags: [
-            ["a", live.universalID, relay, "root"],
-          //  ["hand", "1"], // hand raised flag
-            ["client", "Primal-iOS-App"]
-        ])
-    }
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()

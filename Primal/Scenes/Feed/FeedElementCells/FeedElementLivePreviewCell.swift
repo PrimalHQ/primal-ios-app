@@ -106,7 +106,7 @@ class LivePreviewView: UIView, Themeable {
         checkView.user = live.user.data
         nipLabel.isHidden = checkView.isHidden
         
-        titleLabel.text = live.event.title
+        titleLabel.text = live.title
         countLabel.text = live.event.participants.localized()
         startedLabel.text = live.startedText
         

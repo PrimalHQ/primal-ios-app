@@ -11,7 +11,7 @@ class LiveVideoZapsPostCell: LongFormZapsPostCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        largeGallery.zappingType = "live"
+        largeGallery.zappingType = "stream"
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

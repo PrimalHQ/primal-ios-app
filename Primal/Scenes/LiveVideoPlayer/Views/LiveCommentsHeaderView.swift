@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LiveCommentsHeaderView: UIStackView {
+class LiveCommentsHeaderView: UIStackView, Themeable {
     let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
     let timeLabel = UILabel("Started", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
     let countIcon = UIImageView(image: .liveViewersCount)
@@ -31,13 +31,17 @@ class LiveCommentsHeaderView: UIStackView {
             infoButton.isHidden = small
             infoButton.alpha = small ? 0 : 1
             
+            closeButton.isHidden = !small
+            closeButton.alpha = small ? 1 : 0
+            
             layoutMargins = small ? .init(top: 0, left: 16, bottom: 0, right: 4) : .init(top: 8, left: 16, bottom: 12, right: 4)
+            
+            alignment = small ? .center : .top
         }
     }
     
     init() {
         super.init(frame: .zero)
-        countIcon.tintColor = .foreground4
         countIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         let leftStack = UIStackView(axis: .vertical, [titleLabel, secondInfoRow])
         leftStack.spacing = 2
@@ -55,13 +59,22 @@ class LiveCommentsHeaderView: UIStackView {
         insetsLayoutMarginsFromSafeArea = false
         layoutMargins = .init(top: 8, left: 16, bottom: 12, right: 4)
         
-        [configButton, infoButton].forEach { $0.tintColor = .foreground3 }
-        
         secondInfoRow.alignment = .center
         countIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         setContentHuggingPriority(.required, for: .vertical)
+        
+        updateTheme()
     }
     
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func updateTheme() {
+        [configButton, infoButton, closeButton].forEach { $0.tintColor = .foreground3 }
+        
+        titleLabel.textColor = .foreground
+        [timeLabel, countLabel, liveLabel].forEach { $0.textColor = .foreground4 }
+        
+        countIcon.tintColor = .foreground4
+    }
 }

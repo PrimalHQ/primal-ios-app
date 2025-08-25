@@ -48,14 +48,13 @@ class ArticleCell: UITableViewCell, Themeable {
         updateTheme()
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 1
+        paragraphStyle.lineSpacing = 3.5
         paragraphStyle.lineBreakMode = .byTruncatingTail
 
         titleLabel.attributedText = NSAttributedString(string: content.title, attributes: [
             .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 32 / 1.4176, weight: .heavy),
-            .foregroundColor: UIColor.foreground,
-//            .kern: -0.58 / 1.4176
+            .font: UIFont.appFont(withSize: 18, weight: .bold),
+            .foregroundColor: UIColor.foreground
         ])
         
         if let words = content.words {

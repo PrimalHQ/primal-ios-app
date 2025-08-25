@@ -28,7 +28,7 @@ class LiveVideoDetailsController: UIViewController, LiveVideoUserDetailsViewCont
     private let descBackground = UIScrollView()
     private let border = SpacerView(height: 1, color: .foreground6)
     
-    private lazy var titleLabel = UILabel(live.event.title, color: .foreground, font: .appFont(withSize: 16, weight: .semibold))
+    private lazy var titleLabel = UILabel(live.title, color: .foreground, font: .appFont(withSize: 16, weight: .semibold))
     
     private let qrButton = CircleIconButton(icon: UIImage(named: "profileQR"))
     private let zapButton = CircleIconButton(icon: UIImage(named: "profileZap"))
@@ -112,7 +112,7 @@ class LiveVideoDetailsController: UIViewController, LiveVideoUserDetailsViewCont
         
         countLabel.text = live.event.participants.localized()
         startedLabel.text = live.startedText
-        titleLabel.text = live.event.title
+        titleLabel.text = live.title
         
         updateFollowButtons()
     }

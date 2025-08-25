@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Frame 193.pdf",
+      "filename" : "Dark mode 1.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "Light mode.svg",
       "idiom" : "universal"
     }
   ],

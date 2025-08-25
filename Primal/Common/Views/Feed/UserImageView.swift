@@ -26,12 +26,11 @@ class UserImageView: UIView, Themeable {
     
     var legendGradientSize: CGFloat {
         height + {
-            if height >= 100 { return 12 }
-            if height >= 80 { return 8 }
-            if height >= 60 { return 7 }
-            if height >= 40 { return 6 }
-            if height >= 32 { return 4 }
-            return 3
+            if height >= 100 { return 6 }
+            if height >= 75 { return 5 }
+            if height >= 62 { return 4 }
+            if height >= 43 { return 3 }
+            return 2
         }()
     }
     
@@ -39,9 +38,8 @@ class UserImageView: UIView, Themeable {
     
     var legendBackgroundCircleSize: CGFloat {
         noBackgroundCircle ? height : height + {
-            if height >= 100 { return 1.5 }
             if height >= 40 { return 1 }
-            if height >= 32 { return 0.5 }
+            if height >= 24 { return 0.5 }
             return 0
         }()
     }

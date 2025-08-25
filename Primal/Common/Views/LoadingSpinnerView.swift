@@ -22,6 +22,7 @@ enum AnimationType {
     case liveIcon
     case liveBuffering
     case videoLoading
+    case videoLoadingLight
     
     case genericSkeleton
     case genericSkeletonLight
@@ -48,6 +49,7 @@ enum AnimationType {
         case .liveIcon:                 return "liveIconAnimation"
         case .liveBuffering:            return "liveBufferSpinner"
         case .videoLoading:             return "videoLoadingScreen"
+        case .videoLoadingLight:        return "videoLoadingScreenLight"
         }
     }
     

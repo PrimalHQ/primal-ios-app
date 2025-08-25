@@ -136,7 +136,7 @@ final class MenuContainerController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
         
-        themeButton.setImage(Theme.current.menuButtonImage, for: .normal)
+        themeButton.setImage(.themeButton, for: .normal)
         
         nameLabel.textColor = .foreground
         
@@ -206,10 +206,10 @@ private extension MenuContainerController {
         mainStack.alpha = 0
         
         view.addSubview(notificationIndicator)
-        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 166)
+        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
         
         view.addSubview(premiumIndicator)
-        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 137)
         
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -293,7 +293,7 @@ private extension MenuContainerController {
         profileImageRow.alignment = .center
 
         let manageAccountsButton = ThemeableButton().setTheme {
-            $0.configuration = .simpleImage(UIImage(named: npubs.count < 2 ? "addAccount" : "moreAccounts"))
+            $0.configuration = .simpleImage(npubs.count < 2 ? .addAccount : .moreAccounts)
             $0.tintColor = .foreground2
         }
         profileImageRow.addArrangedSubview(manageAccountsButton)
@@ -477,15 +477,32 @@ private extension MenuContainerController {
     }
 }
 
-final class MenuItemButton: UIButton, Themeable {
+final class MenuItemButton: MyButton, Themeable {
     let title: String
     let image: UIImage?
     
+    override var isPressed: Bool {
+        didSet {
+            updateTheme()
+        }
+    }
+    
+    let titleLabel = UILabel()
+    let imageView = UIImageView()
+    
     init(title: String, image: UIImage?) {
-        self.title = title
+        self.title = title.capitalized
         self.image = image
         super.init(frame: .zero)
         
+        let stack = UIStackView([imageView, titleLabel])
+        stack.alignment = .center
+        stack.spacing = 12
+        
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 8)
+        
+        imageView.image = image?.withRenderingMode(.alwaysTemplate)
         updateTheme()
     }
     
@@ -494,15 +511,11 @@ final class MenuItemButton: UIButton, Themeable {
     }
     
     func updateTheme() {
-        var config = UIButton.Configuration.plain()
-        config.attributedTitle = .init(title, attributes: .init([
+        titleLabel.attributedText = .init(string: title, attributes: [
             .font: UIFont.appFont(withSize: 18.2, weight: .regular),
-            .kern: 0.2
-        ]))
-        config.image = image?.withRenderingMode(.alwaysTemplate)
-        config.imagePadding = 12
-        config.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
-        config.baseForegroundColor = .foreground2
-        configuration = config
+            .kern: 0.2,
+            .foregroundColor: isPressed ? UIColor.foreground : UIColor.foreground3
+        ])
+        imageView.tintColor = isPressed ? .foreground : .foreground3
     }
 }

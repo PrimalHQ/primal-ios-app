@@ -14,10 +14,10 @@ class ArticleTopInfoView: UIView, Themeable {
     
     lazy var titleLabel = ThemeableLabel().setTheme { [weak self] in
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 32.0 / 32.0
+        paragraphStyle.lineHeightMultiple = 1.2
         $0.attributedText = NSAttributedString(string: self?.title ?? "", attributes: [
             .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 32, weight: .heavy),
+            .font: UIFont.appFont(withSize: 27, weight: .bold),
             .foregroundColor: UIColor.foreground,
 //            .kern: -0.58 / 1.4176
         ])

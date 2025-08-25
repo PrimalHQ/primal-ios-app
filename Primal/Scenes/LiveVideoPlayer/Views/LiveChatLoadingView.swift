@@ -10,16 +10,18 @@ import Lottie
 
 class LiveChatLoadingView: UIView, Themeable {
     
-    let allAnimationViews = (0...4).map { _ in LottieAnimationView().constrainToSize(height: 80) }
+    let allAnimationViews = (0...4).map { _ in LottieAnimationView() }
     
     init() {
         super.init(frame: .zero)
         
         let mainStack = UIStackView(axis: .vertical, allAnimationViews)
         mainStack.spacing = 10
+        mainStack.distribution = .fillEqually
+        mainStack.setContentCompressionResistancePriority(.init(1), for: .vertical)
         
         addSubview(mainStack)
-        mainStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 16)
+        mainStack.pinToSuperview(padding: 16)
         
         clipsToBounds = true
         
@@ -28,8 +30,10 @@ class LiveChatLoadingView: UIView, Themeable {
             $0.contentMode = .scaleToFill
             $0.layer.cornerRadius = 16
             $0.clipsToBounds = true
+            $0.setContentCompressionResistancePriority(.init(1), for: .vertical)
         }
         
+        setContentCompressionResistancePriority(.init(1), for: .vertical)
         updateTheme()
     }
     

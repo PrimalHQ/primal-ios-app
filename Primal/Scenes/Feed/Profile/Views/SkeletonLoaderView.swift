@@ -15,13 +15,12 @@ class SkeletonLoaderCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(loaderView)
         loaderView
-            .pinToSuperview(edges: .leading)
+            .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .top, padding: 10)
         
         let botC = loaderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        let trailC = loaderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         
-        [botC, trailC].forEach {
+        [botC].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
         }

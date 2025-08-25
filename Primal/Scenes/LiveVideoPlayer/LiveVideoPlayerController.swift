@@ -108,6 +108,8 @@ class LiveVideoPlayerController: UIViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    override var prefersStatusBarHidden: Bool { currentVideoRotation != .portrait }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -116,7 +118,7 @@ class LiveVideoPlayerController: UIViewController {
         contentBackgroundView.backgroundColor = .background
         
         contentBackgroundView.addSubview(commentsVC.view)
-        commentsVC.view.pinToSuperview()
+        commentsVC.view.pinToSuperview(edges: [.bottom, .horizontal]).pinToSuperview(edges: .top, padding: 5)
         
         commentsVC.willMove(toParent: self)
         addChild(commentsVC)
@@ -131,7 +133,7 @@ class LiveVideoPlayerController: UIViewController {
         heightC.priority = .defaultLow
         
         view.addSubview(contentView)
-        contentView.pin(to: contentBackgroundView)
+        contentView.pin(to: contentBackgroundView, edges: [.bottom, .horizontal]).pin(to: contentBackgroundView, edges: .top, padding: 5)
         
         view.addSubview(horizontalVideoParent)
         horizontalVideoParent.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical).constrainToAspect(1)
@@ -150,21 +152,13 @@ class LiveVideoPlayerController: UIViewController {
         safeAreaConstraint?.isActive = true
         
         contentBackgroundView.pinToSuperview(edges: [.bottom, .horizontal])
-        contentBackgroundView.topAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor).isActive = true
+        contentBackgroundView.topAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor, constant: -5).isActive = true
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         view.addGestureRecognizer(panGesture)
         
         liveVideoPlayer.delegate = self
         horizontalVideoPlayer.delegate = self
-        
-        Timer.publish(every: 300, on: .main, in: .default).prepend(Date())
-            .sink { [weak self] _ in
-                guard let live = self?.live, let event = NostrObject.liveWatchEvent(live: live.event) else { return }
-                
-                PostingManager.instance.sendEvent(event, { _ in })
-            }
-            .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)
             .compactMap { _ in UIDevice.current.orientation }
@@ -289,6 +283,7 @@ private extension LiveVideoPlayerController {
         }
                 
         currentVideoRotation = orientation
+        setNeedsStatusBarAppearanceUpdate()
         
         liveVideoPlayer.hideControls()
         horizontalVideoPlayer.hideControls()

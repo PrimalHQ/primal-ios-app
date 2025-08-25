@@ -39,7 +39,7 @@ class LiveVideoChatController: UIViewController, Themeable {
     var comments: [ParsedLiveComment] = []
     let post: ParsedContent
     
-    var userCache: [String: ParsedUser] = [:]
+    static var userCache: [String: ParsedUser] = [:]
     
     var videoController: LiveVideoPlayerController? { parent as? LiveVideoPlayerController }
     
@@ -47,6 +47,12 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     let zapsLoadingView = ZapGalleryLoadingView()
     let chatLoadingView = LiveChatLoadingView()
+    
+    var isFilteringOn = true {
+        didSet {
+            requestChat()
+        }
+    }
     
     init(live: ParsedLiveEvent) {
         self.live = live
@@ -155,9 +161,12 @@ class LiveVideoChatController: UIViewController, Themeable {
         }), for: .touchUpInside)
         
         header.closeButton.addAction(.init(handler: { [weak self] _ in
+            self?.input.textView.resignFirstResponder()
+        }), for: .touchUpInside)
+        
+        header.configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            self.post.zaps = []
-            self.zapsInfoVC.reloadZaps()
+            videoController?.presentLivePopup(LiveVideoConfigController(live: live, chatVC: self))
         }), for: .touchUpInside)
     }
     
@@ -166,7 +175,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         updateTheme()
         
-        header.titleLabel.text = live.event.title
+        header.titleLabel.text = live.title
         header.countLabel.text = live.event.participants.localized()
         header.timeLabel.text = live.startedText
         if live.isLive {
@@ -226,9 +235,8 @@ extension LiveVideoChatController: NantesLabelDelegate {
 }
 
 private extension LiveVideoChatController {
-    func addZaps(_ zaps: [ParsedZap]) {
-        post.zaps.append(contentsOf: zaps)
-        post.zaps.sort(by: {
+    func setZaps(_ zaps: [ParsedZap]) {
+        post.zaps = zaps.sorted(by: {
             guard $0.amountSats == $1.amountSats else { return $0.amountSats > $1.amountSats }
             
             return $0.createdAt < $1.createdAt
@@ -260,7 +268,7 @@ private extension LiveVideoChatController {
         
         let amount = tagAmount / 1000
         
-        let user = userCache[pubkey] ?? ParsedUser(data: .init(pubkey: pubkey))
+        let user = Self.userCache[pubkey] ?? ParsedUser(data: .init(pubkey: pubkey))
         let message: String = event["content"]?.stringValue ?? ""
         
         return ParsedLiveComment(user: user, comment: parsedComment(message), event: event, zapAmount: amount)
@@ -277,7 +285,7 @@ private extension LiveVideoChatController {
         
         let amount = tagAmount / 1000
         
-        let user = userCache[pubkey] ?? ParsedUser(data: .init(pubkey: pubkey))
+        let user = Self.userCache[pubkey] ?? ParsedUser(data: .init(pubkey: pubkey))
         let message: String = event["content"]?.stringValue ?? ""
         let receiptId = event["id"]?.stringValue ?? ""
         let createdAt = event["created_at"]?.doubleValue ?? 0
@@ -290,7 +298,8 @@ private extension LiveVideoChatController {
             "kind": .number(30311),
             "pubkey": .string(live.event.creatorPubkey),
             "identifier": .string(live.event.dTag),
-            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "content_moderation_mode": .string(isFilteringOn ? "moderated" : "all")
         ])
         .publisher()
         .sink { [weak self] res in
@@ -303,7 +312,7 @@ private extension LiveVideoChatController {
             pubkeys += commentEvents.compactMap { $0["pubkey"]?.stringValue }
             pubkeys += res.zapReceipts.flatMap { $0.value.objectValue?["content"]?.stringValue?.extractUserMentionsAsPubkeys() ?? [] }
             pubkeys += commentEvents.flatMap { $0["content"]?.stringValue?.extractUserMentionsAsPubkeys() ?? [] }
-            pubkeys = pubkeys.unique().filter({ self.userCache[$0] == nil })
+            pubkeys = pubkeys.unique().filter({ Self.userCache[$0] == nil })
             
             let splitPubkeys = pubkeys.splitInSubArrays(into: max(1, pubkeys.count / 50))
             
@@ -329,7 +338,7 @@ private extension LiveVideoChatController {
                         chatLoadingView.isHidden = true
                         
                         for user in users {
-                            userCache[user.data.pubkey] = user
+                            Self.userCache[user.data.pubkey] = user
                         }
                         
                         let zapComments: [ParsedLiveComment] = zapReceipts.compactMap({ self.jsonToZapComment($0.1) })
@@ -342,14 +351,14 @@ private extension LiveVideoChatController {
                                 else { return nil }
                                 
                                 return .init(
-                                    user: self.userCache[userPubkey] ?? ParsedUser(data: .init(pubkey: userPubkey)),
+                                    user: Self.userCache[userPubkey] ?? ParsedUser(data: .init(pubkey: userPubkey)),
                                     comment: self.parsedComment(content),
                                     event: event
                                 )
                             })
                         
                         self.comments += (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
-                        addZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
+                        setZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
                         commentsTable.reloadData()
                     }
                     .store(in: &self.cancellables)
@@ -361,7 +370,8 @@ private extension LiveVideoChatController {
             "kind": .number(30311),
             "pubkey": .string(live.event.creatorPubkey),
             "identifier": .string(live.event.dTag),
-            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "content_moderation_mode": .string(isFilteringOn ? "moderated" : "all")
         ])) { [weak self] response in
             DispatchQueue.main.async {
                 guard
@@ -399,16 +409,18 @@ private extension LiveVideoChatController {
                     event = zapReceipt
                     content = zapReceipt["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     userPubkey = pubkey
+                    
+                    if pubkey == IdentityManager.instance.userHexPubkey { return } // This zap is already in the gallery
                 } else {
                     content = event["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     guard let pubkey = event["pubkey"]?.stringValue else { return }
                     userPubkey = pubkey
                 }
                 
-                var pubkeysToFetch: [String] = self.userCache[userPubkey] == nil ? [userPubkey] : []
-                pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { self.userCache[$0] == nil }
+                var pubkeysToFetch: [String] = Self.userCache[userPubkey] == nil ? [userPubkey] : []
+                pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
                 
-                if let user = self.userCache[userPubkey], pubkeysToFetch.isEmpty {
+                if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
                     self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content), event: event, zapAmount: amount), at: 0)
                     self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
                     if let zap = self.jsonToZap(.object(event)) {
@@ -423,11 +435,11 @@ private extension LiveVideoChatController {
                         guard let self else { return }
                         
                         for user in res.getSortedUsers() {
-                            userCache[user.data.pubkey] = user
+                            Self.userCache[user.data.pubkey] = user
                         }
                         
                         comments.insert(ParsedLiveComment(
-                            user: userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
+                            user: Self.userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
                             comment: parsedComment(content),
                             event: event,
                             zapAmount: amount
@@ -450,7 +462,7 @@ extension LiveVideoChatController: MetadataCoding {
         var replacements: [(String, String, String)] = []
         for mention in mentions {
             if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string, let pubkey = (try? decodedMetadata(from: mentionText).pubkey) ?? mentionText.npubToPubkey() {
-                let name = "@\(userCache[pubkey]?.data.firstIdentifier ?? "unknown")"
+                let name = "@\(Self.userCache[pubkey]?.data.firstIdentifier ?? "unknown")"
                 replacements.append((mention, name, "https://primal.net/p/\(pubkey.hexToNpub() ?? pubkey)"))
             }
         }
