@@ -325,7 +325,7 @@ extension Array where Element == GroupedNotification {
                     }
                 }
                 grouped += groupedByPostReaction
-            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
+            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED, .LIVE_EVENT_HAPPENING:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 grouped += notifications

@@ -91,7 +91,7 @@ extension WalletSearchController {
         }
         
         if let url = URL(string: text), url.isPrimalURL {
-            PrimalWebsiteScheme().openURL(url)
+            PrimalWebsiteScheme.shared.openURL(url)
             return
         }
         

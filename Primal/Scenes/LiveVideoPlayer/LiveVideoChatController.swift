@@ -409,8 +409,6 @@ private extension LiveVideoChatController {
                     event = zapReceipt
                     content = zapReceipt["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     userPubkey = pubkey
-                    
-                    if pubkey == IdentityManager.instance.userHexPubkey { return } // This zap is already in the gallery
                 } else {
                     content = event["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     guard let pubkey = event["pubkey"]?.stringValue else { return }
@@ -423,13 +421,13 @@ private extension LiveVideoChatController {
                 if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
                     self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content), event: event, zapAmount: amount), at: 0)
                     self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                    if let zap = self.jsonToZap(.object(event)) {
+                    if let zap = self.jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey {
                         self.addZap(zap)
                     }
                     return
                 }
                 
-                SocketRequest(name: "user_infos", payload: ["pubkeys": [.array(pubkeysToFetch.map({ .string($0) }))]]).publisher()
+                SocketRequest(name: "user_infos", payload: ["pubkeys": .array(pubkeysToFetch.map({ .string($0) }))]).publisher()
                     .receive(on: DispatchQueue.main)
                     .sink { [weak self] res in
                         guard let self else { return }
@@ -445,7 +443,7 @@ private extension LiveVideoChatController {
                             zapAmount: amount
                         ), at: 0)
                         commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                        if let zap = jsonToZap(.object(event)) {
+                        if let zap = jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey  {
                             addZap(zap)
                         }
                     }

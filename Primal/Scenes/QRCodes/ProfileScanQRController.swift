@@ -64,7 +64,7 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
         
         guard let pubkey else {
             if let url = URL(string: origText) {
-                PrimalWebsiteScheme().openURL(url)
+                PrimalWebsiteScheme.shared.openURL(url)
             }
             return
         }

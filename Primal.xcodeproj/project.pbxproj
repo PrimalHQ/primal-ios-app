@@ -261,6 +261,7 @@
 		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
+		B90DB06D2E5CB90100A67D4A /* LiveMuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -1002,6 +1003,7 @@
 		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
+		B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMuteManager.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -1813,6 +1815,7 @@
 				93F27DAB2A27FC47004ADA55 /* FeedManager.swift */,
 				939329452A66E82E00B96AAA /* LoginManager.swift */,
 				C1AF0026036532D4652C7322 /* MuteManager.swift */,
+				B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */,
 				B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */,
 				B94F2BD72ADDAF000041181B /* InAppPurchaseManager.swift */,
 				B9B290542B4C46890069C87F /* SmartContactsManager.swift */,
@@ -3697,6 +3700,7 @@
 				9E88349C2A211577005DB548 /* RootAnimatorToSignIn.swift in Sources */,
 				B9E67E8F2D0767F3006BB397 /* FeedElementZapPreviewCell.swift in Sources */,
 				B91EF0CD2CEA1B0900299ECF /* PremiumManageContentHeaderCell.swift in Sources */,
+				B90DB06D2E5CB90100A67D4A /* LiveMuteManager.swift in Sources */,
 				B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */,
 				B91EF0D12CEA23C300299ECF /* PremiumManageNameController.swift in Sources */,
 				B91E56EA2CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift in Sources */,
@@ -4388,7 +4392,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.23;
+				MARKETING_VERSION = 2.5.27;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4437,7 +4441,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.23;
+				MARKETING_VERSION = 2.5.27;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

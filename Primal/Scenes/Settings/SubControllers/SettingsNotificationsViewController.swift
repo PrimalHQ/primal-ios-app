@@ -384,6 +384,8 @@ extension PrimalSettingsNotifications {
             return YOUR_POST_WAS_HIGHLIGHTED ?? true
         case .YOUR_POST_WAS_BOOKMARKED:
             return YOUR_POST_WAS_BOOKMARKED ?? true
+        case .LIVE_EVENT_HAPPENING:
+            return LIVE_EVENT_HAPPENING ?? true
         }
     }
     
@@ -423,6 +425,8 @@ extension PrimalSettingsNotifications {
             YOUR_POST_WAS_HIGHLIGHTED = value
         case .YOUR_POST_WAS_BOOKMARKED:
             YOUR_POST_WAS_BOOKMARKED = value
+        case .LIVE_EVENT_HAPPENING:
+            LIVE_EVENT_HAPPENING = value
         }
     }
 }

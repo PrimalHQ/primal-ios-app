@@ -297,6 +297,8 @@ extension GroupedNotification {
             return "reposted a note your note was mentioned in"
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
             return "replied to a note your note was mentioned in"
+        case .LIVE_EVENT_HAPPENING:
+            return "is live"
         }
     }
     
@@ -339,6 +341,8 @@ extension NotificationType {
         case .YOUR_POST_WAS_HIGHLIGHTED:
             return .notifHighlight
         case .YOUR_POST_WAS_BOOKMARKED:
+            return .notifBookmark
+        case .LIVE_EVENT_HAPPENING: // TODO: REPLACE WITH IMAGE
             return .notifBookmark
         }
     }

@@ -12,6 +12,8 @@ import NostrSDK
 final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
     static var shared = PrimalWebsiteScheme()
     
+    private init() { }
+    
     var cancellables: Set<AnyCancellable> = []
     
     func canOpenURL(_ url: URL) -> Bool {
@@ -23,7 +25,8 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
 
         let path = url.path()
         let pathL = path.lowercased()
-        let id = url.lastPathComponent
+        let components = url.pathComponents
+        let id = components.dropFirst().first ?? url.lastPathComponent
         
         if pathL.hasPrefix("/e/") || pathL.hasPrefix("/a/") {
             guard let metadata = try? decodedMetadata(from: id) else {
@@ -52,6 +55,10 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         if pathL.hasPrefix("/p/") {
             guard let metadata = try? decodedMetadata(from: id), let pubkey = metadata.pubkey else {
                 notify(.primalProfileLink, id)
+                return
+            }
+            if components[safe: 3]?.lowercased() == "live", let dTag = components[safe: 4] {
+                navigateToLive(pubkey: pubkey, id: dTag)
                 return
             }
             RootViewController.instance.navigateTo = .profile(pubkey)
@@ -91,11 +98,16 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         
         CheckNip05Request(domain: "primal.net", name: name).publisher()
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { _ in }) { data in
+            .sink(receiveCompletion: { _ in }) { [weak self] data in
                 guard
                     let names = data.objectValue?["names"]?.objectValue,
                     let pubkey = names[name]?.stringValue
                 else { return }
+                
+                if components[safe: 2]?.lowercased() == "live", let dTag = components[safe: 3] {
+                    self?.navigateToLive(pubkey: pubkey, id: dTag)
+                    return
+                }
                 
                 if let second = pathComponents.dropFirst().first {
                     RootViewController.instance.navigateTo = .article(pubkey: pubkey, id: id)
@@ -104,5 +116,26 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func navigateToLive(pubkey: String, id: String) {
+        SocketRequest(name: "parametrized_replaceable_event", payload: [
+            "kind": .number(Double(NostrKind.live.rawValue)),
+            "pubkey": .string(pubkey),
+            "identifier": .string(id)
+        ])
+        .publisher()
+        .receive(on: DispatchQueue.main)
+        .sink { res in
+            let users = res.getSortedUsers()
+            guard
+                let live = LiveEventManager.instance.liveEvent(for: pubkey),
+                let user = LiveEventManager.instance.user(for: pubkey) ?? users.first(where: { $0.data.pubkey == pubkey }) ?? users.first
+            else { return }
+            
+            RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
+            
+        }
+        .store(in: &cancellables)
     }
 }

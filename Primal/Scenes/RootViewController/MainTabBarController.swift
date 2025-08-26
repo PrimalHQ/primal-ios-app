@@ -384,6 +384,8 @@ private extension MainTabBarController {
                             return (newPost, nil)
                         case .promoCode(let code):
                             return (OnboardingParentViewController(.redeemCode(code)), nil)
+                        case .live(let live):
+                            return (LiveVideoPlayerController(live: live), nil)
                         }
                     }()
                                         

@@ -19,7 +19,7 @@ extension UIButton.Configuration {
         config.imagePadding = 8
         config.attributedTitle = .init("Mute", attributes: .init([
             .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: UIColor.white
+            .foregroundColor: UIColor.foreground
         ]))
         
         return config
@@ -34,7 +34,7 @@ extension UIButton.Configuration {
         config.imagePadding = 8
         config.attributedTitle = .init("Report message", attributes: .init([
             .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: UIColor.white
+            .foregroundColor: UIColor.foreground
         ]))
         
         return config
@@ -162,6 +162,12 @@ class LiveVideoMessageDetailsController: UIViewController, LiveVideoUserDetailsV
             }
             dismissAsLivePopup()
         }), for: .touchUpInside)
+        
+        reportButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            
+            present(PopupReportContentController(message), animated: true)
+        }), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -218,5 +224,15 @@ extension LiveVideoMessageDetailsController: NantesLabelDelegate {
         } else {
             present(SFSafariViewController(url: link), animated: true)
         }
+    }
+}
+
+extension ParsedLiveComment: PostingReferenceObject {
+    var reference: (tagLetter: String, universalID: String)? {
+        ("e", event["id"]?.stringValue ?? "")
+    }
+    
+    var referencePubkey: String {
+        user.data.pubkey
     }
 }

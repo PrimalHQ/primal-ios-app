@@ -59,6 +59,12 @@ class LiveVideoConfigController: UIViewController, Themeable {
             filterView.isHidden = true
         }
         
+        notifView.switchView.isOn = !LiveMuteManager.instance.isMuted(live.user.data.pubkey)
+        notifView.switchView.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            LiveMuteManager.instance.toggleMuted(self.live.user.data.pubkey)
+        }), for: .valueChanged)
+        
         view.addSubview(backgroundExtender)
         backgroundExtender.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom, padding: -200)
         

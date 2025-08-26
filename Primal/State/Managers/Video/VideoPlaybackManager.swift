@@ -77,10 +77,11 @@ final class VideoPlaybackManager: NSObject {
                 MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
                 
                 let urlString = live.event.image.isEmpty ? live.user.profileImage.url : live.event.image
+                let imageId = live.event.universalID
                 if !urlString.isEmpty, let url = URL(string: urlString) {
                     KingfisherManager.shared.retrieveImage(with: url) { result in
                         let mngr = VideoPlaybackManager.instance
-                        guard case .success(let value) = result, urlString == mngr.currentlyPlaying?.live?.event.image, !mngr.isMuted else { return }
+                        guard case .success(let value) = result, imageId == mngr.currentlyPlaying?.live?.event.universalID, !mngr.isMuted else { return }
                         let image = value.image
                         let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
                         nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork

@@ -338,7 +338,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             url = .init(string: "https://" + url.absoluteString) ?? url
         }
         
-        let primalScheme = PrimalWebsiteScheme()
+        let primalScheme = PrimalWebsiteScheme.shared
         if primalScheme.canOpenURL(url) {
             primalScheme.openURL(url)
             return

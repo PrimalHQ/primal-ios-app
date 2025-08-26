@@ -13,7 +13,7 @@ import Lottie
 enum LivePlayerViewAction {
     case dismiss, fullscreen
     case quote, share, copyLink, copyID, copyRawData
-    case mute, report, requestDelete
+    case mute, report//, requestDelete
 }
 
 protocol LivePlayerViewDelegate: AnyObject {
@@ -209,10 +209,7 @@ class LivePlayerView: UIView {
             }),
             UIAction(title: "Report Content", image: .menuReport, attributes: .destructive, handler: { [weak self] _ in
                 self?.delegate?.livePlayerViewPerformAction(.report)
-            }),
-            UIAction(title: "Request Delete", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
-                self?.delegate?.livePlayerViewPerformAction(.requestDelete)
-            }),
+            })
         ])
     }
     

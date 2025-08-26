@@ -16,10 +16,6 @@ class LivePopupDismissGesture: UIPanGestureRecognizer {
         self.addTarget(self, action: #selector(execute))
     }
     
-    deinit {
-        print("DEINIT")
-    }
-    
     @objc private func execute() {
         let trans = translation(in: nil)
         

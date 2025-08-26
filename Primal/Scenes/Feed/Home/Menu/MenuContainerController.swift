@@ -137,6 +137,7 @@ final class MenuContainerController: UIViewController, Themeable {
         view.backgroundColor = .background
         
         themeButton.setImage(.themeButton, for: .normal)
+        themeButton.tintColor = .foreground3
         
         nameLabel.textColor = .foreground
         
@@ -488,7 +489,7 @@ final class MenuItemButton: MyButton, Themeable {
     }
     
     let titleLabel = UILabel()
-    let imageView = UIImageView()
+    let imageView = UIImageView().constrainToSize(20)
     
     init(title: String, image: UIImage?) {
         self.title = title.capitalized

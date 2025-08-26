@@ -10,6 +10,7 @@ import AVFoundation
 import AVKit
 import Combine
 import GenericJSON
+import NostrSDK
 
 class ParsedLiveComment {
     let user: ParsedUser
@@ -79,6 +80,8 @@ class LiveVideoPlayerController: UIViewController {
         } else {
             player = nil
         }
+        
+        print("Muted: \(LiveMuteManager.instance.isMuted(live.user.data.pubkey))") // to initialize the mute list
         
         player?.play()
         liveVideoPlayer.player = player
@@ -418,7 +421,8 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
             UIPasteboard.general.string = "nostr:\(live.event.noteId())"
             liveVideoPlayer.showDimmedToastCentered("Copied!")
         case .copyLink:
-            break
+            UIPasteboard.general.string = live.webURL()
+            liveVideoPlayer.showDimmedToastCentered("Copied!")
         case .mute:
             let pubkey = live.user.data.pubkey
             let alert = UIAlertController(title: "Are you sure you want to mute this user?", message: nil, preferredStyle: .alert)
@@ -436,14 +440,10 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
             }
             present(alert, animated: true)
         case .report:
-            // TODO: Report
-            break
-        case .requestDelete:
-            // TODO: Request delete
-            break
+            present(PopupReportContentController(live), animated: true)
         case .share:
-            // TODO: share
-            break
+            let activityViewController = UIActivityViewController(activityItems: [live.webURL()], applicationActivities: nil)
+            present(activityViewController, animated: true, completion: nil)
         }
     }
 }
@@ -454,5 +454,31 @@ extension LiveVideoPlayerController: AVPlayerViewControllerDelegate {
         coordinator.animate(alongsideTransition: nil) { [weak self] transitionContext in
             self?.player?.play()
         }
+    }
+}
+
+extension ParsedLiveEvent: PostingReferenceObject, MetadataCoding {
+    var reference: (tagLetter: String, universalID: String)? {
+        ("a", event.universalID)
+    }
+    
+    var referencePubkey: String {
+        user.data.pubkey
+    }
+    
+    func webURL() -> String {
+        if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: event.creatorPubkey) {
+            return "https://primal.net/\(name)/live/\(event.dTag)"
+        }
+
+        var metadata = Metadata()
+        metadata.pubkey = event.creatorPubkey
+        if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
+            return "https://primal.net/p/\(identifier)/live/\(event.dTag)"
+        }
+
+        let npub = event.creatorPubkey.hexToNpub() ?? event.creatorPubkey
+
+        return "https://primal.net/p/\(npub)/live/\(event.dTag)/"
     }
 }

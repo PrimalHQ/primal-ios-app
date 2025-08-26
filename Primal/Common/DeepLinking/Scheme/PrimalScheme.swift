@@ -29,6 +29,6 @@ final class PrimalSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
         
         guard let primalURL = URL(string: "https://primal.net/" + host + path) else { return }
         
-        PrimalWebsiteScheme().openURL(primalURL)
+        PrimalWebsiteScheme.shared.openURL(primalURL)
     }
 }

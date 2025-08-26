@@ -12,7 +12,7 @@ extension UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         config.image = .sendMessage.withTintColor(enabled ? .foreground : .foreground5)
         config.cornerStyle = .capsule
-        config.baseForegroundColor = enabled ? .foreground : .foreground5
+        config.baseForegroundColor = enabled ? .white : .foreground5
         config.background.backgroundColor = enabled ? .accent : .foreground6
         return config
     }

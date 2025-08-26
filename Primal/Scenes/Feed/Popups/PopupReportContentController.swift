@@ -20,9 +20,9 @@ class PopupReportContentController: UIViewController {
     
     let optionViews = ReportReason.allCases.map { ReportPickerSelectionView(name: $0.rawValue.capitalized) }
     
-    let post: ParsedContent
-    init(_ post: ParsedContent) {
-        self.post = post
+    let reference: PostingReferenceObject
+    init(_ reference: PostingReferenceObject) {
+        self.reference = reference
         super.init(nibName: nil, bundle: nil)
         modalTransitionStyle = .crossDissolve
         modalPresentationStyle = .overFullScreen
@@ -74,7 +74,7 @@ class PopupReportContentController: UIViewController {
         }), for: .touchUpInside)
         
         reportButton.addAction(.init(handler: { [weak self] _ in
-            guard let self, let currentReason, let event = NostrObject.reportNote(currentReason, post) else { return }
+            guard let self, let currentReason, let event = NostrObject.reportNote(currentReason, reference) else { return }
             
             dismiss(animated: true, completion: nil)
             

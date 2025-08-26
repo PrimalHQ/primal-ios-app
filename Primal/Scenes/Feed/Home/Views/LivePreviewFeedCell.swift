@@ -229,6 +229,10 @@ class HorizontallyScrollingLabel: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        titleDisplayLink?.remove(from: .main, forMode: .default)
+    }
+    
     func startUpdatingLabel() {
         guard maxDelta > 0 else {
             currentDelta = 0

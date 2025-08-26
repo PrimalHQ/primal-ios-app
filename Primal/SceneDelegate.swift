@@ -13,7 +13,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         PrimalSchemeDeeplinkHandler(),
         NostrSchemeDeeplinkHandler(),
         NWCSchemeDeeplinkHandler(),
-        PrimalWebsiteScheme()
+        PrimalWebsiteScheme.shared
     ])
     
     var window: UIWindow?

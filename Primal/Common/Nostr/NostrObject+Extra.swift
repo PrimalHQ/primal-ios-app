@@ -216,10 +216,10 @@ extension NostrObject {
         ])
     }
     
-    static func reportNote(_ report: ReportReason, _ note: ParsedContent) -> NostrObject? {
+    static func reportNote(_ report: ReportReason, _ note: PostingReferenceObject) -> NostrObject? {
         createNostrObject(content: "", kind: 1984, tags: [
-            ["e", note.post.id, report.rawValue],
-            ["p", note.user.data.pubkey]
+            [note.reference?.tagLetter ?? "e", note.reference?.universalID ?? "", report.rawValue],
+            ["p", note.referencePubkey]
         ])
     }
     
@@ -260,6 +260,10 @@ extension NostrObject {
 
     static func muteList(_ mutedTags: [[String]]) -> NostrObject? {
         createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: mutedTags)
+    }
+    
+    static func liveMuteList(_ pubkeys: Set<String>) -> NostrObject? {
+        create(content: "", kind: 10555, tags: pubkeys.map({ ["p", $0] }))
     }
     
     static func followedMuteLists(content: String, tags: [[String]]) -> NostrObject? {

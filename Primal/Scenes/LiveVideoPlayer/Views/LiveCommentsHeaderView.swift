@@ -16,8 +16,8 @@ class LiveCommentsHeaderView: UIStackView, Themeable {
     let liveLabel = UILabel("Live", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
     lazy var secondInfoRow = UIStackView([liveIcon, SpacerView(width: 4), liveLabel, SpacerView(width: 10), timeLabel, SpacerView(width: 10), countIcon, SpacerView(width: 6), countLabel])
     
-    let configButton = UIButton(configuration: .simpleImage(.searchConfig))
-    let infoButton = UIButton(configuration: .simpleImage(.liveInfo))
+    let configButton = UIButton(configuration: .simpleImage(.searchConfig.withRenderingMode(.alwaysTemplate)))
+    let infoButton = UIButton(configuration: .simpleImage(.liveInfo.withRenderingMode(.alwaysTemplate)))
     let closeButton = UIButton(configuration: .simpleImage(.liveCommentsClose))
     
     var small: Bool = false {

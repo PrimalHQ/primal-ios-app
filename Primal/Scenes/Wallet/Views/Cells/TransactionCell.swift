@@ -197,6 +197,7 @@ private extension TransactionCell {
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
         
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
+        profileImage.showLivePill = false
     }
     
     @objc func profileTapped() {

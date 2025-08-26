@@ -183,4 +183,8 @@ class LiveEventManager {
     func liveEvent(for pubkey: String) -> ProcessedLiveEvent? {
         return liveEvents[pubkey]
     }
+    
+    func user(for pubkey: String) -> ParsedUser? {
+        cachedUsers[pubkey]
+    }
 }

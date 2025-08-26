@@ -133,26 +133,12 @@ class UserImageView: UIView, Themeable {
                 legendaryGradient.colors = [.accent, .accent, .accent]
             }
             
-            if !live.image.isEmpty {
-                animatedImageView.kf.setImage(with: URL(string: live.image), placeholder: UIImage.profile, options: [
-                    .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
-                    .transition(.fade(0.2)),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage
-                ])
-            } else if let imageURL = user.profileImage.url(for: .small) {
-                loadImage(url: imageURL, originalURL: user.profileImage.url, userPubkey: user.data.pubkey)
-            } else {
-                animatedImageView.image = .profile
-            }
-            
             livePill.isHidden = false
             legendaryGradient.startPulsing()
-            return
+        } else {
+            livePill.isHidden = true
+            legendaryGradient.stopPulsing()
         }
-        
-        livePill.isHidden = true
-        legendaryGradient.stopPulsing()
         
         let url = user.profileImage.url(for: height < 120 ? .small : .medium)
         

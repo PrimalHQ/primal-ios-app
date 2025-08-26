@@ -204,10 +204,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             if let url = extra["link"] as? String, let url = URL(string: url) {
                 if waitForOpen {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        PrimalWebsiteScheme().openURL(url)
+                        PrimalWebsiteScheme.shared.openURL(url)
                     }
                 } else {
-                    PrimalWebsiteScheme().openURL(url)
+                    PrimalWebsiteScheme.shared.openURL(url)
                 }
             }
         }
