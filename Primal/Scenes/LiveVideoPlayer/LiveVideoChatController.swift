@@ -13,9 +13,26 @@ import SafariServices
 import NostrSDK
 
 class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
+    
+    let onZapDetails: () -> Void
+    init(onZapDetails: @escaping () -> Void) {
+        self.onZapDetails = onZapDetails
+        super.init()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
     func reloadZaps() {
         table.reloadData()
         self.heightConstraint?.constant = 64
+    }
+    
+    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
+        guard case .zapDetails = event else {
+            super.performEvent(event, withPost: post, inCell: cell)
+            return
+        }
+        onZapDetails()
     }
 }
 
@@ -30,7 +47,9 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     var cancellables: Set<AnyCancellable> = []
     
-    lazy var zapsInfoVC = LiveZapsInfoVC()
+    lazy var zapsInfoVC = LiveZapsInfoVC { [weak self] in
+        self?.videoController?.presentLivePopup(LiveVideoZapsController(zaps: self?.comments.filter({ $0.zapAmount > 0 }) ?? []))
+    }
     
     let live: ParsedLiveEvent
     
@@ -60,6 +79,8 @@ class LiveVideoChatController: UIViewController, Themeable {
         self.post = ParsedContent(post: .init(nostrPost: nostrContent, nostrPostStats: .empty(nostrContent.id)), user: live.user)
         
         super.init(nibName: nil, bundle: nil)
+        
+        commentsTable.transform = .init(rotationAngle: .pi)
         
         requestChat()
     }
@@ -118,7 +139,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         commentsTable.register(LiveVideoChatMessageCell.self, forCellReuseIdentifier: "cell")
         commentsTable.register(LiveVideoChatZapCell.self, forCellReuseIdentifier: "zapCell")
         commentsTable.showsVerticalScrollIndicator = false
-        commentsTable.transform = .init(rotationAngle: .pi)
         commentsTable.separatorStyle = .none
         commentsTable.keyboardDismissMode = .onDrag
         commentsTable.contentInsetAdjustmentBehavior = .never
@@ -211,11 +231,9 @@ extension LiveVideoChatController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: comment.zapAmount > 0 ? "zapCell" : "cell", for: indexPath)
         cell.transform = tableView.transform
         if comment.zapAmount > 0 {
-            (cell as? LiveVideoChatZapCell)?.updateForComment(comment)
-            (cell as? LiveVideoChatZapCell)?.commentLabel.delegate = self
+            (cell as? LiveVideoChatZapCell)?.updateForComment(comment, delegate: self)
         } else {
-            (cell as? LiveVideoChatMessageCell)?.updateForComment(comment)
-            (cell as? LiveVideoChatMessageCell)?.commentLabel.delegate = self
+            (cell as? LiveVideoChatMessageCell)?.updateForComment(comment, delegate: self)
         }
         return cell
     }
@@ -271,7 +289,7 @@ private extension LiveVideoChatController {
         let user = Self.userCache[pubkey] ?? ParsedUser(data: .init(pubkey: pubkey))
         let message: String = event["content"]?.stringValue ?? ""
         
-        return ParsedLiveComment(user: user, comment: parsedComment(message), event: event, zapAmount: amount)
+        return ParsedLiveComment(user: user, comment: parsedComment(message, isZap: true), event: event, zapAmount: amount)
     }
     
     func jsonToZap(_ json: JSON) -> ParsedZap? {
@@ -344,7 +362,7 @@ private extension LiveVideoChatController {
                         let zapComments: [ParsedLiveComment] = zapReceipts.compactMap({ self.jsonToZapComment($0.1) })
                         
                         let comments: [ParsedLiveComment] = commentEvents
-                            .compactMap({ event in
+                            .compactMap({ event -> ParsedLiveComment? in
                                 guard
                                     let userPubkey = event["pubkey"]?.stringValue,
                                     let content = event["content"]?.stringValue
@@ -352,7 +370,7 @@ private extension LiveVideoChatController {
                                 
                                 return .init(
                                     user: Self.userCache[userPubkey] ?? ParsedUser(data: .init(pubkey: userPubkey)),
-                                    comment: self.parsedComment(content),
+                                    comment: self.parsedComment(content, isZap: false),
                                     event: event
                                 )
                             })
@@ -419,7 +437,7 @@ private extension LiveVideoChatController {
                 pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
                 
                 if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
-                    self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content), event: event, zapAmount: amount), at: 0)
+                    self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
                     self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
                     if let zap = self.jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey {
                         self.addZap(zap)
@@ -438,7 +456,7 @@ private extension LiveVideoChatController {
                         
                         comments.insert(ParsedLiveComment(
                             user: Self.userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
-                            comment: parsedComment(content),
+                            comment: parsedComment(content, isZap: amount > 0),
                             event: event,
                             zapAmount: amount
                         ), at: 0)
@@ -454,14 +472,15 @@ private extension LiveVideoChatController {
 }
 
 extension LiveVideoChatController: MetadataCoding {
-    func parsedComment(_ comment: String) -> NSAttributedString {
+    func parsedComment(_ comment: String, isZap: Bool) -> NSAttributedString {
         let mentions = comment.extractMentions()
         
         var replacements: [(String, String, String)] = []
         for mention in mentions {
             if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string, let pubkey = (try? decodedMetadata(from: mentionText).pubkey) ?? mentionText.npubToPubkey() {
-                let name = "@\(Self.userCache[pubkey]?.data.firstIdentifier ?? "unknown")"
-                replacements.append((mention, name, "https://primal.net/p/\(pubkey.hexToNpub() ?? pubkey)"))
+                let user = Self.userCache[pubkey] ?? .init(data: .init(pubkey: pubkey))
+                let name = "@\(user.data.firstIdentifier)"
+                replacements.append((mention, name, "https://primal.net/p/\(user.data.npub)"))
             }
         }
         
@@ -470,11 +489,11 @@ extension LiveVideoChatController: MetadataCoding {
             replacements: replacements,
             baseAttributes: [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
-                .foregroundColor: UIColor.foreground3,
+                .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
             ],
             specialAttributes:  [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
-                .foregroundColor: UIColor.foreground3,
+                .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
                 .underlineStyle: NSUnderlineStyle.single.rawValue
             ]
         )

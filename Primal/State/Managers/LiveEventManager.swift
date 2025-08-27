@@ -140,7 +140,7 @@ class LiveEventManager {
     var currentlyLiveFollowing: [ParsedUser] {
         var users: [ParsedUser] = []
         for (pubkey, event) in liveEvents {
-            if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
+            if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey), !LiveMuteManager.instance.isMuted(pubkey) {
                 users.append(user)
             }
         }
@@ -148,11 +148,11 @@ class LiveEventManager {
     }
     
     var currentlyLiveFollowingPublisher: AnyPublisher<[ParsedUser], Never> {
-        Publishers.CombineLatest($liveEvents, $cachedUsers)
-            .map { events, cachedUsers in
+        Publishers.CombineLatest3($liveEvents, $cachedUsers, LiveMuteManager.instance.$mutedPubkeys)
+            .map { events, cachedUsers, mutedPubkeys in
                 var users: [ParsedUser] = []
                 for (pubkey, event) in events {
-                    if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey) {
+                    if event.isLive, event.eventDate.isOneHourOld(), let user = cachedUsers[pubkey], FollowManager.instance.isFollowing(pubkey), !mutedPubkeys.contains(pubkey) {
                         users.append(user)
                     }
                 }
@@ -168,16 +168,22 @@ class LiveEventManager {
     func addLiveEvent(_ event: [String: JSON]) {
         guard let processed = ProcessedLiveEvent.fromEvent(event) else { return }
         
+        if let oldEvent = liveEvents[processed.pubkey],  oldEvent.eventDate > processed.eventDate {
+            return // Ignore older live events
+        }
+        
         liveEvents[processed.pubkey] = processed
         
-        SocketRequest(name: "user_infos", payload: ["pubkeys": .array([.string(processed.pubkey)])]).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] res in
-                for user in res.getSortedUsers() {
-                    self?.cachedUsers[user.data.pubkey] = user
+        if cachedUsers[processed.pubkey] == nil {
+            SocketRequest(name: "user_infos", payload: ["pubkeys": .array([.string(processed.pubkey)])]).publisher()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] res in
+                    for user in res.getSortedUsers() {
+                        self?.cachedUsers[user.data.pubkey] = user
+                    }
                 }
-            }
-            .store(in: &cancellables)
+                .store(in: &cancellables)
+        }
     }
     
     func liveEvent(for pubkey: String) -> ProcessedLiveEvent? {

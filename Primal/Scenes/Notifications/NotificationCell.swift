@@ -27,7 +27,7 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     lazy var seeMoreLabel = UILabel()
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     lazy var bottomBarStandIn = UIView()
-    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, articleView, postPreview, bottomBarStandIn])
+    lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, embeddedLive, articleView, postPreview, bottomBarStandIn])
     
     var firstRowLeftC: NSLayoutConstraint?
     
@@ -50,7 +50,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         if let post = notification.post {
             update(post)
             postContentStack.isHidden = false
-            bottomBarStandIn.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub
+            bottomBarStandIn.isHidden = post.user.data.npub == IdentityManager.instance.user?.npub || post.isEmpty
+            bottomButtonStack.isHidden = bottomBarStandIn.isHidden
         } else {
             postContentStack.isHidden = true
         }
@@ -298,7 +299,7 @@ extension GroupedNotification {
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
             return "replied to a note your note was mentioned in"
         case .LIVE_EVENT_HAPPENING:
-            return "is live"
+            return post?.embeddedLive?.isLive == true ? "is live" : "was live"
         }
     }
     
@@ -342,8 +343,8 @@ extension NotificationType {
             return .notifHighlight
         case .YOUR_POST_WAS_BOOKMARKED:
             return .notifBookmark
-        case .LIVE_EVENT_HAPPENING: // TODO: REPLACE WITH IMAGE
-            return .notifBookmark
+        case .LIVE_EVENT_HAPPENING:
+            return .notifLiveDot.overlayed(with: .notifLive.withTintColor(.foreground, renderingMode: .alwaysOriginal))
         }
     }
     

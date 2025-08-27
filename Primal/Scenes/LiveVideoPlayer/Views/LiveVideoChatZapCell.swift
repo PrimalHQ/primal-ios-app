@@ -9,6 +9,31 @@ import UIKit
 import Nantes
 
 class LiveVideoChatZapCell: UITableViewCell {
+    
+    let view = LiveVideoChatZapView()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        selectionStyle = .none
+        
+        contentView.addSubview(view)
+        view.pinToSuperview(edges: .vertical, padding: 3).pinToSuperview(edges: .horizontal, padding: 8)
+        
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+ 
+    func updateForComment(_ comment: ParsedLiveComment, delegate: NantesLabelDelegate?) {
+        contentView.backgroundColor = .background
+        
+        view.updateForComment(comment)
+        view.commentLabel.delegate = delegate
+    }
+}
+
+
+class LiveVideoChatZapView: UIView {
     let userImage = UserImageView(height: 24)
     let userNameLabel = UILabel("", color: .gold, font: .appFont(withSize: 16, weight: .bold))
     let zapInfoLabel = UILabel("zapped", color: .gold, font: .appFont(withSize: 16, weight: .regular))
@@ -17,19 +42,13 @@ class LiveVideoChatZapCell: UITableViewCell {
     let zapIcon = UIImageView(image: .topZapGalleryIcon)
     let commentLabel = NantesLabel()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init() {
+        super.init(frame: .zero)
         
-        selectionStyle = .none
-        
-        let goldenBackground = UIView()
-        goldenBackground.backgroundColor = .pro.withAlphaComponent(0.2)
-        goldenBackground.layer.borderWidth = 1
-        goldenBackground.layer.borderColor = UIColor.pro.cgColor
-        goldenBackground.layer.cornerRadius = 8
-        
-        contentView.addSubview(goldenBackground)
-        goldenBackground.pinToSuperview(edges: .vertical, padding: 3).pinToSuperview(edges: .horizontal, padding: 8)
+        backgroundColor = .pro.withAlphaComponent(0.2)
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.pro.cgColor
+        layer.cornerRadius = 8
         
         zapIcon.tintColor = .black
         let zapStack = UIStackView([zapIcon, zapAmountLabel])
@@ -44,14 +63,14 @@ class LiveVideoChatZapCell: UITableViewCell {
         stack.setCustomSpacing(4, after: userNameLabel)
         stack.alignment = .center
         
-        contentView.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 8 + 3)
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .top, padding: 8)
         
-        contentView.addSubview(commentLabel)
+        addSubview(commentLabel)
         commentLabel
-            .pinToSuperview(edges: .leading, padding: 52)
-            .pinToSuperview(edges: .trailing, padding: 20)
-            .pinToSuperview(edges: .bottom, padding: 8 + 3)
+            .pinToSuperview(edges: .leading, padding: 44)
+            .pinToSuperview(edges: .trailing, padding: 12)
+            .pinToSuperview(edges: .bottom, padding: 8)
         
         commentLabel.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 0).isActive = true
         
@@ -64,11 +83,11 @@ class LiveVideoChatZapCell: UITableViewCell {
         commentLabel.linkAttributes = [.underlineStyle: NSUnderlineStyle.single.rawValue]
     }
     
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func updateForComment(_ comment: ParsedLiveComment) {
-        contentView.backgroundColor = .background
-        
         userImage.setUserImage(comment.user)
         userNameLabel.text = comment.user.data.firstIdentifier
         

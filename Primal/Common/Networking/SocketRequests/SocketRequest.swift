@@ -133,6 +133,7 @@ extension PostRequestResult {
             events.append(payload)
             return
         case .live:
+            events.append(payload)
             Task {
                 await LiveEventManager.instance.addLiveEvent(payload)
             }

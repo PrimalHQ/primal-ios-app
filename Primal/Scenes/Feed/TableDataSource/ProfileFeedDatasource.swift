@@ -226,9 +226,9 @@ private extension ProfileFeedDatasource {
                 snapshot.appendItems([selectedTab == 3 ? .loadingMedia : .loading])
             } else {
                 if selectedTab == 2 {
-                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) has no articles")])
+                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) hasn't posted any articles")])
                 } else {
-                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) has no posts")])
+                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) hasn't posted any notes")])
                 }
             }
         } else {

@@ -123,6 +123,7 @@ extension UIView {
     func stopPulsing() {
         layer.removeAnimation(forKey: "pulse")
         layer.removeAnimation(forKey: "pulseOpacity")
+        layer.removeAnimation(forKey: "pulseXY")
     }
     
     // MARK: - Constraints

@@ -228,6 +228,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? AnimatingViewProtocol)?.startAnimating()
+        
         guard
             let post = postForIndexPath(indexPath),
             let index = posts.firstIndex(where: { $0.post.id == post.post.id })
@@ -494,6 +496,12 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             }
         }
     }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? AnimatingViewProtocol)?.stopAnimating()
+    }
+    
+    
 }
 
 private extension NoteViewController {

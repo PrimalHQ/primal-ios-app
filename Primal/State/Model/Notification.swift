@@ -17,6 +17,7 @@ enum PushNotificationGroup {
     case MENTIONS
     case DIRECT_MESSAGES
     case WALLET_TRANSACTIONS
+    case LIVE
 }
 
 enum AdditionalNotificationOptions {
@@ -205,8 +206,8 @@ enum NostrNotification: Codable, Hashable {
             return .postReplied(postId: post_your_post_was_mentioned_in, userId: who_replied_to_it, reply: reply)
         case .LIVE_EVENT_HAPPENING:
             guard
-                let live_event_id = object["live_event_id"]?.stringValue,
-                let host_pubkey = object["host_pubkey"]?.stringValue
+                let live_event_id = object["coordinate"]?.stringValue,
+                let host_pubkey = object["host"]?.stringValue
             else { return nil }
             
             return .liveHappening(liveId: live_event_id, userId: host_pubkey)
@@ -243,8 +244,8 @@ extension NostrNotification {
                 .postMentionZapped(let postId, _, _),
                 .postMentionLiked(let postId, _),
                 .postMentionReposted(let postId, _),
-                .postBookmarked(let postId, _):
-            
+                .postBookmarked(let postId, _),
+                .liveHappening(let postId, _):
             return postId
         case .postHighlighted(_, _, let highlight):
             return highlight
@@ -253,7 +254,7 @@ extension NostrNotification {
                 .postMentionReplied(_, _, reply: let reply):
             
             return reply
-        case .userFollowed, .userUnfollowed, .liveHappening:
+        case .userFollowed, .userUnfollowed:
             return nil
         }
     }

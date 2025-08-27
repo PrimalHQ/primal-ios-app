@@ -369,6 +369,29 @@ extension PostRequestResult {
                         print(highlight)
                         return true
                     })
+                } else {
+                    let split = postId.split(separator: ":")
+
+                    if split.count != 3 { return GroupedNotification(users: parsedUsers, mainNotification: notif) }
+
+                    let pubkey = split[1].string
+                    let dTag = split[2].string
+                    
+                    guard
+                        let live = events.first(where: {
+                            $0["pubkey"]?.stringValue == pubkey && $0["tags"]?.arrayValue?.tagValueForKey("d") == dTag
+                        }),
+                        let processed = ProcessedLiveEvent.fromEvent(live)
+                    else {
+                        return GroupedNotification(users: parsedUsers, mainNotification: notif)
+                    }
+                        
+                    let content = NostrContent(jsonData: live)
+                    notificationPost = .init(.init(
+                        post: .empty,
+                        user: createParsedUser(users[content.pubkey] ?? .init(pubkey: content.pubkey))
+                    ))
+                    notificationPost?.embeddedLive = .init(event: processed, user: createParsedUser(users[processed.pubkey] ?? .init(pubkey: processed.pubkey)))
                 }
             }
             

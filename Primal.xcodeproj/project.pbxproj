@@ -262,6 +262,7 @@
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
 		B90DB06D2E5CB90100A67D4A /* LiveMuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */; };
+		B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06E2E5E10C400A67D4A /* LiveVideoZapsController.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
@@ -1004,6 +1005,7 @@
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
 		B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMuteManager.swift; sourceTree = "<group>"; };
+		B90DB06E2E5E10C400A67D4A /* LiveVideoZapsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoZapsController.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
@@ -3261,6 +3263,7 @@
 				B9EDA57F2E4B677D003262E4 /* LiveVideoDetailsController.swift */,
 				B9EDA5832E4CA97D003262E4 /* LiveVideoMessageDetailsController.swift */,
 				B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */,
+				B90DB06E2E5E10C400A67D4A /* LiveVideoZapsController.swift */,
 			);
 			path = LivePopups;
 			sourceTree = "<group>";
@@ -3872,6 +3875,7 @@
 				B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */,
 				B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */,
 				B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */,
+				B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
 				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
 				B906AB122C9B47800089813F /* Thumbnail.swift in Sources */,
@@ -4392,7 +4396,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.27;
+				MARKETING_VERSION = 2.5.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4441,7 +4445,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.27;
+				MARKETING_VERSION = 2.5.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

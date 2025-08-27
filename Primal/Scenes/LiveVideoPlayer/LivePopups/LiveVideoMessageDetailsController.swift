@@ -72,7 +72,9 @@ class LiveVideoMessageDetailsController: UIViewController, LiveVideoUserDetailsV
     internal let unfollowButton = RoundedSmallButton(text: "unfollow").constrainToSize(width: 100)
     
     private let chatMessageLabel = UILabel("Chat Message", color: .foreground4, font: .appFont(withSize: 15, weight: .regular))
-    private let descLabel = NantesLabel()
+    private let messagePreview = LiveVideoChatMessageView()
+    private let zapPreview = LiveVideoChatZapView()
+    let zapPreviewBackground = UIView()
     private let reportButton = UIButton(configuration: .reportLiveMessageButton()).constrainToSize(width: 180)
     
     private let backgroundExtender = SpacerView(height: 200, priority: .required)
@@ -122,26 +124,25 @@ class LiveVideoMessageDetailsController: UIViewController, LiveVideoUserDetailsV
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -200)
         
-        let reportStack = UIStackView(axis: .vertical, [descLabel, reportButton])
+        zapPreviewBackground.layer.cornerRadius = 8
+        zapPreviewBackground.addSubview(zapPreview)
+        zapPreview.pinToSuperview()
+        
+        let reportStack = UIStackView(axis: .vertical, [messagePreview, zapPreviewBackground, reportButton])
         reportStack.alignment = .leading
         reportStack.spacing = 16
         
-        let smallUserImageView = UserImageView(height: 24)
-        smallUserImageView.setUserImage(userForDetails)
-        let contentStack = UIStackView([smallUserImageView, reportStack])
-        contentStack.alignment = .top
-        contentStack.spacing = 8
-        
-        let descStack = UIStackView(axis: .vertical, [chatMessageLabel, SpacerView(height: 18), contentStack])
-        descStack.alignment = .leading
+        let descStack = UIStackView(axis: .vertical, [chatMessageLabel, SpacerView(height: 18), reportStack])
+        zapPreviewBackground.pin(to: descStack, edges: .horizontal)
         
         descBackground.addSubview(descStack)
         descStack.pinToSuperview(padding: 24).pin(to: view, edges: .horizontal, padding: 24)
         
-        descLabel.numberOfLines = 0
-        descLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        descLabel.enabledTextCheckingTypes = .link
-        descLabel.delegate = self
+        zapPreviewBackground.isHidden = message.zapAmount < 1
+        messagePreview.isHidden = message.zapAmount > 0
+        
+        zapPreview.commentLabel.delegate = self
+        messagePreview.commentLabel.delegate = self
         
         updateTheme()
         
@@ -152,7 +153,6 @@ class LiveVideoMessageDetailsController: UIViewController, LiveVideoUserDetailsV
         zapButton.addAction(.init(handler: { [weak self] _ in self?.zapTapped() }), for: .touchUpInside)
         messageButton.addAction(.init(handler: { [weak self] _ in self?.messageTapped() }), for: .touchUpInside)
         imageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in self?.openUserProfile() }))
-        smallUserImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in self?.openUserProfile() }))
         
         muteButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
@@ -177,40 +177,18 @@ class LiveVideoMessageDetailsController: UIViewController, LiveVideoUserDetailsV
     }
     
     func updateTheme() {
+        zapPreviewBackground.backgroundColor = .background
         infoBackground.backgroundColor = .background4
         descBackground.backgroundColor = .background3
         backgroundExtender.backgroundColor = .background3
         
         pullbar.pullBar.backgroundColor = .foreground5.withAlphaComponent(0.8)
         
-        descLabel.linkAttributes = [.foregroundColor: UIColor.accent]
-        
         muteButton.configuration = .liveMuteButton()
         reportButton.configuration = .reportLiveMessageButton()
         
-        if message.text.string.isEmpty {
-            descLabel.isHidden = true
-        } else {
-            descLabel.isHidden = false
-            descLabel.attributedText = descText()
-        }
-    }
-    
-    func descText() -> NSAttributedString {
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.lineSpacing = 7
-        
-        let text = NSMutableAttributedString(string: "\(message.user.data.firstIdentifier) ", attributes: [
-            .font: UIFont.appFont(withSize: 16, weight: .bold),
-            .foregroundColor: UIColor.foreground,
-            .paragraphStyle: paragraph
-        ])
-        
-        let mutable = NSMutableAttributedString(attributedString: message.text)
-        mutable.addAttributes([.paragraphStyle: paragraph], range: NSRange(location: 0, length: mutable.length))
-        
-        text.append(mutable)
-        return text
+        zapPreview.updateForComment(message)
+        messagePreview.updateForComment(message)
     }
 }
 

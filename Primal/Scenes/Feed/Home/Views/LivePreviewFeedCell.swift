@@ -8,11 +8,16 @@
 import UIKit
 import Lottie
 
+protocol AnimatingViewProtocol {
+    func stopAnimating()
+    func startAnimating()
+}
+
 protocol LivePreviewFeedCellDelegate: AnyObject {
     func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser)
 }
 
-class LivePreviewFeedCell: UITableViewCell {
+class LivePreviewFeedCell: UITableViewCell, AnimatingViewProtocol {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).constrainToSize(height: 72)
     let border = SpacerView(height: 1, color: .background3)
     
@@ -56,6 +61,14 @@ class LivePreviewFeedCell: UITableViewCell {
             return ($0, live)
         }
     }
+    
+    func stopAnimating() {
+        collectionView.visibleCells.forEach({ ($0 as? AnimatingViewProtocol)?.stopAnimating() })
+    }
+    
+    func startAnimating() {
+        collectionView.visibleCells.forEach({ ($0 as? AnimatingViewProtocol)?.startAnimating() })
+    }
 }
 
 extension LivePreviewFeedCell: UICollectionViewDataSource {
@@ -68,8 +81,7 @@ extension LivePreviewFeedCell: UICollectionViewDataSource {
         let (usr, event) = lives[indexPath.item]
         (cell as? LivePreviewFeedCellCell)?.setup(user: usr, live: event)
         return cell
-    }
-    
+    }   
 }
 
 extension LivePreviewFeedCell: UICollectionViewDelegateFlowLayout {
@@ -85,10 +97,14 @@ extension LivePreviewFeedCell: UICollectionViewDelegateFlowLayout {
         let (usr, event) = lives[indexPath.item]
         delegate?.didSelectLive(event, user: usr)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        (cell as? LivePreviewFeedCellCell)?.stopAnimating()
+    }
 }
 
-class LivePreviewFeedCellCell: UICollectionViewCell {
-    let userImage = UserImageView(height: 40)
+class LivePreviewFeedCellCell: UICollectionViewCell, AnimatingViewProtocol {
+    let userImage = UserImageView(height: 40, showLegendGlow: false)
     let watchersIcon = UIImageView(image: .livePillUser)
     let watcherCountLabel = UILabel("", color: .white, font: .appFont(withSize: 16, weight: .bold))
     let textLabel = HorizontallyScrollingLabel()
@@ -141,7 +157,28 @@ class LivePreviewFeedCellCell: UICollectionViewCell {
         background.backgroundColor = .accent
         
         background.startPulsingXY()
+        liveIcon.play()
+    }
+    
+    deinit {
+        stopAnimating()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
         
+        stopAnimating()
+    }
+    
+    func stopAnimating() {
+        background.stopPulsing()
+        textLabel.stopAnimating()
+        liveIcon.stop()
+    }
+    
+    func startAnimating() {
+        background.startPulsingXY()
+        textLabel.startAnimating()
         liveIcon.play()
     }
 }
@@ -172,7 +209,7 @@ private extension UIView {
 
 }
 
-class HorizontallyScrollingLabel: UIView {
+class HorizontallyScrollingLabel: UIView, AnimatingViewProtocol {
     let label = UILabel()
     let hideIcon = UIImageView(image: .liveTextGradientCover)
     
@@ -233,13 +270,21 @@ class HorizontallyScrollingLabel: UIView {
         titleDisplayLink?.remove(from: .main, forMode: .default)
     }
     
+    func stopAnimating() {
+        currentDelta = 0
+        isPaused = false
+        elapsed = 0
+        label.transform = .identity
+        titleDisplayLink = nil
+    }
+    
+    func startAnimating() {
+        startUpdatingLabel()
+    }
+    
     func startUpdatingLabel() {
         guard maxDelta > 0 else {
-            currentDelta = 0
-            isPaused = false
-            elapsed = 0
-            label.transform = .identity
-            titleDisplayLink = nil
+            stopAnimating()
             return
         }
         

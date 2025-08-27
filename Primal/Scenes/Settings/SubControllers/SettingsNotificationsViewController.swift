@@ -221,6 +221,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             .inApp(.REPLIES, [.YOUR_POST_WAS_REPLIED_TO]),
             .inApp(.REPOSTS, [.YOUR_POST_WAS_REPOSTED]),
             .inApp(.MENTIONS, [.YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST]),
+            .inApp(.LIVE, [.LIVE_EVENT_HAPPENING])
         ]))
         
         tableData.append(.init(text: "NOTIFICATION PREFERENCES", notifications: [
@@ -450,6 +451,8 @@ extension PrimalSettingsPushNotifications {
             return DIRECT_MESSAGES
         case .WALLET_TRANSACTIONS:
             return WALLET_TRANSACTIONS
+        case .LIVE:
+            return true
         }
     }
     
@@ -471,6 +474,8 @@ extension PrimalSettingsPushNotifications {
             DIRECT_MESSAGES = value
         case .WALLET_TRANSACTIONS:
             WALLET_TRANSACTIONS = value
+        case .LIVE:
+            break // TODO: one day
         }
     }
 }
@@ -521,6 +526,8 @@ extension PushNotificationGroup {
             return "Direct Messages"
         case .WALLET_TRANSACTIONS:
             return "Wallet Transactions"
+        case .LIVE:
+            return "Live events"
         }
     }
     
@@ -542,6 +549,8 @@ extension PushNotificationGroup {
             return .notifMessageGroup
         case .WALLET_TRANSACTIONS:
             return .notifWalletGroup
+        case .LIVE:
+            return NotificationType.LIVE_EVENT_HAPPENING.icon ?? .liveIcon
         }
     }
 }

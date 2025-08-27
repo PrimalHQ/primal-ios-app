@@ -9,26 +9,46 @@ import UIKit
 import Nantes
 
 class LiveVideoChatMessageCell: UITableViewCell {
-    let userImage = UserImageView(height: 24)
-    let userNameLabel = UILabel("", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
-    let commentLabel = NantesLabel()
+    let view = LiveVideoChatMessageView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
         
+        contentView.addSubview(view)
+        view.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func updateForComment(_ comment: ParsedLiveComment, delegate: NantesLabelDelegate) {
+        contentView.backgroundColor = .background
+        
+        view.updateForComment(comment)
+        view.commentLabel.delegate = delegate
+    }
+}
+
+class LiveVideoChatMessageView: UIView {
+    let userImage = UserImageView(height: 24)
+    let userNameLabel = UILabel("", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
+    let commentLabel = NantesLabel()
+    
+    init() {
+        super.init(frame: .zero)
+        
         let stack = UIStackView(axis: .horizontal, [userImage, userNameLabel])
         stack.setCustomSpacing(8, after: userImage)
         stack.alignment = .center
         
-        contentView.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 5)
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 5)
         
-        contentView.addSubview(commentLabel)
+        addSubview(commentLabel)
         commentLabel
-            .pinToSuperview(edges: .leading, padding: 52)
-            .pinToSuperview(edges: .trailing, padding: 20)
+            .pinToSuperview(edges: .leading, padding: 32)
+            .pinToSuperview(edges: .trailing)
             .pinToSuperview(edges: .bottom, padding: 7)
             .pinToSuperview(edges: .top, padding: 1)
         
@@ -42,8 +62,6 @@ class LiveVideoChatMessageCell: UITableViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateForComment(_ comment: ParsedLiveComment) {
-        contentView.backgroundColor = .background
-        
         userImage.setUserImage(comment.user)
         userNameLabel.text = comment.user.data.firstIdentifier
         let text = NSMutableAttributedString(string: comment.user.data.firstIdentifier, attributes: [

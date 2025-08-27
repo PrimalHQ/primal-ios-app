@@ -26,7 +26,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         let path = url.path()
         let pathL = path.lowercased()
         let components = url.pathComponents
-        let id = components.dropFirst().first ?? url.lastPathComponent
+        let id = components.dropFirst(2).first ?? url.lastPathComponent
         
         if pathL.hasPrefix("/e/") || pathL.hasPrefix("/a/") {
             guard let metadata = try? decodedMetadata(from: id) else {

@@ -343,7 +343,7 @@ private extension MenuContainerController {
             
             if state.isExpired {
                 premiumIndicator.number = 1
-                premiumIndicator.color = { .accent }
+//                premiumIndicator.color = { .accent }
                 return
             }
             
@@ -353,7 +353,7 @@ private extension MenuContainerController {
             }
             
             premiumIndicator.number = 1
-            premiumIndicator.color = { .pro }
+//            premiumIndicator.color = { .pro }
         })
         .store(in: &cancellables)
     }

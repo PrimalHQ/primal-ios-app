@@ -26,7 +26,7 @@ final class LiveMuteManager {
             .store(in: &cancellables)
     }
     
-    private(set) var mutedPubkeys: Set<String> = []
+    @Published private(set) var mutedPubkeys: Set<String> = []
 
     static let instance = LiveMuteManager()
 

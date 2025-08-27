@@ -18,7 +18,7 @@ class LiveCommentsHeaderView: UIStackView, Themeable {
     
     let configButton = UIButton(configuration: .simpleImage(.searchConfig.withRenderingMode(.alwaysTemplate)))
     let infoButton = UIButton(configuration: .simpleImage(.liveInfo.withRenderingMode(.alwaysTemplate)))
-    let closeButton = UIButton(configuration: .simpleImage(.liveCommentsClose))
+    let closeButton = UIButton(configuration: .simpleImage(.liveCommentsClose.scalePreservingAspectRatio(size: 16).withRenderingMode(.alwaysTemplate)))
     
     var small: Bool = false {
         didSet {
