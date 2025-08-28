@@ -12,7 +12,7 @@ class MainThreadElementUserCell: ThreadElementBaseCell, RegularFeedElementCell {
     
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: 42)
-    let checkbox = VerifiedView()
+    let checkbox = VerifiedView().constrainToSize(FontSizeSelection.current.contentFontSize)
     let nameLabel = UILabel()
     let nipLabel = UILabel()
     lazy var nameCheckStack = UIStackView([nameLabel, checkbox])

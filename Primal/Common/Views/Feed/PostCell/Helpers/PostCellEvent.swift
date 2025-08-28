@@ -21,6 +21,7 @@ enum PostCellEvent {
     case embeddedPost
     case repostedProfile
     case article
+    case live
     
     case articleTag(String)
     

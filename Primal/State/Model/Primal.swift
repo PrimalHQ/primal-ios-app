@@ -380,7 +380,7 @@ extension PrimalFeedPost {
 }
 
 struct PrimalZapEvent: Codable {
-    var created_at: Int
+    var created_at: Double
     var event_id: String
     var zap_receipt_id: String
     var receiver: String

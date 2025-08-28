@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import Combine
 import Kingfisher
+import AVKit
 
 extension CAMediaTimingFunction {
     static let easeInTiming = CAMediaTimingFunction(controlPoints: 0.98, 0, 0.99, 0.53)
@@ -28,6 +29,7 @@ enum DeeplinkNavigation {
     case premium
     case legends
     case newPost(text: String, files: [URL])
+    case live(ParsedLiveEvent)
     case promoCode(String)
 }
 
@@ -40,6 +42,35 @@ final class RootViewController: UIViewController {
     private var introVC: IntroVideoController?
     private var cancellables: Set<AnyCancellable> = []
     
+    var liveVideoController: LiveVideoPlayerController? {
+        didSet {
+            if VideoPlaybackManager.instance.currentlyPlaying == oldValue?.player && oldValue != liveVideoController {
+                VideoPlaybackManager.instance.currentlyPlaying = nil
+            }
+            
+            if let liveVideoController, let player = liveVideoController.player {
+                livePlayer.setup(player: player, live: liveVideoController.live.event)
+            } else {
+                livePlayer.removePlayer()
+                VideoPlaybackManager.instance.currentlyLivePip = nil
+            }
+            
+            if liveVideoController == nil {
+                UIView.animate(withDuration: 0.2) {
+                    self.livePlayer.alpha = 0
+                } completion: { _ in
+                    self.livePlayer.alpha = 1
+                    self.livePlayer.isHidden = true
+                }
+            } else {
+                livePlayer.isHidden = false
+                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
+            }
+        }
+    }
+    
+    var livePlayer = LiveVideoEmbeddedView()
+    
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
     var smoothScrollSpeed: Int = 100
@@ -49,6 +80,11 @@ final class RootViewController: UIViewController {
     var didFinishInit = false
     
     @Published var navigateTo: DeeplinkNavigation?
+    
+    var myPip: AVPictureInPictureController? {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else { return nil }
+        return AVPictureInPictureController(playerLayer: livePlayer.playerView.playerLayer)
+    }
     
     private init() {
         super.init(nibName: nil, bundle: nil)
@@ -76,6 +112,9 @@ final class RootViewController: UIViewController {
             self?.beginScrollAnimation()
         }), for: .touchUpInside)
         
+        view.addSubview(livePlayer)
+        livePlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
+        livePlayer.isHidden = true
         smoothScrollButton.isHidden = true
         
         _ = WalletManager.instance
@@ -106,10 +145,37 @@ final class RootViewController: UIViewController {
                 self?.navigateTo = $0
             })
             .store(in: &cancellables)
+        
+        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
+            guard let livePlayer = self?.livePlayer else { return }
+            if livePlayer.showChevron {
+                UIView.animate(withDuration: 0.2) {
+                    livePlayer.showChevron = false
+                    if livePlayer.center.x < 0 {
+                        livePlayer.center.x += LivePlayerMoveGesture.hideAdjustment
+                    } else {
+                        livePlayer.center.x -= LivePlayerMoveGesture.hideAdjustment
+                    }
+                }
+                return
+            }
+            guard let live = self?.liveVideoController else { return }
+            self?.present(live, animated: true)
+        })
+        let move = LivePlayerMoveGesture()
+        
+        [move, liveTap].forEach { livePlayer.addGestureRecognizer($0) }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        if let presentedViewController {
+            return presentedViewController.prefersStatusBarHidden
+        }
+        return false
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -125,7 +191,7 @@ final class RootViewController: UIViewController {
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if presentedViewController as? ImageGalleryController != nil {
+        if presentedViewController as? ImageGalleryController != nil || presentedViewController?.presentedViewController as? AVPlayerViewController != nil {
             return .allButUpsideDown
         }
         return .portrait

@@ -8,11 +8,6 @@
 import Foundation
 import Combine
 
-extension String { // TODO: Remove in 2025
-    static let smartContactListKey = "smartContactListKey"
-    static let smartContactDefaultListKey = "smartContactDefaultListKey"
-}
-
 struct CodableParsedUser: Codable {
     let data: PrimalUser
     let profileImage: MediaMetadata.Resource

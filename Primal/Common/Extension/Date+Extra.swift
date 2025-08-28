@@ -133,6 +133,11 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    func isOneHourOld() -> Bool {
+        let seconds = -timeIntervalSince(.now)
+        return seconds < 3600
+    }
+    
     func is18YearsOld() -> Bool {
         let calendar = Calendar.current
         let now = Date()

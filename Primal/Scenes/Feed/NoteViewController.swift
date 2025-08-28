@@ -30,7 +30,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     static let bigZapAnimView = LottieAnimationView(animation: AnimationType.zapMedium.animation).constrainToSize(width: 375, height: 50)
     
     var refreshControl = UIRefreshControl()
-    let table = UITableView()
+    let table = SafeTableView()
     let navigationBorder = UIView().constrainToSize(height: 1)
     lazy var stack = UIStackView(arrangedSubviews: [table])
     
@@ -47,6 +47,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     @Published var posts: [ParsedContent] = [] {
         didSet {
+            if view.window == nil { return }
+            
             dataSource.setPosts(posts)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -77,7 +79,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        table.reloadData()
+        DispatchQueue.main.async {
+            self.dataSource.setPosts(self.posts)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -92,7 +96,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        if !VideoPlaybackManager.instance.isLive {
+            VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+        }
         
         if animated {
             if prevTransform != 0 {
@@ -113,7 +119,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        guard ContentDisplaySettings.autoPlayVideos, view.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
+        if let current = VideoPlaybackManager.instance.currentlyPlaying, current.isLive && current.isPlaying { return }
+        guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
@@ -137,7 +144,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if FullScreenVideoPlayerController.instance == nil {
+        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
             if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
                 VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
             } else {
@@ -154,7 +161,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         // System sometimes updates table contentOffset without moving the cells
         // so if delta is larger than 50 we ignore it
         if abs(delta) > 50 { return }
-        
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
@@ -222,6 +228,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? AnimatingViewProtocol)?.startAnimating()
+        
         guard
             let post = postForIndexPath(indexPath),
             let index = posts.firstIndex(where: { $0.post.id == post.post.id })
@@ -332,7 +340,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             url = .init(string: "https://" + url.absoluteString) ?? url
         }
         
-        let primalScheme = PrimalWebsiteScheme()
+        let primalScheme = PrimalWebsiteScheme.shared
         if primalScheme.canOpenURL(url) {
             primalScheme.openURL(url)
             return
@@ -410,6 +418,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .article:
             guard let article = post.article else { return }
             showViewController(ArticleViewController(content: article))
+        case .live:
+            guard let live = post.embeddedLive else { return }
+            present(LiveVideoPlayerController(live: live), animated: true)
         case .payInvoice:
             guard let invoice = post.invoice else { return }
             search(invoice.string)
@@ -485,6 +496,12 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             }
         }
     }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? AnimatingViewProtocol)?.stopAnimating()
+    }
+    
+    
 }
 
 private extension NoteViewController {
@@ -775,12 +792,12 @@ extension NoteViewController: PostCellDelegate {
         }
         
         if VideoPlaybackManager.instance.currentlyPlaying?.originalURL != url {
-            VideoPlaybackManager.instance.currentlyPlaying = VideoPlayer(url: url, originalURL: url, userPubkey: "")
+            VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
         guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
         
-        present(FullScreenVideoPlayerController(player), animated: true) 
+        present(FullScreenVideoPlayerController(player), animated: true)
     }
     
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {

@@ -27,6 +27,8 @@ class HomeFeedChildController: PostFeedViewController {
             guard let self else { return true }
             return self.table.contentOffset.y > 300
         }
+        
+        dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
     
     required init?(coder: NSCoder) {
@@ -84,12 +86,8 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
-    func updatePosts(old: Int, new: Int, users: [ParsedUser]) {
-        if new != 0 {
-            newPostsView.setCount(new, users: users)
-        }
-        
-        if new == 0 {
+    func updateNewPosts(notes: Int, noteUsers: [ParsedUser], live: Int, liveUsers: [ParsedUser], wasInvisible: Bool) {
+        guard notes > 0 || live > 0 else {
             UIView.animate(withDuration: 0.3) {
                 self.newPostsView.alpha = 0
             } completion: { finished in
@@ -97,7 +95,12 @@ class HomeFeedChildController: PostFeedViewController {
                     self.newPostsViewParent.isHidden = true
                 }
             }
-        } else if old == 0 {
+            return
+        }
+        
+        newPostsView.setCounts(noteCount: notes, noteUsers: noteUsers, liveCount: live, liveUsers: liveUsers)
+        
+        if wasInvisible {
             newPostsViewParent.isHidden = false
             newPostsView.transform = .init(translationX: 0, y: -30)
             UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
@@ -144,7 +147,12 @@ class HomeFeedChildController: PostFeedViewController {
         parentHomeVC?.postButtonParent.transform = .init(translationX: 0, y: -transform)
         
         newPostsViewParent.transform = .init(translationX: 0, y: transform)
-        newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
+        
+        if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
+            newPostsViewParent.alpha = min((1 - (percent * 4)).clamped(to: 0...1), 1 - min(100, -2 * table.contentOffset.y) / 100)
+        } else {
+            newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
+        }
     }
     
     override func updateTheme() {
@@ -154,12 +162,25 @@ class HomeFeedChildController: PostFeedViewController {
     }
 }
 
+extension HomeFeedChildController: LivePreviewFeedCellDelegate {
+    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser) {
+        present(LiveVideoPlayerController(live: .init(event: live, user: user)), animated: true)
+    }
+}
+
 private extension HomeFeedChildController {
     func setupPublishers() {
-        feed.$newPosts.withPrevious().receive(on: DispatchQueue.main).sink { [weak self] old, new in
-            self?.updatePosts(old: old.0, new: new.0, users: new.1)
-        }
-        .store(in: &cancellables)
+        Publishers.CombineLatest(feed.$newPosts, LiveEventManager.instance.currentlyLiveFollowingPublisher)
+            .prepend(((0, []), []))
+            .withPrevious()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] old, new in
+                self?.updateNewPosts(notes: new.0.0, noteUsers: new.0.1, live: new.1.count, liveUsers: new.1, wasInvisible: old.0.0 + old.1.count == 0)
+                if new.0.0 == 0 && !new.1.isEmpty && self?.table.contentOffset.y ?? 0 < 0 {
+                    self?.newPostsViewParent.alpha = 0
+                }
+            }
+            .store(in: &cancellables)
         
         feed.newParsedPosts
             .receive(on: DispatchQueue.main)

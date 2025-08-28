@@ -14,6 +14,10 @@ class FeedElementBaseCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
+        clipsToBounds = false
+        contentView.clipsToBounds = false
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -23,7 +27,6 @@ class FeedElementBaseCell: UITableViewCell {
     }
     
     func updateTheme() {
-        contentView.backgroundColor = .background2
     }
 }
 
@@ -33,7 +36,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
-    let checkbox = VerifiedView().constrainToAspect(1)
+    let checkbox = VerifiedView().constrainToAspect(1, priority: .required)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
     let nipLabel = UILabel()
@@ -44,7 +47,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
     lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
     lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameSuperStack])
-    let threeDotsSpacer = SpacerView(width: 20)
+    let threeDotsSpacer = SpacerView(width: 20, priority: .required)
     
     let repostedByOverlayButton = UIButton()
     

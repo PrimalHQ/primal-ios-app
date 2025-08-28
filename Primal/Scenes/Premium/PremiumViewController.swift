@@ -9,9 +9,9 @@ import Combine
 import UIKit
 import StoreKit
 
-private extension String {
+extension String {
     static var lastVisitedPremiumKey = "lastVisitedPremiumKey1"
-    static let didVisitPremiumAfterProUpdateKey = "didVisitPremiumAfterProUpdateKey"
+    static let didVisitPremiumAfterProUpdateKey = "didVisitPremiumAfterProUpdateKey" // TODO: remove in 2026
 }
 
 extension UserDefaults {
@@ -24,22 +24,12 @@ extension UserDefaults {
         }
     }
     
-    var didVisitPremiumAfterProUpdate: Bool {
-        get {
-            bool(forKey: .didVisitPremiumAfterProUpdateKey)
-        }
-        set {
-            set(newValue, forKey: .didVisitPremiumAfterProUpdateKey)
-        }
-    }
-    
     var currentUserLastPremiumVisit: Date {
         get {
             lastVisitedPremium[IdentityManager.instance.userHexPubkey] ?? .distantPast
         }
         set {
             lastVisitedPremium[IdentityManager.instance.userHexPubkey] = newValue
-            didVisitPremiumAfterProUpdate = true
             notify(.visitPremiumNotification)
         }
     }

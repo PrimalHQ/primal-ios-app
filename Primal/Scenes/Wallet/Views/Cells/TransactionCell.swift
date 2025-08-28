@@ -66,7 +66,7 @@ final class TransactionCell: UITableViewCell, Themeable {
             nameLabel.text = "Bitcoin"
         } else {
             oldProfileId = ""
-            profileImage.image = UIImage(named: "nonZapPayment")
+            profileImage.image = .nonZapPaymentOld
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
@@ -197,6 +197,7 @@ private extension TransactionCell {
         currencyLabel.font = .appFont(withSize: 14, weight: .regular)
         
         profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profileTapped)))
+        profileImage.showLivePill = false
     }
     
     @objc func profileTapped() {

@@ -8,10 +8,6 @@
 import Foundation
 import Combine
 
-extension String {
-    static let checkedNipsKey = "checkedNipsKey"
-}
-
 class CheckNip05Manager {
     static let instance = CheckNip05Manager()
     
@@ -31,6 +27,10 @@ class CheckNip05Manager {
     }
     
     func isVerified(_ user: PrimalUser) -> Bool {
+        if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: user.pubkey), custom.custom_badge {
+            return true
+        }
+        
         guard !user.nip05.isEmpty else { return false }
         
         if let pubkey = checkedNips[user.nip05] {

@@ -36,11 +36,8 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
-    
     let noConnectionView = NoConnectionView()
-
     lazy var buttons = tabs.map { _ in UIButton() }
-    
     let notificationIndicator = NotificationsIndicator()
     
     private let buttonStackParent = UIView()
@@ -71,13 +68,11 @@ final class MainTabBarController: UIViewController, Themeable {
 
     var cancellables: Set<AnyCancellable> = []
     
+    var childSafeAreaInsets = UIEdgeInsets.zero { didSet { children.forEach { $0.additionalSafeAreaInsets = childSafeAreaInsets } } }
+    
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
-    var continousConnection: ContinousConnection? {
-        didSet {
-            oldValue?.end()
-        }
-    }
+    var continousConnection: ContinousConnection?
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
@@ -106,7 +101,7 @@ final class MainTabBarController: UIViewController, Themeable {
     var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
     
     var showTabBarBorder: Bool {
-        get { !navigationBorder.isHidden }
+        get { navigationBorder.alpha > 0.1 }
         set {
             navigationBorder.alpha = newValue ? 1 : 0
             circleBorderView.alpha = newValue ? 1 : 0
@@ -210,6 +205,7 @@ final class MainTabBarController: UIViewController, Themeable {
         
         if nav == currentTab { return }
         
+        nav.additionalSafeAreaInsets = childSafeAreaInsets
         nav.beginAppearanceTransition(true, animated: true)
         currentTab.beginAppearanceTransition(false, animated: true)
         
@@ -336,8 +332,8 @@ private extension MainTabBarController {
         .store(in: &cancellables)
         
         let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
-        let delay3SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(3), scheduler: RunLoop.main).map({ _ in false })
-        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay3SecondsForegroundPublisher)
+        let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
+        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay5SecondsForegroundPublisher)
         
         Publishers.CombineLatest(
             didJustEnterForegroundPublisher.prepend(false),
@@ -388,6 +384,8 @@ private extension MainTabBarController {
                             return (newPost, nil)
                         case .promoCode(let code):
                             return (OnboardingParentViewController(.redeemCode(code)), nil)
+                        case .live(let live):
+                            return (LiveVideoPlayerController(live: live), nil)
                         }
                     }()
                                         
@@ -420,6 +418,16 @@ private extension MainTabBarController {
                 self?.menuButtonPressedForTab(tab)
             }), for: .touchUpInside)
         }
+        
+        Timer.publish(every: 180, on: .main, in: .default).autoconnect().prepend(.now)
+            .delay(for: 2, scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
+                    .sink { _ in }
+                    .store(in: &cancellables)
+            }
+            .store(in: &cancellables)
     }
     
     func addCircleWalletButton() {

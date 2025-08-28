@@ -10,7 +10,7 @@ import NostrSDK
 import GenericJSON
 
 public extension String {
-    static let lightningInvoicePattern = "lnbc[a-z0-9]{40,}"
+    static let lightningInvoicePattern = "(?i)lnbc[a-z0-9]{40,}"
     static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
@@ -42,6 +42,7 @@ class NoteProcessor: MetadataCoding {
             postId: primalZapEvent.event_id,
             amountSats: primalZapEvent.amount_sats,
             message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+            createdAt: primalZapEvent.created_at,
             user: parsedUsers.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
         )
     }
@@ -68,6 +69,7 @@ class NoteProcessor: MetadataCoding {
                     postId: primalZapEvent.event_id,
                     amountSats: primalZapEvent.amount_sats,
                     message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                    createdAt: primalZapEvent.created_at,
                     user: response.createParsedUser(user)
                 )
             },
@@ -100,6 +102,7 @@ class NoteProcessor: MetadataCoding {
                     postId: primalZapEvent.event_id,
                     amountSats: primalZapEvent.amount_sats,
                     message: response.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                    createdAt: primalZapEvent.created_at,
                     user: user
                 ),
                 zappedObject: zappedObject
@@ -146,6 +149,7 @@ class NoteProcessor: MetadataCoding {
                     postId: postId,
                     amountSats: amount,
                     message: message,
+                    createdAt: event["created_at"]?.doubleValue ?? 0,
                     user: user
                 ),
                 zappedObject: otherUser
@@ -306,7 +310,9 @@ class NoteProcessor: MetadataCoding {
                     return
                 }
                 
-                if kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue {
+                if kind == NostrKind.live.rawValue, let event: [String: JSON] = mention.encodeToString()?.decode(), let processed = ProcessedLiveEvent.fromEvent(event) {
+                    p.embeddedLive = ParsedLiveEvent(event: processed, user: response.createParsedUser(response.users[processed.pubkey] ?? PrimalUser(pubkey: processed.pubkey)))
+                } else if kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue {
                     p.article = Article(
                         id: id,
                         title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",

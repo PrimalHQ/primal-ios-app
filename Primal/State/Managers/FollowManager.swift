@@ -111,7 +111,11 @@ final class FollowManager {
     func resetDefaultRelays() {
         SocketRequest(name: "get_default_relays", payload: nil).publisher()
             .sink { result in
-                guard let relays = result.messageArray else { return }
+                guard var relays = result.messageArray else { return }
+                
+                if WalletManager.instance.hasPremium {
+                    relays.append(.premiumRelayURL)
+                }
                 
                 var newRelays: [String: RelayInfo] = [:]
                 relays.forEach { newRelays[$0] = .init(read: true, write: true) }
@@ -136,20 +140,6 @@ final class FollowManager {
     private func updateRelays() {
         guard let relays = IdentityManager.instance.userRelays, let ev = NostrObject.relays(relays) else { return }
         
-        RelaysPostbox.instance.request(ev)
-    }
-    
-    private func follow(_ pubkey: String) {
-        sendBatchFollowEvent([pubkey])
-    }
-    
-    private func unfollow(_ pubkey: String) {
-        guard let index = IdentityManager.instance.userContacts.set.firstIndex(of: pubkey) else { return }
-        
-        IdentityManager.instance.userContacts.set.remove(at: index)
-            
-        guard let ev = NostrObject.contacts(IdentityManager.instance.userContacts.set) else { return }
-            
         RelaysPostbox.instance.request(ev)
     }
     

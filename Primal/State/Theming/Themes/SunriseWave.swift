@@ -34,7 +34,6 @@ class SunriseWave: AppTheme {
     
     let extraColorMenu: UIColor = .init(rgb: 0x222222)
     
-    var menuButtonImage: UIImage? { UIImage(named: "themeButtonLight") }
     var tabBarDotImage: UIImage? { UIImage(named: "newIndicator") }
     
     var statusBarStyle: UIStatusBarStyle { .darkContent }

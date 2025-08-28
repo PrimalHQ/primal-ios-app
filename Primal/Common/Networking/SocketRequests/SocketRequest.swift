@@ -74,7 +74,7 @@ struct SocketRequest {
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
                     DatabaseManager.instance.saveMediaResources(pendingResult.mediaMetadata.flatMap { $0.resources })
-                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore)
+//                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore) Not sure if this is good
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))
@@ -121,8 +121,7 @@ extension PostRequestResult {
             guard 
                 let id = payload["id"]?.stringValue,
                 let tags = payload["tags"]?.arrayValue,
-                let descriptionTagArray = tags.compactMap({ $0.arrayValue }).first(where: { $0.first == "description" }),
-                let zapContent: JSON = descriptionTagArray[safe: 1]?.stringValue?.decode()
+                let zapContent: JSON = tags.tagValueForKey("description")?.decode()
             else {
                 print("Error decoding zapReceipt")
                 return
@@ -132,6 +131,12 @@ extension PostRequestResult {
             return
         case .handlerInfo:
             events.append(payload)
+            return
+        case .live:
+            events.append(payload)
+            Task {
+                await LiveEventManager.instance.addLiveEvent(payload)
+            }
             return
 //        case .shortenedArticle:
 //            let longFormEvent = NostrContent(jsonData: payload)

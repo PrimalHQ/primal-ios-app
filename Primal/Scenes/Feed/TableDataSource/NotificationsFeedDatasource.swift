@@ -63,7 +63,7 @@ class NotificationsFeedDatasource: UITableViewDiffableDataSource<SingleSection, 
     }
     
     func setNotifications(_ notifications: [GroupedNotification]) {
-        let shouldHidePushNotifications = UserDefaults.standard.currentUserEnabledNotifications || UserDefaults.standard.currentUserHideNotificationPermissionRequest
+        let shouldHidePushNotifications = UserDefaults.standard.currentUserEnabledNotifications || UserDefaults.standard.currentUserHideNotificationPermissionRequest || notifications.isEmpty
         cells = (shouldHidePushNotifications ? [] : [.pushNotifications]) + notifications.map { .notification($0) }
         
         var snapshot = NSDiffableDataSourceSnapshot<SingleSection, NotificationCellType>()

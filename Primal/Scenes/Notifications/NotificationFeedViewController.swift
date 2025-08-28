@@ -325,7 +325,7 @@ extension Array where Element == GroupedNotification {
                     }
                 }
                 grouped += groupedByPostReaction
-            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED:
+            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED, .LIVE_EVENT_HAPPENING:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 grouped += notifications
@@ -369,6 +369,29 @@ extension PostRequestResult {
                         print(highlight)
                         return true
                     })
+                } else {
+                    let split = postId.split(separator: ":")
+
+                    if split.count != 3 { return GroupedNotification(users: parsedUsers, mainNotification: notif) }
+
+                    let pubkey = split[1].string
+                    let dTag = split[2].string
+                    
+                    guard
+                        let live = events.first(where: {
+                            $0["pubkey"]?.stringValue == pubkey && $0["tags"]?.arrayValue?.tagValueForKey("d") == dTag
+                        }),
+                        let processed = ProcessedLiveEvent.fromEvent(live)
+                    else {
+                        return GroupedNotification(users: parsedUsers, mainNotification: notif)
+                    }
+                        
+                    let content = NostrContent(jsonData: live)
+                    notificationPost = .init(.init(
+                        post: .empty,
+                        user: createParsedUser(users[content.pubkey] ?? .init(pubkey: content.pubkey))
+                    ))
+                    notificationPost?.embeddedLive = .init(event: processed, user: createParsedUser(users[processed.pubkey] ?? .init(pubkey: processed.pubkey)))
                 }
             }
             

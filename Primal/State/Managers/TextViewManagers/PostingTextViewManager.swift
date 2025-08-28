@@ -414,7 +414,7 @@ private extension PostingTextViewManager {
     func findAndExtractReferences() {
         guard extractReferences else { return }
         
-        let pattern = "((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(lnbc[a-z0-9]{40,})"
+        let pattern = "(?<=^(nostr:)?|\\s(nostr:)?)((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(\(String.lightningInvoicePattern))"
 
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
         
@@ -439,7 +439,7 @@ private extension PostingTextViewManager {
     }
     
     func extractReference(_ ref: String) -> Bool {
-        if ref.hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
+        if ref.lowercased().hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
             embeddedElements.append(.invoice(invoice, ref))
             return true
         }
@@ -451,11 +451,11 @@ private extension PostingTextViewManager {
             return true
         }
         
-        if let pubkey = metadata.pubkey, let identifier = metadata.identifier {
+        if let pubkey = metadata.pubkey, let identifier = metadata.identifier, metadata.kind == UInt32(NostrKind.longForm.rawValue) {
             SocketRequest(name: "long_form_content_thread_view", payload: [
                 "pubkey": .string(pubkey),
                 "identifier": .string(identifier),
-                "kind": .number(Double(metadata.kind ?? UInt32(NostrKind.longForm.rawValue))),
+                "kind": .number(Double(NostrKind.longForm.rawValue)),
                 "limit": 1,
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
             ])

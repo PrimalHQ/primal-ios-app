@@ -81,26 +81,28 @@ final class MuteManager {
         ])
 
         Connection.regular.request(request) { res in
-            for response in res {
-                let kind = NostrKind.fromGenericJSON(response)
-
-                switch kind {
-                case .muteList:
-                    let nostrContent = NostrContent(json: response)
-
-                    for tag in nostrContent.tags {
-                        self.muteTags.insert(tag)
+            DispatchQueue.main.async {
+                for response in res {
+                    let kind = NostrKind.fromGenericJSON(response)
+                    
+                    switch kind {
+                    case .muteList:
+                        let nostrContent = NostrContent(json: response)
+                        
+                        for tag in nostrContent.tags {
+                            self.muteTags.insert(tag)
+                        }
+                    case .categoryList, .mediaMetadata, .userScore, .metadata:
+                        // Ignore apps who don't use default NIP standard for mute lists
+                        break
+                    default:
+                        print("MuteManager: requestMuteList: Got unexpected event kind in response: \(response)")
                     }
-                case .categoryList, .mediaMetadata, .userScore, .metadata:
-                    // Ignore apps who don't use default NIP standard for mute lists
-                    break
-                default:
-                    print("MuteManager: requestMuteList: Got unexpected event kind in response: \(response)")
                 }
-            }
-
-            if let callback {
-                callback()
+                
+                if let callback {
+                    callback()
+                }
             }
         }
     }

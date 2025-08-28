@@ -163,10 +163,10 @@ final class WalletManager {
     
     var maxBalance: Int { impl.maxBalance }
     
-    var hasPremium: Bool { premiumState != nil }
+    var hasPremium: Bool { premiumState?.isExpired == false }
     var hasLegend: Bool { premiumState?.isLegend == true }
     var hasPremiumPublisher: AnyPublisher<Bool, Never> {
-        $premiumState.map { $0 != nil }.eraseToAnyPublisher()
+        $premiumState.map { $0?.isExpired == false }.eraseToAnyPublisher()
     }
     
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
@@ -316,7 +316,7 @@ final class WalletManager {
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
         do {
-            zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
+            zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, createdAt: Date().timeIntervalSince1970, user: IdentityManager.instance.parsedUserSafe))
             addZap(post.post.id, amount: sats)
             try await send(user: post.user.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: post))
         } catch {
@@ -328,7 +328,7 @@ final class WalletManager {
     func zap(object: ZappableReferenceObject, sats: Int, note: String) async throws {
         do {
             if let universalID = object.reference?.universalID {
-                zapEvent.send(.init(receiptId: UUID().uuidString, postId: universalID, amountSats: sats, message: note, user: IdentityManager.instance.parsedUserSafe))
+                zapEvent.send(.init(receiptId: UUID().uuidString, postId: universalID, amountSats: sats, message: note, createdAt: Date().timeIntervalSince1970, user: IdentityManager.instance.parsedUserSafe))
                 addZap(universalID, amount: sats)
             }
             try await send(user: object.userToZap.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: object))

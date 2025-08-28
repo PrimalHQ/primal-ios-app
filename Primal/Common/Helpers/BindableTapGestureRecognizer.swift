@@ -36,6 +36,21 @@ final class BindablePanGestureRecognizer: UIPanGestureRecognizer {
     }
 }
 
+final class BindableSwipeGestureRecognizer: UISwipeGestureRecognizer {
+    private let action: () -> Void
+
+    init(direction: UISwipeGestureRecognizer.Direction, action: @escaping () -> Void) {
+        self.action = action
+        super.init(target: nil, action: nil)
+        self.direction = direction
+        self.addTarget(self, action: #selector(execute))
+    }
+    
+    @objc private func execute() {
+        action()
+    }
+}
+
 final class BindableLongTapGestureRecognizer: UILongPressGestureRecognizer {
     private let action: () -> Void
 

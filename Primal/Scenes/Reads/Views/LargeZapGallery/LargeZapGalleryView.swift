@@ -34,6 +34,8 @@ class LargeZapGalleryView: UIView, ZapGallery {
     
     var zapPillTapCallback: () -> ()
     
+    var zappingType = "article"
+    
     private func zapPillButton(title: String) -> UIButton {
         let button = UIButton(configuration: .zapPillButton(title)).constrainToSize(height: 28)
         button.addAction(.init(handler: { [weak self] _ in
@@ -45,6 +47,8 @@ class LargeZapGalleryView: UIView, ZapGallery {
     weak var delegate: ZapGalleryViewDelegate?
     
     var singleLine: Bool = false
+    
+    var lastShownZapIds: [String] = []
     
     init(zapTapCallback: @escaping () -> ()) {
         zapPillTapCallback = zapTapCallback
@@ -82,6 +86,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
     }
         
     func update() {
+        
         animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         stack.arrangedSubviews.forEach {
             $0.removeFromSuperview()
@@ -89,8 +94,10 @@ class LargeZapGalleryView: UIView, ZapGallery {
                 animationStack.addArrangedSubview($0)
             }
         }
+        
+        var oldShown = lastShownZapIds
         defer {
-            if animatingChanges {
+            if animatingChanges && oldShown != lastShownZapIds {
                 if zaps.count == 1 {
                     animationStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 }
@@ -99,16 +106,20 @@ class LargeZapGalleryView: UIView, ZapGallery {
             }
         }
         
+        lastShownZapIds = []
+        
         if let first = zaps.first {
+            
             let hStack = UIStackView(arrangedSubviews: [zapView(first, text: true)])
             stack.addArrangedSubview(hStack)
+            lastShownZapIds.append(first.receiptId)
             
             if zaps.count == 1 {
                 stack.addArrangedSubview(zapPillButton(title: "Zap"))
                 return
             }
         } else {
-            stack.addArrangedSubview(zapPillButton(title: "Be the first to zap this article!"))
+            stack.addArrangedSubview(zapPillButton(title: "Be the first to zap this \(zappingType)!"))
             return
         }
         
@@ -122,11 +133,12 @@ class LargeZapGalleryView: UIView, ZapGallery {
             
             currentWidth += view.width() + 6
             
-            if currentWidth + 60 > max(300, frame.width) {
+            if currentWidth + 70 > max(320, frame.width) {
                 break
             }
             
             hStack.addArrangedSubview(view)
+            lastShownZapIds.append(zap.receiptId)
         }
         
         hStack.addArrangedSubview(zapPillButton(title: "Zap"))
@@ -288,7 +300,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
                         let view = UIView()
                         pill.insertSubview(view, at: 0)
                         view.pinToSuperview()
-                        view.backgroundColor = .init(rgb: 0xFFA02F)
+                        view.backgroundColor = .gold
                         background = view
                     }
                     

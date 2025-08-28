@@ -74,7 +74,7 @@ class ProfileNavigationView: UIView, Themeable {
             }
         }
         
-        if let oldImageUrl, oldImageUrl == parsed.data.picture {
+        if let oldImageUrl, oldImageUrl == parsed.data.picture, LiveEventManager.instance.liveEvent(for: parsed.data.pubkey) == nil {
             // NOTHING to prevent double loading of gifs
             profilePicture.updateGlow(parsed)
         } else {

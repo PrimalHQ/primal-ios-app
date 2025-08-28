@@ -29,6 +29,7 @@ struct ParsedZap: Hashable {
     let postId: String
     let amountSats: Int
     let message: String
+    let createdAt: Double
     let user: ParsedUser
 }
 
@@ -50,6 +51,7 @@ struct NoteZapsRequest {
                         postId: noteId,
                         amountSats: primalZapEvent.amount_sats,
                         message: resultZaps.zapReceipts[primalZapEvent.zap_receipt_id]?["content"]?.stringValue ?? "",
+                        createdAt: primalZapEvent.created_at,
                         user: users.first(where: { $0.data.pubkey == primalZapEvent.sender }) ?? ParsedUser(data: .init(pubkey: primalZapEvent.sender))
                     )
                 }

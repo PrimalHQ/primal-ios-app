@@ -13,6 +13,8 @@ final class OnboardingProfileImageView: UIView {
     init() {
         super.init(frame: .zero)
         imageView.animatedImageView.image = UIImage(named: "onboardingDefaultAvatar")
+        imageView.showLivePill = false
+        imageView.showLegendGlow = false
         
         addSubview(imageView)
         imageView.pinToSuperview(padding: 3)

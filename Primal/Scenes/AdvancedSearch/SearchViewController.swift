@@ -129,19 +129,22 @@ private extension SearchViewController {
     func doSearch() {
         if userSearchText.isEmpty { return }
         
-        if userSearchText.hasPrefix("npub1") && userSearchText.count == 63 {
+        let userSearchText = userSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lowerCased = userSearchText.lowercased()
+        
+        if lowerCased.hasPrefix("npub1") && userSearchText.count == 63 {
             notify(.primalProfileLink, userSearchText)
             navigationController?.viewControllers.removeAll(where: { $0 == self })
             return
         }
         
-        if userSearchText.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
+        if lowerCased.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
             notify(.primalNoteLink, text)
             navigationController?.viewControllers.removeAll(where: { $0 == self })
             return
         }
         
-        if userSearchText.hasPrefix("lnurl") || userSearchText.hasPrefix("lnbc") {
+        if (lowerCased.hasPrefix("lnurl") || lowerCased.hasPrefix("lnbc")) && lowerCased.count > 20 {
             search(userSearchText)
             return
         }

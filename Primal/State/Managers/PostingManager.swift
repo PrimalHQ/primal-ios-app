@@ -30,17 +30,17 @@ extension PrimalFeedPost: PostingReferenceObject {
        
     var universalID: String {
         guard
-            kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue,
-            let tagId = tags.first(where: { $0.first == "d" })?[safe: 1]
+            let tagId = tags.first(where: { $0.first == "d" })?[safe: 1],
+                kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue || kind == NostrKind.live.rawValue
         else { return id }
         
-        return "\(NostrKind.longForm.rawValue):\(pubkey):\(tagId)"
+        return "\(kind):\(pubkey):\(tagId)"
     }
     
     var reference: (tagLetter: String, universalID: String)? { (referenceTagLetter, universalID) }
     
     var referenceTagLetter: String {
-        kind == NostrKind.longForm.rawValue ? "a" : "e"
+        kind == NostrKind.longForm.rawValue || kind == NostrKind.live.rawValue ? "a" : "e"
     }
 }
 
@@ -99,7 +99,7 @@ final class PostingManager {
             let isRoot = !obj.tags.contains(where: { tag in tag[safe: 3] == "root" })
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                RootViewController.instance.showToast("\(isRoot ? "Note" : "Reply") Published")
+                RootViewController.instance.finalChild.view.showToastTop("\(isRoot ? "Note" : "Reply") Published")
             }
         }
         .store(in: &cancellables)

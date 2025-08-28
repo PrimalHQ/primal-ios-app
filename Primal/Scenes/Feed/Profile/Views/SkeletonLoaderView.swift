@@ -13,10 +13,17 @@ class SkeletonLoaderCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubview(loaderView)
+        contentView.addSubview(loaderView)
         loaderView
             .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .vertical, padding: 10)
+            .pinToSuperview(edges: .top, padding: 10)
+        
+        let botC = loaderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        
+        [botC].forEach {
+            $0.priority = .defaultHigh
+            $0.isActive = true
+        }
         
         selectionStyle = .none
     }

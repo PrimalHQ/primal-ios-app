@@ -175,5 +175,34 @@ extension UIImage {
 
         return gradientImage ?? self
     }
+    
+    static var nonZapPaymentDynamic: UIImage {
+        nonZapPayment.withTintColor(.accent, renderingMode: .alwaysOriginal)
+    }
+    
+    func overlayed(with overlay: UIImage, at position: CGPoint? = nil) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(self.size, false, 0.0)
+
+        // Draw base image
+        self.draw(in: CGRect(origin: .zero, size: self.size))
+
+        // Calculate overlay position (center if not provided)
+        let pos: CGPoint
+        if let position = position {
+            pos = position
+        } else {
+            pos = CGPoint(
+                x: (self.size.width - overlay.size.width) / 2,
+                y: (self.size.height - overlay.size.height) / 2
+            )
+        }
+
+        // Draw overlay
+        overlay.draw(in: CGRect(origin: pos, size: overlay.size))
+
+        let result = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return result
+    }
 }
 

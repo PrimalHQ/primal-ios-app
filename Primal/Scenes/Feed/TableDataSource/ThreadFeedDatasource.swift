@@ -136,6 +136,11 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         tableView.register(MainThreadElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID + ThreadPosition.child.rawValue)
         
+        // Live
+        tableView.register(ParentThreadElementLivePreviewCell.self, forCellReuseIdentifier: FeedElementLivePreviewCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementLivePreviewCell.self, forCellReuseIdentifier: FeedElementLivePreviewCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementLivePreviewCell.self, forCellReuseIdentifier: FeedElementLivePreviewCell.cellID + ThreadPosition.child.rawValue)
+        
         // Links
         tableView.register(ParentThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large" + ThreadPosition.parent.rawValue)
         tableView.register(MainThreadElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large" + ThreadPosition.main.rawValue)

@@ -89,6 +89,12 @@ final class RegexTests: XCTestCase {
                 "https://primal.net/p/npub1kpt95rv4q3mcz8e4lamwtxq7men6jprf49l7asfac9lnv2gda0lqdknhmz"
             ]
         ),
+        (
+            "nostr:nprofile1qqsrwny8twqyqtef54j4udy3z3fctdxszcgedm7f4p2l3pk6q247kyqw66hvj aaa",
+            [
+                "nostr:nprofile1qqsrwny8twqyqtef54j4udy3z3fctdxszcgedm7f4p2l3pk6q247kyqw66hvj"
+            ]
+        ),
     ]
     
     let articleTests: [(String, [String])] = [

@@ -19,6 +19,10 @@ enum AnimationType {
     case transferFailed
     case walletLightning
     case notificationLightning
+    case liveIcon
+    case liveBuffering
+    case videoLoading
+    case videoLoadingLight
     
     case genericSkeleton
     case genericSkeletonLight
@@ -42,6 +46,10 @@ enum AnimationType {
         case .notificationLightning:    return "notificationLightning"
         case .genericSkeleton:          return "genericSkeleton"
         case .genericSkeletonLight:     return "genericSkeletonLight"
+        case .liveIcon:                 return "liveIconAnimation"
+        case .liveBuffering:            return "liveBufferSpinner"
+        case .videoLoading:             return "videoLoadingScreen"
+        case .videoLoadingLight:        return "videoLoadingScreenLight"
         }
     }
     

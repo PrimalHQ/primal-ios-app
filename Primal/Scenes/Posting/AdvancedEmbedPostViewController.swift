@@ -14,6 +14,7 @@ enum PostEmbedPreview {
     case post(ParsedContent)
     case article(Article)
     case invoice(Invoice, String)
+    case live(ParsedLiveEvent)
 }
 
 class AdvancedEmbedPostViewController: UIViewController {
@@ -322,6 +323,10 @@ extension PostEmbedPreview {
             view.updateForInvoice(invoice)
             view.copyButton.isHidden = true
             return view
+        case .live(let live):
+            let view = LivePreviewView()
+            view.setLive(live: live)
+            return view
         }
     }
     
@@ -342,6 +347,8 @@ extension PostEmbedPreview {
             return "nostr:" + article.asParsedContent.noteId(extended: true)
         case .post(let post):
             return "nostr:" + post.noteId(extended: true)
+        case .live(let live):
+            return "nostr:\(live.event.noteId())"
         case .invoice(_, let text):
             return text
         }

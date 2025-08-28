@@ -7,11 +7,13 @@
 
 import UIKit
 
+extension String {
+    static let premiumRelayURL = "wss://premium.primal.net"
+}
+
 class PremiumManageRelayController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        let relayURLString = "wss://premium.primal.net"
         
         title = "Premium Relay"
         navigationItem.leftBarButtonItem = customBackButton
@@ -19,7 +21,7 @@ class PremiumManageRelayController: UIViewController {
         
         let relayDotIndicator = SpacerView(width: 10, height: 10, color: .foreground5)
         relayDotIndicator.layer.cornerRadius = 5
-        let relayStack = UIStackView([relayDotIndicator, UILabel(relayURLString, color: .foreground, font: .appFont(withSize: 16, weight: .regular))])
+        let relayStack = UIStackView([relayDotIndicator, UILabel(.premiumRelayURL, color: .foreground, font: .appFont(withSize: 16, weight: .regular))])
         relayStack.spacing = 12
         relayStack.alignment = .center
         let relayView = SpacerView(height: 44, color: .background3, priority: .required)
@@ -52,13 +54,13 @@ class PremiumManageRelayController: UIViewController {
             .pinToSuperview(edges: .horizontal, padding: 35)
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
         
-        if IdentityManager.instance.userRelays?.contains(where: { $0.key == relayURLString }) == true {
+        if IdentityManager.instance.userRelays?.contains(where: { $0.key == .premiumRelayURL }) == true {
             actionButton.title = "Connected to Premium Relay"
             actionButton.isEnabled = false
             relayDotIndicator.backgroundColor = .init(rgb: 0x66E205)
         } else {
             actionButton.addAction(.init(handler: { _ in
-                FollowManager.instance.addRelay(url: relayURLString)
+                FollowManager.instance.addRelay(url: .premiumRelayURL)
                 actionButton.title = "Connected to Premium Relay"
                 actionButton.isEnabled = false
                 relayDotIndicator.backgroundColor = .init(rgb: 0x66E205)

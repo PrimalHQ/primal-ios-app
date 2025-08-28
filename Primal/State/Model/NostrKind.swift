@@ -24,6 +24,8 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case liveComment = 1311
+    
     case zapIntention = 9041
     case zapReceipt = 9735
     case highlight = 9802
@@ -32,11 +34,16 @@ enum NostrKind: Int {
     case bookmarks = 10_003
     
     case blossom = 10_063
+    case livePresence = 10_312
+    
+    case liveMuteList = 10_555
     
     case categoryList = 30_000
     case longForm = 30_023
     
     case settings = 30_078
+    
+    case live = 30_311
     
     case handlerInfo = 31_990
     

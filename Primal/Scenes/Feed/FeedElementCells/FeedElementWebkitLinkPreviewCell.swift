@@ -74,6 +74,20 @@ class FeedElementWebkitLinkPreviewCell: FeedElementBaseCell, RegularFeedElementC
     }
 }
 
+public extension URL {
+    var isYoutubeVideoURL: Bool {
+        isYoutubeURL && youtubeID != nil
+    }
+    
+    var isTidalMusicURL: Bool {
+        isTidalURL && tidalEmbedURL != nil
+    }
+    
+    var isSpotifyMusicURL: Bool {
+        isSpotifyURL && spotifyEmbedURL != nil
+    }
+}
+
 private extension URL {
     var youtubeID: String? {
         if path().contains("/shorts/") || path.contains("/live/") {
@@ -92,10 +106,10 @@ private extension URL {
     }
     
     var tidalEmbedURL: URL? {
-        var embedString = absoluteString
+        var embedString = ""
         
         if embedString.contains("listen.tidal.com") {
-            embedString = embedString.replacingOccurrences(of: "listen.tidal.com", with: "embed.tidal.com")
+            embedString = absoluteString.replacingOccurrences(of: "listen.tidal.com", with: "embed.tidal.com")
             embedString = embedString.replacingOccurrences(of: "/playlist/", with: "/playlists/")
             embedString = embedString.replacingOccurrences(of: "/track/", with: "/tracks/")
         } else {
@@ -105,6 +119,8 @@ private extension URL {
                 embedString = "https://embed.tidal.com/playlists/\(playlistID)"
             }
         }
+        
+        if embedString.isEmpty { return nil }
         
         return URL(string: embedString)
     }
@@ -119,6 +135,8 @@ private extension URL {
         // Split the path to extract type and ID
         let pathComponents = path.split(separator: "/")
         guard let type = pathComponents[safe: 0], let id = pathComponents[safe: 1] else { return nil }
+        
+        if type == "genre" { return nil }
 
         // Construct the embed URL
         let embedURL = "https://open.spotify.com/embed/\(type)/\(id)?autoplay=1"

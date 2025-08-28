@@ -135,6 +135,10 @@ extension NostrObject {
                 
                 pubkeysToTag.insert(article.user.data.pubkey)
                 pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .live(let live):
+                pubkeysToTag.insert(live.event.pubkey)
+                
+                allTags.append(["a", live.event.universalID, RelayHintManager.instance.getRelayHint(live.event.universalID), "mention"])
             case .invoice(_):
                 break
             }
@@ -212,10 +216,10 @@ extension NostrObject {
         ])
     }
     
-    static func reportNote(_ report: ReportReason, _ note: ParsedContent) -> NostrObject? {
+    static func reportNote(_ report: ReportReason, _ note: PostingReferenceObject) -> NostrObject? {
         createNostrObject(content: "", kind: 1984, tags: [
-            ["e", note.post.id, report.rawValue],
-            ["p", note.user.data.pubkey]
+            [note.reference?.tagLetter ?? "e", note.reference?.universalID ?? "", report.rawValue],
+            ["p", note.referencePubkey]
         ])
     }
     
@@ -256,6 +260,10 @@ extension NostrObject {
 
     static func muteList(_ mutedTags: [[String]]) -> NostrObject? {
         createNostrObject(content: "", kind: NostrKind.muteList.rawValue, tags: mutedTags)
+    }
+    
+    static func liveMuteList(_ pubkeys: Set<String>) -> NostrObject? {
+        create(content: "", kind: 10555, tags: pubkeys.map({ ["p", $0] }))
     }
     
     static func followedMuteLists(content: String, tags: [[String]]) -> NostrObject? {
@@ -353,6 +361,14 @@ extension NostrObject {
         else { return nil }
         
         return createNostrObjectAndSign(pubkey: pubkey, privkey: secret, content: base64, kind: 23194, tags: [["p", serverPubkey]])
+    }
+    
+    static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
+        let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
+        return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
+            ["a", live.universalID, relay, "root"],
+            ["client", "Primal-iOS-App"]
+        ])
     }
 }
 

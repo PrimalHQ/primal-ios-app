@@ -14,6 +14,8 @@ extension UIColor {
     }
     
     static let pro = UIColor(rgb: 0xE47C00)
+    static let gold = UIColor(rgb: 0xFFA02F)
+    static let live = UIColor(rgb: 0xEE0000)
     
     convenience init(rgb: UInt) {
         self.init(

@@ -79,6 +79,10 @@ extension UIViewController {
         return UIBarButtonItem(customView: button)
     }
     
+    var finalChild: UIViewController {
+        children.last?.finalChild ?? self
+    }
+    
     func findParent<T>() -> T? {
         return parent as? T ?? parent?.findParent()
     }

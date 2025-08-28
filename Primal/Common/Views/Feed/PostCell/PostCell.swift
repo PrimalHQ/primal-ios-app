@@ -37,6 +37,7 @@ class PostCell: UITableViewCell {
     let mainImages = ImageGalleryView()
     let articleView = ArticleFeedView()
     let linkPresentation = SmallLinkPreview()
+    let embeddedLive = LivePreviewView()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
     let likeButton = FeedLikeButton()
@@ -96,6 +97,13 @@ class PostCell: UITableViewCell {
             linkPresentation.isHidden = false
         } else {
             linkPresentation.isHidden = true
+        }
+        
+        if let live = content.embeddedLive {
+            embeddedLive.setLive(live: live)
+            embeddedLive.isHidden = false
+        } else {
+            embeddedLive.isHidden = true
         }
         
         if let parent = content.replyingTo {
@@ -351,6 +359,11 @@ private extension PostCell {
             guard let self else { return }
             delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
         }), for: .touchUpInside)
+        
+        embeddedLive.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+            guard let self else { return }
+            delegate?.postCellDidTap(self, .live)
+        })
         
         if LoginManager.instance.method() == .nsec {
             likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)

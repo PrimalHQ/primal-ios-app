@@ -24,7 +24,7 @@ final class VideoCell: UICollectionViewCell {
     
     var player: VideoPlayer? {
         didSet {
-            muteUpdater = VideoPlaybackManager.instance.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
+            muteUpdater = VideoPlaybackManager.instance.isMutedPublisher.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
                 self?.muteButton.buttonState = isMuted ? .muted : .unmuted
             })
             
@@ -178,6 +178,11 @@ final class PlayerView: UIView {
     override class var layerClass: AnyClass { AVPlayerLayer.self }
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+    
+    var player: AVPlayer? {
+        get { playerLayer.player }
+        set { playerLayer.player = newValue }
+    }
     
     init() {
         super.init(frame: .zero)

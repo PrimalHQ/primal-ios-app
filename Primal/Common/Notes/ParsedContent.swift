@@ -97,6 +97,7 @@ final class ParsedContent: Hashable {
     
     var embeddedPosts: [ParsedContent] = []
     var embeddedZap: ParsedFeedZap?
+    var embeddedLive: ParsedLiveEvent?
     var reposted: ParsedRepost?
     
     var mentionedUsers: [PrimalUser] = []
@@ -143,6 +144,8 @@ extension ParsedUser: MetadataCoding {
     }
     
     var isCurrentUser: Bool { data.isCurrentUser }
+    
+    var followersSafe: Int { followers ?? 0 }
 }
 
 enum ParsedContentTextStyle {

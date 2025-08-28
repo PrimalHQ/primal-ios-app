@@ -16,6 +16,7 @@ enum ProfileFeedItem: Hashable {
     case profileInfo(ParsedUser, NSAttributedString, stats: NostrUserProfileInfo?, followedBy: [ParsedUser]?, followsUser: Bool, selectedTab: Int)
     case muted(ParsedUser)
     case empty(String)
+    case live
     case loading
     case loadingMedia
 }
@@ -66,7 +67,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(profile: ParsedUser, tableView: UITableView, delegate: FeedElementCellDelegate & ArticleCellDelegate & MediaTripleCellDelegate & ProfileInfoCellDelegate & MutedUserCellDelegate, refreshCallback: @escaping () -> ()) {
+    init(profile: ParsedUser, tableView: UITableView, delegate: FeedElementCellDelegate & ArticleCellDelegate & MediaTripleCellDelegate & ProfileInfoCellDelegate & MutedUserCellDelegate & LivePreviewFeedCellDelegate, refreshCallback: @escaping () -> ()) {
         self.profile = profile
         parsedDescription = NSAttributedString(string: profile.data.about.trimmingCharacters(in: .whitespacesAndNewlines), attributes: aboutTextAttributes)
         
@@ -127,6 +128,10 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
             case .loadingMedia:
                 cell = tableView.dequeueReusableCell(withIdentifier: "mediaLoading", for: indexPath)
+            case .live:
+                cell = tableView.dequeueReusableCell(withIdentifier: "live", for: indexPath)
+                (cell as? LivePreviewFeedCell)?.setUsers([profile], delegate: delegate)
+                (cell as? LivePreviewFeedCell)?.border.isHidden = true
             }
             
             return cell
@@ -166,6 +171,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
         tableView.register(MutedUserCell.self, forCellReuseIdentifier: "muted")
         tableView.register(ProfileInfoCell.self, forCellReuseIdentifier: "profile")
         tableView.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
+        tableView.register(LivePreviewFeedCell.self, forCellReuseIdentifier: "live")
     }
     
     func setPosts(_ posts: [ParsedContent]) {
@@ -210,15 +216,19 @@ private extension ProfileFeedDatasource {
         if MuteManager.instance.isMutedUser(profile.data.pubkey) {
             snapshot.appendItems([.muted(profile)])
         }
+        
+        if let live = LiveEventManager.instance.liveEvent(for: profile.data.pubkey), case .started = live.state {
+            snapshot.appendItems([.live])
+        }
 
         if cells.isEmpty {
             if isLoading {
                 snapshot.appendItems([selectedTab == 3 ? .loadingMedia : .loading])
             } else {
                 if selectedTab == 2 {
-                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) has no articles")])
+                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) hasn't posted any articles")])
                 } else {
-                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) has no posts")])
+                    snapshot.appendItems([.empty("\(profile.data.firstIdentifier) hasn't posted any notes")])
                 }
             }
         } else {

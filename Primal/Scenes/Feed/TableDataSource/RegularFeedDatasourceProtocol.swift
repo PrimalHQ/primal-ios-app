@@ -22,6 +22,7 @@ enum NoteFeedElement: Hashable {
     case zapPreview
     case article
     case info
+    case live
     case invoice
     case reactions
 }
@@ -60,6 +61,8 @@ extension NoteFeedElement {
             return FeedElementZapPreviewCell.cellID
         case .article:
             return FeedElementArticleCell.cellID
+        case .live:
+            return FeedElementLivePreviewCell.cellID
         case .info:
             return FeedElementInfoCell.cellID
         case .invoice:
@@ -86,6 +89,7 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(FeedElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID)
         tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
         tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
+        tableView.register(FeedElementLivePreviewCell.self, forCellReuseIdentifier: FeedElementLivePreviewCell.cellID)
         
         tableView.register(FeedElementWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID)
         tableView.register(FeedElementWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: FeedElementWebPreviewCell.cellID + "Large")
@@ -118,21 +122,22 @@ extension RegularFeedDatasourceProtocol {
             for (index, data) in content.linkPreviews.enumerated() {
                 if short && index > 1 { break } // Only show two link previews short view
                 
-                if data.url.isYoutubeURL {
+                if data.url.isYoutubeVideoURL {
                     parts.append(.webPreview(.youtube, data))
                 } else if data.url.isTwitterURL {
                     parts.append(.webPreview(.system, data))
                 } else if data.url.isGithubURL || data.url.isRumbleURL {
                     parts.append(.webPreview(.large, data))
-                } else if data.url.isSpotifyURL {
+                } else if data.url.isSpotifyMusicURL {
                     parts.append(.webPreview(.music, data))
-                } else if data.url.isTidalURL {
+                } else if data.url.isTidalMusicURL {
                     parts.append(.webPreview(.tidal, data))
                 } else {
                     parts.append(.webPreview(.small, data))
                 }
             }
             
+            if let live = content.embeddedLive { parts.append(.live) }
             if let zapPreview = content.embeddedZap { parts.append(.zapPreview) }
             if let custom = content.customEvent { parts.append(.info) }
             if let error = content.notFound { parts.append(.info) }
