@@ -362,8 +362,6 @@ private extension LiveVideoPlayerController {
         var percent = delta / (dgs.totalVerticalDistance)
         percent = percent.clamp(0, 1)
         
-        print(delta)
-        
         switch gesture.state {
         case .changed, .began:
             setTransition(progress: percent)

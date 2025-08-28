@@ -221,7 +221,6 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             .inApp(.REPLIES, [.YOUR_POST_WAS_REPLIED_TO]),
             .inApp(.REPOSTS, [.YOUR_POST_WAS_REPOSTED]),
             .inApp(.MENTIONS, [.YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST]),
-            .inApp(.LIVE, [.LIVE_EVENT_HAPPENING])
         ]))
         
         tableData.append(.init(text: "NOTIFICATION PREFERENCES", notifications: [
@@ -386,7 +385,7 @@ extension PrimalSettingsNotifications {
         case .YOUR_POST_WAS_BOOKMARKED:
             return YOUR_POST_WAS_BOOKMARKED ?? true
         case .LIVE_EVENT_HAPPENING:
-            return LIVE_EVENT_HAPPENING ?? true
+            return true
         }
     }
     
@@ -427,7 +426,8 @@ extension PrimalSettingsNotifications {
         case .YOUR_POST_WAS_BOOKMARKED:
             YOUR_POST_WAS_BOOKMARKED = value
         case .LIVE_EVENT_HAPPENING:
-            LIVE_EVENT_HAPPENING = value
+//            LIVE_EVENT_HAPPENING = value
+            break
         }
     }
 }
@@ -451,8 +451,6 @@ extension PrimalSettingsPushNotifications {
             return DIRECT_MESSAGES
         case .WALLET_TRANSACTIONS:
             return WALLET_TRANSACTIONS
-        case .LIVE:
-            return true
         }
     }
     
@@ -474,8 +472,6 @@ extension PrimalSettingsPushNotifications {
             DIRECT_MESSAGES = value
         case .WALLET_TRANSACTIONS:
             WALLET_TRANSACTIONS = value
-        case .LIVE:
-            break // TODO: one day
         }
     }
 }
@@ -526,8 +522,6 @@ extension PushNotificationGroup {
             return "Direct Messages"
         case .WALLET_TRANSACTIONS:
             return "Wallet Transactions"
-        case .LIVE:
-            return "Live events"
         }
     }
     
@@ -549,8 +543,6 @@ extension PushNotificationGroup {
             return .notifMessageGroup
         case .WALLET_TRANSACTIONS:
             return .notifWalletGroup
-        case .LIVE:
-            return NotificationType.LIVE_EVENT_HAPPENING.icon ?? .liveIcon
         }
     }
 }

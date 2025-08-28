@@ -121,8 +121,6 @@ struct PrimalSettingsNotifications: Codable, Hashable {
     
     var YOUR_POST_WAS_HIGHLIGHTED: Bool?
     var YOUR_POST_WAS_BOOKMARKED: Bool?
-    
-    var LIVE_EVENT_HAPPENING: Bool?
 }
 
 struct PrimalPagination: Codable, Hashable {

@@ -8,10 +8,6 @@
 import Foundation
 import Combine
 
-extension String {
-    static let checkedNipsKey = "checkedNipsKey"
-}
-
 class CheckNip05Manager {
     static let instance = CheckNip05Manager()
     

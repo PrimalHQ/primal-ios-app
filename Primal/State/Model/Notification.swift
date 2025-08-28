@@ -17,7 +17,6 @@ enum PushNotificationGroup {
     case MENTIONS
     case DIRECT_MESSAGES
     case WALLET_TRANSACTIONS
-    case LIVE
 }
 
 enum AdditionalNotificationOptions {

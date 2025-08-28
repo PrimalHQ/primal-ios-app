@@ -63,11 +63,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .hugeFontKey:           true,
         ])
         
-        UserDefaults.standard.removeObject(forKey: .smartContactListKey)
-        UserDefaults.standard.removeObject(forKey: .smartContactDefaultListKey)
-        UserDefaults.standard.removeObject(forKey: .cachedUsersDefaultsKey)
-        UserDefaults.standard.removeObject(forKey: .checkedNipsKey)
-        UserDefaults.standard.removeObject(forKey: "isLatestFeedFirstKey")
+        UserDefaults.standard.removeObject(forKey: .didVisitPremiumAfterProUpdateKey)
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         

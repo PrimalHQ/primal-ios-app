@@ -81,8 +81,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         super.init(nibName: nil, bundle: nil)
         
         commentsTable.transform = .init(rotationAngle: .pi)
-        
-        requestChat()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -174,6 +172,12 @@ class LiveVideoChatController: UIViewController, Themeable {
             }
             .store(in: &cancellables)
         
+        NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
+            .sink { [weak self] _ in
+                self?.requestChat()
+            }
+            .store(in: &cancellables)
+        
         header.infoButton.addAction(.init(handler: { [weak self] _ in
             guard let videoVC = self?.parent as? LiveVideoPlayerController else { return }
             
@@ -206,6 +210,8 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         zapsLoadingView.play()
         chatLoadingView.play()
+        
+        requestChat()
     }
     
     func updateTheme() {
@@ -384,6 +390,10 @@ private extension LiveVideoChatController {
         }
         .store(in: &cancellables)
         
+        requestContinous()
+    }
+     
+    func requestContinous() {
         continousConnection = Connection.regular.requestCacheContinous(name: "live_feed", request: .object([
             "kind": .number(30311),
             "pubkey": .string(live.event.creatorPubkey),
