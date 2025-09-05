@@ -87,6 +87,10 @@ extension ProcessedLiveEvent: MetadataCoding {
         "\(NostrKind.live.rawValue):\(pubkey):\(dTag)"
     }
     
+    var creatorUniversalID: String {
+        "\(NostrKind.live.rawValue):\(creatorPubkey):\(dTag)"
+    }
+    
     func noteId() -> String {
         var metadata = Metadata()
         let hint = RelayHintManager.instance.getRelayHint(universalID)

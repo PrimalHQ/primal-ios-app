@@ -366,7 +366,7 @@ extension NostrObject {
     static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
-            ["a", live.universalID, relay, "root"],
+            ["a", live.creatorUniversalID, relay, "root"],
             ["client", "Primal-iOS-App"]
         ])
     }
