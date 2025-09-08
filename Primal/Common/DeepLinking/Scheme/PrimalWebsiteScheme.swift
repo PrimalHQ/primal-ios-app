@@ -119,7 +119,6 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
     }
     
     func navigateToLive(pubkey: String, id: String) {
-        print("🚀 navigateToLive called with pubkey: \(pubkey), id: \(id)")
         SocketRequest(name: "parametrized_replaceable_event", payload: [
             "kind": .number(Double(NostrKind.live.rawValue)),
             "pubkey": .string(pubkey),
@@ -128,9 +127,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         .publisher()
         .receive(on: DispatchQueue.main)
         .sink { res in
-            print("🚀 navigateToLive - Network response received")
             let users = res.getSortedUsers()
-            print("🚀 navigateToLive - Users count: \(users.count)")
             
             // Try to get from cache first
             var live = LiveEventManager.instance.liveEvent(for: pubkey)
@@ -138,25 +135,15 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             
             // If not in cache, try to create from network response
             if live == nil {
-                print("🚀 navigateToLive - Live event not in cache, creating from network response")
                 if let liveEvent = res.events.first {
                     live = ProcessedLiveEvent.fromEvent(liveEvent)
-                    print("🚀 navigateToLive - Created live event from response: \(live != nil ? "✅" : "❌")")
                 }
             }
             
-            print("🚀 navigateToLive - live: \(live != nil ? "✅" : "❌"), user: \(user != nil ? "✅" : "❌")")
-            
-            guard let live = live, let user = user else { 
-                print("🚀 navigateToLive - FAILED: Missing live event or user data")
-                print("🚀 navigateToLive - Response events count: \(res.events.count)")
-                if !res.events.isEmpty {
-                    print("🚀 navigateToLive - First event: \(res.events.first!)")
-                }
-                return 
+            guard let live = live, let user = user else {
+                return
             }
             
-            print("🚀 navigateToLive - SUCCESS: Navigating to live stream!")
             RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
             
         }
