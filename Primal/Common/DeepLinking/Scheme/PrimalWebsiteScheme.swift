@@ -128,10 +128,21 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         .receive(on: DispatchQueue.main)
         .sink { res in
             let users = res.getSortedUsers()
-            guard
-                let live = LiveEventManager.instance.liveEvent(for: pubkey),
-                let user = LiveEventManager.instance.user(for: pubkey) ?? users.first(where: { $0.data.pubkey == pubkey }) ?? users.first
-            else { return }
+            
+            // Try to get from cache first
+            var live = LiveEventManager.instance.liveEvent(for: pubkey)
+            let user = LiveEventManager.instance.user(for: pubkey) ?? users.first(where: { $0.data.pubkey == pubkey }) ?? users.first
+            
+            // If not in cache, try to create from network response
+            if live == nil {
+                if let liveEvent = res.events.first {
+                    live = ProcessedLiveEvent.fromEvent(liveEvent)
+                }
+            }
+            
+            guard let live = live, let user = user else {
+                return
+            }
             
             RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
             
