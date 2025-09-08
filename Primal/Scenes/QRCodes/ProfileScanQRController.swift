@@ -28,6 +28,12 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
     var captureSession = AVCaptureSession()
     var qrCodeFrameView = UIView()
     
+    // QR Code debounce properties
+    var lastScannedText: String?
+    var lastScanTime: Date?
+    var isProcessingQRCode = false // Prevent concurrent processing
+    private let scanDebounceInterval: TimeInterval = 2.0 // Prevent rescanning same QR for 2 seconds
+    
     let previewView = CapturePreviewView()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { previewView.previewLayer }
     
@@ -40,6 +46,7 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("🚀🚀🚀 PRIMAL QR CONTROLLER LOADED - OUR CODE IS ACTIVE! 🚀🚀🚀")
         setup()
         
         Task { @MainActor in
@@ -48,51 +55,162 @@ final class ProfileScanQRController: UIViewController, OnboardingViewController,
     }
     
     func search(_ text: String) {
-        guard !didOpenQRCode else { return }
+        print("🚀 PRIMAL QR SCANNER ACTIVATED - TEXT: \(text)")
+        print("🔍 QR Debug - Scanning text: \(text)")
+        
+        // Prevent concurrent processing
+        if isProcessingQRCode {
+            print("🔍 QR Debug - Already processing a QR code, ignoring")
+            return
+        }
+        
+        // Check if we already processed this QR code recently
+        let now = Date()
+        if let lastText = lastScannedText, 
+           let lastTime = lastScanTime,
+           lastText == text,
+           now.timeIntervalSince(lastTime) < scanDebounceInterval {
+            print("🔍 QR Debug - Ignoring duplicate scan within \(scanDebounceInterval)s")
+            return
+        }
+        
+        // Set processing flag IMMEDIATELY to prevent race conditions
+        isProcessingQRCode = true
+        lastScannedText = text
+        lastScanTime = now
+        
+        guard !didOpenQRCode else { 
+            print("🚀 QR Scanner already opened something, returning")
+            isProcessingQRCode = false // Reset processing flag
+            return 
+        }
+        
+        // Reset didOpenQRCode after 3 seconds to allow re-scanning if navigation fails
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            if self?.didOpenQRCode == true {
+                print("🔍 QR Debug - Auto-resetting didOpenQRCode after timeout")
+                self?.didOpenQRCode = false
+                self?.isProcessingQRCode = false
+            }
+        }
         
         let origText = text
         let text: String = String(text.split(separator: ":").last ?? "") // Eliminate junk text ("nostr:", etc.)
+        print("🔍 QR Debug - After prefix removal: \(text)")
         
         var pubkey: String?
+        var noteId: String?
+        
+        // Handle npub (user profiles)
         if text.hasPrefix("npub") {
             pubkey = HexKeypair.npubToHexPubkey(text)
         }
         
-        if let result = try? decodedMetadata(from: text), let resPubkey = result.pubkey {
-            pubkey = resPubkey
+        // Handle note1 (notes)
+        if text.hasPrefix("note1") {
+            noteId = text.noteIdToHex()
         }
         
-        guard let pubkey else {
-            if let url = URL(string: origText) {
-                PrimalWebsiteScheme.shared.openURL(url)
+        // Handle complex metadata (nprofile, nevent, naddr, etc.)
+        if let result = try? decodedMetadata(from: text) {
+            print("🔍 QR Debug - Decoded metadata SUCCESS!")
+            print("  - identifier: \(result.identifier ?? "nil")")
+            print("  - kind: \(result.kind ?? 0)")
+            print("  - pubkey: \(result.pubkey ?? "nil")")
+            print("  - eventId: \(result.eventId ?? "nil")")
+            print("  - text starts with: \(String(text.prefix(20)))")
+            
+            if let resPubkey = result.pubkey {
+                pubkey = resPubkey
+                print("🔍 QR Debug - Set pubkey from metadata: \(resPubkey)")
             }
+            if let resEventId = result.eventId {
+                noteId = resEventId
+                print("🔍 QR Debug - Set noteId from metadata: \(resEventId)")
+            }
+            
+            // Handle naddr (live streams)
+            if let identifier = result.identifier, 
+               let kind = result.kind,
+               let userId = result.pubkey {
+                print("🔍 QR Debug - Checking naddr: kind=\(kind), live.rawValue=\(NostrKind.live.rawValue), match=\(kind == UInt32(NostrKind.live.rawValue))")
+                if kind == UInt32(NostrKind.live.rawValue) {
+                    print("🔍 QR Debug - naddr detected! Attempting to navigate to live stream")
+                    print("🔍 QR Debug - pubkey: \(userId), identifier: \(identifier)")
+                    
+                    // Set didOpenQRCode = true immediately to prevent double scanning
+                    didOpenQRCode = true
+                    
+                    // Try the live navigation
+                    PrimalWebsiteScheme.shared.navigateToLive(pubkey: userId, id: identifier)
+                    return
+                }
+            }
+        } else {
+            print("🔍 QR Debug - Failed to decode metadata from: \(text)")
+        }
+        
+        print("🔍 QR Debug - Final: pubkey=\(pubkey ?? "nil"), noteId=\(noteId ?? "nil")")
+        
+        if let pubkey {
+            print("🔍 QR Debug - Navigating to profile: \(pubkey)")
+            didOpenQRCode = true
+            // Clear debounce data on successful navigation
+            lastScannedText = nil
+            lastScanTime = nil
+            isProcessingQRCode = false
+            (onboardingParent as? ProfileQRController)?.isOpeningProfileScreen = true
+            navigationController?.pushViewController(ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), animated: true)
             return
         }
         
-        didOpenQRCode = true
+        if let noteId {
+            print("🔍 QR Debug - Navigating to thread: \(noteId)")
+            didOpenQRCode = true
+            // Clear debounce data on successful navigation
+            lastScannedText = nil
+            lastScanTime = nil
+            isProcessingQRCode = false
+            navigationController?.pushViewController(ThreadViewController(threadId: noteId), animated: true)
+            return
+        }
         
-        (onboardingParent as? ProfileQRController)?.isOpeningProfileScreen = true
-        navigationController?.pushViewController(ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), animated: true)
+        // Fallback to URL handling
+        if let url = URL(string: origText) {
+            PrimalWebsiteScheme.shared.openURL(url)
+        }
+        
+        // Reset processing flag if we reach the end without navigation
+        isProcessingQRCode = false
     }
 }
 
 extension ProfileScanQRController: AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        print("🚀 QR METADATA OUTPUT TRIGGERED - \(metadataObjects.count) objects detected")
         guard let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject else {
+            print("🚀 No readable QR code object found")
             qrCodeFrameView.frame = CGRect.zero
             return
         }
         
+        print("🚀 QR Code type: \(metadataObj.type.rawValue)")
         guard
             metadataObj.type == AVMetadataObject.ObjectType.qr
-        else { return }
+        else { 
+            print("🚀 Not a QR code type, ignoring")
+            return 
+        }
                 
         if let barCodeObject = videoPreviewLayer.transformedMetadataObject(for: metadataObj) {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 
         if let text = metadataObj.stringValue {
+            print("🚀 QR Code text detected: \(text)")
             search(text)
+        } else {
+            print("🚀 QR Code detected but no string value")
         }
     }
 }
@@ -104,7 +222,7 @@ private extension ProfileScanQRController {
         addNavigationBar("Scan QR Code")
         
         let descLabel = UILabel()
-        descLabel.text = "Scan a user’s QR code to find them on Nostr"
+        descLabel.text = "Scan a user's, note or live stream QR code to find them on Nostr"
         descLabel.textAlignment = .center
         descLabel.font = .appFont(withSize: 18, weight: .regular)
         descLabel.textColor = .white
