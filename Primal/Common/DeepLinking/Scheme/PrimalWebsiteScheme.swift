@@ -119,23 +119,32 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
     }
     
     func navigateToLive(pubkey: String, id: String) {
-        SocketRequest(name: "parametrized_replaceable_event", payload: [
-            "kind": .number(Double(NostrKind.live.rawValue)),
-            "pubkey": .string(pubkey),
-            "identifier": .string(id)
-        ])
-        .publisher()
-        .receive(on: DispatchQueue.main)
-        .sink { res in
-            let users = res.getSortedUsers()
-            guard
-                let live = LiveEventManager.instance.liveEvent(for: pubkey),
-                let user = LiveEventManager.instance.user(for: pubkey) ?? users.first(where: { $0.data.pubkey == pubkey }) ?? users.first
-            else { return }
-            
-            RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
-            
-        }
-        .store(in: &cancellables)
+        Timer.publish(every: 1, on: .main, in: .default).autoconnect()
+            .first()
+            .flatMap { _ in
+                Publishers.Zip(
+                    SocketRequest(name: "find_live_events", payload: [
+                        "host_pubkey": .string(pubkey),
+                        "identifier": .string(id)
+                    ])
+                    .publisher(),
+                    SocketRequest(name: "user_infos", payload: [
+                        "pubkeys": [.string(pubkey)]
+                    ])
+                    .publisher()
+                )
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { (res, userRes) in
+                let users = userRes.getSortedUsers()
+                guard
+                    let liveEvent = res.events.first,
+                    let live = ProcessedLiveEvent.fromEvent(liveEvent),
+                    let user = users.first(where: { $0.data.pubkey == pubkey }) ?? users.first
+                else { return }
+                
+                RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
+            }
+            .store(in: &cancellables)
     }
 }

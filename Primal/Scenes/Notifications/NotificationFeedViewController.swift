@@ -206,6 +206,7 @@ final class NotificationFeedViewController: NoteViewController {
         }
     }
     
+    @discardableResult
     override func open(post: ParsedContent) -> NoteViewController {
         if post.post.id == "empty" {
             if post.user.data.id != "empty" {
@@ -270,6 +271,16 @@ final class NotificationFeedViewController: NoteViewController {
             mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
             mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
         }        
+    }
+    
+    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
+        switch event {
+        case .embeddedPost:
+            guard let post = post.embeddedPosts.first else { return }
+            open(post: post)
+        default:
+            super.performEvent(event, withPost: post, inCell: cell)
+        }
     }
 }
 

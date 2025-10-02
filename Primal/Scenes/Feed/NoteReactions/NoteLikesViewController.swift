@@ -48,7 +48,15 @@ class NoteLikesViewController: UIViewController, Themeable {
     }
     
     func refresh() {
-        NoteLikesRequest(noteId: noteId).publisher()
+        let req: NoteLikesRequest
+        let comps = noteId.split(separator: ":")
+        if comps.count == 3, let articleId = comps[safe: 2], let pubkey = comps[safe: 1] {
+            req = NoteLikesRequest(articleId: articleId.string, pubkey: pubkey.string)
+        } else {
+            req = NoteLikesRequest(noteId: noteId)
+        }
+        
+        req.publisher()
             .receive(on: DispatchQueue.main)
             .assign(to: \.users, onWeak: self)
             .store(in: &cancellables)

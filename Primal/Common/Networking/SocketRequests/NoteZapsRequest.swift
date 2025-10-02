@@ -17,6 +17,15 @@ extension SocketRequest {
         ]))
     }
     
+    static func articleZaps(identifier: String, pubkey: String, limit: Int) -> SocketRequest {
+        .init(useHTTP: true, name: "event_zaps_by_satszapped", payload: .object([
+            "identifier": .string(identifier),
+            "pubkey": .string(pubkey),
+            "limit": .number(Double(limit)),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
+        ]))
+    }
+    
     static func userInfo(pubkeys: [String]) -> SocketRequest {
         .init(name: "user_infos", payload: .object([
             "pubkeys": .array(pubkeys.map { .string($0) })
@@ -34,11 +43,37 @@ struct ParsedZap: Hashable {
 }
 
 struct NoteZapsRequest {
-    let noteId: String
+    enum Kind {
+        case note(String)
+        case article(String, pubkey: String)
+    }
+    
+    init(noteId: String, limit: Int) {
+        self.kind = .note(noteId)
+        self.limit = limit
+    }
+    
+    init(articleId: String, pubkey: String, limit: Int) {
+        self.kind = .article(articleId, pubkey: pubkey)
+        self.limit = limit
+    }
+    
+    let kind: Kind
     var limit: Int = 11
     
     func publisher() -> AnyPublisher<[ParsedZap], Never> {
-        SocketRequest.eventZaps(noteId: noteId, limit: limit).publisher()
+        let request: SocketRequest
+        let noteId: String
+        switch kind {
+        case .note(let id):
+            request = .eventZaps(noteId: id, limit: limit)
+            noteId = id
+        case .article(let articleId, let pubkey):
+            request = .articleZaps(identifier: articleId, pubkey: pubkey, limit: limit)
+            noteId = "\(NostrKind.longForm.rawValue):\(pubkey):\(articleId)"
+        }
+        
+        return request.publisher()
             .flatMap { result in
                 Publishers.Zip(Just(result), SocketRequest.userInfo(pubkeys: result.postZaps.map { $0.sender }).publisher())
             }

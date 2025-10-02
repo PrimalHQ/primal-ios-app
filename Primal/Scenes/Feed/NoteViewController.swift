@@ -76,11 +76,15 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         fatalError("init(coder:) has not been implemented")
     }
     
+    var firstRun = true
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        DispatchQueue.main.async {
-            self.dataSource.setPosts(self.posts)
+        DispatchQueue.main.async { [self] in
+            if !firstRun || !posts.isEmpty {
+                dataSource.setPosts(posts)
+            }
+            firstRun = false
         }
     }
     
@@ -426,11 +430,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             search(invoice.string)
             textSearch = nil
         case .zapDetails:
-            show(NoteReactionsParentController(.zaps, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.zaps, noteId: post.post.universalID), sender: nil)
         case .likeDetails:
-            show(NoteReactionsParentController(.likes, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.likes, noteId: post.post.universalID), sender: nil)
         case .repostDetails:
-            show(NoteReactionsParentController(.reposts, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.reposts, noteId: post.post.universalID), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
@@ -462,7 +466,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            mainTabBarController?.showToast("Copied!")
+            showToast("Copied!")
         case .report:
             present(PopupReportContentController(post), animated: true)
         case .muteUser:
@@ -501,7 +505,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         (cell as? AnimatingViewProtocol)?.stopAnimating()
     }
     
-    
+    func showToast(_ message: String) {
+        mainTabBarController?.showToast(message)
+    }
 }
 
 private extension NoteViewController {
@@ -672,7 +678,7 @@ private extension NoteViewController {
     func requestDelete(_ post: ParsedContent) {
         let alert = UIAlertController(title: "Delete note?", message: "This will issue a \"request delete\" command to the relays where the note was published.", preferredStyle: .alert)
         alert.addAction(.init(title: "Cancel", style: .cancel))
-        alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+        alert.addAction(.init(title: "Delete", style: .destructive, handler: { [weak self] _ in
             guard let deleteEvent = NostrObject.deleteNote(post) else { return }
             
             PostingManager.instance.sendEvent(deleteEvent) { success in
@@ -681,7 +687,7 @@ private extension NoteViewController {
                 DispatchQueue.main.async {
                     notify(.noteDeleted, post.post.id)
                     
-                    RootViewController.instance.showToast("Note Deleted")
+                    self?.showToast("Note Deleted")
                 }
             }
         }))
@@ -705,10 +711,23 @@ extension NoteViewController: PostCellDelegate {
         
         let popup = PopupMenuViewController()
         
-        popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
-            PostingManager.instance.sendRepostEvent(post: post)
-            cell.repostButton.animateTo(post.reposts + 1, filled: true)
-        }))
+        if PostingManager.instance.hasReposted(parsedPost.post.universalID) {
+            popup.addAction(.init(title: "Delete Repost", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
+                let alert = UIAlertController(title: "Delete Repost?", message: "This will issue a \"request delete\" command to the relays where the repost was published", preferredStyle: .alert)
+                alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+                    PostingManager.instance.deleteRepostEvent(parsedPost)
+                    cell.repostButton.animateTo(post.reposts - 1, filled: false)
+                    PostingManager.instance.deleteRepost(parsedPost.post.universalID)
+                }))
+                alert.addAction(.init(title: "Cancel", style: .cancel))
+                self?.present(alert, animated: true)
+            }))
+        } else {
+            popup.addAction(.init(title: "Repost", image: .repostIconLarge, handler: { _ in
+                PostingManager.instance.sendRepostEvent(post: post)
+                cell.repostButton.animateTo(post.reposts + 1, filled: true)
+            }))
+        }
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
@@ -812,7 +831,7 @@ extension NoteViewController: PostCellDelegate {
             items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
-                self?.mainTabBarController?.showToast("Copied!")
+                self?.showToast("Copied!")
             })
             
             if zap.message.isValidURL, let url = URL(string: zap.message) {

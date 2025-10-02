@@ -106,9 +106,12 @@ struct MediaMetadata: Codable, Hashable {
             var duration: Double? { dur }
         }
         
-        func url(for size: MediaSize) -> URL? {
-            (variants.first(where: { $0.size == size }) ?? variants.first(where: { $0.size == .original }) ?? variants.first)?.url
-                ?? URL(string: url)
+        func url(for size: MediaSize, animated: Bool = true) -> URL? {
+            let v = (variants.first(where: { $0.size == size && $0.animated == animated })
+                ?? variants.first(where: { $0.size == .original && $0.animated == animated })
+                ?? variants.first)
+            
+            return v?.url ?? URL(string: url)
         }
     }
 }

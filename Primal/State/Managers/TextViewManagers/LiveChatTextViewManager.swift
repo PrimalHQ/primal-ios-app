@@ -194,7 +194,9 @@ final class LiveChatTextViewManager: TextViewManager, MetadataCoding {
             let ev = NostrObject.liveComment(live: live.event, comment: postingText)
         else { return }
         
-        textView.text = ""
+        DispatchQueue.main.async {
+            self.textView.text = ""
+        }
         
         PostingManager.instance.sendEvent(ev, { _ in })
     }

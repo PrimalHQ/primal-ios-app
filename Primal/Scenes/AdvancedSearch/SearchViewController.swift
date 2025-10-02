@@ -81,7 +81,7 @@ private extension SearchViewController {
         advancedSearch.searchType = searchType
         let text = userSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
         if !text.isEmpty {
-            advancedSearch.includeWordsText = "\"\(text)\""
+            advancedSearch.includeWordsText = text
         }
         return advancedSearch
     }

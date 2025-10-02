@@ -461,6 +461,7 @@
 		B98DD8E82C6682D900E8369A /* ArticleFeedPreviewFeedController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E72C6682D900E8369A /* ArticleFeedPreviewFeedController.swift */; };
 		B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */; };
 		B98DD8EC2C89B1BC00E8369A /* HomeFeedChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */; };
+		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
@@ -1205,6 +1206,7 @@
 		B98DD8E72C6682D900E8369A /* ArticleFeedPreviewFeedController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedPreviewFeedController.swift; sourceTree = "<group>"; };
 		B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownNavigationView.swift; sourceTree = "<group>"; };
 		B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedChildController.swift; sourceTree = "<group>"; };
+		B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInfoBubbleView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
@@ -3002,6 +3004,7 @@
 		B9C672DE2E2FB5DE00243B45 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */,
 				B9A3353F2E589BEB000B2CA7 /* LiveChatLoadingView.swift */,
 				B9A3353D2E589619000B2CA7 /* ZapGalleryLoadingView.swift */,
 				B9EDA5812E4BC1D2003262E4 /* AutoHidingView.swift */,
@@ -3727,6 +3730,7 @@
 				9393313229A3E56F003954C2 /* NostrContent.swift in Sources */,
 				B98DD8D52C6259B100E8369A /* ArticleFeedManager.swift in Sources */,
 				B9C672E92E2FF89C00243B45 /* LiveVideoChatZapCell.swift in Sources */,
+				B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */,
 				B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
@@ -4396,7 +4400,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.34;
+				MARKETING_VERSION = 2.5.45;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4445,7 +4449,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.34;
+				MARKETING_VERSION = 2.5.45;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

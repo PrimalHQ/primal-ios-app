@@ -465,17 +465,17 @@ extension ParsedLiveEvent: PostingReferenceObject, MetadataCoding {
     }
     
     func webURL() -> String {
-        if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: event.creatorPubkey) {
+        if let name = PremiumCustomizationManager.instance.getPremiumName(pubkey: event.pubkey) {
             return "https://primal.net/\(name)/live/\(event.dTag)"
         }
 
         var metadata = Metadata()
-        metadata.pubkey = event.creatorPubkey
+        metadata.pubkey = event.pubkey
         if let identifier = try? encodedIdentifier(with: metadata, identifierType: .profile) {
             return "https://primal.net/p/\(identifier)/live/\(event.dTag)"
         }
 
-        let npub = event.creatorPubkey.hexToNpub() ?? event.creatorPubkey
+        let npub = event.pubkey.hexToNpub() ?? event.creatorPubkey
 
         return "https://primal.net/p/\(npub)/live/\(event.dTag)/"
     }

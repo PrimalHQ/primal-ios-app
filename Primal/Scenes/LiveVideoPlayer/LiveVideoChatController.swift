@@ -12,6 +12,10 @@ import Nantes
 import SafariServices
 import NostrSDK
 
+extension String {
+    static let livePopupShouldHideKey = "livePopupShouldHideKey"
+}
+
 class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
     
     let onZapDetails: () -> Void
@@ -44,6 +48,10 @@ class LiveVideoChatController: UIViewController, Themeable {
     let usersTable = UsersTableView()
     let input = LiveVideoChatInputView()
     let spacer = KeyboardSizingView()
+    
+    lazy var helperPopup = PopupInfoBubbleView(title: "You can control live stream notifications and chat settings") { [weak self] in
+        UserDefaults.standard.set(true, forKey: .livePopupShouldHideKey)
+    }
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -124,12 +132,21 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         view.addSubview(usersTable)
         usersTable.pin(to: commentsTable, edges: [.horizontal, .bottom])
+        
+        view.addSubview(helperPopup)
+        helperPopup.pinToSuperview(edges: .trailing, padding: 8).constrainToSize(width: 270)
 
         NSLayoutConstraint.activate([
+            helperPopup.topAnchor.constraint(equalTo: header.configButton.bottomAnchor),
+            helperPopup.triangleView.centerXAnchor.constraint(equalTo: header.configButton.centerXAnchor),
             usersTable.topAnchor.constraint(greaterThanOrEqualTo: commentsTable.topAnchor),
             input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12),
             commentsTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 100)
         ])
+        
+        if UserDefaults.standard.bool(forKey: .livePopupShouldHideKey) {
+            helperPopup.removeFromSuperview()
+        }
         
         commentsTable.backgroundColor = .background
         commentsTable.delegate = self
@@ -178,6 +195,14 @@ class LiveVideoChatController: UIViewController, Themeable {
             }
             .store(in: &cancellables)
         
+        WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard let self, post.post.id == zap.postId, zap.user.data.pubkey == IdentityManager.instance.userHexPubkey else { return }
+            
+            self.comments.insert(ParsedLiveComment(user: zap.user, comment: self.parsedComment(zap.message, isZap: true), event: [:], zapAmount: zap.amountSats), at: 0)
+            self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
+        }
+        .store(in: &cancellables)
+        
         header.infoButton.addAction(.init(handler: { [weak self] _ in
             guard let videoVC = self?.parent as? LiveVideoPlayerController else { return }
             
@@ -190,7 +215,15 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         header.configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
+            helperPopup.animateRemove()
             videoController?.presentLivePopup(LiveVideoConfigController(live: live, chatVC: self))
+        }), for: .touchUpInside)
+        
+        input.sendButton.addAction(.init(handler: { [weak self] _ in // Simple workaround
+            guard let self, let text = input.textView.text, !text.isEmpty else { return }
+            
+            self.comments.insert(ParsedLiveComment(user: IdentityManager.instance.parsedUserSafe, comment: self.parsedComment(text, isZap: false), event: [:], zapAmount: 0), at: 0)
+            self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
         }), for: .touchUpInside)
     }
     
@@ -199,7 +232,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         updateTheme()
         
-        header.titleLabel.text = live.title
         header.countLabel.text = live.event.participants.localized()
         header.timeLabel.text = live.startedText
         if live.isLive {
@@ -217,6 +249,14 @@ class LiveVideoChatController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background4
         spacer.backgroundColor = .background
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
+        header.titleLabel.attributedText = .init(string: live.title, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .bold),
+            .foregroundColor: UIColor.foreground,
+            .paragraphStyle: paragraphStyle
+        ])
     }
 }
 
@@ -381,7 +421,7 @@ private extension LiveVideoChatController {
                                 )
                             })
                         
-                        self.comments += (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
+                        self.comments = (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
                         setZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
                         commentsTable.reloadData()
                     }
@@ -438,10 +478,14 @@ private extension LiveVideoChatController {
                     content = zapReceipt["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     userPubkey = pubkey
                 } else {
+                    if kind != NostrKind.liveComment.rawValue { return } // Ignore non comments
+                    
                     content = event["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     guard let pubkey = event["pubkey"]?.stringValue else { return }
                     userPubkey = pubkey
                 }
+                
+                if userPubkey == IdentityManager.instance.userHexPubkey { return } // Ignore personal messages and zaps
                 
                 var pubkeysToFetch: [String] = Self.userCache[userPubkey] == nil ? [userPubkey] : []
                 pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
@@ -449,7 +493,7 @@ private extension LiveVideoChatController {
                 if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
                     self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
                     self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                    if let zap = self.jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey {
+                    if let zap = self.jsonToZap(.object(event)) {
                         self.addZap(zap)
                     }
                     return
@@ -471,7 +515,7 @@ private extension LiveVideoChatController {
                             zapAmount: amount
                         ), at: 0)
                         commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                        if let zap = jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey  {
+                        if let zap = jsonToZap(.object(event)) {
                             addZap(zap)
                         }
                     }
@@ -494,17 +538,23 @@ extension LiveVideoChatController: MetadataCoding {
             }
         }
         
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = 20
+        paragraph.maximumLineHeight = 20
+        
         return attributedStringByReplacing(
             comment,
             replacements: replacements,
             baseAttributes: [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
+                .paragraphStyle: paragraph
             ],
             specialAttributes:  [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
-                .underlineStyle: NSUnderlineStyle.single.rawValue
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .paragraphStyle: paragraph
             ]
         )
     }

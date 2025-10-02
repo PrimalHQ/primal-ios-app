@@ -41,6 +41,7 @@ class HomeFeedChildController: PostFeedViewController {
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
         newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
+        newPostsViewParent.alpha = 0
         
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
         newPostsView.alpha = 0
@@ -113,7 +114,9 @@ class HomeFeedChildController: PostFeedViewController {
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         super.tableView(tableView, willDisplay: cell, forRowAt: indexPath)
         
-        feed.didShowPost(indexPath.row)
+        if let post = dataSource.postForIndexPath(indexPath), let index = posts.firstIndex(of: post) {
+            feed.didShowPost(index)
+        }
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
