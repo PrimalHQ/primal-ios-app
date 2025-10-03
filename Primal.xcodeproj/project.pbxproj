@@ -462,6 +462,7 @@
 		B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */; };
 		B98DD8EC2C89B1BC00E8369A /* HomeFeedChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */; };
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
+		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
@@ -1207,6 +1208,7 @@
 		B98DD8E92C80670200E8369A /* DropdownNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownNavigationView.swift; sourceTree = "<group>"; };
 		B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedChildController.swift; sourceTree = "<group>"; };
 		B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInfoBubbleView.swift; sourceTree = "<group>"; };
+		B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoSmallHeaderView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
@@ -3012,6 +3014,7 @@
 				B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */,
 				B9C672E62E2FE43700243B45 /* LiveVideoChatMessageCell.swift */,
 				B9C672DF2E2FB5EC00243B45 /* LiveCommentsHeaderView.swift */,
+				B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */,
 				B9C672DA2E2535B500243B45 /* LivePlayerView.swift */,
 				B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */,
 			);
@@ -3954,6 +3957,7 @@
 				B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */,
 				B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
+				B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */,
 				B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */,
 				9ED4161C2A4F7D1900892235 /* SettingsNotificationsViewController.swift in Sources */,
 				93B7FE762A0AB0A5005AE313 /* NostrProfile.swift in Sources */,
@@ -4400,7 +4404,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.45;
+				MARKETING_VERSION = 2.5.47;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4449,7 +4453,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.45;
+				MARKETING_VERSION = 2.5.47;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -40,8 +40,12 @@ struct LiveDismissGestureState {
 
 class LiveVideoPlayerController: UIViewController {
     let liveVideoPlayer = LivePlayerView()
+    let liveVideoParent = UIView()
     let horizontalVideoPlayer = LargeLivePlayerView()
     let horizontalVideoParent = UIView()
+    
+    let smallHeader = LiveVideoSmallHeaderView()
+    let smallVideoCoverView = UIView()
     
     let player: VideoPlayer?
     
@@ -49,6 +53,8 @@ class LiveVideoPlayerController: UIViewController {
     
     let safeAreaSpacer = UIView()
     var safeAreaConstraint: NSLayoutConstraint?
+    var videoParentSmallHeightC: NSLayoutConstraint?
+    var videoBotC: NSLayoutConstraint?
     
     let contentBackgroundView = UIView()
     let contentView = AutoHidingView()
@@ -61,6 +67,10 @@ class LiveVideoPlayerController: UIViewController {
     private lazy var commentsVC = LiveVideoChatController(live: live)
     
     var currentTransitionProgress: CGFloat = 0
+    
+    @Published var smallVideoPlayer: Bool = false
+    var smallVideoPlayerAnimating: Bool = false
+    
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
     var isDismissingInteractively: Bool { currentTransitionProgress != 0 }
     
@@ -128,7 +138,7 @@ class LiveVideoPlayerController: UIViewController {
         view.addSubview(contentBackgroundView)
         commentsVC.didMove(toParent: self)
         
-        let videoStack = UIStackView(axis: .vertical, [safeAreaSpacer, liveVideoPlayer])
+        let videoStack = UIStackView(axis: .vertical, [safeAreaSpacer, liveVideoParent])
         
         view.addSubview(videoStack)
         videoStack.pinToSuperview(edges: [.top, .horizontal])
@@ -145,6 +155,20 @@ class LiveVideoPlayerController: UIViewController {
         horizontalVideoPlayer.pinToSuperview(edges: .horizontal).centerToSuperview()
         horizontalVideoParent.isHidden = true
         
+        liveVideoParent.addSubview(smallHeader)
+        smallHeader.pinToSuperview(edges: [.horizontal, .top])
+        smallHeader.alpha = 0
+        smallHeader.transform = .init(translationX: 0, y: 200)
+        
+        liveVideoParent.addSubview(liveVideoPlayer)
+        liveVideoPlayer.pinToSuperview(edges: [.horizontal, .top])
+        videoBotC = liveVideoParent.bottomAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor)
+        videoBotC?.isActive = true
+        
+        liveVideoParent.addSubview(smallVideoCoverView)
+        smallVideoCoverView.pinToSuperview()
+        smallVideoCoverView.isHidden = true
+        
         NSLayoutConstraint.activate([
             heightC,
             horizontalVideoPlayer.heightAnchor.constraint(equalTo: view.widthAnchor),
@@ -154,8 +178,27 @@ class LiveVideoPlayerController: UIViewController {
         safeAreaConstraint = safeAreaSpacer.heightAnchor.constraint(equalToConstant: RootViewController.instance.view.window?.safeAreaInsets.top ?? 0)
         safeAreaConstraint?.isActive = true
         
+        videoParentSmallHeightC = liveVideoParent.heightAnchor.constraint(equalToConstant: 104)
+        
         contentBackgroundView.pinToSuperview(edges: [.bottom, .horizontal])
-        contentBackgroundView.topAnchor.constraint(equalTo: liveVideoPlayer.bottomAnchor, constant: -5).isActive = true
+        contentBackgroundView.topAnchor.constraint(equalTo: liveVideoParent.bottomAnchor, constant: -5).isActive = true
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6
+        smallHeader.titleLabel.attributedText = .init(string: live.title, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .bold),
+            .foregroundColor: UIColor.foreground,
+            .paragraphStyle: paragraphStyle
+        ])
+        smallHeader.countLabel.text = live.event.participants.localized()
+        smallHeader.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
+        
+        smallVideoCoverView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self else { return }
+            commentsVC.commentsTable.setContentOffset(commentsVC.commentsTable.contentOffset, animated: false) // Kill any current scrolling
+            smallVideoPlayer = false
+            liveVideoPlayer.showControls()
+        }))
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         view.addGestureRecognizer(panGesture)
@@ -170,6 +213,48 @@ class LiveVideoPlayerController: UIViewController {
                 self?.rotateVideoPlayer(for: orientation)
             }
             .store(in: &cancellables)
+        
+        let shouldStartAnimating = $smallVideoPlayer.dropFirst().removeDuplicates().debounce(for: 0.1, scheduler: DispatchQueue.main).removeDuplicates()
+        
+        shouldStartAnimating
+            .sink { [weak self] mini in
+                guard let self else { return }
+                self.videoParentSmallHeightC?.isActive = mini
+                self.videoBotC?.isActive = !mini
+                self.smallVideoCoverView.isHidden = !mini
+                
+                guard mini else {
+                    UIView.animate(withDuration: 0.4) {
+                        self.liveVideoPlayer.transform = .init(translationX: -self.view.frame.width / 2, y: 0)
+                        self.smallHeader.alpha = 0
+                        self.smallHeader.transform = .init(translationX: 0, y: 200)
+                        self.view.layoutIfNeeded()
+                    } completion: { _ in
+                        self.liveVideoParent.backgroundColor = .clear
+                    }
+                    return
+                }
+                
+                let scale = 88 / liveVideoPlayer.frame.height
+                
+                self.liveVideoParent.backgroundColor = .background4
+                self.liveVideoPlayer.hideControls()
+                
+                UIView.animate(withDuration: 0.4) {
+                    self.liveVideoPlayer.transform = .init(scaleX: scale, y: scale).translatedBy(x: (-self.liveVideoPlayer.frame.width / 2 + 10) / scale, y: (104 - self.liveVideoPlayer.frame.height) / 2 / scale)
+                    self.smallHeader.alpha = 1
+                    self.smallHeader.transform = .identity
+                    self.view.layoutIfNeeded()
+                }
+            }
+            .store(in: &cancellables)
+        
+        Publishers.Merge(
+            shouldStartAnimating.map { _ in true },
+            shouldStartAnimating.delay(for: 0.2, scheduler: DispatchQueue.main).map { _ in false }
+        )
+        .assign(to: \.smallVideoPlayerAnimating, onWeak: self)
+        .store(in: &cancellables)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -223,6 +308,10 @@ class LiveVideoPlayerController: UIViewController {
         }
     }
     
+    func chatControllerRequestMiniPlayer(_ mini: Bool) {
+        smallVideoPlayer = mini
+    }
+    
     func chatControllerRequestsMoreSpace() {
         safeAreaSpacer.isHidden = true
     }
@@ -269,8 +358,6 @@ class LiveVideoPlayerController: UIViewController {
         RootViewController.instance.livePlayer.alpha = 1
     }
 }
-
-
 
 private extension LiveVideoPlayerController {
     private func rotateVideoPlayer(for orientation: UIDeviceOrientation) {
@@ -328,7 +415,7 @@ private extension LiveVideoPlayerController {
     @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let touchPoint = gesture.location(in: view?.window)
         
-        guard currentVideoRotation.isPortrait else { return }
+        guard currentVideoRotation.isPortrait, !smallVideoPlayer, !smallVideoPlayerAnimating else { return }
         
         if case .began = gesture.state {
             let main = RootViewController.instance

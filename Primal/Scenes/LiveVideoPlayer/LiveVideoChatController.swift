@@ -49,6 +49,13 @@ class LiveVideoChatController: UIViewController, Themeable {
     let input = LiveVideoChatInputView()
     let spacer = KeyboardSizingView()
     
+    let topInfoView = UIView()
+    lazy var topStack = UIStackView(axis: .vertical, [
+        header,
+        infoParent,
+        SpacerView(height: 1, color: .background3),
+    ])
+    
     lazy var helperPopup = PopupInfoBubbleView(title: "You can control live stream notifications and chat settings") { [weak self] in
         UserDefaults.standard.set(true, forKey: .livePopupShouldHideKey)
     }
@@ -105,8 +112,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsInfoVC.willMove(toParent: self)
         
         let stack = UIStackView(axis: .vertical, [
-            header,
-            infoParent,
             SpacerView(height: 1, color: .background3),
             commentsTable,
             SpacerView(height: 1, color: .background3),
@@ -119,6 +124,11 @@ class LiveVideoChatController: UIViewController, Themeable {
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, padding: 8)
         
+        view.addSubview(topInfoView)
+        topInfoView.pinToSuperview(edges: [.top, .horizontal])
+        topInfoView.addSubview(topStack)
+        topStack.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: [.horizontal, .bottom])
+        
         addChild(zapsInfoVC)
         zapsInfoVC.didMove(toParent: self)
         zapsInfoVC.posts = [post]
@@ -128,7 +138,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsLoadingView.pin(to: zapsInfoVC.view, edges: [.horizontal, .top])
         
         view.addSubview(chatLoadingView)
-        chatLoadingView.pin(to: commentsTable)
+        chatLoadingView.pin(to: commentsTable, edges: [.horizontal, .bottom])
         
         view.addSubview(usersTable)
         usersTable.pin(to: commentsTable, edges: [.horizontal, .bottom])
@@ -137,6 +147,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         helperPopup.pinToSuperview(edges: .trailing, padding: 8).constrainToSize(width: 270)
 
         NSLayoutConstraint.activate([
+            chatLoadingView.topAnchor.constraint(equalTo: topInfoView.bottomAnchor),
             helperPopup.topAnchor.constraint(equalTo: header.configButton.bottomAnchor),
             helperPopup.triangleView.centerXAnchor.constraint(equalTo: header.configButton.centerXAnchor),
             usersTable.topAnchor.constraint(greaterThanOrEqualTo: commentsTable.topAnchor),
@@ -225,6 +236,17 @@ class LiveVideoChatController: UIViewController, Themeable {
             self.comments.insert(ParsedLiveComment(user: IdentityManager.instance.parsedUserSafe, comment: self.parsedComment(text, isZap: false), event: [:], zapAmount: 0), at: 0)
             self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
         }), for: .touchUpInside)
+        
+        DispatchQueue.main.async {
+            self.videoController?.$smallVideoPlayer.dropFirst().removeDuplicates().debounce(for: 0.1, scheduler: DispatchQueue.main).removeDuplicates()
+                .sink { [weak self] mini in
+                    UIView.animate(withDuration: 0.4) {
+                        self?.topInfoView.alpha = mini ? 0 : 1
+                        self?.helperPopup.alpha = mini ? 0 : 1
+                    }
+                }
+                .store(in: &self.cancellables)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -250,6 +272,8 @@ class LiveVideoChatController: UIViewController, Themeable {
         view.backgroundColor = .background4
         spacer.backgroundColor = .background
         
+        topInfoView.backgroundColor = .background4
+        
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 6
         header.titleLabel.attributedText = .init(string: live.title, attributes: [
@@ -265,6 +289,13 @@ extension LiveVideoChatController: UITableViewDelegate {
         guard let videoVC = parent as? LiveVideoPlayerController, let message = comments[safe: indexPath.row] else { return }
         
         videoVC.presentLivePopup(LiveVideoMessageDetailsController(live: live, message: message))
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging else { return }
+        
+        let offset = scrollView.contentOffset.y
+        videoController?.chatControllerRequestMiniPlayer(offset > 100)
     }
 }
 

@@ -177,11 +177,7 @@ class LivePlayerView: UIView {
         addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
             if self.controlsView.isHidden {
-                self.controlsView.alpha = 0
-                self.controlsView.isHidden = false
-                UIView.animate(withDuration: 0.2) {
-                    self.controlsView.alpha = 1
-                }
+                self.showControls()
             } else {
                 self.hideControls()
             }
@@ -221,6 +217,14 @@ class LivePlayerView: UIView {
         } completion: { _ in
             self.controlsView.isHidden = true
         }        
+    }
+    
+    func showControls() {
+        controlsView.alpha = 0
+        controlsView.isHidden = false
+        UIView.animate(withDuration: 0.2) {
+            self.controlsView.alpha = 1
+        }
     }
     
     func setCancellables() {

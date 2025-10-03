@@ -62,7 +62,7 @@ class PopupInfoBubbleView: UIStackView, Themeable {
             self.alpha = 0
         } completion: { _ in
             self.removeFromSuperview()
-//            self.onClose()
+            self.onClose()
         }
     }
     
