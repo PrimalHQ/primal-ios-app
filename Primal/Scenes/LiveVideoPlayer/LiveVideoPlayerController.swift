@@ -49,7 +49,7 @@ class LiveVideoPlayerController: UIViewController {
     
     let player: VideoPlayer?
     
-    let live: ParsedLiveEvent
+    var live: ParsedLiveEvent { didSet { updateLabels() } }
     
     let safeAreaSpacer = UIView()
     var safeAreaConstraint: NSLayoutConstraint?
@@ -68,8 +68,9 @@ class LiveVideoPlayerController: UIViewController {
     
     var currentTransitionProgress: CGFloat = 0
     
-    @Published var smallVideoPlayer: Bool = false
-    var smallVideoPlayerAnimating: Bool = false
+    @Published private var smallVideoPlayer: Bool = false
+    @Published private var commentsOverride: Bool = false
+    @Published private var smallVideoPlayerAnimating: Bool = false
     
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
     var isDismissingInteractively: Bool { currentTransitionProgress != 0 }
@@ -143,7 +144,7 @@ class LiveVideoPlayerController: UIViewController {
         view.addSubview(videoStack)
         videoStack.pinToSuperview(edges: [.top, .horizontal])
         let heightC = liveVideoPlayer.heightAnchor.constraint(equalTo: liveVideoPlayer.widthAnchor, multiplier: 9 / 16)
-        heightC.priority = .defaultLow
+        heightC.priority = .defaultHigh
         
         view.addSubview(contentView)
         contentView.pin(to: contentBackgroundView, edges: [.bottom, .horizontal]).pin(to: contentBackgroundView, edges: .top, padding: 5)
@@ -183,18 +184,10 @@ class LiveVideoPlayerController: UIViewController {
         contentBackgroundView.pinToSuperview(edges: [.bottom, .horizontal])
         contentBackgroundView.topAnchor.constraint(equalTo: liveVideoParent.bottomAnchor, constant: -5).isActive = true
         
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 6
-        smallHeader.titleLabel.attributedText = .init(string: live.title, attributes: [
-            .font: UIFont.appFont(withSize: 16, weight: .bold),
-            .foregroundColor: UIColor.foreground,
-            .paragraphStyle: paragraphStyle
-        ])
-        smallHeader.countLabel.text = live.event.participants.localized()
-        smallHeader.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
+        updateLabels()
         
         smallVideoCoverView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            guard let self else { return }
+            guard let self, !commentsOverride else { return }
             commentsVC.commentsTable.setContentOffset(commentsVC.commentsTable.contentOffset, animated: false) // Kill any current scrolling
             smallVideoPlayer = false
             liveVideoPlayer.showControls()
@@ -214,44 +207,69 @@ class LiveVideoPlayerController: UIViewController {
             }
             .store(in: &cancellables)
         
-        let shouldStartAnimating = $smallVideoPlayer.dropFirst().removeDuplicates().debounce(for: 0.1, scheduler: DispatchQueue.main).removeDuplicates()
+        let shouldStartAnimating = Publishers.CombineLatest3($smallVideoPlayer, $commentsOverride, $smallVideoPlayerAnimating)
+            .filter { !$2 }
+            .map { $0.0 || $0.1 }
+            .removeDuplicates()
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .dropFirst()
         
         shouldStartAnimating
             .sink { [weak self] mini in
+                print("receive v action")
                 guard let self else { return }
                 self.videoParentSmallHeightC?.isActive = mini
                 self.videoBotC?.isActive = !mini
                 self.smallVideoCoverView.isHidden = !mini
                 
                 guard mini else {
-                    UIView.animate(withDuration: 0.4) {
+                    UIView.animate(withDuration: 0.3) {
                         self.liveVideoPlayer.transform = .init(translationX: -self.view.frame.width / 2, y: 0)
                         self.smallHeader.alpha = 0
                         self.smallHeader.transform = .init(translationX: 0, y: 200)
+                        self.commentsVC.topInfoView.alpha = 1
+                        self.commentsVC.helperPopup.alpha = 1
                         self.view.layoutIfNeeded()
-                    } completion: { _ in
+                    } completion: { finished in
+                        guard finished else { return }
                         self.liveVideoParent.backgroundColor = .clear
+                        self.safeAreaSpacer.backgroundColor = .background
                     }
                     return
                 }
                 
+                // We can't animate table grow because new cells will animate rotating 180
+                // So we let the table grow without animation, and mock other animations using transforms
+                // Adjust commentsVC header
+                let yOffset = liveVideoPlayer.frame.height - 104
+                self.commentsVC.topInfoView.transform = .init(translationX: 0, y: yOffset)
+                self.commentsVC.helperPopup.transform = .init(translationX: 0, y: yOffset)
+                
                 let scale = 88 / liveVideoPlayer.frame.height
                 
+                self.safeAreaSpacer.backgroundColor = .background4
                 self.liveVideoParent.backgroundColor = .background4
                 self.liveVideoPlayer.hideControls()
                 
-                UIView.animate(withDuration: 0.4) {
+                // Let table grow without animation
+                self.view.layoutIfNeeded()
+                
+                UIView.animate(withDuration: 0.3) {
                     self.liveVideoPlayer.transform = .init(scaleX: scale, y: scale).translatedBy(x: (-self.liveVideoPlayer.frame.width / 2 + 10) / scale, y: (104 - self.liveVideoPlayer.frame.height) / 2 / scale)
                     self.smallHeader.alpha = 1
                     self.smallHeader.transform = .identity
-                    self.view.layoutIfNeeded()
+                    self.commentsVC.topInfoView.alpha = 0
+                    self.commentsVC.helperPopup.alpha = 0
+                    self.commentsVC.topInfoView.transform = .identity
+                    self.commentsVC.helperPopup.transform = .identity
                 }
             }
             .store(in: &cancellables)
         
         Publishers.Merge(
             shouldStartAnimating.map { _ in true },
-            shouldStartAnimating.delay(for: 0.2, scheduler: DispatchQueue.main).map { _ in false }
+            shouldStartAnimating.delay(for: 0.3, scheduler: DispatchQueue.main).map { _ in false }
         )
         .assign(to: \.smallVideoPlayerAnimating, onWeak: self)
         .store(in: &cancellables)
@@ -279,8 +297,10 @@ class LiveVideoPlayerController: UIViewController {
         default: break
         }
         
-        liveVideoPlayer.anchorPoint = (.init(x: 0, y: 0.5))
-        liveVideoPlayer.transform = .init(translationX: -view.frame.width / 2, y: 0)
+        if !smallVideoPlayer {
+            liveVideoPlayer.anchorPoint = (.init(x: 0, y: 0.5))
+            liveVideoPlayer.transform = .init(translationX: -view.frame.width / 2, y: 0)
+        }
         
         safeAreaConstraint?.constant = view.window?.safeAreaInsets.top ?? 0
         UIView.animate(withDuration: 0.1, animations: { self.view.layoutIfNeeded() })
@@ -313,11 +333,11 @@ class LiveVideoPlayerController: UIViewController {
     }
     
     func chatControllerRequestsMoreSpace() {
-        safeAreaSpacer.isHidden = true
+        commentsOverride = true
     }
     
     func chatControllerRequestsNormalSize() {
-        safeAreaSpacer.isHidden = false
+        commentsOverride = false
     }
     
     func setTransition(progress: CGFloat) {
@@ -478,8 +498,21 @@ private extension LiveVideoPlayerController {
     func setVideoAspectRatio(_ aspect: CGFloat) {
         videoAspect = aspect
         let heightC = liveVideoPlayer.widthAnchor.constraint(equalTo: liveVideoPlayer.heightAnchor, multiplier: aspect)
-        heightC.priority = .defaultHigh
+        heightC.priority = .required
         heightC.isActive = true
+    }
+    
+    func updateLabels() {
+        smallHeader.countLabel.text = live.event.participants.localized()
+        smallHeader.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        smallHeader.titleLabel.attributedText = .init(string: live.title, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .bold),
+            .foregroundColor: UIColor.foreground,
+            .paragraphStyle: paragraphStyle
+        ])
     }
 }
 

@@ -18,7 +18,7 @@ class PrimalWalletManager {
     @Published var isLoadingWallet = true
     
     private var isLoadingTransactions = false
-    private var update: ContinousConnection?
+    private var update: ContinuousConnection?
     private var cancellables: Set<AnyCancellable> = []
     
     init() {

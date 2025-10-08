@@ -48,6 +48,11 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
                 return
             }
             
+            if let kind = metadata.kind, kind == NostrKind.live.rawValue {
+                navigateToNaddressLive(pubkey: pubkey, id: identifier)
+                return
+            }
+            
             RootViewController.instance.navigateTo = .article(pubkey: pubkey, id: identifier)
             return
         }
@@ -116,6 +121,24 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func navigateToNaddressLive(pubkey: String, id: String) {
+        SocketRequest(name: "parametrized_replaceable_event", payload: [
+            "kind": .number(Double(NostrKind.live.rawValue)),
+            "pubkey": .string(pubkey),
+            "identifier": .string(id)
+        ])
+        .publisher()
+        .delay(for: 1, scheduler: DispatchQueue.main)
+        .sink { res in
+            guard let liveEvent = res.events.first, let live = ProcessedLiveEvent.fromEvent(liveEvent) else { return }
+            
+            let user = LiveEventManager.instance.user(for: live.pubkey) ?? .init(data: .init(pubkey: pubkey))
+            
+            RootViewController.instance.navigateTo = .live(.init(event: live, user: user))
+        }
+        .store(in: &cancellables)
     }
     
     func navigateToLive(pubkey: String, id: String) {

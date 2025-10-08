@@ -15,6 +15,7 @@ class LiveVideoChatMessageCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
+        transform = .init(rotationAngle: .pi)
         
         contentView.addSubview(view)
         view.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
@@ -62,7 +63,7 @@ class LiveVideoChatMessageView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateForComment(_ comment: ParsedLiveComment) {
-        userImage.setUserImage(comment.user)
+        userImage.setUserImage(comment.user, feed: false)
         userNameLabel.text = comment.user.data.firstIdentifier
         let text = NSMutableAttributedString(string: comment.user.data.firstIdentifier, attributes: [
             .foregroundColor: UIColor.clear,
