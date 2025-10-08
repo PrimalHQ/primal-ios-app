@@ -23,6 +23,7 @@ protocol LivePlayerViewDelegate: AnyObject {
 class LargeLivePlayerView: LivePlayerView {
     override var horizontalMargin: CGFloat { 36 }
     override var verticalMargin: CGFloat { 20 }
+    override var labelFontSize: CGFloat { 24 }
     
     override init() {
         super.init()
@@ -44,13 +45,15 @@ class LivePlayerView: UIView {
     
     var player: VideoPlayer? {
         didSet {
+            streamEndedView.isHidden = player != nil
             playerLayer.player = player?.avPlayer
-            
             setCancellables()
         }
     }
     
     let controlsView = UIView()
+    let streamEndedView = UIView()
+    lazy var streamEndedLabel = UILabel("STREAM ENDED", color: .foreground5, font: .appFont(withSize: labelFontSize, weight: .bold))
     
     let dismissButton = UIButton(configuration: .simpleImage(.liveMinimize))
     let airplayButton = AVRoutePickerView() //UIButton(configuration: .simpleImage(.airPlay))
@@ -76,6 +79,7 @@ class LivePlayerView: UIView {
     var horizontalMargin: CGFloat { 8 }
     var verticalMargin: CGFloat { 4 }
     var buttonSize: CGFloat { 36 }
+    var labelFontSize: CGFloat { 16 }
     
     init() {
         super.init(frame: .zero)
@@ -100,6 +104,13 @@ class LivePlayerView: UIView {
         loadingAnimationView.loopMode = .loop
         loadingAnimationView.contentMode = .scaleAspectFill
         loadingAnimationView.setContentCompressionResistancePriority(.init(1), for: .vertical)
+        
+        addSubview(streamEndedView)
+        streamEndedView.pinToSuperview()
+        streamEndedView.isHidden = true
+        streamEndedView.addSubview(streamEndedLabel)
+        streamEndedLabel.centerToSuperview()
+        streamEndedView.backgroundColor = .background3
         
         let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
         topRightStack.spacing = 4

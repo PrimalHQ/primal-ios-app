@@ -355,6 +355,11 @@ class LiveVideoPlayerController: UIViewController {
         
         contentView.transform = .init(translationX: 0, y: progress.interpolatingBetween(start: 0, end: 1000))
         
+        liveVideoPlayer.streamEndedLabel.transform = .init(
+            scaleX: progress.interpolatingBetween(start: 1, end: 12 / (16 * dgs.finalHorizontalScale)),
+            y: progress.interpolatingBetween(start: 1, end: 12 / (16 * dgs.finalVerticalScale))
+        )
+        
         liveVideoPlayer.transform = CGAffineTransform(
                 translationX: progress.interpolatingBetween(start: dgs.startHorizontalPosition, end: dgs.startHorizontalPosition + dgs.finalHorizontalPosition),
                 y: progress.interpolatingBetween(start: 0, end: dgs.videoVerticalMove)
@@ -368,6 +373,7 @@ class LiveVideoPlayerController: UIViewController {
     func resetDismissTransition() {
         view.transform = .identity
         liveVideoPlayer.transform = .init(translationX: -view.bounds.width / 2, y: 0)
+        liveVideoPlayer.streamEndedLabel.transform = .identity
         safeAreaSpacer.transform = .identity
         contentView.transform = .identity
         contentBackgroundView.transform = .identity
