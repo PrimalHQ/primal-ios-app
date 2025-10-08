@@ -21,7 +21,7 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
         
         contentView.addSubview(gallery)
         gallery
-            .pinToSuperview(edges: .top, padding: 8)
+            .pinToSuperview(edges: .top, padding: 4)
             .pinToSuperview(edges: .bottom, padding: 1)
             .pinToSuperview(edges: .horizontal, padding: 16)
         

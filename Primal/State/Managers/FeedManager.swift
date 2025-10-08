@@ -10,6 +10,22 @@ import Foundation
 import GenericJSON
 import UIKit
 
+extension ParsedRepost {
+    func combinedWithOthers(_ reposts: [ParsedRepost]) -> ParsedRepost {
+        let newUsers = users + reposts.flatMap { $0.users }
+        
+        if users.contains(where: { $0.data.pubkey == IdentityManager.instance.userHexPubkey }) {
+            // If we already have the users repost, then keep the id so that it is the id of the user repost
+            return .init(users: newUsers, date: date, id: id)
+        }
+        
+        // find user repost id
+        let newId = reposts.first(where: { $0.users.contains(where: { $0.data.pubkey == IdentityManager.instance.userHexPubkey })})?.id ?? id
+        
+        return .init(users: newUsers, date: date, id: newId)
+    }
+}
+
 final class FeedManager {
     private var cancellables: Set<AnyCancellable> = []
     
@@ -204,14 +220,14 @@ private extension FeedManager {
                     // Remove same post without repost from page if it exists
                     sorted = sorted.filter { $0.post.id != id || $0.reposted != nil }
                     
+                    let parsedReposts = reposts.compactMap(\.reposted)
                     if let old = alreadyAddedReposts[id], let oldReposted = old.reposted {
-                        let newUsers = oldReposted.users + reposts.flatMap { $0.reposted?.users ?? [] }
                         DispatchQueue.main.async {
-                            old.reposted = .init(users: newUsers, date: oldReposted.date, id: oldReposted.id)
+                            old.reposted = oldReposted.combinedWithOthers(parsedReposts)
                         }
                     } else if let first = reposts.first {
                         if let oldReposted = first.reposted {
-                            first.reposted = .init(users: reposts.flatMap { $0.reposted?.users ?? [] }, date: oldReposted.date, id: oldReposted.id)
+                            first.reposted = oldReposted.combinedWithOthers(Array(parsedReposts.dropFirst()))
                         }
                         alreadyAddedReposts[id] = first
                     }
@@ -237,7 +253,7 @@ private extension FeedManager {
     /// This method is only required for the home feed manager
     func initFuturePublishersAndObservers() {
         Publishers.CombineLatest3($newAddedPosts, $newPostObjects, $parsedPosts)
-            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
             .map { added, notAdded, old  in (added + notAdded.count, (notAdded + old.prefix(added)).map { $0.user }) }
             .assign(to: \.newPosts, onWeak: self)
             .store(in: &cancellables)
@@ -265,6 +281,10 @@ private extension FeedManager {
                 guard let self, !blockFuturePosts else { return }
 
                 processFuturePosts(sorted)
+                
+                if !addFuturePostsDirectly() { // Only on app enter foreground we invert this logic and add to feed if it is at the top
+                    addAllFuturePosts()
+                }
             }
             .store(in: &cancellables)
     }
@@ -331,7 +351,10 @@ private extension FeedManager {
 
         if sorted.isEmpty { return }
         
-        if newPostObjects.isEmpty && addFuturePostsDirectly() {
+        if addFuturePostsDirectly() {
+            sorted += newPostObjects
+            newPostObjects = []
+            
             parsedPosts.insert(contentsOf: sorted, at: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { // We need to wait for parsedPosts to propagate to posts
                 self.newAddedPosts += sorted.count

@@ -51,7 +51,15 @@ class NoteZapsViewController: UIViewController, Themeable {
     }
     
     func refresh() {
-        NoteZapsRequest(noteId: noteId, limit: 100).publisher()
+        let req: NoteZapsRequest
+        let comps = noteId.split(separator: ":")
+        if comps.count == 3, let articleId = comps[safe: 2], let pubkey = comps[safe: 1] {
+            req = NoteZapsRequest(articleId: articleId.string, pubkey: pubkey.string, limit: 100)
+        } else {
+            req = NoteZapsRequest(noteId: noteId, limit: 100)
+        }
+        
+        req.publisher()
             .receive(on: DispatchQueue.main)
             .assign(to: \.zaps, onWeak: self)
             .store(in: &cancellables)

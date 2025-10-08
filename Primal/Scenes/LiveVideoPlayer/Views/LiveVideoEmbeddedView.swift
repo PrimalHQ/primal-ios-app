@@ -21,8 +21,11 @@ class LiveVideoEmbeddedView: UIView {
     private let leftChevron = UIImageView(image: .livePlayerChevron)
     private let rightChevron = UIImageView(image: .livePlayerChevron)
     
+    private let streamEndedView = UIView()
+    private let streamEndedLabel = UILabel("STREAM ENDED", color: .init(rgb: 0x666666), font: .appFont(withSize: 12, weight: .bold))
+    
     @Published var showChevron = false
-    var player: VideoPlayer?
+    var player: VideoPlayer? { didSet { streamEndedView.isHidden = player != nil } }
     
     var playPauseCancellable: AnyCancellable?
     
@@ -46,6 +49,13 @@ class LiveVideoEmbeddedView: UIView {
         
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 2)
+        
+        addSubview(streamEndedView)
+        streamEndedView.pinToSuperview()
+        streamEndedView.isHidden = true
+        streamEndedView.addSubview(streamEndedLabel)
+        streamEndedLabel.centerToSuperview()
+        streamEndedView.backgroundColor = .init(rgb: 0x222222)
         
         addSubview(leftChevron)
         leftChevron.pinToSuperview(edges: [.leading, .vertical])

@@ -152,7 +152,7 @@ class LiveEventManager {
     }
     
     var currentlyLiveFollowingPublisher: AnyPublisher<[ParsedUser], Never> {
-        Publishers.CombineLatest3($liveEvents, $cachedUsers, LiveMuteManager.instance.$mutedPubkeys)
+        Publishers.CombineLatest3($liveEvents.debounce(for: 1, scheduler: RunLoop.main), $cachedUsers, LiveMuteManager.instance.$mutedPubkeys)
             .map { events, cachedUsers, mutedPubkeys in
                 var users: [ParsedUser] = []
                 for (pubkey, event) in events {
@@ -187,6 +187,15 @@ class LiveEventManager {
                     }
                 }
                 .store(in: &cancellables)
+        }
+    }
+    
+    @MainActor
+    func filterCurrentlyLive(_ lives: [ProcessedLiveEvent]) {
+        let currentlyLiveTags = Set(lives.map(\.dTag))
+        
+        liveEvents = liveEvents.filter { _, live in
+            currentlyLiveTags.contains(live.dTag)
         }
     }
     

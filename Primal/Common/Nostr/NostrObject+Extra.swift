@@ -209,6 +209,13 @@ extension NostrObject {
         })
     }
     
+    static func deleteRepost(_ repostId: String) -> NostrObject? {
+        createNostrObject(content: "Removing Repost", kind: NostrKind.eventDeletion.rawValue, tags: [
+            ["k", NostrKind.repost.rawValue.string],
+            ["e", repostId]
+        ])
+    }
+    
     static func deleteNote(_ note: ParsedContent) -> NostrObject? {
         createNostrObject(content: "Removing Note", kind: NostrKind.eventDeletion.rawValue, tags: [
             ["k", NostrKind.text.rawValue.string],

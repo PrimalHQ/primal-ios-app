@@ -32,7 +32,7 @@ class PremiumLegendPayController: UIViewController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    var trackPayment: ContinousConnection?
+    var trackPayment: ContinuousConnection?
     
     var runOnce = true
     

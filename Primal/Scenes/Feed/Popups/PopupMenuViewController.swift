@@ -63,7 +63,7 @@ private extension PopupMenuViewController {
         
         for action in actions {
             let button: UIControl = (actions.count > 1) ?
-                (action.image != nil ? PopupMenuIconButton(icon: action.image, text: action.title) : simpleButton(action.title))
+                (action.image != nil ? PopupMenuIconButton(action: action) : simpleButton(action.title))
               : LargeRoundedButton(title: action.title)
             button.addAction(.init(handler: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
@@ -118,13 +118,18 @@ final class PopupMenuIconButton: MyButton {
         }
     }
     
-    init(icon: UIImage?, text: String) {
+    init(action: UIAction) {
         super.init(frame: .zero)
-        iconView.image = icon
-        label.text = text
+        iconView.image = action.image
+        label.text = action.title
         
         label.font = .appFont(withSize: 20, weight: .regular)
-        label.textColor = .foreground
+        
+        if action.attributes.contains(.destructive) {
+            label.textColor = .red
+        } else {
+            label.textColor = .foreground
+        }
         
         iconView.constrainToSize(24)
         iconView.contentMode = .center

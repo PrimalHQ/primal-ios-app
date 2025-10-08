@@ -20,7 +20,7 @@ extension Array where Element == JSON {
     func tagValueForKeyWithRole(_ key: String, role: String) -> String? {
         let res = first(where: {
             let array = $0.arrayValue
-            return array?.first?.stringValue == key && array?[safe: 3]?.stringValue == role
+            return array?.first?.stringValue == key && array?[safe: 3]?.stringValue?.lowercased() == role
         })
         .map { $0.arrayValue?.compactMap { $0.stringValue } ?? [] }
         return res?[safe: 1]

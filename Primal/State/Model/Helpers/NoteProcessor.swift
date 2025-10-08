@@ -11,7 +11,7 @@ import GenericJSON
 
 public extension String {
     static let lightningInvoicePattern = "(?i)lnbc[a-z0-9]{40,}"
-    static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?njump.me/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
+    static let articleMentionPattern = "(?<!\\S)(nostr:|(https://)?(www.)?(njump.me|zap.stream)/)?naddr1\\w+\\b|#\\[(\\d+)\\]"
     static let noteMentionPattern = "\\b(((https://)?(primal.net/e/|njump.me/))|nostr:|@)?((nevent|note)1\\w+)\\b|#\\[(\\d+)\\]"
     static let nip08MentionPattern = "\\#\\[([0-9]*)\\]"
     static let nip27MentionPattern = "\\b(((https://)?primal.net/p/)|nostr:)?((npub|nprofile)1\\w+)\\b"
@@ -285,6 +285,7 @@ class NoteProcessor: MetadataCoding {
                 let mentionText = (text as NSString).substring(with: matchRange)
                 
                 itemsToRemove.append(mentionText)
+                otherURLs.remove(object: mentionText)
 
                 guard
                     let address = mentionText.split(separator: ":").last?.split(separator: "/").last,
@@ -481,6 +482,23 @@ class NoteProcessor: MetadataCoding {
                 p.customEvent = mention
                 itemsToRemove.append(mentionText)
             }
+        } else if mention.post.kind == NostrKind.longForm.rawValue {
+            let mention = mention.post.toRepostNostrContent()
+            
+            p.article = Article(
+                id: mentionId,
+                title: mention.tags.first(where: { $0.first == "title" })?[safe: 1] ?? "",
+                image: mention.tags.first(where: { $0.first == "image" })?[safe: 1],
+                summary: mention.tags.first(where: { $0.first == "summary" })?[safe: 1],
+                words: nil,
+                zaps: [],
+                replies: [],
+                stats: response.stats[mention.id] ?? .empty(mention.id),
+                event: mention,
+                user: response.createParsedUser(response.users[mention.pubkey] ?? PrimalUser(pubkey: mention.pubkey))
+            )
+            
+            itemsToRemove.append(mentionText)
         } else if mention.post.kind == NostrKind.highlight.rawValue  {
             let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
             

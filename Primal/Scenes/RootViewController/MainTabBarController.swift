@@ -72,7 +72,7 @@ final class MainTabBarController: UIViewController, Themeable {
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
-    var continousConnection: ContinousConnection?
+    var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
@@ -388,18 +388,24 @@ private extension MainTabBarController {
                             return (LiveVideoPlayerController(live: live), nil)
                         }
                     }()
-                                        
-                    if let tab {
-                        self.switchToTab(tab, open: vc)
-                        if vc == nil {
-                            self.navForTab(tab).popToRootViewController(animated: true)
+                    
+                    let presentLogic = {
+                        if let tab {
+                            self.switchToTab(tab, open: vc)
+                            if vc == nil {
+                                self.navForTab(tab).popToRootViewController(animated: true)
+                            }
+                        } else if let vc {
+                            self.present(vc, animated: true)
                         }
-                        
-                        if self.presentedViewController as? SFSafariViewController != nil{
-                            self.dismiss(animated: true)
+                    }
+                    
+                    if let presentedViewController {
+                        presentedViewController.dismiss(animated: true) {
+                            presentLogic()
                         }
-                    } else if let vc {
-                        (self.presentedViewController ?? self).present(vc, animated: true)
+                    } else {
+                        presentLogic()
                     }
                 }
                 .store(in: &cancellables)
@@ -424,7 +430,15 @@ private extension MainTabBarController {
             .sink { [weak self] _ in
                 guard let self else { return }
                 SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
-                    .sink { _ in }
+                    .sink { res in
+                        let liveEvents = res.events
+                            .filter({ $0["kind"]?.doubleValue == Double(NostrKind.live.rawValue) })
+                            .compactMap { ProcessedLiveEvent.fromEvent($0) }
+                        
+                        guard !liveEvents.isEmpty || res.message == nil else { return }
+                        
+                        LiveEventManager.instance.filterCurrentlyLive(liveEvents)
+                    }
                     .store(in: &cancellables)
             }
             .store(in: &cancellables)

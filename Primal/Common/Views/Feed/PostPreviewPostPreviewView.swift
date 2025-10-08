@@ -22,6 +22,7 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
     let mainImages = ImageGalleryView()
     let linkPreview = SmallLinkPreview()
     let zapPreview = ZapPreviewView()
+    let embeddedLive = LivePreviewView()
     let infoView = SimpleInfoView()
     
     let separatorLabel = UILabel()
@@ -88,6 +89,13 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
             zapPreview.isHidden = false
         } else {
             zapPreview.isHidden = true
+        }
+        
+        if let live = content.embeddedLive {
+            embeddedLive.setLive(live: live)
+            embeddedLive.isHidden = false
+        } else {
+            embeddedLive.isHidden = true
         }
         
         if let invoice = content.invoice {
@@ -192,7 +200,7 @@ private extension PostPreviewPostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, linkPreview, zapPreview, infoView
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, embeddedLive, linkPreview, zapPreview, infoView
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)

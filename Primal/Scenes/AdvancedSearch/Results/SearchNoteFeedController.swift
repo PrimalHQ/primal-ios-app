@@ -27,7 +27,9 @@ class SearchNoteFeedController: NoteFeedViewController {
     override init(feed: FeedManager) {
         super.init(feed: feed)
         
-        dataSource = SearchFeedDatasource(showPremiumCard: showPremiumCard, tableView: table, delegate: self)
+        dataSource = SearchFeedDatasource(showPremiumCard: showPremiumCard, tableView: table, delegate: self, refreshCallback: { [weak self] in
+            self?.feed.refresh()
+        })
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

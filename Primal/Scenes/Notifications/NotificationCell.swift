@@ -110,6 +110,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
     }
+    
+    
 }
 
 private extension NotificationCell {
@@ -275,6 +277,9 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_BOOKMARKED:
             return "bookmarked your note"
         case .YOUR_POST_WAS_REPOSTED:
+            if post?.post.kind == NostrKind.longForm.rawValue {
+                return "reposted your article"
+            }
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
             return "replied to your note"

@@ -11,6 +11,7 @@ enum SearchFeedItem: Hashable {
     case noteElement(content: ParsedContent, element: NoteFeedElement)
     case premium
     case loading
+    case noResults
 }
 
 class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, SearchFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
@@ -22,12 +23,18 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
     var cellCount: Int { cells.count }
     
     let showPremiumCard: Bool
-    init(showPremiumCard: Bool, tableView: UITableView, delegate: FeedElementCellDelegate & SearchPremiumCellDelegate) {
+    init(showPremiumCard: Bool, tableView: UITableView, delegate: FeedElementCellDelegate & SearchPremiumCellDelegate, refreshCallback: @escaping () -> ()) {
         self.showPremiumCard = showPremiumCard
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
             
             switch item {
+            case .noResults:
+                cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+                if let cell = cell as? EmptyTableViewCell {
+                    cell.view.label.text = "No results."
+                    cell.refreshCallback = refreshCallback
+                }
             case .loading:
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
@@ -54,12 +61,12 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
                     cell.delegate = delegate
                 }
             }
-            
             return cell
         }
         
         registerCells(tableView)
         tableView.register(SearchPremiumCell.self, forCellReuseIdentifier: "premium")
+        tableView.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
         
         defaultRowAnimation = .none
     }
@@ -74,18 +81,20 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
         return content
     }
     
+    var firstRun = true
     func setPosts(_ posts: [ParsedContent]) {
         var cells: [SearchFeedItem] = convertPostsToCells(posts).flatMap { post, elements in
             elements.map { .noteElement(content: post, element: $0) }
         }
         
         if cells.isEmpty {
-            cells.append(.loading)
+            cells.append(firstRun ? .loading : .noResults)
         } else if showPremiumCard {
             cells.append(.premium)
         }
         
         self.cells = cells
+        firstRun = false
     }
     
     func updateCells() {
