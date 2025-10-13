@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 22. 8. 2025..
 //
 
+import Combine
 import Foundation
 import AVKit
 
@@ -25,6 +26,8 @@ class VideoPlayer: NSObject {
     
     var live: ParsedLiveEvent?
     var isLive: Bool { live != nil }
+    
+    var cancellables: Set<AnyCancellable> = []
     
     init(url: String, originalURL: String, userPubkey: String, live: ParsedLiveEvent? = nil) {
         self.url = url

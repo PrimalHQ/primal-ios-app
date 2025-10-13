@@ -32,6 +32,8 @@ class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementC
     
     lazy var infoRow = UIStackView([repliesLabel, zapsLabel, likesLabel, repostsLabel, UIView()])
     
+    let border = SpacerView(height: 1, color: .background3)
+    
     override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
                 
@@ -100,6 +102,7 @@ class MainThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementC
         
         bookmarkButton.tintColor = .foreground5
         bottomBorder.backgroundColor = .background3
+        border.backgroundColor = .background3
     }
 }
 
@@ -138,7 +141,7 @@ private extension MainThreadElementReactionsCell {
     }
     
     func setup() {
-        let mainStack = UIStackView(axis: .vertical, [timeLabel, infoRow, SpacerView(height: 4), SpacerView(height: 1, color: .background3), bottomButtonStack])
+        let mainStack = UIStackView(axis: .vertical, [timeLabel, infoRow, SpacerView(height: 4), border, bottomButtonStack])
         mainStack.spacing = 8
 
         timeLabel.font = .appFont(withSize: 16, weight: .regular)

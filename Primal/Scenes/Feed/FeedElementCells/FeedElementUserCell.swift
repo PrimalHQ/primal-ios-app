@@ -125,7 +125,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         nameLabel.text = user.firstIdentifier
         
-        if CheckNip05Manager.instance.isVerified(user) {
+        if CheckNip05Manager.instance.isVerifiedForFeed(user) {
             nipLabel.text = user.parsedNip
             nipLabel.isHidden = false
             checkbox.user = user

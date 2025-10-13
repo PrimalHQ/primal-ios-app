@@ -28,6 +28,8 @@ class ThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        
         mainLabel.attributedText = parsedContent.attributedTextShort
         mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPosts.isEmpty) ? 12 : 6
         

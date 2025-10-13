@@ -87,7 +87,11 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     var continuousConnection: AnyCancellable?
     
-    var comments: [ParsedLiveComment] = []
+    var comments: [ParsedLiveComment] = [] {
+        didSet {
+            commentsTable.contentInset = .init(top: 10, left: 0, bottom: comments.count > 20 ? 10 : 180, right: 0)
+        }
+    }
     let post: ParsedContent
     
     static var userCache: [String: ParsedUser] = [:]
@@ -187,7 +191,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         commentsTable.separatorStyle = .none
         commentsTable.keyboardDismissMode = .onDrag
         commentsTable.contentInsetAdjustmentBehavior = .never
-        commentsTable.contentInset = .init(top: 10, left: 0, bottom: 10, right: 0)
         
         spacer.updateHeightCancellable().store(in: &cancellables)
         
@@ -242,6 +245,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         header.closeButton.addAction(.init(handler: { [weak self] _ in
             self?.input.textView.resignFirstResponder()
         }), for: .touchUpInside)
+        header.closeButton.isHidden = true
         
         header.configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
@@ -288,7 +292,10 @@ class LiveVideoChatController: UIViewController, Themeable {
 
 extension LiveVideoChatController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let videoVC = parent as? LiveVideoPlayerController, let message = comments[safe: indexPath.row] else { return }
+        guard let videoVC = parent as? LiveVideoPlayerController, !videoVC.commentsOverride, let message = comments[safe: indexPath.row] else {
+            input.textView.resignFirstResponder()
+            return
+        }
         
         videoVC.presentLivePopup(LiveVideoMessageDetailsController(live: live, message: message))
     }
@@ -297,7 +304,6 @@ extension LiveVideoChatController: UITableViewDelegate {
         guard scrollView.isDragging, comments.count > 20 else { return }
         
         let offset = scrollView.contentOffset.y
-        print(offset)
         videoController?.chatControllerRequestMiniPlayer(offset > 10)
     }
 }
@@ -494,6 +500,7 @@ private extension LiveVideoChatController {
             return
         case .livePresence:
             // TODO: Update the watcher count
+            print("DO SOMETHING")
             return
         case .zapReceipt:
             guard
@@ -515,6 +522,16 @@ private extension LiveVideoChatController {
             guard let pubkey = event["pubkey"]?.stringValue else { return }
             userPubkey = pubkey
         default: // Ignore non comments
+            return
+        }
+        
+        let isDuplicate = comments.contains(where: {
+            guard let id = $0.event["id"]?.stringValue else { return false }
+            return id == event["id"]?.stringValue
+        })
+        
+        if isDuplicate {
+            print("Duplicate denied")
             return
         }
         
@@ -574,10 +591,6 @@ extension LiveVideoChatController: MetadataCoding {
         let mentions = comment.extractMentions()
         
         var replacements: [(String, String, String)] = []
-        
-        if comment.hasPrefix("nostr:nprofile1qqsdv8emcke7k") {
-            print("HERE")
-        }
         
         for mention in mentions {
             if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string,

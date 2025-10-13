@@ -69,7 +69,7 @@ class LiveVideoPlayerController: UIViewController {
     var currentTransitionProgress: CGFloat = 0
     
     @Published private var smallVideoPlayer: Bool = false
-    @Published private var commentsOverride: Bool = false
+    @Published private(set) var commentsOverride: Bool = false
     @Published private var smallVideoPlayerAnimating: Bool = false
     
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
@@ -441,7 +441,7 @@ private extension LiveVideoPlayerController {
     @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let touchPoint = gesture.location(in: view?.window)
         
-        guard currentVideoRotation.isPortrait, !smallVideoPlayer, !smallVideoPlayerAnimating else { return }
+        guard currentVideoRotation.isPortrait, !(smallVideoPlayer || commentsOverride), !smallVideoPlayerAnimating else { return }
         
         if case .began = gesture.state {
             let main = RootViewController.instance
@@ -509,6 +509,15 @@ private extension LiveVideoPlayerController {
     }
     
     func updateLabels() {
+        switch live.event.state {
+        case .started:
+            break
+        case .ended(let url):
+            if url == nil {
+                .
+            }
+        }
+        
         smallHeader.countLabel.text = live.event.participants.localized()
         smallHeader.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
         
