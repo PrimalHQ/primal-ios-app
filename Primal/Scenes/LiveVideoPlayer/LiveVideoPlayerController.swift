@@ -47,7 +47,7 @@ class LiveVideoPlayerController: UIViewController {
     let smallHeader = LiveVideoSmallHeaderView()
     let smallVideoCoverView = UIView()
     
-    let player: VideoPlayer?
+    var player: VideoPlayer?
     
     var live: ParsedLiveEvent { didSet { updateLabels() } }
     
@@ -513,9 +513,15 @@ private extension LiveVideoPlayerController {
         case .started:
             break
         case .ended(let url):
-            if url == nil {
-                .
+            if player?.url == url { break }
+            guard let url else {
+                player = nil
+                liveVideoPlayer.player = nil
+                return
             }
+            
+            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
+            liveVideoPlayer.player = player
         }
         
         smallHeader.countLabel.text = live.event.participants.localized()
