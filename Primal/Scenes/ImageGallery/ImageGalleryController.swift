@@ -8,13 +8,17 @@
 import UIKit
 
 class ImageGalleryController: UIViewController {
-    let urls: [String]
+    let media: [MediaMetadata.Resource]
     
     let pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     let progress: PrimalProgressView = .init()
     
-    init(current: String, all: [String] = []) {
-        urls = all
+    convenience init(current: String, all: [String] = []) {
+        self.init(current: .init(url: current), all: all.map({ .init(url: $0) }))
+    }
+    
+    init(current: MediaMetadata.Resource, all: [MediaMetadata.Resource] = []) {
+        media = all
         super.init(nibName: nil, bundle: nil)
         
         modalPresentationStyle = .overFullScreen
@@ -25,13 +29,13 @@ class ImageGalleryController: UIViewController {
         pageViewController.view.pinToSuperview()
         pageViewController.didMove(toParent: self)
         
-        pageViewController.setViewControllers([ImageFullScreenViewController(url: current)], direction: .forward, animated: false)
+        pageViewController.setViewControllers([ImageFullScreenViewController(media: current)], direction: .forward, animated: false)
         pageViewController.dataSource = self
         pageViewController.delegate = self
         
         if all.count > 1 {
             progress.numberOfPages = all.count
-            progress.currentPage = urls.firstIndex(of: current) ?? 0
+            progress.currentPage = media.firstIndex(of: current) ?? 0
             view.addSubview(progress)
             progress.pinToSuperview(edges: .bottom, padding: 0, safeArea: true).centerToSuperview(axis: .horizontal)
         }
@@ -57,7 +61,7 @@ class ImageGalleryController: UIViewController {
 
 extension ImageGalleryController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard completed, let url = (pageViewController.viewControllers?.first as? ImageFullScreenViewController)?.url, let index = urls.firstIndex(of: url) else { return }
+        guard completed, let url = (pageViewController.viewControllers?.first as? ImageFullScreenViewController)?.media, let index = media.firstIndex(of: url) else { return }
         progress.currentPage = index
         UIView.animate(withDuration: 0.1) {
             self.progress.alpha = 1            
@@ -68,25 +72,25 @@ extension ImageGalleryController: UIPageViewControllerDelegate {
 extension ImageGalleryController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard
-            let oldImageURL = (viewController as? ImageFullScreenViewController)?.url,
-            let index = urls.firstIndex(of: oldImageURL),
-            let newUrl = urls[safe: index - 1] ?? urls.last // we take urls.last so that we achieve carousel effect
+            let oldImage = (viewController as? ImageFullScreenViewController)?.media,
+            let index = media.firstIndex(of: oldImage),
+            let newImage = media[safe: index - 1] ?? media.last // we take urls.last so that we achieve carousel effect
         else {
             return nil
         }
         
-        return ImageFullScreenViewController(url: newUrl)
+        return ImageFullScreenViewController(media: newImage)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard
-            let oldImageURL = (viewController as? ImageFullScreenViewController)?.url,
-            let index = urls.firstIndex(of: oldImageURL),
-            let newUrl = urls[safe: index + 1] ?? urls.first // we take urls.first so that we achieve carousel effect
+            let oldImage = (viewController as? ImageFullScreenViewController)?.media,
+            let index = media.firstIndex(of: oldImage),
+            let newImage = media[safe: index + 1] ?? media.first // we take urls.first so that we achieve carousel effect
         else {
             return nil
         }
         
-        return ImageFullScreenViewController(url: newUrl)
+        return ImageFullScreenViewController(media: newImage)
     }
 }

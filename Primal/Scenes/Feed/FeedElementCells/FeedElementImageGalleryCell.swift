@@ -32,8 +32,8 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         
         contentView.addSubview(mainImages)
         mainImages
-            .pinToSuperview(edges: .top, padding: 4)
-            .pinToSuperview(edges: .bottom, padding: 0)
+            .pinToSuperview(edges: .top, padding: 10)
+            .pinToSuperview(edges: .bottom, padding: 6)
             .pinToSuperview(edges: .horizontal, padding: 16)
         
         mainImages.imageDelegate = self

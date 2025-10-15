@@ -753,46 +753,44 @@ extension NoteViewController: PostCellDelegate {
         
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
         
-        let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = post.mediaResources.filter { $0.url.isImageURL }
         
         let current = cell.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
-        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, embeddedPost: ParsedContent, resource: MediaMetadata.Resource) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)
             return
         }
         
-        let allImages = embeddedPost.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = embeddedPost.mediaResources.filter { $0.url.isImageURL }
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = embeddedPost.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
-        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func handleVideoUrlTapped(_ url: String, in cell: FeedElementVideoCell) {
