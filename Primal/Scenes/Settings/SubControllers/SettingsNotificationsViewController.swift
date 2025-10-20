@@ -210,7 +210,8 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
                 .push(.REPOSTS),
                 .push(.MENTIONS),
                 .push(.DIRECT_MESSAGES),
-                .push(.WALLET_TRANSACTIONS)
+                .push(.WALLET_TRANSACTIONS),
+                .push(.LIVE_EVENT_HAPPENING)
             ]))
         }
         
@@ -221,9 +222,11 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
             .inApp(.REPLIES, [.YOUR_POST_WAS_REPLIED_TO]),
             .inApp(.REPOSTS, [.YOUR_POST_WAS_REPOSTED]),
             .inApp(.MENTIONS, [.YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST]),
+            .inApp(.LIVE_EVENT_HAPPENING, [.LIVE_EVENT_HAPPENING])
         ]))
         
         tableData.append(.init(text: "NOTIFICATION PREFERENCES", notifications: [
+            .additional(.include_deep_replies),
             .additional(.ignore_events_with_too_many_mentions),
             .additional(.only_show_dm_notifications_from_users_i_follow),
             .additional(.only_show_reactions_from_users_i_follow)
@@ -327,11 +330,13 @@ extension PrimalSettingsAdditionalNotifications {
     func getValueForType(_ type: AdditionalNotificationOptions) -> Bool {
         switch type {
         case .ignore_events_with_too_many_mentions:
-            return ignore_events_with_too_many_mentions
+            return ignore_events_with_too_many_mentions ?? true
         case .only_show_dm_notifications_from_users_i_follow:
-            return only_show_dm_notifications_from_users_i_follow
+            return only_show_dm_notifications_from_users_i_follow ?? true
         case .only_show_reactions_from_users_i_follow:
             return only_show_reactions_from_users_i_follow ?? false
+        case .include_deep_replies:
+            return include_deep_replies ?? true
         }
     }
     
@@ -343,6 +348,8 @@ extension PrimalSettingsAdditionalNotifications {
             only_show_dm_notifications_from_users_i_follow = value
         case .only_show_reactions_from_users_i_follow:
             only_show_reactions_from_users_i_follow = value
+        case .include_deep_replies:
+            include_deep_replies = value
         }
     }
 }
@@ -351,35 +358,35 @@ extension PrimalSettingsNotifications {
     func getValueForType(_ type: NotificationType) -> Bool {
         switch type {
         case .NEW_USER_FOLLOWED_YOU:
-            return NEW_USER_FOLLOWED_YOU
+            return NEW_USER_FOLLOWED_YOU ?? true
         case .YOUR_POST_WAS_ZAPPED:
-            return YOUR_POST_WAS_ZAPPED
+            return YOUR_POST_WAS_ZAPPED ?? true
         case .YOUR_POST_WAS_LIKED:
-            return YOUR_POST_WAS_LIKED
+            return YOUR_POST_WAS_LIKED ?? true
         case .YOUR_POST_WAS_REPOSTED:
-            return YOUR_POST_WAS_REPOSTED
+            return YOUR_POST_WAS_REPOSTED ?? true
         case .YOUR_POST_WAS_REPLIED_TO:
-            return YOUR_POST_WAS_REPLIED_TO
+            return YOUR_POST_WAS_REPLIED_TO ?? true
         case .YOU_WERE_MENTIONED_IN_POST:
-            return YOU_WERE_MENTIONED_IN_POST
+            return YOU_WERE_MENTIONED_IN_POST ?? true
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
-            return YOUR_POST_WAS_MENTIONED_IN_POST
+            return YOUR_POST_WAS_MENTIONED_IN_POST ?? true
         case .POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED:
-            return POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED
+            return POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED ?? true
         case .POST_YOU_WERE_MENTIONED_IN_WAS_LIKED:
-            return POST_YOU_WERE_MENTIONED_IN_WAS_LIKED
+            return POST_YOU_WERE_MENTIONED_IN_WAS_LIKED ?? true
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED:
-            return POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED
+            return POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED ?? true
         case .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO:
-            return POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO
+            return POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO ?? true
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED:
-            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED
+            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED ?? true
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED:
-            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED
+            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED ?? true
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED:
-            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED
+            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED ?? true
         case .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
-            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO
+            return POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO ?? true
         case .YOUR_POST_WAS_HIGHLIGHTED:
             return YOUR_POST_WAS_HIGHLIGHTED ?? true
         case .YOUR_POST_WAS_BOOKMARKED:
@@ -426,7 +433,7 @@ extension PrimalSettingsNotifications {
         case .YOUR_POST_WAS_BOOKMARKED:
             YOUR_POST_WAS_BOOKMARKED = value
         case .LIVE_EVENT_HAPPENING:
-//            LIVE_EVENT_HAPPENING = value
+            LIVE_EVENT_HAPPENING = value
             break
         }
     }
@@ -436,21 +443,23 @@ extension PrimalSettingsPushNotifications {
     func getValueForType(_ type: PushNotificationGroup) -> Bool {
         switch type {
         case .NEW_FOLLOWS:
-            return NEW_FOLLOWS
+            return NEW_FOLLOWS ?? true
         case .ZAPS:
-            return ZAPS
+            return ZAPS ?? true
         case .REACTIONS:
-            return REACTIONS
+            return REACTIONS ?? true
         case .REPLIES:
-            return REPLIES
+            return REPLIES ?? true
         case .REPOSTS:
-            return REPOSTS
+            return REPOSTS ?? true
         case .MENTIONS:
-            return MENTIONS
+            return MENTIONS ?? true
         case .DIRECT_MESSAGES:
-            return DIRECT_MESSAGES
+            return DIRECT_MESSAGES ?? true
         case .WALLET_TRANSACTIONS:
-            return WALLET_TRANSACTIONS
+            return WALLET_TRANSACTIONS ?? true
+        case .LIVE_EVENT_HAPPENING:
+            return LIVE_EVENT_HAPPENING ?? true
         }
     }
     
@@ -472,6 +481,8 @@ extension PrimalSettingsPushNotifications {
             DIRECT_MESSAGES = value
         case .WALLET_TRANSACTIONS:
             WALLET_TRANSACTIONS = value
+        case .LIVE_EVENT_HAPPENING:
+            LIVE_EVENT_HAPPENING = value
         }
     }
 }
@@ -489,6 +500,8 @@ extension SettingsNotificationsViewController.NotificationOption {
                 return "Only show DM notifications\nfrom users I follow"
             case .only_show_reactions_from_users_i_follow:
                 return "Only show reactions from\nusers I follow"
+            case .include_deep_replies:
+                return "Include replies to replies"
             }
         }
     }
@@ -522,6 +535,8 @@ extension PushNotificationGroup {
             return "Direct Messages"
         case .WALLET_TRANSACTIONS:
             return "Wallet Transactions"
+        case .LIVE_EVENT_HAPPENING:
+            return "Live Streams"
         }
     }
     
@@ -543,6 +558,8 @@ extension PushNotificationGroup {
             return .notifMessageGroup
         case .WALLET_TRANSACTIONS:
             return .notifWalletGroup
+        case .LIVE_EVENT_HAPPENING:
+            return .notifLive
         }
     }
 }

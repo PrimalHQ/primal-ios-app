@@ -17,12 +17,14 @@ enum PushNotificationGroup {
     case MENTIONS
     case DIRECT_MESSAGES
     case WALLET_TRANSACTIONS
+    case LIVE_EVENT_HAPPENING
 }
 
 enum AdditionalNotificationOptions {
     case ignore_events_with_too_many_mentions
     case only_show_dm_notifications_from_users_i_follow
     case only_show_reactions_from_users_i_follow
+    case include_deep_replies
 }
 
 enum NotificationType: Int, CaseIterable, Codable {

@@ -23,7 +23,7 @@ class LiveVideoChatMessageCell: UITableViewCell {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func updateForComment(_ comment: ParsedLiveComment, delegate: NantesLabelDelegate) {
+    func updateForComment(_ comment: ParsedLiveComment, delegate: NantesLabelDelegate?) {
         contentView.backgroundColor = .background
         
         view.updateForComment(comment)

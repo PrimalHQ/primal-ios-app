@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ImageGalleryMediaController {
+    var media: MediaMetadata.Resource { get }
+}
+
 class ImageGalleryController: UIViewController {
     let media: [MediaMetadata.Resource]
     
@@ -29,7 +33,7 @@ class ImageGalleryController: UIViewController {
         pageViewController.view.pinToSuperview()
         pageViewController.didMove(toParent: self)
         
-        pageViewController.setViewControllers([ImageFullScreenViewController(media: current)], direction: .forward, animated: false)
+        pageViewController.setViewControllers([controllerForMedia(current)], direction: .forward, animated: false)
         pageViewController.dataSource = self
         pageViewController.delegate = self
         
@@ -61,10 +65,10 @@ class ImageGalleryController: UIViewController {
 
 extension ImageGalleryController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard completed, let url = (pageViewController.viewControllers?.first as? ImageFullScreenViewController)?.media, let index = media.firstIndex(of: url) else { return }
+        guard completed, let url = (pageViewController.viewControllers?.first as? ImageGalleryMediaController)?.media, let index = media.firstIndex(of: url) else { return }
         progress.currentPage = index
         UIView.animate(withDuration: 0.1) {
-            self.progress.alpha = 1            
+            self.progress.alpha = 1
         }
     }
 }
@@ -72,25 +76,32 @@ extension ImageGalleryController: UIPageViewControllerDelegate {
 extension ImageGalleryController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard
-            let oldImage = (viewController as? ImageFullScreenViewController)?.media,
-            let index = media.firstIndex(of: oldImage),
-            let newImage = media[safe: index - 1] ?? media.last // we take urls.last so that we achieve carousel effect
+            let oldMedia = (viewController as? ImageGalleryMediaController)?.media,
+            let index = media.firstIndex(of: oldMedia),
+            let newMedia = media[safe: index - 1] ?? media.last // we take urls.last so that we achieve carousel effect
         else {
             return nil
         }
         
-        return ImageFullScreenViewController(media: newImage)
+        return controllerForMedia(newMedia)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard
-            let oldImage = (viewController as? ImageFullScreenViewController)?.media,
+            let oldImage = (viewController as? ImageGalleryMediaController)?.media,
             let index = media.firstIndex(of: oldImage),
-            let newImage = media[safe: index + 1] ?? media.first // we take urls.first so that we achieve carousel effect
+            let newMedia = media[safe: index + 1] ?? media.first // we take urls.first so that we achieve carousel effect
         else {
             return nil
         }
         
-        return ImageFullScreenViewController(media: newImage)
+        return controllerForMedia(newMedia)
+    }
+    
+    func controllerForMedia(_ media: MediaMetadata.Resource) -> UIViewController {
+        if media.url.isVideoURL {
+            return ImageGalleryVideoController(media: media)
+        }
+        return ImageFullScreenViewController(media: media)
     }
 }

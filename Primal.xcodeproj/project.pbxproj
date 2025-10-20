@@ -274,6 +274,8 @@
 		B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */; };
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
+		B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */; };
+		B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A3602EA0FA420003683D /* LiveChatDatasource.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
 		B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */; };
 		B91BB95D2B3B3854003F6B2A /* ErrorMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */; };
@@ -1019,6 +1021,8 @@
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryVideoController.swift; sourceTree = "<group>"; };
+		B918A3602EA0FA420003683D /* LiveChatDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatDatasource.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
 		B91B45B22BEE23310073A539 /* FollowUsersMutelistRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowUsersMutelistRequest.swift; sourceTree = "<group>"; };
 		B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageCell.swift; sourceTree = "<group>"; };
@@ -2889,6 +2893,7 @@
 			children = (
 				B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */,
 				B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */,
+				B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */,
 			);
 			path = ImageGallery;
 			sourceTree = "<group>";
@@ -2999,6 +3004,7 @@
 				B9C672DE2E2FB5DE00243B45 /* Views */,
 				B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */,
 				B9C672E12E2FB91400243B45 /* LiveVideoChatController.swift */,
+				B918A3602EA0FA420003683D /* LiveChatDatasource.swift */,
 			);
 			path = LiveVideoPlayer;
 			sourceTree = "<group>";
@@ -3735,6 +3741,7 @@
 				B9C672E92E2FF89C00243B45 /* LiveVideoChatZapCell.swift in Sources */,
 				B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */,
 				B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */,
+				B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
@@ -3751,6 +3758,7 @@
 				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
 				B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */,
 				B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */,
+				B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
@@ -4404,7 +4412,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.57;
+				MARKETING_VERSION = 2.5.62;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4453,7 +4461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.57;
+				MARKETING_VERSION = 2.5.62;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

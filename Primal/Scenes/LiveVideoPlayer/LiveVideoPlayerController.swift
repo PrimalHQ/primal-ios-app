@@ -12,7 +12,7 @@ import Combine
 import GenericJSON
 import NostrSDK
 
-class ParsedLiveComment {
+struct ParsedLiveComment: Hashable {
     let user: ParsedUser
     let text: NSAttributedString
     let event: [String: JSON]
@@ -514,14 +514,11 @@ private extension LiveVideoPlayerController {
             break
         case .ended(let url):
             if player?.url == url { break }
-            guard let url else {
-                player = nil
-                liveVideoPlayer.player = nil
-                return
-            }
             
-            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
-            liveVideoPlayer.player = player
+            player = nil
+            liveVideoPlayer.player = nil
+            liveVideoPlayer.playReplayButton.isHidden = url == nil
+            return
         }
         
         smallHeader.countLabel.text = live.event.participants.localized()
@@ -583,6 +580,11 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [live.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .playReplay:
+            guard let url = live.videoURL else { return }
+            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
+            player?.play()
+            liveVideoPlayer.player = player
         }
     }
 }

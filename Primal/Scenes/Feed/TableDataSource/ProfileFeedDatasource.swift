@@ -314,7 +314,7 @@ private extension ProfileFeedDatasource {
         
         SocketRequest(name: "user_profile_followed_by", payload: [
             "pubkey": .string(profile.data.pubkey),
-            "limit": 5,
+            "limit": 6,
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ])
         .publisher()

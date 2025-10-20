@@ -239,7 +239,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             let index = posts.firstIndex(where: { $0.post.id == post.post.id })
         else { return }
         
-        let postsToPreload = posts[index...].prefix(10).filter({ !preloadedPosts.contains($0.post.id) })
+        let postsToPreload = posts[max(0, index - 10)...].prefix(min(10, index) + 10).filter({ !preloadedPosts.contains($0.post.id) })
         
         for postToPreload in postsToPreload {
             preloadPost(postToPreload)
@@ -746,14 +746,9 @@ extension NoteViewController: PostCellDelegate {
     }
     
     func postCellDidTapImages(_ cell: ElementImageGalleryCell, resource: MediaMetadata.Resource) {
-        if resource.url.isVideoURL {
-            handleVideoUrlTapped(resource.url, in: cell)
-            return
-        }
-        
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
         
-        let allImages = post.mediaResources.filter { $0.url.isImageURL }
+        let allImages = post.mediaResources
         
         let current = cell.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
@@ -776,7 +771,7 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        let allImages = embeddedPost.mediaResources.filter { $0.url.isImageURL }
+        let allImages = embeddedPost.mediaResources
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {

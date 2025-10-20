@@ -34,7 +34,6 @@ extension String {
 }
 
 class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
-    
     let onZapDetails: () -> Void
     init(onZapDetails: @escaping () -> Void) {
         self.onZapDetails = onZapDetails
@@ -89,7 +88,8 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     var comments: [ParsedLiveComment] = [] {
         didSet {
-            commentsTable.contentInset = .init(top: 10, left: 0, bottom: comments.count > 20 ? 10 : 180, right: 0)
+            commentsTable.contentInset = .init(top: 10, left: 0, bottom: comments.count > 20 ? 10 : 160, right: 0)
+            datasource.comments = comments
         }
     }
     let post: ParsedContent
@@ -98,6 +98,7 @@ class LiveVideoChatController: UIViewController, Themeable {
     
     var videoController: LiveVideoPlayerController? { parent as? LiveVideoPlayerController }
     
+    lazy var datasource = LiveChatDatasource(tableView: commentsTable, delegate: self)
     lazy var inputManager = LiveChatTextViewManager(textView: input.textView, usersTable: usersTable, sendButton: input.sendButton, live: live)
     
     let zapsLoadingView = ZapGalleryLoadingView()
@@ -182,15 +183,8 @@ class LiveVideoChatController: UIViewController, Themeable {
             helperPopup.removeFromSuperview()
         }
         
-        commentsTable.backgroundColor = .background
         commentsTable.delegate = self
-        commentsTable.dataSource = self
-        commentsTable.register(LiveVideoChatMessageCell.self, forCellReuseIdentifier: "cell")
-        commentsTable.register(LiveVideoChatZapCell.self, forCellReuseIdentifier: "zapCell")
-        commentsTable.showsVerticalScrollIndicator = false
-        commentsTable.separatorStyle = .none
-        commentsTable.keyboardDismissMode = .onDrag
-        commentsTable.contentInsetAdjustmentBehavior = .never
+        inputManager.delegate = self
         
         spacer.updateHeightCancellable().store(in: &cancellables)
         
@@ -218,7 +212,6 @@ class LiveVideoChatController: UIViewController, Themeable {
                 if filtered.count == comments.count { return }
                 
                 comments = filtered
-                commentsTable.reloadData()
             }
             .store(in: &cancellables)
         
@@ -232,7 +225,6 @@ class LiveVideoChatController: UIViewController, Themeable {
             guard let self, post.post.id == zap.postId, zap.user.data.pubkey == IdentityManager.instance.userHexPubkey else { return }
             
             self.comments.insert(ParsedLiveComment(user: zap.user, comment: self.parsedComment(zap.message, isZap: true), event: [:], zapAmount: zap.amountSats), at: 0)
-            self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
         }
         .store(in: &cancellables)
         
@@ -251,13 +243,6 @@ class LiveVideoChatController: UIViewController, Themeable {
             guard let self else { return }
             helperPopup.animateRemove()
             videoController?.presentLivePopup(LiveVideoConfigController(live: live, chatVC: self))
-        }), for: .touchUpInside)
-        
-        input.sendButton.addAction(.init(handler: { [weak self] _ in // Simple workaround
-            guard let self, let text = input.textView.text, !text.isEmpty else { return }
-            
-            self.comments.insert(ParsedLiveComment(user: IdentityManager.instance.parsedUserSafe, comment: self.parsedComment(text, isZap: false), event: [:], zapAmount: 0), at: 0)
-            self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
         }), for: .touchUpInside)
     }
     
@@ -305,22 +290,6 @@ extension LiveVideoChatController: UITableViewDelegate {
         
         let offset = scrollView.contentOffset.y
         videoController?.chatControllerRequestMiniPlayer(offset > 10)
-    }
-}
-
-extension LiveVideoChatController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { comments.count }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let comment = comments[indexPath.row]
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: comment.zapAmount > 0 ? "zapCell" : "cell", for: indexPath)
-        if comment.zapAmount > 0 {
-            (cell as? LiveVideoChatZapCell)?.updateForComment(comment, delegate: self)
-        } else {
-            (cell as? LiveVideoChatMessageCell)?.updateForComment(comment, delegate: self)
-        }
-        return cell
     }
 }
 
@@ -462,7 +431,6 @@ private extension LiveVideoChatController {
                         
                         self.comments = (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
                         setZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
-                        commentsTable.reloadData()
                     }
                     .store(in: &self.cancellables)
             }
@@ -525,31 +493,11 @@ private extension LiveVideoChatController {
             return
         }
         
-        let isDuplicate = comments.contains(where: {
-            guard let id = $0.event["id"]?.stringValue else { return false }
-            return id == event["id"]?.stringValue
-        })
-        
-        if isDuplicate {
-            print("Duplicate denied")
-            return
-        }
-        
-        // Ignore already existing personal messages and zaps in case they were sent from this device
-        if userPubkey == IdentityManager.instance.userHexPubkey {
-            if comments.prefix(10).contains(where: {
-                $0.user.data.pubkey == userPubkey && $0.zapAmount == amount && $0.event.isEmpty
-            }) {
-                return
-            }
-        }
-        
         var pubkeysToFetch: [String] = Self.userCache[userPubkey] == nil ? [userPubkey] : []
         pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
         
         if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
             self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
-            self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
             if let zap = self.jsonToZap(.object(event)) {
                 self.addZap(zap)
             }
@@ -571,7 +519,6 @@ private extension LiveVideoChatController {
                     event: event,
                     zapAmount: amount
                 ), at: 0)
-                commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
                 if let zap = jsonToZap(.object(event)) {
                     addZap(zap)
                 }
@@ -652,5 +599,11 @@ extension LiveVideoChatController: MetadataCoding {
         }
 
         return mutable
+    }
+}
+
+extension LiveVideoChatController: LiveChatTextViewManagerDelegate {
+    func newEventSent(_ event: [String : GenericJSON.JSON]) {
+        processNewEvent(event)
     }
 }

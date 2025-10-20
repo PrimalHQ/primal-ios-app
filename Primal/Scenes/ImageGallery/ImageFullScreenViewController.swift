@@ -53,7 +53,7 @@ extension ImageMenuHandler {
     }
 }
 
-final class ImageFullScreenViewController: UIViewController {
+final class ImageFullScreenViewController: UIViewController, ImageGalleryMediaController {
     let background = UIView()
     let imageView = FLAnimatedImageView()
     let scroll = UIScrollView()
@@ -101,13 +101,7 @@ final class ImageFullScreenViewController: UIViewController {
         startImageView.alpha = 0.01
         
         if imageView.image == nil, let image = startImageView.image {
-            imageView.image = image
-            
-            let s = image.size
-            imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
-            imageConstraint?.isActive = true
-            
-            setInsetForZoomedIn(viewSize: view.frame.size)
+            setLoadedImage(image)
         }
         
         var cs: [NSLayoutConstraint] = []
@@ -232,30 +226,38 @@ private extension ImageFullScreenViewController {
             cache.isCached(forKey: small)
         else {
             imageView.kf.setImage(with: URL(string: media.url)) { [weak self] res in
-                guard let self, case .success(let result) = res else { return }
-                
-                imageConstraint?.isActive = false
-                let s = result.image.size
-                imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
-                imageConstraint?.isActive = true
-                
-                if view.window != nil {
-                    setInsetForZoomedIn(viewSize: view.frame.size)
-                } else {
-                    setInsetForZoomedIn(viewSize: UIScreen.main.bounds.size)
-                }
+                guard case .success(let result) = res else { return }
+                self?.setLoadedImage(result.image)
             }
             return
         }
         
         cache.retrieveImage(forKey: small) { [weak self] result in
             guard let self else { return }
-            guard case .success(let value) = result, imageView.image == nil, let smallImage = value.image else {
-                imageView.kf.setImage(with: URL(string: media.url))
+            
+            if case .success(let value) = result, imageView.image == nil, let smallImage = value.image {
+                setLoadedImage(smallImage)
                 return
             }
-            print("USED PLACEHOLDER")
-            imageView.kf.setImage(with: URL(string: media.url), placeholder: smallImage)
+            
+            imageView.kf.setImage(with: URL(string: media.url), placeholder: imageView.image) { [weak self] res in
+                guard case .success(let result) = res else { return }
+                self?.setLoadedImage(result.image)
+            }
+        }
+    }
+    
+    func setLoadedImage(_ image: UIImage) {
+        imageView.image = image
+        imageConstraint?.isActive = false
+        let s = image.size
+        imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / max(1, s.height))
+        imageConstraint?.isActive = true
+        
+        if view.window != nil {
+            setInsetForZoomedIn(viewSize: view.frame.size)
+        } else {
+            setInsetForZoomedIn(viewSize: UIScreen.main.bounds.size)
         }
     }
     
