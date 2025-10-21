@@ -466,7 +466,7 @@
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
-		B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B99E037D2BF3F277006CCECB /* NostrSDK */; };
+		B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B9982FD42EA678E900BEC881 /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
@@ -1436,6 +1436,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
@@ -1445,7 +1446,6 @@
 				B9B687A32D25A2AD00140927 /* Down in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
-				B99E037E2BF3F277006CCECB /* NostrSDK in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
 				B9CC1ADE2DF38ECB0020BFC2 /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
@@ -3360,11 +3360,11 @@
 				9EF4BFBF2A8A633B003396AA /* Nantes */,
 				933B85742A9F6EC400C48FF6 /* CryptoSwift */,
 				B9F933172B867D860064B495 /* QRCode */,
-				B99E037D2BF3F277006CCECB /* NostrSDK */,
 				B99E039B2C07C059006CCECB /* Ink */,
 				B906AB032C99F3E40089813F /* GRDB */,
 				B9B687A22D25A2AD00140927 /* Down */,
 				B907D3C02DBBF18B002B86DA /* LightningDevKit */,
+				B9982FD42EA678E900BEC881 /* NostrSDK */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3502,11 +3502,11 @@
 				9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */,
 				933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */,
-				B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 				B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */,
 				B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */,
 				B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */,
+				B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -4412,7 +4412,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.62;
+				MARKETING_VERSION = 2.5.65;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4461,7 +4461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.62;
+				MARKETING_VERSION = 2.5.65;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4814,9 +4814,9 @@
 				minimumVersion = 0.0.125;
 			};
 		};
-		B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
+		B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nostr-sdk/nostr-sdk-ios";
+			repositoryURL = "https://github.com/PrimalHQ/nostr-sdk-ios";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -4904,9 +4904,9 @@
 			package = B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */;
 			productName = LightningDevKit;
 		};
-		B99E037D2BF3F277006CCECB /* NostrSDK */ = {
+		B9982FD42EA678E900BEC881 /* NostrSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B99E037C2BF3F277006CCECB /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
+			package = B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
 			productName = NostrSDK;
 		};
 		B99E039B2C07C059006CCECB /* Ink */ = {

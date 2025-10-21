@@ -51,6 +51,8 @@ enum NotificationType: Int, CaseIterable, Codable {
     case YOUR_POST_WAS_BOOKMARKED = 302
     
     case LIVE_EVENT_HAPPENING = 501
+    
+    case REPLY_TO_REPLY = 601
 }
 
 struct PrimalNotification: Codable, Hashable {
@@ -99,6 +101,8 @@ enum NostrNotification: Codable, Hashable {
     case postMentionReplied(postId: String, userId: String, reply: String)
     
     case liveHappening(liveId: String, userId: String)
+    
+    case replyToReply(postId: String, userId: String, reply: String)
     
     static func fromJSON(_ object: [String: JSON], kind: NotificationType) -> NostrNotification? {
         switch kind {
@@ -212,6 +216,13 @@ enum NostrNotification: Codable, Hashable {
             else { return nil }
             
             return .liveHappening(liveId: live_event_id, userId: host_pubkey)
+        case .REPLY_TO_REPLY:
+            guard
+                let who_replied = object["who_replied_to_it"]?.stringValue,
+                let your_post = object["your_post"]?.stringValue,
+                let reply = object["reply"]?.stringValue
+            else { return nil }
+            return .replyToReply(postId: your_post, userId: who_replied, reply: reply)
         }
     }
 }
@@ -224,7 +235,7 @@ extension NostrNotification {
     
     var mainUserId: String? {
         switch self {
-        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId, _), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _), .postBookmarked(_, let userId), .postHighlighted(_, let userId, _), .liveHappening(_, let userId):
+        case .userFollowed(let userId), .userUnfollowed(let userId), .postZapped(_, let userId, _), .postLiked(_, let userId, _), .postReposted(_, let userId), .postReplied(_, let userId, _), .userMentionZapped(_, let userId, _), .userMentionLiked(_, let userId), .userMentionReposted(_, let userId), .userMentionReplied(_, let userId, _), .postMentionZapped(_, let userId, _), .postMentionLiked(_, let userId), .postMentionReposted(_, let userId), .postMentionReplied(_, let userId, _), .postBookmarked(_, let userId), .postHighlighted(_, let userId, _), .liveHappening(_, let userId), .replyToReply(_, let userId, _):
             
             return userId
         case .postMention, .userMention:
@@ -252,8 +263,8 @@ extension NostrNotification {
             return highlight
         case    .userMentionReplied(_, _, reply: let reply),
                 .postReplied(_, _, reply: let reply),
-                .postMentionReplied(_, _, reply: let reply):
-            
+                .postMentionReplied(_, _, reply: let reply),
+                .replyToReply(_, _, let reply):
             return reply
         case .userFollowed, .userUnfollowed:
             return nil

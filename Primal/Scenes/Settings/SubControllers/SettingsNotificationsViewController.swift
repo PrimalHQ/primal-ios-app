@@ -392,7 +392,9 @@ extension PrimalSettingsNotifications {
         case .YOUR_POST_WAS_BOOKMARKED:
             return YOUR_POST_WAS_BOOKMARKED ?? true
         case .LIVE_EVENT_HAPPENING:
-            return true
+            return LIVE_EVENT_HAPPENING ?? true
+        case .REPLY_TO_REPLY:
+            return REPLY_TO_REPLY ?? true
         }
     }
     
@@ -434,7 +436,8 @@ extension PrimalSettingsNotifications {
             YOUR_POST_WAS_BOOKMARKED = value
         case .LIVE_EVENT_HAPPENING:
             LIVE_EVENT_HAPPENING = value
-            break
+        case .REPLY_TO_REPLY:
+            REPLY_TO_REPLY = value
         }
     }
 }

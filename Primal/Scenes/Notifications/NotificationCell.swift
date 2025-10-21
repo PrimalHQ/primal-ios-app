@@ -274,9 +274,8 @@ extension GroupedNotification {
             }
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
-            if post?.replyingTo?.user.data.pubkey == IdentityManager.instance.userHexPubkey {
-                return "replied to your note"
-            }
+            return "replied to your note"
+        case .REPLY_TO_REPLY:
             return "replied in your thread"
         case .YOU_WERE_MENTIONED_IN_POST:
             return "mentioned you in a note"
@@ -345,12 +344,14 @@ extension NotificationType {
             return .notifBookmark
         case .LIVE_EVENT_HAPPENING:
             return .notifLive
+        case .REPLY_TO_REPLY:
+            return nil
         }
     }
     
     var isReply: Bool {
         switch self {
-        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .REPLY_TO_REPLY:
             return true
         default:
             return false
