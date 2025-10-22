@@ -710,11 +710,11 @@ func random_bytes(count: Int) -> Data {
 }
 
 func encrypt_message(message: String, privkey: String, to_pk: String, encoding: EncEncoding = .base64) -> String? {
-    let iv = random_bytes(count: 16).bytes
+    let iv = random_bytes(count: 16).byteArray
     guard let shared_sec = get_shared_secret(privkey: privkey, pubkey: to_pk) else {
         return nil
     }
-    let utf8_message = Data(message.utf8).bytes
+    let utf8_message = Data(message.utf8).byteArray
     guard let enc_message = aes_encrypt(data: utf8_message, iv: iv, shared_sec: shared_sec) else {
         return nil
     }

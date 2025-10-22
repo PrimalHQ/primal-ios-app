@@ -17,7 +17,7 @@ struct Thumbnail: Identifiable, Equatable {
 
 extension Thumbnail: Codable, FetchableRecord, MutablePersistableRecord {
     // Define database columns from CodingKeys
-    fileprivate enum Columns {
+    internal enum Columns {
         static let url = Column(CodingKeys.url)
         static let image = Column(CodingKeys.image)
     }

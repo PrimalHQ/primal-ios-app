@@ -38,6 +38,8 @@ class ThreadElementImageGalleryCell: ThreadElementBaseCell, RegularFeedElementCe
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         imageAspectConstraint?.isActive = false
         imageAspectConstraint = nil
         

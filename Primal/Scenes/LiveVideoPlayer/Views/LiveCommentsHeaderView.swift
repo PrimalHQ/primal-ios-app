@@ -52,7 +52,7 @@ class LiveCommentsHeaderView: UIStackView, Themeable {
         
         titleLabel.numberOfLines = 2
         
-        let rightStack = UIStackView([configButton, infoButton, closeButton])
+        let rightStack = UIStackView([configButton, infoButton])
         
         [leftStack, UIView(), rightStack].forEach { addArrangedSubview($0) }
         alignment = .top

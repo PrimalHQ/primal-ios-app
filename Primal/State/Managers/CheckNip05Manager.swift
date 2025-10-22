@@ -26,6 +26,17 @@ class CheckNip05Manager {
             .store(in: &cancellables)
     }
     
+    // We trust everyone in the feed unless previously checked
+    func isVerifiedForFeed(_ user: PrimalUser) -> Bool {
+        if isVerified(user) { return true }
+        
+        if dontCheckAgain.contains(user.nip05) {
+            return false
+        }
+        
+        return !user.nip05.isEmpty
+    }
+    
     func isVerified(_ user: PrimalUser) -> Bool {
         if let custom = PremiumCustomizationManager.instance.getCustomization(pubkey: user.pubkey), custom.custom_badge {
             return true

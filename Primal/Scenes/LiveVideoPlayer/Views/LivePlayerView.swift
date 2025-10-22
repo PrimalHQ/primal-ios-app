@@ -14,6 +14,7 @@ enum LivePlayerViewAction {
     case dismiss, fullscreen
     case quote, share, copyLink, copyID, copyRawData
     case mute, report//, requestDelete
+    case playReplay
 }
 
 protocol LivePlayerViewDelegate: AnyObject {
@@ -54,6 +55,8 @@ class LivePlayerView: UIView {
     let controlsView = UIView()
     let streamEndedView = UIView()
     lazy var streamEndedLabel = UILabel("STREAM ENDED", color: .foreground5, font: .appFont(withSize: labelFontSize, weight: .bold))
+    let playReplayButton = UIButton(configuration: .pill(text: "Replay", foregroundColor: .background, backgroundColor: .foreground, font: .appFont(withSize: 14, weight: .bold)))
+        .constrainToSize(height: 26)
     
     let dismissButton = UIButton(configuration: .simpleImage(.liveMinimize))
     let airplayButton = AVRoutePickerView() //UIButton(configuration: .simpleImage(.airPlay))
@@ -67,7 +70,6 @@ class LivePlayerView: UIView {
     
     let muteButton = UIButton(configuration: .simpleImage(.videoMuted))
     let fullscreenButton = UIButton(configuration: .simpleImage(.fullScreen))
-    
     let liveDot = UIView().constrainToSize(8)
     
     weak var delegate: LivePlayerViewDelegate?
@@ -111,6 +113,10 @@ class LivePlayerView: UIView {
         streamEndedView.addSubview(streamEndedLabel)
         streamEndedLabel.centerToSuperview()
         streamEndedView.backgroundColor = .background3
+        
+        streamEndedView.addSubview(playReplayButton)
+        playReplayButton.centerToSuperview(axis: .horizontal).pin(to: streamEndedLabel, edges: .top, padding: 30)
+        playReplayButton.isHidden = true
         
         let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
         topRightStack.spacing = 4
@@ -183,6 +189,10 @@ class LivePlayerView: UIView {
         
         fullscreenButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.livePlayerViewPerformAction(.fullscreen)
+        }), for: .touchUpInside)
+        
+        playReplayButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.livePlayerViewPerformAction(.playReplay)
         }), for: .touchUpInside)
         
         addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in

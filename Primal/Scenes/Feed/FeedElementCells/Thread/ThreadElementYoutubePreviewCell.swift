@@ -100,6 +100,8 @@ class ThreadElementYoutubePreviewCell: ThreadElementBaseCell, RegularFeedElement
     }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         thumbnailView.tintColor = .foreground5
         thumbnailView.backgroundColor = .background3
         subtitleLabel.textColor = .foreground4

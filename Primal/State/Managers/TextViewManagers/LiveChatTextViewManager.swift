@@ -8,6 +8,11 @@
 import Combine
 import NostrSDK
 import UIKit
+import GenericJSON
+
+protocol LiveChatTextViewManagerDelegate: AnyObject {
+    func newEventSent(_ event: [String: JSON])
+}
 
 final class LiveChatTextViewManager: TextViewManager, MetadataCoding {
     var tokens: [UserToken] {
@@ -47,6 +52,8 @@ final class LiveChatTextViewManager: TextViewManager, MetadataCoding {
     let usersTableView: UsersTableView
     let sendButton: UIButton
     let live: ParsedLiveEvent
+    
+    weak var delegate: LiveChatTextViewManagerDelegate?
     
     private var tagRegex: NSRegularExpression! { try! NSRegularExpression(pattern: "@([^\\s\\K]+)") }
     
@@ -194,10 +201,8 @@ final class LiveChatTextViewManager: TextViewManager, MetadataCoding {
             let ev = NostrObject.liveComment(live: live.event, comment: postingText)
         else { return }
         
-        DispatchQueue.main.async {
-            self.textView.text = ""
-        }
-        
+        textView.text = ""
+        delegate?.newEventSent(ev.toJSON().objectValue ?? [:])
         PostingManager.instance.sendEvent(ev, { _ in })
     }
 }

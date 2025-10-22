@@ -53,7 +53,7 @@ extension ImageMenuHandler {
     }
 }
 
-final class ImageFullScreenViewController: UIViewController {
+final class ImageFullScreenViewController: UIViewController, ImageGalleryMediaController {
     let background = UIView()
     let imageView = FLAnimatedImageView()
     let scroll = UIScrollView()
@@ -69,7 +69,7 @@ final class ImageFullScreenViewController: UIViewController {
     
     var gallery: ImageGalleryController? { findParent() }
     
-    let url: String
+    let media: MediaMetadata.Resource
     
     var showChrome: Bool = true {
         didSet {
@@ -78,8 +78,8 @@ final class ImageFullScreenViewController: UIViewController {
         }
     }
     
-    init(url: String) {
-        self.url = url
+    init(media: MediaMetadata.Resource) {
+        self.media = media
         super.init(nibName: nil, bundle: nil)
         
         setup()
@@ -101,13 +101,7 @@ final class ImageFullScreenViewController: UIViewController {
         startImageView.alpha = 0.01
         
         if imageView.image == nil, let image = startImageView.image {
-            imageView.image = image
-            
-            let s = image.size
-            imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
-            imageConstraint?.isActive = true
-            
-            setInsetForZoomedIn(viewSize: view.frame.size)
+            setLoadedImage(image)
         }
         
         var cs: [NSLayoutConstraint] = []
@@ -197,22 +191,6 @@ private extension ImageFullScreenViewController {
         threeDotsButton.pinToSuperview(edges: .trailing, padding: 14).centerToView(closeButton, axis: .vertical).constrainToSize(32)
         threeDotsButton.setImage(UIImage(named: "threeDots"), for: .normal)
         
-        imageView.kf.indicatorType = .activity
-        imageView.kf.setImage(with: URL(string: url)) { [weak self] res in
-            guard let self, case .success(let result) = res else { return }
-            
-            imageConstraint?.isActive = false
-            let s = result.image.size
-            imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / s.height)
-            imageConstraint?.isActive = true
-            
-            if view.window != nil {
-                setInsetForZoomedIn(viewSize: view.frame.size)
-            } else {
-                setInsetForZoomedIn(viewSize: UIScreen.main.bounds.size)
-            }
-        }
-
         scroll.minimumZoomScale = 1
         scroll.maximumZoomScale = 4
         scroll.delegate = self
@@ -239,6 +217,48 @@ private extension ImageFullScreenViewController {
         
         imageView.addInteraction(UIContextMenuInteraction(delegate: self))
         imageView.isUserInteractionEnabled = true
+        imageView.kf.indicatorType = .activity
+        
+        let cache = ImageCache.default
+        guard
+            !cache.isCached(forKey: media.url), // If we don't already have the original try to load small version first
+            let small = media.url(for: .small)?.absoluteString,
+            cache.isCached(forKey: small)
+        else {
+            imageView.kf.setImage(with: URL(string: media.url)) { [weak self] res in
+                guard case .success(let result) = res else { return }
+                self?.setLoadedImage(result.image)
+            }
+            return
+        }
+        
+        cache.retrieveImage(forKey: small) { [weak self] result in
+            guard let self else { return }
+            
+            if case .success(let value) = result, imageView.image == nil, let smallImage = value.image {
+                setLoadedImage(smallImage)
+                return
+            }
+            
+            imageView.kf.setImage(with: URL(string: media.url), placeholder: imageView.image) { [weak self] res in
+                guard case .success(let result) = res else { return }
+                self?.setLoadedImage(result.image)
+            }
+        }
+    }
+    
+    func setLoadedImage(_ image: UIImage) {
+        imageView.image = image
+        imageConstraint?.isActive = false
+        let s = image.size
+        imageConstraint = imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: s.width / max(1, s.height))
+        imageConstraint?.isActive = true
+        
+        if view.window != nil {
+            setInsetForZoomedIn(viewSize: view.frame.size)
+        } else {
+            setInsetForZoomedIn(viewSize: UIScreen.main.bounds.size)
+        }
     }
     
     func setInsetForZoomedIn(viewSize: CGSize) {
@@ -347,6 +367,8 @@ private extension ImageFullScreenViewController {
 }
 
 extension ImageFullScreenViewController: ImageMenuHandler, UIContextMenuInteractionDelegate {
+    var url: String { media.url }
+    
     var viewController: UIViewController { self }
     
     var image: UIImage? { imageView.image }
@@ -372,7 +394,7 @@ extension ImageFullScreenViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
         
-        if let gallery, gallery.urls.count < 2 {
+        if let gallery, gallery.media.count < 2 {
             return true
         }
         

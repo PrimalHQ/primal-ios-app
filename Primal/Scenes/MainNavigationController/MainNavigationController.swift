@@ -38,6 +38,9 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         navigationBar.isTranslucent = true
             
         interactivePopGestureRecognizer?.delegate = self
+        if #available(iOS 26.0, *) {
+            interactiveContentPopGestureRecognizer?.delegate = self
+        }
         
         delegate = self
         

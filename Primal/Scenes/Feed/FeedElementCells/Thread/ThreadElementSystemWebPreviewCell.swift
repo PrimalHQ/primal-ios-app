@@ -71,8 +71,4 @@ class ThreadElementSystemWebPreviewCell: ThreadElementBaseCell, RegularFeedEleme
     func updateWebPreview(_ metadata: LinkMetadata) {
         loadURL(metadata.url.absoluteString)
     }
-    
-    override func update(_ content: ParsedContent) {
-        
-    }
 }

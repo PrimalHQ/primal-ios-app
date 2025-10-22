@@ -33,6 +33,8 @@ class ThreadElementSmallZapGalleryCell: ThreadElementBaseCell, RegularFeedElemen
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        
         if parsedContent.post.id != lastContentId {
             gallery.setZaps([])
             lastContentId = parsedContent.post.id

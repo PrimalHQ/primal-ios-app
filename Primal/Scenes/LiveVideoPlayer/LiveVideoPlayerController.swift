@@ -12,7 +12,7 @@ import Combine
 import GenericJSON
 import NostrSDK
 
-class ParsedLiveComment {
+struct ParsedLiveComment: Hashable {
     let user: ParsedUser
     let text: NSAttributedString
     let event: [String: JSON]
@@ -47,7 +47,7 @@ class LiveVideoPlayerController: UIViewController {
     let smallHeader = LiveVideoSmallHeaderView()
     let smallVideoCoverView = UIView()
     
-    let player: VideoPlayer?
+    var player: VideoPlayer?
     
     var live: ParsedLiveEvent { didSet { updateLabels() } }
     
@@ -69,7 +69,7 @@ class LiveVideoPlayerController: UIViewController {
     var currentTransitionProgress: CGFloat = 0
     
     @Published private var smallVideoPlayer: Bool = false
-    @Published private var commentsOverride: Bool = false
+    @Published private(set) var commentsOverride: Bool = false
     @Published private var smallVideoPlayerAnimating: Bool = false
     
     @Published var currentVideoRotation: UIDeviceOrientation = .portrait
@@ -441,7 +441,7 @@ private extension LiveVideoPlayerController {
     @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let touchPoint = gesture.location(in: view?.window)
         
-        guard currentVideoRotation.isPortrait, !smallVideoPlayer, !smallVideoPlayerAnimating else { return }
+        guard currentVideoRotation.isPortrait, !(smallVideoPlayer || commentsOverride), !smallVideoPlayerAnimating else { return }
         
         if case .began = gesture.state {
             let main = RootViewController.instance
@@ -509,6 +509,18 @@ private extension LiveVideoPlayerController {
     }
     
     func updateLabels() {
+        switch live.event.state {
+        case .started:
+            break
+        case .ended(let url):
+            if player?.url == url { break }
+            
+            player = nil
+            liveVideoPlayer.player = nil
+            liveVideoPlayer.playReplayButton.isHidden = url == nil
+            return
+        }
+        
         smallHeader.countLabel.text = live.event.participants.localized()
         smallHeader.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
         
@@ -568,6 +580,11 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [live.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .playReplay:
+            guard let url = live.videoURL else { return }
+            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
+            player?.play()
+            liveVideoPlayer.player = player
         }
     }
 }

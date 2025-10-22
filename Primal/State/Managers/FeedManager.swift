@@ -281,10 +281,6 @@ private extension FeedManager {
                 guard let self, !blockFuturePosts else { return }
 
                 processFuturePosts(sorted)
-                
-                if !addFuturePostsDirectly() { // Only on app enter foreground we invert this logic and add to feed if it is at the top
-                    addAllFuturePosts()
-                }
             }
             .store(in: &cancellables)
     }

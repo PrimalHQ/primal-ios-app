@@ -31,7 +31,7 @@ struct Profile: Identifiable, Equatable {
 
 extension Profile: Codable, FetchableRecord, MutablePersistableRecord {
     // Define database columns from CodingKeys
-    fileprivate enum Columns {
+    internal enum Columns {
         static let pubkey = Column(CodingKeys.pubkey)
         static let npub = Column(CodingKeys.npub)
         static let name = Column(CodingKeys.name)

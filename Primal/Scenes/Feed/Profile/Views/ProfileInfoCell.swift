@@ -122,8 +122,10 @@ class ProfileInfoCell: UITableViewCell {
             infoStack.isLoading = true
         }
         
+        let followedBy = followedBy?.filter({ $0.data.pubkey != user.pubkey }) ?? []
+        
         followedByView.setUsers(followedBy)
-        followedByView.isHidden = followedBy?.isEmpty == true
+        followedByView.isHidden = followedBy.isEmpty
         
         infoStack.set(selectedTab, animated: false)
         

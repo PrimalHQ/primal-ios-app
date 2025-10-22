@@ -39,16 +39,14 @@ class LiveVideoEmbeddedView: UIView {
         addSubview(playerView)
         playerView.pinToSuperview()
         
-        let mainStack = UIStackView([playButton, UIView(), closeButton])
-        
         addSubview(loadingView)
         loadingView.centerToSuperview()
         loadingView.addSubview(animationView)
         animationView.centerToSuperview()
         animationView.loopMode = .loop
         
-        addSubview(mainStack)
-        mainStack.pinToSuperview(edges: [.horizontal, .top], padding: 2)
+        addSubview(playButton)
+        playButton.pinToSuperview(edges: [.leading, .top], padding: 2)
         
         addSubview(streamEndedView)
         streamEndedView.pinToSuperview()
@@ -56,6 +54,9 @@ class LiveVideoEmbeddedView: UIView {
         streamEndedView.addSubview(streamEndedLabel)
         streamEndedLabel.centerToSuperview()
         streamEndedView.backgroundColor = .init(rgb: 0x222222)
+        
+        addSubview(closeButton)
+        closeButton.pinToSuperview(edges: [.trailing, .top], padding: 2)
         
         addSubview(leftChevron)
         leftChevron.pinToSuperview(edges: [.leading, .vertical])

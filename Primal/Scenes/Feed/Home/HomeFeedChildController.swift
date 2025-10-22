@@ -23,11 +23,6 @@ class HomeFeedChildController: PostFeedViewController {
     override init(feed: FeedManager) {
         super.init(feed: feed)
         
-        feed.addFuturePostsDirectly = { [weak self] in
-            guard let self else { return true }
-            return self.table.contentOffset.y > 300
-        }
-        
         dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
     

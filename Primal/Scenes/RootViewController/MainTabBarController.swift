@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import Lottie
 import SafariServices
+import GenericJSON
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -386,6 +387,8 @@ private extension MainTabBarController {
                             return (OnboardingParentViewController(.redeemCode(code)), nil)
                         case .live(let live):
                             return (LiveVideoPlayerController(live: live), nil)
+                        case .url(let url):
+                            return (SFSafariViewController(url: url), nil)
                         }
                     }()
                     
@@ -425,23 +428,10 @@ private extension MainTabBarController {
             }), for: .touchUpInside)
         }
         
-        Timer.publish(every: 180, on: .main, in: .default).autoconnect().prepend(.now)
-            .delay(for: 2, scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
-                    .sink { res in
-                        let liveEvents = res.events
-                            .filter({ $0["kind"]?.doubleValue == Double(NostrKind.live.rawValue) })
-                            .compactMap { ProcessedLiveEvent.fromEvent($0) }
-                        
-                        guard !liveEvents.isEmpty || res.message == nil else { return }
-                        
-                        LiveEventManager.instance.filterCurrentlyLive(liveEvents)
-                    }
-                    .store(in: &cancellables)
-            }
-            .store(in: &cancellables)
+        Connection.regular.continuousConnectionCancellable(name: "live_events_from_follows", request: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]) { event in
+            LiveEventManager.instance.addLiveEvent(event)
+        }
+        .store(in: &cancellables)
     }
     
     func addCircleWalletButton() {

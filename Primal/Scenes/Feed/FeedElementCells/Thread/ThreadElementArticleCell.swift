@@ -29,6 +29,8 @@ class ThreadElementArticleCell: ThreadElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         guard let article = content.article else { return }
         articleView.setUp(article)
         articleView.updateTheme()

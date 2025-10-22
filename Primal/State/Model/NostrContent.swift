@@ -88,7 +88,7 @@ struct MediaMetadata: Codable, Hashable {
     
     struct Resource: Codable, Hashable {
         let url: String
-        let variants: [Variant]
+        var variants: [Variant] = []
         
         struct Variant: Codable, Hashable {
             var a: Int
