@@ -467,6 +467,8 @@
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B9982FD42EA678E900BEC881 /* NostrSDK */; };
+		B9982FD82EA7E7E400BEC881 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */; };
+		B9982FD92EA7E7E400BEC881 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
@@ -550,8 +552,6 @@
 		B9C6D2452CB00F6300B2EEBE /* PrimalPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */; };
 		B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */; };
 		B9C6D24A2CB43DE500B2EEBE /* ExplorePeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2492CB43DE500B2EEBE /* ExplorePeopleViewController.swift */; };
-		B9CC1ADE2DF38ECB0020BFC2 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9CC1ADC2DF37F5E0020BFC2 /* PrimalShared.xcframework */; };
-		B9CC1ADF2DF38ECB0020BFC2 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9CC1ADC2DF37F5E0020BFC2 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AED2DF767020020BFC2 /* UserListViewController.swift */; };
 		B9CC1AF02DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AEF2DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift */; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
@@ -704,7 +704,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9CC1ADF2DF38ECB0020BFC2 /* PrimalShared.xcframework in Embed Frameworks */,
+				B9982FD92EA7E7E400BEC881 /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1214,6 +1214,7 @@
 		B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInfoBubbleView.swift; sourceTree = "<group>"; };
 		B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoSmallHeaderView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
+		B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
 		B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParsedContent+PostInfo.swift"; sourceTree = "<group>"; };
@@ -1295,7 +1296,6 @@
 		B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPageController.swift; sourceTree = "<group>"; };
 		B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedViewController.swift; sourceTree = "<group>"; };
 		B9C6D2492CB43DE500B2EEBE /* ExplorePeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleViewController.swift; sourceTree = "<group>"; };
-		B9CC1ADC2DF37F5E0020BFC2 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9CC1AED2DF767020020BFC2 /* UserListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
 		B9CC1AEF2DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleHeaderCell.swift; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
@@ -1447,7 +1447,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9CC1ADE2DF38ECB0020BFC2 /* PrimalShared.xcframework in Frameworks */,
+				B9982FD82EA7E7E400BEC881 /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1579,7 +1579,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9CC1ADC2DF37F5E0020BFC2 /* PrimalShared.xcframework */,
+				B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,

@@ -18,11 +18,11 @@ extension Combine.Publisher where Self.Failure == _Concurrency.CancellationError
 }
 public enum Skie {
   public enum KotlinxCoroutinesCore {
-    public enum Runnable {
-      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreRunnable
-    }
     public enum Flow {
       public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreFlow
+    }
+    public enum Runnable {
+      public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreRunnable
     }
     public enum StateFlow {
       public typealias __Kotlin = PrimalShared.Kotlinx_coroutines_coreStateFlow
@@ -105,6 +105,21 @@ public enum Skie {
     }
   }
   public typealias co_touchlab_skie__runtime_kotlin = PrimalShared.Skie.RuntimeKotlin
+  public enum PagingCommon {
+    public enum PagingSource {
+      public enum LoadResult {
+      }
+      public enum LoadParams {
+      }
+    }
+    public enum RemoteMediator {
+      public enum MediatorResult {
+      }
+    }
+    public enum LoadState {
+    }
+  }
+  public typealias androidx_paging__paging_common = PrimalShared.Skie.PagingCommon
   public enum KtorUtils {
     public enum Pipeline {
     }
@@ -117,18 +132,30 @@ public enum Skie {
     }
   }
   public typealias Primal_core__networking_primal = PrimalShared.Skie.NetworkingPrimal
-  public enum NetworkingNwc {
-    public enum NwcResult {
+  public enum Primal_data_wallet__repository {
+    public enum CreateLightningInvoiceRequest {
     }
-    public enum NwcMethod {
-    }
-  }
-  public typealias Primal_core__networking_nwc = PrimalShared.Skie.NetworkingNwc
-  public enum KtorHttp {
-    public enum OutgoingContent {
+    public enum TransactionsRequest {
     }
   }
-  public typealias io_ktor__ktor_http = PrimalShared.Skie.KtorHttp
+  public enum Utils {
+    public enum Result {
+    }
+  }
+  public typealias Primal_core__utils = PrimalShared.Skie.Utils
+  public enum Wallet {
+    public enum Wallet {
+    }
+    public enum TxRequest {
+      public enum Lightning {
+      }
+    }
+    public enum Transaction {
+    }
+    public enum Region {
+    }
+  }
+  public typealias Primal_domain__wallet = PrimalShared.Skie.Wallet
   public enum KotlinxSerializationCore {
     public enum SerialKind {
     }
@@ -142,24 +169,29 @@ public enum Skie {
     }
   }
   public typealias org_jetbrains_kotlinx__kotlinx_serialization_core = PrimalShared.Skie.KotlinxSerializationCore
-  public enum KotlinxIoCore {
-    public enum Source {
-    }
-    public enum Sink {
+  public enum RemoteNwc {
+    public enum NwcMethod {
     }
   }
-  public typealias org_jetbrains_kotlinx__kotlinx_io_core = PrimalShared.Skie.KotlinxIoCore
+  public typealias Primal_data_wallet__remote_nwc = PrimalShared.Skie.RemoteNwc
   public enum Nostr {
+    public enum SignResult {
+    }
+    public enum NostrEntity {
+    }
     public enum ZapResult {
     }
     public enum ZapTarget {
-    }
-    public enum SignResult {
     }
     public enum ZapError {
     }
   }
   public typealias Primal_domain__nostr = PrimalShared.Skie.Nostr
+  public enum RemotePrimal {
+    public enum WalletOperationRequestBody {
+    }
+  }
+  public typealias Primal_data_wallet__remote_primal = PrimalShared.Skie.RemotePrimal
   public enum KotlinxSerializationJson {
     public enum JsonElement {
     }
@@ -178,6 +210,23 @@ public enum Skie {
     }
   }
   public typealias Primal_domain__primal = PrimalShared.Skie.Primal
+  public enum KtorHttp {
+    public enum OutgoingContent {
+    }
+  }
+  public typealias io_ktor__ktor_http = PrimalShared.Skie.KtorHttp
+  public enum KotlinxIoCore {
+    public enum Source {
+    }
+    public enum Sink {
+    }
+  }
+  public typealias org_jetbrains_kotlinx__kotlinx_io_core = PrimalShared.Skie.KotlinxIoCore
+  public enum KtorfitLibCore {
+    public enum KtorfitResult {
+    }
+  }
+  public typealias Ktorfit__ktorfit_lib_core = PrimalShared.Skie.KtorfitLibCore
   public enum KotlinxDatetime {
     public enum DateTimeFormat {
     }
@@ -195,11 +244,6 @@ public enum Skie {
     }
   }
   public typealias com_squareup_okio__okio = PrimalShared.Skie.Okio
-  public enum PagingCommon {
-    public enum LoadState {
-    }
-  }
-  public typealias androidx_paging__paging_common = PrimalShared.Skie.PagingCommon
 }
 @_hasMissingDesignatedInitializers public class SkieSwiftFlowIterator<T> : _Concurrency.AsyncIteratorProtocol {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -428,6 +472,270 @@ extension PrimalShared.RetryKt {
 public func __retryNetworkCall(retries: Swift.Int32, delay: Swift.Int64, onBeforeDelay: ((PrimalShared.NetworkException) -> Swift.Void)?, onBeforeTry: ((PrimalShared.KotlinInt) -> Swift.Void)?, block: any PrimalShared.KotlinSuspendFunction0, completionHandler: @escaping (Any?, (any Swift.Error)?) -> Swift.Void)
 @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
 public func retryNetworkCall(retries: Swift.Int32, delay: Swift.Int64, onBeforeDelay: ((PrimalShared.NetworkException) -> Swift.Void)?, onBeforeTry: ((PrimalShared.KotlinInt) -> Swift.Void)?, block: any PrimalShared.KotlinSuspendFunction0) async throws -> Any?
+extension PrimalShared.WalletRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createLightningInvoice(walletId: Swift.String, amountInBtc: Swift.String?, comment: Swift.String?) async throws -> PrimalShared.UtilsResult<PrimalShared.LnInvoiceCreateResult>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createOnChainAddress(userId: Swift.String) async throws -> PrimalShared.OnChainAddressResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllTransactions(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteWalletById(walletId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchWalletBalance(walletId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findTransactionByIdOrNull(txId: Swift.String) async throws -> PrimalShared.Transaction?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getWalletById(walletId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.Wallet>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func parseLnInvoice(userId: Swift.String, lnbc: Swift.String) async throws -> PrimalShared.LnInvoiceParseResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func parseLnUrl(userId: Swift.String, lnurl: Swift.String) async throws -> PrimalShared.LnUrlParseResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func pay(walletId: Swift.String, request: PrimalShared.TxRequest) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateWalletBalance(walletId: Swift.String, balanceInBtc: Swift.Double, maxBalanceInBtc: PrimalShared.KotlinDouble?) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertNostrWallet(userId: Swift.String, wallet: PrimalShared.Wallet.NWC) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertWalletSettings(walletId: Swift.String, spamThresholdAmountInSats: Swift.Int64) async throws
+}
+extension PrimalShared.Kotlinx_coroutines_coreFlow {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func collect(collector: any PrimalShared.Kotlinx_coroutines_coreFlowCollector) async throws
+}
+extension PrimalShared.Kotlinx_coroutines_coreFlowCollector {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func emit(value: Any?) async throws
+}
+extension PrimalShared.WalletTextParser {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func parseAndQueryText(userId: Swift.String, text: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.DraftTx>
+}
+extension PrimalShared.LightningApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getInvoice(callbackUrl: Swift.String, amountMSats: Swift.Int64, comment: Swift.String?) async throws -> PrimalShared.InvoiceResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getPayRequest(lnUrl: Swift.String) async throws -> PrimalShared.PayRequest
+}
+extension PrimalShared.LightningRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getInvoice(callbackUrl: Swift.String, amountMSats: Swift.Int64, comment: Swift.String?) async throws -> PrimalShared.UtilsResult<PrimalShared.InvoiceResponse>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getPayRequest(lnUrl: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.PayRequest>
+}
+extension PrimalShared.Remote_primalPrimalWalletApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func activateWallet(userId: Swift.String, code: Swift.String) async throws -> Swift.String
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func confirmInAppPurchase(userId: Swift.String, quoteId: Swift.String, purchaseToken: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createLightningInvoice(userId: Swift.String, body: PrimalShared.Remote_primalDepositRequestBody) async throws -> PrimalShared.Remote_primalLightningInvoiceResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createOnChainAddress(userId: Swift.String, body: PrimalShared.Remote_primalDepositRequestBody) async throws -> PrimalShared.Remote_primalOnChainAddressResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getBalance(userId: Swift.String) async throws -> PrimalShared.Remote_primalBalanceResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getExchangeRate(userId: Swift.String) async throws -> PrimalShared.KotlinDouble
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getInAppPurchaseQuote(userId: Swift.String, productId: Swift.String, region: Swift.String, previousQuoteId: Swift.String?) async throws -> PrimalShared.Remote_primalInAppPurchaseQuoteResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getMiningFees(userId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> [PrimalShared.Remote_primalMiningFeeTier]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getPromoCodeDetails(code: Swift.String) async throws -> PrimalShared.Remote_primalPromoCodeDetailsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getTransactions(userId: Swift.String, body: PrimalShared.Remote_primalTransactionsRequestBody) async throws -> PrimalShared.Remote_primalTransactionsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getWalletUserInfo(userId: Swift.String) async throws -> PrimalShared.Remote_primalWalletUserInfoResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getWalletUserKycLevel(userId: Swift.String) async throws -> PrimalShared.KotlinInt
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func parseLnInvoice(userId: Swift.String, lnbc: Swift.String) async throws -> PrimalShared.Remote_primalParsedLnInvoiceResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func parseLnUrl(userId: Swift.String, lnurl: Swift.String) async throws -> PrimalShared.Remote_primalParsedLnUrlResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func redeemPromoCode(authorizationEvent: PrimalShared.NostrEvent) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func requestActivationCodeToEmail(userId: Swift.String, body: PrimalShared.Remote_primalGetActivationCodeRequestBody) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func withdraw(userId: Swift.String, body: PrimalShared.Remote_primalWithdrawRequestBody) async throws
+}
+extension PrimalShared.BillingRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func confirmInAppPurchase(userId: Swift.String, quoteId: Swift.String, purchaseToken: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getInAppPurchaseMinSatsQuote(userId: Swift.String, region: Swift.String, productId: Swift.String, previousQuoteId: Swift.String?) async throws -> PrimalShared.InAppPurchaseSatsQuote
+}
+extension PrimalShared.ExchangeRateRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getExchangeRate(userId: Swift.String) async throws -> PrimalShared.KotlinDouble
+}
+extension PrimalShared.TransactionFeeRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchDefaultMiningFee(userId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> PrimalShared.OnChainTransactionFeeTier?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchMiningFees(userId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> [PrimalShared.OnChainTransactionFeeTier]
+}
+extension PrimalShared.NostrEventSignatureHandler {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func signNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent) async throws -> PrimalShared.SignResult
+}
+extension PrimalShared.LocalWalletTransactionDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllTransactionsByUserId(userId: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findTransactionById(txId: Swift.String) async throws -> PrimalShared.LocalWalletTransaction?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func firstByWalletId(walletId: Swift.String) async throws -> PrimalShared.LocalWalletTransactionData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func lastByWalletId(walletId: Swift.String) async throws -> PrimalShared.LocalWalletTransactionData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalWalletTransactionData]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAllNostrTransactions(data: [PrimalShared.LocalNostrTransactionData]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAllPrimalTransactions(data: [PrimalShared.LocalPrimalTransactionData]) async throws
+}
+extension PrimalShared.Skie.PagingCommon.PagingSource {
+  public struct __Suspend<Key, Value> where Key : AnyObject, Value : AnyObject {
+    public let __kotlinObject: PrimalShared.Paging_commonPagingSource<Key, Value>
+    public init(_ __kotlinObject: PrimalShared.Paging_commonPagingSource<Key, Value>)
+  }
+}
+public func skie<Key, Value>(_ kotlinObject: PrimalShared.Paging_commonPagingSource<Key, Value>) -> PrimalShared.Skie.PagingCommon.PagingSource.__Suspend<Key, Value> where Key : AnyObject, Value : AnyObject
+extension PrimalShared.Skie.PagingCommon.PagingSource.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func load(params: PrimalShared.Paging_commonPagingSourceLoadParams<Key>) async throws -> PrimalShared.Paging_commonPagingSourceLoadResult<Key, Value>
+}
+extension PrimalShared.LocalWalletSettingsDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findWalletSettings(walletId: Swift.String) async throws -> PrimalShared.LocalWalletSettings?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertWalletSettings(settings: PrimalShared.LocalWalletSettings) async throws
+}
+extension PrimalShared.LocalWalletDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearActiveWallet(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteNostrWalletById(walletId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePrimalWalletById(walletId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteWalletById(walletId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteWalletInfoById(walletId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLastUsedWalletByType(userId: PrimalShared.LocalEncryptable<Foundation.NSString>, type: PrimalShared.WalletType) async throws -> PrimalShared.LocalWallet?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findWallet(walletId: Swift.String) async throws -> PrimalShared.LocalWallet?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findWalletInfo(walletId: Swift.String) async throws -> PrimalShared.LocalWalletInfo?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getActiveWallet(userId: Swift.String) async throws -> PrimalShared.LocalActiveWallet?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insertOrIgnoreWalletInfo(info: PrimalShared.LocalWalletInfo) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateWalletBalance(walletId: Swift.String, balanceInBtc: PrimalShared.LocalEncryptable<PrimalShared.KotlinDouble>, maxBalanceInBtc: PrimalShared.LocalEncryptable<PrimalShared.KotlinDouble>?) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateWalletLightningAddress(walletId: Swift.String, lightningAddress: PrimalShared.LocalEncryptable<Foundation.NSString>?) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertActiveWallet(data: PrimalShared.LocalActiveWalletData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertNostrWalletData(data: PrimalShared.LocalNostrWalletData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertPrimalWalletData(data: PrimalShared.LocalPrimalWalletData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertWalletInfo(info: PrimalShared.LocalWalletInfo) async throws
+}
+extension PrimalShared.Room_runtimeInvalidationTracker {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func refresh(tables: PrimalShared.KotlinArray<Foundation.NSString>) async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.WalletAccountRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func activateWallet(userId: Swift.String, code: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.WalletActivationResult>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearActiveWallet(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchWalletAccountInfo(userId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLastUsedNostrWallet(userId: Swift.String) async throws -> PrimalShared.Wallet?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getActiveWallet(userId: Swift.String) async throws -> PrimalShared.Wallet?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getPromoCodeDetails(code: Swift.String) async throws -> PrimalShared.PromoCodeDetails
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func redeemPromoCode(userId: Swift.String, code: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func requestActivationCodeToEmail(params: PrimalShared.WalletActivationParams) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setActiveWallet(userId: Swift.String, walletId: Swift.String) async throws
+}
+extension PrimalShared.EventRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchEventActions(eventId: Swift.String, kind: Swift.Int32) async throws -> [PrimalShared.NostrEventAction]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchEventZaps(userId: Swift.String, eventId: Swift.String, limit: Swift.Int32) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchReplaceableEvent(naddr: PrimalShared.Naddr) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchReplaceableEvents(naddrs: [PrimalShared.Naddr]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getZapReceipts(invoices: [Swift.String]) async throws -> PrimalShared.UtilsResult<Foundation.NSDictionary>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeZapsByEventId(eventId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.ProfileRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowers(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowing(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchMissingProfiles(profileIds: [Swift.String]) async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfile(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfileId(primalName: Swift.String) async throws -> Swift.String?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfiles(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchUserProfileFollowedBy(profileId: Swift.String, userId: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileData(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileDataOrNull(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileStats(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileStats]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isUserFollowing(userId: Swift.String, targetUserId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func reportAbuse(userId: Swift.String, reportType: PrimalShared.ReportType, profileId: Swift.String, eventId: Swift.String?, articleId: Swift.String?) async throws
+}
+extension PrimalShared.PrimalApiClient {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func closeSubscription(subscriptionId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func query(message: PrimalShared.PrimalCacheFilter) async throws -> PrimalShared.PrimalQueryResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribe(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribeBuffered(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribeBufferedOnInactivity(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter, inactivityTimeout: Swift.Int64) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.Skie.PagingCommon.RemoteMediator {
+  public struct __Suspend<Key, Value> where Key : AnyObject, Value : AnyObject {
+    public let __kotlinObject: PrimalShared.Paging_commonRemoteMediator<Key, Value>
+    public init(_ __kotlinObject: PrimalShared.Paging_commonRemoteMediator<Key, Value>)
+  }
+}
+public func skie<Key, Value>(_ kotlinObject: PrimalShared.Paging_commonRemoteMediator<Key, Value>) -> PrimalShared.Skie.PagingCommon.RemoteMediator.__Suspend<Key, Value> where Key : AnyObject, Value : AnyObject
+extension PrimalShared.Skie.PagingCommon.RemoteMediator.__Suspend {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func initialize() async throws -> PrimalShared.Paging_commonRemoteMediatorInitializeAction
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func load(loadType: PrimalShared.Paging_commonLoadType, state: PrimalShared.Paging_commonPagingState<Key, Value>) async throws -> PrimalShared.Paging_commonRemoteMediatorMediatorResult
+}
 extension PrimalShared.LightningAddressChecker {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func validateLightningAddress(lud16: Swift.String) async throws
@@ -469,43 +777,651 @@ extension PrimalShared.Ktor_client_coreHttpClientEngine {
 }
 extension PrimalShared.NwcApi {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getBalance() async throws -> PrimalShared.NwcResult<PrimalShared.GetBalanceResponsePayload>
+  public func getBalance() async throws -> PrimalShared.UtilsResult<PrimalShared.GetBalanceResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getInfo() async throws -> PrimalShared.NwcResult<PrimalShared.GetInfoResponsePayload>
+  public func getInfo() async throws -> PrimalShared.UtilsResult<PrimalShared.GetInfoResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func listTransactions(params: PrimalShared.ListTransactionsParams) async throws -> PrimalShared.NwcResult<PrimalShared.ListTransactionsResponsePayload>
+  public func listTransactions(params: PrimalShared.ListTransactionsParams) async throws -> PrimalShared.UtilsResult<PrimalShared.ListTransactionsResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func lookupInvoice(params: PrimalShared.LookupInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.LookupInvoiceResponsePayload>
+  public func lookupInvoice(params: PrimalShared.LookupInvoiceParams) async throws -> PrimalShared.UtilsResult<PrimalShared.LookupInvoiceResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func makeInvoice(params: PrimalShared.MakeInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.MakeInvoiceResponsePayload>
+  public func makeInvoice(params: PrimalShared.MakeInvoiceParams) async throws -> PrimalShared.UtilsResult<PrimalShared.MakeInvoiceResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func multiPayInvoice(params: [PrimalShared.PayInvoiceParams]) async throws -> PrimalShared.NwcResult<Foundation.NSArray>
+  public func multiPayInvoice(params: [PrimalShared.PayInvoiceParams]) async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func multiPayKeysend(params: [PrimalShared.PayKeysendParams]) async throws -> PrimalShared.NwcResult<Foundation.NSArray>
+  public func multiPayKeysend(params: [PrimalShared.PayKeysendParams]) async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func payInvoice(params: PrimalShared.PayInvoiceParams) async throws -> PrimalShared.NwcResult<PrimalShared.PayInvoiceResponsePayload>
+  public func payInvoice(params: PrimalShared.PayInvoiceParams) async throws -> PrimalShared.UtilsResult<PrimalShared.PayInvoiceResponsePayload>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func payKeysend(params: PrimalShared.PayKeysendParams) async throws -> PrimalShared.NwcResult<PrimalShared.PayKeysendResponsePayload>
+  public func payKeysend(params: PrimalShared.PayKeysendParams) async throws -> PrimalShared.UtilsResult<PrimalShared.PayKeysendResponsePayload>
 }
 extension PrimalShared.NostrZapper {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func zap(data: PrimalShared.ZapRequestData) async throws -> PrimalShared.ZapResult
 }
-extension PrimalShared.PrimalApiClient {
+extension PrimalShared.Ktorfit_lib_coreConverterSuspendResponseConverter {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func closeSubscription(subscriptionId: Swift.String) async throws -> PrimalShared.KotlinBoolean
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func query(message: PrimalShared.PrimalCacheFilter) async throws -> PrimalShared.PrimalQueryResult
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func subscribe(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  public func convert(result: any PrimalShared.Ktorfit_lib_coreKtorfitResult) async throws -> Any?
 }
-extension PrimalShared.Kotlinx_coroutines_coreFlow {
+extension PrimalShared.KotlinSuspendFunction0 {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func collect(collector: any PrimalShared.Kotlinx_coroutines_coreFlowCollector) async throws
+  public func invoke() async throws -> Any?
 }
-extension PrimalShared.Kotlinx_coroutines_coreFlowCollector {
+extension PrimalShared.ConnectNwcUseCase {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func emit(value: Any?) async throws
+  public func invoke(userId: Swift.String, nwcUrl: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+}
+extension PrimalShared.LocalTrendingTopicDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAll() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalTrendingTopic]) async throws
+}
+extension PrimalShared.LocalThreadConversationDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func connectArticleWithComment(data: [PrimalShared.LocalArticleCommentCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func connectNoteWithReply(data: [PrimalShared.LocalNoteConversationCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteArticleCrossRefs(articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findCrossRefByCommentId(commentNoteId: Swift.String) async throws -> PrimalShared.LocalArticleCommentCrossRef?
+}
+extension PrimalShared.LocalStreamDataDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findStaleStreamData() async throws -> [PrimalShared.LocalStreamData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findStreamByATag(aTag: Swift.String) async throws -> PrimalShared.LocalStream?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findStreamData(mainHostIds: [Swift.String]) async throws -> [PrimalShared.LocalStreamData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertStreamData(data: [PrimalShared.LocalStreamData]) async throws
+}
+extension PrimalShared.LocalStreamFollowsCrossRefDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByATag(aTag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalStreamFollowsCrossRef) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalStreamFollowsCrossRef]) async throws
+}
+extension PrimalShared.LocalStreamChatMessageDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteMessages(streamATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalStreamChatMessageData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalStreamChatMessageData]) async throws
+}
+extension PrimalShared.LocalRepostDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalRepostData]) async throws
+}
+extension PrimalShared.LocalPublicBookmarkDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllBookmarks(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByTagValue(tagValue: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findByTagValue(tagValue: Swift.String) async throws -> PrimalShared.LocalPublicBookmark?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertBookmarks(data: [PrimalShared.LocalPublicBookmark]) async throws
+}
+extension PrimalShared.LocalProfileDataDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findExistingProfileIds(profileIds: [Swift.String]) async throws -> [Swift.String]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLegendProfileData(profileIds: [Swift.String]) async throws -> [Swift.String : Any]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findMetadataEventId(profileId: Swift.String) async throws -> Swift.String
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileData(profileId: Swift.String) async throws -> PrimalShared.LocalProfileData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileData(profileIds: [Swift.String]) async throws -> [PrimalShared.LocalProfileData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insertOrReplaceAll(data: [PrimalShared.LocalProfileData]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insertOrUpdateAll(data: [PrimalShared.LocalProfileData]) async throws
+}
+extension PrimalShared.LocalProfileStatsDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findProfileStats(profileIds: [Swift.String]) async throws -> [PrimalShared.LocalProfileStats]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insertOrIgnore(data: [PrimalShared.LocalProfileStats]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateFollowers(profileId: Swift.String, followers: Swift.Int32) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalProfileStats) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalProfileStats]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertFollowers(profileId: Swift.String, followers: Swift.Int32) async throws
+}
+extension PrimalShared.LocalPostDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePostById(postId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAndDeletePostById(postId: Swift.String) async throws -> PrimalShared.LocalPostData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findByPostId(postId: Swift.String) async throws -> PrimalShared.LocalPostData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findPosts(postIds: [Swift.String]) async throws -> [PrimalShared.LocalPostData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalPostData]) async throws
+}
+extension PrimalShared.LocalNotificationDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func allCount(ownerId: Swift.String) async throws -> PrimalShared.KotlinInt
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func first(ownerId: Swift.String) async throws -> PrimalShared.LocalNotificationData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func last(ownerId: Swift.String) async throws -> PrimalShared.LocalNotificationData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllUnseenNotificationsAsSeen(ownerId: Swift.String, seenAt: Swift.Int64) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalNotificationData]) async throws
+}
+extension PrimalShared.LocalMutedItemDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteListByOwnerId(ownerId: Swift.String, listType: PrimalShared.LocalListType) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: Swift.Set<PrimalShared.LocalMutedItemData>) async throws
+}
+extension PrimalShared.LocalDirectMessageDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func firstByOwnerId(ownerId: Swift.String) async throws -> PrimalShared.LocalDirectMessageData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func firstByOwnerId(ownerId: Swift.String, participantId: Swift.String) async throws -> PrimalShared.LocalDirectMessageData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func lastByOwnerId(ownerId: Swift.String) async throws -> PrimalShared.LocalDirectMessageData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalDirectMessageData]) async throws
+}
+extension PrimalShared.LocalMessageConversationDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllConversationAsRead(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markConversationAsRead(participantId: Swift.String, ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalMessageConversationData]) async throws
+}
+extension PrimalShared.LocalHighlightDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteById(highlightId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findById(highlightId: Swift.String) async throws -> PrimalShared.LocalHighlight?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalHighlightData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalHighlightData]) async throws
+}
+extension PrimalShared.LocalFollowPackListCrossRefDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func connect(data: [PrimalShared.LocalFollowPackListCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnections() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLast() async throws -> PrimalShared.LocalFollowPackListCrossRef?
+}
+extension PrimalShared.LocalFollowPackDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearCrossRefsByPackATags(aTags: [Swift.String]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getFollowPack(authorId: Swift.String, identifier: Swift.String) async throws -> PrimalShared.LocalFollowPack?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertCrossRefs(refs: [PrimalShared.LocalFollowPackProfileCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertFollowPackData(data: [PrimalShared.LocalFollowPackData]) async throws
+}
+extension PrimalShared.LocalFollowPackRemoteKeyDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAll() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func find(aTag: Swift.String) async throws -> PrimalShared.LocalFollowPackRemoteKey?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLatest() async throws -> PrimalShared.LocalFollowPackRemoteKey?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalFollowPackRemoteKey]) async throws
+}
+extension PrimalShared.LocalFeedPostDataCrossRefDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func connect(data: [PrimalShared.LocalFeedPostDataCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnections(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnectionsByDirective(ownerId: Swift.String, feedSpec: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePostConnections(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLastBySpec(ownerId: Swift.String, spec: Swift.String) async throws -> PrimalShared.LocalFeedPostDataCrossRef?
+}
+extension PrimalShared.LocalFeedDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerIdAndSpec(ownerId: Swift.String, spec: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerIdAndSpecKind(ownerId: Swift.String, specKind: PrimalShared.FeedSpecKind) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getAllFeedsBySpecKind(ownerId: Swift.String, specKind: PrimalShared.FeedSpecKind) async throws -> [PrimalShared.LocalFeed]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalFeed]) async throws
+}
+extension PrimalShared.LocalFeedPostRemoteKeyDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByEventId(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAllByOwnerId(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByDirective(ownerId: Swift.String, directive: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func find(postId: Swift.String?, repostId: Swift.String?, directive: Swift.String, ownerId: Swift.String) async throws -> PrimalShared.LocalFeedPostRemoteKey?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findByEventId(ownerId: Swift.String, eventId: Swift.String) async throws -> PrimalShared.LocalFeedPostRemoteKey?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLatestByDirective(ownerId: Swift.String, directive: Swift.String) async throws -> PrimalShared.LocalFeedPostRemoteKey?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func lastCachedAt(ownerId: Swift.String, directive: Swift.String) async throws -> PrimalShared.KotlinLong?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: [PrimalShared.LocalFeedPostRemoteKey]) async throws
+}
+extension PrimalShared.LocalFeedPostDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAllPostsByIds(postIds: [Swift.String]) async throws -> [PrimalShared.LocalFeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func newestFeedPosts(query: PrimalShared.Room_runtimeRoomRawQuery) async throws -> [PrimalShared.LocalFeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func oldestFeedPosts(query: PrimalShared.Room_runtimeRoomRawQuery) async throws -> [PrimalShared.LocalFeedPost]
+}
+extension PrimalShared.LocalEventZapDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func delete(senderId: Swift.String, receiverId: Swift.String, noteId: Swift.String, timestamp: Swift.Int64) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteAll(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAllByInvoices(invoices: [Swift.String]) async throws -> [PrimalShared.LocalEventZap]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insert(data: PrimalShared.LocalEventZap) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalEventZap]) async throws
+}
+extension PrimalShared.LocalEventUserStatsDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByEventId(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func find(eventId: Swift.String, userId: Swift.String) async throws -> PrimalShared.LocalEventUserStats?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func reduceEventUserStats(eventId: Swift.String, userId: Swift.String, reducer: @escaping (PrimalShared.LocalEventUserStats) -> PrimalShared.LocalEventUserStats) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalEventUserStats) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalEventUserStats]) async throws
+}
+extension PrimalShared.LocalEventUriDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func loadEventUris(noteId: Swift.String, types: [PrimalShared.EventUriType]) async throws -> [PrimalShared.LocalEventUri]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAllEventNostrUris(data: [PrimalShared.LocalEventUriNostr]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAllEventUris(data: [PrimalShared.LocalEventUri]) async throws
+}
+extension PrimalShared.LocalEventStatsDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByEventId(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func find(eventId: Swift.String) async throws -> PrimalShared.LocalEventStats?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func reduceEventStats(eventId: Swift.String, reducer: @escaping (PrimalShared.LocalEventStats) -> PrimalShared.LocalEventStats) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalEventStats) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalEventStats]) async throws
+}
+extension PrimalShared.LocalEventRelayHintsDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findById(eventIds: [Swift.String]) async throws -> [PrimalShared.LocalEventRelayHints]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insert(data: [PrimalShared.LocalEventRelayHints]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func update(data: [PrimalShared.LocalEventRelayHints]) async throws
+}
+extension PrimalShared.LocalArticleDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByATag(articleATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAndDeleteArticleByATag(articleATag: Swift.String) async throws -> PrimalShared.LocalArticle?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findArticleByATag(articleATag: Swift.String) async throws -> PrimalShared.LocalArticle?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(list: [PrimalShared.LocalArticleData]) async throws
+}
+extension PrimalShared.LocalArticleFeedCrossRefDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func connect(data: [PrimalShared.LocalArticleFeedCrossRef]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnections(ownerId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnectionsByATag(articleATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteConnectionsBySpec(ownerId: Swift.String, spec: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findLastBySpec(ownerId: Swift.String, spec: Swift.String) async throws -> PrimalShared.LocalArticleFeedCrossRef?
+}
+extension PrimalShared.UserDataCleanupRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearUserData(userId: Swift.String) async throws
+}
+extension PrimalShared.RemoteArticlesApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getArticleDetails(body: PrimalShared.RemoteArticleDetailsRequestBody) async throws -> PrimalShared.RemoteArticleResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getArticleFeed(body: PrimalShared.RemoteArticleFeedRequestBody) async throws -> PrimalShared.RemoteArticleResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getArticleHighlights(body: PrimalShared.RemoteArticleHighlightsRequestBody) async throws -> PrimalShared.RemoteArticleHighlightsResponse
+}
+extension PrimalShared.ArticleRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteArticleByATag(articleATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleAndComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchArticleHighlights(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getArticleByATag(aTag: Swift.String) async throws -> PrimalShared.Article?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticle(aTag: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticle(articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByCommentId(commentNoteId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleByEventId(eventId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observeArticleComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.PrimalPublisher {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func signPublishImportNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent, outboxRelays: [Swift.String]) async throws -> PrimalShared.PrimalPublishResult
+}
+extension PrimalShared.HighlightRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getHighlightById(highlightId: Swift.String) async throws -> PrimalShared.Highlight?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func publishAndSaveHighlight(userId: Swift.String, content: Swift.String, referencedEventATag: Swift.String?, referencedEventAuthorTag: Swift.String?, context: Swift.String?, alt: Swift.String, createdAt: Swift.Int64) async throws -> PrimalShared.Nevent
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func publishDeleteHighlight(userId: Swift.String, highlightId: Swift.String) async throws
+}
+extension PrimalShared.RemoteUsersApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getDefaultRelays() async throws -> [Swift.String]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getRecommendedBlossomServers() async throws -> [Swift.String]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserBookmarksList(userId: Swift.String) async throws -> PrimalShared.RemoteBookmarksResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserFollowList(userId: Swift.String) async throws -> PrimalShared.RemoteUserContactsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserFollowers(userId: Swift.String) async throws -> PrimalShared.RemoteUsersResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserFollowing(userId: Swift.String) async throws -> PrimalShared.RemoteUsersResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserProfile(userId: Swift.String) async throws -> PrimalShared.RemoteUserProfileResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserProfileFollowedBy(profileId: Swift.String, userId: Swift.String, limit: Swift.Int32) async throws -> PrimalShared.RemoteUserProfilesResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserProfilesMetadata(userIds: Swift.Set<Swift.String>) async throws -> PrimalShared.RemoteUserProfilesResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserRelays(userIds: [Swift.String]) async throws -> PrimalShared.RemoteUsersRelaysResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isUserFollowing(userId: Swift.String, targetUserId: Swift.String) async throws -> PrimalShared.KotlinBoolean
+}
+extension PrimalShared.PublicBookmarksRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addToBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistBookmarks(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func isBookmarked(tagValue: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFromBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
+}
+extension PrimalShared.NostrZapperFactory {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func createOrNull(walletId: Swift.String) async throws -> (any PrimalShared.NostrZapper)?
+}
+extension PrimalShared.EventInteractionRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteEvent(userId: Swift.String, eventIdentifier: Swift.String, eventKind: PrimalShared.NostrEventKind, content: Swift.String, relayHint: Swift.String?) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteZaps(eventId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func likeEvent(userId: Swift.String, eventId: Swift.String, eventAuthorId: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func repostEvent(userId: Swift.String, eventId: Swift.String, eventKind: Swift.Int32, eventAuthorId: Swift.String, eventRawNostrEvent: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func zapEvent(userId: Swift.String, walletId: Swift.String, amountInSats: Swift.UInt64, comment: Swift.String, target: PrimalShared.ZapTarget, zapRequestEvent: PrimalShared.NostrEvent) async throws -> PrimalShared.ZapResult
+}
+extension PrimalShared.EventRelayHintsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findRelaysByIds(eventIds: [Swift.String]) async throws -> [PrimalShared.EventRelayHints]
+}
+extension PrimalShared.RemoteEventStatsApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getEventActions(body: PrimalShared.RemoteEventActionsRequestBody) async throws -> PrimalShared.RemoteEventActionsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getEventZaps(body: PrimalShared.RemoteEventZapsRequestBody) async throws -> PrimalShared.RemoteEventZapsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getReplaceableEvent(body: PrimalShared.RemoteReplaceableEventRequest) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteReplaceableEventResponse>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getReplaceableEvents(body: PrimalShared.RemoteReplaceableEventsRequest) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteReplaceableEventResponse>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getZapReceipts(invoices: [Swift.String]) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteInvoicesToZapReceiptsResponse>
+}
+extension PrimalShared.EventUriRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func loadEventLinks(noteId: Swift.String, types: [PrimalShared.EventUriType]) async throws -> [PrimalShared.EventLink]
+}
+extension PrimalShared.RemoteExploreApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getFollowList(body: PrimalShared.RemoteFollowPackRequestBody) async throws -> PrimalShared.RemoteFollowListsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getFollowLists(body: PrimalShared.RemoteFollowListsRequestBody) async throws -> PrimalShared.RemoteFollowListsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getPopularUsers() async throws -> PrimalShared.RemoteUsersResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getTrendingPeople(body: PrimalShared.RemoteExploreRequestBody) async throws -> PrimalShared.RemoteTrendingPeopleResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getTrendingTopics() async throws -> [PrimalShared.RemoteTopicScore]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getTrendingZaps(body: PrimalShared.RemoteExploreRequestBody) async throws -> PrimalShared.RemoteTrendingZapsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func searchUsers(body: PrimalShared.RemoteSearchUsersRequestBody) async throws -> PrimalShared.RemoteUsersResponse
+}
+extension PrimalShared.ExploreRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowList(profileId: Swift.String, identifier: Swift.String) async throws -> PrimalShared.FollowPack?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowLists(since: PrimalShared.KotlinLong?, until: PrimalShared.KotlinLong?, limit: Swift.Int32, offset: PrimalShared.KotlinInt?) async throws -> [PrimalShared.FollowPack]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchPopularUsers() async throws -> [PrimalShared.UserProfileSearchItem]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingPeople(userId: Swift.String) async throws -> [PrimalShared.ExplorePeopleData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingTopics() async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchTrendingZaps(userId: Swift.String) async throws -> [PrimalShared.ExploreZapNoteData]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func searchUsers(query: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.UserProfileSearchItem]
+}
+extension PrimalShared.StreamRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func awaitLiveStreamSubscriptionStart(naddr: PrimalShared.Naddr, userId: Swift.String, streamContentModerationMode: PrimalShared.StreamContentModerationMode) async throws -> any PrimalShared.Kotlinx_coroutines_coreJob
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findWhoIsLive(mainHostIds: [Swift.String]) async throws -> Swift.Set<Swift.String>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getStaleStreamNaddrs() async throws -> [PrimalShared.Naddr]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getStream(aTag: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.Stream>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func startLiveEventsFromFollowsSubscription(userId: Swift.String) async throws
+}
+extension PrimalShared.LiveStreamChatRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func clearMessages(streamATag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendMessage(userId: Swift.String, streamATag: Swift.String, content: Swift.String) async throws
+}
+extension PrimalShared.NotificationRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllNotificationsAsSeen(authorization: PrimalShared.NostrEvent) async throws
+}
+extension PrimalShared.MutedItemRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistMuteList(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistStreamMuteList(userId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteStreamNotifications(ownerId: Swift.String, pubkey: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteUserAndPersistMuteList(userId: Swift.String, mutedUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func muteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteStreamNotifications(ownerId: Swift.String, pubkey: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteUserAndPersistMuteList(userId: Swift.String, unmutedUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func unmuteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
+}
+extension PrimalShared.FeedsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addDvmFeedLocally(userId: Swift.String, dvmFeed: PrimalShared.DvmFeed, specKind: PrimalShared.FeedSpecKind) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func addFeedLocally(userId: Swift.String, feedSpec: Swift.String, title: Swift.String, description: Swift.String, feedSpecKind: PrimalShared.FeedSpecKind, feedKind: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistArticleFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchAndPersistNoteFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind) async throws -> [PrimalShared.PrimalFeed]?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchRecommendedDvmFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind?) async throws -> [PrimalShared.DvmFeed]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistLocallyAndRemotelyUserFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, feeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistNewDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistRemotelyAllLocalUserFeeds(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFeedLocally(userId: Swift.String, feedSpec: Swift.String) async throws
+}
+extension PrimalShared.FeedRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePostById(postId: Swift.String, userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchConversation(userId: Swift.String, noteId: Swift.String, limit: Swift.Int32) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFeedPageSnapshot(userId: Swift.String, feedSpec: Swift.String, notes: Swift.String?, until: PrimalShared.KotlinLong?, since: PrimalShared.KotlinLong?, order: Swift.String?, limit: Swift.Int32) async throws -> PrimalShared.FeedPageSnapshot
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchReplies(userId: Swift.String, noteId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findAllPostsByIds(postIds: [Swift.String]) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findConversation(userId: Swift.String, noteId: Swift.String) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findNewestPosts(userId: Swift.String, feedDirective: Swift.String, allowMutedThreads: Swift.Bool, limit: Swift.Int32) async throws -> [PrimalShared.FeedPost]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findPostsById(postId: Swift.String) async throws -> PrimalShared.FeedPost?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeFeedSpec(userId: Swift.String, feedSpec: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func replaceFeed(userId: Swift.String, feedSpec: Swift.String, snapshot: PrimalShared.FeedPageSnapshot) async throws
+}
+extension PrimalShared.ChatRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchFollowConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNewConversationMessages(userId: Swift.String, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNonFollowsConversations(userId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markAllMessagesAsRead(authorization: PrimalShared.NostrEvent) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func markConversationAsRead(authorization: PrimalShared.NostrEvent, conversationUserId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func sendMessage(userId: Swift.String, receiverId: Swift.String, text: Swift.String) async throws
+}
+extension PrimalShared.CachingImportRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheEvents(nostrEvents: [PrimalShared.NostrEvent], primalEvents: [PrimalShared.PrimalEvent]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheNostrEvents(events: PrimalShared.KotlinArray<PrimalShared.NostrEvent>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cacheNostrEvents(events: [PrimalShared.NostrEvent]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cachePrimalEvents(events: PrimalShared.KotlinArray<PrimalShared.PrimalEvent>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func cachePrimalEvents(events: [PrimalShared.PrimalEvent]) async throws
+}
+extension PrimalShared.RemoteFeedsApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getDefaultUserFeeds(specKind: PrimalShared.FeedSpecKind) async throws -> PrimalShared.RemoteFeedsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getFeaturedFeeds(specKind: PrimalShared.FeedSpecKind?, pubkey: Swift.String?) async throws -> PrimalShared.RemoteDvmFeedsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getUserFeeds(authorization: PrimalShared.NostrEvent, specKind: PrimalShared.FeedSpecKind) async throws -> PrimalShared.RemoteFeedsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setUserFeeds(userFeedsNostrEvent: PrimalShared.NostrEvent) async throws
+}
+extension PrimalShared.RemoteSettingsApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getAppSettings(authorization: PrimalShared.NostrEvent) async throws -> PrimalShared.RemoteGetAppSettingsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getDefaultAppSettings(pubkey: Swift.String) async throws -> PrimalShared.RemoteGetAppSettingsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getMuteList(userId: Swift.String) async throws -> PrimalShared.RemoteGetMuteListResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getStreamMuteList(userId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteGetStreamMuteListResponse>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setAppSettings(settingsEvent: PrimalShared.NostrEvent) async throws
+}
+extension PrimalShared.RemoteNotificationsApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getLastSeenTimestamp(userId: Swift.String) async throws -> PrimalShared.Kotlinx_datetimeInstant?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getNotifications(body: PrimalShared.RemoteNotificationsRequestBody) async throws -> PrimalShared.RemoteNotificationsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setLastSeenTimestamp(authorization: PrimalShared.NostrEvent) async throws
+}
+extension PrimalShared.RemoteUserWellKnownApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchProfileId(primalName: Swift.String) async throws -> PrimalShared.RemoteProfileWellKnownResponse
+}
+extension PrimalShared.RemoteLiveStreamApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribeToLiveEvent(streamingNaddr: PrimalShared.Naddr, userId: Swift.String, contentModerationMode: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func subscribeToLiveEventsFromFollows(userId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
 }
 extension PrimalShared.Skie.NetworkingPrimal.PrimalSocketSubscription {
   public struct __Suspend<T> where T : AnyObject {
@@ -538,217 +1454,17 @@ extension PrimalShared.NostrSocketClient {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func sendREQ(subscriptionId: Swift.String, data: [Swift.String : PrimalShared.Kotlinx_serialization_jsonJsonElement]) async throws
 }
-extension PrimalShared.KotlinSuspendFunction0 {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func invoke() async throws -> Any?
-}
-extension PrimalShared.PublicBookmarksRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func addToBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchAndPersistBookmarks(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func isBookmarked(tagValue: Swift.String) async throws -> PrimalShared.KotlinBoolean
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func removeFromBookmarks(userId: Swift.String, bookmarkType: PrimalShared.BookmarkType, tagValue: Swift.String, forceUpdate: Swift.Bool) async throws
-}
-extension PrimalShared.EventInteractionRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteEvent(userId: Swift.String, eventIdentifier: Swift.String, eventKind: PrimalShared.NostrEventKind, content: Swift.String, relayHint: Swift.String?) async throws -> PrimalShared.PrimalPublishResult
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func likeEvent(userId: Swift.String, eventId: Swift.String, eventAuthorId: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func repostEvent(userId: Swift.String, eventId: Swift.String, eventKind: Swift.Int32, eventAuthorId: Swift.String, eventRawNostrEvent: Swift.String, optionalTags: [[PrimalShared.Kotlinx_serialization_jsonJsonElement]]) async throws -> PrimalShared.PrimalPublishResult
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func zapEvent(userId: Swift.String, amountInSats: Swift.UInt64, comment: Swift.String, target: PrimalShared.ZapTarget, zapRequestEvent: PrimalShared.NostrEvent) async throws -> PrimalShared.ZapResult
-}
-extension PrimalShared.EventRelayHintsRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findRelaysByIds(eventIds: [Swift.String]) async throws -> [PrimalShared.EventRelayHints]
-}
-extension PrimalShared.EventRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchEventActions(eventId: Swift.String, kind: Swift.Int32) async throws -> [PrimalShared.NostrEventAction]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchEventZaps(userId: Swift.String, eventId: Swift.String, limit: Swift.Int32) async throws
-}
-extension PrimalShared.ExploreRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFollowList(profileId: Swift.String, identifier: Swift.String) async throws -> PrimalShared.FollowPack?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFollowLists(since: PrimalShared.KotlinLong?, until: PrimalShared.KotlinLong?, limit: Swift.Int32, offset: PrimalShared.KotlinInt?) async throws -> [PrimalShared.FollowPack]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchPopularUsers() async throws -> [PrimalShared.UserProfileSearchItem]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchTrendingPeople(userId: Swift.String) async throws -> [PrimalShared.ExplorePeopleData]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchTrendingTopics() async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchTrendingZaps(userId: Swift.String) async throws -> [PrimalShared.ExploreZapNoteData]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func searchUsers(query: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.UserProfileSearchItem]
-}
-extension PrimalShared.FeedsRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func addDvmFeedLocally(userId: Swift.String, dvmFeed: PrimalShared.DvmFeed, specKind: PrimalShared.FeedSpecKind) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func addFeedLocally(userId: Swift.String, feedSpec: Swift.String, title: Swift.String, description: Swift.String, feedSpecKind: PrimalShared.FeedSpecKind, feedKind: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchAndPersistArticleFeeds(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchAndPersistDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchAndPersistNoteFeeds(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind) async throws -> [PrimalShared.PrimalFeed]?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchRecommendedDvmFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind?) async throws -> [PrimalShared.DvmFeed]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func persistLocallyAndRemotelyUserFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, feeds: [PrimalShared.PrimalFeed]) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func persistNewDefaultFeeds(userId: Swift.String, specKind: PrimalShared.FeedSpecKind, givenDefaultFeeds: [PrimalShared.PrimalFeed]) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func persistRemotelyAllLocalUserFeeds(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func removeFeedLocally(userId: Swift.String, feedSpec: Swift.String) async throws
-}
-extension PrimalShared.CachingImportRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func cacheEvents(nostrEvents: [PrimalShared.NostrEvent], primalEvents: [PrimalShared.PrimalEvent]) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func cacheNostrEvents(events: PrimalShared.KotlinArray<PrimalShared.NostrEvent>) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func cacheNostrEvents(events: [PrimalShared.NostrEvent]) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func cachePrimalEvents(events: PrimalShared.KotlinArray<PrimalShared.PrimalEvent>) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func cachePrimalEvents(events: [PrimalShared.PrimalEvent]) async throws
-}
-extension PrimalShared.EventUriRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func loadEventLinks(noteId: Swift.String, types: [PrimalShared.EventUriType]) async throws -> [PrimalShared.EventLink]
-}
-extension PrimalShared.ChatRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFollowConversations(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchNewConversationMessages(userId: Swift.String, conversationUserId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchNonFollowsConversations(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func markAllMessagesAsRead(authorization: PrimalShared.NostrEvent) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func markConversationAsRead(authorization: PrimalShared.NostrEvent, conversationUserId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func sendMessage(userId: Swift.String, receiverId: Swift.String, text: Swift.String) async throws
-}
-extension PrimalShared.MutedItemRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchAndPersistMuteList(userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func muteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func muteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func muteUserAndPersistMuteList(userId: Swift.String, mutedUserId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func muteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func unmuteHashtagAndPersistMuteList(userId: Swift.String, hashtag: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func unmuteThreadAndPersistMuteList(userId: Swift.String, postId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func unmuteUserAndPersistMuteList(userId: Swift.String, unmutedUserId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func unmuteWordAndPersistMuteList(userId: Swift.String, word: Swift.String) async throws
-}
-extension PrimalShared.NotificationRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func markAllNotificationsAsSeen(authorization: PrimalShared.NostrEvent) async throws
-}
-extension PrimalShared.FeedRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deletePostById(postId: Swift.String, userId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchConversation(userId: Swift.String, noteId: Swift.String, limit: Swift.Int32) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFeedPageSnapshot(userId: Swift.String, feedSpec: Swift.String, notes: Swift.String?, until: PrimalShared.KotlinLong?, since: PrimalShared.KotlinLong?, order: Swift.String?, limit: Swift.Int32) async throws -> PrimalShared.FeedPageSnapshot
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchReplies(userId: Swift.String, noteId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findAllPostsByIds(postIds: [Swift.String]) async throws -> [PrimalShared.FeedPost]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findConversation(userId: Swift.String, noteId: Swift.String) async throws -> [PrimalShared.FeedPost]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findNewestPosts(userId: Swift.String, feedDirective: Swift.String, allowMutedThreads: Swift.Bool, limit: Swift.Int32) async throws -> [PrimalShared.FeedPost]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findPostsById(postId: Swift.String) async throws -> PrimalShared.FeedPost?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func removeFeedSpec(userId: Swift.String, feedSpec: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func replaceFeed(userId: Swift.String, feedSpec: Swift.String, snapshot: PrimalShared.FeedPageSnapshot) async throws
-}
-extension PrimalShared.ProfileRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFollowers(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchFollowing(profileId: Swift.String) async throws -> [PrimalShared.UserProfileSearchItem]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchProfile(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchProfileId(primalName: Swift.String) async throws -> Swift.String?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchProfiles(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchUserProfileFollowedBy(profileId: Swift.String, userId: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.ProfileData]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findProfileData(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileData]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findProfileDataOrNull(profileId: Swift.String) async throws -> PrimalShared.ProfileData?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findProfileStats(profileIds: [Swift.String]) async throws -> [PrimalShared.ProfileStats]
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func isUserFollowing(userId: Swift.String, targetUserId: Swift.String) async throws -> PrimalShared.KotlinBoolean
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func reportAbuse(userId: Swift.String, reportType: PrimalShared.ReportType, profileId: Swift.String, eventId: Swift.String?, articleId: Swift.String?) async throws
-}
 extension PrimalShared.NostrEventImporter {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func importEvents(events: [PrimalShared.NostrEvent]) async throws -> PrimalShared.KotlinBoolean
 }
-extension PrimalShared.PrimalPublisher {
+extension PrimalShared.UtilsUpdater {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func signPublishImportNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent, outboxRelays: [Swift.String]) async throws -> PrimalShared.PrimalPublishResult
-}
-extension PrimalShared.ArticleRepository {
+  public func doUpdate() async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteArticleByATag(articleATag: Swift.String) async throws
+  public func updateImmediately() async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchArticleAndComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchArticleHighlights(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getArticleByATag(aTag: Swift.String) async throws -> PrimalShared.Article?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func observeArticle(articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func observeArticleByCommentId(commentNoteId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func observeArticleByEventId(eventId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func observeArticleComments(userId: Swift.String, articleId: Swift.String, articleAuthorId: Swift.String) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
-}
-extension PrimalShared.HighlightRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getHighlightById(highlightId: Swift.String) async throws -> PrimalShared.Highlight?
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func publishAndSaveHighlight(userId: Swift.String, content: Swift.String, referencedEventATag: Swift.String?, referencedEventAuthorTag: Swift.String?, context: Swift.String?, alt: Swift.String, createdAt: Swift.Int64) async throws -> PrimalShared.Nevent
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func publishDeleteHighlight(userId: Swift.String, highlightId: Swift.String) async throws
-}
-extension PrimalShared.UserDataCleanupRepository {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func clearUserData(userId: Swift.String) async throws
+  public func updateWithDebounce(duration: Swift.Int64) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
 }
 extension PrimalShared.BlossomApi {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -772,17 +1488,9 @@ extension PrimalShared.IosPrimalBlossomUploadService {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upload(path: Swift.String, userId: Swift.String, onSignRequested: @escaping (PrimalShared.NostrUnsignedEvent) -> PrimalShared.NostrEvent, onProgress: ((PrimalShared.KotlinInt, PrimalShared.KotlinInt) -> Swift.Void)?) async throws -> PrimalShared.UploadResult
 }
-extension PrimalShared.NostrEventSignatureHandler {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func signNostrEvent(unsignedNostrEvent: PrimalShared.NostrUnsignedEvent) async throws -> PrimalShared.SignResult
-}
 extension PrimalShared.NostrEventPublisher {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func publishNostrEvent(nostrEvent: PrimalShared.NostrEvent, outboxRelays: [Swift.String]) async throws
-}
-extension PrimalShared.NostrZapperFactory {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func createOrNull(userId: Swift.String) async throws -> (any PrimalShared.NostrZapper)?
 }
 extension PrimalShared.Skie.RuntimeKotlin.SkieColdFlowIterator {
   public struct __Suspend<E> where E : AnyObject {
@@ -808,6 +1516,20 @@ extension PrimalShared.Ktor_ioByteWriteChannel {
 extension PrimalShared.Ktor_httpOutgoingContent.WriteChannelContent {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func writeTo(channel: any PrimalShared.Ktor_ioByteWriteChannel) async throws
+}
+extension PrimalShared.RemoteArticleHighlightsResponse {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistToDatabaseAsTransaction(database: PrimalShared.LocalPrimalDatabase) async throws
+}
+extension PrimalShared.RemoteArticleResponse {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistArticleCommentsToDatabase(articleId: Swift.String, articleAuthorId: Swift.String, database: PrimalShared.LocalPrimalDatabase) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistToDatabaseAsTransaction(userId: Swift.String, database: PrimalShared.LocalPrimalDatabase) async throws
+}
+extension PrimalShared.RemoteEventZapsResponse {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistToDatabaseAsTransaction(database: PrimalShared.LocalPrimalDatabase) async throws
 }
 public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
 public func SkieKotlinFlow<T>(_ flow: PrimalShared.SkieSwiftSharedFlow<T>) -> PrimalShared.SkieKotlinFlow<T> where T : AnyObject
@@ -1153,40 +1875,25 @@ extension PrimalShared.KotlinKVariance {
 extension PrimalShared.__KotlinKVariance {
   public func toSwiftEnum() -> PrimalShared.KotlinKVariance
 }
-@frozen public enum Ktor_utilsMonth : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case january
-  case february
-  case march
-  case april
-  case may
-  case june
-  case july
-  case august
-  case september
-  case october
-  case november
-  case december
+@frozen public enum DraftTxStatus : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case draft
+  case sending
+  case sent
+  case failed
   public var name: Swift.String {
     get
   }
   public var ordinal: Swift.Int32 {
     get
   }
-  public var value: Swift.String {
-    get
-  }
-  public static var companion: PrimalShared.__Ktor_utilsMonth.Companion {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth?) -> PrimalShared.Ktor_utilsMonth
-  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsMonth
-  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsMonth
-  public typealias Companion = PrimalShared.__Ktor_utilsMonth.Companion
-  public static func == (a: PrimalShared.Ktor_utilsMonth, b: PrimalShared.Ktor_utilsMonth) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.Ktor_utilsMonth]
-  nonisolated public static var allCases: [PrimalShared.Ktor_utilsMonth] {
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__DraftTxStatus, result: inout PrimalShared.DraftTxStatus?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__DraftTxStatus, result: inout PrimalShared.DraftTxStatus?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__DraftTxStatus?) -> PrimalShared.DraftTxStatus
+  public func _bridgeToObjectiveC() -> PrimalShared.__DraftTxStatus
+  public typealias _ObjectiveCType = PrimalShared.__DraftTxStatus
+  public static func == (a: PrimalShared.DraftTxStatus, b: PrimalShared.DraftTxStatus) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.DraftTxStatus]
+  nonisolated public static var allCases: [PrimalShared.DraftTxStatus] {
     get
   }
   public func hash(into hasher: inout Swift.Hasher)
@@ -1194,41 +1901,29 @@ extension PrimalShared.__KotlinKVariance {
     get
   }
 }
-extension PrimalShared.Ktor_utilsMonth {
-  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsMonth
+extension PrimalShared.DraftTxStatus {
+  public func toKotlinEnum() -> PrimalShared.__DraftTxStatus
 }
-extension PrimalShared.__Ktor_utilsMonth {
-  public func toSwiftEnum() -> PrimalShared.Ktor_utilsMonth
+extension PrimalShared.__DraftTxStatus {
+  public func toSwiftEnum() -> PrimalShared.DraftTxStatus
 }
-@frozen public enum Ktor_utilsWeekDay : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case monday
-  case tuesday
-  case wednesday
-  case thursday
-  case friday
-  case saturday
-  case sunday
+@frozen public enum WalletType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case primal
+  case nwc
   public var name: Swift.String {
     get
   }
   public var ordinal: Swift.Int32 {
     get
   }
-  public var value: Swift.String {
-    get
-  }
-  public static var companion: PrimalShared.__Ktor_utilsWeekDay.Companion {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay?) -> PrimalShared.Ktor_utilsWeekDay
-  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsWeekDay
-  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsWeekDay
-  public typealias Companion = PrimalShared.__Ktor_utilsWeekDay.Companion
-  public static func == (a: PrimalShared.Ktor_utilsWeekDay, b: PrimalShared.Ktor_utilsWeekDay) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.Ktor_utilsWeekDay]
-  nonisolated public static var allCases: [PrimalShared.Ktor_utilsWeekDay] {
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__WalletType, result: inout PrimalShared.WalletType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletType, result: inout PrimalShared.WalletType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletType?) -> PrimalShared.WalletType
+  public func _bridgeToObjectiveC() -> PrimalShared.__WalletType
+  public typealias _ObjectiveCType = PrimalShared.__WalletType
+  public static func == (a: PrimalShared.WalletType, b: PrimalShared.WalletType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.WalletType]
+  nonisolated public static var allCases: [PrimalShared.WalletType] {
     get
   }
   public func hash(into hasher: inout Swift.Hasher)
@@ -1236,11 +1931,320 @@ extension PrimalShared.__Ktor_utilsMonth {
     get
   }
 }
-extension PrimalShared.Ktor_utilsWeekDay {
-  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsWeekDay
+extension PrimalShared.WalletType {
+  public func toKotlinEnum() -> PrimalShared.__WalletType
 }
-extension PrimalShared.__Ktor_utilsWeekDay {
-  public func toSwiftEnum() -> PrimalShared.Ktor_utilsWeekDay
+extension PrimalShared.__WalletType {
+  public func toSwiftEnum() -> PrimalShared.WalletType
+}
+@frozen public enum TxType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case deposit
+  case withdraw
+  public var id: Swift.Int32 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__TxType, result: inout PrimalShared.TxType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TxType, result: inout PrimalShared.TxType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TxType?) -> PrimalShared.TxType
+  public func _bridgeToObjectiveC() -> PrimalShared.__TxType
+  public typealias _ObjectiveCType = PrimalShared.__TxType
+  public static func == (a: PrimalShared.TxType, b: PrimalShared.TxType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.TxType]
+  nonisolated public static var allCases: [PrimalShared.TxType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.TxType {
+  public func toKotlinEnum() -> PrimalShared.__TxType
+}
+extension PrimalShared.__TxType {
+  public func toSwiftEnum() -> PrimalShared.TxType
+}
+@frozen public enum TxState : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case created
+  case processing
+  case succeeded
+  case failed
+  case canceled
+  public var id: Swift.Int32 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public func isPending() -> Swift.Bool
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__TxState, result: inout PrimalShared.TxState?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TxState, result: inout PrimalShared.TxState?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TxState?) -> PrimalShared.TxState
+  public func _bridgeToObjectiveC() -> PrimalShared.__TxState
+  public typealias _ObjectiveCType = PrimalShared.__TxState
+  public static func == (a: PrimalShared.TxState, b: PrimalShared.TxState) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.TxState]
+  nonisolated public static var allCases: [PrimalShared.TxState] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.TxState {
+  public func toKotlinEnum() -> PrimalShared.__TxState
+}
+extension PrimalShared.__TxState {
+  public func toSwiftEnum() -> PrimalShared.TxState
+}
+@frozen public enum SubWallet : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case open
+  public var id: Swift.Int32 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__SubWallet.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__SubWallet, result: inout PrimalShared.SubWallet?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__SubWallet, result: inout PrimalShared.SubWallet?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__SubWallet?) -> PrimalShared.SubWallet
+  public func _bridgeToObjectiveC() -> PrimalShared.__SubWallet
+  public typealias _ObjectiveCType = PrimalShared.__SubWallet
+  public typealias Companion = PrimalShared.__SubWallet.Companion
+  public static func == (a: PrimalShared.SubWallet, b: PrimalShared.SubWallet) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.SubWallet]
+  nonisolated public static var allCases: [PrimalShared.SubWallet] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.SubWallet {
+  public func toKotlinEnum() -> PrimalShared.__SubWallet
+}
+extension PrimalShared.__SubWallet {
+  public func toSwiftEnum() -> PrimalShared.SubWallet
+}
+@frozen public enum Network : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case lightning
+  case bitcoin
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__Network.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Network, result: inout PrimalShared.Network?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Network, result: inout PrimalShared.Network?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Network?) -> PrimalShared.Network
+  public func _bridgeToObjectiveC() -> PrimalShared.__Network
+  public typealias _ObjectiveCType = PrimalShared.__Network
+  public typealias Companion = PrimalShared.__Network.Companion
+  public static func == (a: PrimalShared.Network, b: PrimalShared.Network) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Network]
+  nonisolated public static var allCases: [PrimalShared.Network] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Network {
+  public func toKotlinEnum() -> PrimalShared.__Network
+}
+extension PrimalShared.__Network {
+  public func toSwiftEnum() -> PrimalShared.Network
+}
+@frozen public enum WalletKycLevel : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case none
+  case email
+  public var id: Swift.Int32 {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__WalletKycLevel.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__WalletKycLevel, result: inout PrimalShared.WalletKycLevel?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletKycLevel, result: inout PrimalShared.WalletKycLevel?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletKycLevel?) -> PrimalShared.WalletKycLevel
+  public func _bridgeToObjectiveC() -> PrimalShared.__WalletKycLevel
+  public typealias _ObjectiveCType = PrimalShared.__WalletKycLevel
+  public typealias Companion = PrimalShared.__WalletKycLevel.Companion
+  public static func == (a: PrimalShared.WalletKycLevel, b: PrimalShared.WalletKycLevel) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.WalletKycLevel]
+  nonisolated public static var allCases: [PrimalShared.WalletKycLevel] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.WalletKycLevel {
+  public func toKotlinEnum() -> PrimalShared.__WalletKycLevel
+}
+extension PrimalShared.__WalletKycLevel {
+  public func toSwiftEnum() -> PrimalShared.WalletKycLevel
+}
+@frozen public enum WalletActivationStatus : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case pendingData
+  case pendingOtpVerification
+  case activationSuccess
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__WalletActivationStatus, result: inout PrimalShared.WalletActivationStatus?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletActivationStatus, result: inout PrimalShared.WalletActivationStatus?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__WalletActivationStatus?) -> PrimalShared.WalletActivationStatus
+  public func _bridgeToObjectiveC() -> PrimalShared.__WalletActivationStatus
+  public typealias _ObjectiveCType = PrimalShared.__WalletActivationStatus
+  public static func == (a: PrimalShared.WalletActivationStatus, b: PrimalShared.WalletActivationStatus) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.WalletActivationStatus]
+  nonisolated public static var allCases: [PrimalShared.WalletActivationStatus] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.WalletActivationStatus {
+  public func toKotlinEnum() -> PrimalShared.__WalletActivationStatus
+}
+extension PrimalShared.__WalletActivationStatus {
+  public func toSwiftEnum() -> PrimalShared.WalletActivationStatus
+}
+@frozen public enum CurrencyMode : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case fiat
+  case sats
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public func not() -> PrimalShared.CurrencyMode
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__CurrencyMode, result: inout PrimalShared.CurrencyMode?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__CurrencyMode, result: inout PrimalShared.CurrencyMode?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__CurrencyMode?) -> PrimalShared.CurrencyMode
+  public func _bridgeToObjectiveC() -> PrimalShared.__CurrencyMode
+  public typealias _ObjectiveCType = PrimalShared.__CurrencyMode
+  public static func == (a: PrimalShared.CurrencyMode, b: PrimalShared.CurrencyMode) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.CurrencyMode]
+  nonisolated public static var allCases: [PrimalShared.CurrencyMode] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.CurrencyMode {
+  public func toKotlinEnum() -> PrimalShared.__CurrencyMode
+}
+extension PrimalShared.__CurrencyMode {
+  public func toSwiftEnum() -> PrimalShared.CurrencyMode
+}
+@frozen public enum InvoiceType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case incoming
+  case outgoing
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__InvoiceType.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__InvoiceType, result: inout PrimalShared.InvoiceType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__InvoiceType, result: inout PrimalShared.InvoiceType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__InvoiceType?) -> PrimalShared.InvoiceType
+  public func _bridgeToObjectiveC() -> PrimalShared.__InvoiceType
+  public typealias _ObjectiveCType = PrimalShared.__InvoiceType
+  public typealias Companion = PrimalShared.__InvoiceType.Companion
+  public static func == (a: PrimalShared.InvoiceType, b: PrimalShared.InvoiceType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.InvoiceType]
+  nonisolated public static var allCases: [PrimalShared.InvoiceType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.InvoiceType {
+  public func toKotlinEnum() -> PrimalShared.__InvoiceType
+}
+extension PrimalShared.__InvoiceType {
+  public func toSwiftEnum() -> PrimalShared.InvoiceType
+}
+@frozen public enum ReportType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case nudity
+  case profanity
+  case illegal
+  case spam
+  case impersonation
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType?) -> PrimalShared.ReportType
+  public func _bridgeToObjectiveC() -> PrimalShared.__ReportType
+  public typealias _ObjectiveCType = PrimalShared.__ReportType
+  public static func == (a: PrimalShared.ReportType, b: PrimalShared.ReportType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.ReportType]
+  nonisolated public static var allCases: [PrimalShared.ReportType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.ReportType {
+  public func toKotlinEnum() -> PrimalShared.__ReportType
+}
+extension PrimalShared.__ReportType {
+  public func toSwiftEnum() -> PrimalShared.ReportType
 }
 @frozen public enum NostrEventKind : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case metadata
@@ -1260,6 +2264,7 @@ extension PrimalShared.__Ktor_utilsWeekDay {
   case channelHideMessage
   case channelMuteUser
   case fileMetadata
+  case chatMessage
   case reporting
   case zapRequest
   case zap
@@ -1269,6 +2274,7 @@ extension PrimalShared.__Ktor_utilsWeekDay {
   case relayListMetadata
   case bookmarksList
   case blossomServerList
+  case streamMuteList
   case walletInfo
   case clientAuthentication
   case nwcRequest
@@ -1281,6 +2287,7 @@ extension PrimalShared.__Ktor_utilsWeekDay {
   case badgeDefinition
   case longFormContent
   case applicationSpecificData
+  case liveActivity
   case appRecommendation
   case appHandler
   case starterPack
@@ -1329,6 +2336,7 @@ extension PrimalShared.__Ktor_utilsWeekDay {
   case primalLegendLeaderboard
   case primalPremiumLeaderboard
   case primalRecommendedBlossomServer
+  case primalInvoicesToZapRequests
   case primalWalletOperation
   case primalWalletBalance
   case primalWalletDepositInvoice
@@ -1394,42 +2402,6 @@ extension PrimalShared.NostrEventKind {
 }
 extension PrimalShared.__NostrEventKind {
   public func toSwiftEnum() -> PrimalShared.NostrEventKind
-}
-@frozen public enum ReportType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case nudity
-  case profanity
-  case illegal
-  case spam
-  case impersonation
-  public var id: Swift.String {
-    get
-  }
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType, result: inout PrimalShared.ReportType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ReportType?) -> PrimalShared.ReportType
-  public func _bridgeToObjectiveC() -> PrimalShared.__ReportType
-  public typealias _ObjectiveCType = PrimalShared.__ReportType
-  public static func == (a: PrimalShared.ReportType, b: PrimalShared.ReportType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.ReportType]
-  nonisolated public static var allCases: [PrimalShared.ReportType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.ReportType {
-  public func toKotlinEnum() -> PrimalShared.__ReportType
-}
-extension PrimalShared.__ReportType {
-  public func toSwiftEnum() -> PrimalShared.ReportType
 }
 extension PrimalShared.Nip19TLV {
   public typealias Type_ = PrimalShared.__Bridge__Nip19TLV_Type_
@@ -1538,6 +2510,310 @@ extension PrimalShared.Bech32.__Encoding {
     get
   }
 }
+@frozen public enum StreamStatus : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case planned
+  case live
+  case ended
+  public var name: Swift.String {
+    get
+  }
+  public var nostrValue: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__StreamStatus.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__StreamStatus, result: inout PrimalShared.StreamStatus?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__StreamStatus, result: inout PrimalShared.StreamStatus?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__StreamStatus?) -> PrimalShared.StreamStatus
+  public func _bridgeToObjectiveC() -> PrimalShared.__StreamStatus
+  public typealias _ObjectiveCType = PrimalShared.__StreamStatus
+  public typealias Companion = PrimalShared.__StreamStatus.Companion
+  public static func == (a: PrimalShared.StreamStatus, b: PrimalShared.StreamStatus) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.StreamStatus]
+  nonisolated public static var allCases: [PrimalShared.StreamStatus] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.StreamStatus {
+  public func toKotlinEnum() -> PrimalShared.__StreamStatus
+}
+extension PrimalShared.__StreamStatus {
+  public func toSwiftEnum() -> PrimalShared.StreamStatus
+}
+@frozen public enum BookmarkType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case note
+  case article
+  case stream
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType?) -> PrimalShared.BookmarkType
+  public func _bridgeToObjectiveC() -> PrimalShared.__BookmarkType
+  public typealias _ObjectiveCType = PrimalShared.__BookmarkType
+  public static func == (a: PrimalShared.BookmarkType, b: PrimalShared.BookmarkType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.BookmarkType]
+  nonisolated public static var allCases: [PrimalShared.BookmarkType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.BookmarkType {
+  public func toKotlinEnum() -> PrimalShared.__BookmarkType
+}
+extension PrimalShared.__BookmarkType {
+  public func toSwiftEnum() -> PrimalShared.BookmarkType
+}
+@frozen public enum NotificationType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case newUserFollowedYou
+  case yourPostWasZapped
+  case yourPostWasLiked
+  case yourPostWasReposted
+  case yourPostWasRepliedTo
+  case youWereMentionedInPost
+  case yourPostWasMentionedInPost
+  case postYouWereMentionedInWasZapped
+  case postYouWereMentionedInWasLiked
+  case postYouWereMentionedInWasReposted
+  case postYouWereMentionedInWasRepliedTo
+  case postYourPostWasMentionedInWasZapped
+  case postYourPostWasMentionedInWasLiked
+  case postYourPostWasMentionedInWasReposted
+  case postYourPostWasMentionedInWasRepliedTo
+  case yourPostWasHighlighted
+  case yourPostWasBookmarked
+  case liveEventHappening
+  public var collapsable: Swift.Bool {
+    get
+  }
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var type: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__NotificationType.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType?) -> PrimalShared.NotificationType
+  public func _bridgeToObjectiveC() -> PrimalShared.__NotificationType
+  public typealias _ObjectiveCType = PrimalShared.__NotificationType
+  public typealias Companion = PrimalShared.__NotificationType.Companion
+  public static func == (a: PrimalShared.NotificationType, b: PrimalShared.NotificationType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.NotificationType]
+  nonisolated public static var allCases: [PrimalShared.NotificationType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.NotificationType {
+  public func toKotlinEnum() -> PrimalShared.__NotificationType
+}
+extension PrimalShared.__NotificationType {
+  public func toSwiftEnum() -> PrimalShared.NotificationType
+}
+@frozen public enum EventUriType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case image
+  case video
+  case audio
+  case pdf
+  case youTube
+  case rumble
+  case spotify
+  case tidal
+  case gitHub
+  case other
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType?) -> PrimalShared.EventUriType
+  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriType
+  public typealias _ObjectiveCType = PrimalShared.__EventUriType
+  public static func == (a: PrimalShared.EventUriType, b: PrimalShared.EventUriType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.EventUriType]
+  nonisolated public static var allCases: [PrimalShared.EventUriType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.EventUriType {
+  public func toKotlinEnum() -> PrimalShared.__EventUriType
+}
+extension PrimalShared.__EventUriType {
+  public func toSwiftEnum() -> PrimalShared.EventUriType
+}
+@frozen public enum EventUriNostrType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case zap
+  case note
+  case stream
+  case profile
+  case article
+  case highlight
+  case unsupported
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType?) -> PrimalShared.EventUriNostrType
+  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriNostrType
+  public typealias _ObjectiveCType = PrimalShared.__EventUriNostrType
+  public static func == (a: PrimalShared.EventUriNostrType, b: PrimalShared.EventUriNostrType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.EventUriNostrType]
+  nonisolated public static var allCases: [PrimalShared.EventUriNostrType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.EventUriNostrType {
+  public func toKotlinEnum() -> PrimalShared.__EventUriNostrType
+}
+extension PrimalShared.__EventUriNostrType {
+  public func toSwiftEnum() -> PrimalShared.EventUriNostrType
+}
+@frozen public enum ConversationRelation : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case follows
+  case other
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__ConversationRelation.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation?) -> PrimalShared.ConversationRelation
+  public func _bridgeToObjectiveC() -> PrimalShared.__ConversationRelation
+  public typealias _ObjectiveCType = PrimalShared.__ConversationRelation
+  public typealias Companion = PrimalShared.__ConversationRelation.Companion
+  public static func == (a: PrimalShared.ConversationRelation, b: PrimalShared.ConversationRelation) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.ConversationRelation]
+  nonisolated public static var allCases: [PrimalShared.ConversationRelation] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.ConversationRelation {
+  public func toKotlinEnum() -> PrimalShared.__ConversationRelation
+}
+extension PrimalShared.__ConversationRelation {
+  public func toSwiftEnum() -> PrimalShared.ConversationRelation
+}
+@frozen public enum FeedSpecKind : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case reads
+  case notes
+  public var id: Swift.String {
+    get
+  }
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var settingsKey: Swift.String {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind?) -> PrimalShared.FeedSpecKind
+  public func _bridgeToObjectiveC() -> PrimalShared.__FeedSpecKind
+  public typealias _ObjectiveCType = PrimalShared.__FeedSpecKind
+  public static func == (a: PrimalShared.FeedSpecKind, b: PrimalShared.FeedSpecKind) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.FeedSpecKind]
+  nonisolated public static var allCases: [PrimalShared.FeedSpecKind] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.FeedSpecKind {
+  public func toKotlinEnum() -> PrimalShared.__FeedSpecKind
+}
+extension PrimalShared.__FeedSpecKind {
+  public func toSwiftEnum() -> PrimalShared.FeedSpecKind
+}
+@frozen public enum StreamContentModerationMode : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case moderated
+  case none
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__StreamContentModerationMode, result: inout PrimalShared.StreamContentModerationMode?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__StreamContentModerationMode, result: inout PrimalShared.StreamContentModerationMode?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__StreamContentModerationMode?) -> PrimalShared.StreamContentModerationMode
+  public func _bridgeToObjectiveC() -> PrimalShared.__StreamContentModerationMode
+  public typealias _ObjectiveCType = PrimalShared.__StreamContentModerationMode
+  public static func == (a: PrimalShared.StreamContentModerationMode, b: PrimalShared.StreamContentModerationMode) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.StreamContentModerationMode]
+  nonisolated public static var allCases: [PrimalShared.StreamContentModerationMode] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.StreamContentModerationMode {
+  public func toKotlinEnum() -> PrimalShared.__StreamContentModerationMode
+}
+extension PrimalShared.__StreamContentModerationMode {
+  public func toSwiftEnum() -> PrimalShared.StreamContentModerationMode
+}
 @frozen public enum PrimalServerType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case caching
   case upload
@@ -1568,39 +2844,6 @@ extension PrimalShared.PrimalServerType {
 }
 extension PrimalShared.__PrimalServerType {
   public func toSwiftEnum() -> PrimalShared.PrimalServerType
-}
-@frozen public enum BookmarkType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case note
-  case article
-  public var id: Swift.String {
-    get
-  }
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType, result: inout PrimalShared.BookmarkType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__BookmarkType?) -> PrimalShared.BookmarkType
-  public func _bridgeToObjectiveC() -> PrimalShared.__BookmarkType
-  public typealias _ObjectiveCType = PrimalShared.__BookmarkType
-  public static func == (a: PrimalShared.BookmarkType, b: PrimalShared.BookmarkType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.BookmarkType]
-  nonisolated public static var allCases: [PrimalShared.BookmarkType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.BookmarkType {
-  public func toKotlinEnum() -> PrimalShared.__BookmarkType
-}
-extension PrimalShared.__BookmarkType {
-  public func toSwiftEnum() -> PrimalShared.BookmarkType
 }
 @frozen public enum PrimalScope : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case follows
@@ -1666,206 +2909,6 @@ extension PrimalShared.PrimalTimeframe {
 extension PrimalShared.__PrimalTimeframe {
   public func toSwiftEnum() -> PrimalShared.PrimalTimeframe
 }
-@frozen public enum EventUriType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case image
-  case video
-  case audio
-  case pdf
-  case youTube
-  case rumble
-  case spotify
-  case tidal
-  case gitHub
-  case other
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType, result: inout PrimalShared.EventUriType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriType?) -> PrimalShared.EventUriType
-  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriType
-  public typealias _ObjectiveCType = PrimalShared.__EventUriType
-  public static func == (a: PrimalShared.EventUriType, b: PrimalShared.EventUriType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.EventUriType]
-  nonisolated public static var allCases: [PrimalShared.EventUriType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.EventUriType {
-  public func toKotlinEnum() -> PrimalShared.__EventUriType
-}
-extension PrimalShared.__EventUriType {
-  public func toSwiftEnum() -> PrimalShared.EventUriType
-}
-@frozen public enum EventUriNostrType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case zap
-  case note
-  case profile
-  case article
-  case highlight
-  case unsupported
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType, result: inout PrimalShared.EventUriNostrType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__EventUriNostrType?) -> PrimalShared.EventUriNostrType
-  public func _bridgeToObjectiveC() -> PrimalShared.__EventUriNostrType
-  public typealias _ObjectiveCType = PrimalShared.__EventUriNostrType
-  public static func == (a: PrimalShared.EventUriNostrType, b: PrimalShared.EventUriNostrType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.EventUriNostrType]
-  nonisolated public static var allCases: [PrimalShared.EventUriNostrType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.EventUriNostrType {
-  public func toKotlinEnum() -> PrimalShared.__EventUriNostrType
-}
-extension PrimalShared.__EventUriNostrType {
-  public func toSwiftEnum() -> PrimalShared.EventUriNostrType
-}
-@frozen public enum FeedSpecKind : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case reads
-  case notes
-  public var id: Swift.String {
-    get
-  }
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public var settingsKey: Swift.String {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind, result: inout PrimalShared.FeedSpecKind?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__FeedSpecKind?) -> PrimalShared.FeedSpecKind
-  public func _bridgeToObjectiveC() -> PrimalShared.__FeedSpecKind
-  public typealias _ObjectiveCType = PrimalShared.__FeedSpecKind
-  public static func == (a: PrimalShared.FeedSpecKind, b: PrimalShared.FeedSpecKind) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.FeedSpecKind]
-  nonisolated public static var allCases: [PrimalShared.FeedSpecKind] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.FeedSpecKind {
-  public func toKotlinEnum() -> PrimalShared.__FeedSpecKind
-}
-extension PrimalShared.__FeedSpecKind {
-  public func toSwiftEnum() -> PrimalShared.FeedSpecKind
-}
-@frozen public enum ConversationRelation : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case follows
-  case other
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static var companion: PrimalShared.__ConversationRelation.Companion {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation, result: inout PrimalShared.ConversationRelation?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__ConversationRelation?) -> PrimalShared.ConversationRelation
-  public func _bridgeToObjectiveC() -> PrimalShared.__ConversationRelation
-  public typealias _ObjectiveCType = PrimalShared.__ConversationRelation
-  public typealias Companion = PrimalShared.__ConversationRelation.Companion
-  public static func == (a: PrimalShared.ConversationRelation, b: PrimalShared.ConversationRelation) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.ConversationRelation]
-  nonisolated public static var allCases: [PrimalShared.ConversationRelation] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.ConversationRelation {
-  public func toKotlinEnum() -> PrimalShared.__ConversationRelation
-}
-extension PrimalShared.__ConversationRelation {
-  public func toSwiftEnum() -> PrimalShared.ConversationRelation
-}
-@frozen public enum NotificationType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case newUserFollowedYou
-  case yourPostWasZapped
-  case yourPostWasLiked
-  case yourPostWasReposted
-  case yourPostWasRepliedTo
-  case youWereMentionedInPost
-  case yourPostWasMentionedInPost
-  case postYouWereMentionedInWasZapped
-  case postYouWereMentionedInWasLiked
-  case postYouWereMentionedInWasReposted
-  case postYouWereMentionedInWasRepliedTo
-  case postYourPostWasMentionedInWasZapped
-  case postYourPostWasMentionedInWasLiked
-  case postYourPostWasMentionedInWasReposted
-  case postYourPostWasMentionedInWasRepliedTo
-  case yourPostWasHighlighted
-  case yourPostWasBookmarked
-  public var collapsable: Swift.Bool {
-    get
-  }
-  public var id: Swift.String {
-    get
-  }
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public var type: Swift.Int32 {
-    get
-  }
-  public static var companion: PrimalShared.__NotificationType.Companion {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType, result: inout PrimalShared.NotificationType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__NotificationType?) -> PrimalShared.NotificationType
-  public func _bridgeToObjectiveC() -> PrimalShared.__NotificationType
-  public typealias _ObjectiveCType = PrimalShared.__NotificationType
-  public typealias Companion = PrimalShared.__NotificationType.Companion
-  public static func == (a: PrimalShared.NotificationType, b: PrimalShared.NotificationType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.NotificationType]
-  nonisolated public static var allCases: [PrimalShared.NotificationType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension PrimalShared.NotificationType {
-  public func toKotlinEnum() -> PrimalShared.__NotificationType
-}
-extension PrimalShared.__NotificationType {
-  public func toSwiftEnum() -> PrimalShared.NotificationType
-}
 @frozen public enum NotificationSettingsSection : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case pushNotifications
   case notificationsInTab
@@ -1896,6 +2939,227 @@ extension PrimalShared.NotificationSettingsSection {
 }
 extension PrimalShared.__NotificationSettingsSection {
   public func toSwiftEnum() -> PrimalShared.NotificationSettingsSection
+}
+@frozen public enum Paging_commonRemoteMediatorInitializeAction : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case launchInitialRefresh
+  case skipInitialRefresh
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonRemoteMediatorInitializeAction, result: inout PrimalShared.Paging_commonRemoteMediatorInitializeAction?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonRemoteMediatorInitializeAction, result: inout PrimalShared.Paging_commonRemoteMediatorInitializeAction?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonRemoteMediatorInitializeAction?) -> PrimalShared.Paging_commonRemoteMediatorInitializeAction
+  public func _bridgeToObjectiveC() -> PrimalShared.__Paging_commonRemoteMediatorInitializeAction
+  public typealias _ObjectiveCType = PrimalShared.__Paging_commonRemoteMediatorInitializeAction
+  public static func == (a: PrimalShared.Paging_commonRemoteMediatorInitializeAction, b: PrimalShared.Paging_commonRemoteMediatorInitializeAction) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Paging_commonRemoteMediatorInitializeAction]
+  nonisolated public static var allCases: [PrimalShared.Paging_commonRemoteMediatorInitializeAction] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Paging_commonRemoteMediatorInitializeAction {
+  public func toKotlinEnum() -> PrimalShared.__Paging_commonRemoteMediatorInitializeAction
+}
+extension PrimalShared.__Paging_commonRemoteMediatorInitializeAction {
+  public func toSwiftEnum() -> PrimalShared.Paging_commonRemoteMediatorInitializeAction
+}
+@frozen public enum Paging_commonLoadType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case refresh
+  case prepend
+  case append
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType?) -> PrimalShared.Paging_commonLoadType
+  public func _bridgeToObjectiveC() -> PrimalShared.__Paging_commonLoadType
+  public typealias _ObjectiveCType = PrimalShared.__Paging_commonLoadType
+  public static func == (a: PrimalShared.Paging_commonLoadType, b: PrimalShared.Paging_commonLoadType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Paging_commonLoadType]
+  nonisolated public static var allCases: [PrimalShared.Paging_commonLoadType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Paging_commonLoadType {
+  public func toKotlinEnum() -> PrimalShared.__Paging_commonLoadType
+}
+extension PrimalShared.__Paging_commonLoadType {
+  public func toSwiftEnum() -> PrimalShared.Paging_commonLoadType
+}
+@frozen public enum Ktor_utilsMonth : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case january
+  case february
+  case march
+  case april
+  case may
+  case june
+  case july
+  case august
+  case september
+  case october
+  case november
+  case december
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var value: Swift.String {
+    get
+  }
+  public static var companion: PrimalShared.__Ktor_utilsMonth.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth, result: inout PrimalShared.Ktor_utilsMonth?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsMonth?) -> PrimalShared.Ktor_utilsMonth
+  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsMonth
+  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsMonth
+  public typealias Companion = PrimalShared.__Ktor_utilsMonth.Companion
+  public static func == (a: PrimalShared.Ktor_utilsMonth, b: PrimalShared.Ktor_utilsMonth) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Ktor_utilsMonth]
+  nonisolated public static var allCases: [PrimalShared.Ktor_utilsMonth] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Ktor_utilsMonth {
+  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsMonth
+}
+extension PrimalShared.__Ktor_utilsMonth {
+  public func toSwiftEnum() -> PrimalShared.Ktor_utilsMonth
+}
+@frozen public enum Ktor_utilsWeekDay : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case monday
+  case tuesday
+  case wednesday
+  case thursday
+  case friday
+  case saturday
+  case sunday
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public var value: Swift.String {
+    get
+  }
+  public static var companion: PrimalShared.__Ktor_utilsWeekDay.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay, result: inout PrimalShared.Ktor_utilsWeekDay?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Ktor_utilsWeekDay?) -> PrimalShared.Ktor_utilsWeekDay
+  public func _bridgeToObjectiveC() -> PrimalShared.__Ktor_utilsWeekDay
+  public typealias _ObjectiveCType = PrimalShared.__Ktor_utilsWeekDay
+  public typealias Companion = PrimalShared.__Ktor_utilsWeekDay.Companion
+  public static func == (a: PrimalShared.Ktor_utilsWeekDay, b: PrimalShared.Ktor_utilsWeekDay) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.Ktor_utilsWeekDay]
+  nonisolated public static var allCases: [PrimalShared.Ktor_utilsWeekDay] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.Ktor_utilsWeekDay {
+  public func toKotlinEnum() -> PrimalShared.__Ktor_utilsWeekDay
+}
+extension PrimalShared.__Ktor_utilsWeekDay {
+  public func toSwiftEnum() -> PrimalShared.Ktor_utilsWeekDay
+}
+@frozen public enum LocalListType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case muteList
+  case streamMuteList
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__LocalListType.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__LocalListType, result: inout PrimalShared.LocalListType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalListType, result: inout PrimalShared.LocalListType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalListType?) -> PrimalShared.LocalListType
+  public func _bridgeToObjectiveC() -> PrimalShared.__LocalListType
+  public typealias _ObjectiveCType = PrimalShared.__LocalListType
+  public typealias Companion = PrimalShared.__LocalListType.Companion
+  public static func == (a: PrimalShared.LocalListType, b: PrimalShared.LocalListType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.LocalListType]
+  nonisolated public static var allCases: [PrimalShared.LocalListType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.LocalListType {
+  public func toKotlinEnum() -> PrimalShared.__LocalListType
+}
+extension PrimalShared.__LocalListType {
+  public func toSwiftEnum() -> PrimalShared.LocalListType
+}
+@frozen public enum LocalMutedItemType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case user
+  case hashtag
+  case word
+  case thread
+  case stream
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static var companion: PrimalShared.__LocalMutedItemType.Companion {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__LocalMutedItemType, result: inout PrimalShared.LocalMutedItemType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalMutedItemType, result: inout PrimalShared.LocalMutedItemType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalMutedItemType?) -> PrimalShared.LocalMutedItemType
+  public func _bridgeToObjectiveC() -> PrimalShared.__LocalMutedItemType
+  public typealias _ObjectiveCType = PrimalShared.__LocalMutedItemType
+  public typealias Companion = PrimalShared.__LocalMutedItemType.Companion
+  public static func == (a: PrimalShared.LocalMutedItemType, b: PrimalShared.LocalMutedItemType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.LocalMutedItemType]
+  nonisolated public static var allCases: [PrimalShared.LocalMutedItemType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.LocalMutedItemType {
+  public func toKotlinEnum() -> PrimalShared.__LocalMutedItemType
+}
+extension PrimalShared.__LocalMutedItemType {
+  public func toSwiftEnum() -> PrimalShared.LocalMutedItemType
 }
 extension PrimalShared.Mime {
   public typealias Type_ = PrimalShared.__Bridge__Mime_Type_
@@ -2007,89 +3271,111 @@ extension PrimalShared.BignumRoundingMode {
 extension PrimalShared.__BignumRoundingMode {
   public func toSwiftEnum() -> PrimalShared.BignumRoundingMode
 }
-@frozen public enum Paging_commonLoadType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
-  case refresh
-  case prepend
-  case append
-  public var name: Swift.String {
-    get
-  }
-  public var ordinal: Swift.Int32 {
-    get
-  }
-  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?)
-  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType, result: inout PrimalShared.Paging_commonLoadType?) -> Swift.Bool
-  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__Paging_commonLoadType?) -> PrimalShared.Paging_commonLoadType
-  public func _bridgeToObjectiveC() -> PrimalShared.__Paging_commonLoadType
-  public typealias _ObjectiveCType = PrimalShared.__Paging_commonLoadType
-  public static func == (a: PrimalShared.Paging_commonLoadType, b: PrimalShared.Paging_commonLoadType) -> Swift.Bool
-  public typealias AllCases = [PrimalShared.Paging_commonLoadType]
-  nonisolated public static var allCases: [PrimalShared.Paging_commonLoadType] {
-    get
-  }
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
+extension PrimalShared.Skie.Primal_data_wallet__repository.CreateLightningInvoiceRequest {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case nWC(PrimalShared.CreateLightningInvoiceRequest.NWC)
+    case primal(PrimalShared.CreateLightningInvoiceRequest.Primal)
+    public static func == (a: PrimalShared.Skie.Primal_data_wallet__repository.CreateLightningInvoiceRequest.__Sealed, b: PrimalShared.Skie.Primal_data_wallet__repository.CreateLightningInvoiceRequest.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
   }
 }
-extension PrimalShared.Paging_commonLoadType {
-  public func toKotlinEnum() -> PrimalShared.__Paging_commonLoadType
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal_data_wallet__repository.CreateLightningInvoiceRequest.__Sealed where __Sealed : PrimalShared.CreateLightningInvoiceRequest
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal_data_wallet__repository.CreateLightningInvoiceRequest.__Sealed? where __Sealed : PrimalShared.CreateLightningInvoiceRequest
+extension PrimalShared.Skie.Primal_data_wallet__repository.TransactionsRequest {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case nWC(PrimalShared.TransactionsRequest.NWC)
+    case primal(PrimalShared.TransactionsRequest.Primal)
+    public static func == (a: PrimalShared.Skie.Primal_data_wallet__repository.TransactionsRequest.__Sealed, b: PrimalShared.Skie.Primal_data_wallet__repository.TransactionsRequest.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
 }
-extension PrimalShared.__Paging_commonLoadType {
-  public func toSwiftEnum() -> PrimalShared.Paging_commonLoadType
-}
-extension PrimalShared.Skie.NetworkingNwc.NwcResult {
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal_data_wallet__repository.TransactionsRequest.__Sealed where __Sealed : PrimalShared.TransactionsRequest
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal_data_wallet__repository.TransactionsRequest.__Sealed? where __Sealed : PrimalShared.TransactionsRequest
+extension PrimalShared.Skie.Utils.Result {
   @frozen public enum __Sealed<T> : Swift.Hashable where T : AnyObject {
-    case failure(PrimalShared.NwcResultFailure<T>)
-    case success(PrimalShared.NwcResultSuccess<T>)
-    public static func == (a: PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>, b: PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>) -> Swift.Bool
+    case `else`
+    public static func == (a: PrimalShared.Skie.Utils.Result.__Sealed<T>, b: PrimalShared.Skie.Utils.Result.__Sealed<T>) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
   }
 }
-public func onEnum<T, __Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T> where T : AnyObject, __Sealed : PrimalShared.NwcResult<T>
-@_disfavoredOverload public func onEnum<T, __Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingNwc.NwcResult.__Sealed<T>? where T : AnyObject, __Sealed : PrimalShared.NwcResult<T>
-extension PrimalShared.Skie.NetworkingNwc.NwcMethod {
+public func onEnum<T, __Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Utils.Result.__Sealed<T> where T : AnyObject, __Sealed : PrimalShared.UtilsResult<T>
+@_disfavoredOverload public func onEnum<T, __Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Utils.Result.__Sealed<T>? where T : AnyObject, __Sealed : PrimalShared.UtilsResult<T>
+extension PrimalShared.Skie.Wallet.Wallet {
   @frozen public enum __Sealed : Swift.Hashable {
-    case getBalance(PrimalShared.NwcMethod.GetBalance)
-    case getInfo(PrimalShared.NwcMethod.GetInfo)
-    case listTransactions(PrimalShared.NwcMethod.ListTransactions)
-    case lookupInvoice(PrimalShared.NwcMethod.LookupInvoice)
-    case makeInvoice(PrimalShared.NwcMethod.MakeInvoice)
-    case multiPayInvoice(PrimalShared.NwcMethod.MultiPayInvoice)
-    case multiPayKeysend(PrimalShared.NwcMethod.MultiPayKeysend)
-    case payInvoice(PrimalShared.NwcMethod.PayInvoice)
-    case payKeysend(PrimalShared.NwcMethod.PayKeysend)
-    case paymentReceived(PrimalShared.NwcMethod.PaymentReceived)
-    case paymentSent(PrimalShared.NwcMethod.PaymentSent)
-    public static func == (a: PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed, b: PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed) -> Swift.Bool
+    case nWC(PrimalShared.Wallet.NWC)
+    case primal(PrimalShared.Wallet.Primal)
+    public static func == (a: PrimalShared.Skie.Wallet.Wallet.__Sealed, b: PrimalShared.Skie.Wallet.Wallet.__Sealed) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
   }
 }
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed where __Sealed : PrimalShared.NwcMethod
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingNwc.NwcMethod.__Sealed? where __Sealed : PrimalShared.NwcMethod
-extension PrimalShared.Skie.KtorHttp.OutgoingContent {
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Wallet.Wallet.__Sealed where __Sealed : PrimalShared.Wallet
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Wallet.Wallet.__Sealed? where __Sealed : PrimalShared.Wallet
+extension PrimalShared.Skie.Wallet.TxRequest {
   @frozen public enum __Sealed : Swift.Hashable {
-    case byteArrayContent(PrimalShared.Ktor_httpOutgoingContent.ByteArrayContent)
-    case contentWrapper(PrimalShared.Ktor_httpOutgoingContent.ContentWrapper)
-    case noContent(PrimalShared.Ktor_httpOutgoingContent.NoContent)
-    case protocolUpgrade(PrimalShared.Ktor_httpOutgoingContent.ProtocolUpgrade)
-    case readChannelContent(PrimalShared.Ktor_httpOutgoingContent.ReadChannelContent)
-    case writeChannelContent(PrimalShared.Ktor_httpOutgoingContent.WriteChannelContent)
-    public static func == (a: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed, b: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed) -> Swift.Bool
+    case bitcoinOnChain(PrimalShared.TxRequest.BitcoinOnChain)
+    case lightning(PrimalShared.TxRequest.Lightning)
+    public static func == (a: PrimalShared.Skie.Wallet.TxRequest.__Sealed, b: PrimalShared.Skie.Wallet.TxRequest.__Sealed) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
   }
 }
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed where __Sealed : PrimalShared.Ktor_httpOutgoingContent
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed? where __Sealed : PrimalShared.Ktor_httpOutgoingContent
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Wallet.TxRequest.__Sealed where __Sealed : PrimalShared.TxRequest
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Wallet.TxRequest.__Sealed? where __Sealed : PrimalShared.TxRequest
+extension PrimalShared.Skie.Wallet.TxRequest.Lightning {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case lnInvoice(PrimalShared.TxRequest.LightningLnInvoice)
+    case lnUrl(PrimalShared.TxRequest.LightningLnUrl)
+    public static func == (a: PrimalShared.Skie.Wallet.TxRequest.Lightning.__Sealed, b: PrimalShared.Skie.Wallet.TxRequest.Lightning.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Wallet.TxRequest.Lightning.__Sealed where __Sealed : PrimalShared.TxRequest.Lightning
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Wallet.TxRequest.Lightning.__Sealed? where __Sealed : PrimalShared.TxRequest.Lightning
+extension PrimalShared.Skie.Wallet.Transaction {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case lightning(PrimalShared.Transaction.Lightning)
+    case onChain(PrimalShared.Transaction.OnChain)
+    case storePurchase(PrimalShared.Transaction.StorePurchase)
+    case zap(PrimalShared.Transaction.Zap)
+    public static func == (a: PrimalShared.Skie.Wallet.Transaction.__Sealed, b: PrimalShared.Skie.Wallet.Transaction.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Wallet.Transaction.__Sealed where __Sealed : PrimalShared.Transaction
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Wallet.Transaction.__Sealed? where __Sealed : PrimalShared.Transaction
+extension PrimalShared.Skie.Wallet.Region {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case country(PrimalShared.Country)
+    case state(PrimalShared.State)
+    public static func == (a: PrimalShared.Skie.Wallet.Region.__Sealed, b: PrimalShared.Skie.Wallet.Region.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Wallet.Region.__Sealed where __Sealed : PrimalShared.Region
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Wallet.Region.__Sealed? where __Sealed : PrimalShared.Region
 extension PrimalShared.Skie.KotlinxSerializationCore.SerialKind {
   @frozen public enum __Sealed : Swift.Hashable {
     case polymorphicKind(PrimalShared.Kotlinx_serialization_corePolymorphicKind)
@@ -2223,32 +3509,58 @@ extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2 {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause2
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause2.__Sealed? where __Sealed : PrimalShared.Kotlinx_coroutines_coreSelectClause2
-extension PrimalShared.Skie.KotlinxIoCore.Source {
+extension PrimalShared.Skie.RemoteNwc.NwcMethod {
   @frozen public enum __Sealed : Swift.Hashable {
-    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
-    case `else`
-    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed) -> Swift.Bool
+    case getBalance(PrimalShared.NwcMethod.GetBalance)
+    case getInfo(PrimalShared.NwcMethod.GetInfo)
+    case listTransactions(PrimalShared.NwcMethod.ListTransactions)
+    case lookupInvoice(PrimalShared.NwcMethod.LookupInvoice)
+    case makeInvoice(PrimalShared.NwcMethod.MakeInvoice)
+    case multiPayInvoice(PrimalShared.NwcMethod.MultiPayInvoice)
+    case multiPayKeysend(PrimalShared.NwcMethod.MultiPayKeysend)
+    case payInvoice(PrimalShared.NwcMethod.PayInvoice)
+    case payKeysend(PrimalShared.NwcMethod.PayKeysend)
+    case paymentReceived(PrimalShared.NwcMethod.PaymentReceived)
+    case paymentSent(PrimalShared.NwcMethod.PaymentSent)
+    public static func == (a: PrimalShared.Skie.RemoteNwc.NwcMethod.__Sealed, b: PrimalShared.Skie.RemoteNwc.NwcMethod.__Sealed) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
   }
 }
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSource
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSource
-extension PrimalShared.Skie.KotlinxIoCore.Sink {
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.RemoteNwc.NwcMethod.__Sealed where __Sealed : PrimalShared.NwcMethod
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.RemoteNwc.NwcMethod.__Sealed? where __Sealed : PrimalShared.NwcMethod
+extension PrimalShared.Skie.Nostr.SignResult {
   @frozen public enum __Sealed : Swift.Hashable {
-    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
-    case `else`
-    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed) -> Swift.Bool
+    case rejected(PrimalShared.SignResult.Rejected)
+    case signed(PrimalShared.SignResult.Signed)
+    public static func == (a: PrimalShared.Skie.Nostr.SignResult.__Sealed, b: PrimalShared.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
     public func hash(into hasher: inout Swift.Hasher)
     public var hashValue: Swift.Int {
       get
     }
   }
 }
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSink
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSink
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.SignResult.__Sealed where __Sealed : PrimalShared.SignResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.SignResult.__Sealed? where __Sealed : PrimalShared.SignResult
+extension PrimalShared.Skie.Nostr.NostrEntity {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case naddr(PrimalShared.Naddr)
+    case nevent(PrimalShared.Nevent)
+    case nprofile(PrimalShared.Nprofile)
+    public static func == (a: PrimalShared.Skie.Nostr.NostrEntity.__Sealed, b: PrimalShared.Skie.Nostr.NostrEntity.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.NostrEntity.__Sealed where __Sealed : PrimalShared.NostrEntity
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.NostrEntity.__Sealed? where __Sealed : PrimalShared.NostrEntity
+extension PrimalShared.NostrEntity {
+  public func toNostrString() -> Swift.String
+}
 extension PrimalShared.Skie.Nostr.ZapResult {
   @frozen public enum __Sealed : Swift.Hashable {
     case failure(PrimalShared.ZapResult.Failure)
@@ -2276,19 +3588,6 @@ extension PrimalShared.Skie.Nostr.ZapTarget {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapTarget.__Sealed where __Sealed : PrimalShared.ZapTarget
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapTarget.__Sealed? where __Sealed : PrimalShared.ZapTarget
-extension PrimalShared.Skie.Nostr.SignResult {
-  @frozen public enum __Sealed : Swift.Hashable {
-    case rejected(PrimalShared.SignResult.Rejected)
-    case signed(PrimalShared.SignResult.Signed)
-    public static func == (a: PrimalShared.Skie.Nostr.SignResult.__Sealed, b: PrimalShared.Skie.Nostr.SignResult.__Sealed) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.SignResult.__Sealed where __Sealed : PrimalShared.SignResult
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.SignResult.__Sealed? where __Sealed : PrimalShared.SignResult
 extension PrimalShared.Skie.Nostr.ZapError {
   @frozen public enum __Sealed : Swift.Hashable {
     case failedToFetchZapInvoice(PrimalShared.ZapError.FailedToFetchZapInvoice)
@@ -2306,6 +3605,35 @@ extension PrimalShared.Skie.Nostr.ZapError {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Nostr.ZapError.__Sealed where __Sealed : PrimalShared.ZapError
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Nostr.ZapError.__Sealed? where __Sealed : PrimalShared.ZapError
+extension PrimalShared.Skie.RemotePrimal.WalletOperationRequestBody {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case activateWalletRequestBody(PrimalShared.Remote_primalActivateWalletRequestBody)
+    case balanceRequestBody(PrimalShared.Remote_primalBalanceRequestBody)
+    case depositRequestBody(PrimalShared.Remote_primalDepositRequestBody)
+    case emptyRequestBody(PrimalShared.Remote_primalEmptyRequestBody)
+    case exchangeRateRequestBody(PrimalShared.Remote_primalExchangeRateRequestBody)
+    case getActivationCodeRequestBody(PrimalShared.Remote_primalGetActivationCodeRequestBody)
+    case inAppPurchaseQuoteRequestBody(PrimalShared.Remote_primalInAppPurchaseQuoteRequestBody)
+    case inAppPurchaseRequestBody(PrimalShared.Remote_primalInAppPurchaseRequestBody)
+    case isWalletUserRequestBody(PrimalShared.Remote_primalIsWalletUserRequestBody)
+    case miningFeesRequestBody(PrimalShared.Remote_primalMiningFeesRequestBody)
+    case nwcCreateNewConnectionRequestBody(PrimalShared.Remote_primalNwcCreateNewConnectionRequestBody)
+    case nwcRevokeConnectionRequestBody(PrimalShared.Remote_primalNwcRevokeConnectionRequestBody)
+    case parseLnInvoiceRequestBody(PrimalShared.Remote_primalParseLnInvoiceRequestBody)
+    case parseLnUrlRequestBody(PrimalShared.Remote_primalParseLnUrlRequestBody)
+    case promoCodeRequestBody(PrimalShared.Remote_primalPromoCodeRequestBody)
+    case transactionsRequestBody(PrimalShared.Remote_primalTransactionsRequestBody)
+    case userWalletInfoRequestBody(PrimalShared.Remote_primalUserWalletInfoRequestBody)
+    case withdrawRequestBody(PrimalShared.Remote_primalWithdrawRequestBody)
+    public static func == (a: PrimalShared.Skie.RemotePrimal.WalletOperationRequestBody.__Sealed, b: PrimalShared.Skie.RemotePrimal.WalletOperationRequestBody.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.RemotePrimal.WalletOperationRequestBody.__Sealed where __Sealed : PrimalShared.Remote_primalWalletOperationRequestBody
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.RemotePrimal.WalletOperationRequestBody.__Sealed? where __Sealed : PrimalShared.Remote_primalWalletOperationRequestBody
 extension PrimalShared.Skie.KotlinxSerializationJson.JsonElement {
   @frozen public enum __Sealed : Swift.Hashable {
     case jsonPrimitive(PrimalShared.Kotlinx_serialization_jsonJsonPrimitive)
@@ -2332,24 +3660,6 @@ extension PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonPrimitive
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxSerializationJson.JsonPrimitive.__Sealed? where __Sealed : PrimalShared.Kotlinx_serialization_jsonJsonPrimitive
-extension PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage {
-  @frozen public enum __Sealed : Swift.Hashable {
-    case authMessage(PrimalShared.NostrIncomingMessage.AuthMessage)
-    case countMessage(PrimalShared.NostrIncomingMessage.CountMessage)
-    case eoseMessage(PrimalShared.NostrIncomingMessage.EoseMessage)
-    case eventMessage(PrimalShared.NostrIncomingMessage.EventMessage)
-    case eventsMessage(PrimalShared.NostrIncomingMessage.EventsMessage)
-    case noticeMessage(PrimalShared.NostrIncomingMessage.NoticeMessage)
-    case okMessage(PrimalShared.NostrIncomingMessage.OkMessage)
-    public static func == (a: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed, b: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed where __Sealed : PrimalShared.NostrIncomingMessage
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed? where __Sealed : PrimalShared.NostrIncomingMessage
 extension PrimalShared.Skie.Primal.NotificationSettingsType {
   @frozen public enum __Sealed : Swift.Hashable {
     case preferences(PrimalShared.NotificationSettingsType.Preferences)
@@ -2414,6 +3724,135 @@ extension PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed where __Sealed : PrimalShared.NotificationSettingsType.TabNotifications
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal.NotificationSettingsType.TabNotifications.__Sealed? where __Sealed : PrimalShared.NotificationSettingsType.TabNotifications
+extension PrimalShared.Skie.PagingCommon.PagingSource.LoadResult {
+  @frozen public enum __Sealed<Key, Value> : Swift.Hashable where Key : AnyObject, Value : AnyObject {
+    case error(PrimalShared.Paging_commonPagingSourceLoadResultError<Key, Value>)
+    case invalid(PrimalShared.Paging_commonPagingSourceLoadResultInvalid<Key, Value>)
+    case page(PrimalShared.Paging_commonPagingSourceLoadResultPage<Key, Value>)
+    public static func == (a: PrimalShared.Skie.PagingCommon.PagingSource.LoadResult.__Sealed<Key, Value>, b: PrimalShared.Skie.PagingCommon.PagingSource.LoadResult.__Sealed<Key, Value>) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<Key, Value, __Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.PagingSource.LoadResult.__Sealed<Key, Value> where Key : AnyObject, Value : AnyObject, __Sealed : PrimalShared.Paging_commonPagingSourceLoadResult<Key, Value>
+@_disfavoredOverload public func onEnum<Key, Value, __Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.PagingSource.LoadResult.__Sealed<Key, Value>? where Key : AnyObject, Value : AnyObject, __Sealed : PrimalShared.Paging_commonPagingSourceLoadResult<Key, Value>
+extension PrimalShared.Skie.PagingCommon.PagingSource.LoadParams {
+  @frozen public enum __Sealed<Key> : Swift.Hashable where Key : AnyObject {
+    case append(PrimalShared.Paging_commonPagingSourceLoadParamsAppend<Key>)
+    case prepend(PrimalShared.Paging_commonPagingSourceLoadParamsPrepend<Key>)
+    case refresh(PrimalShared.Paging_commonPagingSourceLoadParamsRefresh<Key>)
+    public static func == (a: PrimalShared.Skie.PagingCommon.PagingSource.LoadParams.__Sealed<Key>, b: PrimalShared.Skie.PagingCommon.PagingSource.LoadParams.__Sealed<Key>) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<Key, __Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.PagingSource.LoadParams.__Sealed<Key> where Key : AnyObject, __Sealed : PrimalShared.Paging_commonPagingSourceLoadParams<Key>
+@_disfavoredOverload public func onEnum<Key, __Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.PagingSource.LoadParams.__Sealed<Key>? where Key : AnyObject, __Sealed : PrimalShared.Paging_commonPagingSourceLoadParams<Key>
+extension PrimalShared.Skie.PagingCommon.RemoteMediator.MediatorResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case error(PrimalShared.Paging_commonRemoteMediatorMediatorResult.Error)
+    case success(PrimalShared.Paging_commonRemoteMediatorMediatorResult.Success)
+    public static func == (a: PrimalShared.Skie.PagingCommon.RemoteMediator.MediatorResult.__Sealed, b: PrimalShared.Skie.PagingCommon.RemoteMediator.MediatorResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.RemoteMediator.MediatorResult.__Sealed where __Sealed : PrimalShared.Paging_commonRemoteMediatorMediatorResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.RemoteMediator.MediatorResult.__Sealed? where __Sealed : PrimalShared.Paging_commonRemoteMediatorMediatorResult
+extension PrimalShared.Skie.PagingCommon.LoadState {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case error(PrimalShared.Paging_commonLoadState.Error)
+    case loading(PrimalShared.Paging_commonLoadState.Loading)
+    case notLoading(PrimalShared.Paging_commonLoadState.NotLoading)
+    public static func == (a: PrimalShared.Skie.PagingCommon.LoadState.__Sealed, b: PrimalShared.Skie.PagingCommon.LoadState.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed where __Sealed : PrimalShared.Paging_commonLoadState
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed? where __Sealed : PrimalShared.Paging_commonLoadState
+extension PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case authMessage(PrimalShared.NostrIncomingMessage.AuthMessage)
+    case countMessage(PrimalShared.NostrIncomingMessage.CountMessage)
+    case eoseMessage(PrimalShared.NostrIncomingMessage.EoseMessage)
+    case eventMessage(PrimalShared.NostrIncomingMessage.EventMessage)
+    case eventsMessage(PrimalShared.NostrIncomingMessage.EventsMessage)
+    case noticeMessage(PrimalShared.NostrIncomingMessage.NoticeMessage)
+    case okMessage(PrimalShared.NostrIncomingMessage.OkMessage)
+    public static func == (a: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed, b: PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed where __Sealed : PrimalShared.NostrIncomingMessage
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.NetworkingPrimal.NostrIncomingMessage.__Sealed? where __Sealed : PrimalShared.NostrIncomingMessage
+extension PrimalShared.Skie.KtorHttp.OutgoingContent {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case byteArrayContent(PrimalShared.Ktor_httpOutgoingContent.ByteArrayContent)
+    case contentWrapper(PrimalShared.Ktor_httpOutgoingContent.ContentWrapper)
+    case noContent(PrimalShared.Ktor_httpOutgoingContent.NoContent)
+    case protocolUpgrade(PrimalShared.Ktor_httpOutgoingContent.ProtocolUpgrade)
+    case readChannelContent(PrimalShared.Ktor_httpOutgoingContent.ReadChannelContent)
+    case writeChannelContent(PrimalShared.Ktor_httpOutgoingContent.WriteChannelContent)
+    public static func == (a: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed, b: PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed where __Sealed : PrimalShared.Ktor_httpOutgoingContent
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KtorHttp.OutgoingContent.__Sealed? where __Sealed : PrimalShared.Ktor_httpOutgoingContent
+extension PrimalShared.Skie.KotlinxIoCore.Source {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Source.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSource
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Source.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSource
+extension PrimalShared.Skie.KotlinxIoCore.Sink {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case buffer(PrimalShared.Kotlinx_io_coreBuffer)
+    case `else`
+    public static func == (a: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed, b: PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed where __Sealed : PrimalShared.Kotlinx_io_coreSink
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KotlinxIoCore.Sink.__Sealed? where __Sealed : PrimalShared.Kotlinx_io_coreSink
+extension PrimalShared.Skie.KtorfitLibCore.KtorfitResult {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case failure(PrimalShared.Ktorfit_lib_coreKtorfitResultFailure)
+    case success(PrimalShared.Ktorfit_lib_coreKtorfitResultSuccess)
+    public static func == (a: PrimalShared.Skie.KtorfitLibCore.KtorfitResult.__Sealed, b: PrimalShared.Skie.KtorfitLibCore.KtorfitResult.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.KtorfitLibCore.KtorfitResult.__Sealed where __Sealed : PrimalShared.Ktorfit_lib_coreKtorfitResult
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.KtorfitLibCore.KtorfitResult.__Sealed? where __Sealed : PrimalShared.Ktorfit_lib_coreKtorfitResult
 extension PrimalShared.Skie.KotlinxDatetime.DateTimeFormat {
   @frozen public enum __Sealed : Swift.Hashable {
     case `else`
@@ -2479,24 +3918,21 @@ extension PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed where __Sealed : PrimalShared.Skie_SuspendResult
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.RuntimeKotlin.Skie_SuspendResult.__Sealed? where __Sealed : PrimalShared.Skie_SuspendResult
-extension PrimalShared.Skie.PagingCommon.LoadState {
-  @frozen public enum __Sealed : Swift.Hashable {
-    case error(PrimalShared.Paging_commonLoadState.Error)
-    case loading(PrimalShared.Paging_commonLoadState.Loading)
-    case notLoading(PrimalShared.Paging_commonLoadState.NotLoading)
-    public static func == (a: PrimalShared.Skie.PagingCommon.LoadState.__Sealed, b: PrimalShared.Skie.PagingCommon.LoadState.__Sealed) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
-public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed where __Sealed : PrimalShared.Paging_commonLoadState
-@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.PagingCommon.LoadState.__Sealed? where __Sealed : PrimalShared.Paging_commonLoadState
-public var MAX_RELAY_HINTS: Swift.Int32 {
+public var WalletRegionJson: Swift.String {
   get
 }
 extension Swift.String {
+  public func isNwcUrl() -> Swift.Bool
+  public func parseNWCUrl() -> PrimalShared.NostrWalletConnect
+  public func isBitcoinUri() -> Swift.Bool
+  public func isLightningAddress() -> Swift.Bool
+  public func isLightningUri() -> Swift.Bool
+  public func isLnInvoice() -> Swift.Bool
+  public func isLnUrl() -> Swift.Bool
+  public func parseBitcoinPaymentInstructions() -> PrimalShared.BitcoinPaymentInstruction?
+  public func parseLightningPaymentInstructions() -> Swift.String?
+  public func parseSatsToUsd(currentExchangeRate: PrimalShared.KotlinDouble?) -> Swift.String
+  public func parseUsdToSats(currentExchangeRate: PrimalShared.KotlinDouble?) -> Swift.String
   public func asAltTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
   public func asContextTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
   public func asEventIdTag(relayHint: Swift.String?, marker: Swift.String?, authorPubkey: Swift.String?) -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
@@ -2512,6 +3948,7 @@ extension Swift.String {
   public func parsePubkeyTags(marker: Swift.String?) -> Swift.Set<Swift.AnyHashable>
   public func parseReplaceableEventTags(marker: Swift.String?) -> Swift.Set<Swift.AnyHashable>
   public func assureValidNsec() -> Swift.String
+  public func bech32ToHexOrNull() -> Swift.String?
   public func bech32ToHexOrThrow() -> Swift.String
   public func bechToBytesOrThrow(hrp: Swift.String?) throws -> PrimalShared.KotlinByteArray
   public func extractKeyPairFromPrivateKeyOrThrow() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
@@ -2521,7 +3958,10 @@ extension Swift.String {
   public func urlToLnUrlHrp() -> Swift.String
   public func parseHashtags() -> [Swift.String]
   public func decodeLNUrlOrNull() -> Swift.String?
+  public func ensureEncodedLnUrl() -> Swift.String
   public func parseAsLNUrlOrNull() -> Swift.String?
+  public func stripLightningPrefix() -> Swift.String
+  public func asNostrEntity() -> PrimalShared.UtilsResult<any PrimalShared.NostrEntity>
   public func clearAtSignFromNostrUris() -> Swift.String
   public func extractEventId() -> Swift.String?
   public func extractNoteId() -> Swift.String?
@@ -2540,8 +3980,8 @@ extension Swift.String {
   public func nostrUriToBytes() -> PrimalShared.KotlinByteArray?
   public func nostrUriToNoteId() -> Swift.String?
   public func nostrUriToNoteIdAndRelay() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
-  public func nostrUriToPubkey() -> Swift.String?
   public func nostrUriToPubkeyAndRelay() -> PrimalShared.KotlinPair<Foundation.NSString, Foundation.NSString>
+  public func npubToPubkey() -> Swift.String?
   public func parseNostrUris() -> [Swift.String]
   public func takeAsNaddrOrNull() -> PrimalShared.Naddr?
   public func takeAsNaddrStringOrNull() -> Swift.String?
@@ -2552,7 +3992,6 @@ extension Swift.String {
   public func asEllipsizedNpub() -> Swift.String
   public func formatNip05Identifier() -> Swift.String
   public func isValidHex() -> Swift.Bool
-  public func parseIncomingMessage() -> PrimalShared.NostrIncomingMessage?
   public func extractAdvancedSearchQuery() -> Swift.String?
   public func extractPubkeyFromFeedSpec(prefix: Swift.String?, suffix: Swift.String?) -> Swift.String?
   public func extractSimpleSearchQuery() -> Swift.String?
@@ -2576,6 +4015,10 @@ extension Swift.String {
   public func resolveFeedSpecKind() -> PrimalShared.FeedSpecKind?
   public func supportsNoteReposts() -> Swift.Bool
   public func supportsUpwardsNotesPagination() -> Swift.Bool
+  public func parseIncomingMessage() -> PrimalShared.NostrIncomingMessage?
+}
+public var MAX_RELAY_HINTS: Swift.Int32 {
+  get
 }
 extension Swift.Int64 {
   public func asExpirationTag() -> [PrimalShared.Kotlinx_serialization_jsonJsonElement]
@@ -2610,51 +4053,84 @@ public var DEFAULT_ZAP_CONFIG: [PrimalShared.ContentZapConfigItem] {
 public var DEFAULT_ZAP_DEFAULT: PrimalShared.ContentZapDefault {
   get
 }
+public func resolveStreamStatus(status: PrimalShared.StreamStatus, streamingUrl: Swift.String?, startsAt: PrimalShared.KotlinLong?, endsAt: PrimalShared.KotlinLong?, createdAt: Swift.Int64) -> PrimalShared.StreamStatus
 public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
 extension PrimalShared.KotlinKVariance : Swift.Sendable {}
 extension PrimalShared.KotlinKVariance : Swift.BitwiseCopyable {}
-extension PrimalShared.Ktor_utilsMonth : Swift.Sendable {}
-extension PrimalShared.Ktor_utilsMonth : Swift.BitwiseCopyable {}
-extension PrimalShared.Ktor_utilsWeekDay : Swift.Sendable {}
-extension PrimalShared.Ktor_utilsWeekDay : Swift.BitwiseCopyable {}
-extension PrimalShared.NostrEventKind : Swift.Sendable {}
-extension PrimalShared.NostrEventKind : Swift.BitwiseCopyable {}
+extension PrimalShared.DraftTxStatus : Swift.Sendable {}
+extension PrimalShared.DraftTxStatus : Swift.BitwiseCopyable {}
+extension PrimalShared.WalletType : Swift.Sendable {}
+extension PrimalShared.WalletType : Swift.BitwiseCopyable {}
+extension PrimalShared.TxType : Swift.Sendable {}
+extension PrimalShared.TxType : Swift.BitwiseCopyable {}
+extension PrimalShared.TxState : Swift.Sendable {}
+extension PrimalShared.TxState : Swift.BitwiseCopyable {}
+extension PrimalShared.SubWallet : Swift.Sendable {}
+extension PrimalShared.SubWallet : Swift.BitwiseCopyable {}
+extension PrimalShared.Network : Swift.Sendable {}
+extension PrimalShared.Network : Swift.BitwiseCopyable {}
+extension PrimalShared.WalletKycLevel : Swift.Sendable {}
+extension PrimalShared.WalletKycLevel : Swift.BitwiseCopyable {}
+extension PrimalShared.WalletActivationStatus : Swift.Sendable {}
+extension PrimalShared.WalletActivationStatus : Swift.BitwiseCopyable {}
+extension PrimalShared.CurrencyMode : Swift.Sendable {}
+extension PrimalShared.CurrencyMode : Swift.BitwiseCopyable {}
+extension PrimalShared.InvoiceType : Swift.Sendable {}
+extension PrimalShared.InvoiceType : Swift.BitwiseCopyable {}
 extension PrimalShared.ReportType : Swift.Sendable {}
 extension PrimalShared.ReportType : Swift.BitwiseCopyable {}
+extension PrimalShared.NostrEventKind : Swift.Sendable {}
+extension PrimalShared.NostrEventKind : Swift.BitwiseCopyable {}
 extension PrimalShared.__Bridge__Nip19TLV_Type_ : Swift.Sendable {}
 extension PrimalShared.__Bridge__Nip19TLV_Type_ : Swift.BitwiseCopyable {}
 extension PrimalShared.ReactionType : Swift.Sendable {}
 extension PrimalShared.ReactionType : Swift.BitwiseCopyable {}
 extension PrimalShared.__Bridge__Bech32_Encoding : Swift.Sendable {}
 extension PrimalShared.__Bridge__Bech32_Encoding : Swift.BitwiseCopyable {}
-extension PrimalShared.PrimalServerType : Swift.Sendable {}
-extension PrimalShared.PrimalServerType : Swift.BitwiseCopyable {}
+extension PrimalShared.StreamStatus : Swift.Sendable {}
+extension PrimalShared.StreamStatus : Swift.BitwiseCopyable {}
 extension PrimalShared.BookmarkType : Swift.Sendable {}
 extension PrimalShared.BookmarkType : Swift.BitwiseCopyable {}
-extension PrimalShared.PrimalScope : Swift.Sendable {}
-extension PrimalShared.PrimalScope : Swift.BitwiseCopyable {}
-extension PrimalShared.PrimalTimeframe : Swift.Sendable {}
-extension PrimalShared.PrimalTimeframe : Swift.BitwiseCopyable {}
+extension PrimalShared.NotificationType : Swift.Sendable {}
+extension PrimalShared.NotificationType : Swift.BitwiseCopyable {}
 extension PrimalShared.EventUriType : Swift.Sendable {}
 extension PrimalShared.EventUriType : Swift.BitwiseCopyable {}
 extension PrimalShared.EventUriNostrType : Swift.Sendable {}
 extension PrimalShared.EventUriNostrType : Swift.BitwiseCopyable {}
-extension PrimalShared.FeedSpecKind : Swift.Sendable {}
-extension PrimalShared.FeedSpecKind : Swift.BitwiseCopyable {}
 extension PrimalShared.ConversationRelation : Swift.Sendable {}
 extension PrimalShared.ConversationRelation : Swift.BitwiseCopyable {}
-extension PrimalShared.NotificationType : Swift.Sendable {}
-extension PrimalShared.NotificationType : Swift.BitwiseCopyable {}
+extension PrimalShared.FeedSpecKind : Swift.Sendable {}
+extension PrimalShared.FeedSpecKind : Swift.BitwiseCopyable {}
+extension PrimalShared.StreamContentModerationMode : Swift.Sendable {}
+extension PrimalShared.StreamContentModerationMode : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalServerType : Swift.Sendable {}
+extension PrimalShared.PrimalServerType : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalScope : Swift.Sendable {}
+extension PrimalShared.PrimalScope : Swift.BitwiseCopyable {}
+extension PrimalShared.PrimalTimeframe : Swift.Sendable {}
+extension PrimalShared.PrimalTimeframe : Swift.BitwiseCopyable {}
 extension PrimalShared.NotificationSettingsSection : Swift.Sendable {}
 extension PrimalShared.NotificationSettingsSection : Swift.BitwiseCopyable {}
+extension PrimalShared.Paging_commonRemoteMediatorInitializeAction : Swift.Sendable {}
+extension PrimalShared.Paging_commonRemoteMediatorInitializeAction : Swift.BitwiseCopyable {}
+extension PrimalShared.Paging_commonLoadType : Swift.Sendable {}
+extension PrimalShared.Paging_commonLoadType : Swift.BitwiseCopyable {}
+extension PrimalShared.Ktor_utilsMonth : Swift.Sendable {}
+extension PrimalShared.Ktor_utilsMonth : Swift.BitwiseCopyable {}
+extension PrimalShared.Ktor_utilsWeekDay : Swift.Sendable {}
+extension PrimalShared.Ktor_utilsWeekDay : Swift.BitwiseCopyable {}
+extension PrimalShared.LocalListType : Swift.Sendable {}
+extension PrimalShared.LocalListType : Swift.BitwiseCopyable {}
+extension PrimalShared.LocalMutedItemType : Swift.Sendable {}
+extension PrimalShared.LocalMutedItemType : Swift.BitwiseCopyable {}
 extension PrimalShared.__Bridge__Mime_Type_ : Swift.Sendable {}
 extension PrimalShared.__Bridge__Mime_Type_ : Swift.BitwiseCopyable {}
 extension PrimalShared.BignumSign : Swift.Sendable {}
 extension PrimalShared.BignumSign : Swift.BitwiseCopyable {}
 extension PrimalShared.BignumRoundingMode : Swift.Sendable {}
 extension PrimalShared.BignumRoundingMode : Swift.BitwiseCopyable {}
-extension PrimalShared.Paging_commonLoadType : Swift.Sendable {}
-extension PrimalShared.Paging_commonLoadType : Swift.BitwiseCopyable {}
+extension PrimalShared.Skie.Utils.Result.__Sealed : Swift.Sendable {}
+extension PrimalShared.Skie.Utils.Result.__Sealed : Swift.BitwiseCopyable {}
 extension PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.Sendable {}
 extension PrimalShared.Skie.KotlinxSerializationCore.SerializersModule.__Sealed : Swift.BitwiseCopyable {}
 extension PrimalShared.Skie.KotlinxCoroutinesCore.SelectClause0.__Sealed : Swift.Sendable {}

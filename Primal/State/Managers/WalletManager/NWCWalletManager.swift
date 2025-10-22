@@ -10,15 +10,6 @@ import Foundation
 import NostrSDK
 import GenericJSON
 import PrimalShared
-//
-//struct ZapRequestData: Codable {
-//    var zapperUserId: String
-//    var targetUserId: String
-//    var lnUrlDecoded: String
-//    var zapAmountInSats: Int64
-//    var zapComment: String
-//    var userZapRequestEvent: NostrEvent
-//}
 
 extension PrimalUser {
     var decodedLNURL: String? {
@@ -85,6 +76,23 @@ class NWCWalletManager {
         address = items.first(where: { $0.name == "lud16" })?.value
         
         let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
+        
+//        let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
+//        let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
+//        
+//        let repo = IosRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: self)
+//        let eventRepo = IosRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection)
+//        
+//        // WalletRepo wallet info by id (balance, transactions, etc.)
+//        let walletRepo = IosRepositoryFactory_.shared.createWalletRepository(
+//            primalWalletApiClient: walletConnection,
+//            nostrEventSignatureHandler: self,
+//            profileRepository: repo,
+//            eventRepository: eventRepo
+//        )
+//        
+//        // WalletAccountRepo
+//        let walletAccountRepo = IosRepositoryFactory_.shared.createWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: self)
         
         client = NwcClientFactory.shared.createNwcApiClient(nwcData: data)
         zapper = NwcClientFactory.shared.createNwcNostrZapper(nwcData: data)
@@ -166,14 +174,31 @@ extension NWCWalletManager: WalletImplementation {
     }
     
     func refreshBalance() {
-        Task { @MainActor [weak self] in
-            do {
-                guard let res = (try await self?.client.getBalance() as? NwcResultSuccess<GetBalanceResponsePayload>)?.result else { return }
-                
-                self?.balance = Int(res.balance / 1_000)
-            } catch {
-                print(error)
-            }
-        }
+//        Task { @MainActor [weak self] in
+//            do {
+//                guard let res = (try await self?.client.getBalance() as? NwcResultSuccess<GetBalanceResponsePayload>)?.result else { return }
+//
+//                self?.balance = Int(res.balance / 1_000)
+//            } catch {
+//                print(error)
+//            }
+//        }
+    }
+}
+
+extension NWCWalletManager: NostrEventSignatureHandler {
+    func __signNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, completionHandler: @escaping @Sendable (SignResult?, (any Error)?) -> Void) {
+        SignResult.Signed(event: .init(id: <#T##String#>, pubKey: <#T##String#>, createdAt: <#T##Int64#>, kind: <#T##Int32#>, tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: <#T##[[String]]#>), content: <#T##String#>, sig: <#T##String#>))
+    }
+    
+    
+    func verifySignature(nostrEvent: PrimalShared.NostrEvent) -> Bool {
+        true
+    }
+}
+
+extension NWCWalletManager: PrimalPublisher {
+    func __signPublishImportNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, outboxRelays: [String]) async throws -> PrimalPublishResult {
+        throw WalletError.noWallet
     }
 }

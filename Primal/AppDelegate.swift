@@ -11,6 +11,7 @@ import AVFAudio
 import GRDB
 import Intents
 import GenericJSON
+import PrimalShared
 
 extension UserDefaults {
     var notificationEnableEvents: [NostrObject] {
@@ -73,6 +74,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
+        
+        IosRepositoryFactory_.shared.doInit(enableDbEncryption: true)
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()
