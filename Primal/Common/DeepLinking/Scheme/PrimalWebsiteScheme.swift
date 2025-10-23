@@ -93,7 +93,8 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
             "dms": .messages,
             "bookmarks": .bookmarks,
             "premium": .premium,
-            "legends": .legends
+            "legends": .legends,
+            "downloads": .url(url)
         ]
         
         if let page = staticPages[name] {

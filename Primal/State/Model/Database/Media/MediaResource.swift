@@ -22,7 +22,7 @@ struct MediaResource: Identifiable, Equatable {
 
 extension MediaResource: Codable, FetchableRecord, MutablePersistableRecord {
     // Define database columns from CodingKeys
-    fileprivate enum Columns {
+    internal enum Columns {
         static let url = Column(CodingKeys.url)
         static let variants = Column(CodingKeys.variants)
     }

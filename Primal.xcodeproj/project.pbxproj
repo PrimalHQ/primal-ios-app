@@ -378,6 +378,8 @@
 		B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B944292D2BD81B6000746FBC /* ZapGallery.swift */; };
 		B94429312BD8206200746FBC /* ZapPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94429302BD8206200746FBC /* ZapPillView.swift */; };
 		B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */; };
+		B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; };
+		B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */; };
 		B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */; };
 		B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */; };
@@ -467,8 +469,6 @@
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B9982FD42EA678E900BEC881 /* NostrSDK */; };
-		B9982FD82EA7E7E400BEC881 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */; };
-		B9982FD92EA7E7E400BEC881 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
@@ -704,7 +704,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9982FD92EA7E7E400BEC881 /* PrimalShared.xcframework in Embed Frameworks */,
+				B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1125,6 +1125,7 @@
 		B944292D2BD81B6000746FBC /* ZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapGallery.swift; sourceTree = "<group>"; };
 		B94429302BD8206200746FBC /* ZapPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapPillView.swift; sourceTree = "<group>"; };
 		B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = zapGallerySkeletonLight.json; sourceTree = "<group>"; };
+		B9454A5F2EA982F90026387B /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingMessages.swift; sourceTree = "<group>"; };
 		B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSearchController.swift; sourceTree = "<group>"; };
@@ -1214,7 +1215,6 @@
 		B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInfoBubbleView.swift; sourceTree = "<group>"; };
 		B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoSmallHeaderView.swift; sourceTree = "<group>"; };
 		B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentZapPill.swift; sourceTree = "<group>"; };
-		B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellNantesDelegate.swift; sourceTree = "<group>"; };
 		B99E03822BF76064006CCECB /* PostCellEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCellEvent.swift; sourceTree = "<group>"; };
 		B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParsedContent+PostInfo.swift"; sourceTree = "<group>"; };
@@ -1447,7 +1447,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9982FD82EA7E7E400BEC881 /* PrimalShared.xcframework in Frameworks */,
+				B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1579,7 +1579,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9982FD62EA7E7CD00BEC881 /* PrimalShared.xcframework */,
+				B9454A5F2EA982F90026387B /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,

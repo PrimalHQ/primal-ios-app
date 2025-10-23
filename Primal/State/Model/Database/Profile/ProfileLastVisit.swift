@@ -18,7 +18,7 @@ struct ProfileLastVisit: Identifiable, Equatable {
 
 extension ProfileLastVisit: Codable, FetchableRecord, MutablePersistableRecord {
     // Define database columns from CodingKeys
-    fileprivate enum Columns {
+    internal enum Columns {
         static let profilePubkey = Column(CodingKeys.profilePubkey)
         static let userPubkey = Column(CodingKeys.userPubkey)
         static let lastVisit = Column(CodingKeys.lastVisit)

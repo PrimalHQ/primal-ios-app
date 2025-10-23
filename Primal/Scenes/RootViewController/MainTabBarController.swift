@@ -387,6 +387,8 @@ private extension MainTabBarController {
                             return (OnboardingParentViewController(.redeemCode(code)), nil)
                         case .live(let live):
                             return (LiveVideoPlayerController(live: live), nil)
+                        case .url(let url):
+                            return (SFSafariViewController(url: url), nil)
                         }
                     }()
                     
