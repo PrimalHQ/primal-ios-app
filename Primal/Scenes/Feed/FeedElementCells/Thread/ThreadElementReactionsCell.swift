@@ -82,6 +82,8 @@ class ThreadElementReactionsCell: ThreadElementBaseCell, RegularFeedElementCell,
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         let postInfo = content.postInfo
         
         replyButton.set(postInfo.isReplied ? max(1, content.post.replies) : content.post.replies, filled: postInfo.isReplied)

@@ -44,20 +44,23 @@ final class AvatarView: UIView {
     }
     
     func setImages(_ images: [URL], userCount: Int) {
-        for view in avatarViews { view.isHidden = true }
+        for view in avatarViews {
+            view.isHidden = true
+            view.kf.cancelDownloadTask()
+            view.image = .profile
+        }
         
         zip(avatarViews, images).forEach { view, url in
             view.isHidden = false
-            view.kf.setImage(with: url, placeholder: UIImage(named: "Profile"), options: [
+            view.kf.setImage(with: url, placeholder: UIImage.profile, options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: size, height: size))),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage,
             ])
         }
         
-        if images.isEmpty, let first = avatarViews.first {
-            first.image = UIImage(named: "Profile")
-            first.isHidden = false
+        if images.isEmpty, let last = avatarViews.last {
+            last.isHidden = false
         }
         
         let imagesCount = images.count.clamp(1, avatarViews.count)

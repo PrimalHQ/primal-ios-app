@@ -169,7 +169,7 @@ final class RegexTests: XCTestCase {
         // Test 4: Invalid contexts
         (
             """
-            This is an invalid URL: https://zap.stream/naddr1invalid.
+            This is an invalid URL: https://invalid.stream/naddr1invalid.
             Partial match: naddr1 partial.
             Similar pattern: nnaddr1similar.
             """,
@@ -187,6 +187,23 @@ final class RegexTests: XCTestCase {
                 "nostr:naddr1valid1",
                 "naddr1valid3",
                 "#[789]"
+            ]
+        ),
+        // Test 6: Mixed valid and invalid and zap stream link
+        (
+            """
+            Valid: nostr:naddr1valid1
+            Invalid: https://invalid.com/naddr1invalid2
+            Valid standalone: naddr1valid3
+            Valid hashtag: #[789]
+            
+            valid: https://zap.stream/naddr1qq9rzde48qurqdfcxqcqz9mhwden5te0wfjkccte9ec8y6tdv9kzumn9wshsygqkz89jdu8fpkt6xldan842dtkjnmpajksu6nqy5ju46rr6m0mmfgpsgqqqwensjq3eyw
+            """,
+            [
+                "nostr:naddr1valid1",
+                "naddr1valid3",
+                "#[789]",
+                "https://zap.stream/naddr1qq9rzde48qurqdfcxqcqz9mhwden5te0wfjkccte9ec8y6tdv9kzumn9wshsygqkz89jdu8fpkt6xldan842dtkjnmpajksu6nqy5ju46rr6m0mmfgpsgqqqwensjq3eyw"
             ]
         ),
     ]

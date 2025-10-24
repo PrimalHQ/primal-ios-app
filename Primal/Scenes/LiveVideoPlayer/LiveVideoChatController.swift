@@ -12,8 +12,28 @@ import Nantes
 import SafariServices
 import NostrSDK
 
+extension Connection {
+    func continuousConnectionCancellable(name: String, request: JSON, callback: @escaping ([String: JSON]) -> Void) -> AnyCancellable {
+        var continuousConnection: ContinuousConnection?
+        
+        return isConnectedPublisher.removeDuplicates().filter({ $0 })
+            .sink { [weak self] _ in
+                continuousConnection = self?.requestCacheContinous(name: name, request: request) { response in
+                    guard let event = response.arrayValue?.last?.objectValue else { return }
+                    DispatchQueue.main.async {
+                        callback(event)
+                    }
+                }
+                let _ = continuousConnection // This is necessary to suppress a warning
+            }
+    }
+}
+
+extension String {
+    static let livePopupShouldHideKey = "livePopupShouldHideKey"
+}
+
 class LiveZapsInfoVC: EmbeddedPostController<LiveVideoZapsPostCell> {
-    
     let onZapDetails: () -> Void
     init(onZapDetails: @escaping () -> Void) {
         self.onZapDetails = onZapDetails
@@ -45,23 +65,40 @@ class LiveVideoChatController: UIViewController, Themeable {
     let input = LiveVideoChatInputView()
     let spacer = KeyboardSizingView()
     
+    let topInfoView = UIView()
+    lazy var topStack = UIStackView(axis: .vertical, [
+        header,
+        infoParent,
+        SpacerView(height: 1, color: .background3),
+    ])
+    
+    lazy var helperPopup = PopupInfoBubbleView(title: "You can control live stream notifications and chat settings") { [weak self] in
+        UserDefaults.standard.set(true, forKey: .livePopupShouldHideKey)
+    }
+    
     var cancellables: Set<AnyCancellable> = []
     
     lazy var zapsInfoVC = LiveZapsInfoVC { [weak self] in
         self?.videoController?.presentLivePopup(LiveVideoZapsController(zaps: self?.comments.filter({ $0.zapAmount > 0 }) ?? []))
     }
     
-    let live: ParsedLiveEvent
+    var live: ParsedLiveEvent { didSet { updateLabels() } }
     
-    var continousConnection: ContinousConnection?
+    var continuousConnection: AnyCancellable?
     
-    var comments: [ParsedLiveComment] = []
+    var comments: [ParsedLiveComment] = [] {
+        didSet {
+            commentsTable.contentInset = .init(top: 10, left: 0, bottom: comments.count > 20 ? 10 : 160, right: 0)
+            datasource.comments = comments
+        }
+    }
     let post: ParsedContent
     
     static var userCache: [String: ParsedUser] = [:]
     
     var videoController: LiveVideoPlayerController? { parent as? LiveVideoPlayerController }
     
+    lazy var datasource = LiveChatDatasource(tableView: commentsTable, delegate: self)
     lazy var inputManager = LiveChatTextViewManager(textView: input.textView, usersTable: usersTable, sendButton: input.sendButton, live: live)
     
     let zapsLoadingView = ZapGalleryLoadingView()
@@ -97,8 +134,6 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsInfoVC.willMove(toParent: self)
         
         let stack = UIStackView(axis: .vertical, [
-            header,
-            infoParent,
             SpacerView(height: 1, color: .background3),
             commentsTable,
             SpacerView(height: 1, color: .background3),
@@ -111,6 +146,11 @@ class LiveVideoChatController: UIViewController, Themeable {
             .pinToSuperview(edges: [.horizontal, .bottom])
             .pinToSuperview(edges: .top, padding: 8)
         
+        view.addSubview(topInfoView)
+        topInfoView.pinToSuperview(edges: [.top, .horizontal])
+        topInfoView.addSubview(topStack)
+        topStack.pinToSuperview(edges: .top, padding: 8).pinToSuperview(edges: [.horizontal, .bottom])
+        
         addChild(zapsInfoVC)
         zapsInfoVC.didMove(toParent: self)
         zapsInfoVC.posts = [post]
@@ -120,33 +160,37 @@ class LiveVideoChatController: UIViewController, Themeable {
         zapsLoadingView.pin(to: zapsInfoVC.view, edges: [.horizontal, .top])
         
         view.addSubview(chatLoadingView)
-        chatLoadingView.pin(to: commentsTable)
+        chatLoadingView.pin(to: commentsTable, edges: [.horizontal, .bottom])
         
         view.addSubview(usersTable)
         usersTable.pin(to: commentsTable, edges: [.horizontal, .bottom])
+        
+        view.addSubview(helperPopup)
+        helperPopup.pinToSuperview(edges: .trailing, padding: 8).constrainToSize(width: 270)
 
+        let loadingTopC = chatLoadingView.topAnchor.constraint(equalTo: topInfoView.bottomAnchor)
+        loadingTopC.priority = .defaultLow
+        
         NSLayoutConstraint.activate([
+            loadingTopC,
+            helperPopup.topAnchor.constraint(equalTo: header.configButton.bottomAnchor),
+            helperPopup.triangleView.centerXAnchor.constraint(equalTo: header.configButton.centerXAnchor),
             usersTable.topAnchor.constraint(greaterThanOrEqualTo: commentsTable.topAnchor),
             input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12),
-            commentsTable.heightAnchor.constraint(greaterThanOrEqualToConstant: 100)
         ])
         
-        commentsTable.backgroundColor = .background
+        if UserDefaults.standard.bool(forKey: .livePopupShouldHideKey) {
+            helperPopup.removeFromSuperview()
+        }
+        
         commentsTable.delegate = self
-        commentsTable.dataSource = self
-        commentsTable.register(LiveVideoChatMessageCell.self, forCellReuseIdentifier: "cell")
-        commentsTable.register(LiveVideoChatZapCell.self, forCellReuseIdentifier: "zapCell")
-        commentsTable.showsVerticalScrollIndicator = false
-        commentsTable.separatorStyle = .none
-        commentsTable.keyboardDismissMode = .onDrag
-        commentsTable.contentInsetAdjustmentBehavior = .never
-        commentsTable.contentInset = .init(top: 10, left: 0, bottom: 10, right: 0)
+        inputManager.delegate = self
         
         spacer.updateHeightCancellable().store(in: &cancellables)
         
         KeyboardManager.instance.isShowingKeyboard.sink { [weak self] isShowing in
-            self?.header.small = isShowing
-            self?.zapsInfoVC.view.superview?.isHidden = isShowing
+//            self?.header.small = isShowing
+//            self?.zapsInfoVC.view.superview?.isHidden = isShowing
             
             if isShowing {
                 self?.videoController?.chatControllerRequestsMoreSpace()
@@ -168,7 +212,6 @@ class LiveVideoChatController: UIViewController, Themeable {
                 if filtered.count == comments.count { return }
                 
                 comments = filtered
-                commentsTable.reloadData()
             }
             .store(in: &cancellables)
         
@@ -177,6 +220,13 @@ class LiveVideoChatController: UIViewController, Themeable {
                 self?.requestChat()
             }
             .store(in: &cancellables)
+        
+        WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
+            guard let self, post.post.id == zap.postId, zap.user.data.pubkey == IdentityManager.instance.userHexPubkey else { return }
+            
+            self.comments.insert(ParsedLiveComment(user: zap.user, comment: self.parsedComment(zap.message, isZap: true), event: [:], zapAmount: zap.amountSats), at: 0)
+        }
+        .store(in: &cancellables)
         
         header.infoButton.addAction(.init(handler: { [weak self] _ in
             guard let videoVC = self?.parent as? LiveVideoPlayerController else { return }
@@ -187,9 +237,11 @@ class LiveVideoChatController: UIViewController, Themeable {
         header.closeButton.addAction(.init(handler: { [weak self] _ in
             self?.input.textView.resignFirstResponder()
         }), for: .touchUpInside)
+        header.closeButton.isHidden = true
         
         header.configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
+            helperPopup.animateRemove()
             videoController?.presentLivePopup(LiveVideoConfigController(live: live, chatVC: self))
         }), for: .touchUpInside)
     }
@@ -199,14 +251,7 @@ class LiveVideoChatController: UIViewController, Themeable {
         
         updateTheme()
         
-        header.titleLabel.text = live.title
-        header.countLabel.text = live.event.participants.localized()
-        header.timeLabel.text = live.startedText
-        if live.isLive {
-            header.liveIcon.backgroundColor = .live
-        } else {
-            header.liveIcon.backgroundColor = .foreground4
-        }
+        updateLabels()
         
         zapsLoadingView.play()
         chatLoadingView.play()
@@ -217,31 +262,34 @@ class LiveVideoChatController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background4
         spacer.backgroundColor = .background
+        
+        topInfoView.backgroundColor = .background4
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        header.titleLabel.attributedText = .init(string: live.title, attributes: [
+            .font: UIFont.appFont(withSize: 16, weight: .bold),
+            .foregroundColor: UIColor.foreground,
+            .paragraphStyle: paragraphStyle
+        ])
     }
 }
 
 extension LiveVideoChatController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let videoVC = parent as? LiveVideoPlayerController, let message = comments[safe: indexPath.row] else { return }
+        guard let videoVC = parent as? LiveVideoPlayerController, !videoVC.commentsOverride, let message = comments[safe: indexPath.row] else {
+            input.textView.resignFirstResponder()
+            return
+        }
         
         videoVC.presentLivePopup(LiveVideoMessageDetailsController(live: live, message: message))
     }
-}
-
-extension LiveVideoChatController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { comments.count }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let comment = comments[indexPath.row]
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging, comments.count > 20 else { return }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: comment.zapAmount > 0 ? "zapCell" : "cell", for: indexPath)
-        cell.transform = tableView.transform
-        if comment.zapAmount > 0 {
-            (cell as? LiveVideoChatZapCell)?.updateForComment(comment, delegate: self)
-        } else {
-            (cell as? LiveVideoChatMessageCell)?.updateForComment(comment, delegate: self)
-        }
-        return cell
+        let offset = scrollView.contentOffset.y
+        videoController?.chatControllerRequestMiniPlayer(offset > 10)
     }
 }
 
@@ -381,103 +429,107 @@ private extension LiveVideoChatController {
                                 )
                             })
                         
-                        self.comments += (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
+                        self.comments = (comments + zapComments).sorted(by: { $0.createdAt > $1.createdAt })
                         setZaps(zapReceipts.compactMap { self.jsonToZap($0.1) })
-                        commentsTable.reloadData()
                     }
                     .store(in: &self.cancellables)
             }
         }
         .store(in: &cancellables)
         
-        requestContinous()
-    }
-     
-    func requestContinous() {
-        continousConnection = Connection.regular.requestCacheContinous(name: "live_feed", request: .object([
+        continuousConnection = Connection.regular.continuousConnectionCancellable(name: "live_feed", request: .object([
             "kind": .number(30311),
             "pubkey": .string(live.event.creatorPubkey),
             "identifier": .string(live.event.dTag),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
             "content_moderation_mode": .string(isFilteringOn ? "moderated" : "all")
-        ])) { [weak self] response in
-            DispatchQueue.main.async {
-                guard
-                    let self,
-                    var event = response.arrayValue?.last?.objectValue
-                else { return }
-                
-                let kind: Int = Int(event["kind"]?.doubleValue ?? 0)
-                
-                if kind == NostrKind.live.rawValue {
-                    // TODO: Update the live info
-                    return
-                }
-                
-                if kind == NostrKind.livePresence.rawValue {
-                    // TODO: Update the watcher count
-                    return
-                }
-                
-                var amount = 0
-                let userPubkey: String
-                let content: String
-                if kind == NostrKind.zapReceipt.rawValue {
-                    guard
-                        let tags = event["tags"]?.arrayValue,
-                        let desc = tags.tagValueForKey("description"),
-                        let zapReceipt: [String: JSON] = desc.decode(),
-                        let pubkey = zapReceipt["pubkey"]?.stringValue
-                    else { return }
-                    
-                    if let zapTags = zapReceipt["tags"]?.arrayValue, let amountS = zapTags.tagValueForKey("amount") {
-                        amount = (Int(amountS) ?? amount) / 1000
-                    }
-                    
-                    event = zapReceipt
-                    content = zapReceipt["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                    userPubkey = pubkey
-                } else {
-                    content = event["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-                    guard let pubkey = event["pubkey"]?.stringValue else { return }
-                    userPubkey = pubkey
-                }
-                
-                var pubkeysToFetch: [String] = Self.userCache[userPubkey] == nil ? [userPubkey] : []
-                pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
-                
-                if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
-                    self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
-                    self.commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                    if let zap = self.jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey {
-                        self.addZap(zap)
-                    }
-                    return
-                }
-                
-                SocketRequest(name: "user_infos", payload: ["pubkeys": .array(pubkeysToFetch.map({ .string($0) }))]).publisher()
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] res in
-                        guard let self else { return }
-                        
-                        for user in res.getSortedUsers() {
-                            Self.userCache[user.data.pubkey] = user
-                        }
-                        
-                        comments.insert(ParsedLiveComment(
-                            user: Self.userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
-                            comment: parsedComment(content, isZap: amount > 0),
-                            event: event,
-                            zapAmount: amount
-                        ), at: 0)
-                        commentsTable.insertRows(at: [.init(row: 0, section: 0)], with: .automatic)
-                        if let zap = jsonToZap(.object(event)), userPubkey != IdentityManager.instance.userHexPubkey  {
-                            addZap(zap)
-                        }
-                    }
-                    .store(in: &self.cancellables)
-            }
+        ]), callback: { [weak self] event in
+            self?.processNewEvent(event)
+        })
+    }
+        
+    func processNewEvent(_ event: [String: JSON]) {
+        guard let kind: NostrKind = NostrKind(rawValue: Int(event["kind"]?.doubleValue ?? 0)) else {
+            print("Unknown kind: \(event)")
+            return
         }
+        
+        var event = event
+        
+        var amount = 0
+        let userPubkey: String
+        let content: String
+        
+        switch kind {
+        case .live:
+            guard let liveEvent = ProcessedLiveEvent.fromEvent(event) else { return }
+            live = .init(event: liveEvent, user: live.user)
+            videoController?.live = live
+            return
+        case .livePresence:
+            // TODO: Update the watcher count
+            print("DO SOMETHING")
+            return
+        case .zapReceipt:
+            guard
+                let tags = event["tags"]?.arrayValue,
+                let desc = tags.tagValueForKey("description"),
+                let zapReceipt: [String: JSON] = desc.decode(),
+                let pubkey = zapReceipt["pubkey"]?.stringValue
+            else { return }
+            
+            if let zapTags = zapReceipt["tags"]?.arrayValue, let amountS = zapTags.tagValueForKey("amount") {
+                amount = (Int(amountS) ?? amount) / 1000
+            }
+            
+            event = zapReceipt
+            content = zapReceipt["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            userPubkey = pubkey
+        case .liveComment:
+            content = event["content"]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            guard let pubkey = event["pubkey"]?.stringValue else { return }
+            userPubkey = pubkey
+        default: // Ignore non comments
+            return
+        }
+        
+        var pubkeysToFetch: [String] = Self.userCache[userPubkey] == nil ? [userPubkey] : []
+        pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
+        
+        if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
+            self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
+            if let zap = self.jsonToZap(.object(event)) {
+                self.addZap(zap)
+            }
+            return
+        }
+        
+        SocketRequest(name: "user_infos", payload: ["pubkeys": .array(pubkeysToFetch.map({ .string($0) }))]).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] res in
+                guard let self else { return }
+                
+                for user in res.getSortedUsers() {
+                    Self.userCache[user.data.pubkey] = user
+                }
+                
+                comments.insert(ParsedLiveComment(
+                    user: Self.userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
+                    comment: parsedComment(content, isZap: amount > 0),
+                    event: event,
+                    zapAmount: amount
+                ), at: 0)
+                if let zap = jsonToZap(.object(event)) {
+                    addZap(zap)
+                }
+            }
+            .store(in: &self.cancellables)
+    }
+    
+    func updateLabels() {
+        header.countLabel.text = live.event.participants.localized()
+        header.timeLabel.text = live.startedText
+        header.liveIcon.backgroundColor = live.isLive ? .live : .foreground4
     }
 }
 
@@ -486,13 +538,19 @@ extension LiveVideoChatController: MetadataCoding {
         let mentions = comment.extractMentions()
         
         var replacements: [(String, String, String)] = []
+        
         for mention in mentions {
-            if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string, let pubkey = (try? decodedMetadata(from: mentionText).pubkey) ?? mentionText.npubToPubkey() {
+            if let mentionText = mention.split(separator: "/").last?.split(separator: ":").last?.string,
+               let pubkey = (try? decodedMetadata(from: mentionText).pubkey) ?? mentionText.npubToPubkey() {
                 let user = Self.userCache[pubkey] ?? .init(data: .init(pubkey: pubkey))
                 let name = "@\(user.data.firstIdentifier)"
                 replacements.append((mention, name, "https://primal.net/p/\(user.data.npub)"))
             }
         }
+        
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.minimumLineHeight = 20
+        paragraph.maximumLineHeight = 20
         
         return attributedStringByReplacing(
             comment,
@@ -500,11 +558,13 @@ extension LiveVideoChatController: MetadataCoding {
             baseAttributes: [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
+                .paragraphStyle: paragraph
             ],
             specialAttributes:  [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
-                .underlineStyle: NSUnderlineStyle.single.rawValue
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .paragraphStyle: paragraph
             ]
         )
     }
@@ -539,5 +599,11 @@ extension LiveVideoChatController: MetadataCoding {
         }
 
         return mutable
+    }
+}
+
+extension LiveVideoChatController: LiveChatTextViewManagerDelegate {
+    func newEventSent(_ event: [String : GenericJSON.JSON]) {
+        processNewEvent(event)
     }
 }

@@ -76,11 +76,15 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         fatalError("init(coder:) has not been implemented")
     }
     
+    var firstRun = true
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        DispatchQueue.main.async {
-            self.dataSource.setPosts(self.posts)
+        DispatchQueue.main.async { [self] in
+            if !firstRun || !posts.isEmpty {
+                dataSource.setPosts(posts)
+            }
+            firstRun = false
         }
     }
     
@@ -235,7 +239,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             let index = posts.firstIndex(where: { $0.post.id == post.post.id })
         else { return }
         
-        let postsToPreload = posts[index...].prefix(10).filter({ !preloadedPosts.contains($0.post.id) })
+        let postsToPreload = posts[max(0, index - 10)...].prefix(min(10, index) + 10).filter({ !preloadedPosts.contains($0.post.id) })
         
         for postToPreload in postsToPreload {
             preloadPost(postToPreload)
@@ -426,11 +430,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             search(invoice.string)
             textSearch = nil
         case .zapDetails:
-            show(NoteReactionsParentController(.zaps, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.zaps, noteId: post.post.universalID), sender: nil)
         case .likeDetails:
-            show(NoteReactionsParentController(.likes, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.likes, noteId: post.post.universalID), sender: nil)
         case .repostDetails:
-            show(NoteReactionsParentController(.reposts, noteId: post.post.id), sender: nil)
+            show(NoteReactionsParentController(.reposts, noteId: post.post.universalID), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
@@ -462,7 +466,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             present(activityViewController, animated: true, completion: nil)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
-            mainTabBarController?.showToast("Copied!")
+            showToast("Copied!")
         case .report:
             present(PopupReportContentController(post), animated: true)
         case .muteUser:
@@ -501,7 +505,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         (cell as? AnimatingViewProtocol)?.stopAnimating()
     }
     
-    
+    func showToast(_ message: String) {
+        mainTabBarController?.showToast(message)
+    }
 }
 
 private extension NoteViewController {
@@ -672,7 +678,7 @@ private extension NoteViewController {
     func requestDelete(_ post: ParsedContent) {
         let alert = UIAlertController(title: "Delete note?", message: "This will issue a \"request delete\" command to the relays where the note was published.", preferredStyle: .alert)
         alert.addAction(.init(title: "Cancel", style: .cancel))
-        alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+        alert.addAction(.init(title: "Delete", style: .destructive, handler: { [weak self] _ in
             guard let deleteEvent = NostrObject.deleteNote(post) else { return }
             
             PostingManager.instance.sendEvent(deleteEvent) { success in
@@ -681,7 +687,7 @@ private extension NoteViewController {
                 DispatchQueue.main.async {
                     notify(.noteDeleted, post.post.id)
                     
-                    RootViewController.instance.showToast("Note Deleted")
+                    self?.showToast("Note Deleted")
                 }
             }
         }))
@@ -705,10 +711,23 @@ extension NoteViewController: PostCellDelegate {
         
         let popup = PopupMenuViewController()
         
-        popup.addAction(.init(title: "Repost", image: .init(named: "repostIconLarge"), handler: { _ in
-            PostingManager.instance.sendRepostEvent(post: post)
-            cell.repostButton.animateTo(post.reposts + 1, filled: true)
-        }))
+        if PostingManager.instance.hasReposted(parsedPost.post.universalID) {
+            popup.addAction(.init(title: "Delete Repost", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
+                let alert = UIAlertController(title: "Delete Repost?", message: "This will issue a \"request delete\" command to the relays where the repost was published", preferredStyle: .alert)
+                alert.addAction(.init(title: "Delete", style: .destructive, handler: { _ in
+                    PostingManager.instance.deleteRepostEvent(parsedPost)
+                    cell.repostButton.animateTo(post.reposts - 1, filled: false)
+                    PostingManager.instance.deleteRepost(parsedPost.post.universalID)
+                }))
+                alert.addAction(.init(title: "Cancel", style: .cancel))
+                self?.present(alert, animated: true)
+            }))
+        } else {
+            popup.addAction(.init(title: "Repost", image: .repostIconLarge, handler: { _ in
+                PostingManager.instance.sendRepostEvent(post: post)
+                cell.repostButton.animateTo(post.reposts + 1, filled: true)
+            }))
+        }
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
@@ -727,53 +746,46 @@ extension NoteViewController: PostCellDelegate {
     }
     
     func postCellDidTapImages(_ cell: ElementImageGalleryCell, resource: MediaMetadata.Resource) {
-        if resource.url.isVideoURL {
-            handleVideoUrlTapped(resource.url, in: cell)
-            return
-        }
-        
         guard let indexPath = table.indexPath(for: cell), let post = postForIndexPath(indexPath) else { return }
         
-        let allImages = post.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = post.mediaResources
         
         let current = cell.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
-        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, embeddedPost: ParsedContent, resource: MediaMetadata.Resource) {
-        guard let indexPath = table.indexPath(for: cell) else { return }
-        
         if resource.url.isVideoURL {
             handleVideoUrlTapped(resource.url, in: cell)
             return
         }
         
-        let allImages = embeddedPost.mediaResources.map { $0.url } .filter { $0.isImageURL }
+        let allImages = embeddedPost.mediaResources
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageCell.imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = embeddedPost.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
-            ImageGalleryController(current: resource.url, all: allImages).present(from: self, imageView: imageView)
+            ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }
         
-        present(ImageGalleryController(current: resource.url, all: allImages), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func handleVideoUrlTapped(_ url: String, in cell: FeedElementVideoCell) {
@@ -812,7 +824,7 @@ extension NoteViewController: PostCellDelegate {
             items.append(UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
-                self?.mainTabBarController?.showToast("Copied!")
+                self?.showToast("Copied!")
             })
             
             if zap.message.isValidURL, let url = URL(string: zap.message) {

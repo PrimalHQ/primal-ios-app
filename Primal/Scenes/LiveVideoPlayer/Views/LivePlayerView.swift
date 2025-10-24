@@ -14,6 +14,7 @@ enum LivePlayerViewAction {
     case dismiss, fullscreen
     case quote, share, copyLink, copyID, copyRawData
     case mute, report//, requestDelete
+    case playReplay
 }
 
 protocol LivePlayerViewDelegate: AnyObject {
@@ -23,6 +24,7 @@ protocol LivePlayerViewDelegate: AnyObject {
 class LargeLivePlayerView: LivePlayerView {
     override var horizontalMargin: CGFloat { 36 }
     override var verticalMargin: CGFloat { 20 }
+    override var labelFontSize: CGFloat { 24 }
     
     override init() {
         super.init()
@@ -44,13 +46,17 @@ class LivePlayerView: UIView {
     
     var player: VideoPlayer? {
         didSet {
+            streamEndedView.isHidden = player != nil
             playerLayer.player = player?.avPlayer
-            
             setCancellables()
         }
     }
     
     let controlsView = UIView()
+    let streamEndedView = UIView()
+    lazy var streamEndedLabel = UILabel("STREAM ENDED", color: .foreground5, font: .appFont(withSize: labelFontSize, weight: .bold))
+    let playReplayButton = UIButton(configuration: .pill(text: "Replay", foregroundColor: .background, backgroundColor: .foreground, font: .appFont(withSize: 14, weight: .bold)))
+        .constrainToSize(height: 26)
     
     let dismissButton = UIButton(configuration: .simpleImage(.liveMinimize))
     let airplayButton = AVRoutePickerView() //UIButton(configuration: .simpleImage(.airPlay))
@@ -64,7 +70,6 @@ class LivePlayerView: UIView {
     
     let muteButton = UIButton(configuration: .simpleImage(.videoMuted))
     let fullscreenButton = UIButton(configuration: .simpleImage(.fullScreen))
-    
     let liveDot = UIView().constrainToSize(8)
     
     weak var delegate: LivePlayerViewDelegate?
@@ -76,6 +81,7 @@ class LivePlayerView: UIView {
     var horizontalMargin: CGFloat { 8 }
     var verticalMargin: CGFloat { 4 }
     var buttonSize: CGFloat { 36 }
+    var labelFontSize: CGFloat { 16 }
     
     init() {
         super.init(frame: .zero)
@@ -100,6 +106,17 @@ class LivePlayerView: UIView {
         loadingAnimationView.loopMode = .loop
         loadingAnimationView.contentMode = .scaleAspectFill
         loadingAnimationView.setContentCompressionResistancePriority(.init(1), for: .vertical)
+        
+        addSubview(streamEndedView)
+        streamEndedView.pinToSuperview()
+        streamEndedView.isHidden = true
+        streamEndedView.addSubview(streamEndedLabel)
+        streamEndedLabel.centerToSuperview()
+        streamEndedView.backgroundColor = .background3
+        
+        streamEndedView.addSubview(playReplayButton)
+        playReplayButton.centerToSuperview(axis: .horizontal).pin(to: streamEndedLabel, edges: .top, padding: 30)
+        playReplayButton.isHidden = true
         
         let topRightStack = UIStackView([airplayButton.constrainToSize(buttonSize), threeDotsButton.constrainToSize(buttonSize)])
         topRightStack.spacing = 4
@@ -174,14 +191,14 @@ class LivePlayerView: UIView {
             self?.delegate?.livePlayerViewPerformAction(.fullscreen)
         }), for: .touchUpInside)
         
+        playReplayButton.addAction(.init(handler: { [weak self] _ in
+            self?.delegate?.livePlayerViewPerformAction(.playReplay)
+        }), for: .touchUpInside)
+        
         addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             guard let self else { return }
             if self.controlsView.isHidden {
-                self.controlsView.alpha = 0
-                self.controlsView.isHidden = false
-                UIView.animate(withDuration: 0.2) {
-                    self.controlsView.alpha = 1
-                }
+                self.showControls()
             } else {
                 self.hideControls()
             }
@@ -221,6 +238,14 @@ class LivePlayerView: UIView {
         } completion: { _ in
             self.controlsView.isHidden = true
         }        
+    }
+    
+    func showControls() {
+        controlsView.alpha = 0
+        controlsView.isHidden = false
+        UIView.animate(withDuration: 0.2) {
+            self.controlsView.alpha = 1
+        }
     }
     
     func setCancellables() {

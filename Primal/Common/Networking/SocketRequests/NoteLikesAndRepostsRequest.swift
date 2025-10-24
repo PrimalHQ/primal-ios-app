@@ -17,6 +17,15 @@ extension SocketRequest {
         ]))
     }
     
+    static func articleLikes(identifier: String, pubkey: String, limit: Int) -> SocketRequest {
+        .init(name: "event_actions", payload: .object([
+            "identifier": .string(identifier),
+            "pubkey": .string(pubkey),
+            "kind": .number(7),
+            "limit": .number(Double(limit))
+        ]))
+    }
+    
     static func eventReposts(noteId: String, limit: Int) -> SocketRequest {
         .init(name: "event_actions", payload: .object([
             "event_id": .string(noteId),
@@ -24,25 +33,81 @@ extension SocketRequest {
             "limit": .number(Double(limit))
         ]))
     }
+    
+    static func articleReposts(identifier: String, pubkey: String, limit: Int) -> SocketRequest {
+        .init(name: "event_actions", payload: .object([
+            "identifier": .string(identifier),
+            "pubkey": .string(pubkey),
+            "kind": .number(6),
+            "limit": .number(Double(limit))
+        ]))
+    }
 }
 
 struct NoteLikesRequest {
-    let noteId: String
+    enum Kind {
+        case note(String)
+        case article(String, pubkey: String)
+    }
+    
+    init(noteId: String, limit: Int = 200) {
+        self.kind = .note(noteId)
+        self.limit = limit
+    }
+    
+    init(articleId: String, pubkey: String, limit: Int = 200) {
+        self.kind = .article(articleId, pubkey: pubkey)
+        self.limit = limit
+    }
+    
+    let kind: Kind
     var limit: Int = 200
     
     func publisher() -> AnyPublisher<[ParsedUser], Never> {
-        SocketRequest.eventLikes(noteId: noteId, limit: limit).publisher()
+        let request: SocketRequest
+        switch kind {
+        case .note(let id):
+            request = .eventLikes(noteId: id, limit: limit)
+        case .article(let articleId, let pubkey):
+            request = .articleLikes(identifier: articleId, pubkey: pubkey, limit: limit)
+        }
+        
+        return request.publisher()
             .map { $0.getSortedUsers() }
             .eraseToAnyPublisher()
     }
 }
 
 struct NoteRepostsRequest {
-    let noteId: String
+    enum Kind {
+        case note(String)
+        case article(String, pubkey: String)
+    }
+    
+    init(noteId: String, limit: Int = 200) {
+        self.kind = .note(noteId)
+        self.limit = limit
+    }
+    
+    init(articleId: String, pubkey: String, limit: Int = 200) {
+        self.kind = .article(articleId, pubkey: pubkey)
+        self.limit = limit
+    }
+    
+    let kind: Kind
     var limit: Int = 200
     
     func publisher() -> AnyPublisher<[ParsedUser], Never> {
-        SocketRequest.eventReposts(noteId: noteId, limit: limit).publisher()
+        let request: SocketRequest
+        let noteId: String
+        switch kind {
+        case .note(let id):
+            request = .eventReposts(noteId: id, limit: limit)
+        case .article(let articleId, let pubkey):
+            request = .articleReposts(identifier: articleId, pubkey: pubkey, limit: limit)
+        }
+        
+        return request.publisher()
             .map { $0.getSortedUsers() }
             .eraseToAnyPublisher()
     }

@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 22. 8. 2025..
 //
 
+import Combine
 import Foundation
 import AVKit
 
@@ -12,7 +13,6 @@ class VideoPlayer: NSObject {
     
     var didInitPlayer = false
     
-    private var looper: AVPlayerLooper?
     lazy var avPlayer: AVPlayer = playerWithURL(url)
     
     @Published var isPlaying = false
@@ -25,6 +25,8 @@ class VideoPlayer: NSObject {
     
     var live: ParsedLiveEvent?
     var isLive: Bool { live != nil }
+    
+    var cancellables: Set<AnyCancellable> = []
     
     init(url: String, originalURL: String, userPubkey: String, live: ParsedLiveEvent? = nil) {
         self.url = url
@@ -73,15 +75,20 @@ class VideoPlayer: NSObject {
             return player
         }
         
-        let queuePlayer = AVQueuePlayer()
+        let player = AVPlayer(url: url)
+        player.actionAtItemEnd = .none
+        player.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        player.isMuted = true
         
-        let item = AVPlayerItem(url: url)
-        looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+//            .receive(on: DispatchQueue.main)
+            .sink { [weak player] _ in
+                player?.seek(to: .zero)
+            }
+            .store(in: &cancellables)
         
-        looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         didInitPlayer = true
-        queuePlayer.isMuted = true
-        return queuePlayer
+        return player
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -123,11 +130,10 @@ class VideoPlayer: NSObject {
             return
         }
         
-        guard let queuePlayer = avPlayer as? AVQueuePlayer else { return }
-        
         let item = AVPlayerItem(url: finalURL)
+        avPlayer.removeObserver(self, forKeyPath: "status")
+        avPlayer = .init(playerItem: item)
         url = finalURL.absoluteString
-        looper = AVPlayerLooper(player: queuePlayer, templateItem: item)
-        looper?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        avPlayer.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
     }
 }

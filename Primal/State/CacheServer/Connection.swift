@@ -10,7 +10,7 @@ import Combine
 import Network
 import GenericJSON
 
-class ContinousConnection {
+class ContinuousConnection {
     let id: String
     private weak var connection: Connection?
     
@@ -208,7 +208,7 @@ final class Connection {
     }
     
     
-    func requestCacheContinous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+    func requestCacheContinous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinuousConnection {
         if let request {
             return requestContinous(.object([
                 "cache" : .array(
@@ -222,7 +222,7 @@ final class Connection {
         }
     }
     
-    func requestContinous(_ request: JSON, subId: String = UUID().uuidString, _ handler: @escaping (JSON) -> Void) -> ContinousConnection {
+    func requestContinous(_ request: JSON, subId: String = UUID().uuidString, _ handler: @escaping (JSON) -> Void) -> ContinuousConnection {
         let json: JSON = .array([.string("REQ"), .string(subId), request])
         Self.dispatchQueue.async {
             guard let jsonData = try? self.jsonEncoder.encode(json) else {

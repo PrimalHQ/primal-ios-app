@@ -16,19 +16,6 @@ class NoteFeedViewController: PostFeedViewController {
         }
     }
     
-    override init(feed: FeedManager) {
-        super.init(feed: feed)
-        
-        feed.addFuturePostsDirectly = { [weak self] in
-            guard let self else { return true }
-            return self.table.contentOffset.y > 300
-        }
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         

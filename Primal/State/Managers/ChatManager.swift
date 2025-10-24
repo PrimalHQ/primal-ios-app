@@ -17,7 +17,7 @@ final class ChatManager {
     }
     
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
-    var continousConnection: ContinousConnection? {
+    var continousConnection: ContinuousConnection? {
         didSet {
             oldValue?.end()
         }

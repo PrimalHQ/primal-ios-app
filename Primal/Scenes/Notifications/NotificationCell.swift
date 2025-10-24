@@ -25,11 +25,11 @@ final class NotificationCell: PostCell, ElementReactionsCell {
     let reactionLabel = UILabel()
     
     lazy var seeMoreLabel = UILabel()
+    lazy var iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
+    let iconStandIn = SpacerView(width: 2, priority: .required)
     lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
     lazy var bottomBarStandIn = UIView()
     lazy var postContentStack = UIStackView(arrangedSubviews: [textStack, mainImages, linkPresentation, embeddedLive, articleView, postPreview, bottomBarStandIn])
-    
-    var firstRowLeftC: NSLayoutConstraint?
     
     var notificationCellDelegate: NotificationCellDelegate? {
         get { delegate as? NotificationCellDelegate }
@@ -67,8 +67,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         iconView.image = notification.icon
         iconLabel.attributedText = notification.iconText
-        
-        firstRowLeftC?.constant = notification.mainNotification.type.isReply ? -40 : 0
+        iconStack.isHidden = notification.mainNotification.type.isReply
+        iconStandIn.isHidden = !iconStack.isHidden
         
         avatarStack.setImages(notification.users.compactMap { $0.profileImage.url(for: .small) }, userCount: notification.users.count)
         
@@ -110,6 +110,8 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
     }
+    
+    
 }
 
 private extension NotificationCell {
@@ -120,17 +122,9 @@ private extension NotificationCell {
             .pinToSuperview(edges: .top, padding: -6)
             .pinToSuperview(edges: .bottom, padding: -12)
         
-        let iconStack = UIStackView(arrangedSubviews: [SpacerView(height: 4), iconView, iconLabel])
-        
         let firstRow = UIStackView([avatarStack, auxParent, UIView(), timeLabel])
-        let firstRowParent = UIView()
-        firstRowParent.addSubview(firstRow)
-        firstRow.pinToSuperview(edges: [.vertical, .trailing])
-        firstRowLeftC = firstRow.leadingAnchor.constraint(equalTo: firstRowParent.leadingAnchor)
-        firstRowLeftC?.isActive = true
-        
-        let contentStack = UIStackView(arrangedSubviews: [firstRowParent, mainParent, postContentStack])
-        let mainStack = UIStackView(arrangedSubviews: [iconStack, contentStack])
+        let contentStack = UIStackView(arrangedSubviews: [firstRow, mainParent, postContentStack])
+        let mainStack = UIStackView(arrangedSubviews: [iconStack, iconStandIn, contentStack])
         
         iconView.centerToView(avatarStack, axis: .vertical)
         iconView.setContentHuggingPriority(.required, for: .vertical)
@@ -275,9 +269,14 @@ extension GroupedNotification {
         case .YOUR_POST_WAS_BOOKMARKED:
             return "bookmarked your note"
         case .YOUR_POST_WAS_REPOSTED:
+            if post?.post.kind == NostrKind.longForm.rawValue {
+                return "reposted your article"
+            }
             return "reposted your note"
         case .YOUR_POST_WAS_REPLIED_TO:
             return "replied to your note"
+        case .REPLY_TO_REPLY:
+            return "replied in your thread"
         case .YOU_WERE_MENTIONED_IN_POST:
             return "mentioned you in a note"
         case .YOUR_POST_WAS_MENTIONED_IN_POST:
@@ -344,13 +343,15 @@ extension NotificationType {
         case .YOUR_POST_WAS_BOOKMARKED:
             return .notifBookmark
         case .LIVE_EVENT_HAPPENING:
-            return .notifLiveDot.overlayed(with: .notifLive.withTintColor(.foreground, renderingMode: .alwaysOriginal))
+            return .notifLive
+        case .REPLY_TO_REPLY:
+            return nil
         }
     }
     
     var isReply: Bool {
         switch self {
-        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO:
+        case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .REPLY_TO_REPLY:
             return true
         default:
             return false

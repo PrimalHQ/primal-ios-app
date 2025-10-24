@@ -49,7 +49,15 @@ class NoteRepostsViewController: UIViewController, Themeable {
     }
     
     func refresh() {
-        NoteRepostsRequest(noteId: noteId).publisher()
+        let req: NoteRepostsRequest
+        let comps = noteId.split(separator: ":")
+        if comps.count == 3, let articleId = comps[safe: 2], let pubkey = comps[safe: 1] {
+            req = NoteRepostsRequest(articleId: articleId.string, pubkey: pubkey.string)
+        } else {
+            req = NoteRepostsRequest(noteId: noteId)
+        }
+        
+        req.publisher()
             .receive(on: DispatchQueue.main)
             .assign(to: \.users, onWeak: self)
             .store(in: &cancellables)

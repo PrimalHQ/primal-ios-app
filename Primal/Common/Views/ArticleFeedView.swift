@@ -34,10 +34,10 @@ class ArticleFeedView: UIView, Themeable {
         updateTheme()
         
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 6
+        paragraphStyle.lineHeightMultiple = 1.2
         titleLabel.attributedText = NSAttributedString(string: content.title, attributes: [
             .paragraphStyle: paragraphStyle,
-            .font: UIFont.appFont(withSize: 22, weight: .heavy),
+            .font: UIFont.appFont(withSize: 18, weight: .bold),
             .foregroundColor: UIColor.foreground
         ])
         

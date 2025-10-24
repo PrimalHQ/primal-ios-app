@@ -268,6 +268,10 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         wasDragged = true
     }
+    
+    override func showToast(_ message: String) {
+        view.showToastTop(message)
+    }
 }
 
 private extension ThreadViewController {

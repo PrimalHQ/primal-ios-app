@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import Lottie
 import SafariServices
+import GenericJSON
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -72,7 +73,7 @@ final class MainTabBarController: UIViewController, Themeable {
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
-    var continousConnection: ContinousConnection?
+    var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
@@ -386,20 +387,28 @@ private extension MainTabBarController {
                             return (OnboardingParentViewController(.redeemCode(code)), nil)
                         case .live(let live):
                             return (LiveVideoPlayerController(live: live), nil)
+                        case .url(let url):
+                            return (SFSafariViewController(url: url), nil)
                         }
                     }()
-                                        
-                    if let tab {
-                        self.switchToTab(tab, open: vc)
-                        if vc == nil {
-                            self.navForTab(tab).popToRootViewController(animated: true)
+                    
+                    let presentLogic = {
+                        if let tab {
+                            self.switchToTab(tab, open: vc)
+                            if vc == nil {
+                                self.navForTab(tab).popToRootViewController(animated: true)
+                            }
+                        } else if let vc {
+                            self.present(vc, animated: true)
                         }
-                        
-                        if self.presentedViewController as? SFSafariViewController != nil{
-                            self.dismiss(animated: true)
+                    }
+                    
+                    if let presentedViewController {
+                        presentedViewController.dismiss(animated: true) {
+                            presentLogic()
                         }
-                    } else if let vc {
-                        (self.presentedViewController ?? self).present(vc, animated: true)
+                    } else {
+                        presentLogic()
                     }
                 }
                 .store(in: &cancellables)
@@ -419,15 +428,10 @@ private extension MainTabBarController {
             }), for: .touchUpInside)
         }
         
-        Timer.publish(every: 180, on: .main, in: .default).autoconnect().prepend(.now)
-            .delay(for: 2, scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
-                    .sink { _ in }
-                    .store(in: &cancellables)
-            }
-            .store(in: &cancellables)
+        Connection.regular.continuousConnectionCancellable(name: "live_events_from_follows", request: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]) { event in
+            LiveEventManager.instance.addLiveEvent(event)
+        }
+        .store(in: &cancellables)
     }
     
     func addCircleWalletButton() {

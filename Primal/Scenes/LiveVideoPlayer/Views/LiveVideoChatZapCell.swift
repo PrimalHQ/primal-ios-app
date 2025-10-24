@@ -16,6 +16,7 @@ class LiveVideoChatZapCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
+        transform = .init(rotationAngle: .pi)
         
         contentView.addSubview(view)
         view.pinToSuperview(edges: .vertical, padding: 3).pinToSuperview(edges: .horizontal, padding: 8)
@@ -77,6 +78,8 @@ class LiveVideoChatZapView: UIView {
         commentLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         zapInfoLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         userNameLabel.setContentHuggingPriority(.required, for: .horizontal)
+        zapAmountLabel.setContentHuggingPriority(.required, for: .horizontal)
+        zapInfoLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         commentLabel.numberOfLines = 0
         commentLabel.enabledTextCheckingTypes = .link

@@ -24,6 +24,8 @@ class ThreadElementZapPreviewCell: ThreadElementBaseCell, RegularFeedElementCell
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         guard let zap = content.embeddedZap else { return }
         zapPreview.updateForZap(zap)
         zapPreview.updateTheme()

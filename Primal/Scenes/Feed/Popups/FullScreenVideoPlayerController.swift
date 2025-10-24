@@ -8,7 +8,7 @@
 import UIKit
 import AVKit
 
-final class FullScreenVideoPlayerController: AVPlayerViewController {
+class FullScreenVideoPlayerController: AVPlayerViewController {
     
     static weak var instance: FullScreenVideoPlayerController?
     

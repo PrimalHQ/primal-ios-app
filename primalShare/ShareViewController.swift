@@ -8,6 +8,7 @@
 import MobileCoreServices
 import UIKit
 import Social
+import UniformTypeIdentifiers
 
 class ShareViewController: SLComposeServiceViewController {
 
@@ -39,9 +40,9 @@ class ShareViewController: SLComposeServiceViewController {
         let dispatchGroup = DispatchGroup()
         
         for provider in attachments {
-            if provider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) {
+            if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 dispatchGroup.enter()
-                provider.loadItem(forTypeIdentifier: kUTTypeImage as String, options: nil) { (item, error) in
+                provider.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { (item, error) in
                     defer { dispatchGroup.leave() }
                     
                     if let imageURL = item as? URL {
@@ -68,9 +69,9 @@ class ShareViewController: SLComposeServiceViewController {
                 }
             }
             
-            if provider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String) {
+            if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
                 dispatchGroup.enter()
-                provider.loadItem(forTypeIdentifier: kUTTypeMovie as String, options: nil) { (item, error) in
+                provider.loadItem(forTypeIdentifier: UTType.movie.identifier, options: nil) { (item, error) in
                     defer { dispatchGroup.leave() }
                     
                     if let videoURL = item as? URL {

@@ -129,6 +129,8 @@ final class PostingManager {
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
     func hasLiked(_ eventId: String) -> Bool { userLikes.contains(eventId) }
     
+    func deleteRepost(_ eventId: String) { userReposts.remove(eventId) }
+    
     func hasLiked(_ reference: PostingReferenceObject) -> Bool {
         guard let id = reference.reference?.universalID else { return false }
         return userLikes.contains(id)
@@ -187,11 +189,11 @@ final class PostingManager {
         }
         lastPostedEvent = ev
         
-        userReposts.insert(ev.id)
+        userReposts.insert(post.universalID)
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             // do nothing
         }, errorHandler: {
-            self.userReposts.remove(ev.id)
+            self.userReposts.remove(post.universalID)
         })
     }
     
@@ -243,6 +245,17 @@ final class PostingManager {
         }, errorHandler: {
             callback(false)
         })
+    }
+    
+    func deleteRepostEvent(_ post: ParsedContent) {
+        if LoginManager.instance.method() != .nsec { return }
+        guard let repost = post.reposted else { return }
+        
+        userReposts.remove(post.post.universalID)
+        
+        guard let ev = NostrObject.deleteRepost(repost.id) else { return }
+        
+        RelaysPostbox.instance.request(ev)
     }
 }
 

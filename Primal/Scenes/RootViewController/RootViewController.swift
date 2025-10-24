@@ -31,6 +31,7 @@ enum DeeplinkNavigation {
     case newPost(text: String, files: [URL])
     case live(ParsedLiveEvent)
     case promoCode(String)
+    case url(URL)
 }
 
 final class RootViewController: UIViewController {
@@ -56,12 +57,7 @@ final class RootViewController: UIViewController {
             }
             
             if liveVideoController == nil {
-                UIView.animate(withDuration: 0.2) {
-                    self.livePlayer.alpha = 0
-                } completion: { _ in
-                    self.livePlayer.alpha = 1
-                    self.livePlayer.isHidden = true
-                }
+                livePlayer.isHidden = true
             } else {
                 livePlayer.isHidden = false
                 livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)

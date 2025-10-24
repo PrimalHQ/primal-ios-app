@@ -140,7 +140,7 @@ final class NotificationFeedViewController: NoteViewController {
     override func updateTheme() {
         super.updateTheme()
         
-        posts.forEach { $0.buildContentString(style: .notifications) }
+        notifications.forEach { $0.post?.buildContentString(style: $0.mainNotification.type == .YOUR_POST_WAS_REPLIED_TO ? .regular : .notifications) }
         
         navigationItem.leftBarButtonItem = customBackButton
         
@@ -184,7 +184,7 @@ final class NotificationFeedViewController: NoteViewController {
         .sink { [weak self] newResult, seenResult in
             (self?.dataSource as? NotificationsFeedDatasource)?.separatorIndex = newResult.count - 1
             self?.notifications = newResult + seenResult
-            self?.notifications.forEach { $0.post?.buildContentString(style: .notifications) }
+            self?.notifications.forEach { $0.post?.buildContentString(style: $0.mainNotification.type == .YOUR_POST_WAS_REPLIED_TO ? .regular : .notifications) }
             self?.isLoading = false
             
             if self?.view.window == nil { return }
@@ -206,6 +206,7 @@ final class NotificationFeedViewController: NoteViewController {
         }
     }
     
+    @discardableResult
     override func open(post: ParsedContent) -> NoteViewController {
         if post.post.id == "empty" {
             if post.user.data.id != "empty" {
@@ -248,7 +249,7 @@ final class NotificationFeedViewController: NoteViewController {
                 if notifications.isEmpty {
                     self.didReachEnd = true
                 } else {
-                    notifications.forEach { $0.post?.buildContentString(style: .notifications) }
+                    notifications.forEach { $0.post?.buildContentString(style: $0.mainNotification.type == .YOUR_POST_WAS_REPLIED_TO ? .regular : .notifications) }
                     self.notifications += notifications.grouped()
                 }
                 self.isLoading = false
@@ -270,6 +271,16 @@ final class NotificationFeedViewController: NoteViewController {
             mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
             mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
         }        
+    }
+    
+    override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
+        switch event {
+        case .embeddedPost:
+            guard let post = post.embeddedPosts.first else { return }
+            open(post: post)
+        default:
+            super.performEvent(event, withPost: post, inCell: cell)
+        }
     }
 }
 
@@ -325,7 +336,7 @@ extension Array where Element == GroupedNotification {
                     }
                 }
                 grouped += groupedByPostReaction
-            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED, .LIVE_EVENT_HAPPENING:
+            case .YOUR_POST_WAS_REPLIED_TO, .POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO, .YOU_WERE_MENTIONED_IN_POST, .YOUR_POST_WAS_MENTIONED_IN_POST, .POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO, .YOUR_POST_WAS_HIGHLIGHTED, .YOUR_POST_WAS_BOOKMARKED, .LIVE_EVENT_HAPPENING, .REPLY_TO_REPLY:
                 
                 let notifications = filter { $0.mainNotification.type == type }
                 grouped += notifications

@@ -82,45 +82,50 @@ struct PrimalSettingsContent: Codable, Hashable {
 }
 
 struct PrimalSettingsPushNotifications: Codable, Hashable {
-    var NEW_FOLLOWS: Bool = true
-    var ZAPS: Bool = true
-    var REACTIONS: Bool = true
-    var REPLIES: Bool = true
-    var REPOSTS: Bool = true
-    var MENTIONS: Bool = true
-    var DIRECT_MESSAGES: Bool = true
-    var WALLET_TRANSACTIONS: Bool = true
+    var NEW_FOLLOWS: Bool? = true
+    var ZAPS: Bool? = true
+    var REACTIONS: Bool? = true
+    var REPLIES: Bool? = true
+    var REPOSTS: Bool? = true
+    var MENTIONS: Bool? = true
+    var DIRECT_MESSAGES: Bool? = true
+    var WALLET_TRANSACTIONS: Bool? = true
+    var LIVE_EVENT_HAPPENING: Bool? = true
 }
 
 struct PrimalSettingsAdditionalNotifications: Codable, Hashable {
-    var ignore_events_with_too_many_mentions = true
-    var only_show_dm_notifications_from_users_i_follow = true
+    var ignore_events_with_too_many_mentions: Bool? = true
+    var only_show_dm_notifications_from_users_i_follow: Bool? = true
     var only_show_reactions_from_users_i_follow: Bool? = false
+    var include_deep_replies: Bool? = true
     var show_wallet_push_notifications_above_sats: Int? = 1
 }
 
 struct PrimalSettingsNotifications: Codable, Hashable {
-    var NEW_USER_FOLLOWED_YOU: Bool
+    var NEW_USER_FOLLOWED_YOU: Bool?
 
-    var YOUR_POST_WAS_ZAPPED: Bool
-    var YOUR_POST_WAS_LIKED: Bool
-    var YOUR_POST_WAS_REPOSTED: Bool
-    var YOUR_POST_WAS_REPLIED_TO: Bool
-    var YOU_WERE_MENTIONED_IN_POST: Bool
-    var YOUR_POST_WAS_MENTIONED_IN_POST: Bool
+    var YOUR_POST_WAS_ZAPPED: Bool?
+    var YOUR_POST_WAS_LIKED: Bool?
+    var YOUR_POST_WAS_REPOSTED: Bool?
+    var YOUR_POST_WAS_REPLIED_TO: Bool?
+    var YOU_WERE_MENTIONED_IN_POST: Bool?
+    var YOUR_POST_WAS_MENTIONED_IN_POST: Bool?
 
-    var POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED: Bool
-    var POST_YOU_WERE_MENTIONED_IN_WAS_LIKED: Bool
-    var POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED: Bool
-    var POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO: Bool
+    var POST_YOU_WERE_MENTIONED_IN_WAS_ZAPPED: Bool?
+    var POST_YOU_WERE_MENTIONED_IN_WAS_LIKED: Bool?
+    var POST_YOU_WERE_MENTIONED_IN_WAS_REPOSTED: Bool?
+    var POST_YOU_WERE_MENTIONED_IN_WAS_REPLIED_TO: Bool?
 
-    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED: Bool
-    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED: Bool
-    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED: Bool
-    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO: Bool
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_ZAPPED: Bool?
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_LIKED: Bool?
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPOSTED: Bool?
+    var POST_YOUR_POST_WAS_MENTIONED_IN_WAS_REPLIED_TO: Bool?
     
     var YOUR_POST_WAS_HIGHLIGHTED: Bool?
     var YOUR_POST_WAS_BOOKMARKED: Bool?
+    var LIVE_EVENT_HAPPENING: Bool?
+    
+    var REPLY_TO_REPLY: Bool?
 }
 
 struct PrimalPagination: Codable, Hashable {

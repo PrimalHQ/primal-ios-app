@@ -41,6 +41,8 @@ class ThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementBaseCell, Regula
     }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         linkPresentation.updateTheme()
     }
 }

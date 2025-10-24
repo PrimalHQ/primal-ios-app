@@ -8,7 +8,7 @@
 import UIKit
 
 class LiveCommentsHeaderView: UIStackView, Themeable {
-    let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
+    let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
     let timeLabel = UILabel("Started", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
     let countIcon = UIImageView(image: .liveViewersCount)
     let countLabel = UILabel("-", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
@@ -50,7 +50,9 @@ class LiveCommentsHeaderView: UIStackView, Themeable {
         liveIcon.backgroundColor = .live
         liveIcon.layer.cornerRadius = 3
         
-        let rightStack = UIStackView([configButton, infoButton, closeButton])
+        titleLabel.numberOfLines = 2
+        
+        let rightStack = UIStackView([configButton, infoButton])
         
         [leftStack, UIView(), rightStack].forEach { addArrangedSubview($0) }
         alignment = .top

@@ -25,6 +25,8 @@ class ThreadElementInfoCell: ThreadElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func update(_ content: ParsedContent) {
+        super.update(content)
+        
         if let customEvent = content.customEvent {
             infoView.isHidden = false
             infoView.set(

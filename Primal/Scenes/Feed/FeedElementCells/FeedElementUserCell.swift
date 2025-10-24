@@ -14,7 +14,6 @@ class FeedElementBaseCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
-        contentView.backgroundColor = .clear
         backgroundColor = .clear
         clipsToBounds = false
         contentView.clipsToBounds = false
@@ -23,10 +22,11 @@ class FeedElementBaseCell: UITableViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func update(_ parsedContent: ParsedContent) {
-        
+        contentView.backgroundColor = .background2
     }
     
     func updateTheme() {
+        contentView.backgroundColor = .background2
     }
 }
 
@@ -58,7 +58,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         contentView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
-        let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2)
+        let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
         botC.priority = .defaultLow
         botC.isActive = true
         
@@ -125,7 +125,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         
         nameLabel.text = user.firstIdentifier
         
-        if CheckNip05Manager.instance.isVerified(user) {
+        if CheckNip05Manager.instance.isVerifiedForFeed(user) {
             nipLabel.text = user.parsedNip
             nipLabel.isHidden = false
             checkbox.user = user

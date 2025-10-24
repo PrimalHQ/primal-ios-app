@@ -40,7 +40,7 @@ class PremiumManageContentController: UITableViewController {
     
     private var stats: EventBackupStats? { didSet { tableView.reloadData() } }
     
-    var update: ContinousConnection?
+    var update: ContinuousConnection?
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -44,6 +44,13 @@ class ThreadElementBaseCell: FeedElementBaseCell {
         }
     }
     
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        
+        parentIndicator.backgroundColor = .foreground6
+        contentView.backgroundColor = position == .child ? .background2 : .clear
+    }
+    
     convenience override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
     }

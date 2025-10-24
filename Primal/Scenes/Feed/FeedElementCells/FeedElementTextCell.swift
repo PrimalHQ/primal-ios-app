@@ -65,7 +65,7 @@ private extension FeedElementTextCell {
         textStack
             .pinToSuperview(edges: .horizontal, padding: 16)
             .pinToSuperview(edges: .bottom)
-            .pinToSuperview(edges: .top, padding: 8)
+            .pinToSuperview(edges: .top, padding: 4)
         
         textStack.axis = .vertical
         
