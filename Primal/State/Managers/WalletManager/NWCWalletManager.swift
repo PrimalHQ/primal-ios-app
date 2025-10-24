@@ -56,9 +56,6 @@ class NWCWalletManager {
     
     var cancellables: Set<AnyCancellable> = []
     
-    let client: any NwcApi
-    let zapper: any NostrZapper
-    
     init?(url: String) {
         guard
             let u = URL(string: url),
@@ -77,20 +74,16 @@ class NWCWalletManager {
         
         let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
         
-        client = NwcClientFactory.shared.createNwcApiClient(nwcData: data)
-        zapper = NwcClientFactory.shared.createNwcNostrZapper(nwcData: data)
-        print("NWC: \(url)")
-        
         refreshBalance()
         
         let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
         let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
         
-        let repo = IosRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: self)
-        let eventRepo = IosRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection)
+        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: self)
+        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
-        let walletRepo = IosRepositoryFactory_.shared.createWalletRepository(
+        let walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
             primalWalletApiClient: walletConnection,
             nostrEventSignatureHandler: self,
             profileRepository: repo,
@@ -99,11 +92,8 @@ class NWCWalletManager {
         
         let pubkey = IdentityManager.instance.userHexPubkey
         
-        
-        
-        
         // WalletAccountRepo
-        let walletAccountRepo = IosRepositoryFactory_.shared.createWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: self)
+        let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
         
         // Za reaktivno apdejtovanje
         walletAccountRepo.observeActiveWalletId(userId: pubkey)
@@ -115,7 +105,7 @@ class NWCWalletManager {
             .store(in: &cancellables)
         
         Task {
-            let res = try await ConnectNwcUseCase(walletRepository: walletRepo, walletAccountRepository: walletAccountRepo).invoke(userId: pubkey, nwcUrl: url).exceptionOrNull()
+            let res = try await ConnectNwcUseCase(walletRepository: walletRepo, walletAccountRepository: walletAccountRepo).invoke(userId: pubkey, nwcUrl: url, autoSetAsDefaultWallet: true)
             
             print("WALLET SUCCES \(res)")
             
@@ -123,7 +113,7 @@ class NWCWalletManager {
             
             let balance = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrThrow()
             
-            print(balance)
+            print("WALLET BALANCE \(balance)")
             
             // Za receive ekran
 //            try await walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: nil, comment: nil)
@@ -147,22 +137,22 @@ extension NWCWalletManager: WalletImplementation {
     }
     
     func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
-        guard let address = user.decodedLNURL else { throw WalletError.noLud }
-        
-        let data = ZapRequestData(
-            zapperUserId: IdentityManager.instance.userHexPubkey,
-            targetUserId: user.pubkey,
-            lnUrlDecoded: address,
-            zapAmountInSats: UInt64(sats),
-            zapComment: note,
-            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
-        )
-        
-        let res = try await zapper.zap(data: data)
-        
-        if let error = res as? ZapResult.Failure {
-            print(error.description())
-        }
+//        guard let address = user.decodedLNURL else { throw WalletError.noLud }
+//        
+//        let data = ZapRequestData(
+//            zapperUserId: IdentityManager.instance.userHexPubkey,
+//            targetUserId: user.pubkey,
+//            lnUrlDecoded: address,
+//            zapAmountInSats: UInt64(sats),
+//            zapComment: note,
+//            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
+//        )
+//        
+//        let res = try await zapper.zap(data: data)
+//        
+//        if let error = res as? ZapResult.Failure {
+//            print(error.description())
+//        }
     }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {

@@ -75,7 +75,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
-        IosRepositoryFactory_.shared.doInit(enableDbEncryption: true)
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: false)
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()
