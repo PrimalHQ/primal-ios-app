@@ -10,6 +10,7 @@ import UIKit
 import Lottie
 import SafariServices
 import GenericJSON
+import Kingfisher
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -75,6 +76,8 @@ final class MainTabBarController: UIViewController, Themeable {
     
     var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
+    
+    let oldStyleTabBar = UITabBar()
     
     let chatManager = ChatManager()
     var newMessageCount = 0 {
@@ -299,6 +302,52 @@ private extension MainTabBarController {
         notificationIndicator.isHidden = true
 
         vStack.axis = .vertical
+        
+        vStack.isHidden = true
+        view.addSubview(oldStyleTabBar)
+        oldStyleTabBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom, padding: -30, safeArea: true)
+        oldStyleTabBar.items = [
+            .init(title: "Feeds", image: .feedMainTabIcon, selectedImage: .feedMainTabIcon),
+            .init(title: "Reads", image: .readsMainTabIcon, selectedImage: .readsMainTabIcon),
+            .init(title: "Videos", image: .videosMainTabIcon, selectedImage: .videosMainTabIcon),
+            .init(title: "Wallet", image: .walletMainTabIcon, selectedImage: .walletMainTabIcon),
+            .init(title: "Profile", image: .profile, selectedImage: .profile),
+        ]
+        
+        IdentityManager.instance.$parsedUser
+            .compactMap { $0?.profileImage.url(for: .small) }
+            .first()
+            .sink { [weak self] image in
+                KingfisherManager.shared.retrieveImage(with: image) { res in
+                    guard var image = try? res.get().image else { return }
+                    
+                    image = image.scalePreservingAspectRatio(size: 25).withRenderingMode(.alwaysOriginal)
+                    
+                    self?.oldStyleTabBar.items = [
+                        .init(title: "Feeds", image: .feedMainTabIcon, selectedImage: .feedMainTabIcon),
+                        .init(title: "Reads", image: .readsMainTabIcon, selectedImage: .readsMainTabIcon),
+                        .init(title: "Videos", image: .videosMainTabIcon, selectedImage: .videosMainTabIcon),
+                        .init(title: "Wallet", image: .walletMainTabIcon, selectedImage: .walletMainTabIcon),
+                        .init(title: "Profile", image: image, selectedImage: image),
+                    ]
+                }
+            }
+            .store(in: &cancellables)
+        
+        oldStyleTabBar.tintColor = .foregroundAutomatic
+        
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+
+        // Make it translucent & compact
+        appearance.backgroundEffect = UIBlurEffect(style: .systemThinMaterial)
+        appearance.backgroundColor = .clear
+        appearance.stackedLayoutAppearance.normal.iconColor = .secondaryLabel
+        appearance.stackedLayoutAppearance.selected.iconColor = .label
+
+        oldStyleTabBar.standardAppearance = UITabBarAppearance()
+        oldStyleTabBar.scrollEdgeAppearance = appearance
+
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()

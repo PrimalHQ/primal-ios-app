@@ -11,10 +11,19 @@ class NewPostButton: UIButton, Themeable {
     init() {
         super.init(frame: .zero)
         
-        setImage(UIImage(named: "addPostPlus"), for: .normal)
+        if #available(iOS 26.0, *) {
+            var config = UIButton.Configuration.glass()
+            config.image = .addPostPlus
+            config.cornerStyle = .capsule
+            configuration = config
+        } else {
+            setImage(.addPostPlus, for: .normal)
+            layer.cornerRadius = 28
+            tintColor = .white
+        }
+        
         constrainToSize(56)
         updateTheme()
-        layer.cornerRadius = 28
     }
     
     required init?(coder: NSCoder) {
@@ -22,6 +31,10 @@ class NewPostButton: UIButton, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .accent
+        if #available(iOS 26.0, *) {
+            tintColor = .foregroundAutomatic
+        } else {
+            backgroundColor = .accent
+        }
     }
 }
