@@ -39,27 +39,42 @@ extension UIViewController {
         }
     }
     
-    var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
+    var customBackButton: UIBarButtonItem {
+        backButtonWithColor(.foreground)
+    }
     
     func customSearchButton(scope: SearchScope = .global, type: SearchType = .notes) -> UIBarButtonItem {
-        let view = UIView().constrainToSize(44)
-        let icon = UIImageView(image: UIImage(named: "navSearch"))
-        icon.tintColor = .foreground
-        view.addSubview(icon)
-        icon.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
-        let button = UIButton()
-        view.addSubview(button)
-        button.pinToSuperview()
-        button.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
-        }), for: .touchUpInside)
-        return .init(customView: view)
+        return UIBarButtonItem(image: .navSearch, style: .plain, target: nil, action: nil)
+        
+//        let view = UIView().constrainToSize(44)
+//        let icon = UIImageView(image: UIImage(named: "navSearch"))
+//        icon.tintColor = .foreground
+//        view.addSubview(icon)
+//        icon.centerToSuperview(axis: .vertical).pinToSuperview(edges: .trailing)
+//        let button = UIButton()
+//        view.addSubview(button)
+//        button.pinToSuperview()
+//        button.addAction(.init(handler: { [weak self] _ in
+//            self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
+//        }), for: .touchUpInside)
+//        return .init(customView: view)
+    }
+    
+    func customNavigationsButton() -> UIBarButtonItem {
+        UIBarButtonItem(image: .tabIconNotifications, style: .plain, target: nil, action: nil)
     }
     
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
-        let button = backButtonWithColorNoAction(color)
-        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        return UIBarButtonItem(customView: button)
+//        let button = backButtonWithColorNoAction(color)
+//        button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
+//        return UIBarButtonItem(customView: button)
+        
+        return UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left")?.withTintColor(color),
+            style: .plain,
+            target: self,
+            action: #selector(backButtonPressed)
+        )
     }
     
     func backButtonWithColorNoAction(_ color: UIColor) -> UIButton {

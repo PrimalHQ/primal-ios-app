@@ -190,7 +190,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         return true
     }
     
-    func setBarsToTransform(_ transform: CGFloat) {        
+    func setBarsToTransform(_ transform: CGFloat) {
+        return
+        
         prevTransform = transform
         navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
         navigationBorder.transform = .init(translationX: 0, y: transform)
@@ -527,8 +529,8 @@ private extension NoteViewController {
             self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
         }
         
-        view.addSubview(navigationBorder)
-        navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+//        view.addSubview(navigationBorder)
+//        navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
         table.refreshControl = refreshControl
         

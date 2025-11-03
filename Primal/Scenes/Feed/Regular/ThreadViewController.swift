@@ -230,11 +230,12 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         super.updateTheme()
         
         let back = backButtonWithColorNoAction(.foreground)
-        navigationItem.leftBarButtonItem = .init(customView: back)
-        back.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            inputManager.askToSaveThenDismiss(self)
-        }), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left")?.withTintColor(.foreground),
+            style: .plain,
+            target: self,
+            action: #selector(backButtonAction)
+        )
         
         textInputView.tintColor = .accent
         textInputView.textColor = .foreground
@@ -244,6 +245,10 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         inputBackground.backgroundColor = .background3
         
         updateReplyToLabel()
+    }
+    
+    @objc func backButtonAction() {
+        inputManager.askToSaveThenDismiss(self)
     }
     
     func updateReplyToLabel() {

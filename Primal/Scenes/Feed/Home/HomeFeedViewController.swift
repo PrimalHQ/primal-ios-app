@@ -23,6 +23,38 @@ extension UIButton.Configuration {
         config.titleLineBreakMode = .byTruncatingTail
         return config
     }
+    
+    static func feedSelectionButton(title: String, selected: Bool, kind: Int = 0) -> UIButton.Configuration {
+        var config: UIButton.Configuration
+        
+        if selected {
+            if #available(iOS 26.0, *) {
+                config = .prominentGlass()
+            } else {
+                config = .filled()
+            }
+            config.baseBackgroundColor = .foreground
+            config.baseForegroundColor = .background
+        } else {
+            if #available(iOS 26.0, *) {
+                config = .glass()
+                config.baseForegroundColor = .foregroundAutomatic
+            } else {
+                config = .filled()
+                config.baseBackgroundColor = .background
+                config.baseForegroundColor = .foreground
+            }
+        }
+        
+        config.contentInsets = .init(top: 0, leading: 10, bottom: 0, trailing: 10)
+        config.cornerStyle = .capsule
+        
+        var container = AttributeContainer()
+        container.font = UIFont.appFont(withSize: 16, weight: .semibold)
+        config.attributedTitle = AttributedString(title, attributes: container)
+
+        return config
+    }
 }
 
 final class HomeFeedViewController: UIViewController, Themeable {
@@ -58,14 +90,13 @@ final class HomeFeedViewController: UIViewController, Themeable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navTitleView.title = "Latest"
-        navigationItem.titleView = navTitleView
+//        navTitleView.title = "Latest"
+//        navigationItem.titleView = navTitleView
         
         navTitleView.button.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
                 self?.setFeed(feed)
-                self?.pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
             }), animated: true)
         }), for: .touchUpInside)
         
@@ -80,16 +111,27 @@ final class HomeFeedViewController: UIViewController, Themeable {
         }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
-        postButton.constrainToSize(56).pinToSuperview(padding: 8)
-        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        postButton.pinToSuperview(padding: 8)
+        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
         
         pageVC.dataSource = self
         pageVC.delegate = self
         view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
         
-        navigationItem.rightBarButtonItem = customSearchButton()
+        navigationItem.rightBarButtonItems = [customSearchButton(), customNavigationsButton()]
         updateTitle()
         
+        DispatchQueue.main.async {            
+            RootViewController.instance.$barsHidden.dropFirst().sink { [weak self] hidden in
+                guard let self else { return }
+                
+                UIView.animate(withDuration: 0.3) {
+                    self.postButton.transform = hidden ? .init(rotationAngle: .pi / 2).scaledBy(x: 0.2, y: 0.2) : .identity
+                    self.postButtonParent.transform = hidden ? .init(translationX: 15, y: 170) : .identity
+                }
+            }
+            .store(in: &self.cancellables)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -107,7 +149,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func updateTheme() {
         updateTitle()
         
-        navigationItem.rightBarButtonItem = customSearchButton()
+        navigationItem.rightBarButtonItems = [customSearchButton(), customNavigationsButton()]
         
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()
@@ -125,6 +167,9 @@ final class HomeFeedViewController: UIViewController, Themeable {
         didSet {
             cachedFeedToLeft = nil
             cachedFeedToRight = nil
+            
+            let nav: MainNavigationController? = findParent()
+            nav?.updateButtons()
         }
     }
     private var cachedFeedToLeft: PrimalFeed?
@@ -132,7 +177,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
-//        pageVC.setViewControllers([HomeFeedChildController(feed: .init(feed: feed))], direction: .forward, animated: false)
+        pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
     }
     
     func feedToLeftOfCurrentFeed() -> PrimalFeed? {

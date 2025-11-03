@@ -68,6 +68,34 @@ extension UIImage {
         return concatenatedImage
     }
     
+    static func createRingImage(color: UIColor, size: CGFloat, ringWidth: CGFloat) -> UIImage? {
+        // Create a renderer with the specified size.
+        let size = CGSize(width: size, height: size)
+        let renderer = UIGraphicsImageRenderer(size: size)
+
+        // Define the drawing process.
+        let ringImage = renderer.image { context in
+            // Calculate the center and radius of the ring.
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let radius = (min(size.width, size.height) - ringWidth) / 2.0
+
+            // Create a circular path for the ring.
+            let path = UIBezierPath(
+                arcCenter: center,
+                radius: radius,
+                startAngle: 0,
+                endAngle: 2 * .pi,
+                clockwise: true
+            )
+
+            // Set the path's properties and draw it.
+            color.setStroke()
+            path.lineWidth = ringWidth
+            path.stroke()
+        }
+        return ringImage
+    }
+    
     func trimBottomPixels(pixelsToTrim: CGFloat) -> UIImage {
         guard size.height > pixelsToTrim / scale else { return self }
         
@@ -180,7 +208,7 @@ extension UIImage {
         nonZapPayment.withTintColor(.accent, renderingMode: .alwaysOriginal)
     }
     
-    func overlayed(with overlay: UIImage, at position: CGPoint? = nil) -> UIImage? {
+    func overlayed(with overlay: UIImage, at position: CGPoint? = nil) -> UIImage {
         UIGraphicsBeginImageContextWithOptions(self.size, false, 0.0)
 
         // Draw base image
@@ -202,7 +230,55 @@ extension UIImage {
 
         let result = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return result
+        return result ?? self
+    }
+    
+    func profileMenuItem(legend: LegendCustomization?) -> UIImage {
+        guard let legend = legend?.theme else {
+            return circularImage(size: 25).withRenderingMode(.alwaysOriginal)
+        }
+        
+        let specificColor = UIColor(rgb: 0xA8E731)
+        
+        let blackImage = UIGraphicsImageRenderer(size: CGSize(width: 23, height: 23)).image { context in
+            specificColor.setFill()
+            context.fill(CGRect(origin: .zero, size: CGSize(width: 23, height: 23)))
+        }.circularImage(size: 23)
+        
+        let gradient = (Self.createRingImage(color: .black, size: 25, ringWidth: 1) ?? blackImage).withGradient(from: legend.colors, startPoint: legend.startPoint, endPoint: legend.endPoint)
+
+        return gradient
+            .overlayed(with: circularImage(size: 21))
+            .withRenderingMode(.alwaysOriginal)
+    }
+    
+    func circularImage(size squareSize: CGFloat) -> UIImage {
+        let rect = CGRect(origin: .zero, size: CGSize(width: squareSize, height: squareSize))
+        
+        // Begin a high-quality graphics context
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0.0)
+        defer { UIGraphicsEndImageContext() }
+        
+        // Create circular clipping path
+        let path = UIBezierPath(ovalIn: rect)
+        path.addClip()
+        
+        // Compute aspect fill drawing rect
+        let scale = max(squareSize / size.width, squareSize / size.height)
+        let scaledWidth = size.width * scale
+        let scaledHeight = size.height * scale
+        let drawRect = CGRect(
+            x: (squareSize - scaledWidth) / 2.0,
+            y: (squareSize - scaledHeight) / 2.0,
+            width: scaledWidth,
+            height: scaledHeight
+        )
+        
+        // Draw the image inside the circle
+        draw(in: drawRect)
+        
+        // Retrieve the new image
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
 }
 

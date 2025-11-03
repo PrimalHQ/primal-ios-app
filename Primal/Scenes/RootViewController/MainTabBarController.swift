@@ -31,7 +31,7 @@ enum MainTab: String {
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController()))
+    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController(), addGesture: false))
     lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
     lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
     lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
@@ -78,6 +78,7 @@ final class MainTabBarController: UIViewController, Themeable {
     var deeplinkCancellable: AnyCancellable?
     
     let oldStyleTabBar = UITabBar()
+    let smallTabBarButton = UIButton()
     
     let chatManager = ChatManager()
     var newMessageCount = 0 {
@@ -305,14 +306,89 @@ private extension MainTabBarController {
         
         vStack.isHidden = true
         view.addSubview(oldStyleTabBar)
-        oldStyleTabBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom, padding: -30, safeArea: true)
+        oldStyleTabBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom)
         oldStyleTabBar.items = [
-            .init(title: "Feeds", image: .feedMainTabIcon, selectedImage: .feedMainTabIcon),
-            .init(title: "Reads", image: .readsMainTabIcon, selectedImage: .readsMainTabIcon),
-            .init(title: "Videos", image: .videosMainTabIcon, selectedImage: .videosMainTabIcon),
-            .init(title: "Wallet", image: .walletMainTabIcon, selectedImage: .walletMainTabIcon),
-            .init(title: "Profile", image: .profile, selectedImage: .profile),
+            .init(title: "Feeds", image: .mainTabIconFeed, selectedImage: .selectedMainTabIconFeed),
+            .init(title: "Reads", image: .mainTabIconReads, selectedImage: .selectedMainTabIconReads),
+            .init(title: "Videos", image: .mainTabIconVideos, selectedImage: .selectedMainTabIconVideos),
+            .init(title: "Wallet", image: .mainTabIconWallet, selectedImage: .selectedMainTabIconWallet),
+            .init(title: "Me", image: .profile, selectedImage: .profile),
         ]
+        oldStyleTabBar.selectedItem = oldStyleTabBar.items?.first
+        
+        
+        if #available(iOS 26.0, *) {
+            var smallTabBarConfig = UIButton.Configuration.glass()
+            smallTabBarConfig.image = .selectedMainTabIconFeed
+            smallTabBarConfig.attributedTitle = AttributedString("Following", attributes: .init([
+                .font: UIFont.appFont(withSize: 14, weight: .regular)
+            ]))
+            smallTabBarConfig.baseForegroundColor = .foregroundAutomatic
+            smallTabBarConfig.imagePadding = 8
+            
+            smallTabBarButton.configuration = smallTabBarConfig
+            view.addSubview(smallTabBarButton)
+            smallTabBarButton.pinToSuperview(edges: .bottom, padding: 0, safeArea: true).centerToSuperview(axis: .horizontal)
+            
+            smallTabBarButton.addAction(.init(handler: { _ in
+                let scrollViews: [UIScrollView] = RootViewController.instance.view.findAllSubviews()
+                scrollViews.forEach {
+                    $0.setContentOffset($0.contentOffset, animated: false)
+                }
+                RootViewController.instance.shouldHideBars = false
+            }), for: .touchUpInside)
+        }
+        
+        DispatchQueue.main.async { [self] in
+            let xScale = (oldStyleTabBar.frame.width - 40) / smallTabBarButton.frame.width
+            let yScale = (oldStyleTabBar.frame.height - 20) / smallTabBarButton.frame.height
+            
+            RootViewController.instance.$barsHidden.dropFirst().sink { [weak self] hidden in
+                guard let self else { return }
+                
+                if hidden {
+                    smallTabBarButton.transform = .init(scaleX: xScale, y: yScale)
+                    smallTabBarButton.alpha = 0
+                    smallTabBarButton.titleLabel?.alpha = 0
+                    smallTabBarButton.imageView?.alpha = 0
+                    
+                    UIView.animate(withDuration: 0.1) {
+                        self.smallTabBarButton.alpha = 1
+                    }
+                    
+                    UIView.animate(withDuration: 0.2, delay: 0.1) {
+                        self.smallTabBarButton.titleLabel?.alpha = 1
+                        self.smallTabBarButton.imageView?.alpha = 1
+                    }
+                    
+                    UIView.animate(withDuration: 0.2) {
+                        self.smallTabBarButton.transform = .identity
+                        
+                        self.oldStyleTabBar.transform = .init(scaleX: 1 / xScale, y: 1 / yScale)
+                        self.oldStyleTabBar.alpha = 0
+                    }
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                        UIView.animate(withDuration: 0.1) {
+                            self.smallTabBarButton.alpha = 0
+                        }
+                    }
+                    
+                    UIView.animate(withDuration: 0.2) {
+                        self.smallTabBarButton.titleLabel?.alpha = 0
+                        self.smallTabBarButton.imageView?.alpha = 0
+                    }
+                    
+                    UIView.animate(withDuration: 0.2, delay: 0.1) {
+                        self.smallTabBarButton.transform = .init(scaleX: xScale, y: yScale)
+                        
+                        self.oldStyleTabBar.transform = .identity
+                        self.oldStyleTabBar.alpha = 1
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        }
         
         IdentityManager.instance.$parsedUser
             .compactMap { $0?.profileImage.url(for: .small) }
@@ -321,15 +397,16 @@ private extension MainTabBarController {
                 KingfisherManager.shared.retrieveImage(with: image) { res in
                     guard var image = try? res.get().image else { return }
                     
-                    image = image.scalePreservingAspectRatio(size: 25).withRenderingMode(.alwaysOriginal)
+                    image = image.profileMenuItem(legend: PremiumCustomizationManager.instance.getCustomization(pubkey: IdentityManager.instance.userHexPubkey))
                     
                     self?.oldStyleTabBar.items = [
-                        .init(title: "Feeds", image: .feedMainTabIcon, selectedImage: .feedMainTabIcon),
-                        .init(title: "Reads", image: .readsMainTabIcon, selectedImage: .readsMainTabIcon),
-                        .init(title: "Videos", image: .videosMainTabIcon, selectedImage: .videosMainTabIcon),
-                        .init(title: "Wallet", image: .walletMainTabIcon, selectedImage: .walletMainTabIcon),
-                        .init(title: "Profile", image: image, selectedImage: image),
+                        .init(title: "Feeds", image: .mainTabIconFeed, selectedImage: .selectedMainTabIconFeed),
+                        .init(title: "Reads", image: .mainTabIconReads, selectedImage: .selectedMainTabIconReads),
+                        .init(title: "Videos", image: .mainTabIconVideos, selectedImage: .selectedMainTabIconVideos),
+                        .init(title: "Wallet", image: .mainTabIconWallet, selectedImage: .selectedMainTabIconWallet),
+                        .init(title: "Me", image: image, selectedImage: image),
                     ]
+                    self?.oldStyleTabBar.selectedItem = self?.oldStyleTabBar.items?.first
                 }
             }
             .store(in: &cancellables)

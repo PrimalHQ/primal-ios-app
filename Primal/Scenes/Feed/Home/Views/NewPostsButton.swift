@@ -23,6 +23,8 @@ final class NewPostsButton: MyButton, Themeable {
     
     let separator = SpacerView(width: 1, height: 24, color: .white.withAlphaComponent(0.5))
     
+    lazy var mainStack = UIStackView([noteStack, separator, liveStack])
+    
     override var isPressed: Bool {
         didSet {
             noteStack.alpha = isPressed ? 0.5 : 1
@@ -32,8 +34,8 @@ final class NewPostsButton: MyButton, Themeable {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .accent
         layer.cornerRadius = 20
+        clipsToBounds = true
         
         [(noteAvatars, noteAvatarStack, noteLabel, noteStack), (liveAvatars, liveAvatarStack, liveLabel, liveStack)].forEach { avatars, avatarStack, label, stack in
             avatars.forEach { avatar in
@@ -60,16 +62,34 @@ final class NewPostsButton: MyButton, Themeable {
             stack.spacing = 10
             
             label.font = .appFont(withSize: 14, weight: .regular)
-            label.textColor = .white
+            label.textColor = .foregroundAutomatic
         }
         
-        let mainStack = UIStackView([noteStack, separator, liveStack])
         mainStack.spacing = 8
         
-        addSubview(mainStack)
+        var viewToAdd: UIView = self
+        if #available(iOS 26.0, *) {
+            let effectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            insertSubview(effectView, at: 0)
+            effectView.pinToSuperview()
+            viewToAdd = effectView.contentView
+        }
+        
+        viewToAdd.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .leading, padding: 5).pinToSuperview(edges: .trailing, padding: 17).centerToSuperview(axis: .vertical)
         
+        let constraints = [
+            mainStack.leadingAnchor.constraint(equalTo: viewToAdd.leadingAnchor, constant: 5),
+            mainStack.trailingAnchor.constraint(equalTo: viewToAdd.trailingAnchor, constant: -17)
+        ]
+        
+        constraints.forEach {
+            $0.priority = .defaultHigh
+            $0.isActive = true
+        }
+        
         constrainToSize(height: 40)
+        updateTheme()
     }
     
     func setCounts(noteCount: Int, noteUsers: [ParsedUser], liveCount: Int, liveUsers: [ParsedUser]) {
@@ -112,10 +132,10 @@ final class NewPostsButton: MyButton, Themeable {
     func labelText(_ number: Int, _ text: String) -> NSAttributedString {
         let str = NSMutableAttributedString(string: number.localized(), attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .bold),
-            .foregroundColor: UIColor.white
+            .foregroundColor: UIColor.foregroundAutomatic
         ])
         str.append(.init(string: " \(text)", attributes: [
-            .foregroundColor: UIColor.white,
+            .foregroundColor: UIColor.foregroundAutomatic,
             .font: UIFont.appFont(withSize: 14, weight: .regular)
         ]))
         return str
@@ -127,6 +147,10 @@ final class NewPostsButton: MyButton, Themeable {
     }
     
     func updateTheme() {
-        backgroundColor = .accent
+        if #available(iOS 26.0, *) {
+            
+        } else {
+            backgroundColor = .accent
+        }
     }
 }

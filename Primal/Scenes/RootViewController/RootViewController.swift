@@ -75,6 +75,10 @@ final class RootViewController: UIViewController {
     var didAnimate = false
     var didFinishInit = false
     
+    
+    @Published var shouldHideBars: Bool = false
+    @Published private(set) var barsHidden: Bool = false
+    
     @Published var navigateTo: DeeplinkNavigation?
     
     var myPip: AVPictureInPictureController? {
@@ -140,6 +144,13 @@ final class RootViewController: UIViewController {
             .sink(receiveValue: { [weak self] in
                 self?.navigateTo = $0
             })
+            .store(in: &cancellables)
+        
+        $shouldHideBars
+            .removeDuplicates()
+            .debounce(for: 0.3, scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .assign(to: \.barsHidden, onWeak: self)
             .store(in: &cancellables)
         
         let liveTap = BindableTapGestureRecognizer(action: { [weak self] in

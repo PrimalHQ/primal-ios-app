@@ -208,4 +208,57 @@ extension UIView {
         }
         return self
     }
+    
+    func applyRightFadeMask(fadeWidth: CGFloat = 80.0) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = bounds
+
+        // Left side fully visible → right side fades out
+        gradientLayer.colors = [
+            UIColor.black.cgColor,
+            UIColor.black.cgColor,
+            UIColor.clear.cgColor
+        ]
+        
+        // Location where fading starts and ends (adjust as needed)
+        gradientLayer.locations = [
+            NSNumber(value: 0.0),
+            NSNumber(value: Float((bounds.width - fadeWidth) / bounds.width)),
+            NSNumber(value: 1.0)
+        ]
+        
+        // Horizontal fade
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        
+        // Use as a mask (alpha channel)
+        layer.mask = gradientLayer
+    }
+    
+    func animateBottomTopFade(disappear: Bool = true) {
+        let maskLayer = CAGradientLayer()
+        maskLayer.frame = .init(x: 0, y: -bounds.height, width: bounds.width, height: 3 * bounds.height)
+        maskLayer.colors = disappear ? [
+            UIColor.clear.cgColor,   // transparent (bottom)
+            UIColor.black.cgColor,   // visible (top)
+        ] : [
+            UIColor.black.cgColor,
+            UIColor.clear.cgColor
+        ]
+        maskLayer.locations = [0, 0.33] // bot third is gradient, top 2 thirds are solid
+        maskLayer.startPoint = CGPoint(x: 0.5, y: 1.0) // bottom center
+        maskLayer.endPoint = CGPoint(x: 0.5, y: 0.0)   // top center
+
+        layer.mask = maskLayer
+
+        let animation = CABasicAnimation(keyPath: "locations")
+        animation.fromValue = [0, 0.33]
+        animation.toValue = [0.66, 1]
+        animation.duration = 0.3
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+
+        maskLayer.add(animation, forKey: "verticalFade")
+    }
 }

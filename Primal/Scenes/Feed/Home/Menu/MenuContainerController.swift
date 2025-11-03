@@ -49,8 +49,10 @@ final class MenuContainerController: UIViewController, Themeable {
     private(set) var isOpen = false
     
     let child: UIViewController
-    init(child: UIViewController) {
+    let addGesture: Bool
+    init(child: UIViewController, addGesture: Bool = true) {
         self.child = child
+        self.addGesture = addGesture
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -253,8 +255,10 @@ private extension MenuContainerController {
         view.addSubview(child.view)
         child.view.pinToSuperview(edges: .vertical)
         
-        let drag = UIPanGestureRecognizer(target: self, action: #selector(childPanned))
-        child.view.addGestureRecognizer(drag)
+        if addGesture {
+            let drag = UIPanGestureRecognizer(target: self, action: #selector(childPanned))
+            child.view.addGestureRecognizer(drag)
+        }
         
         let leading = child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         leading.priority = .defaultHigh
@@ -268,16 +272,14 @@ private extension MenuContainerController {
         
         nameLabel.font = .appFont(withSize: 16, weight: .bold)
         
-        let menuButtonParent = UIView()
+//        let menuButtonParent = UIView()
         profileImageButton.addTarget(self, action: #selector(toggleMenuTapped), for: .touchUpInside)
         
-        menuButtonParent.addSubview(profileImageButton)
+//        menuButtonParent.addSubview(profileImageButton)
         profileImageButton.constrainToSize(44).pinToSuperview()
-        menuButtonParent.addSubview(menuProfileImage)
+//        menuButtonParent.addSubview(menuProfileImage)
         menuProfileImage.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading)
         menuProfileImage.isUserInteractionEnabled = false
-        
-        child.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: menuButtonParent)
         
         view.addSubview(coverView)
         coverView.pin(to: child.view)

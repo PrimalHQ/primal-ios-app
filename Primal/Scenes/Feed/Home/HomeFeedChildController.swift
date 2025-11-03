@@ -14,6 +14,8 @@ class HomeFeedChildController: PostFeedViewController {
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
     
+    lazy var newPostSquareConstraint = newPostsView.widthAnchor.constraint(equalToConstant: 40)
+    
     @Published var cachedPosts: [ParsedContent] = []
     @Published var isScrolling = false
     @Published var didReachEnd = false
@@ -30,13 +32,17 @@ class HomeFeedChildController: PostFeedViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var adjustedTopBarHeight: CGFloat {
+        topBarHeight + 70
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
-        newPostsViewParent.alpha = 0
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 178).centerToSuperview(axis: .horizontal)
+        newPostsViewParent.alpha = 1
         
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
         newPostsView.alpha = 0
@@ -62,6 +68,47 @@ class HomeFeedChildController: PostFeedViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) { [weak self] in
             self?.callOnLoad()
+        }
+        
+        DispatchQueue.main.async {
+            RootViewController.instance.$barsHidden.dropFirst().sink { [weak self] hidden in
+                guard let self else { return }
+                
+                if hidden {
+                    self.newPostSquareConstraint.isActive = true
+                    UIView.animate(withDuration: 0.5) {
+                        self.newPostsViewParent.transform = .init(translationX: 0, y: -106)
+                    }
+                    
+                    UIView.animate(withDuration: 0.25) {
+                        self.newPostsView.layoutIfNeeded()
+                        self.newPostsView.mainStack.alpha = 0
+                    } completion: { _ in
+                        UIView.animate(withDuration: 0.25) {
+                            self.newPostsView.transform = .init(scaleX: 0.01, y: 0.01)
+                        } completion: { _ in
+                            self.newPostsView.alpha = 0
+                        }
+                    }
+                } else {
+                    self.newPostsView.alpha = 1
+                    
+                    UIView.animate(withDuration: 0.5) {
+                        self.newPostsViewParent.transform = .identity
+                    }
+                    
+                    UIView.animate(withDuration: 0.25) {
+                        self.newPostsView.transform = .identity
+                    } completion: { _ in
+                        self.newPostSquareConstraint.isActive = false
+                        UIView.animate(withDuration: 0.25) {
+                            self.newPostsView.mainStack.alpha = 1
+                            self.newPostsView.layoutIfNeeded()
+                        }
+                    }
+                }
+            }
+            .store(in: &self.cancellables)
         }
     }
     
@@ -114,7 +161,23 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
+    var oldOffset: CGFloat = 0
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        let delta = scrollView.contentOffset.y - oldOffset
+        
+        if abs(delta) < 5 { return }
+        
+        if delta > 0 {
+            RootViewController.instance.shouldHideBars = true
+        } else {
+            RootViewController.instance.shouldHideBars = false
+        }
+        
+        oldOffset = scrollView.contentOffset.y
+        
+        return
+        
         super.scrollViewDidScroll(scrollView)
         
         if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
@@ -132,6 +195,8 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var parentHomeVC: HomeFeedViewController?
     override func setBarsToTransform(_ transform: CGFloat) {
+        return
+        
         guard menuContainer?.isOpen == false else { return }
         
         super.setBarsToTransform(transform)
@@ -175,7 +240,7 @@ private extension HomeFeedChildController {
             .sink { [weak self] old, new in
                 self?.updateNewPosts(notes: new.0.0, noteUsers: new.0.1, live: new.1.count, liveUsers: new.1, wasInvisible: old.0.0 + old.1.count == 0)
                 if new.0.0 == 0 && !new.1.isEmpty && self?.table.contentOffset.y ?? 0 < 0 {
-                    self?.newPostsViewParent.alpha = 0
+//                    self?.newPostsViewParent.alpha = 0
                 }
             }
             .store(in: &cancellables)
