@@ -37,7 +37,15 @@ extension UIButton.Configuration {
             config.baseForegroundColor = .background
         } else {
             if #available(iOS 26.0, *) {
-                config = .glass()
+                let kind = kind % 3
+                switch kind {
+                case 1:
+                    config = .clearGlass()
+                case 2:
+                    config = .clearGlass()
+                default:
+                    config = .clearGlass()
+                }
                 config.baseForegroundColor = .foregroundAutomatic
             } else {
                 config = .filled()

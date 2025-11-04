@@ -165,16 +165,11 @@ class HomeFeedChildController: PostFeedViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let delta = scrollView.contentOffset.y - oldOffset
+        oldOffset = scrollView.contentOffset.y
         
         if abs(delta) < 5 { return }
         
-        if delta > 0 {
-            RootViewController.instance.shouldHideBars = true
-        } else {
-            RootViewController.instance.shouldHideBars = false
-        }
-        
-        oldOffset = scrollView.contentOffset.y
+        RootViewController.instance.shouldHideBars = delta > 0 && oldOffset > 0
         
         return
         

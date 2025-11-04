@@ -71,7 +71,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         
         view.addSubview(logo)
         logo.pinToSuperview(edges: .leading, padding: 32).centerToView(navigationBar, axis: .vertical)
-        logo.transform = .init(scaleX: 1.2, y: 1.2)
+        logo.transform = .init(scaleX: 1.15, y: 1.15).translatedBy(x: -6, y: -8)
         
         updateAppearance()
         
@@ -110,11 +110,11 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         }), for: .touchUpInside)
         
         let mainStack = UIStackView([scrollParent, button])
-        viewToAdd.addSubview(mainStack)
+        view.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .leading)
             .pinToSuperview(edges: .trailing, padding: 12)
-            .pinToSuperview(edges: .bottom, padding: 8)
+            .pin(to: viewToAdd, edges: .bottom, padding: 8)
         
         mainStack.spacing = 4
         mainStack.alignment = .center
@@ -133,6 +133,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
                     UIView.animateKeyframes(withDuration: 0.5, delay: 0.0, options: .calculationModeLinear, animations: {
                         UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
                             navigationBarBackground.transform = .init(translationX: 0, y: -166)
+                            mainStack.transform = .init(translationX: 0, y: -166)
                         }
                         
                         UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.4, animations: {
@@ -159,6 +160,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
                     UIView.animateKeyframes(withDuration: 0.5, delay: 0.0, options: .calculationModeLinear, animations: {
                         UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
                             navigationBarBackground.transform = .identity
+                            mainStack.transform = .identity
                         }
                         UIView.addKeyframe(withRelativeStartTime: 0.27, relativeDuration: 0.33, animations: {
                             mainStack.alpha = 1
@@ -166,7 +168,7 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
                         })
                         
                         UIView.addKeyframe(withRelativeStartTime: 0.61, relativeDuration: 0.39, animations: {
-                            self.logo.transform = .init(scaleX: 1.2, y: 1.2)
+                            self.logo.transform = .init(scaleX: 1.15, y: 1.15).translatedBy(x: -6, y: -8)
                             self.navigationBar.transform = .identity
                             button.transform = .identity
                         })
@@ -248,8 +250,8 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         
         let currentFeed = feedVC?.currentFeed ?? PrimalFeed.getActiveFeeds(.note).first
         
-        return PrimalFeed.getActiveFeeds(.note).map { feed in
-            let button = UIButton(configuration: .feedSelectionButton(title: feed.name, selected: currentFeed?.spec == feed.spec ))
+        return PrimalFeed.getActiveFeeds(.note).enumerated().map { (index, feed) in
+            let button = UIButton(configuration: .feedSelectionButton(title: feed.name, selected: currentFeed?.spec == feed.spec, kind: index))
             
             button.addAction(.init(handler: { [weak self] _ in
                 guard let feedVC: HomeFeedViewController = RootViewController.instance.findInChildren() else { return }
