@@ -50,6 +50,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private var cancellables: Set<AnyCancellable> = []
     private(set) var pushNotificationsToken: Data?
     
+    var remoteSessionManager: RemoteSigningManager?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Self.shared = self
@@ -76,6 +77,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         ArticleWebViewCache.setup()
         
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: false)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: false)
+        
+        remoteSessionManager = RemoteSigningManager()
+        
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()

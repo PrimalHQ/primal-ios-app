@@ -85,7 +85,7 @@ class NWCWalletManager {
         // WalletRepo wallet info by id (balance, transactions, etc.)
         let walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
             primalWalletApiClient: walletConnection,
-            nostrEventSignatureHandler: self,
+            nostrEventSignatureHandler: SigningManager(),
             profileRepository: repo,
             eventRepository: eventRepo
         )
@@ -208,27 +208,6 @@ extension NWCWalletManager: WalletImplementation {
 //                print(error)
 //            }
 //        }
-    }
-}
-
-extension NWCWalletManager: NostrEventSignatureHandler {
-    func __signNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, completionHandler: @escaping @Sendable (SignResult?, (any Error)?) -> Void) {
-        let tags = NostrExtensions.shared.mapAsListOfListOfStrings(tags: unsignedNostrEvent.tags)
-        guard let object = NostrObject.create(content: unsignedNostrEvent.pubKey, kind: Int(unsignedNostrEvent.kind), tags: tags) else {
-            completionHandler(SignResult.Rejected(error: .init(message: "Failed to sign", cause: nil)), nil)
-            return
-        }
-        
-        completionHandler(
-            SignResult.Signed(event: .init(
-                id: object.id, pubKey: object.pubkey, createdAt: object.created_at, kind: Int32(object.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: object.tags), content: object.content, sig: object.sig
-            )), nil
-        )
-    }
-    
-    
-    func verifySignature(nostrEvent: PrimalShared.NostrEvent) -> Bool {
-        true
     }
 }
 
