@@ -36,11 +36,19 @@ extension Keychain {
         
         try set(npubsJSONString, key: Self.savedNpubsKey)
     }
+    
+    func getSavedNsec(_ npub: String) -> String? {
+        guard let nsec = try? getString(npub) else {
+            print("ICloudKeychain: There is no nsec saved to ICloud Keychain associated with npub: \(npub)")
+            return nil
+        }
+        return nsec
+    }
 }
 
 final class ICloudKeychainManager {
-    private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal")
-        .synchronizable(false)
+    private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal").synchronizable(false)
+    private let onlineKeychain: Keychain = Keychain(service: "net.primal.iosappOnline.Primal").synchronizable(true)
     private var cancellables = Set<AnyCancellable>()
     
     private init() {}
@@ -49,30 +57,42 @@ final class ICloudKeychainManager {
     
     @Published var userPubkey: String = ""
     
-    lazy var npubs: [String] = keychain.getSavedNpubs()
+    lazy var localNpubs: [String] = keychain.getSavedNpubs()
     
-    func hasSavedNpub(_ npub: String) -> Bool { npubs.contains(where: { $0 == npub }) }
+    func hasSavedNpub(_ npub: String) -> Bool { localNpubs.contains(where: { $0 == npub }) }
     
-    func getSavedNsec(_ npub: String) -> String? {
-        guard let nsec = try? keychain.getString(npub) else {
-            print("ICloudKeychain: There is no nsec saved to ICloud Keychain associated with npub: \(npub)")
-            return nil
-        }
-        
-        return nsec
+    func hasSavedNpubOnline(_ npub: String) -> Bool {
+        onlineKeychain.getSavedNpubs().contains(npub)
     }
     
-    func saveKeypair(npub: String, nsec: String? = nil) -> Bool {
-        userPubkey = ""
+    func toggleOnlineSyncForNpub(_ npub: String, on: Bool) {
+        var npubs = onlineKeychain.getSavedNpubs()
+        npubs.remove(object: npub)
         
-        if let index = npubs.firstIndex(where: { $0 == npub }) {
-            npubs.remove(at: index)
+        if on {
+            npubs.insert(npub, at: 0)
+            if let nsec = keychain.getSavedNsec(npub) {
+                try? onlineKeychain.set(nsec, key: npub)
+            }
+        } else {
+            try? onlineKeychain.remove(npub)
         }
         
-        npubs.insert(npub, at: 0)
+        try? onlineKeychain.saveNpubs(npubs)
+    }
+    
+    func saveKeypair(npub: String, nsec: String? = nil, online: Bool = false) -> Bool {
+        userPubkey = ""
+        
+        if let index = localNpubs.firstIndex(where: { $0 == npub }) {
+            localNpubs.remove(at: index)
+        }
+        
+        localNpubs.insert(npub, at: 0)
         
         do {
-            try keychain.saveNpubs(npubs)
+            try keychain.saveNpubs(localNpubs)
+            
             if let nsec {
                 try keychain.set(nsec, key: npub)
             }
@@ -81,21 +101,47 @@ final class ICloudKeychainManager {
             return false
         }
         
+        
+        if online {
+            return onlineSaveNpub(npub, nsec: nsec)
+        }
+        
+        return true
+    }
+    
+    func onlineSaveNpub(_ npub: String, nsec: String? = nil) -> Bool {
+        var onlineNpubs = onlineKeychain.getSavedNpubs()
+        if let index = onlineNpubs.firstIndex(where: { $0 == npub }) {
+            onlineNpubs.remove(at: index)
+        }
+        onlineNpubs.insert(npub, at: 0)
+        
+        do {
+            try onlineKeychain.saveNpubs(onlineNpubs)
+            if let nsec = nsec ?? keychain.getSavedNsec(npub) {
+                try onlineKeychain.set(nsec, key: npub)
+            }
+        } catch let error {
+            print("ICloudKeychain: \(error)")
+            return false
+        }
         return true
     }
     
     // Used until we get to support multiple accounts
     func getLoginInfo() -> NostrKeypair? {
-        guard let npub = npubs.first else { return nil }
+        guard let npub = localNpubs.first else { return nil }
         
-        let keypair = NKeypair.nostrKeypair(npub: npub, nsec: getSavedNsec(npub))
+        let keypair = NKeypair.nostrKeypair(npub: npub, nsec: keychain.getSavedNsec(npub))
         userPubkey = keypair?.hexVariant.pubkey ?? ""
         return keypair
     }
     
+    func hasNsec(_ npub: String) -> Bool { keychain.getSavedNsec(npub) != nil }
+    
     @discardableResult
     func logoutCurrentUser() -> Bool {
-        guard let npub = npubs.first else { return false }
+        guard let npub = localNpubs.first else { return false }
         userPubkey = ""
         return removeKeypair(npub)
     }
@@ -114,10 +160,10 @@ final class ICloudKeychainManager {
     
     func removeKeypair(_ npub: String) -> Bool {
         userPubkey = ""
-        npubs.remove(object: npub)
+        localNpubs.remove(object: npub)
     
         do {
-            try keychain.saveNpubs(npubs)
+            try keychain.saveNpubs(localNpubs)
             try keychain.remove(npub)
         } catch let error {
             print("ICloudKeychain: \(error)")

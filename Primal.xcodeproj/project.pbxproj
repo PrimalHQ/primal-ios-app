@@ -351,6 +351,8 @@
 		B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */; };
 		B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */; };
 		B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */; };
+		B9239EF32EBB7D4C0075916A /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9239EF12EBB7D420075916A /* PrimalShared.xcframework */; };
+		B9239EF42EBB7D4C0075916A /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9239EF12EBB7D420075916A /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -378,8 +380,6 @@
 		B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B944292D2BD81B6000746FBC /* ZapGallery.swift */; };
 		B94429312BD8206200746FBC /* ZapPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94429302BD8206200746FBC /* ZapPillView.swift */; };
 		B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */; };
-		B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; };
-		B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */; };
 		B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */; };
 		B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */; };
@@ -704,7 +704,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */,
+				B9239EF42EBB7D4C0075916A /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1098,6 +1098,7 @@
 		B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageContentFooterCell.swift; sourceTree = "<group>"; };
 		B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCheckInterestsController.swift; sourceTree = "<group>"; };
 		B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingReviewController.swift; sourceTree = "<group>"; };
+		B9239EF12EBB7D420075916A /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -1125,7 +1126,6 @@
 		B944292D2BD81B6000746FBC /* ZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapGallery.swift; sourceTree = "<group>"; };
 		B94429302BD8206200746FBC /* ZapPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapPillView.swift; sourceTree = "<group>"; };
 		B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = zapGallerySkeletonLight.json; sourceTree = "<group>"; };
-		B9454A5F2EA982F90026387B /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingMessages.swift; sourceTree = "<group>"; };
 		B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSearchController.swift; sourceTree = "<group>"; };
@@ -1447,7 +1447,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */,
+				B9239EF32EBB7D4C0075916A /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1579,7 +1579,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9454A5F2EA982F90026387B /* PrimalShared.xcframework */,
+				B9239EF12EBB7D420075916A /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -4412,7 +4412,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.65;
+				MARKETING_VERSION = 2.5.90;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4461,7 +4461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.65;
+				MARKETING_VERSION = 2.5.90;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

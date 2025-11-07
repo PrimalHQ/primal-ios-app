@@ -191,8 +191,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let extra = userInfo["extra"] as? [String: Any] {
             var waitForOpen = false
             if let userPubkey = extra["user_pubkey"] as? String, IdentityManager.instance.userHexPubkey != userPubkey, let npub = userPubkey.hexToNpub() {
-                let key = ICloudKeychainManager.instance.getSavedNsec(npub) ?? npub
-                _ = LoginManager.instance.login(key)
+                _ = LoginManager.instance.login(npub)
                 RootViewController.instance.reset()
                 waitForOpen = true
             }
