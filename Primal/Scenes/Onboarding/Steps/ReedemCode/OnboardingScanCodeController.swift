@@ -9,10 +9,7 @@ import AVKit
 import Combine
 import UIKit
 
-final class OnboardingScanCodeController: UIViewController, QRCaptureController, OnboardingViewController, PromotionCodeChecker {
-    let titleLabel = UILabel()
-    let backButton: UIButton = .init()
-    
+final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptureController, PromotionCodeChecker {
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { previewView.previewLayer }
     var qrCodeFrameView = UIView()
@@ -61,7 +58,8 @@ final class OnboardingScanCodeController: UIViewController, QRCaptureController,
         descLabel.pinToSuperview(edges: .bottom, padding: 40).centerToSuperview(axis: .horizontal)
         
         enterCodeButton.addAction(.init(handler: { [weak self] _ in
-            self?.onboardingParent?.pushViewController(OnboardingEnterCodeController(), animated: true)
+            guard let self else { return }
+            onboardingParent?.pushViewController(OnboardingEnterCodeController(backgroundIndex: backgroundIndex + 1), animated: true)
         }), for: .touchUpInside)
         
         addNavigationBar("Redeem Code")
@@ -106,11 +104,12 @@ extension OnboardingScanCodeController: AVCaptureMetadataOutputObjectsDelegate {
         checking = code
         
         checkPromotionCode(code) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let info):
-                self?.onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code), animated: true)
+                onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code, backgroundIndex: backgroundIndex + 1), animated: true)
             case .failure(let message):
-                self?.onboardingParent?.pushViewController(OnboardingEnterCodeController(startingCode: code, error: message), animated: true)
+                onboardingParent?.pushViewController(OnboardingEnterCodeController(startingCode: code, error: message, backgroundIndex: backgroundIndex + 1), animated: true)
                 return
             }
         }

@@ -16,6 +16,7 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     
     let titleLabel = UILabel()
     let backButton = UIButton()
+    let backgroundIndex: CGFloat
     
     private let confButton: UIControl = OnboardingMainButton("Finish")
     
@@ -26,16 +27,17 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     
     var session: OnboardingSession
     let profile: AccountCreationData
-    init(email: String, profile: AccountCreationData, session: OnboardingSession) {
+    init(email: String, profile: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         self.session = session
         self.profile = profile
+        self.backgroundIndex = backgroundIndex
         super.init(email: email)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
-        addBackground(4, clipToLeft: false)
+        addBackground(clipToLeft: false)
         addNavigationBar("Activate Wallet")
         titleLabel.textAlignment = .center
         
@@ -53,7 +55,7 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     }
     
     override func showSummary(_ newAddress: String) {
-        onboardingParent?.resetCrossfade(OnboardingWalletFinalController(session: session))
+        onboardingParent?.resetCrossfade(OnboardingWalletFinalController(session: session, backgroundIndex: backgroundIndex + 1))
     }
     
     override var userProfile: NostrProfile? {
@@ -71,16 +73,13 @@ class OnboardingWalletCodeController: WalletActivationCodeController, Onboarding
     }
 }
 
-final class OnboardingWalletFinalController: UIViewController, OnboardingViewController, PromotionCodeChecker {
-    let titleLabel = UILabel()
-    let backButton = UIButton()
-    
+final class OnboardingWalletFinalController: OnboardingBaseViewController, PromotionCodeChecker {
     var cancellables: Set<AnyCancellable> = []
    
     let session: OnboardingSession
-    init(session: OnboardingSession) {
+    init(session: OnboardingSession, backgroundIndex: CGFloat) {
         self.session = session
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
     }
     
     required init?(coder: NSCoder) {
@@ -90,7 +89,7 @@ final class OnboardingWalletFinalController: UIViewController, OnboardingViewCon
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addBackground(4, clipToLeft: false)
+        addBackground(clipToLeft: false)
         addNavigationBar("Success")
         
         let icon = UIImageView(image: UIImage(named: "onboardingFinishCheckmark"))

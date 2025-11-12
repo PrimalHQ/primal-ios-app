@@ -351,8 +351,6 @@
 		B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */; };
 		B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */; };
 		B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */; };
-		B9239EF32EBB7D4C0075916A /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9239EF12EBB7D420075916A /* PrimalShared.xcframework */; };
-		B9239EF42EBB7D4C0075916A /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9239EF12EBB7D420075916A /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */; };
 		B9318F622B6298650044B6AA /* WalletQRTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */; };
@@ -436,6 +434,13 @@
 		B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */; };
 		B981E0A22D6F6F0C002B9729 /* TripleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */; };
 		B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */; };
+		B98B786F2EC207EB006134F9 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; };
+		B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */; };
+		B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78742EC209BE006134F9 /* OrSeparatorView.swift */; };
+		B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78762EC21730006134F9 /* CloudLoginButton.swift */; };
+		B98B78792EC21E96006134F9 /* OnboardingManageCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */; };
+		B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */; };
 		B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */; };
 		B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */; };
 		B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */; };
@@ -704,7 +709,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9239EF42EBB7D4C0075916A /* PrimalShared.xcframework in Embed Frameworks */,
+				B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1098,7 +1103,6 @@
 		B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageContentFooterCell.swift; sourceTree = "<group>"; };
 		B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCheckInterestsController.swift; sourceTree = "<group>"; };
 		B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingReviewController.swift; sourceTree = "<group>"; };
-		B9239EF12EBB7D420075916A /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B9318F5F2B6048FE0044B6AA /* SettingsEditZapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditZapController.swift; sourceTree = "<group>"; };
 		B9318F612B6298650044B6AA /* WalletQRTransitionAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletQRTransitionAnimator.swift; sourceTree = "<group>"; };
@@ -1183,6 +1187,12 @@
 		B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrupleImageGalleryCell.swift; sourceTree = "<group>"; };
+		B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
+		B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCloudSigninController.swift; sourceTree = "<group>"; };
+		B98B78742EC209BE006134F9 /* OrSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrSeparatorView.swift; sourceTree = "<group>"; };
+		B98B78762EC21730006134F9 /* CloudLoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudLoginButton.swift; sourceTree = "<group>"; };
+		B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManageCloudController.swift; sourceTree = "<group>"; };
+		B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudRemoveLoginView.swift; sourceTree = "<group>"; };
 		B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedView.swift; sourceTree = "<group>"; };
 		B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadArticleController.swift; sourceTree = "<group>"; };
 		B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleWebView.swift; sourceTree = "<group>"; };
@@ -1447,7 +1457,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9239EF32EBB7D4C0075916A /* PrimalShared.xcframework in Frameworks */,
+				B98B786F2EC207EB006134F9 /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1577,9 +1587,9 @@
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* Scenes */,
 				9393312829A3E4E0003954C2 /* Common */,
+				B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9239EF12EBB7D420075916A /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -2061,6 +2071,9 @@
 		9E83DF712A573E6900F2C379 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */,
+				B98B78762EC21730006134F9 /* CloudLoginButton.swift */,
+				B98B78742EC209BE006134F9 /* OrSeparatorView.swift */,
 				9E83DF722A573E7A00F2C379 /* FormHeaderView.swift */,
 				B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */,
 				B9009B4F2B07B14B002B0613 /* SignInInputField.swift */,
@@ -2180,6 +2193,7 @@
 		9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				B98B78712EC20801006134F9 /* iCloud */,
 				9E83DF712A573E6900F2C379 /* Views */,
 				9E9F2F6C29F6AB6400A9CDF3 /* Steps */,
 				9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */,
@@ -2775,6 +2789,15 @@
 				B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		B98B78712EC20801006134F9 /* iCloud */ = {
+			isa = PBXGroup;
+			children = (
+				B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */,
+				B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */,
+			);
+			path = iCloud;
 			sourceTree = "<group>";
 		};
 		B98DD8B02C493D5A00E8369A /* Logic */ = {
@@ -3761,6 +3784,7 @@
 				B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
+				B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */,
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
 				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,
 				B9CE4DB02B697FCE0060A1B8 /* SlideDownTransition.swift in Sources */,
@@ -3778,7 +3802,9 @@
 				B9E67E852D076327006BB397 /* FeedElementWebPreviewCell.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
+				B98B78792EC21E96006134F9 /* OnboardingManageCloudController.swift in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
+				B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */,
 				B98DD8C82C5C108700E8369A /* Article.swift in Sources */,
 				B9E67EC82D10D8F5006BB397 /* ArticleCommentsDatasource.swift in Sources */,
 				B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */,
@@ -3938,6 +3964,7 @@
 				B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */,
 				B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */,
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
+				B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */,
@@ -4136,6 +4163,7 @@
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */,
 				B99E03AB2C0DFB9F006CCECB /* PostTagsView.swift in Sources */,
+				B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */,
 				B9C672E42E2FDDA900243B45 /* SimpleHelperViews.swift in Sources */,
 				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
 				B9E67EAC2D09D8FA006BB397 /* ThreadElementWebPreviewCell.swift in Sources */,
@@ -4412,7 +4440,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.90;
+				MARKETING_VERSION = 2.6.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4461,7 +4489,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.90;
+				MARKETING_VERSION = 2.6.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

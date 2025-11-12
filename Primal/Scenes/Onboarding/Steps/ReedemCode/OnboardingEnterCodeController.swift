@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class OnboardingEnterCodeController: UIViewController, OnboardingViewController, PromotionCodeChecker {
+class OnboardingEnterCodeController: OnboardingBaseViewController, PromotionCodeChecker {
     var iconTextColor: UIColor { .white }
     var inputBackgroundColor: UIColor { .white.withAlphaComponent(0.8) }
     var inputTextColor: UIColor { .init(rgb: 0x111111) }
@@ -20,9 +20,6 @@ class OnboardingEnterCodeController: UIViewController, OnboardingViewController,
     
     private let confButton = OnboardingMainButton("Apply Code")
     
-    let titleLabel = UILabel()
-    let backButton = UIButton()
-    
     let errorMessage = UILabel()
     
     var cancellables = Set<AnyCancellable>()
@@ -30,8 +27,8 @@ class OnboardingEnterCodeController: UIViewController, OnboardingViewController,
     @Published var checking = false
     @Published var currentText = ""
     
-    convenience init(startingCode: String, error: String? = nil) {
-        self.init(nibName: nil, bundle: nil)
+    convenience init(startingCode: String, error: String? = nil, backgroundIndex: CGFloat) {
+        self.init(backgroundIndex: backgroundIndex)
         
         codeInput.text = startingCode
         currentText = startingCode
@@ -42,7 +39,7 @@ class OnboardingEnterCodeController: UIViewController, OnboardingViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addBackground(1)
+        addBackground()
         addNavigationBar("Enter Your Code")
         titleLabel.textAlignment = .center
         
@@ -127,14 +124,15 @@ private extension OnboardingEnterCodeController {
         checking = true
         
         checkPromotionCode(code) { [weak self] result in
-            self?.checking = false
+            guard let self else { return }
+            checking = false
             
             switch result {
             case .success(let info):
-                self?.onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code), animated: true)
+                onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code, backgroundIndex: backgroundIndex + 1), animated: true)
             case .failure(let message):
-                self?.errorMessage.text = "  \(message)  "
-                self?.errorMessage.isHidden = false
+                errorMessage.text = "  \(message)  "
+                errorMessage.isHidden = false
             }
         }
     }

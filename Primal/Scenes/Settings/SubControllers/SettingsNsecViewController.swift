@@ -188,12 +188,16 @@ private extension SettingsNsecViewController {
             
             if isOn {
                 ICloudKeychainManager.instance.toggleOnlineSyncForNpub(npub, on: isOn)
+                
+                view.showToast("Key added to iCloud")
             } else {
                 authenticateWithFaceID { [weak self] success in
                     guard let self else { return }
                     
                     if success {
                         ICloudKeychainManager.instance.toggleOnlineSyncForNpub(npub, on: isOn)
+                        
+                        view.showToast("Key removed from iCloud")
                     } else {
                         iCloudSwitch.isOn = !isOn
                     }

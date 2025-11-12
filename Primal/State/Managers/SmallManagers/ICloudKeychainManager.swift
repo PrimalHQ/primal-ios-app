@@ -58,6 +58,7 @@ final class ICloudKeychainManager {
     @Published var userPubkey: String = ""
     
     lazy var localNpubs: [String] = keychain.getSavedNpubs()
+    var onlineNpubs: [String] { onlineKeychain.getSavedNpubs() }
     
     func hasSavedNpub(_ npub: String) -> Bool { localNpubs.contains(where: { $0 == npub }) }
     
@@ -65,8 +66,16 @@ final class ICloudKeychainManager {
         onlineKeychain.getSavedNpubs().contains(npub)
     }
     
+    func hasSavedNsecOline(_ npub: String) -> Bool {
+        onlineKeychain.getSavedNsec(npub) != nil
+    }
+    
+    func getOnlineKey(_ npub: String) -> String {
+        onlineKeychain.getSavedNsec(npub) ?? npub
+    }
+    
     func toggleOnlineSyncForNpub(_ npub: String, on: Bool) {
-        var npubs = onlineKeychain.getSavedNpubs()
+        var npubs = onlineNpubs
         npubs.remove(object: npub)
         
         if on {
@@ -79,6 +88,10 @@ final class ICloudKeychainManager {
         }
         
         try? onlineKeychain.saveNpubs(npubs)
+    }
+    
+    var onlineNpubsThatAreNotInUse: [String] {
+        onlineNpubs.filter { !localNpubs.contains($0) }
     }
     
     func saveKeypair(npub: String, nsec: String? = nil, online: Bool = false) -> Bool {

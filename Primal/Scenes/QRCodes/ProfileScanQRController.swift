@@ -21,10 +21,7 @@ final class CapturePreviewView: UIView {
     var previewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
 }
 
-final class ProfileScanQRController: UIViewController, OnboardingViewController, QRCaptureController, MetadataCoding {
-    var titleLabel: UILabel = .init()
-    var backButton: UIButton = .init()
-    
+final class ProfileScanQRController: OnboardingBaseViewController, QRCaptureController, MetadataCoding {    
     var captureSession = AVCaptureSession()
     var qrCodeFrameView = UIView()
     
@@ -100,7 +97,7 @@ extension ProfileScanQRController: AVCaptureMetadataOutputObjectsDelegate {
 
 private extension ProfileScanQRController {
     func setup() {
-        addBackground(2.5)
+        addBackground()
         addNavigationBar("Scan QR Code")
         
         let descLabel = UILabel()

@@ -55,6 +55,7 @@ final class ProfileShowQRController: UIViewController, OnboardingViewController 
     
     var titleLabel: UILabel = .init()
     var backButton: UIButton = .init()
+    let backgroundIndex: CGFloat = 1.5
     
     let userInfo = OnboardingProfileInfoView()
     let qrCodeView = UIImageView()
@@ -62,7 +63,7 @@ final class ProfileShowQRController: UIViewController, OnboardingViewController 
     let action = QRCodeActionButton("Scan QR Code")
     let tabParent = UIView()
     
-    lazy var scanController = ProfileScanQRController()
+    lazy var scanController = ProfileScanQRController(backgroundIndex: 2.5)
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -83,7 +84,7 @@ final class ProfileShowQRController: UIViewController, OnboardingViewController 
 
 private extension ProfileShowQRController {
     func setup() {
-        addBackground(1.5, clipToLeft: false)
+        addBackground(clipToLeft: false)
         backButton.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.popViewController(animated: true)
         }), for: .touchUpInside)

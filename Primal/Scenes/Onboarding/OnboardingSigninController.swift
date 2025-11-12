@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import SwiftUI
 
-final class OnboardingSigninController: UIViewController, OnboardingViewController {
+final class OnboardingSigninController: OnboardingBaseViewController {
     enum State {
         case ready
         case invalidKey
@@ -19,10 +19,11 @@ final class OnboardingSigninController: UIViewController, OnboardingViewControll
     lazy var infoView = OnboardingProfileInfoView()
     lazy var instruction = UILabel()
     lazy var input = SignInInputField()
-    lazy var titleLabel = UILabel()
-    lazy var backButton: UIButton = .init()
     
     lazy var confirmButton = OnboardingMainButton("Paste Your Key")
+    
+    let iCloudSwitch = UISwitch()
+    lazy var iCloudStack = UIStackView([SpacerView(width: 9), UILabel("Save login in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular)), iCloudSwitch])
     
     var cancellables = Set<AnyCancellable>()
     
@@ -73,6 +74,8 @@ private extension OnboardingSigninController {
             instruction.text = "Enter your Nostr key to sign in:"
             confirmButton.setTitle("Paste Your Key", for: .normal)
             
+            iCloudStack.isHidden = true
+            
             input.isCorrect = nil
         case .invalidKey:
             infoView.isHidden = true
@@ -81,23 +84,32 @@ private extension OnboardingSigninController {
             instruction.text = "Please enter a valid Nostr key,\nstarting with “nsec” or “npub”:"
             confirmButton.setTitle("Paste New Key", for: .normal)
             
+            iCloudStack.isHidden = true
+            
             input.isCorrect = false
         case .validKey:
             instruction.isHidden = true
             confirmButton.setTitle("Sign In", for: .normal)
+            
+            iCloudStack.isHidden = false
+            iCloudSwitch.isOn = true
             
             input.isCorrect = true
         }
     }
     
     func setup() {
-        addBackground(1)
+        addBackground()
         
         let textStack = UIStackView(arrangedSubviews: [
             infoView,    SpacerView(height: 12, priority: .required), SpacerView(height: 16, priority: .defaultLow),
             instruction, SpacerView(height: 12, priority: .defaultHigh),
-            input,       SpacerView(height: 12, priority: .required)
+            input,       SpacerView(height: 12, priority: .required),
+            iCloudStack
         ])
+        iCloudStack.alignment = .center
+        iCloudStack.isHidden = true
+        iCloudStack.constrainToSize(height: 40)
         
         let mainStack = UIStackView(arrangedSubviews: [UIView(), textStack, confirmButton])
         view.addSubview(mainStack)
@@ -245,6 +257,19 @@ private extension OnboardingSigninController {
     }
     
     func signIn(_ nsec: String) {
+        if iCloudSwitch.isOn {
+            if let hexPrivkey = HexKeypair.nsecToHexPrivkey(nsec),
+               let hexPubkey = HexKeypair.privkeyToPubkey(hexPrivkey),
+               let keypair = HexKeypair.nostrKeypair(hexPubkey: hexPubkey, hexPrivkey: hexPrivkey)
+            {
+                let npub = keypair.nVariant.npub
+                let nsec = keypair.nVariant.nsec
+                _ = ICloudKeychainManager.instance.onlineSaveNpub(npub, nsec: nsec)
+            } else {
+                _ = ICloudKeychainManager.instance.onlineSaveNpub(nsec)
+            }
+        }
+        
         guard LoginManager.instance.loginReset(nsec) else {
             state = .invalidKey
             return

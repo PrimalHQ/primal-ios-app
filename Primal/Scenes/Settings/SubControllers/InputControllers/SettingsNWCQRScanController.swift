@@ -9,10 +9,7 @@ import UIKit
 import AVFoundation
 import Combine
 
-class SettingsNWCQRScanController: UIViewController, OnboardingViewController, QRCaptureController {
-    var titleLabel = UILabel()
-    var backButton = UIButton()
-    
+class SettingsNWCQRScanController: OnboardingBaseViewController, QRCaptureController {
     var captureSession = AVCaptureSession()
     var qrCodeFrameView = UIView()
     
@@ -29,7 +26,7 @@ class SettingsNWCQRScanController: UIViewController, OnboardingViewController, Q
     let callback: (String) -> Void
     init(callback: @escaping (String) -> Void) {
         self.callback = callback
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: 1)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -79,7 +76,7 @@ extension SettingsNWCQRScanController: AVCaptureMetadataOutputObjectsDelegate {
 
 private extension SettingsNWCQRScanController {
     func setup() {
-        addBackground(1)
+        addBackground()
         addNavigationBar("Connect NWC Wallet")
         
         backButton.addAction(.init(handler: { [weak self] _ in

@@ -9,14 +9,12 @@ import Combine
 import UIKit
 import Kingfisher
 
-final class OnboardingFollowSuggestionsController: UIViewController, OnboardingViewController {
+final class OnboardingFollowSuggestionsController: OnboardingBaseViewController {
     let oldData: AccountCreationData
     var session: OnboardingSession
     
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     
-    let titleLabel: UILabel = .init()
-    let backButton: UIButton = .init()
     lazy var table = UITableView()
     lazy var continueButton = OnboardingMainButton("Next")
     
@@ -29,10 +27,10 @@ final class OnboardingFollowSuggestionsController: UIViewController, OnboardingV
     
     var cancellables: Set<AnyCancellable> = []
 
-    init(data: AccountCreationData, session: OnboardingSession) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         self.oldData = data
         self.session = session
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
         
         setup()
     }
@@ -44,7 +42,7 @@ final class OnboardingFollowSuggestionsController: UIViewController, OnboardingV
 
 private extension OnboardingFollowSuggestionsController {
     func setup() {
-        addBackground(4)
+        addBackground()
         addNavigationBar("Your Follows")
         
         view.addSubview(continueButton)
@@ -82,7 +80,7 @@ private extension OnboardingFollowSuggestionsController {
 
 
     @objc func continuePressed() {
-        onboardingParent?.pushViewController(OnboardingPreviewController(data: oldData, session: session), animated: true)        
+        onboardingParent?.pushViewController(OnboardingPreviewController(data: oldData, session: session, backgroundIndex: backgroundIndex + 1), animated: true)        
     }
 }
 

@@ -32,10 +32,7 @@ final class OnboardingMainButton: UIButton {
     }
 }
 
-final class OnboardingStartViewController: UIViewController, OnboardingViewController {
-    let titleLabel = UILabel()
-    let backButton: UIButton = .init()
-    
+final class OnboardingStartViewController: OnboardingBaseViewController {    
     let screenshot = UIImageView(image: UIImage(named: "screenshotOnboarding"))
     let termsBothLines = TermsAndConditionsView(whiteOverride: true)
     
@@ -50,11 +47,15 @@ final class OnboardingStartViewController: UIViewController, OnboardingViewContr
     }
     
     @objc func signupPressed() {
-        onboardingParent?.pushViewController(OnboardingDisplayNameController(), animated: true)
+        onboardingParent?.pushViewController(OnboardingDisplayNameController(backgroundIndex: backgroundIndex + 1), animated: true)
     }
     
-    @objc func signinPressed() {
-        onboardingParent?.pushViewController(OnboardingSigninController(), animated: true)
+    @objc func signinPressed() {        
+        if ICloudKeychainManager.instance.onlineNpubsThatAreNotInUse.isEmpty {
+            onboardingParent?.pushViewController(OnboardingSigninController(backgroundIndex: backgroundIndex + 1), animated: true)
+        } else {
+            onboardingParent?.pushViewController(OnboardingCloudSigninController(backgroundIndex: backgroundIndex + 1), animated: true)
+        }
     }
 }
 
@@ -102,7 +103,8 @@ private extension OnboardingStartViewController {
         signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
         redeemCodeButton.addAction(.init(handler: { [weak self] _ in
-            self?.onboardingParent?.pushViewController(OnboardingScanCodeController(), animated: true)
+            guard let self else { return }
+            onboardingParent?.pushViewController(OnboardingScanCodeController(backgroundIndex: backgroundIndex + 1), animated: true)
         }), for: .touchUpInside)
         
         view.constrainToSize(width: 375, height: 800)
