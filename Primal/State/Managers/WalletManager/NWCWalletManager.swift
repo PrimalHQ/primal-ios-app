@@ -11,15 +11,9 @@ import NostrSDK
 import GenericJSON
 import PrimalShared
 
-extension PrimalUser {
-    var decodedLNURL: String? {
-        if lud16.isEmpty {
-            if lud06.isEmpty { return nil }
-            
-            return decode_lnurl(lud06)?.absoluteString
-        }
-        
-        let parts = lud16.components(separatedBy: "@")
+extension String {
+    var lud16ToDecodedLNURL: String? {
+        let parts = components(separatedBy: "@")
         
         guard parts.count == 2 else { return nil }
         
@@ -39,6 +33,18 @@ extension PrimalUser {
     }
 }
 
+extension PrimalUser {
+    var decodedLNURL: String? {
+        if lud16.isEmpty {
+            if lud06.isEmpty { return nil }
+            
+            return decode_lnurl(lud06)?.absoluteString
+        }
+        
+        return lud16.lud16ToDecodedLNURL
+    }
+}
+
 class NWCWalletManager {
     
     @Published var balance: Int = 0
@@ -53,6 +59,11 @@ class NWCWalletManager {
     var maxBalance: Int = 10000
     
     private let urlSession: URLSession = .shared
+    
+    let zapFactory: any NostrZapperFactory
+    let walletRepo: any WalletRepository
+    
+    var walletID: String?
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -74,21 +85,22 @@ class NWCWalletManager {
         
         let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
         
-        refreshBalance()
-        
         let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
         let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
         
-        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: self)
+        
+        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance)
         let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
-        let walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
+        walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
             primalWalletApiClient: walletConnection,
             nostrEventSignatureHandler: SigningManager(),
             profileRepository: repo,
             eventRepository: eventRepo
         )
+        
+        zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
         
         let pubkey = IdentityManager.instance.userHexPubkey
         
@@ -98,9 +110,23 @@ class NWCWalletManager {
         // Za reaktivno apdejtovanje
         walletAccountRepo.observeActiveWalletId(userId: pubkey)
             .toPublisher()
-            .sink { walletId in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] walletId in
                 print("WALLET ID \(walletId ?? "nil")")
+                guard
+                    let id = walletId
+                else { return }
                 
+                self?.walletID = id
+            }
+            .store(in: &cancellables)
+        
+        walletAccountRepo.observeActiveWallet(userId: pubkey)
+            .toPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] wallet in
+                guard let wallet else { return }
+                self?.balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
             }
             .store(in: &cancellables)
         
@@ -113,8 +139,12 @@ class NWCWalletManager {
             
             let balance = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrThrow()
             
-            print("WALLET BALANCE \(balance)")
             
+//            walletRepo.latestTransactions(walletId: walletID, walletType: .nwc).toPublisher()
+//                .sink { transaction in
+//                    print(transaction)
+//                }
+//                .store(in: &cancellables)
             // Za receive ekran
 //            try await walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: nil, comment: nil)
 //            
@@ -137,41 +167,46 @@ extension NWCWalletManager: WalletImplementation {
     }
     
     func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
-//        guard let address = user.decodedLNURL else { throw WalletError.noLud }
-//        
-//        let data = ZapRequestData(
-//            zapperUserId: IdentityManager.instance.userHexPubkey,
-//            targetUserId: user.pubkey,
-//            lnUrlDecoded: address,
-//            zapAmountInSats: UInt64(sats),
-//            zapComment: note,
-//            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
-//        )
-//        
-//        let res = try await zapper.zap(data: data)
-//        
-//        if let error = res as? ZapResult.Failure {
-//            print(error.description())
-//        }
+        guard let address = user.decodedLNURL else { throw WalletError.noLud }
+        guard let walletID else { throw WalletError.noWallet }
+        
+        let data = ZapRequestData(
+            zapperUserId: IdentityManager.instance.userHexPubkey,
+            recipientUserId: user.pubkey,
+            recipientLnUrlDecoded: address,
+            zapAmountInSats: UInt64(sats),
+            zapComment: note,
+            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
+        )
+
+        let zapper = try await zapFactory.createOrNull(walletId: walletID)
+        let res = try await zapper?.zap(walletId: walletID, data: data)
+        
+        if let error = res as? ZapResult.Failure {
+            print(error.description())
+        }
     }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-//        var amount: KotlinLong? = nil
-//        if let satsOverride {
-//            amount = KotlinLong(value: Int64(satsOverride))
-//        }
-//        let res = try await client.payInvoice(params: .init(invoice: lninvoice, amount: amount))
-        
-//        print(res.description)
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
+        print(res)
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws {
-        // TODO: Mozda nece moci throw error
-        throw WalletError.notSupported
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
+        print(res)
+        // TODO: Ask alex about
+        // lud16: nil
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws {
-        throw WalletError.notSupported
+        guard let walletID else { throw WalletError.noWallet }
+        guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
+        
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
+        print(res)
 //        try await sendInvoice(lud, satsOverride: sats, messageOverride: note)
     }
     
@@ -195,24 +230,19 @@ extension NWCWalletManager: WalletImplementation {
     }
     
     func loadMoreTransactions() {
+        guard let walletID else { return }
         
     }
     
     func refreshBalance() {
-//        Task { @MainActor [weak self] in
-//            do {
-//                guard let res = (try await self?.client.getBalance() as? NwcResultSuccess<GetBalanceResponsePayload>)?.result else { return }
-//
-//                self?.balance = Int(res.balance / 1_000)
-//            } catch {
-//                print(error)
-//            }
-//        }
-    }
-}
-
-extension NWCWalletManager: PrimalPublisher {
-    func __signPublishImportNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, outboxRelays: [String]) async throws -> PrimalPublishResult {
-        throw WalletError.noWallet
+        guard let walletID else { return }
+        
+        Task { @MainActor in
+            do {
+                _ = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrThrow()
+            } catch {
+                print(error)
+            }
+        }
     }
 }

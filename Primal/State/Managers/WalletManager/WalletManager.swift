@@ -119,7 +119,7 @@ protocol WalletImplementation {
     var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { get }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws
@@ -298,8 +298,8 @@ final class WalletManager {
         try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        try await impl.sendLNURL(lnurl: lnurl, pubkey: pubkey, sats: sats, note: note, zap: zap)
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+        try await impl.sendLNURL(lnurl: lnurl, pubkey: pubkey, sats: sats, note: note)
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
@@ -386,7 +386,7 @@ class DummyWalletImplementation: WalletImplementation {
         throw WalletError.noWallet
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws {
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         throw WalletError.noWallet
     }
     

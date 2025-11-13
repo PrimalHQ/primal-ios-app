@@ -151,8 +151,8 @@ class PrimalWalletManager {
         try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws {
-        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: nil))
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject?) async throws {

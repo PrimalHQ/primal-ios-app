@@ -32,3 +32,9 @@ extension SigningManager: NostrEventSignatureHandler {
         true
     }
 }
+
+extension SigningManager: PrimalPublisher {
+    func __signPublishImportNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, outboxRelays: [String]) async throws -> PrimalPublishResult {
+        throw WalletError.noWallet
+    }
+}
