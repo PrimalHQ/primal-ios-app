@@ -13,17 +13,19 @@ extension Keychain {
     private static let savedNpubsKey = "primal-saved-npubs"
     
     fileprivate func getSavedNpubs() -> [String] {
+        let all = allKeys().filter { $0.hasPrefix("npub") }
+        
         guard let npubsJSON = try? getString(Self.savedNpubsKey) else {
             print("ICloudKeychain: There are no saved npubs in ICloud Keychain")
-            return []
+            return all
         }
         
         guard let npubs: [String] = npubsJSON.decode() else {
             print("ICloudKeychain: Error converting npubs JSON string to [String] type")
-            return []
+            return all
         }
         
-        return npubs
+        return npubs + all.filter { !npubs.contains($0) }
     }
     
     func hasSavedNpubs() -> Bool { (try? contains(Self.savedNpubsKey)) ?? false }
