@@ -145,7 +145,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         payload["environment"] = "sandbox"
         #endif
         
-        SocketRequest(name: "update_push_notification_token", payload: .object(payload))
+        SocketRequest(name: "update_push_notification_token_for_nip46", payload: .object(payload))
             .publisher()
             .sink { res in
                 print(res.message)
@@ -199,8 +199,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let extra = userInfo["extra"] as? [String: Any] {
             var waitForOpen = false
             if let userPubkey = extra["user_pubkey"] as? String, IdentityManager.instance.userHexPubkey != userPubkey, let npub = userPubkey.hexToNpub() {
-                let key = ICloudKeychainManager.instance.getSavedNsec(npub) ?? npub
-                _ = LoginManager.instance.login(key)
+                _ = LoginManager.instance.login(npub)
                 RootViewController.instance.reset()
                 waitForOpen = true
             }

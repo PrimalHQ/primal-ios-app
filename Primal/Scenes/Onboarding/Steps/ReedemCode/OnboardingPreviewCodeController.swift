@@ -13,18 +13,15 @@ private extension UIColor {
     static let gray80 = UIColor(rgb: 0x808080)
 }
 
-class OnboardingPreviewCodeController: UIViewController, OnboardingViewController, PromotionCodeChecker {
-    let titleLabel = UILabel()
-    let backButton = UIButton()
-    
+class OnboardingPreviewCodeController: OnboardingBaseViewController, PromotionCodeChecker {
     var cancellables: Set<AnyCancellable> = []
     
     let info: PromoCodeInfo
     let code: String
-    init(info: PromoCodeInfo, code: String) {
+    init(info: PromoCodeInfo, code: String, backgroundIndex: CGFloat) {
         self.info = info
         self.code = code
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -32,7 +29,7 @@ class OnboardingPreviewCodeController: UIViewController, OnboardingViewControlle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addBackground(2)
+        addBackground()
         addNavigationBar("Success!")
         
         let (actionText, description) = {
@@ -64,7 +61,7 @@ class OnboardingPreviewCodeController: UIViewController, OnboardingViewControlle
             .pinToSuperview(edges: .bottom, padding: 12, safeArea: true)
         
         action.addAction(.init(handler: { [weak self] _ in
-            guard IdentityManager.instance.userHexPubkey.isEmpty else {
+            guard let self, IdentityManager.instance.userHexPubkey.isEmpty else {
                 if WalletManager.instance.userHasWallet != true {
                     self?.dismiss(animated: true)
                     RootViewController.instance.present(MainNavigationController(rootViewController: WalletActivateViewController()), animated: true)
@@ -81,9 +78,9 @@ class OnboardingPreviewCodeController: UIViewController, OnboardingViewControlle
                 return
             }
             
-            let signup = OnboardingDisplayNameController()
-            signup.session.promoCode = self?.code
-            self?.onboardingParent?.pushViewController(signup, animated: true)
+            let signup = OnboardingDisplayNameController(backgroundIndex: backgroundIndex + 1)
+            signup.session.promoCode = self.code
+            onboardingParent?.pushViewController(signup, animated: true)
         }), for: .touchUpInside)
     }
 }

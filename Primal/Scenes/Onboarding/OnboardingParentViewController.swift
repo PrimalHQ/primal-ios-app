@@ -11,6 +11,20 @@ import SwiftUI
 protocol OnboardingViewController: UIViewController {
     var titleLabel: UILabel { get }
     var backButton: UIButton { get }
+    var backgroundIndex: CGFloat { get }
+}
+
+class OnboardingBaseViewController: UIViewController, OnboardingViewController {
+    lazy var titleLabel = UILabel()
+    lazy var backButton: UIButton = .init()
+    
+    let backgroundIndex: CGFloat
+    init(backgroundIndex: CGFloat) {
+        self.backgroundIndex = backgroundIndex
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
 class OnboardingParentViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -28,16 +42,20 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     init(_ start: StartScreen = .start) {
         switch start {
         case .start:
-            viewControllerStack = [OnboardingStartViewController()]
+            viewControllerStack = [OnboardingStartViewController(backgroundIndex: 0)]
         case .login:
-            viewControllerStack = [OnboardingSigninController()]
+            if ICloudKeychainManager.instance.onlineNpubsThatAreNotInUse.isEmpty {
+                viewControllerStack = [OnboardingSigninController(backgroundIndex: 0)]
+            } else {
+                viewControllerStack = [OnboardingCloudSigninController(backgroundIndex: 0)]
+            }
         case .signup:
-            viewControllerStack = [OnboardingDisplayNameController()]
+            viewControllerStack = [OnboardingDisplayNameController(backgroundIndex: 0)]
         case .redeemCode(let code):
             if let code {
-                viewControllerStack = [OnboardingEnterCodeController(startingCode: code)]
+                viewControllerStack = [OnboardingEnterCodeController(startingCode: code, backgroundIndex: 0)]
             } else {
-                viewControllerStack = [OnboardingScanCodeController()]
+                viewControllerStack = [OnboardingScanCodeController(backgroundIndex: 0)]
             }
         }
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
@@ -78,6 +96,12 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
         UIView.transition(with: view, duration: 0.5, options: .transitionCrossDissolve) {
             self.setViewControllers([viewController], direction: .forward, animated: false)
         }
+    }
+    
+    func popToRootViewController(animated: Bool) {
+        guard let first = viewControllerStack.first else { return }
+        viewControllerStack = [first]
+        setViewControllers([first], direction: .reverse, animated: animated)
     }
     
     func popViewController(animated: Bool) {
@@ -147,7 +171,7 @@ extension OnboardingViewController {
         titleLabel.textColor = .white
     }
     
-    func addBackground(_ index: CGFloat, clipToLeft: Bool = true) {
+    func addBackground(clipToLeft: Bool = true) {
         let background = UIImageView(image: UIImage(named: "onboardingBackground"))
         let backgroundParent = UIView()
         backgroundParent.addSubview(background)
@@ -166,7 +190,7 @@ extension OnboardingViewController {
             relatedBy: .equal,
             toItem: view,
             attribute: .trailing,
-            multiplier: -1 * index,
+            multiplier: -1 * (backgroundIndex - 0.0001),
             constant: 0
         )
         constraint.priority = .defaultHigh

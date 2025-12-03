@@ -32,16 +32,12 @@ final class OnboardingMainButton: UIButton {
     }
 }
 
-final class OnboardingStartViewController: UIViewController, OnboardingViewController {
-    let titleLabel = UILabel()
-    let backButton: UIButton = .init()
-    
+final class OnboardingStartViewController: OnboardingBaseViewController {    
     let screenshot = UIImageView(image: UIImage(named: "screenshotOnboarding"))
     let termsBothLines = TermsAndConditionsView(whiteOverride: true)
     
     let signupButton = OnboardingMainButton("Create Account")
     let signinButton = OnboardingMainButton("Sign In")
-    let redeemCodeButton = OnboardingMainButton("Redeem Code")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,11 +46,15 @@ final class OnboardingStartViewController: UIViewController, OnboardingViewContr
     }
     
     @objc func signupPressed() {
-        onboardingParent?.pushViewController(OnboardingDisplayNameController(), animated: true)
+        onboardingParent?.pushViewController(OnboardingDisplayNameController(backgroundIndex: backgroundIndex + 1), animated: true)
     }
     
-    @objc func signinPressed() {
-        onboardingParent?.pushViewController(OnboardingSigninController(), animated: true)
+    @objc func signinPressed() {        
+        if ICloudKeychainManager.instance.onlineNpubsThatAreNotInUse.isEmpty {
+            onboardingParent?.pushViewController(OnboardingSigninController(backgroundIndex: backgroundIndex + 1), animated: true)
+        } else {
+            onboardingParent?.pushViewController(OnboardingCloudSigninController(backgroundIndex: backgroundIndex + 1), animated: true)
+        }
     }
 }
 
@@ -81,7 +81,6 @@ private extension OnboardingStartViewController {
             logoParent,         SpacerView(height: 25, priority: .defaultHigh),
             signinButton,       SpacerView(height: 10, priority: .defaultHigh),
             signupButton,       SpacerView(height: 10, priority: .defaultHigh),
-//            redeemCodeButton,   SpacerView(height: 18, priority: .defaultHigh),
             termsBothLines
         ])
         contentStack.axis = .vertical
@@ -101,9 +100,6 @@ private extension OnboardingStartViewController {
         
         signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
-        redeemCodeButton.addAction(.init(handler: { [weak self] _ in
-            self?.onboardingParent?.pushViewController(OnboardingScanCodeController(), animated: true)
-        }), for: .touchUpInside)
         
         view.constrainToSize(width: 375, height: 800)
         view.centerToSuperview(axis: .horizontal)

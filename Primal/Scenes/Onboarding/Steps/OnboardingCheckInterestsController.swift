@@ -9,24 +9,22 @@ import Combine
 import UIKit
 import SafariServices
 
-final class OnboardingCheckInterestsController: UIViewController, OnboardingViewController {
+final class OnboardingCheckInterestsController: OnboardingBaseViewController {
     let oldData: AccountCreationData
     var session: OnboardingSession
     
     let instructionLabel = UILabel()
     let continueButton = OnboardingMainButton("Next")
-    let titleLabel: UILabel = .init()
-    let backButton = UIButton()
     let progressView = PrimalProgressView(progress: 2, total: 4, markProgress: true)
     
     var editSelected = false
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(data: AccountCreationData, session: OnboardingSession) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         self.oldData = data
         self.session = session
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
         
         setup()
     }
@@ -38,7 +36,7 @@ final class OnboardingCheckInterestsController: UIViewController, OnboardingView
 
 private extension OnboardingCheckInterestsController {
     func setup() {
-        addBackground(3)
+        addBackground()
         addNavigationBar("Your Follows")
         instructionLabel.attributedText = descAttributedString("We followed \(session.usersToFollow.count) Nostr accounts based on the interests you selected.")
         
@@ -76,9 +74,9 @@ private extension OnboardingCheckInterestsController {
     
     @objc func continuePressed() {
         if editSelected {
-            onboardingParent?.pushViewController(OnboardingFollowSuggestionsController(data: oldData, session: session), animated: true)
+            onboardingParent?.pushViewController(OnboardingFollowSuggestionsController(data: oldData, session: session, backgroundIndex: backgroundIndex + 1), animated: true)
         } else {
-            onboardingParent?.pushViewController(OnboardingPreviewController(data: oldData, session: session), animated: true)
+            onboardingParent?.pushViewController(OnboardingPreviewController(data: oldData, session: session, backgroundIndex: backgroundIndex + 1), animated: true)
         }
     }
 }

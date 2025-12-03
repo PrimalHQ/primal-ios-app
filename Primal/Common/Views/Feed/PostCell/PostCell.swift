@@ -173,7 +173,9 @@ class PostCell: UITableViewCell {
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0
-            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: CGFloat(first.height) / CGFloat(first.width), constant: constant)
+            let height = first.height > 1 ? first.height : 1
+            let width = first.width > 1 ? first.width : height
+            let aspect = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: height / width, constant: constant)
             aspect.priority = .defaultHigh
             aspect.isActive = true
             imageAspectConstraint = aspect

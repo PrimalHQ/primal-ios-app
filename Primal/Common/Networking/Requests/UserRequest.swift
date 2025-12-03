@@ -18,3 +18,14 @@ struct UserRequest: Request {
     
     var pubkey: String
 }
+
+
+struct UsersRequest: Request {
+    typealias ResponseData = [JSON]
+    
+    let url: URL = URL(string: "https://cache1.primal.net/api/")!
+    
+    var body: Any? { ["user_infos", ["pubkeys": pubkeys]] as Any }
+    
+    var pubkeys: [String]
+}

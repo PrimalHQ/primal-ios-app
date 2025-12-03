@@ -15,6 +15,7 @@ class OnboardingWalletController: WalletActivateViewController, OnboardingViewCo
     
     let titleLabel = UILabel()
     let backButton = UIButton()
+    let backgroundIndex: CGFloat
     
     private let confButton: UIControl = OnboardingMainButton("Next")
     override var confirmButton: UIControl { confButton }
@@ -26,16 +27,17 @@ class OnboardingWalletController: WalletActivateViewController, OnboardingViewCo
     
     var session: OnboardingSession
     let profile: AccountCreationData
-    init(profile: AccountCreationData, session: OnboardingSession) {
+    init(profile: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat = 4) {
         self.session = session
         self.profile = profile
+        self.backgroundIndex = backgroundIndex
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
-        addBackground(4, clipToLeft: false)
+        addBackground(clipToLeft: false)
         addNavigationBar("Activate Wallet")
         titleLabel.textAlignment = .center
         
@@ -54,6 +56,6 @@ class OnboardingWalletController: WalletActivateViewController, OnboardingViewCo
     }
     
     override func showCodeController(_ email: String) {
-        onboardingParent?.reset(OnboardingWalletCodeController(email: email, profile: profile, session: session), animated: false)
+        onboardingParent?.reset(OnboardingWalletCodeController(email: email, profile: profile, session: session, backgroundIndex: backgroundIndex + 1), animated: false)
     }
 }

@@ -82,8 +82,12 @@ class VideoPlayer: NSObject {
         
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
 //            .receive(on: DispatchQueue.main)
-            .sink { [weak player] _ in
-                player?.seek(to: .zero)
+            .sink { [weak player, weak self] _ in
+                if let duration = player?.currentItem?.duration.seconds, duration < 0.5 {
+                    self?.attemptBlossomLoad()
+                } else {
+                    player?.seek(to: .zero)
+                }
             }
             .store(in: &cancellables)
         

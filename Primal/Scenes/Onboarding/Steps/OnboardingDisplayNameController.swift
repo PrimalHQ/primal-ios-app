@@ -9,10 +9,7 @@ import Combine
 import UIKit
 import Kingfisher
 
-final class OnboardingDisplayNameController: UIViewController, OnboardingViewController {
-    let titleLabel = UILabel()
-    let backButton: UIButton = .init()
-    
+final class OnboardingDisplayNameController: OnboardingBaseViewController {    
     let avatarView = UIImageView(image: UIImage(named: "onboardingDefaultAvatar"))
     let addPhotoButton = SolidColorUIButton(title: "add photo", color: .white)
     
@@ -66,7 +63,7 @@ final class OnboardingDisplayNameController: UIViewController, OnboardingViewCon
 
 private extension OnboardingDisplayNameController {
     func setup() {
-        addBackground(1)
+        addBackground()
         addNavigationBar("Create Account")
         
         let avatarStack = UIStackView(axis: .vertical, [avatarView, SpacerView(height: 8), addPhotoButton])
@@ -183,7 +180,7 @@ private extension OnboardingDisplayNameController {
         nextButton.addAction(.init(handler: { [weak self] _ in
             guard let self = self, !self.accountData.displayname.isEmpty else { return }
             
-            self.onboardingParent?.pushViewController(OnboardingInterestsController(data: self.accountData, session: self.session), animated: true)
+            self.onboardingParent?.pushViewController(OnboardingInterestsController(data: self.accountData, session: self.session, backgroundIndex: backgroundIndex + 1), animated: true)
         }), for: .touchUpInside)
         
         displayNameInput.addAction(.init(handler: { [weak self] _ in
