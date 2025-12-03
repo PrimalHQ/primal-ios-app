@@ -356,6 +356,11 @@ extension NostrObject {
         return createNostrObject(content: contentString, kind: 1337)
     }
     
+    static func remoteSignerEnableEvent(token: String) -> NostrObject? {
+        guard let contentString = ["token": token].encodeToString() else { return nil }
+        return createNostrObject(content: contentString, kind: 1337)
+    }
+    
     static func activatePromoCode(code: String) -> NostrObject? {
         guard let contentString = ["promo_code": code].encodeToString() else { return nil }
         return createNostrObject(content: contentString, kind: NostrKind.settings.rawValue, tags: [["d", "Primal-iOS-App"]])   
@@ -377,6 +382,18 @@ extension NostrObject {
             ["client", "Primal-iOS-App"]
         ])
     }
+    
+    static func createNostrObjectAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
+        guard
+            let id = createNostrObjectId(pubkey: pubkey, tags: tags, content: content, created_at: createdAt, kind: kind),
+            let sig = createNostrObjectSig(privkey: privkey, id: id)
+        else {
+            return nil
+        }
+        
+        return NostrObject(id: id, sig: sig, tags: tags, pubkey: pubkey, created_at: createdAt, kind: kind, content: content)
+    }
+
 }
 
 fileprivate func getKeypair() -> NostrKeypair? { OnboardingSession.instance?.newUserKeypair ?? ICloudKeychainManager.instance.getLoginInfo()
@@ -391,18 +408,7 @@ fileprivate let jsonEncoder = JSONEncoder()
 fileprivate func createNostrObject(content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
     guard let keypair = getKeypair(), let privkey = keypair.hexVariant.privkey else { return nil }
     
-    return createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
-}
-
-fileprivate func createNostrObjectAndSign(pubkey: String, privkey: String, content: String, kind: Int = 1, tags: [[String]] = [], createdAt: Int64 = Int64(Date().timeIntervalSince1970)) -> NostrObject? {
-    guard
-        let id = createNostrObjectId(pubkey: pubkey, tags: tags, content: content, created_at: createdAt, kind: kind),
-        let sig = createNostrObjectSig(privkey: privkey, id: id)
-    else {
-        return nil
-    }
-    
-    return NostrObject(id: id, sig: sig, tags: tags, pubkey: pubkey, created_at: createdAt, kind: kind, content: content)
+    return NostrObject.createNostrObjectAndSign(pubkey: keypair.hexVariant.pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
 }
 
 fileprivate func createNostrLikeEvent(reference: PostingReferenceObject) -> NostrObject? {

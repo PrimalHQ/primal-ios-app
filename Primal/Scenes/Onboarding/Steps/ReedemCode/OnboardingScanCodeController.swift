@@ -9,24 +9,24 @@ import AVKit
 import Combine
 import UIKit
 
-final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptureController, PromotionCodeChecker {
+final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptureController, WalletSearchController, PromotionCodeChecker {
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { previewView.previewLayer }
     var qrCodeFrameView = UIView()
     let previewView = CapturePreviewView()
     
-    let enterCodeButton = WalletSendSmallActionBlackButton(title: "Enter Code Instead", icon: .walletTabKeyboard)
+    let enterCodeButton = WalletSendSmallActionBlackButton(title: "Use Keyboard Instead", icon: .walletTabKeyboard)
     
     var cancellables: Set<AnyCancellable> = []
     
     let cover = UIImageView(image: .qrCodeMaskLoading)
     
-    var checking: String?
+    var textSearch: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let image = UIImageView(image: UIImage(named: "qrCodeMask"))
+        let image = UIImageView(image: .qrCodeMask)
         view.addSubview(image)
         image.pinToSuperview()
         image.contentMode = .scaleAspectFill
@@ -51,18 +51,23 @@ final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptur
         view.bringSubviewToFront(image)
         
         view.addSubview(enterCodeButton)
-        enterCodeButton.pinToSuperview(edges: .bottom, padding: 140).centerToSuperview(axis: .horizontal)
+        enterCodeButton.centerToSuperview(axis: .horizontal)
+        enterCodeButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 150).isActive = true
         
-        let descLabel = UILabel("Scan your Invite Code,\nor a Primal Gift Card.", color: .white, font: .appFont(withSize: 18, weight: .regular), multiline: true)
-        view.addSubview(descLabel)
-        descLabel.pinToSuperview(edges: .bottom, padding: 40).centerToSuperview(axis: .horizontal)
+        let descStack = UIStackView(axis: .vertical, [
+            UILabel("Scan Anything:", color: .white, font: .appFont(withSize: 16, weight: .bold), multiline: true),
+            UILabel("Invite code, payment invoice, login string,\nuser link, content link, primal gift card", color: .white.withAlphaComponent(0.75), font: .appFont(withSize: 14, weight: .regular), multiline: true)
+        ])
+        descStack.spacing = 4
+        view.addSubview(descStack)
+        descStack.pinToSuperview(edges: .bottom, padding: 40).centerToSuperview(axis: .horizontal)
         
         enterCodeButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             onboardingParent?.pushViewController(OnboardingEnterCodeController(backgroundIndex: backgroundIndex + 1), animated: true)
         }), for: .touchUpInside)
         
-        addNavigationBar("Redeem Code")
+        addNavigationBar("Scan Code")
     }
     
     var isRunning = false
@@ -81,6 +86,12 @@ final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptur
                 self.cover.alpha = 0
             }
         }
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+//            self.dismiss(animated: true) {
+//                RootViewController.instance.present(RemoteSignerRootController(.newLogin("nostrconnect://5aa4f3ea9da10181c7246d19876dc420405dd1aa5caaf93580f56a5ef74e5520?url=https%3A%2F%2Fapp.coracle.social&name=Coracle&image=https%3A%2F%2Fapp.coracle.social%2Fimages%2Flogo.png&perms=sign_event%3A22242%2Cnip04_encrypt%2Cnip04_decrypt%2Cnip44_encrypt%2Cnip44_decrypt&secret=278yp5&relay=wss%3A%2F%2Frelay.nsec.app%2F&relay=wss%3A%2F%2Fbucket.coracle.social%2F&relay=wss%3A%2F%2Foffchain.pub%2F")), animated: true)
+//            }
+//        }
     }
 }
 
@@ -99,20 +110,32 @@ extension OnboardingScanCodeController: AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
 
-        guard let text = metadataObj.stringValue, let code = text.split(separator: "/").last?.string, code.count == 8, checking != code else { return }
+        guard let text = metadataObj.stringValue else { return }
+              
+        if let code = text.split(separator: "/").last?.string, code.count == 8, textSearch != code {
+            textSearch = code
             
-        checking = code
-        
-        checkPromotionCode(code) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let info):
-                onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code, backgroundIndex: backgroundIndex + 1), animated: true)
-            case .failure(let message):
-                onboardingParent?.pushViewController(OnboardingEnterCodeController(startingCode: code, error: message, backgroundIndex: backgroundIndex + 1), animated: true)
-                return
+            checkPromotionCode(code) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let info):
+                    onboardingParent?.pushViewController(OnboardingPreviewCodeController(info: info, code: code, backgroundIndex: backgroundIndex + 1), animated: true)
+                case .failure(let message):
+                    onboardingParent?.pushViewController(OnboardingEnterCodeController(startingCode: code, error: message, backgroundIndex: backgroundIndex + 1), animated: true)
+                    return
+                }
             }
+            return
         }
+        
+        if text.hasPrefix("nostrconnect:") {
+            dismiss(animated: true) {
+                RootViewController.instance.present(RemoteSignerRootController(.newLogin(text)), animated: true)
+            }
+            return
+        }
+        
+        search(text)
     }
 }
 

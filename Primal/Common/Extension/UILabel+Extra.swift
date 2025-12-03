@@ -10,13 +10,27 @@ import UIKit
 extension UILabel {
     convenience init(_ text: String, color: UIColor, font: UIFont, multiline: Bool = false) {
         self.init(frame: .zero)
-        self.text = text
-        self.textColor = color
+        
         self.font = font
-        self.numberOfLines = multiline ? 0 : 1
+        self.textColor = color
+        
+        var attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: color
+        ]
+        
         if multiline {
             textAlignment = .center
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            paragraphStyle.lineSpacing = 4
+            
+            attributes[.paragraphStyle] = paragraphStyle
         }
+        
+        numberOfLines = multiline ? 0 : 1
+        attributedText = .init(string: text, attributes: attributes)
     }
     
     func countLabelLines() -> Int {

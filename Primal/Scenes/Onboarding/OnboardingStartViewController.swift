@@ -38,7 +38,6 @@ final class OnboardingStartViewController: OnboardingBaseViewController {
     
     let signupButton = OnboardingMainButton("Create Account")
     let signinButton = OnboardingMainButton("Sign In")
-    let redeemCodeButton = OnboardingMainButton("Redeem Code")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +81,6 @@ private extension OnboardingStartViewController {
             logoParent,         SpacerView(height: 25, priority: .defaultHigh),
             signinButton,       SpacerView(height: 10, priority: .defaultHigh),
             signupButton,       SpacerView(height: 10, priority: .defaultHigh),
-//            redeemCodeButton,   SpacerView(height: 18, priority: .defaultHigh),
             termsBothLines
         ])
         contentStack.axis = .vertical
@@ -102,10 +100,6 @@ private extension OnboardingStartViewController {
         
         signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
-        redeemCodeButton.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            onboardingParent?.pushViewController(OnboardingScanCodeController(backgroundIndex: backgroundIndex + 1), animated: true)
-        }), for: .touchUpInside)
         
         view.constrainToSize(width: 375, height: 800)
         view.centerToSuperview(axis: .horizontal)

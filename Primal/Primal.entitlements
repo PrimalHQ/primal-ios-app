@@ -22,5 +22,9 @@
 	<true/>
 	<key>com.apple.security.personal-information.photos-library</key>
 	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)net.primal.iosapp.Primal</string>
+	</array>
 </dict>
 </plist>

@@ -274,6 +274,9 @@
 		B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */; };
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
+		B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B91797E82EDDCB8F00EF29EF /* KeychainAccess */; };
+		B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FD2EDDD21D00EF29EF /* NostrSDK */; };
+		B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FF2EDDD23200EF29EF /* NostrSDK */; };
 		B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */; };
 		B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A3602EA0FA420003683D /* LiveChatDatasource.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
@@ -434,8 +437,10 @@
 		B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */; };
 		B981E0A22D6F6F0C002B9729 /* TripleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */; };
 		B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */; };
+		B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */; };
+		B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */; };
 		B98B786F2EC207EB006134F9 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; };
-		B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */; };
 		B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78742EC209BE006134F9 /* OrSeparatorView.swift */; };
 		B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78762EC21730006134F9 /* CloudLoginButton.swift */; };
@@ -473,7 +478,6 @@
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
-		B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B9982FD42EA678E900BEC881 /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
@@ -1187,6 +1191,8 @@
 		B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrupleImageGalleryCell.swift; sourceTree = "<group>"; };
+		B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerRootController.swift; sourceTree = "<group>"; };
+		B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInController.swift; sourceTree = "<group>"; };
 		B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCloudSigninController.swift; sourceTree = "<group>"; };
 		B98B78742EC209BE006134F9 /* OrSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrSeparatorView.swift; sourceTree = "<group>"; };
@@ -1446,7 +1452,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */,
+				B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
@@ -1484,6 +1490,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */,
+				B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2182,6 +2190,7 @@
 				B9F9331B2B88F6C40064B495 /* Premium */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
 				B99E038A2C0567FA006CCECB /* Reads */,
+				B9856EA12ED8B23D00B21500 /* RemoteSigner */,
 				B9009B582B0FCF3B002B0613 /* QRCodes */,
 				B94F2BB72AD410FA0041181B /* Wallet */,
 				B94A0E222AA8C7C500DEBFE1 /* Messagges */,
@@ -2791,6 +2800,15 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		B9856EA12ED8B23D00B21500 /* RemoteSigner */ = {
+			isa = PBXGroup;
+			children = (
+				B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */,
+				B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */,
+			);
+			path = RemoteSigner;
+			sourceTree = "<group>";
+		};
 		B98B78712EC20801006134F9 /* iCloud */ = {
 			isa = PBXGroup;
 			children = (
@@ -3387,7 +3405,7 @@
 				B906AB032C99F3E40089813F /* GRDB */,
 				B9B687A22D25A2AD00140927 /* Down */,
 				B907D3C02DBBF18B002B86DA /* LightningDevKit */,
-				B9982FD42EA678E900BEC881 /* NostrSDK */,
+				B91797FD2EDDD21D00EF29EF /* NostrSDK */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3449,6 +3467,8 @@
 			);
 			name = PrimalNotifications;
 			packageProductDependencies = (
+				B91797E82EDDCB8F00EF29EF /* KeychainAccess */,
+				B91797FF2EDDD23200EF29EF /* NostrSDK */,
 			);
 			productName = PrimalNotifications;
 			productReference = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */;
@@ -3529,7 +3549,7 @@
 				B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */,
 				B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */,
-				B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
+				B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -4030,11 +4050,13 @@
 				B906AB0D2C9B2D830089813F /* ProfileLastVisit.swift in Sources */,
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
+				B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */,
 				B9EDA5882E4CABE1003262E4 /* LivePopupDismissGesture.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				B9E67EB22D0A17E0006BB397 /* MainThreadElementTextCell.swift in Sources */,
 				B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */,
 				B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */,
+				B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
 				B9C6D2422CAD93ED00B2EEBE /* FeedMarketplaceCellController.swift in Sources */,
 				B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */,
@@ -4440,7 +4462,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.6;
+				MARKETING_VERSION = 2.6.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4489,7 +4511,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.6;
+				MARKETING_VERSION = 2.6.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4842,7 +4864,7 @@
 				minimumVersion = 0.0.125;
 			};
 		};
-		B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
+		B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/PrimalHQ/nostr-sdk-ios";
 			requirement = {
@@ -4932,9 +4954,19 @@
 			package = B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */;
 			productName = LightningDevKit;
 		};
-		B9982FD42EA678E900BEC881 /* NostrSDK */ = {
+		B91797E82EDDCB8F00EF29EF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
+			package = 9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		B91797FD2EDDD21D00EF29EF /* NostrSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
+			productName = NostrSDK;
+		};
+		B91797FF2EDDD23200EF29EF /* NostrSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
 			productName = NostrSDK;
 		};
 		B99E039B2C07C059006CCECB /* Ink */ = {

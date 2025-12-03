@@ -125,7 +125,10 @@ extension LoginManager {
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] users in
                 guard let self else { return }
-                loadedProfiles = users
+                
+                if loadedProfiles.map({ $0.data.pubkey }).sorted() != users.map({ $0.data.pubkey }).sorted() {
+                    loadedProfiles = users
+                }
                 
                 let missing = allPubkeys.filter { pubkey in !self.loadedProfiles.contains(where: { $0.data.pubkey == pubkey })}
         

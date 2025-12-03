@@ -101,7 +101,7 @@ struct MediaMetadata: Codable, Hashable {
             var height: CGFloat { h }
             var width: CGFloat { w }
             var url: URL? { URL(string: media_url) }
-            var animated: Bool { a != 1 }
+            var animated: Bool { a != 0 }
             var size: MediaSize { .init(rawValue: s) ?? .medium }
             var duration: Double? { dur }
         }

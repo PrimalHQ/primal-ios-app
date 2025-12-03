@@ -137,7 +137,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         payload["environment"] = "sandbox"
         #endif
         
-        SocketRequest(name: "update_push_notification_token", payload: .object(payload))
+        SocketRequest(name: "update_push_notification_token_for_nip46", payload: .object(payload))
             .publisher()
             .sink { res in
                 print(res.message)

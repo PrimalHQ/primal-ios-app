@@ -44,6 +44,19 @@ extension UserDefaults {
         get { string(forKey: .useNWCKey)?.decode() ?? [:] }
         set { setValue(newValue.encodeToString(), forKey: .useNWCKey) }
     }
+    
+    var btcToUsd: Double {
+        get {
+            let double = double(forKey: .btcExchangeRateKey)
+            
+            if double < 1 {
+                return 90000
+            }
+            
+            return double
+        }
+        set { set(newValue, forKey: .btcExchangeRateKey) }
+    }
 }
 
 private extension String {
@@ -54,6 +67,7 @@ private extension String {
     static let useUSDKey = "walletUseUSDKey"
     static let nwcSettingsKey = "nwcSettingsKey"
     static let useNWCKey = "useNWCKey"
+    static let btcExchangeRateKey = "btcExchangeRateKey"
 }
 
 struct CodableParsedTransaction: Codable {
@@ -148,7 +162,7 @@ final class WalletManager {
     
     @Published var premiumState: PremiumState?
     @Published var didJustCreateWallet = false
-    @Published var btcToUsd: Double = 44022
+    @Published var btcToUsd: Double = UserDefaults.standard.btcToUsd
     @Published var isBitcoinPrimary = !UserDefaults.standard.useUSD {
         didSet {
             if oldValue != isBitcoinPrimary {
@@ -290,6 +304,7 @@ final class WalletManager {
             .sink { [weak self] res in
                 guard let price = res.bitcoinPrice else { return }
                 self?.btcToUsd = price
+                UserDefaults.standard.btcToUsd = price
             }
             .store(in: &cancellables)
     }
