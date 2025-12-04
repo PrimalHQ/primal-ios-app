@@ -152,6 +152,8 @@ final class ICloudKeychainManager {
         return keypair
     }
     
+    func nsec(_ npub: String) -> String? { keychain.getSavedNsec(npub) }
+    
     func hasNsec(_ npub: String) -> Bool { keychain.getSavedNsec(npub) != nil }
     
     @discardableResult

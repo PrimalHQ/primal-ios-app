@@ -215,6 +215,17 @@ public enum Skie {
     public enum RelayEvent {
     }
   }
+  public enum Account {
+    public enum SessionEvent {
+    }
+  }
+  public typealias Primal_domain__account = PrimalShared.Skie.Account
+  public enum Primal_data_account__remote {
+    public enum RemoteSignerMethod {
+    }
+    public enum RemoteSignerMethodResponse {
+    }
+  }
   public enum NetworkingUpload {
     public enum UploadResult {
     }
@@ -473,6 +484,8 @@ extension PrimalShared.WalletRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getWalletById(walletId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.Wallet>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func latestTransactions(walletId: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.Transaction]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func parseLnInvoice(userId: Swift.String, lnbc: Swift.String) async throws -> PrimalShared.LnInvoiceParseResult
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func parseLnUrl(userId: Swift.String, lnurl: Swift.String) async throws -> PrimalShared.LnUrlParseResult
@@ -568,6 +581,8 @@ extension PrimalShared.LocalWalletTransactionDao {
   public func firstByWalletId(walletId: Swift.String) async throws -> PrimalShared.LocalWalletTransactionData?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func lastByWalletId(walletId: Swift.String) async throws -> PrimalShared.LocalWalletTransactionData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func latestTransactionsByWalletId(walletId: Swift.String, limit: Swift.Int32) async throws -> [PrimalShared.LocalWalletTransaction]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsertAll(data: [PrimalShared.LocalWalletTransactionData]) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -834,19 +849,45 @@ extension PrimalShared.LocalAppSessionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func decrementActiveRelayCountOrEnd(sessionId: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteSessionsByConnectionId(connectionId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endAllActiveSessions(endedAt: Swift.Int64) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endSession(sessionId: Swift.String, endedAt: Swift.Int64) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func findActiveSessionByConnectionId(connectionId: Swift.String) async throws -> PrimalShared.LocalAppSession?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findSession(sessionId: Swift.String) async throws -> PrimalShared.LocalAppSession?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func incrementActiveRelayCount(sessionId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setActiveRelayCount(sessionId: Swift.String, activeRelayCount: Swift.Int32) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsertAll(data: [PrimalShared.LocalAppSessionData]) async throws
 }
+extension PrimalShared.LocalSessionEventDataDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getSessionEvent(eventId: Swift.String) async throws -> PrimalShared.LocalSessionEventData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func insert(data: PrimalShared.LocalSessionEventData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateSessionEventRequestState(eventId: Swift.String, requestState: PrimalShared.LocalRequestState, responsePayload: PrimalShared.LocalEncryptable<Foundation.NSString>?, completedAt: PrimalShared.KotlinLong?) async throws
+}
 extension PrimalShared.LocalAppPermissionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deletePermissionsByConnectionId(connectionId: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findPermission(permissionId: Swift.String, connectionId: Swift.String) async throws -> PrimalShared.LocalAppPermissionData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsert(data: PrimalShared.LocalAppPermissionData) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsertAll(data: [PrimalShared.LocalAppPermissionData]) async throws
+}
+extension PrimalShared.LocalPendingNostrEventDao {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByIds(eventIds: [Swift.String]) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func upsertAll(data: [PrimalShared.LocalPendingNostrEvent]) async throws
 }
 extension PrimalShared.LocalAppConnectionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -856,15 +897,27 @@ extension PrimalShared.LocalAppConnectionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getAll(signerPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> [PrimalShared.LocalAppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getAllAutoStartConnections(signerPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> [PrimalShared.LocalAppConnection]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getConnectionByClientPubKey(clientPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> PrimalShared.LocalAppConnection?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateConnectionAutoStart(connectionId: Swift.String, autoStart: Swift.Bool) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateConnectionName(connectionId: Swift.String, name: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateTrustLevel(connectionId: Swift.String, trustLevel: PrimalShared.LocalTrustLevel) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsertAll(data: [PrimalShared.LocalAppConnectionData]) async throws
 }
 extension PrimalShared.ConnectionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func canProcessMethod(permissionId: Swift.String, clientPubKey: Swift.String) async throws -> PrimalShared.KotlinBoolean
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func deleteConnection(connectionId: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func deleteConnectionsByUser(userPubKey: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getAllAutoStartConnections(signerPubKey: Swift.String) async throws -> [PrimalShared.AppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getAllConnections(signerPubKey: Swift.String) async throws -> [PrimalShared.AppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -873,6 +926,42 @@ extension PrimalShared.ConnectionRepository {
   public func getUserPubKey(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func saveConnection(secret: Swift.String, connection: PrimalShared.AppConnection) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateConnectionAutoStart(connectionId: Swift.String, autoStart: Swift.Bool) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateConnectionName(connectionId: Swift.String, name: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updateTrustLevel(connectionId: Swift.String, trustLevel: PrimalShared.TrustLevel) async throws
+}
+extension PrimalShared.InternalPermissionsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getMediumTrustPermissions() async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
+}
+extension PrimalShared.RemoteWellKnownApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getMediumTrustPermissions() async throws -> PrimalShared.RemoteMediumTrustPermissionsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getSignerPermissions() async throws -> PrimalShared.RemotePermissionsResponse
+}
+extension PrimalShared.PermissionsRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getNamingMap() async throws -> PrimalShared.UtilsResult<Foundation.NSDictionary>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func observePermissions(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.SkieKotlinFlow<Foundation.NSArray>>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func updatePermissionsAction(permissionIds: [Swift.String], connectionId: Swift.String, action: PrimalShared.PermissionAction) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+}
+extension PrimalShared.Nip46EventsHandler {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchNip46Events(eventIds: [Swift.String]) async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
+}
+extension PrimalShared.SessionEventRepository {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func processMissedEvents(signerKeyPair: PrimalShared.NostrKeyPair, eventIds: [Swift.String]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func respondToEvent(eventId: Swift.String, userChoice: PrimalShared.UserChoice) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func respondToEvents(eventIdToUserChoice: [PrimalShared.KotlinPair<Foundation.NSString, PrimalShared.__UserChoice>]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
 }
 extension PrimalShared.SessionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -882,13 +971,21 @@ extension PrimalShared.SessionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endSession(sessionId: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findActiveSessionForConnection(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppSession>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getSession(sessionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppSession>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func incrementActiveRelayCount(sessionIds: [Swift.String]) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func setActiveRelayCount(sessionId: Swift.String, activeRelayCount: Swift.Int32) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func startSession(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func startSessionForClient(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
 }
 extension PrimalShared.SignerConnectionInitializer {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func initialize(signerPubKey: Swift.String, userPubKey: Swift.String, connectionUrl: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppConnection>
+  public func initialize(signerPubKey: Swift.String, userPubKey: Swift.String, connectionUrl: Swift.String, trustLevel: PrimalShared.TrustLevel) async throws -> PrimalShared.UtilsResult<PrimalShared.AppConnection>
 }
 extension PrimalShared.ConnectNwcUseCase {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -1307,6 +1404,8 @@ extension PrimalShared.RemoteEventStatsApi {
   public func getEventActions(body: PrimalShared.RemoteEventActionsRequestBody) async throws -> PrimalShared.RemoteEventActionsResponse
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getEventZaps(body: PrimalShared.RemoteEventZapsRequestBody) async throws -> PrimalShared.RemoteEventZapsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getNip46Events(eventIds: [Swift.String]) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteEventsNip46Response>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getReplaceableEvent(body: PrimalShared.RemoteReplaceableEventRequest) async throws -> PrimalShared.UtilsResult<PrimalShared.RemoteReplaceableEventResponse>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -3254,6 +3353,138 @@ extension PrimalShared.LocalPermissionAction {
 extension PrimalShared.__LocalPermissionAction {
   public func toSwiftEnum() -> PrimalShared.LocalPermissionAction
 }
+@frozen public enum LocalTrustLevel : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case full
+  case medium
+  case low
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public func asDomain() -> PrimalShared.TrustLevel
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__LocalTrustLevel, result: inout PrimalShared.LocalTrustLevel?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalTrustLevel, result: inout PrimalShared.LocalTrustLevel?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalTrustLevel?) -> PrimalShared.LocalTrustLevel
+  public func _bridgeToObjectiveC() -> PrimalShared.__LocalTrustLevel
+  public typealias _ObjectiveCType = PrimalShared.__LocalTrustLevel
+  public static func == (a: PrimalShared.LocalTrustLevel, b: PrimalShared.LocalTrustLevel) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.LocalTrustLevel]
+  nonisolated public static var allCases: [PrimalShared.LocalTrustLevel] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.LocalTrustLevel {
+  public func toKotlinEnum() -> PrimalShared.__LocalTrustLevel
+}
+extension PrimalShared.__LocalTrustLevel {
+  public func toSwiftEnum() -> PrimalShared.LocalTrustLevel
+}
+@frozen public enum LocalSignerMethodType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case connect
+  case ping
+  case signEvent
+  case getPublicKey
+  case nip04Encrypt
+  case nip04Decrypt
+  case nip44Encrypt
+  case nip44Decrypt
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__LocalSignerMethodType, result: inout PrimalShared.LocalSignerMethodType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalSignerMethodType, result: inout PrimalShared.LocalSignerMethodType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalSignerMethodType?) -> PrimalShared.LocalSignerMethodType
+  public func _bridgeToObjectiveC() -> PrimalShared.__LocalSignerMethodType
+  public typealias _ObjectiveCType = PrimalShared.__LocalSignerMethodType
+  public static func == (a: PrimalShared.LocalSignerMethodType, b: PrimalShared.LocalSignerMethodType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.LocalSignerMethodType]
+  nonisolated public static var allCases: [PrimalShared.LocalSignerMethodType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.LocalSignerMethodType {
+  public func toKotlinEnum() -> PrimalShared.__LocalSignerMethodType
+}
+extension PrimalShared.__LocalSignerMethodType {
+  public func toSwiftEnum() -> PrimalShared.LocalSignerMethodType
+}
+@frozen public enum LocalRequestState : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case pendingUserAction
+  case pendingResponse
+  case approved
+  case rejected
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__LocalRequestState, result: inout PrimalShared.LocalRequestState?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalRequestState, result: inout PrimalShared.LocalRequestState?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__LocalRequestState?) -> PrimalShared.LocalRequestState
+  public func _bridgeToObjectiveC() -> PrimalShared.__LocalRequestState
+  public typealias _ObjectiveCType = PrimalShared.__LocalRequestState
+  public static func == (a: PrimalShared.LocalRequestState, b: PrimalShared.LocalRequestState) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.LocalRequestState]
+  nonisolated public static var allCases: [PrimalShared.LocalRequestState] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.LocalRequestState {
+  public func toKotlinEnum() -> PrimalShared.__LocalRequestState
+}
+extension PrimalShared.__LocalRequestState {
+  public func toSwiftEnum() -> PrimalShared.LocalRequestState
+}
+@frozen public enum TrustLevel : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case full
+  case medium
+  case low
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public func asPO() -> PrimalShared.LocalTrustLevel
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__TrustLevel, result: inout PrimalShared.TrustLevel?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TrustLevel, result: inout PrimalShared.TrustLevel?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__TrustLevel?) -> PrimalShared.TrustLevel
+  public func _bridgeToObjectiveC() -> PrimalShared.__TrustLevel
+  public typealias _ObjectiveCType = PrimalShared.__TrustLevel
+  public static func == (a: PrimalShared.TrustLevel, b: PrimalShared.TrustLevel) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.TrustLevel]
+  nonisolated public static var allCases: [PrimalShared.TrustLevel] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.TrustLevel {
+  public func toKotlinEnum() -> PrimalShared.__TrustLevel
+}
+extension PrimalShared.__TrustLevel {
+  public func toSwiftEnum() -> PrimalShared.TrustLevel
+}
 @frozen public enum PermissionAction : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case approve
   case deny
@@ -3264,6 +3495,7 @@ extension PrimalShared.__LocalPermissionAction {
   public var ordinal: Swift.Int32 {
     get
   }
+  public func asPO() -> PrimalShared.LocalPermissionAction
   public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__PermissionAction, result: inout PrimalShared.PermissionAction?)
   public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PermissionAction, result: inout PrimalShared.PermissionAction?) -> Swift.Bool
   public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__PermissionAction?) -> PrimalShared.PermissionAction
@@ -3284,6 +3516,37 @@ extension PrimalShared.PermissionAction {
 }
 extension PrimalShared.__PermissionAction {
   public func toSwiftEnum() -> PrimalShared.PermissionAction
+}
+@frozen public enum RequestState : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case pending
+  case approved
+  case rejected
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__RequestState, result: inout PrimalShared.RequestState?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__RequestState, result: inout PrimalShared.RequestState?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__RequestState?) -> PrimalShared.RequestState
+  public func _bridgeToObjectiveC() -> PrimalShared.__RequestState
+  public typealias _ObjectiveCType = PrimalShared.__RequestState
+  public static func == (a: PrimalShared.RequestState, b: PrimalShared.RequestState) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.RequestState]
+  nonisolated public static var allCases: [PrimalShared.RequestState] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.RequestState {
+  public func toKotlinEnum() -> PrimalShared.__RequestState
+}
+extension PrimalShared.__RequestState {
+  public func toSwiftEnum() -> PrimalShared.RequestState
 }
 @frozen public enum AppSessionState : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case connecting
@@ -3315,6 +3578,70 @@ extension PrimalShared.AppSessionState {
 }
 extension PrimalShared.__AppSessionState {
   public func toSwiftEnum() -> PrimalShared.AppSessionState
+}
+@frozen public enum UserChoice : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case allow
+  case reject
+  case alwaysAllow
+  case alwaysReject
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__UserChoice, result: inout PrimalShared.UserChoice?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__UserChoice, result: inout PrimalShared.UserChoice?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__UserChoice?) -> PrimalShared.UserChoice
+  public func _bridgeToObjectiveC() -> PrimalShared.__UserChoice
+  public typealias _ObjectiveCType = PrimalShared.__UserChoice
+  public static func == (a: PrimalShared.UserChoice, b: PrimalShared.UserChoice) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.UserChoice]
+  nonisolated public static var allCases: [PrimalShared.UserChoice] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.UserChoice {
+  public func toKotlinEnum() -> PrimalShared.__UserChoice
+}
+extension PrimalShared.__UserChoice {
+  public func toSwiftEnum() -> PrimalShared.UserChoice
+}
+@frozen public enum SignerMethodType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
+  case signEvent
+  case getPublicKey
+  case encrypt
+  case decrypt
+  public var name: Swift.String {
+    get
+  }
+  public var ordinal: Swift.Int32 {
+    get
+  }
+  public static func _forceBridgeFromObjectiveC(_ source: PrimalShared.__SignerMethodType, result: inout PrimalShared.SignerMethodType?)
+  public static func _conditionallyBridgeFromObjectiveC(_ source: PrimalShared.__SignerMethodType, result: inout PrimalShared.SignerMethodType?) -> Swift.Bool
+  public static func _unconditionallyBridgeFromObjectiveC(_ source: PrimalShared.__SignerMethodType?) -> PrimalShared.SignerMethodType
+  public func _bridgeToObjectiveC() -> PrimalShared.__SignerMethodType
+  public typealias _ObjectiveCType = PrimalShared.__SignerMethodType
+  public static func == (a: PrimalShared.SignerMethodType, b: PrimalShared.SignerMethodType) -> Swift.Bool
+  public typealias AllCases = [PrimalShared.SignerMethodType]
+  nonisolated public static var allCases: [PrimalShared.SignerMethodType] {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension PrimalShared.SignerMethodType {
+  public func toKotlinEnum() -> PrimalShared.__SignerMethodType
+}
+extension PrimalShared.__SignerMethodType {
+  public func toSwiftEnum() -> PrimalShared.SignerMethodType
 }
 @frozen public enum LocalListType : Swift.Hashable, Swift.CaseIterable, Swift._ObjectiveCBridgeable {
   case muteList
@@ -4037,6 +4364,53 @@ extension PrimalShared.Skie.Primal_data_account__repository.RelayEvent {
 }
 public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal_data_account__repository.RelayEvent.__Sealed where __Sealed : PrimalShared.RelayEvent
 @_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal_data_account__repository.RelayEvent.__Sealed? where __Sealed : PrimalShared.RelayEvent
+extension PrimalShared.Skie.Account.SessionEvent {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case decrypt(PrimalShared.SessionEvent.Decrypt)
+    case encrypt(PrimalShared.SessionEvent.Encrypt)
+    case getPublicKey(PrimalShared.SessionEvent.GetPublicKey)
+    case signEvent(PrimalShared.SessionEvent.SignEvent)
+    public static func == (a: PrimalShared.Skie.Account.SessionEvent.__Sealed, b: PrimalShared.Skie.Account.SessionEvent.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Account.SessionEvent.__Sealed where __Sealed : PrimalShared.SessionEvent
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Account.SessionEvent.__Sealed? where __Sealed : PrimalShared.SessionEvent
+extension PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethod {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case connect(PrimalShared.RemoteRemoteSignerMethod.Connect)
+    case getPublicKey(PrimalShared.RemoteRemoteSignerMethod.GetPublicKey)
+    case nip04Decrypt(PrimalShared.RemoteRemoteSignerMethod.Nip04Decrypt)
+    case nip04Encrypt(PrimalShared.RemoteRemoteSignerMethod.Nip04Encrypt)
+    case nip44Decrypt(PrimalShared.RemoteRemoteSignerMethod.Nip44Decrypt)
+    case nip44Encrypt(PrimalShared.RemoteRemoteSignerMethod.Nip44Encrypt)
+    case ping(PrimalShared.RemoteRemoteSignerMethod.Ping)
+    case signEvent(PrimalShared.RemoteRemoteSignerMethod.SignEvent)
+    public static func == (a: PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethod.__Sealed, b: PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethod.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethod.__Sealed where __Sealed : PrimalShared.RemoteRemoteSignerMethod
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethod.__Sealed? where __Sealed : PrimalShared.RemoteRemoteSignerMethod
+extension PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethodResponse {
+  @frozen public enum __Sealed : Swift.Hashable {
+    case error(PrimalShared.RemoteRemoteSignerMethodResponse.Error)
+    case success(PrimalShared.RemoteRemoteSignerMethodResponse.Success)
+    public static func == (a: PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethodResponse.__Sealed, b: PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethodResponse.__Sealed) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public func onEnum<__Sealed>(of sealed: __Sealed) -> PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethodResponse.__Sealed where __Sealed : PrimalShared.RemoteRemoteSignerMethodResponse
+@_disfavoredOverload public func onEnum<__Sealed>(of sealed: __Sealed?) -> PrimalShared.Skie.Primal_data_account__remote.RemoteSignerMethodResponse.__Sealed? where __Sealed : PrimalShared.RemoteRemoteSignerMethodResponse
 extension PrimalShared.Skie.NetworkingUpload.UploadResult {
   @frozen public enum __Sealed : Swift.Hashable {
     case failed(PrimalShared.UploadResult.Failed)
@@ -4228,6 +4602,8 @@ public var DEFAULT_ZAP_DEFAULT: PrimalShared.ContentZapDefault {
   get
 }
 public func resolveStreamStatus(status: PrimalShared.StreamStatus, streamingUrl: Swift.String?, startsAt: PrimalShared.KotlinLong?, endsAt: PrimalShared.KotlinLong?, createdAt: Swift.Int64) -> PrimalShared.StreamStatus
+public func buildSessionEventData(sessionId: Swift.String, signerPubKey: Swift.String, requestedAt: Swift.Int64, completedAt: PrimalShared.KotlinLong?, method: PrimalShared.RemoteRemoteSignerMethod, response: PrimalShared.RemoteRemoteSignerMethodResponse?) -> PrimalShared.LocalSessionEventData?
+public func provideAccountDatabase() -> PrimalShared.LocalAccountDatabase
 public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
 extension PrimalShared.KotlinKVariance : Swift.Sendable {}
 extension PrimalShared.KotlinKVariance : Swift.BitwiseCopyable {}
@@ -4297,10 +4673,24 @@ extension PrimalShared.Ktor_utilsWeekDay : Swift.Sendable {}
 extension PrimalShared.Ktor_utilsWeekDay : Swift.BitwiseCopyable {}
 extension PrimalShared.LocalPermissionAction : Swift.Sendable {}
 extension PrimalShared.LocalPermissionAction : Swift.BitwiseCopyable {}
+extension PrimalShared.LocalTrustLevel : Swift.Sendable {}
+extension PrimalShared.LocalTrustLevel : Swift.BitwiseCopyable {}
+extension PrimalShared.LocalSignerMethodType : Swift.Sendable {}
+extension PrimalShared.LocalSignerMethodType : Swift.BitwiseCopyable {}
+extension PrimalShared.LocalRequestState : Swift.Sendable {}
+extension PrimalShared.LocalRequestState : Swift.BitwiseCopyable {}
+extension PrimalShared.TrustLevel : Swift.Sendable {}
+extension PrimalShared.TrustLevel : Swift.BitwiseCopyable {}
 extension PrimalShared.PermissionAction : Swift.Sendable {}
 extension PrimalShared.PermissionAction : Swift.BitwiseCopyable {}
+extension PrimalShared.RequestState : Swift.Sendable {}
+extension PrimalShared.RequestState : Swift.BitwiseCopyable {}
 extension PrimalShared.AppSessionState : Swift.Sendable {}
 extension PrimalShared.AppSessionState : Swift.BitwiseCopyable {}
+extension PrimalShared.UserChoice : Swift.Sendable {}
+extension PrimalShared.UserChoice : Swift.BitwiseCopyable {}
+extension PrimalShared.SignerMethodType : Swift.Sendable {}
+extension PrimalShared.SignerMethodType : Swift.BitwiseCopyable {}
 extension PrimalShared.LocalListType : Swift.Sendable {}
 extension PrimalShared.LocalListType : Swift.BitwiseCopyable {}
 extension PrimalShared.LocalMutedItemType : Swift.Sendable {}

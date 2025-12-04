@@ -277,6 +277,12 @@
 		B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B91797E82EDDCB8F00EF29EF /* KeychainAccess */; };
 		B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FD2EDDD21D00EF29EF /* NostrSDK */; };
 		B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FF2EDDD23200EF29EF /* NostrSDK */; };
+		B917982C2EE0690D00EF29EF /* RemoteSigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */; };
+		B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B917982A2EE0690D00EF29EF /* SigningManager.swift */; };
+		B91798302EE0695900EF29EF /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */; };
+		B91798312EE0695900EF29EF /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */; };
+		B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = B91798392EE0E37600EF29EF /* GenericJSON */; };
 		B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */; };
 		B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A3602EA0FA420003683D /* LiveChatDatasource.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
@@ -439,8 +445,6 @@
 		B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */; };
 		B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */; };
 		B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */; };
-		B98B786F2EC207EB006134F9 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; };
-		B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */; };
 		B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78742EC209BE006134F9 /* OrSeparatorView.swift */; };
 		B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78762EC21730006134F9 /* CloudLoginButton.swift */; };
@@ -713,7 +717,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B98B78702EC207EB006134F9 /* PrimalShared.xcframework in Embed Frameworks */,
+				B91798312EE0695900EF29EF /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1030,6 +1034,10 @@
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningManager.swift; sourceTree = "<group>"; };
+		B917982A2EE0690D00EF29EF /* SigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningManager.swift; sourceTree = "<group>"; };
+		B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
+		B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceHandler.swift; sourceTree = "<group>"; };
 		B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryVideoController.swift; sourceTree = "<group>"; };
 		B918A3602EA0FA420003683D /* LiveChatDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatDatasource.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
@@ -1193,7 +1201,6 @@
 		B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrupleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerRootController.swift; sourceTree = "<group>"; };
 		B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInController.swift; sourceTree = "<group>"; };
-		B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCloudSigninController.swift; sourceTree = "<group>"; };
 		B98B78742EC209BE006134F9 /* OrSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrSeparatorView.swift; sourceTree = "<group>"; };
 		B98B78762EC21730006134F9 /* CloudLoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudLoginButton.swift; sourceTree = "<group>"; };
@@ -1463,7 +1470,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B98B786F2EC207EB006134F9 /* PrimalShared.xcframework in Frameworks */,
+				B91798302EE0695900EF29EF /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1492,6 +1499,7 @@
 			files = (
 				B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */,
 				B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */,
+				B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1595,9 +1603,9 @@
 				9393312C29A3E534003954C2 /* State */,
 				9E9F2F6829F6AB6400A9CDF3 /* Scenes */,
 				9393312829A3E4E0003954C2 /* Common */,
-				B98B786D2EC207DE006134F9 /* PrimalShared.xcframework */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
+				B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -1836,6 +1844,7 @@
 				B906AB142C9B52A40089813F /* Database */,
 				B9009B6A2B1F458B002B0613 /* SmallManagers */,
 				B94A0E2E2ABA228700DEBFE1 /* TextViewManagers */,
+				B917982B2EE0690D00EF29EF /* RemoteSigning */,
 				B9370EE52DE5EDFC004A9760 /* WalletManager */,
 				93F27DA32A27EA04004ADA55 /* FollowManager.swift */,
 				93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */,
@@ -2473,6 +2482,16 @@
 				B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */,
 			);
 			path = ImageCollection;
+			sourceTree = "<group>";
+		};
+		B917982B2EE0690D00EF29EF /* RemoteSigning */ = {
+			isa = PBXGroup;
+			children = (
+				B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */,
+				B917982A2EE0690D00EF29EF /* SigningManager.swift */,
+				B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */,
+			);
+			path = RemoteSigning;
 			sourceTree = "<group>";
 		};
 		B91BB9622B3E1022003F6B2A /* TabbedSend */ = {
@@ -3469,6 +3488,7 @@
 			packageProductDependencies = (
 				B91797E82EDDCB8F00EF29EF /* KeychainAccess */,
 				B91797FF2EDDD23200EF29EF /* NostrSDK */,
+				B91798392EE0E37600EF29EF /* GenericJSON */,
 			);
 			productName = PrimalNotifications;
 			productReference = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */;
@@ -3921,6 +3941,8 @@
 				9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */,
 				B9E67EAF2D09E576006BB397 /* DerivativeClasses.swift in Sources */,
 				B9DAA45D2D51550300B00B82 /* LegendListController.swift in Sources */,
+				B917982C2EE0690D00EF29EF /* RemoteSigningManager.swift in Sources */,
+				B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */,
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
 				B91EF0E62CED109F00299ECF /* SearchPremiumCell.swift in Sources */,
@@ -4074,6 +4096,7 @@
 				B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */,
 				B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
+				B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */,
 				B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */,
 				B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */,
 				B91EF0B82CE777D500299ECF /* PremiumManageRelayController.swift in Sources */,
@@ -4462,7 +4485,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.9;
+				MARKETING_VERSION = 2.6.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4511,7 +4534,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.9;
+				MARKETING_VERSION = 2.6.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4968,6 +4991,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
 			productName = NostrSDK;
+		};
+		B91798392EE0E37600EF29EF /* GenericJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
+			productName = GenericJSON;
 		};
 		B99E039B2C07C059006CCECB /* Ink */ = {
 			isa = XCSwiftPackageProductDependency;

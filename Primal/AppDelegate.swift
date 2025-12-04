@@ -19,6 +19,11 @@ extension UserDefaults {
         set { setValue(newValue.encodeToString(), forKey: "notificationEnableEventsKey") }
     }
     
+    var signerNotificationEnableEvents: [NostrObject] {
+        get { string(forKey: "signerNotificationEnableEventsKey")?.decode() ?? [] }
+        set { setValue(newValue.encodeToString(), forKey: "signerNotificationEnableEventsKey") }
+    }
+    
     var currentUserEnabledNotifications: Bool {
         notificationEnableEvents.contains(where: { $0.pubkey == IdentityManager.instance.userHexPubkey })
     }
@@ -76,9 +81,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
-        WalletRepositoryFactory.shared.doInit(enableDbEncryption: false)
-        AccountRepositoryFactory.shared.doInit(enableDbEncryption: false)
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
         
+        _ = RemoteSigningManager.instance
         remoteSessionManager = RemoteSigningManager()
         
         
@@ -118,23 +124,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let currentToken = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         
-        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
+        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() } + ["82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"]
         
-        let oldEvents = UserDefaults.standard.notificationEnableEvents
-        let filteredEvents = oldEvents.filter {
-            if !pubkeys.contains($0.pubkey) { return false }
-         
-            guard
-                let contentData: [String: String] = $0.content.decode(),
-                let token = contentData["token"]
-            else { return false }
-            
-            return token == currentToken
-        }
-        
-        if oldEvents.count != filteredEvents.count {
-            UserDefaults.standard.notificationEnableEvents = filteredEvents
-        }
+        let oldEvents = UserDefaults.standard.signerNotificationEnableEvents
+        let filteredEvents = oldEvents/*.filter {*/
+//            if !pubkeys.contains($0.pubkey) { return false }
+//         
+//            guard
+//                let contentData: [String: JSON] = $0.content.decode(),
+//                let token = contentData["token"]?.stringValue
+//            else { return false }
+//            
+//            return token == currentToken
+//        }
+//        
+//        if oldEvents.count != filteredEvents.count {
+//            UserDefaults.standard.notificationEnableEvents = filteredEvents
+//        }
         
         var payload: [String: JSON] = [
             "events_from_users": .array(filteredEvents.map { $0.toJSON() }),
