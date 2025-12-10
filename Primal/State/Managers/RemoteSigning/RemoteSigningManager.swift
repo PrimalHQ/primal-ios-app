@@ -15,9 +15,19 @@ class RemoteSigningManager {
     
     let connectionRepo = AccountRepositoryFactory.shared.createConnectionRepository()
     let sessionRepo = AccountRepositoryFactory.shared.createSessionRepository()
+    let permissionRepo = AccountRepositoryFactory.shared.createPermissionsRepository()
     let remoteSigner: any RemoteSignerService
     
     var cancellables: Set<AnyCancellable> = []
+    
+    @Published var activeSessions: [AppSession] = []
+    
+    @Published var activeConnections: [AppConnection] = []
+    
+    var isActive: Bool { !activeSessions.isEmpty }
+    var isActivePublisher: AnyPublisher<Bool, Never> {
+        $activeSessions.map({ !$0.isEmpty }).removeDuplicates().eraseToAnyPublisher()
+    }
  
     init() {
         let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
@@ -26,6 +36,24 @@ class RemoteSigningManager {
         remoteSigner = AccountServiceFactory.shared.createRemoteSignerService(signerKeyPair: signerKeypair, eventSignatureHandler: SigningManager.instance, nostrEncryptionService: EncryptionServiceHandler.instance, nostrEncryptionHandler: EncryptionServiceHandler.instance, connectionRepository: connectionRepo, sessionRepository: sessionRepo)
         
         remoteSigner.initialize()
+        
+        sessionRepo.observeActiveSessions(signerPubKey: signerPubkey)
+            .toPublisher()
+            .map { $0 as [AppSession] }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] sessions in
+                self?.activeSessions = sessions
+            }
+            .store(in: &cancellables)
+        
+        connectionRepo.observeAllConnections(signerPubKey: signerPubkey)
+            .toPublisher()
+            .map { $0 as [AppConnection] }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] connections in
+                self?.activeConnections = connections
+            }
+            .store(in: &cancellables)
         
         let sessionEventRepo = AccountRepositoryFactory.shared.createSessionEventRepository(nip46EventsHandler: self)
 //        "3bfadd33-08ec-4ba1-b902-b62c7ea90166"
@@ -50,29 +78,24 @@ class RemoteSigningManager {
        
     }
     
-    func startSession(url: String, userPubKey: String, trustLevel: TrustLevel) {
+    func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) {
         let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
         let signerKeypair = NostrKeyPair(privateKey: "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8", pubKey: signerPubkey)
         
-        let signerConnectionInit = AccountRepositoryFactory.shared.createSignerConnectionInitializer(signerKeyPair: signerKeypair, connectionRepository: connectionRepo, nostrEncryptionService: EncryptionServiceHandler.instance)
+        let signerConnectionInit = AccountRepositoryFactory.shared.createSignerConnectionInitializer(connectionRepository: connectionRepo, sessionRepository: sessionRepo)
         
         Task {
             do {
-                try await connectionRepo.deleteConnectionsByUser(userPubKey: userPubKey)
-                
                 let result = try await signerConnectionInit.initialize(signerPubKey: signerPubkey, userPubKey: userPubKey, connectionUrl: url, trustLevel: trustLevel).getOrThrow()
-                
-                guard let id = result?.connectionId else { return }
-                
-                print("REMOTE SIGNER id: \(id)")
-                
-                let newResult = try await sessionRepo.startSession(connectionId: id)
-                
-                print("REMOTE SIGNER RES: \(newResult)")
-                
             } catch let error {
                 print("REMOTE SIGNER error: \(error)")
             }
+        }
+    }
+    
+    func endSessions(_ sessions: [AppSession]) {
+        Task {
+            try? await sessionRepo.endSessions(sessionIds: sessions.map { $0.sessionId })
         }
     }
 }

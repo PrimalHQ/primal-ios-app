@@ -9,6 +9,7 @@ import UIKit
 
 enum RemoteSignerStartMode {
     case newLogin(String)
+    case activeSessions
 }
 
 class RemoteSignerRootController: UIViewController {
@@ -24,6 +25,8 @@ class RemoteSignerRootController: UIViewController {
                 child.preferredContentSize = .init(width: 200, height: 200)
                 child.view.backgroundColor = .red
             }
+        case .activeSessions:
+            child = RemoteSignerActiveSessionsController()
         }
         super.init(nibName: nil, bundle: nil)
         

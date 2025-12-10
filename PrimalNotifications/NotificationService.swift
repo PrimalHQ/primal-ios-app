@@ -8,9 +8,6 @@
 import UserNotifications
 import Intents
 import UniformTypeIdentifiers
-import KeychainAccess
-import NostrSDK
-import GenericJSON
 
 extension String {
     func decode<T: Codable>() -> T? {
@@ -23,10 +20,7 @@ extension String {
     }
 }
 
-private let keychain: Keychain = Keychain(service: "net.primal.iosapp.Primal").synchronizable(false)
-
-class NotificationService: UNNotificationServiceExtension, NIP44v2Encrypting {
-
+class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     
@@ -46,66 +40,7 @@ class NotificationService: UNNotificationServiceExtension, NIP44v2Encrypting {
         
         let userInfo = request.content.userInfo
         
-        if let nip46_event = userInfo["nip46_event"] as? [String: Any], let content = nip46_event["content"] as? String, let pubkey = nip46_event["pubkey"] as? String {
-            
-            
-            let signerPrivkey = "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8"
-            
-            let qaNpub = "npub13rxpxjc6vh65aay2eswlxejsv0f7530sf64c4arydetpckhfjpustsjeaf"
-            
-            guard
-                let privKey = PrivateKey(hex: signerPrivkey),
-                let pubkey = PublicKey(hex: pubkey),
-                let decoded = try? decrypt(payload: content, privateKeyA: privKey, publicKeyB: pubkey),
-                let decodedJSON: [String: JSON] = decoded.decode(),
-                let params = decodedJSON["params"]?.arrayValue?.first?.stringValue,
-                let paramsJSON: [String: JSON] = params.decode(),
-                let content = paramsJSON["content"]?.stringValue,
-                let kind = paramsJSON["kind"]?.doubleValue,
-                let tags = paramsJSON["tags"]?.arrayValue,
-                let qaNsec = keychain[qaNpub],
-                let keypair = Keypair(nsec: qaNsec)
-            else {
-                contentHandler(bestAttemptContent)
-                return
-            }
-            
-            let created_at = paramsJSON["created_at"]?.doubleValue
-            
-            guard
-                let obj = try? NostrEvent(kind: EventKind.init(rawValue: Int(kind)), content: content, tags: [], createdAt: Int64(created_at ?? Date().timeIntervalSince1970), signedBy: keypair)
-            else {
-                contentHandler(bestAttemptContent)
-                return
-            }
-            var request = URLRequest(url: URL(string: "https://cache1.primal.net/api/")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-            
-            let body: Any = ["broadcast_events", [
-                "events": [[
-                    "id": obj.id,
-                    "pubkey": obj.pubkey,
-                    "content": obj.content,
-                    "created_at": obj.createdAt,
-                    "kind": obj.kind.rawValue,
-                    "tags": obj.tags.map { $0.raw },
-                    "sig": obj.signature as Any
-                ]],
-                "relays": ["wss://relay.primal.net"]
-            ]] as Any
-
-            if let requestBody = try? JSONSerialization.data(withJSONObject: body) {
-                request.httpMethod = "POST"
-                request.httpBody = requestBody
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
-
-            session
-                .dataTask(with: request, completionHandler: { _, _, _ in
-                    contentHandler(bestAttemptContent)
-                })
-                .resume()
-            return
-        }
+        // TODO: - handle remote signing notification
         
         guard
             let communicationData = userInfo["extra"] as? [String: Any]

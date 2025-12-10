@@ -37,7 +37,8 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
-    let noConnectionView = NoConnectionView()
+    let noConnectionView = NoConnectionView().constrainToSize(44)
+    let remoteSignerView = RemoteSignerPillView().constrainToSize(44)
     lazy var buttons = tabs.map { _ in UIButton() }
     let notificationIndicator = NotificationsIndicator()
     
@@ -274,11 +275,12 @@ private extension MainTabBarController {
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
-        view.addSubview(noConnectionView)
-        noConnectionView
+        let indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
+        indicatorStack.spacing = 8
+        view.addSubview(indicatorStack)
+        indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
             .pinToSuperview(edges: .top, padding: 60, safeArea: true)
-            .constrainToSize(height: 44)
         
         let background = ThemeableView().setTheme { $0.backgroundColor = .background }
         buttonStackParent.addSubview(background)
@@ -332,9 +334,25 @@ private extension MainTabBarController {
         }
         .store(in: &cancellables)
         
+        let remoteSignerButton = UIButton().constrainToSize(36)
+        remoteSignerButton.isHidden = true
+        view.addSubview(remoteSignerButton)
+        remoteSignerButton.centerToView(remoteSignerView.iconView)
+        remoteSignerButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(RemoteSignerRootController(.activeSessions), animated: true)
+        }), for: .touchUpInside)
+        
         let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
         let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
         let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay5SecondsForegroundPublisher)
+        
+        RemoteSigningManager.instance.isActivePublisher.sink { [weak self] isActive in
+            self?.remoteSignerView.isOff = !isActive
+            remoteSignerButton.isHidden = !isActive
+            
+            UIApplication.shared.isIdleTimerDisabled = isActive
+        }
+        .store(in: &cancellables)
         
         Publishers.CombineLatest(
             didJustEnterForegroundPublisher.prepend(false),

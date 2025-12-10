@@ -856,17 +856,23 @@ extension PrimalShared.LightningAddressChecker {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func validateLightningAddress(lud16: Swift.String) async throws
 }
+extension PrimalShared.RemoteWellKnownApi {
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getMediumTrustPermissions() async throws -> PrimalShared.RemoteMediumTrustPermissionsResponse
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getSignerPermissions() async throws -> PrimalShared.RemotePermissionsResponse
+}
 extension PrimalShared.LocalAppSessionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func decrementActiveRelayCountOrEnd(sessionId: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteSessionsByConnectionId(connectionId: Swift.String) async throws
+  public func deleteSessions(clientPubKey: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endAllActiveSessions(endedAt: Swift.Int64) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endSession(sessionId: Swift.String, endedAt: Swift.Int64) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findActiveSessionByConnectionId(connectionId: Swift.String) async throws -> PrimalShared.LocalAppSession?
+  public func findActiveSessionByClientPubKey(clientPubKey: Swift.String) async throws -> PrimalShared.LocalAppSession?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func findSession(sessionId: Swift.String) async throws -> PrimalShared.LocalAppSession?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -878,6 +884,8 @@ extension PrimalShared.LocalAppSessionDataDao {
 }
 extension PrimalShared.LocalSessionEventDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteEvents(clientPubKey: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getSessionEvent(eventId: Swift.String) async throws -> PrimalShared.LocalSessionEventData?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func insert(data: PrimalShared.LocalSessionEventData) async throws
@@ -886,9 +894,11 @@ extension PrimalShared.LocalSessionEventDataDao {
 }
 extension PrimalShared.LocalAppPermissionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deletePermissionsByConnectionId(connectionId: Swift.String) async throws
+  public func deletePermissions(clientPubKey: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findPermission(permissionId: Swift.String, connectionId: Swift.String) async throws -> PrimalShared.LocalAppPermissionData?
+  public func findPermission(permissionId: Swift.String, clientPubKey: Swift.String) async throws -> PrimalShared.LocalAppPermissionData?
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func findPermissionsByClientPubKey(clientPubKey: Swift.String) async throws -> [PrimalShared.LocalAppPermissionData]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsert(data: PrimalShared.LocalAppPermissionData) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -896,37 +906,35 @@ extension PrimalShared.LocalAppPermissionDataDao {
 }
 extension PrimalShared.LocalPendingNostrEventDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func deleteByClientPubKey(clientPubKey: Swift.String) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func deleteByIds(eventIds: [Swift.String]) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func upsertAll(data: [PrimalShared.LocalPendingNostrEvent]) async throws
 }
 extension PrimalShared.LocalAppConnectionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteConnection(connectionId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteConnectionsByUser(userPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws
+  public func deleteConnection(clientPubKey: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getAll(signerPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> [PrimalShared.LocalAppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getAllAutoStartConnections(signerPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> [PrimalShared.LocalAppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getConnectionByClientPubKey(clientPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> PrimalShared.LocalAppConnection?
+  public func getConnection(clientPubKey: Swift.String) async throws -> PrimalShared.LocalAppConnection?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateConnectionAutoStart(connectionId: Swift.String, autoStart: Swift.Bool) async throws
+  public func insert(data: PrimalShared.LocalAppConnectionData) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateConnectionName(connectionId: Swift.String, name: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws
+  public func updateConnectionAutoStart(clientPubKey: Swift.String, autoStart: Swift.Bool) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateTrustLevel(connectionId: Swift.String, trustLevel: PrimalShared.LocalTrustLevel) async throws
+  public func updateConnectionName(clientPubKey: Swift.String, name: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func upsertAll(data: [PrimalShared.LocalAppConnectionData]) async throws
+  public func updateTrustLevel(clientPubKey: Swift.String, trustLevel: PrimalShared.LocalTrustLevel) async throws
 }
 extension PrimalShared.ConnectionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func canProcessMethod(permissionId: Swift.String, clientPubKey: Swift.String) async throws -> PrimalShared.KotlinBoolean
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteConnection(connectionId: Swift.String) async throws
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func deleteConnectionsByUser(userPubKey: Swift.String) async throws
+  public func deleteConnectionAndData(clientPubKey: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getAllAutoStartConnections(signerPubKey: Swift.String) async throws -> [PrimalShared.AppConnection]
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -936,31 +944,25 @@ extension PrimalShared.ConnectionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getUserPubKey(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func saveConnection(secret: Swift.String, connection: PrimalShared.AppConnection) async throws
+  public func insertOrReplaceConnection(secret: Swift.String, connection: PrimalShared.AppConnection) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateConnectionAutoStart(connectionId: Swift.String, autoStart: Swift.Bool) async throws
+  public func updateConnectionAutoStart(clientPubKey: Swift.String, autoStart: Swift.Bool) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateConnectionName(connectionId: Swift.String, name: Swift.String) async throws
+  public func updateConnectionName(clientPubKey: Swift.String, name: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updateTrustLevel(connectionId: Swift.String, trustLevel: PrimalShared.TrustLevel) async throws
+  public func updateTrustLevel(clientPubKey: Swift.String, trustLevel: PrimalShared.TrustLevel) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
 }
 extension PrimalShared.InternalPermissionsRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getMediumTrustPermissions() async throws -> PrimalShared.UtilsResult<Foundation.NSArray>
 }
-extension PrimalShared.RemoteWellKnownApi {
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getMediumTrustPermissions() async throws -> PrimalShared.RemoteMediumTrustPermissionsResponse
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getSignerPermissions() async throws -> PrimalShared.RemotePermissionsResponse
-}
 extension PrimalShared.PermissionsRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getNamingMap() async throws -> PrimalShared.UtilsResult<Foundation.NSDictionary>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func observePermissions(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.SkieKotlinFlow<Foundation.NSArray>>
+  public func resetPermissionsToDefault(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func updatePermissionsAction(permissionIds: [Swift.String], connectionId: Swift.String, action: PrimalShared.PermissionAction) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  public func updatePermissionsAction(permissionIds: [Swift.String], clientPubKey: Swift.String, action: PrimalShared.PermissionAction) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
 }
 extension PrimalShared.Nip46EventsHandler {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -980,9 +982,9 @@ extension PrimalShared.SessionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func endAllActiveSessions() async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func endSession(sessionId: Swift.String) async throws
+  public func endSessions(sessionIds: [Swift.String]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func findActiveSessionForConnection(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppSession>
+  public func findActiveSessionForConnection(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppSession>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getSession(sessionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.AppSession>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -990,7 +992,7 @@ extension PrimalShared.SessionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func setActiveRelayCount(sessionId: Swift.String, activeRelayCount: Swift.Int32) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func startSession(connectionId: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
+  public func startSession(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func startSessionForClient(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
 }
@@ -4613,7 +4615,7 @@ public var DEFAULT_ZAP_DEFAULT: PrimalShared.ContentZapDefault {
   get
 }
 public func resolveStreamStatus(status: PrimalShared.StreamStatus, streamingUrl: Swift.String?, startsAt: PrimalShared.KotlinLong?, endsAt: PrimalShared.KotlinLong?, createdAt: Swift.Int64) -> PrimalShared.StreamStatus
-public func buildSessionEventData(sessionId: Swift.String, signerPubKey: Swift.String, requestedAt: Swift.Int64, completedAt: PrimalShared.KotlinLong?, method: PrimalShared.RemoteRemoteSignerMethod, response: PrimalShared.RemoteRemoteSignerMethodResponse?) -> PrimalShared.LocalSessionEventData?
+public func buildSessionEventData(sessionId: Swift.String, signerPubKey: Swift.String, requestedAt: Swift.Int64, requestType: PrimalShared.LocalSignerMethodType, completedAt: PrimalShared.KotlinLong?, method: PrimalShared.RemoteRemoteSignerMethod?, response: PrimalShared.RemoteRemoteSignerMethodResponse?, requestState: PrimalShared.LocalRequestState?) -> PrimalShared.LocalSessionEventData?
 public func provideAccountDatabase() -> PrimalShared.LocalAccountDatabase
 public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
 extension PrimalShared.KotlinKVariance : Swift.Sendable {}

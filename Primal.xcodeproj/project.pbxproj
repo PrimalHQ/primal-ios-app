@@ -258,6 +258,7 @@
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
+		B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */; };
 		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
@@ -279,10 +280,9 @@
 		B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FF2EDDD23200EF29EF /* NostrSDK */; };
 		B917982C2EE0690D00EF29EF /* RemoteSigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */; };
 		B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B917982A2EE0690D00EF29EF /* SigningManager.swift */; };
-		B91798302EE0695900EF29EF /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */; };
-		B91798312EE0695900EF29EF /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */; };
 		B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = B91798392EE0E37600EF29EF /* GenericJSON */; };
+		B91798752EE320AD00EF29EF /* RemoteSignerPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */; };
 		B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */; };
 		B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A3602EA0FA420003683D /* LiveChatDatasource.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
@@ -588,6 +588,15 @@
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
+		B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */; };
+		B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */; };
+		B9D331F72EE84F2A0023D541 /* RemoteSignerConnectionSessionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */; };
+		B9D331F92EE85F300023D541 /* SettingsConnectedAppPermissionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */; };
+		B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */; };
+		B9D331FF2EE862E30023D541 /* SettingsEditConnectionName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */; };
+		B9D332012EE865DF0023D541 /* RemoteSignerPermissionEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */; };
+		B9D3320A2EE89BB10023D541 /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D332082EE89BAA0023D541 /* PrimalShared.xcframework */; };
+		B9D3320B2EE89BB10023D541 /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9D332082EE89BAA0023D541 /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */; };
 		B9DAA4562D4949EA00B00B82 /* ProfilePremiumCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */; };
 		B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */; };
@@ -609,6 +618,11 @@
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
+		B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */; };
+		B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */; };
+		B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */; };
+		B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */; };
+		B9E36BE42EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
 		B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */; };
 		B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */; };
@@ -717,7 +731,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B91798312EE0695900EF29EF /* PrimalShared.xcframework in Embed Frameworks */,
+				B9D3320B2EE89BB10023D541 /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1018,6 +1032,7 @@
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
+		B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionAutostartCell.swift; sourceTree = "<group>"; };
 		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
@@ -1036,8 +1051,8 @@
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
 		B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningManager.swift; sourceTree = "<group>"; };
 		B917982A2EE0690D00EF29EF /* SigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningManager.swift; sourceTree = "<group>"; };
-		B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceHandler.swift; sourceTree = "<group>"; };
+		B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPillView.swift; sourceTree = "<group>"; };
 		B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryVideoController.swift; sourceTree = "<group>"; };
 		B918A3602EA0FA420003683D /* LiveChatDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatDatasource.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
@@ -1342,6 +1357,14 @@
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
+		B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionTrustCell.swift; sourceTree = "<group>"; };
+		B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionSimpleAccentCell.swift; sourceTree = "<group>"; };
+		B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionSessionCell.swift; sourceTree = "<group>"; };
+		B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppPermissionsController.swift; sourceTree = "<group>"; };
+		B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoCell.swift; sourceTree = "<group>"; };
+		B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditConnectionName.swift; sourceTree = "<group>"; };
+		B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPermissionEditCell.swift; sourceTree = "<group>"; };
+		B9D332082EE89BAA0023D541 /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNwcQRController.swift; sourceTree = "<group>"; };
 		B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePremiumCardController.swift; sourceTree = "<group>"; };
 		B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCScheme.swift; sourceTree = "<group>"; };
@@ -1363,6 +1386,11 @@
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
+		B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActiveSessionsController.swift; sourceTree = "<group>"; };
+		B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSignerController.swift; sourceTree = "<group>"; };
+		B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppController.swift; sourceTree = "<group>"; };
+		B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionCell.swift; sourceTree = "<group>"; };
+		B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoActionCell.swift; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementTextCell.swift; sourceTree = "<group>"; };
 		B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -1470,7 +1498,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B91798302EE0695900EF29EF /* PrimalShared.xcframework in Frameworks */,
+				B9D3320A2EE89BB10023D541 /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1605,7 +1633,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B917982E2EE0694A00EF29EF /* PrimalShared.xcframework */,
+				B9D332082EE89BAA0023D541 /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -1969,6 +1997,7 @@
 		9E55F28E2A1FB9B200D5D523 /* SubControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B9E36BD92EE714EA00213CA0 /* RemoteSigning */,
 				B934ADA92DAFDD150044E5B5 /* Muted */,
 				B9FAC6592D42C41200B57EF6 /* NWC */,
 				B9318F632B62ADC20044B6AA /* InputControllers */,
@@ -2660,6 +2689,7 @@
 				B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */,
 				B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */,
 				B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */,
+				B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */,
 			);
 			path = InputControllers;
 			sourceTree = "<group>";
@@ -2822,6 +2852,7 @@
 		B9856EA12ED8B23D00B21500 /* RemoteSigner */ = {
 			isa = PBXGroup;
 			children = (
+				B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */,
 				B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */,
 				B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */,
 			);
@@ -3177,6 +3208,7 @@
 		B9CE4DBA2B7154750060A1B8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */,
 				B9CE4DBB2B7154AE0060A1B8 /* TransactionNotificationView.swift */,
 				B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */,
 			);
@@ -3190,6 +3222,27 @@
 				B9CE4DD82B8505C40060A1B8 /* WalletActivationCodeController.swift */,
 			);
 			path = Activation;
+			sourceTree = "<group>";
+		};
+		B9D331FA2EE860BD0023D541 /* AppController */ = {
+			isa = PBXGroup;
+			children = (
+				B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */,
+				B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */,
+				B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */,
+				B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */,
+				B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */,
+			);
+			path = AppController;
+			sourceTree = "<group>";
+		};
+		B9D331FB2EE860D90023D541 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */,
+				B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */,
+			);
+			path = Permissions;
 			sourceTree = "<group>";
 		};
 		B9DAA45B2D5154E400B00B82 /* LegendList */ = {
@@ -3235,6 +3288,27 @@
 				B9DF0CA72C22163B009ADC7B /* EmbeddedPostController.swift */,
 			);
 			path = EmbeddedControllers;
+			sourceTree = "<group>";
+		};
+		B9E36BD92EE714EA00213CA0 /* RemoteSigning */ = {
+			isa = PBXGroup;
+			children = (
+				B9E36BE02EE7784F00213CA0 /* Cells */,
+				B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */,
+				B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */,
+				B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */,
+			);
+			path = RemoteSigning;
+			sourceTree = "<group>";
+		};
+		B9E36BE02EE7784F00213CA0 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				B9D331FB2EE860D90023D541 /* Permissions */,
+				B9D331FA2EE860BD0023D541 /* AppController */,
+				B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		B9E67E7B2D075D94006BB397 /* FeedElementCells */ = {
@@ -3675,6 +3749,7 @@
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				B9E67EA52D09D8F9006BB397 /* ThreadElementInfoCell.swift in Sources */,
 				B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */,
+				B9D331F72EE84F2A0023D541 /* RemoteSignerConnectionSessionCell.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
 				B9009B5A2B0FD28A002B0613 /* ProfileQRController.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
@@ -3701,6 +3776,7 @@
 				B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */,
 				B906AB102C9B472C0089813F /* MediaResource.swift in Sources */,
 				B9FAC64C2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift in Sources */,
+				B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */,
@@ -3731,15 +3807,18 @@
 				B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
+				B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */,
 				B9A335272E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift in Sources */,
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
 				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */,
+				B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */,
 				B91E56FE2CC1522A00C14809 /* SaveFeedController.swift in Sources */,
 				B9EDA58D2E4F5B15003262E4 /* UsersTableView.swift in Sources */,
 				B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */,
+				B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */,
 				B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */,
 				B9E67EAD2D09D8FA006BB397 /* ThreadElementArticleCell.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
@@ -3756,6 +3835,8 @@
 				B9C6D23D2CA5CA8A00B2EEBE /* FeedPreviewCell.swift in Sources */,
 				9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */,
 				B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */,
+				B9D331FF2EE862E30023D541 /* SettingsEditConnectionName.swift in Sources */,
+				B9D331F92EE85F300023D541 /* SettingsConnectedAppPermissionsController.swift in Sources */,
 				B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */,
 				B91E57162CD528A600C14809 /* UITableView+Extra.swift in Sources */,
 				B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */,
@@ -3828,10 +3909,12 @@
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
 				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,
 				B9CE4DB02B697FCE0060A1B8 /* SlideDownTransition.swift in Sources */,
+				B91798752EE320AD00EF29EF /* RemoteSignerPillView.swift in Sources */,
 				B91E57072CC7ECEF00C14809 /* BookmarkedNoteFeedController.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
+				B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */,
 				B9E67ECD2D13021C006BB397 /* HighlightCommentsDatasource.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */,
@@ -4096,6 +4179,7 @@
 				B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */,
 				B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
+				B9E36BE42EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift in Sources */,
 				B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */,
 				B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */,
 				B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */,
@@ -4133,6 +4217,7 @@
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				B91E571C2CDBC17E00C14809 /* PremiumSearchNameController.swift in Sources */,
 				B9E67EA32D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift in Sources */,
+				B9D332012EE865DF0023D541 /* RemoteSignerPermissionEditCell.swift in Sources */,
 				B91E57022CC6B5D100C14809 /* KeyboardManager.swift in Sources */,
 				B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */,
 				B91E56E12CB97D8800C14809 /* AdvancedSearchController.swift in Sources */,
@@ -4164,6 +4249,7 @@
 				B91E56F92CC1383300C14809 /* NoteFeedViewController.swift in Sources */,
 				B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */,
 				B99E03892BF7B10C006CCECB /* PostFeedCell.swift in Sources */,
+				B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */,
 				B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */,
@@ -4205,6 +4291,7 @@
 				B9E67E872D076354006BB397 /* FeedElementInfoCell.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				B9E67E912D07682B006BB397 /* FeedElementArticleCell.swift in Sources */,
+				B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */,
 				B99E03AB2C0DFB9F006CCECB /* PostTagsView.swift in Sources */,
@@ -4261,6 +4348,7 @@
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
+				B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
@@ -4485,7 +4573,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.10;
+				MARKETING_VERSION = 2.6.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4534,7 +4622,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.10;
+				MARKETING_VERSION = 2.6.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

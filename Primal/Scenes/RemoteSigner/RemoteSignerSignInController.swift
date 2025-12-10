@@ -218,7 +218,7 @@ class RemoteSignerSignInController: UIViewController {
             guard let self, let pubkey = selectedNpub?.npubToPubkey() else { return }
             guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
             
-            RemoteSigningManager.instance.startSession(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
+            RemoteSigningManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
 
             let token = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
 
