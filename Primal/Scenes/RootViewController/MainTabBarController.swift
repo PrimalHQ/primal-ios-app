@@ -10,6 +10,7 @@ import UIKit
 import Lottie
 import SafariServices
 import GenericJSON
+import AVFoundation
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -71,6 +72,8 @@ final class MainTabBarController: UIViewController, Themeable {
     var cancellables: Set<AnyCancellable> = []
     
     var childSafeAreaInsets = UIEdgeInsets.zero { didSet { children.forEach { $0.additionalSafeAreaInsets = childSafeAreaInsets } } }
+    
+    @Published var oldRemoteSignerPopup: RemoteSignerPendingEventsController?
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
@@ -277,6 +280,7 @@ private extension MainTabBarController {
         
         let indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
         indicatorStack.spacing = 8
+        indicatorStack.isUserInteractionEnabled = false
         view.addSubview(indicatorStack)
         indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
@@ -342,9 +346,39 @@ private extension MainTabBarController {
             self?.present(RemoteSignerRootController(.activeSessions), animated: true)
         }), for: .touchUpInside)
         
-        let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
-        let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
-        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay5SecondsForegroundPublisher)
+        Publishers.CombineLatest(
+            RemoteSigningManager.instance.pendingActionsPublisher,
+            $oldRemoteSignerPopup
+        )
+        .debounce(for: 0.3, scheduler: RunLoop.main)
+        .sink { [weak self] events, oldPopup in
+            guard let self else { return }
+            
+            let groups = events.groupByFilter { $0.sessionId }
+            
+            if let oldPopup {
+                if let events = groups[oldPopup.sessionId] {
+                    oldPopup.allEvents = events
+                    
+                    if oldPopup.presentingViewController == nil {
+                        present(RemoteSignerRootController(.custom(oldPopup)), animated: true)
+                    }
+                    return
+                }
+                
+                if oldPopup.presentingViewController != nil { oldPopup.dismiss(animated: true) }
+            }
+            
+            guard let first = groups.first else {
+                oldRemoteSignerPopup = nil
+                return
+            }
+            
+            let new = RemoteSignerPendingEventsController(sessionId: first.key, events: first.value)
+            present(RemoteSignerRootController(.custom(new)), animated: true)
+            oldRemoteSignerPopup = new
+        }
+        .store(in: &cancellables)
         
         RemoteSigningManager.instance.isActivePublisher.sink { [weak self] isActive in
             self?.remoteSignerView.isOff = !isActive
@@ -353,6 +387,24 @@ private extension MainTabBarController {
             UIApplication.shared.isIdleTimerDisabled = isActive
         }
         .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+            .sink { _ in
+                guard
+                    RemoteSigningManager.instance.isActive,
+                    !((VideoPlaybackManager.instance.currentlyPlaying?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlaying?.isPlaying ?? false))
+                else { return }
+                
+                AVAudioPlayer(contentsOf: <#T##URL#>)
+                let player = AVPlayer()
+                
+                VideoPlaybackManager.instance.currentlyPlaying = .init(staticVideo: )
+            }
+            .store(in: &cancellables)
+        
+        let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
+        let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
+        let didJustEnterForegroundPublisher = Publishers.Merge(didEnterForegroundPublisher, delay5SecondsForegroundPublisher)
         
         Publishers.CombineLatest(
             didJustEnterForegroundPublisher.prepend(false),

@@ -36,7 +36,7 @@ final class RemoteSignerConnectionTrustCell: UITableViewCell {
         backgroundColor = .clear
     }
     
-    func configure(trustLevel: AppSignTrustLevel, connection: AppConnection, delegate: RemoteSignerConnectionTrustCellDelegate?) {
+    func configure(trustLevel: AppSignTrustLevel, selected: Bool, delegate: RemoteSignerConnectionTrustCellDelegate?) {
         self.delegate = delegate
         trustButton?.removeFromSuperview()
         
@@ -44,7 +44,7 @@ final class RemoteSignerConnectionTrustCell: UITableViewCell {
         contentView.addSubview(newButton)
         newButton.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 6)
         
-        newButton.isSelected = connection.trustLevel == trustLevel.trustLevel
+        newButton.isSelected = selected
         
         newButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.trustSelected(trustLevel.trustLevel)

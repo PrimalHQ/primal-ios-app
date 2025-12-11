@@ -46,9 +46,9 @@ final class RemoteSignerConnectionAutostartCell: UITableViewCell {
         }), for: .touchUpInside)
     }
 
-    func configure(connection: AppConnection, delegate: RemoteSignerConnectionAutostartCellDelegate?) {
+    func configure(isAutostart: Bool, delegate: RemoteSignerConnectionAutostartCellDelegate?) {
         self.delegate = delegate
-        autostartSwitch.isOn = connection.autoStart
+        autostartSwitch.isOn = isAutostart
         
         autostartSwitch.onTintColor = .accent
         titleLabel.textColor = .foreground3

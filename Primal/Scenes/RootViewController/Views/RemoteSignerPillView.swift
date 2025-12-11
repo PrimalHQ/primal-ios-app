@@ -78,7 +78,6 @@ class RemoteSignerPillView: UIView, Themeable {
         iconView.pinToSuperview(edges: [.trailing, .top])
         
         layer.zPosition = 900
-        isUserInteractionEnabled = false
         isHidden = true
         
         updateTheme()

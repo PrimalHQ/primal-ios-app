@@ -60,9 +60,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
                 }
                 (cell as? RemoteSignerConnectionInfoCell)?.configure(connection: connection, lastStart: lastStart)
             case .permission(let permission, let connection):
-                (cell as? RemoteSignerPermissionEditCell)?.configure(permission: permission, connection: connection)
-
-//                (cell as? RemoteSignerPermissionEditCell)?.configure(connection: connection, delegate: wSelf)
+                (cell as? RemoteSignerPermissionEditCell)?.configure(permission: permission, connection: connection, delegate: wSelf)
             case .reset:
                 (cell as? RemoteSignerConnectionSimpleAccentCell)?.configureWithText("Reset Permissions")
             }
@@ -80,35 +78,17 @@ class SettingsConnectedAppPermissionsController: UIViewController {
         navigationItem.backButtonDisplayMode = .default
         
         view.addSubview(tableView)
-        tableView.pinToSuperview()
+        tableView.pinToSuperview(safeArea: true)
         tableView.register(RemoteSignerConnectionInfoCell.self, forCellReuseIdentifier: RemoteSignerConnectionInfoCell.reuseID)
         tableView.register(RemoteSignerPermissionEditCell.self, forCellReuseIdentifier: RemoteSignerPermissionEditCell.reuseID)
         tableView.register(RemoteSignerConnectionSimpleAccentCell.self, forCellReuseIdentifier: RemoteSignerConnectionSimpleAccentCell.reuseID)
         
+        tableView.contentInsetAdjustmentBehavior = .never
+        tableView.contentInset = .init(top: 20, left: 0, bottom: 60, right: 0)
+        
         tableView.delegate = self
         
-            
-            Publishers.CombineLatest3(
-                RemoteSigningManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionId).toPublisher().map { $0 as [AppSession] },
-                RemoteSigningManager.instance.connectionRepo.observeConnection(clientPubKey: connectionId).toPublisher(),
-                RemoteSigningManager.instance.permissionRepo.observePermissions(clientPubKey: connectionId).toPublisher()
-            )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] sessions, connection, permissions in
-                guard let connection else { return }
-                
-                var snapshot = NSDiffableDataSourceSnapshot<TableSections, TableItem>()
-                snapshot.appendSections([.main, .permissions, .reset])
-                
-                snapshot.appendItems([.mainInfo(connection, lastSession: sessions.first)], toSection: .main)
-                
-                snapshot.appendItems(permissions.map { .permission($0, connection) }, toSection: .permissions)
-                
-                snapshot.appendItems([.reset], toSection: .reset)
-                
-                self?.dataSource.apply(snapshot)
-            }
-            .store(in: &cancellables)
+        refresh()
     }
     
     required init?(coder: NSCoder) {
@@ -120,6 +100,31 @@ class SettingsConnectedAppPermissionsController: UIViewController {
         
         tableView.backgroundColor = .background
         tableView.reloadData()
+    }
+    
+    func refresh() {
+        Publishers.CombineLatest3(
+            RemoteSigningManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher().map { $0 as [AppSession] },
+            RemoteSigningManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher(),
+            RemoteSigningManager.instance.permissionRepo.observePermissions(clientPubKey: connectionID).toPublisher()
+        )
+        .first()  // Ugly table jumps on successive changes (probably something about not being to identify permission groups as same cells
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] sessions, connection, permissions in
+            guard let connection else { return }
+            
+            var snapshot = NSDiffableDataSourceSnapshot<TableSections, TableItem>()
+            snapshot.appendSections([.main, .permissions, .reset])
+            
+            snapshot.appendItems([.mainInfo(connection, lastSession: sessions.first)], toSection: .main)
+            
+            snapshot.appendItems(permissions.sorted(by: { $0.title < $1.title }).map { .permission($0, connection) }, toSection: .permissions)
+            
+            snapshot.appendItems([.reset], toSection: .reset)
+            
+            self?.dataSource.apply(snapshot)
+        }
+        .store(in: &cancellables)
     }
 }
 
@@ -133,8 +138,44 @@ extension SettingsConnectedAppPermissionsController: UITableViewDelegate {
         
         switch item {
         case .reset:
-            showErrorMessage("Reset not implemented")
+            let alert = UIAlertController(title: "Reset Permissions", message: "This will reset all permissions to default settings. Do you wish to continue?", preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "Reset", style: .destructive, handler: { [weak self] _ in
+                guard let self else { return }
+                Task { @MainActor in
+                    _ = try await RemoteSigningManager.instance.permissionRepo.resetPermissionsToDefault(clientPubKey: self.connectionID)
+                    self.refresh()
+                }
+            }))
+            present(alert, animated: true)
         default: return
+        }
+    }
+}
+
+extension SettingsConnectedAppPermissionsController: RemoteSignerPermissionEditCellDelegate {
+    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: PrimalShared.PermissionAction) {
+        var snapshot = dataSource.snapshot()
+        var permissions = snapshot.itemIdentifiers(inSection: .permissions)
+        guard
+            let index = tableView.indexPath(for: cell),
+            let cellInfo = permissions[safe: index.row],
+            case .permission(var group, let connection) = cellInfo
+        else { return }
+        
+        Task { @MainActor in
+            do {
+                let result = try await RemoteSigningManager.instance.permissionRepo.updatePermissionsAction(permissionIds: group.permissionIds, clientPubKey: connection.clientPubKey, action: action)
+                
+                group = .init(groupId: group.groupId, title: group.title, action: action, permissionIds: group.permissionIds)
+                permissions[index.row] = .permission(group, connection)
+                snapshot.deleteSections([.permissions])
+                snapshot.insertSections([.permissions], afterSection: .main)
+                snapshot.appendItems(permissions, toSection: .permissions)
+                await self.dataSource.apply(snapshot)
+            } catch {
+                print("Failed to update permission action: \(error)")
+            }
         }
     }
 }

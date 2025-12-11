@@ -124,23 +124,42 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let currentToken = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
         
-        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() } + ["82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"]
+        let oldSignerEvents = UserDefaults.standard.signerNotificationEnableEvents
         
-        let oldEvents = UserDefaults.standard.signerNotificationEnableEvents
-        let filteredEvents = oldEvents/*.filter {*/
-//            if !pubkeys.contains($0.pubkey) { return false }
-//         
-//            guard
-//                let contentData: [String: JSON] = $0.content.decode(),
-//                let token = contentData["token"]?.stringValue
-//            else { return false }
-//            
-//            return token == currentToken
-//        }
-//        
-//        if oldEvents.count != filteredEvents.count {
-//            UserDefaults.standard.notificationEnableEvents = filteredEvents
-//        }
+        if oldSignerEvents.isEmpty {
+            var payload: [String: JSON] = [
+                "events_from_users": .array(oldSignerEvents.map { $0.toJSON() }),
+                "platform": "iOS",
+                "token": .string(currentToken)
+            ]
+            #if DEBUG
+            payload["environment"] = "sandbox"
+            #endif
+            
+            SocketRequest(name: "update_push_notification_token_for_nip46", payload: .object(payload))
+                .publisher()
+                .sink { res in
+                    print(res.message)
+                }
+                .store(in: &cancellables)
+        }
+        
+        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
+        let oldEvents = UserDefaults.standard.notificationEnableEvents
+        let filteredEvents = oldEvents.filter {
+            if !pubkeys.contains($0.pubkey) { return false }
+         
+            guard
+                let contentData: [String: JSON] = $0.content.decode(),
+                let token = contentData["token"]?.stringValue
+            else { return false }
+            
+            return token == currentToken
+        }
+        
+        if oldEvents.count != filteredEvents.count {
+            UserDefaults.standard.notificationEnableEvents = filteredEvents
+        }
         
         var payload: [String: JSON] = [
             "events_from_users": .array(filteredEvents.map { $0.toJSON() }),
@@ -151,7 +170,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         payload["environment"] = "sandbox"
         #endif
         
-        SocketRequest(name: "update_push_notification_token_for_nip46", payload: .object(payload))
+        SocketRequest(name: "update_push_notification_token", payload: .object(payload))
             .publisher()
             .sink { res in
                 print(res.message)

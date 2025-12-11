@@ -8,12 +8,18 @@
 import UIKit
 import PrimalShared
 
+protocol RemoteSignerPermissionEditCellDelegate: AnyObject {
+    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: PermissionAction)
+}
+
 final class RemoteSignerPermissionEditCell: UITableViewCell {
 
     static let reuseID = "RemoteSignerPermissionEditCell"
 
     private let titleLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
     private let picker = UISegmentedControl(items: ["Allow", "Deny", "Ask"])
+    
+    weak var delegate: RemoteSignerPermissionEditCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,15 +35,25 @@ final class RemoteSignerPermissionEditCell: UITableViewCell {
         selectionStyle = .none
         separatorInset = .zero
 
-        let topStack = UIStackView(axis: .vertical, [titleLabel, picker])
+        let topStack = UIStackView([titleLabel, picker])
         topStack.alignment = .center
         topStack.spacing = 4
         
+        picker.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
         contentView.addSubview(topStack)
         topStack.pinToSuperview(padding: 10)
+        
+        picker.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            let value = picker.selectedSegmentIndex
+            let action: PermissionAction = value == 0 ? .approve : (value == 1 ? .deny : .ask)
+            delegate?.remoteSignerPermissionEditCell(self, didSelect: action)
+        }), for: .valueChanged)
     }
 
-    func configure(permission: AppPermissionGroup, connection: AppConnection) {
+    func configure(permission: AppPermissionGroup, connection: AppConnection, delegate: RemoteSignerPermissionEditCellDelegate?) {
+        self.delegate = delegate
         
         titleLabel.text = permission.title
         

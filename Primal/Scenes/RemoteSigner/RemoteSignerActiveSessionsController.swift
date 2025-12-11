@@ -68,16 +68,16 @@ class RemoteSignerActiveSessionsController: UIViewController {
         contentStack.pinToSuperview(padding: 24)
         contentStack.spacing = 12
         
-        let cancelButton = UIButton()
-        cancelButton.setAttributedTitle(.init(string: "Settings", attributes: [
+        let settingsButton = UIButton()
+        settingsButton.setAttributedTitle(.init(string: "Settings", attributes: [
             .foregroundColor: UIColor.foreground3,
             .font: UIFont.appFont(withSize: 16, weight: .semibold)
         ]), for: .normal)
-        cancelButton.layer.cornerRadius = 20
-        cancelButton.layer.borderWidth = 1
-        cancelButton.layer.borderColor = UIColor.foreground6.cgColor
+        settingsButton.layer.cornerRadius = 20
+        settingsButton.layer.borderWidth = 1
+        settingsButton.layer.borderColor = UIColor.foreground6.cgColor
         let disConnectButton = UIButton(configuration: .accentPill(text: "End Session", font: .appFont(withSize: 16, weight: .semibold)))
-        let buttonStack = UIStackView([cancelButton, disConnectButton]).constrainToSize(height: 40)
+        let buttonStack = UIStackView([settingsButton, disConnectButton]).constrainToSize(height: 40)
         buttonStack.spacing = 12
         buttonStack.distribution = .fillEqually
         
@@ -127,22 +127,22 @@ class RemoteSignerActiveSessionsController: UIViewController {
             }
             
             if selected.count == 1 {
-                cancelButton.configuration = .plain()
-                cancelButton.layer.borderWidth = 1
-                cancelButton.isEnabled = true
+                settingsButton.configuration = .plain()
+                settingsButton.layer.borderWidth = 1
+                settingsButton.isEnabled = true
                 
-                cancelButton.setAttributedTitle(.init(string: "Settings", attributes: [
+                settingsButton.setAttributedTitle(.init(string: "Settings", attributes: [
                     .foregroundColor: UIColor.foreground3,
                     .font: UIFont.appFont(withSize: 16, weight: .semibold)
                 ]), for: .normal)
             } else {
-                cancelButton.layer.borderWidth = 0
-                cancelButton.setAttributedTitle(.init(string: "Settings", attributes: [
+                settingsButton.layer.borderWidth = 0
+                settingsButton.setAttributedTitle(.init(string: "Settings", attributes: [
                     .foregroundColor: UIColor.foreground5,
                     .font: UIFont.appFont(withSize: 16, weight: .semibold)
                 ]), for: .normal)
-                cancelButton.configuration = .disabled("Settings")
-                cancelButton.isEnabled = false
+                settingsButton.configuration = .disabled("Settings")
+                settingsButton.isEnabled = false
             }
             
             if selected.isEmpty {
@@ -165,10 +165,17 @@ class RemoteSignerActiveSessionsController: UIViewController {
             }
         }), for: .touchUpInside)
         
-        cancelButton.addAction(.init(handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+        settingsButton.addAction(.init(handler: { [weak self] _ in
+            guard
+                let self,
+                let sessionId = selectedSessions.first,
+                let clientPubKey = RemoteSigningManager.instance.activeSessions.first(where: { $0.sessionId == sessionId })?.clientPubKey,
+                let connection = RemoteSigningManager.instance.activeConnections.first(where: { $0.clientPubKey == clientPubKey }),
+                let nav: UINavigationController = navigationController ?? presentingViewController?.findInChildren()
+            else { return }
+            nav.pushViewController(SettingsConnectedAppController(appConnection: connection), animated: true)
+            dismiss(animated: true)
         }), for: .touchUpInside)
-        
         
         disConnectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

@@ -10,6 +10,7 @@ import UIKit
 enum RemoteSignerStartMode {
     case newLogin(String)
     case activeSessions
+    case custom(UIViewController)
 }
 
 class RemoteSignerRootController: UIViewController {
@@ -27,6 +28,8 @@ class RemoteSignerRootController: UIViewController {
             }
         case .activeSessions:
             child = RemoteSignerActiveSessionsController()
+        case .custom(let vc):
+            child = vc
         }
         super.init(nibName: nil, bundle: nil)
         

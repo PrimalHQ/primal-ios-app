@@ -618,6 +618,10 @@
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
+		B9E0E6232EE9EB2700F48B2A /* RemoteSignerPendingEventsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */; };
+		B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */; };
+		B9E0E6282EEB188F00F48B2A /* RemoteSigningScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */; };
+		B9E0E62A2EEB483A00F48B2A /* GenericPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */; };
 		B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */; };
 		B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */; };
 		B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */; };
@@ -690,7 +694,7 @@
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
-		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
+		C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1386,6 +1390,10 @@
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
+		B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPendingEventsController.swift; sourceTree = "<group>"; };
+		B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxRadioButton.swift; sourceTree = "<group>"; };
+		B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningScheme.swift; sourceTree = "<group>"; };
+		B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericPlayer.swift; sourceTree = "<group>"; };
 		B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActiveSessionsController.swift; sourceTree = "<group>"; };
 		B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSignerController.swift; sourceTree = "<group>"; };
 		B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppController.swift; sourceTree = "<group>"; };
@@ -1456,7 +1464,7 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
-		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
+		C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2493,6 +2501,7 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
 			);
@@ -2852,6 +2861,8 @@
 		B9856EA12ED8B23D00B21500 /* RemoteSigner */ = {
 			isa = PBXGroup;
 			children = (
+				B9E0E6242EEAC84A00F48B2A /* Views */,
+				B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */,
 				B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */,
 				B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */,
 				B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */,
@@ -3290,6 +3301,14 @@
 			path = EmbeddedControllers;
 			sourceTree = "<group>";
 		};
+		B9E0E6242EEAC84A00F48B2A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		B9E36BD92EE714EA00213CA0 /* RemoteSigning */ = {
 			isa = PBXGroup;
 			children = (
@@ -3456,7 +3475,8 @@
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
 			isa = PBXGroup;
 			children = (
-				C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */,
+				B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */,
+				C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */,
 				C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */,
 				B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */,
 				B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */,
@@ -3789,6 +3809,7 @@
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				B99E038C2C05682B006CCECB /* ReadsViewController.swift in Sources */,
 				B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */,
+				B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */,
 				B9C6D23B2CA5BDE300B2EEBE /* ExploreFeedPreviewParentController.swift in Sources */,
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
@@ -4060,6 +4081,7 @@
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
+				B9E0E6282EEB188F00F48B2A /* RemoteSigningScheme.swift in Sources */,
 				B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */,
 				B9B1ABA52B3336B000837312 /* TransactionUserInfoCell.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
@@ -4163,6 +4185,7 @@
 				B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */,
 				B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
+				B9E0E62A2EEB483A00F48B2A /* GenericPlayer.swift in Sources */,
 				B9C6D2422CAD93ED00B2EEBE /* FeedMarketplaceCellController.swift in Sources */,
 				B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */,
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
@@ -4335,6 +4358,7 @@
 				B91EF0CB2CEA1AA800299ECF /* PremiumManageContentController.swift in Sources */,
 				B94A0E2D2AAB577400DEBFE1 /* ChatMessageCell.swift in Sources */,
 				B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */,
+				B9E0E6232EE9EB2700F48B2A /* RemoteSignerPendingEventsController.swift in Sources */,
 				9E83DF7F2A61E58E00F2C379 /* NewPostsButton.swift in Sources */,
 				B9E67E962D088720006BB397 /* ThreadFeedDatasource.swift in Sources */,
 				B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */,
@@ -4352,7 +4376,7 @@
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
-				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
+				C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
 				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
 				B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */,
@@ -4573,7 +4597,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.12;
+				MARKETING_VERSION = 2.6.14;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4622,7 +4646,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.12;
+				MARKETING_VERSION = 2.6.14;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

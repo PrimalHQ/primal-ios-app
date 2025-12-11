@@ -13,6 +13,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         PrimalSchemeDeeplinkHandler(),
         NostrSchemeDeeplinkHandler(),
         NWCSchemeDeeplinkHandler(),
+        RemoteSigningDeeplingHandler(),
         PrimalWebsiteScheme.shared
     ])
     

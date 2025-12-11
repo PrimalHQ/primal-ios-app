@@ -216,10 +216,13 @@ class RemoteSignerSignInController: UIViewController {
         
         connectButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let pubkey = selectedNpub?.npubToPubkey() else { return }
-            guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
             
             RemoteSigningManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
-
+            
+            dismiss(animated: true)
+            
+            guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
+            
             let token = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
 
             let contentJson: [String: JSON] = [
@@ -238,7 +241,6 @@ class RemoteSignerSignInController: UIViewController {
             UserDefaults.standard.signerNotificationEnableEvents = [object]
             AppDelegate.shared.updateNotificationsSettings()
             
-            dismiss(animated: true)
         }), for: .touchUpInside)
     }
 }

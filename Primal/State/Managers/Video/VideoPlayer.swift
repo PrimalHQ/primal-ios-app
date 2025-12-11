@@ -11,8 +11,6 @@ import AVKit
 
 class VideoPlayer: NSObject {
     
-    var didInitPlayer = false
-    
     lazy var avPlayer: AVPlayer = playerWithURL(url)
     
     @Published var isPlaying = false
@@ -38,6 +36,21 @@ class VideoPlayer: NSObject {
         if ContentDisplaySettings.autoPlayVideos {
             _ = avPlayer // Force init
         }
+    }
+    
+    init(staticVideo: AVPlayer) {
+        url = ""
+        userPubkey = ""
+        originalURL = ""
+        super.init()
+        
+        avPlayer = staticVideo
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: staticVideo.currentItem)
+//            .receive(on: DispatchQueue.main)
+            .sink { [weak staticVideo] _ in
+                staticVideo?.seek(to: .zero)
+            }
+            .store(in: &cancellables)
     }
     
     deinit {
@@ -91,7 +104,6 @@ class VideoPlayer: NSObject {
             }
             .store(in: &cancellables)
         
-        didInitPlayer = true
         return player
     }
 

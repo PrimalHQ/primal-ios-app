@@ -19,8 +19,8 @@ class SettingsConnectedAppController: UIViewController {
     
     enum TableItem: Hashable {
         case mainInfo(AppConnection, lastSession: AppSession?)
-        case autoStart(AppConnection)
-        case trust(TrustLevel, AppConnection)
+        case autoStart(Bool)
+        case trust(TrustLevel, Bool)
         case permissionDetails
         case session(AppSession)
         
@@ -65,10 +65,10 @@ class SettingsConnectedAppController: UIViewController {
                     lastStart = .init(timeIntervalSince1970: TimeInterval(start))
                 }
                 (cell as? RemoteSignerConnectionInfoActionCell)?.configure(connection: connection, lastStart: lastStart, isActive: lastSession != nil && lastSession?.sessionEndedAt == nil, delegate: wSelf)
-            case .autoStart(let connection):
-                (cell as? RemoteSignerConnectionAutostartCell)?.configure(connection: connection, delegate: wSelf)
-            case .trust(let level, let connection):
-                (cell as? RemoteSignerConnectionTrustCell)?.configure(trustLevel: level.appLevel, connection: connection, delegate: wSelf)
+            case .autoStart(let isOn):
+                (cell as? RemoteSignerConnectionAutostartCell)?.configure(isAutostart: isOn, delegate: wSelf)
+            case .trust(let level, let selected):
+                (cell as? RemoteSignerConnectionTrustCell)?.configure(trustLevel: level.appLevel, selected: selected, delegate: wSelf)
             case .permissionDetails:
                 (cell as? RemoteSignerConnectionSimpleAccentCell)?.configureWithText("Permission Details")
             case .session(let session):
@@ -88,12 +88,14 @@ class SettingsConnectedAppController: UIViewController {
         navigationItem.backButtonDisplayMode = .default
         
         view.addSubview(tableView)
-        tableView.pinToSuperview()
+        tableView.pinToSuperview(safeArea: true)
         tableView.register(RemoteSignerConnectionInfoActionCell.self, forCellReuseIdentifier: RemoteSignerConnectionInfoActionCell.reuseID)
         tableView.register(RemoteSignerConnectionAutostartCell.self, forCellReuseIdentifier: RemoteSignerConnectionAutostartCell.reuseID)
         tableView.register(RemoteSignerConnectionTrustCell.self, forCellReuseIdentifier: RemoteSignerConnectionTrustCell.reuseID)
         tableView.register(RemoteSignerConnectionSimpleAccentCell.self, forCellReuseIdentifier: RemoteSignerConnectionSimpleAccentCell.reuseID)
         tableView.register(RemoteSignerConnectionSessionCell.self, forCellReuseIdentifier: RemoteSignerConnectionSessionCell.reuseID)
+        tableView.contentInsetAdjustmentBehavior = .never
+        tableView.contentInset = .init(top: 20, left: 0, bottom: 60, right: 0)
         
         tableView.delegate = self
         
@@ -102,20 +104,24 @@ class SettingsConnectedAppController: UIViewController {
             RemoteSigningManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
         )
         .map { ($0.0 as [AppSession], $0.1) }
-        .receive(on: DispatchQueue.main)
+        .debounce(for: 0.2, scheduler: DispatchQueue.main)
         .sink { [weak self] sessions, connection in
             guard let connection else { return }
             
             var snapshot = NSDiffableDataSourceSnapshot<TableSections, TableItem>()
             snapshot.appendSections([.main, .permissions, .sessions])
             
-            snapshot.appendItems([.mainInfo(connection, lastSession: sessions.first), .autoStart(connection)], toSection: .main)
+            snapshot.appendItems([.mainInfo(connection, lastSession: sessions.first), .autoStart(connection.autoStart)], toSection: .main)
             
-            snapshot.appendItems([.trust(.full, connection), .trust(.medium, connection), .trust(.low, connection), .permissionDetails], toSection: .permissions)
+            var permissionsSection: [TableItem] = [.trust(.full, connection.trustLevel == .full), .trust(.medium, connection.trustLevel == .medium), .trust(.low, connection.trustLevel == .low)]
+            if connection.trustLevel == .medium {
+                permissionsSection.append(.permissionDetails)
+            }
+            snapshot.appendItems(permissionsSection, toSection: .permissions)
             
             snapshot.appendItems(sessions.map({ .session($0) }), toSection: .sessions)
             
-            self?.dataSource.apply(snapshot)
+            self?.dataSource.apply(snapshot, animatingDifferences: false)
         }
         .store(in: &cancellables)
         
@@ -175,13 +181,28 @@ extension SettingsConnectedAppController: UITableViewDelegate {
             return 40
         }
     }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if section > 1 { return 50 }
+        return 0.01
+    }
 }
 
 extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDelegate, RemoteSignerConnectionInfoActionCellDelegate, RemoteSignerConnectionTrustCellDelegate {
     func trustSelected(_ trustLevel: PrimalShared.TrustLevel) {
-        Task {
-            try? await RemoteSigningManager.instance.connectionRepo.updateTrustLevel(clientPubKey: connectionID, trustLevel: trustLevel)
-        }
+        let alert = UIAlertController(
+            title: "Switch Trust Level?",
+            message: "Are you sure you want to switch permissions level to \(trustLevel.appLevel.name)?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Switch", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
+            Task {
+                try? await RemoteSigningManager.instance.connectionRepo.updateTrustLevel(clientPubKey: self.connectionID, trustLevel: trustLevel)
+            }
+        }))
+        present(alert, animated: true)
     }
     
     func autostartChanged(_ isOn: Bool) {
@@ -213,12 +234,17 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
     }
 
     func startStopSession() {
-        showErrorMessage("Unable to start/stop session")
+        let repo = RemoteSigningManager.instance.sessionRepo
         
         Task {
-            try? await RemoteSigningManager.instance.sessionRepo.startSession(clientPubKey: connectionID)
-            try? await RemoteSigningManager.instance.sessionRepo.endSessions(sessionIds: [])
+            do {
+                guard let active = try await repo.findActiveSessionForConnection(clientPubKey: connectionID).getOrNull() else {
+                    _ = try await repo.startSession(clientPubKey: connectionID)
+                    return
+                }
+                
+                _ = try await repo.endSessions(sessionIds: [active.sessionId])
+            }
         }
-
     }
 }

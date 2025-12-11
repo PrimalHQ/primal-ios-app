@@ -16,6 +16,8 @@ class RemoteSigningManager {
     let connectionRepo = AccountRepositoryFactory.shared.createConnectionRepository()
     let sessionRepo = AccountRepositoryFactory.shared.createSessionRepository()
     let permissionRepo = AccountRepositoryFactory.shared.createPermissionsRepository()
+    lazy var sessionEventRepo = AccountRepositoryFactory.shared.createSessionEventRepository(nip46EventsHandler: self)
+    
     let remoteSigner: any RemoteSignerService
     
     var cancellables: Set<AnyCancellable> = []
@@ -24,9 +26,18 @@ class RemoteSigningManager {
     
     @Published var activeConnections: [AppConnection] = []
     
+    var permissionsMap: [String: String] = [:]
+    
     var isActive: Bool { !activeSessions.isEmpty }
     var isActivePublisher: AnyPublisher<Bool, Never> {
         $activeSessions.map({ !$0.isEmpty }).removeDuplicates().eraseToAnyPublisher()
+    }
+    
+    var pendingActionsPublisher: AnyPublisher<[SessionEvent], Never> {
+        let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
+        return sessionEventRepo.observeEventsPendingUserAction(signerPubKey: signerPubkey).toPublisher()
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
     }
  
     init() {
@@ -39,7 +50,7 @@ class RemoteSigningManager {
         
         sessionRepo.observeActiveSessions(signerPubKey: signerPubkey)
             .toPublisher()
-            .map { $0 as [AppSession] }
+//            .map { $0 as [AppSession] }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sessions in
                 self?.activeSessions = sessions
@@ -48,7 +59,7 @@ class RemoteSigningManager {
         
         connectionRepo.observeAllConnections(signerPubKey: signerPubkey)
             .toPublisher()
-            .map { $0 as [AppConnection] }
+//            .map { $0 as [AppConnection] }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] connections in
                 self?.activeConnections = connections
@@ -75,7 +86,17 @@ class RemoteSigningManager {
 //            }
 //            .store(in: &cancellables)
 //        
-       
+        Task { @MainActor in
+            guard let permissionsMap = try await permissionRepo.getNamingMap().getOrThrow() else { return }
+            
+            var newDic: [String: String] = [:]
+            for (key, value) in permissionsMap {
+                if let keyS = key as? String, let valS = value as? String {
+                    newDic[keyS] = valS
+                }
+            }
+            self.permissionsMap = newDic
+        }
     }
     
     func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) {
