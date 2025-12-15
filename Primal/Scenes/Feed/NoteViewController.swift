@@ -123,7 +123,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        if let current = VideoPlaybackManager.instance.currentlyPlaying, current.isLive && current.isPlaying { return }
+        if let current = VideoPlaybackManager.instance.currentlyPlayingVideo, current.isLive && current.isPlaying { return }
         guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
@@ -803,11 +803,11 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlaying?.originalURL != url {
+        if VideoPlaybackManager.instance.currentlyPlayingVideo?.originalURL != url {
             VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
-        guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
+        guard let player = VideoPlaybackManager.instance.currentlyPlayingVideo else { return }
         
         present(FullScreenVideoPlayerController(player), animated: true)
     }

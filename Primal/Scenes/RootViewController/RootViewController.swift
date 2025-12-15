@@ -45,7 +45,7 @@ final class RootViewController: UIViewController {
     
     var liveVideoController: LiveVideoPlayerController? {
         didSet {
-            if VideoPlaybackManager.instance.currentlyPlaying == oldValue?.player && oldValue != liveVideoController {
+            if VideoPlaybackManager.instance.currentlyPlayingVideo == oldValue?.player && oldValue != liveVideoController {
                 VideoPlaybackManager.instance.currentlyPlaying = nil
             }
             

@@ -9,7 +9,10 @@ import Combine
 import Foundation
 import AVKit
 
-class VideoPlayer: NSObject {
+class VideoPlayer: NSObject, PlayerProtocol {
+    func setMuted(_ isMuted: Bool) {
+        avPlayer.isMuted = isMuted
+    }
     
     lazy var avPlayer: AVPlayer = playerWithURL(url)
     

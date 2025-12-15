@@ -11,7 +11,7 @@ class ImageGalleryVideoController: UIViewController, ImageGalleryMediaController
     let media: MediaMetadata.Resource
     
     var video: VideoPlayer {
-        let currentlyPlaying = VideoPlaybackManager.instance.currentlyPlaying
+        let currentlyPlaying = VideoPlaybackManager.instance.currentlyPlayingVideo
         return (currentlyPlaying?.originalURL == media.url ? currentlyPlaying : nil) ?? VideoPlayer(url: media.url, originalURL: media.url, userPubkey: "")
     }
     

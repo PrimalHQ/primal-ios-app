@@ -174,7 +174,7 @@ extension ImageGalleryView: UICollectionViewDataSource {
             let url = r.url(for: .small)?.absoluteString ?? r.url
             
             let player: VideoPlayer
-            if let current = VideoPlaybackManager.instance.currentlyPlaying, current.url == url {
+            if let current = VideoPlaybackManager.instance.currentlyPlayingVideo, current.url == url {
                 player = current
             } else {
                 player = .init(url: url, originalURL: r.url, userPubkey: userPubkey)

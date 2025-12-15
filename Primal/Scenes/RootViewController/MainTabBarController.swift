@@ -392,13 +392,26 @@ private extension MainTabBarController {
             .sink { _ in
                 guard
                     RemoteSigningManager.instance.isActive,
-                    !((VideoPlaybackManager.instance.currentlyPlaying?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlaying?.isPlaying ?? false))
+                    !((VideoPlaybackManager.instance.currentlyPlayingVideo?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlayingVideo?.isPlaying ?? false)),
+                    let path = Bundle.main.path(forResource: "forest", ofType: "mp3")
                 else { return }
                 
-                AVAudioPlayer(contentsOf: <#T##URL#>)
-                let player = AVPlayer()
+                let url = URL(fileURLWithPath: path)
+
+                guard let audioPlayer = try? AVAudioPlayer(contentsOf: url) else { return }
+                    
+                audioPlayer.numberOfLoops = -1
+                audioPlayer.volume
                 
-                VideoPlaybackManager.instance.currentlyPlaying = .init(staticVideo: )
+                try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
+                try? AVAudioSession.sharedInstance().setActive(true)
+
+                VideoPlaybackManager.instance.isMuted = false
+
+                let player = GenericPlayer<AVAudioPlayer>(playerInit: { audioPlayer })
+                player.play()
+                
+                
             }
             .store(in: &cancellables)
         

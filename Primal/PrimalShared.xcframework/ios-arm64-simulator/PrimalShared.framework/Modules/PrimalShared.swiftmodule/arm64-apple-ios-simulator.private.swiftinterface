@@ -922,6 +922,8 @@ extension PrimalShared.LocalAppConnectionDataDao {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func getConnection(clientPubKey: Swift.String) async throws -> PrimalShared.LocalAppConnection?
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func getConnectionsByUser(userPubKey: PrimalShared.LocalEncryptable<Foundation.NSString>) async throws -> [PrimalShared.LocalAppConnection]
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func insert(data: PrimalShared.LocalAppConnectionData) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func updateConnectionAutoStart(clientPubKey: Swift.String, autoStart: Swift.Bool) async throws
@@ -945,6 +947,8 @@ extension PrimalShared.ConnectionRepository {
   public func getUserPubKey(clientPubKey: Swift.String) async throws -> PrimalShared.UtilsResult<Foundation.NSString>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func insertOrReplaceConnection(secret: Swift.String, connection: PrimalShared.AppConnection) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func removeConnectionsByUserPubKey(userPubKey: Swift.String) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func updateConnectionAutoStart(clientPubKey: Swift.String, autoStart: Swift.Bool) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -974,7 +978,7 @@ extension PrimalShared.SessionEventRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func respondToEvent(eventId: Swift.String, userChoice: PrimalShared.UserChoice) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func respondToEvents(eventIdToUserChoice: [PrimalShared.KotlinPair<Foundation.NSString, PrimalShared.__UserChoice>]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
+  public func respondToEvents(userChoices: [PrimalShared.SessionEventUserChoice]) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
 }
 extension PrimalShared.SessionRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)

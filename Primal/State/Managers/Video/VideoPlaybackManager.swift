@@ -39,32 +39,35 @@ final class VideoPlaybackManager: NSObject {
     
     @Published private var _isMuted = true
     @Published private var liveOverride = false
-    @Published var currentlyPlaying: VideoPlayer? {
+    @Published var currentlyPlaying: PlayerProtocol? {
         didSet {
-            currentlyPlaying?.avPlayer.play()
-            guard oldValue != currentlyPlaying else { return }
+            guard oldValue !== currentlyPlaying else { return }
             oldValue?.pause()
-            liveOverride = currentlyPlaying?.isLive == true
+            liveOverride = currentlyPlayingVideo?.isLive == true
         }
     }
+    var currentlyPlayingVideo: VideoPlayer? { currentlyPlaying as? VideoPlayer }
+    
     @Published private var avCategory = AVAudioSession.Category.ambient
     
-    var isLive: Bool { currentlyPlaying?.isLive == true && currentlyPlaying?.isPlaying == true }
+    var isLive: Bool { currentlyPlayingVideo?.isLive == true && currentlyPlaying?.isPlaying == true }
     
     private var cancellables: Set<AnyCancellable> = []
     override init() {
         super.init()
         
-        Publishers.CombineLatest(isMutedPublisher, $currentlyPlaying.removeDuplicates())
+        Publishers.CombineLatest(isMutedPublisher, $currentlyPlaying)
             .debounce(for: 0.01, scheduler: DispatchQueue.main)
             .sink { [weak self] isMuted, currentlyPlaying in
                 
-                currentlyPlaying?.avPlayer.isMuted = isMuted
+                currentlyPlaying?.setMuted(isMuted)
                 
-                guard let live = currentlyPlaying?.live, !isMuted else {
+                guard let live = self?.currentlyPlayingVideo?.live, !isMuted else {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
                     UIApplication.shared.endReceivingRemoteControlEvents()
-                    self?.avCategory = isMuted ? .ambient : .playback
+                    if currentlyPlaying as? VideoPlayer != nil {
+                        self?.avCategory = isMuted ? .ambient : .playback
+                    }
                     return
                 }
                 
@@ -81,7 +84,7 @@ final class VideoPlaybackManager: NSObject {
                 if !urlString.isEmpty, let url = URL(string: urlString) {
                     KingfisherManager.shared.retrieveImage(with: url) { result in
                         let mngr = VideoPlaybackManager.instance
-                        guard case .success(let value) = result, imageId == mngr.currentlyPlaying?.live?.event.universalID, !mngr.isMuted else { return }
+                        guard case .success(let value) = result, imageId == mngr.currentlyPlayingVideo?.live?.event.universalID, !mngr.isMuted else { return }
                         let image = value.image
                         let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
                         nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
@@ -100,7 +103,7 @@ final class VideoPlaybackManager: NSObject {
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .sink { [weak self] _ in
-                let isPlaying = (self?.currentlyPlaying?.avPlayer.rate ?? 0) > 0.01
+                let isPlaying = (self?.currentlyPlayingVideo?.avPlayer.rate ?? 0) > 0.01
                 
                 if isPlaying {
                     self?.currentlyPlaying?.play()

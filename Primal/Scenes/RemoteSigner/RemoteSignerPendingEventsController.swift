@@ -166,11 +166,11 @@ class RemoteSignerPendingEventsController: UIViewController {
         rejectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            let choice = alwaysSwitch.isOn ? __UserChoice.alwaysReject : __UserChoice.reject
+            let choice = alwaysSwitch.isOn ? UserChoice.alwaysReject : .reject
                 
             Task {
-                try await sessionEventRepo.respondToEvents(eventIdToUserChoice: self.selectedEvents.map({
-                    .init(first: $0 as NSString, second: choice as __UserChoice)
+                try await sessionEventRepo.respondToEvents(userChoices: self.selectedEvents.map({
+                    .init(sessionEventId: $0, userChoice: choice)
                 }))
             }
         }), for: .touchUpInside)
@@ -178,11 +178,11 @@ class RemoteSignerPendingEventsController: UIViewController {
         approveButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            let choice = alwaysSwitch.isOn ? __UserChoice.alwaysAllow : __UserChoice.allow
+            let choice = alwaysSwitch.isOn ? UserChoice.alwaysAllow : .allow
                 
             Task {
-                try await sessionEventRepo.respondToEvents(eventIdToUserChoice: self.selectedEvents.map({
-                    .init(first: $0 as NSString, second: choice as __UserChoice)
+                try await sessionEventRepo.respondToEvents(userChoices: self.selectedEvents.map({
+                    .init(sessionEventId: $0, userChoice: choice)
                 }))
             }
         }), for: .touchUpInside)
